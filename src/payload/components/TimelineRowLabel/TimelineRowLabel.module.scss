@@ -1,0 +1,17 @@
+.TimelineRowLabel {
+  &_Container {
+    display: flex;
+    width: 100%;
+  }
+
+  &_DateLabel {
+    font-weight: 600;
+    margin-right: 1em;
+    opacity: 0.5;
+  }
+
+  &_Title {
+    flex-grow: 1;
+    width: 20em;
+  }
+}

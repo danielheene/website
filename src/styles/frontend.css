@@ -1,0 +1,101 @@
+@import "_fonts.inter.css";
+@import "_fonts.jetbrains-mono.css";
+@import "_fonts.pp-supply-mono.css";
+@import "_colors.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* ---------- colors ---------- */
+    --color-current: currentColor;
+    --color-transparent: transparent;
+    --color-inherit: inherit;
+
+    --color-black: 0 0 0;
+    --color-white: 255 255 255;
+
+    --background: var(--color-white);
+    --foreground: var(--color-gray-900);
+
+    /* ---------- fonts ---------- */
+    --font-inter: 'Inter', sans-serif;
+    --font-jetbrains-mono: 'JetBrains Mono', monospace;
+    --font-pp-supply-mono: 'PP Supply Mono', monospace;
+
+    --font-sans: var(--font-inter);
+    --font-mono: var(--font-jetbrains-mono);
+
+    --card: 240 5% 96%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    /*--gray: 222.2 47.4% 11.2%;*/
+    /*--gray-foreground: 210 40% 98%;*/
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 240 6% 90%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    --border-radius: 0.375rem;
+    --border-radius-xs: calc(var(--border-radius) * 0.25);
+    --border-radius-sm: calc(var(--border-radius) * 0.50);
+    --border-radius-md: calc(var(--border-radius) * 1.50);
+    --border-radius-lg: calc(var(--border-radius) * 1.75);
+    --border-radius-xl: calc(var(--border-radius) * 2.25);
+    --border-radius-none: 0;
+    --border-radius-full: 9999px;
+  }
+}
+
+@layer base {
+  html,
+  body {
+    @apply h-full min-h-full font-inter antialiased;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  a {
+    @apply ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+  }
+
+  div.layout {
+    @apply min-h-full flex flex-col flex-nowrap;
+  }
+
+  div.layout > header {
+    @apply justify-self-start;
+  }
+
+  div.layout > footer {
+    @apply justify-self-end;
+  }
+
+  div.layout > header,
+  div.layout > footer {
+    @apply flex-grow-0 flex-shrink-0;
+  }
+
+  div.layout > :not(header):not(footer):last-of-type {
+    @apply flex-grow;
+  }
+}

@@ -1,0 +1,48 @@
+@keyframes pulsate {
+  from {
+    border-color: var(--theme-elevation-250)
+  }
+  to {
+    border-color: var(--theme-elevation-1000)
+  }
+}
+
+.TagItem {
+  cursor: default;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  padding: 0.1em 0.3em;
+  flex-shrink: 0;
+  border: 0.2em solid var(--theme-elevation-250);
+  background-color: var(--theme-elevation-250);
+  color: var(--theme-elevation-1000);
+  margin-right: 0.4em;
+  font-family: var(--font-mono), 'ui-monospace', 'monospace';
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  user-select: none;
+
+  &:global(.pulsate) {
+    animation: pulsate 250ms ease-in-out 2 alternate;
+  }
+
+  &_Value {
+    font-size: 1rem;
+    //line-height: 22px;
+  }
+
+  &_Remove {
+    cursor: pointer;
+    //width: 22px;
+    text-align: center;
+    opacity: 0.4;
+    transition: opacity 125ms ease-in-out;
+  }
+
+  &:hover &_Remove {
+    opacity: 1;
+  }
+
+}

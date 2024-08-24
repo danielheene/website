@@ -1,0 +1,34 @@
+import { IconGallery, IconItem, Meta } from '@storybook/blocks'
+import { BRAND_ICONS, Icon, UI_ICONS } from '../app/components/Icon'
+
+<Meta title="Icons" />
+
+# Icons
+
+<div style={{ padding: '3rem 0' }}>
+  ## UI Icons
+
+  <div style={{ paddingTop: '1rem' }}>
+    <IconGallery>
+      {Object.values(UI_ICONS).map(icon => (
+        <IconItem name={icon}>
+          <Icon name={icon} />
+        </IconItem>
+      ))}
+    </IconGallery>
+  </div>
+</div>
+
+<div style={{ padding: '3rem 0' }}>
+  ## Brand Icons
+
+  <div style={{ paddingTop: '1rem' }}>
+    <IconGallery>
+      {Object.values(BRAND_ICONS).map(icon => (
+        <IconItem name={icon}>
+          <Icon name={icon} />
+        </IconItem>
+      ))}
+    </IconGallery>
+  </div>
+</div>

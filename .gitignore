@@ -1,0 +1,18 @@
+build
+dist/media
+node_modules
+.DS_Store
+.next
+.vercel
+
+# Payload default media upload directory
+public/media/
+
+*.db
+
+*storybook.log
+storybook-static/
+
+.env
+.env.*
+!.env.example

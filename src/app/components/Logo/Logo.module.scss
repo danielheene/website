@@ -1,0 +1,43 @@
+.Logo {
+  width: auto;
+  height: calc(1em * var(--lines) + var(--line-spacing));
+
+  path {
+    shape-rendering: geometricPrecision;
+    color-rendering: optimizeQuality;
+  }
+
+  &VariantSingleLine {
+    --lines: 1;
+    --line-spacing: 0em;
+  }
+
+  &VariantMultiLine {
+    --lines: 2;
+    --line-spacing: 0.06em;
+  }
+
+  &ColorBrand {
+    @apply text-primary;
+  }
+
+  &ColorWhite {
+    @apply text-white;
+  }
+
+  &ColorBlack {
+    @apply text-black;
+  }
+
+  &SizeSmall {
+    font-size: 1.5rem;
+  }
+
+  &SizeRegular {
+    font-size: 2rem;
+  }
+
+  &SizeLarge {
+    font-size: 3rem;
+  }
+}
