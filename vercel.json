@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "alias": "daniel.heene.io",
+  "cleanUrls": true,
+  "public": true,
+  "regions": [
+    "fra1"
+  ],
+  "redirects": [
+    {
+      "source": "/github",
+      "destination": "https://github.com/danielheene"
+    },
+    {
+      "source": "/linkedin",
+      "destination": "https://www.linkedin.com/in/danielheene"
+    }
+  ]
+}

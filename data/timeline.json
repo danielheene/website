@@ -1,0 +1,247 @@
+[
+  {
+    "start": "2022-01-01",
+    "title": "Started Freelancing",
+    "description": [
+      "After all these stations and the foundation of Mülheim Modular it was clear to me that I would like to work and structure freelance in the future.",
+      "My focus is clearly on projects in the areas of JavaScript, TypeScript, React, Next.js and Serverless infrastructures."
+    ],
+    "icon": "feather:terminal",
+    "tags": [
+      "React",
+      "Next.js",
+      "Vercel",
+      "Gatsby",
+      "GraphQL",
+      "Node.js",
+      "Express",
+      "TypeScript",
+      "JavaScript",
+      "Turbo",
+      "Cloudflare",
+      "Serverless",
+      "SEO",
+      "Shopify",
+      "Domain",
+      "Docker",
+      "Kubernetes",
+      "NGINX"
+    ]
+  },
+  {
+    "start": "2021-05-21",
+    "title": "Co-Founded Mülheim Modular",
+    "link": "https://www.muelheim-modular.de/",
+    "description": [
+      "In addition to the operation of our store, I can freely decide here which technology to use. To keep running costs low but offer maximum performance and stability we are currently developing our store system with modern SaaS products and a serverless infrastructure.",
+      "As a CMS solution, we therefore rely on Shopify & Sanity.io to populate cutting-edge Next.js applications, which are deployed to the Edge via Vercel.",
+      "Supporting applications, such as service bots or internal infrastructure will additionally be hosted in our Kubernetes cluster."
+    ],
+    "icon": "feather:music",
+    "tags": [
+      "Shopify",
+      "Next.js",
+      "React",
+      "GraphQL",
+      "Node.js",
+      "TailwindCSS",
+      "twin.macro",
+      "Stitches",
+      "Sanity.io",
+      "Vercel",
+      "Doppler",
+      "Kubernetes",
+      "Docker",
+      "AWS",
+      "Teensy",
+      "Arduino",
+      "Rust",
+      "Python",
+      "C++",
+      "C",
+      "Max/MSP"
+    ]
+  },
+  {
+    "start": "2021-09-01",
+    "end": "2021-12-01",
+    "title": "Started @ Twyte",
+    "description": [
+      "Unfortunately, this station was very short, as I did not expect to be so dissatisfied working in a Vue environment."
+    ],
+    "icon": "simple-icons:vuedotjs",
+    "tags": [
+      "Vue.js",
+      "Vuetify",
+      "Vue-Orm",
+      "Frontend",
+      "Material UI"
+    ]
+  },
+  {
+    "start": "2020-10-01",
+    "end": "2021-08-31",
+    "title": "Started @ TWT Interactive",
+    "description": [
+      "Beyond my work as a developer, I supported decision-making processes regarding infrastructure and technologies, as well as colleagues in the use of Typescript.",
+      "The support and further development of a model-driven React frontend was my primary task here. Besides this task, I also supported the development of a UI library for a market-leading customer in the sanitary industry."
+    ],
+    "icon": "simple-icons:react",
+    "tags": [
+      "React",
+      "Redux",
+      "Next.js",
+      "TypeScript",
+      "GraphQL",
+      "Apollo",
+      "Styled Components",
+      "CSS Modules",
+      "CSS-in-JS",
+      "Emotion",
+      "Monorepo",
+      "Webpack",
+      "Babel",
+      "Jest",
+      "ESLint",
+      "Git",
+      "Model Driven Development",
+      "REST",
+      "Model Driven Frontend",
+      "Design System",
+      "Storybook"
+    ]
+  },
+  {
+    "start": "2018-09-01",
+    "end": "2020-09-30",
+    "title": "Started @ Ambient Innovation",
+    "description": [
+      "In this job, I was in the lead role of the front-end developer of our Scrum team. Besides the responsibility and development of the frontend, user flow tests with cypress were part of my daily tasks.",
+      "I also supervised a practical project at the University of Cologne and supported the students in the realization of their project."
+    ],
+    "icon": "simple-icons:react",
+    "tags": [
+      "React",
+      "Redux",
+      "JavaScript",
+      "TypeScript",
+      "Node.js",
+      "Cypress.io",
+      "Jest",
+      "Webpack",
+      "AWS",
+      "Docker",
+      "Kubernetes",
+      "Rancher",
+      "GitlabCI",
+      "HTML",
+      "CSS",
+      "Agile",
+      "Scrum",
+      "Kanban",
+      "Storybook",
+      "Styled Components",
+      "Stylelint",
+      "Formik",
+      "Django"
+    ]
+  },
+  {
+    "start": "2016-10-01",
+    "end": "2018-08-31",
+    "title": "Started @ d-SIRE",
+    "description": [
+      "My focus here was, among other things, the planning & implementation of modern frontends according to the Atomic Design Principle.",
+      "With the help of Patternlab I was significantly involved in the implementation of a frontend library for Europe's largest perfumery.",
+      "This was followed by the development of a configurator application under AngularJS for one of the leading DIY stores."
+    ],
+    "icon": "simple-icons:react",
+    "tags": [
+      "HTML",
+      "CSS",
+      "Ajax",
+      "PHP",
+      "Atomic Design",
+      "AngularJS",
+      "Responsive Design",
+      "Webpack",
+      "Git",
+      "GitlabCI",
+      "Docker",
+      "Vagrant",
+      "Gulp",
+      "Accessibility",
+      "Bootstrap",
+      "Patternlab",
+      "jQuery",
+      "ES6",
+      "Code-Review",
+      "Sketch & Zeplin",
+      "Scrum",
+      "Kanban",
+      "Agile",
+      "Node.js"
+    ]
+  },
+  {
+    "start": "2016-02-01",
+    "end": "2016-09-30",
+    "title": "Started @ MoebelConcept",
+    "description": [
+      "The implementation of a modern frontend using modern web technologies and Ajax support was one of my primary tasks.",
+      "Apart from that I was also involved in infrastructural topics like backup strategies or deployments."
+    ],
+    "icon": "simple-icons:javascript",
+    "tags": [
+      "HTML",
+      "CSS",
+      "jQuery",
+      "PHP",
+      "AJAX",
+      "Apache",
+      "Debian"
+    ]
+  },
+  {
+    "start": "2013-08-01",
+    "end": "2016-01-31",
+    "title": "Training @ Intro Magazine",
+    "description": [
+      "Among other things, I was responsible for the planning, commissioning and coordination of external service providers for a relocation.",
+      "My daily tasks also included the support of the company's own Debian server landscape for Apache, MySQL, PHP, Varnish & File-Sharing applications."
+    ],
+    "icon": "simple-icons:debian",
+    "tags": [
+      "Apache",
+      "MySQL",
+      "PHP",
+      "Varnish",
+      "Symfony",
+      "Zend Framework",
+      "Python",
+      "File-Sharing",
+      "Debian",
+      "VoIP / SIP",
+      "OS X Server"
+    ]
+  },
+  {
+    "start": "2012-10-01",
+    "end": "2013-07-31",
+    "title": "Traineeship @ Intro Magazine",
+    "description": [
+      "I supported during the relaunch of <strong>intro.de</strong> and <strong>festivalguide.de</strong>.",
+      "Besides smaller tasks, the development of a dashboard for monitoring social media metrics was my primary project."
+    ],
+    "icon": "simple-icons:javascript",
+    "tags": [
+      "HTML",
+      "CSS",
+      "jQuery",
+      "Wordpress",
+      "Zend Framework",
+      "Python",
+      "Symfony"
+    ]
+  }
+]
