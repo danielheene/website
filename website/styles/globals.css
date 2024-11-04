@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    @apply antialiased text-white font-sans transition;
+  }
+
+  body {
+    @apply flex flex-col min-h-screen w-screen;
+  }
+
+  body::after {
+    @apply fixed inset-0 w-screen h-screen -z-max blur-2xl scale-110 bg-cover bg-center;
+    content: "";
+    background-image: url('data:image/webp;base64,UklGRl4BAABXRUJQVlA4IFIBAADQCwCdASo8ACIAPplCmUmlpCKhOrmcALATCWwAtRtQwie88u7835+Oft5gTzt8R3LayIXZ8NDNrquRKMeNVHt0zmcyj+u6cWfW2frEXw33fP3kKGWqU++NMSkV85dgoY6JSqByHEKAAP71eZuvK9rx2T/+HcqJFDuadpprchBGZZ7O1ic/r2tdEeeZCvNlKcRQ1L0/UT9TRUp33JPZIvrhfpUSy4oD1K9802RWjkrH3jgbh3z/dsNF6Xflui4rFo4NT4V/rV82+6fUluQ2LhmjC4P+M1UzLF85NmyQmYWIZ2TnYjv0a3ssC2n0pAUXa0vc1jYkV9mZMSAh6sfRLud4TQHXoccViceqLrRTY+BXavEVwRFbjTs9YMwaMhzXkRhuSxhqBfdExqIy8gueSebHNgIjNp29mndw6z2I2SaOlSHWzdiCL80zwWKCIfjmC+AAAA==');
+  }
+
+  #__next {
+    @apply flex flex-col min-h-screen w-screen opacity-100 transition-opacity duration-75;
+  }
+
+  .is-loading #__next {
+    @apply opacity-0 overflow-hidden cursor-wait duration-300;
+  }
+
+  ::selection {
+    @apply bg-primary text-white;
+  }
+
+  :focus-visible {
+    @apply outline outline-[3px] outline-primary-500 outline-offset-4;
+  }
+
+  :focus:not(:focus-visible) {
+    @apply outline-none ring-0 shadow-none;
+  }
+
+  a:hover {
+    @apply underline;
+  }
+}

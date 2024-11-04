@@ -1,0 +1,227 @@
+{
+  "name": "daniel.heene.io",
+  "version": "0.1.1",
+  "private": true,
+  "description": "Personal Website for daniel.heene.io",
+  "repository": "https://github.com/danielheene/daniel.heene.io",
+  "license": "MIT",
+  "author": "Daniel Heene <daniel@heene.io>",
+  "workspaces": [
+    "website",
+    "studio",
+    "packages/*"
+  ],
+  "scripts": {
+    "chore": "run-s \"chore:**\" --print-label",
+    "chore:deduplicate": "yarn deduplicate",
+    "chore:fix-mismatches": "syncpack fix-mismatches",
+    "chore:set-versions": "set-versions --workspaces",
+    "dev": "dotenv turbo run dev --include-dependencies --parallel --continue",
+    "build": "dotenv turbo run build --include-dependencies",
+    "env": "doppler secrets download --format env --no-file > .env || true",
+    "sanity": "dotenv yarn workspace studio sanity",
+    "postinstall": "husky install",
+    "commit": "commit"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ],
+    "rules": {
+      "body-max-line-length": [
+        2,
+        "always",
+        500
+      ],
+      "footer-max-line-length": [
+        2,
+        "always",
+        500
+      ],
+      "header-max-length": [
+        2,
+        "always",
+        500
+      ],
+      "subject-empty": [
+        2,
+        "never"
+      ]
+    }
+  },
+  "release": {
+    "branches": [
+      "main",
+      "next"
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/changelog",
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "CHANGELOG.md"
+          ]
+        }
+      ]
+    ]
+  },
+  "prettier": {
+    "arrowParens": "always",
+    "bracketSameLine": false,
+    "bracketSpacing": true,
+    "endOfLine": "lf",
+    "jsxSingleQuote": true,
+    "quoteProps": "consistent",
+    "semi": true,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5"
+  },
+  "syncpack": {
+    "resolutions": true,
+    "workspace": true,
+    "sortAz": [
+      "contributors",
+      "dependencies",
+      "dependenciesMeta",
+      "devDependencies",
+      "devDependenciesMeta",
+      "peerDependencies",
+      "peerDependenciesMeta",
+      "optionalDependencies",
+      "optionalDependenciesMeta",
+      "keywords",
+      "resolutions",
+      "scripts"
+    ],
+    "sortFirst": [
+      "$schema",
+      "name",
+      "version",
+      "private",
+      "description",
+      "keywords",
+      "homepage",
+      "bugs",
+      "repository",
+      "funding",
+      "license",
+      "author",
+      "maintainers",
+      "contributors"
+    ],
+    "versionGroups": [
+      {
+        "dependencies": [
+          "react",
+          "react-dom",
+          "react-is"
+        ],
+        "packages": [
+          "studio"
+        ],
+        "pinVersion": "17.0.2"
+      },
+      {
+        "dependencies": [
+          "react",
+          "react-dom",
+          "react-is"
+        ],
+        "packages": [
+          "website"
+        ],
+        "pinVersion": "18.2.0"
+      },
+      {
+        "dependencies": [
+          "sanity"
+        ],
+        "packages": [
+          "**"
+        ],
+        "pinVersion": "dev-preview"
+      }
+    ],
+    "semverGroups": [
+      {
+        "range": "",
+        "dependencyTypes": [
+          "prod",
+          "resolutions",
+          "overrides",
+          "pnpmOverrides",
+          "workspace"
+        ],
+        "dependencies": [
+          "**"
+        ],
+        "packages": [
+          "**"
+        ]
+      },
+      {
+        "range": "~",
+        "dependencyTypes": [
+          "dev"
+        ],
+        "dependencies": [
+          "**"
+        ],
+        "packages": [
+          "**"
+        ]
+      },
+      {
+        "range": "^",
+        "dependencyTypes": [
+          "peer"
+        ],
+        "dependencies": [
+          "**"
+        ],
+        "packages": [
+          "**"
+        ]
+      }
+    ]
+  },
+  "dependencies": {
+    "@commitlint/cli": "^17.2.0",
+    "@commitlint/config-conventional": "^17.2.0",
+    "@next/eslint-plugin-next": "13.0.2",
+    "@sanity/eslint-config-studio": "2.0.1",
+    "@semantic-release/changelog": "^6.0.1",
+    "@semantic-release/commit-analyzer": "^9.0.2",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/release-notes-generator": "^10.0.3",
+    "@types/prettier": "2.7.1",
+    "@typescript-eslint/eslint-plugin": "5.42.0",
+    "@typescript-eslint/parser": "5.42.0",
+    "dotenv-cli": "6.0.0",
+    "eslint": "8.27.0",
+    "eslint-config-next": "13.0.2",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-plugin-import": "2.26.0",
+    "eslint-plugin-jsx-a11y": "6.6.1",
+    "eslint-plugin-prettier": "4.2.1",
+    "eslint-plugin-react": "7.31.10",
+    "eslint-plugin-react-hooks": "4.6.0",
+    "eslint-plugin-security": "1.5.0",
+    "eslint-plugin-security-node": "1.1.1",
+    "eslint-plugin-simple-import-sort": "8.0.0",
+    "husky": "^8.0.1",
+    "npm-run-all": "4.1.5",
+    "prettier": "2.7.1",
+    "rimraf": "3.0.2",
+    "semantic-release": "^19.0.5",
+    "set-versions": "1.0.3",
+    "syncpack": "8.3.9",
+    "turbo": "1.6.3",
+    "typescript": "^4.8.4"
+  },
+  "packageManager": "yarn@3.2.3"
+}

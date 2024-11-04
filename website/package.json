@@ -1,0 +1,70 @@
+{
+  "name": "website",
+  "version": "0.1.1",
+  "description": "Personal Website for daniel.heene.io",
+  "repository": "https://github.com/danielheene/danielheene.git",
+  "license": "MIT",
+  "author": "Daniel Heene <daniel@heene.io>",
+  "scripts": {
+    "dev": "wait-on tcp:3333 && next",
+    "build": "next build",
+    "postbuild": "next-sitemap --config sitemap.config.js",
+    "start": "next start"
+  },
+  "browserslist": [
+    "last 1 chrome version",
+    "last 1 firefox version",
+    "last 1 safari version"
+  ],
+  "postcss": {
+    "plugins": {
+      "tailwindcss": {},
+      "autoprefixer": {}
+    }
+  },
+  "dependencies": {
+    "@iconify/react": "4.0.0",
+    "@portabletext/react": "2.0.0",
+    "@radix-ui/react-tooltip": "1.0.2",
+    "@react-pdf/renderer": "^3.0.0",
+    "@react-pdf/styled-components": "^1.4.0",
+    "@sendgrid/mail": "7.7.0",
+    "@tailwindcss/aspect-ratio": "0.4.2",
+    "@tailwindcss/forms": "0.5.3",
+    "@tailwindcss/line-clamp": "0.4.2",
+    "@tailwindcss/typography": "0.5.7",
+    "@vercel/analytics": "0.1.3",
+    "@vercel/og": "0.0.20",
+    "clsx": "1.2.1",
+    "dedent": "0.7.0",
+    "embla-carousel-react": "7.0.4",
+    "formik": "2.2.9",
+    "framer-motion": "7.6.4",
+    "lodash-es": "4.17.21",
+    "next": "^13.0.2",
+    "next-axiom": "0.15.0",
+    "next-sanity": "1.0.8",
+    "next-seo": "5.14.0",
+    "next-sitemap": "3.1.30",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-is": "18.2.0",
+    "slugify": "1.6.5",
+    "tailwindcss": "3.2.2",
+    "zustand": "4.1.4"
+  },
+  "devDependencies": {
+    "@next/env": "^13.0.2",
+    "@sanity/types": "^3.0.0-rc.0",
+    "@types/node": "^18.11.9",
+    "@types/prettier": "^2.7.1",
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.8",
+    "@types/three": "^0.144.0",
+    "autoprefixer": "^10.4.13",
+    "postcss": "^8.4.18",
+    "sharp": "0.31.2",
+    "typescript": "^4.8.4",
+    "wait-on": "^6.0.1"
+  }
+}

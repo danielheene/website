@@ -1,0 +1,178 @@
+/**
+ *
+ *    push "All Fields" tab to the end of the Tabs list
+ *
+ */
+[data-ui="TabList"]:not([hidden]) {
+  display: flex !important;
+  flex-direction: row !important;
+}
+
+/*[data-ui="TabList"] > div:first-of-type {*/
+/*  display: none;*/
+/*}*/
+
+[data-ui="TabList"] > div:first-of-type {
+  order: 9999;
+  margin-left: auto;
+}
+
+[data-testid="field-body"] [data-testid="pt-editor"] {
+  min-height: calc(100vh - 300px) !important;
+}
+
+/**
+
+ */
+[data-testid='pane-content'] [data-ui='Container']:first-of-type {
+  max-width: 65rem;
+}
+
+[data-as='fieldset'][data-level="0"] {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.25rem;
+}
+
+[data-as='fieldset']:not([data-level="0"]) > [data-ui='Flex'] {
+  display: none !important;
+}
+
+[data-as='fieldset'] > [data-ui='Flex'] + [data-ui='Box'] {
+  border-left: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+[data-testid^='fieldset-'] > [data-ui='Box'],
+[data-testid="field-contact"] > [data-ui='Box'] {
+  border-left: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+[data-testid="field-contact"] {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.25rem;
+}
+
+[data-testid="field-features"] [data-ui='Grid'] > [data-ui='Stack'] {
+  gap: 0.5rem;
+}
+
+[data-testid="field-features"] [data-ui='Grid'] > [data-ui='Stack'] > div {
+  gap: 0.5rem;
+}
+
+[data-testid='fieldset-1-11'] > [data-ui='Box'] > [data-ui='Grid'],
+[data-testid='fieldset-2-10'] > [data-ui='Box'] > [data-ui='Grid'],
+[data-testid='fieldset-3-9'] > [data-ui='Box'] > [data-ui='Grid'],
+[data-testid='fieldset-4-8'] > [data-ui='Box'] > [data-ui='Grid'],
+[data-testid='fieldset-5-7'] > [data-ui='Box'] > [data-ui='Grid'],
+[data-testid='fieldset-6-6'] > [data-ui='Box'] > [data-ui='Grid'],
+[data-testid='fieldset-7-5'] > [data-ui='Box'] > [data-ui='Grid'],
+[data-testid='fieldset-8-4'] > [data-ui='Box'] > [data-ui='Grid'],
+[data-testid='fieldset-9-3'] > [data-ui='Box'] > [data-ui='Grid'],
+[data-testid='fieldset-10-2'] > [data-ui='Box'] > [data-ui='Grid'],
+[data-testid='fieldset-11-1'] > [data-ui='Box'] > [data-ui='Grid'] {
+  grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+}
+
+[data-testid^='fieldset-'] > [data-ui='Box'] > [data-ui='Grid'] > * {
+  grid-column-end: span 6;
+}
+
+[data-testid='fieldset-1-11'] > [data-ui='Box'] > [data-ui='Grid'] > *:nth-child(odd) {
+  grid-column-end: span 1 !important;
+}
+
+[data-testid='fieldset-1-11'] > [data-ui='Box'] > [data-ui='Grid'] > *:nth-child(even) {
+  grid-column-end: span 11 !important;
+}
+
+[data-testid='fieldset-2-10'] > [data-ui='Box'] > [data-ui='Grid'] > *:nth-child(odd) {
+  grid-column-end: span 2 !important;
+}
+
+[data-testid='fieldset-2-10'] > [data-ui='Box'] > [data-ui='Grid'] > *:nth-child(even) {
+  grid-column-end: span 10 !important;
+}
+
+[data-testid='fieldset-3-9'] > [data-ui='Box'] > [data-ui='Grid'] > *:nth-child(odd) {
+  grid-column-end: span 3 !important;
+}
+
+[data-testid='fieldset-3-9'] > [data-ui='Box'] > [data-ui='Grid'] > *:nth-child(even) {
+  grid-column-end: span 9 !important;
+}
+
+[data-testid='fieldset-4-8'] > [data-ui='Box'] > [data-ui='Grid'] > *:nth-child(odd) {
+  grid-column-end: span 4 !important;
+}
+
+[data-testid='fieldset-4-8'] > [data-ui='Box'] > [data-ui='Grid'] > *:nth-child(even) {
+  grid-column-end: span 8 !important;
+}
+
+[data-testid='fieldset-5-7'] > [data-ui='Box'] > [data-ui='Grid'] > *:nth-child(odd) {
+  grid-column-end: span 5 !important;
+}
+
+[data-testid='fieldset-5-7'] > [data-ui='Box'] > [data-ui='Grid'] > *:nth-child(even) {
+  grid-column-end: span 7 !important;
+}
+
+[data-testid='fieldset-6-6'] > [data-ui='Box'] > [data-ui='Grid'] > *:nth-child(odd) {
+  grid-column-end: span 6 !important;
+}
+
+[data-testid='fieldset-6-6'] > [data-ui='Box'] > [data-ui='Grid'] > *:nth-child(even) {
+  grid-column-end: span 6 !important;
+}
+
+[data-testid='fieldset-7-5'] > [data-ui='Box'] > [data-ui='Grid'] > *:nth-child(odd) {
+  grid-column-end: span 7 !important;
+}
+
+[data-testid='fieldset-7-5'] > [data-ui='Box'] > [data-ui='Grid'] > *:nth-child(even) {
+  grid-column-end: span 5 !important;
+}
+
+[data-testid='fieldset-8-4'] > [data-ui='Box'] > [data-ui='Grid'] > *:nth-child(odd) {
+  grid-column-end: span 8 !important;
+}
+
+[data-testid='fieldset-8-4'] > [data-ui='Box'] > [data-ui='Grid'] > *:nth-child(even) {
+  grid-column-end: span 4 !important;
+}
+
+[data-testid='fieldset-9-3'] > [data-ui='Box'] > [data-ui='Grid'] > *:nth-child(odd) {
+  grid-column-end: span 9 !important;
+}
+
+[data-testid='fieldset-9-3'] > [data-ui='Box'] > [data-ui='Grid'] > *:nth-child(even) {
+  grid-column-end: span 3 !important;
+}
+
+[data-testid='fieldset-10-2'] > [data-ui='Box'] > [data-ui='Grid'] > *:nth-child(odd) {
+  grid-column-end: span 10 !important;
+}
+
+[data-testid='fieldset-10-2'] > [data-ui='Box'] > [data-ui='Grid'] > *:nth-child(even) {
+  grid-column-end: span 2 !important;
+}
+
+[data-testid='fieldset-11-1'] > [data-ui='Box'] > [data-ui='Grid'] > *:nth-child(odd) {
+  grid-column-end: span 11 !important;
+}
+
+[data-testid='fieldset-11-1'] > [data-ui='Box'] > [data-ui='Grid'] > *:nth-child(even) {
+  grid-column-end: span 1 !important;
+}
+
+
+.ace_editor {
+  font-size: 16px !important;
+  line-height: 1.3 !important;
+}

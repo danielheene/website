@@ -1,0 +1,45 @@
+@font-face {
+  font-family: 'Syne';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/syne/syne-v15-latin-400.woff2") format("woff2"),
+  url("/fonts/syne/syne-v15-latin-400.woff") format("woff");
+}
+
+@font-face {
+  font-family: 'Syne';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/syne/syne-v15-latin-500.woff2") format("woff2"),
+  url("/fonts/syne/syne-v15-latin-500.woff") format("woff");
+}
+
+@font-face {
+  font-family: 'Syne';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/syne/syne-v15-latin-600.woff2") format("woff2"),
+  url("/fonts/syne/syne-v15-latin-600.woff") format("woff");
+}
+
+@font-face {
+  font-family: 'Syne';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/syne/syne-v15-latin-700.woff2") format("woff2"),
+  url("/fonts/syne/syne-v15-latin-700.woff") format("woff");
+}
+
+@font-face {
+  font-family: 'Syne';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("/fonts/syne/syne-v15-latin-800.woff2") format("woff2"),
+  url("/fonts/syne/syne-v15-latin-800.woff") format("woff");
+}
+
