@@ -11,4 +11,4 @@
 **/temp
 **/docs/**
 tsconfig.json
-
+/README.md

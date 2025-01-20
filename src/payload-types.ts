@@ -12,27 +12,27 @@
  */
 export type HeaderNavItems =
   | {
-  link: {
-    type?: ('reference' | 'custom') | null;
-    newTab?: boolean | null;
-    reference?:
-      | ({
-      relationTo: 'pages';
-      value: number | Page;
-    } | null)
-      | ({
-      relationTo: 'blogPosts';
-      value: number | BlogPost;
-    } | null)
-      | ({
-      relationTo: 'blogCategories';
-      value: number | BlogCategory;
-    } | null);
-    url?: string | null;
-    label: string;
-  };
-  id?: string | null;
-}[]
+      link: {
+        type?: ('reference' | 'custom') | null;
+        newTab?: boolean | null;
+        reference?:
+          | ({
+              relationTo: 'pages';
+              value: number | Page;
+            } | null)
+          | ({
+              relationTo: 'blogPosts';
+              value: number | BlogPost;
+            } | null)
+          | ({
+              relationTo: 'blogCategories';
+              value: number | BlogCategory;
+            } | null);
+        url?: string | null;
+        label: string;
+      };
+      id?: string | null;
+    }[]
   | null;
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -40,27 +40,27 @@ export type HeaderNavItems =
  */
 export type FooterNavItems =
   | {
-  link: {
-    type?: ('reference' | 'custom') | null;
-    newTab?: boolean | null;
-    reference?:
-      | ({
-      relationTo: 'pages';
-      value: number | Page;
-    } | null)
-      | ({
-      relationTo: 'blogPosts';
-      value: number | BlogPost;
-    } | null)
-      | ({
-      relationTo: 'blogCategories';
-      value: number | BlogCategory;
-    } | null);
-    url?: string | null;
-    label: string;
-  };
-  id?: string | null;
-}[]
+      link: {
+        type?: ('reference' | 'custom') | null;
+        newTab?: boolean | null;
+        reference?:
+          | ({
+              relationTo: 'pages';
+              value: number | Page;
+            } | null)
+          | ({
+              relationTo: 'blogPosts';
+              value: number | BlogPost;
+            } | null)
+          | ({
+              relationTo: 'blogCategories';
+              value: number | BlogCategory;
+            } | null);
+        url?: string | null;
+        label: string;
+      };
+      id?: string | null;
+    }[]
   | null;
 
 export interface Config {
@@ -95,7 +95,6 @@ export interface Config {
     collection: 'users';
   };
 }
-
 export interface UserAuthOperations {
   forgotPassword: {
     email: string;
@@ -114,7 +113,6 @@ export interface UserAuthOperations {
     password: string;
   };
 }
-
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "blogCategories".
@@ -126,7 +124,6 @@ export interface BlogCategory {
   updatedAt: string;
   createdAt: string;
 }
-
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "blogTags".
@@ -138,7 +135,6 @@ export interface BlogTag {
   updatedAt: string;
   createdAt: string;
 }
-
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "blogPosts".
@@ -172,16 +168,15 @@ export interface BlogPost {
   authors?: (number | User)[] | null;
   populatedAuthors?:
     | {
-    id?: string | null;
-    name?: string | null;
-  }[]
+        id?: string | null;
+        name?: string | null;
+      }[]
     | null;
   slug?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
-
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
@@ -193,8 +188,8 @@ export interface Media {
   blurHash?: string | null;
   palette?:
     | {
-    [k: string]: unknown;
-  }
+        [k: string]: unknown;
+      }
     | unknown[]
     | string
     | number
@@ -214,7 +209,6 @@ export interface Media {
   focalX?: number | null;
   focalY?: number | null;
 }
-
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
@@ -233,7 +227,6 @@ export interface User {
   lockUntil?: string | null;
   password?: string | null;
 }
-
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
@@ -268,7 +261,6 @@ export interface Page {
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
-
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-preferences".
@@ -282,8 +274,8 @@ export interface PayloadPreference {
   key?: string | null;
   value?:
     | {
-    [k: string]: unknown;
-  }
+        [k: string]: unknown;
+      }
     | unknown[]
     | string
     | number
@@ -292,7 +284,6 @@ export interface PayloadPreference {
   updatedAt: string;
   createdAt: string;
 }
-
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-migrations".
@@ -304,7 +295,6 @@ export interface PayloadMigration {
   updatedAt: string;
   createdAt: string;
 }
-
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "resumeHero".
@@ -333,7 +323,6 @@ export interface ResumeHero {
   updatedAt?: string | null;
   createdAt?: string | null;
 }
-
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "resumeAboutMe".
@@ -362,7 +351,6 @@ export interface ResumeAboutMe {
   updatedAt?: string | null;
   createdAt?: string | null;
 }
-
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "resumeExperience".
@@ -387,38 +375,38 @@ export interface ResumeExperience {
   } | null;
   entries?:
     | {
-    title: string;
-    employer: string;
-    startDate: string;
-    endDate?: string | null;
-    richText?: {
-      root: {
-        type: string;
-        children: {
-          type: string;
-          version: number;
+        title: string;
+        employer: string;
+        startDate: string;
+        endDate?: string | null;
+        richText?: {
+          root: {
+            type: string;
+            children: {
+              type: string;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        technologies?: {
+          id?: string;
+          label?: string;
           [k: string]: unknown;
         }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-    technologies?: {
-      id?: string;
-      label?: string;
-      [k: string]: unknown;
-    }[];
-    id?: string | null;
-  }[]
+        id?: string | null;
+      }[]
     | null;
   anchor?: string | null;
   skillSummary?:
     | {
-    [k: string]: unknown;
-  }
+        [k: string]: unknown;
+      }
     | unknown[]
     | string
     | number
@@ -428,7 +416,6 @@ export interface ResumeExperience {
   updatedAt?: string | null;
   createdAt?: string | null;
 }
-
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "resumeProjects".
@@ -453,33 +440,32 @@ export interface ResumeProject {
   } | null;
   entries?:
     | {
-    headline: string;
-    subline: string;
-    richText?: {
-      root: {
-        type: string;
-        children: {
-          type: string;
-          version: number;
+        headline: string;
+        subline: string;
+        richText?: {
+          root: {
+            type: string;
+            children: {
+              type: string;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
           [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-    image?: number | Media | null;
-    id?: string | null;
-  }[]
+        } | null;
+        image?: number | Media | null;
+        id?: string | null;
+      }[]
     | null;
   anchor?: string | null;
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
-
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "resumeCustomers".
@@ -504,17 +490,16 @@ export interface ResumeCustomer {
   } | null;
   entries?:
     | {
-    logo?: string | null;
-    title?: string | null;
-    id?: string | null;
-  }[]
+        logo?: string | null;
+        title?: string | null;
+        id?: string | null;
+      }[]
     | null;
   anchor?: string | null;
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
-
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "resumeContact".
@@ -550,7 +535,6 @@ export interface ResumeContact {
   updatedAt?: string | null;
   createdAt?: string | null;
 }
-
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "settingsNavigation".
@@ -563,7 +547,6 @@ export interface SettingsNavigation {
   updatedAt?: string | null;
   createdAt?: string | null;
 }
-
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "settingsMeta".
@@ -584,7 +567,6 @@ export interface SettingsMeta {
   updatedAt?: string | null;
   createdAt?: string | null;
 }
-
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "auth".
@@ -595,6 +577,5 @@ export interface Auth {
 
 
 declare module 'payload' {
-  export interface GeneratedTypes extends Config {
-  }
+  export interface GeneratedTypes extends Config {}
 }
