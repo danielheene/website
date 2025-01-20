@@ -1,8 +1,7 @@
 # website
 
 ```css
-
-[theme="dark"] {
+[theme='dark'] {
   --background: hsl(0 0% 0%);
   --foreground: hsl(210 40% 98%);
 
@@ -38,7 +37,7 @@
   --error: hsl(10 39% 43%);
 }
 
-[theme="light"] {
+[theme='light'] {
   --background: hsl(0 0% 100%);
   --foreground: hsl(222.2 84% 4.9%);
 

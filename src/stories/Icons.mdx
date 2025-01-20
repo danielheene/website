@@ -1,5 +1,6 @@
-import { IconGallery, IconItem, Meta } from '@storybook/blocks'
-import { BRAND_ICONS, Icon, UI_ICONS } from '../app/components/Icon'
+import { IconGallery, Meta } from '@storybook/blocks'
+import { BRAND_ICONS, Icon, UI_ICONS } from '../components/Icon'
+import { IconItem } from './components/IconGallery'
 
 <Meta title="Icons" />
 
@@ -25,7 +26,7 @@ import { BRAND_ICONS, Icon, UI_ICONS } from '../app/components/Icon'
   <div style={{ paddingTop: '1rem' }}>
     <IconGallery>
       {Object.values(BRAND_ICONS).map(icon => (
-        <IconItem name={icon}>
+        <IconItem key={icon} name={icon}>
           <Icon name={icon} />
         </IconItem>
       ))}

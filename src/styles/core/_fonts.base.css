@@ -1,0 +1,9 @@
+:root {
+  /* ---------- fonts ---------- */
+  --font-inter: 'Inter', sans-serif;
+  --font-jetbrains-mono: 'JetBrains Mono', monospace;
+  --font-pp-supply-mono: 'PP Supply Mono', monospace;
+
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+}

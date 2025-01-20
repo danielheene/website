@@ -1,0 +1,53 @@
+:root {
+  --color-info-50: 243 251 255;
+  --color-info-100: 229 245 255;
+  --color-info-200: 199 238 255;
+  --color-info-300: 149 225 255;
+  --color-info-400: 91 212 255;
+  --color-info-500: 49 198 252;
+  --color-info-600: 0 176 252;
+  --color-info-700: 0 142 204;
+  --color-info-800: 1 118 170;
+  --color-info-900: 9 98 139;
+  --color-info-950: 6 62 93;
+  --color-info: var(--color-info-500);
+
+  --color-success-50: 244 253 243;
+  --color-success-100: 229 252 227;
+  --color-success-200: 204 247 202;
+  --color-success-300: 163 239 160;
+  --color-success-400: 103 221 98;
+  --color-success-500: 67 214 61;
+  --color-success-600: 38 188 32;
+  --color-success-700: 34 148 30;
+  --color-success-800: 31 117 30;
+  --color-success-900: 28 95 27;
+  --color-success-950: 8 53 8;
+  --color-success: var(--color-success-500);
+
+  --color-warning-50: 255 250 240;
+  --color-warning-100: 255 243 211;
+  --color-warning-200: 255 228 164;
+  --color-warning-300: 255 208 111;
+  --color-warning-400: 255 192 85;
+  --color-warning-500: 255 167 66;
+  --color-warning-600: 255 124 22;
+  --color-warning-700: 235 81 2;
+  --color-warning-800: 191 62 10;
+  --color-warning-900: 157 52 12;
+  --color-warning-950: 91 23 0;
+  --color-warning: var(--color-warning-500);
+
+  --color-error-50: 255 241 241;
+  --color-error-100: 255 223 223;
+  --color-error-200: 255 197 197;
+  --color-error-300: 255 157 157;
+  --color-error-400: 255 100 100;
+  --color-error-500: 255 56 56;
+  --color-error-600: 237 21 21;
+  --color-error-700: 200 13 13;
+  --color-error-800: 165 15 15;
+  --color-error-900: 136 20 20;
+  --color-error-950: 75 4 4;
+  --color-error: var(--color-error-500);
+}

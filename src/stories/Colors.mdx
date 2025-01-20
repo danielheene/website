@@ -1,4 +1,5 @@
-import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
+import { ColorPalette, Meta } from '@storybook/blocks'
+import { ColorItem } from './components/ColorPalette'
 
 <Meta title="Colors" />
 
@@ -43,51 +44,54 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Primary"
         subtitle="--color-primary"
         colors={{
-          '50': '#e7effe',
-          '100': '#d4e0fd',
-          '200': '#b2c6fb',
-          '300': '#859ff8',
-          '400': '#556af5',
-          '500': '#1d27f2',
-          '600': '#150de5',
-          '700': '#2219d0',
-          '800': '#1d189d',
-          '900': '#1d1d79',
-          '950': '#131146',
+          'DEFAULT': '#1d27f2',
+          '50': '#e9f3ff',
+          '100': '#d8e7ff',
+          '200': '#b8d2ff',
+          '300': '#8eb3ff',
+          '400': '#6185ff',
+          '500': '#3d59ff',
+          '600': '#1b29ff',
+          '700': '#1d27f2',
+          '800': '#111cc2',
+          '900': '#182497',
+          '950': '#0e1258',
         }}
       />
       <ColorItem
         title="Secondary"
         subtitle="--color-secondary"
         colors={{
-          '50': '#fdffff',
-          '100': '#f9ffff',
-          '200': '#f4feff',
-          '300': '#edfeff',
-          '400': '#d5f9fd',
-          '500': '#9ef5ff',
-          '600': '#61e6fd',
-          '700': '#38d3f2',
-          '800': '#26bbde',
-          '900': '#249bc0',
-          '950': '#0b6784',
+          'DEFAULT': '#9ef5ff',
+          '50': '#ebffff',
+          '100': '#cdfbff',
+          '200': '#9ef5ff',
+          '300': '#62ecfe',
+          '400': '#1bd8f5',
+          '500': '#00bbdb',
+          '600': '#0295b8',
+          '700': '#0a7794',
+          '800': '#126078',
+          '900': '#134f66',
+          '950': '#063446',
         }}
       />
       <ColorItem
         title="Tertiary"
         subtitle="--color-tertiary"
         colors={{
-          '50': '#fefff8',
-          '100': '#fdffed',
-          '200': '#fbffe2',
-          '300': '#fbffc7',
-          '400': '#fcffb8',
-          '500': '#ffff9e',
-          '600': '#fff25e',
-          '700': '#fdd822',
-          '800': '#ebba10',
-          '900': '#c89718',
-          '950': '#765105',
+          'DEFAULT': '#ffff9e',
+          '50': '#fdfee8',
+          '100': '#feffc2',
+          '200': '#ffff9e',
+          '300': '#fff745',
+          '400': '#fce913',
+          '500': '#ecd006',
+          '600': '#cca302',
+          '700': '#a27506',
+          '800': '#865c0d',
+          '900': '#724b11',
+          '950': '#432705',
         }}
       />
     </ColorPalette>
@@ -103,6 +107,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Info"
         subtitle="--color-info"
         colors={{
+          'DEFAULT': '#31c6fc',
           '50': '#f3fbff',
           '100': '#e5f5ff',
           '200': '#c7eeff',
@@ -121,6 +126,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Success"
         subtitle="--color-success"
         colors={{
+          'DEFAULT': '#43d63d',
           '50': '#f4fdf3',
           '100': '#e5fce3',
           '200': '#ccf7ca',
@@ -139,6 +145,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Warning"
         subtitle="--color-warning"
         colors={{
+          'DEFAULT': '#ffa742',
           '50': '#fffaf0',
           '100': '#fff3d3',
           '200': '#ffe4a4',
@@ -157,6 +164,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Error"
         subtitle="--color-error"
         colors={{
+          'DEFAULT': '#ff3838',
           '50': '#fff1f1',
           '100': '#ffdfdf',
           '200': '#ffc5c5',
@@ -170,7 +178,6 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
           '950': '#4b0404',
         }}
       />
-
     </ColorPalette>
   </div>
 </div>
@@ -184,6 +191,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Slate"
         subtitle="--color-slate"
         colors={{
+          'DEFAULT': '#64748b',
           '50': '#f8fafc',
           '100': '#f1f5f9',
           '200': '#e2e8f0',
@@ -201,6 +209,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Gray"
         subtitle="--color-gray"
         colors={{
+          'DEFAULT': '#6b7280',
           '50': '#f9fafb',
           '100': '#f3f4f6',
           '200': '#e5e7eb',
@@ -218,6 +227,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Zinc"
         subtitle="--color-zinc"
         colors={{
+          'DEFAULT': '#71717a',
           '50': '#fafafa',
           '100': '#f4f4f5',
           '200': '#e4e4e7',
@@ -235,6 +245,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Neutral"
         subtitle="--color-neutral"
         colors={{
+          'DEFAULT': '#737373',
           '50': '#fafafa',
           '100': '#f5f5f5',
           '200': '#e5e5e5',
@@ -252,6 +263,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Stone"
         subtitle="--color-stone"
         colors={{
+          'DEFAULT': '#78716c',
           '50': '#fafaf9',
           '100': '#f5f5f4',
           '200': '#e7e5e4',
@@ -269,6 +281,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Red"
         subtitle="--color-red"
         colors={{
+          'DEFAULT': '#ef4444',
           '50': '#fef2f2',
           '100': '#fee2e2',
           '200': '#fecaca',
@@ -286,6 +299,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Orange"
         subtitle="--color-orange"
         colors={{
+          'DEFAULT': '#f97316',
           '50': '#fff7ed',
           '100': '#ffedd5',
           '200': '#fed7aa',
@@ -303,6 +317,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Amber"
         subtitle="--color-amber"
         colors={{
+          'DEFAULT': '#f59e0b',
           '50': '#fffbeb',
           '100': '#fef3c7',
           '200': '#fde68a',
@@ -320,6 +335,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Yellow"
         subtitle="--color-yellow"
         colors={{
+          'DEFAULT': '#eab308',
           '50': '#fefce8',
           '100': '#fef9c3',
           '200': '#fef08a',
@@ -337,6 +353,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Lime"
         subtitle="--color-lime"
         colors={{
+          'DEFAULT': '#84cc16',
           '50': '#f7fee7',
           '100': '#ecfccb',
           '200': '#d9f99d',
@@ -355,6 +372,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Green"
         subtitle="--color-green"
         colors={{
+          'DEFAULT': '#22c55e',
           '50': '#f0fdf4',
           '100': '#dcfce7',
           '200': '#bbf7d0',
@@ -372,6 +390,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Emerald"
         subtitle="--color-emerald"
         colors={{
+          'DEFAULT': '#10b981',
           '50': '#ecfdf5',
           '100': '#d1fae5',
           '200': '#a7f3d0',
@@ -389,6 +408,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Teal"
         subtitle="--color-teal"
         colors={{
+          'DEFAULT': '#14b8a6',
           '50': '#f0fdfa',
           '100': '#ccfbf1',
           '200': '#99f6e4',
@@ -406,6 +426,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Cyan"
         subtitle="--color-cyan"
         colors={{
+          'DEFAULT': '#06b6d4',
           '50': '#ecfeff',
           '100': '#cffafe',
           '200': '#a5f3fc',
@@ -423,6 +444,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Sky"
         subtitle="--color-sky"
         colors={{
+          'DEFAULT': '#0ea5e9',
           '50': '#f0f9ff',
           '100': '#e0f2fe',
           '200': '#bae6fd',
@@ -440,6 +462,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Blue"
         subtitle="--color-blue"
         colors={{
+          'DEFAULT': '#3b82f6',
           '50': '#eff6ff',
           '100': '#dbeafe',
           '200': '#bfdbfe',
@@ -457,6 +480,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Indigo"
         subtitle="--color-indigo"
         colors={{
+          'DEFAULT': '#6366f1',
           '50': '#eef2ff',
           '100': '#e0e7ff',
           '200': '#c7d2fe',
@@ -474,6 +498,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Violet"
         subtitle="--color-violet"
         colors={{
+          'DEFAULT': '#8b5cf6',
           '50': '#f5f3ff',
           '100': '#ede9fe',
           '200': '#ddd6fe',
@@ -491,6 +516,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Purple"
         subtitle="--color-purple"
         colors={{
+          'DEFAULT': '#a855f7',
           '50': '#faf5ff',
           '100': '#f3e8ff',
           '200': '#e9d5ff',
@@ -508,6 +534,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Fuchsia"
         subtitle="--color-fuchsia"
         colors={{
+          'DEFAULT': '#d946ef',
           '50': '#fdf4ff',
           '100': '#fae8ff',
           '200': '#f5d0fe',
@@ -525,6 +552,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Pink"
         subtitle="--color-pink"
         colors={{
+          'DEFAULT': '#ec4899',
           '50': '#fdf2f8',
           '100': '#fce7f3',
           '200': '#fbcfe8',
@@ -542,6 +570,7 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
         title="Rose"
         subtitle="--color-rose"
         colors={{
+          'DEFAULT': '#f43f5e',
           '50': '#fff1f2',
           '100': '#ffe4e6',
           '200': '#fecdd3',
@@ -555,5 +584,6 @@ import { ColorItem, ColorPalette, Meta } from '@storybook/blocks'
           '950': '#4c0519',
         }} />
     </ColorPalette>
+
   </div>
 </div>

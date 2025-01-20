@@ -25,6 +25,7 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
   const linkResult: Field = {
     name: 'link',
     type: 'group',
+    label: false,
     admin: {
       hideGutter: true,
     },
@@ -76,7 +77,7 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
       },
       label: 'Document to link to',
       maxDepth: 1,
-      relationTo: ['pages'],
+      relationTo: ['pages', 'blogPosts', 'blogCategories'],
       required: true,
     },
     {
@@ -95,6 +96,7 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
       ...linkType,
       admin: {
         ...linkType.admin,
+        label: false,
         width: '50%',
       },
     }))

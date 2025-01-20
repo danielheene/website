@@ -1,16 +1,10 @@
 import React, { FC, Fragment } from 'react'
 
 import { transparentize } from 'polished'
-import { styled, Theme } from '@storybook/theming'
-import { withReset, H2 } from '@storybook/components'
+import { styled } from '@storybook/theming'
+import { withReset } from '@storybook/components'
 
-export const getBlockBackgroundStyle: (theme: Theme) => object = (theme: Theme) => ({
-  borderRadius: theme.appBorderRadius,
-  background: theme.background.content,
-  boxShadow:
-    theme.base === 'light' ? 'rgba(0, 0, 0, 0.10) 0 1px 3px 0' : 'rgba(0, 0, 0, 0.20) 0 2px 5px 0',
-  border: `1px solid ${theme.appBorderColor}`,
-})
+import { getBlockBackgroundStyle } from './_shared'
 
 const Label = styled.div(({ theme }) => ({
   marginRight: 30,
@@ -26,13 +20,6 @@ const Sample = styled.div({
   whiteSpace: 'nowrap',
   textOverflow: 'ellipsis',
 })
-//
-// const TypeSpecimen = styled.div({
-//   display: 'flex',
-//   flexDirection: 'row',
-//   alignItems: 'baseline',
-//   '&:not(:last-child)': { marginBottom: '1rem' },
-// })
 
 const Wrapper = styled.div(withReset, ({ theme }) => ({
   ...getBlockBackgroundStyle(theme),
