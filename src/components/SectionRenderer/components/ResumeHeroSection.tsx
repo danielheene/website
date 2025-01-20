@@ -31,11 +31,10 @@ export const ResumeHeroSection = ({
           blurHash={background.blurHash}
           width={background.width}
           height={background.height}
-          loading="eager"
+          loading="lazy"
           className="absolute top-0 right-0 left-0 bottom-0 z-0"
           fill
           duoTone
-          priority
         />
       )}
       <div className="container h-full grid grid-cols-12 items-center relative">
@@ -65,7 +64,7 @@ export const ResumeHeroSection = ({
               blurHash={portrait.blurHash}
               width={portrait.width}
               height={portrait.height}
-              loading="eager"
+              loading="lazy"
               className={cn(
                 'w-full aspect-square rounded-full',
                 'bg-gradient-to-tr from-primary-500 to-primary-700',
@@ -73,7 +72,6 @@ export const ResumeHeroSection = ({
               )}
               loadedClassName="opacity-100"
               fill
-              priority
             />
           )}
         </div>

@@ -39,6 +39,8 @@ export const ResumeProjectsSectionImage = memo(function ResumeProjectsSectionIma
           alt={image.alt}
           height={image.height}
           width={image.width}
+          blurHash={image.blurHash}
+          loading="lazy"
           className={cn([
             'absolute top-0 md:top-[25px] left-0 md:left-[25px] right-0 md:right-[25px] md:bottom-[25px] w-auto h-auto',
           ])}
