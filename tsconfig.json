@@ -17,7 +17,7 @@
     "noEmit": true,
     "paths": {
       "@/*": [
-        "./src/app/*"
+        "./src/*"
       ],
       "@payload-config": [
         "./src/payload.config.ts"
@@ -25,10 +25,18 @@
       "@payload-types": [
         "./src/payload-types.ts"
       ],
+      "@custom-types": [
+        "./src/custom-types.ts"
+      ],
+      "@tailwind-config": [
+        "./tailwind.config.ts"
+      ],
       "react": [
         "./node_modules/@types/react"
       ],
-      "@styles/*": ["./src/styles/*"]
+      "@styles/*": [
+        "./src/styles/*"
+      ]
     },
     "plugins": [
       {
@@ -48,7 +56,6 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "next.config.js",
-    "redirects.js"
+    "next.config.ts"
   ]
 }

@@ -1,0 +1,23 @@
+@import 'core/_fonts.inter.css';
+@import 'core/_fonts.jetbrains-mono.css';
+@import 'core/_fonts.pp-supply-mono.css';
+@import 'core/_fonts.base.css';
+/*@import 'core/_colors.tailwind.css';*/
+/*@import 'core/_colors.states.css';*/
+@import 'core/_colors.brand.css';
+@import 'core/_colors.base.css';
+
+@import "payload/_nav.css";
+@import "payload/_app-header.css";
+@import "payload/_dashboard.css";
+@import "payload/_resume.hero.css";
+@import "payload/_resume.about-me.css";
+@import "payload/_resume.contact.css";
+@import "payload/_resume.customers.css";
+@import "payload/_resume.experience.css";
+@import "payload/_resume.projects.css";
+
+
+/*@tailwind components;*/
+/*@tailwind utilities;*/
+

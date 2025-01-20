@@ -16,8 +16,8 @@ const config: StorybookConfig = {
       files: '*.mdx',
       titlePrefix: 'Foundation',
     },
-    '../src/**/*.mdx',
-    '../src/**/*.stories.@(js|jsx|mjs|ts|tsx|mdx)',
+    // '../src/**/*.mdx',
+    '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
   ],
 
   core: {

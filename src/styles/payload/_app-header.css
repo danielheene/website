@@ -1,0 +1,27 @@
+.app-header {
+  --icon-size: 36px;
+
+  @apply mb-8;
+
+  .step-nav.app-header__step-nav {
+    @apply text-xl font-mono tracking-tighter lowercase h-auto;
+
+    .step-nav__home {
+      width: 1em !important;
+      height: 1em !important;
+      font-size: var(--icon-size) !important;
+    }
+  }
+
+  .app-header__localizer {
+    display: none;
+  }
+
+  .app-header__account {
+    @apply w-10 h-10;
+
+    img {
+      @apply w-10 max-w-10 h-10 max-h-10 grow-0 shrink-0;
+    }
+  }
+}

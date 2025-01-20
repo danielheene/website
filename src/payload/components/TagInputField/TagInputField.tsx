@@ -20,12 +20,12 @@ type Tag = {
   label: string
 }
 
-type TagFieldExpressions = {
-  allowedChars: RegExp
-  specialChars: RegExp
-  leadingSpecialChars: RegExp
-  trailingSpecialChars: RegExp
-}
+// type TagFieldExpressions = {
+//   allowedChars: RegExp
+//   specialChars: RegExp
+//   leadingSpecialChars: RegExp
+//   trailingSpecialChars: RegExp
+// }
 
 const EVENT_KEY = {
   BACKSPACE: 'Backspace',
@@ -35,12 +35,12 @@ const EVENT_KEY = {
 /**
  * creates a set of expressions for trimming and adjusting tag values
  */
-const generateExpressions = (allowed: string, specials: string): TagFieldExpressions => ({
-  allowedChars: new RegExp(allowed, 'g'),
-  leadingSpecialChars: new RegExp(`^${specials}`, 'g'),
-  specialChars: new RegExp(specials, 'g'),
-  trailingSpecialChars: new RegExp(`${specials}?`, 'g'),
-})
+// const generateExpressions = (allowed: string, specials: string): TagFieldExpressions => ({
+//   allowedChars: new RegExp(allowed, 'g'),
+//   leadingSpecialChars: new RegExp(`^${specials}`, 'g'),
+//   specialChars: new RegExp(specials, 'g'),
+//   trailingSpecialChars: new RegExp(`${specials}?`, 'g'),
+// })
 
 const baseClass = 'tag-field'
 
@@ -55,12 +55,12 @@ export const TagInputField: React.FC<JSONFieldProps> = (props) => {
       admin: {
         className,
         description,
-        editorOptions,
+        // editorOptions,
         readOnly: readOnlyFromAdmin,
         style,
         width,
       } = {},
-      jsonSchema,
+      // jsonSchema,
       label,
       required,
     },
@@ -74,8 +74,8 @@ export const TagInputField: React.FC<JSONFieldProps> = (props) => {
   const inputRef = useRef<HTMLInputElement>(null)
   // const [value, setValue] = useState<Tag[]>([])
   const [stringValue, setStringValue] = useState<string>('')
-  const [jsonError, setJsonError] = useState<string>()
-  const [hasLoadedValue, setHasLoadedValue] = useState(false)
+  // const [jsonError, setJsonError] = useState<string>()
+  // const [hasLoadedValue, setHasLoadedValue] = useState(false)
 
   const memoizedValidate = useCallback(
     (value: string, options: BaseValidateOptions<Tag[], Tag[], string>) => {
@@ -84,12 +84,12 @@ export const TagInputField: React.FC<JSONFieldProps> = (props) => {
           type: 'json',
           name,
           ...options,
-          jsonError,
+          // jsonError,
           required,
         })
       }
     },
-    [validateFromTopLevelProps, name, jsonError, required],
+    [validateFromTopLevelProps, name, required],
   )
 
   const { path: pathFromContext, readOnly: readOnlyFromContext } = useFieldProps()
@@ -133,7 +133,7 @@ export const TagInputField: React.FC<JSONFieldProps> = (props) => {
 
         tag?.classList.remove('pulsate')
         tag?.classList.add('pulsate')
-        return;
+        return
       }
 
       setValue([...value, tag])
@@ -157,7 +157,6 @@ export const TagInputField: React.FC<JSONFieldProps> = (props) => {
         const lastTagElement = containerRef.current.querySelector<HTMLButtonElement>(
           '[data-tag-id]:last-of-type',
         )
-        console.log(lastTagElement)
         // const lastTagElement = Array.from(allTagElements).pop()
         return lastTagElement?.focus()
       }
@@ -205,7 +204,6 @@ export const TagInputField: React.FC<JSONFieldProps> = (props) => {
       }}
     >
       <FieldLabel
-        // field={field}
         Label={field?.admin?.components?.Label}
         label={label}
         required={required}
@@ -214,11 +212,10 @@ export const TagInputField: React.FC<JSONFieldProps> = (props) => {
       <div className={cn([])}>
         <FieldError
           CustomError={field?.admin?.components?.Error}
-          // field={field}
           path={path}
           {...(errorProps || {})}
         />
-        <div className={styles.TagInputField}>
+        <div className={styles.TagInputField} onClick={() => inputRef.current?.focus()}>
           {value.map(({ id, label }) => (
             <TagItem key={id} id={id} onKeyDown={handleKeyDown} onDeleteAction={handleDeleteAction}>
               {label}
@@ -238,7 +235,6 @@ export const TagInputField: React.FC<JSONFieldProps> = (props) => {
       <FieldDescription
         Description={field?.admin?.components?.Description}
         description={description}
-        // field={field}
         {...(descriptionProps || {})}
       />
     </div>

@@ -12,11 +12,8 @@ export const tagInputField: (overrides?: Partial<JSONField>) => JSONField = (ove
         fileMatch: ['a://b/foo.json'], // required
         schema: {
           type: 'array',
-          uniqueItems: true,
           items: {
             type: 'object',
-            required: true,
-            additionalProperties: false,
             properties: {
               id: { type: 'string' },
               label: { type: 'string' },

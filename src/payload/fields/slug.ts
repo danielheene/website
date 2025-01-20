@@ -1,4 +1,3 @@
-
 import type { Field } from 'payload'
 
 import deepMerge from '../utilities/deepMerge'
@@ -11,6 +10,7 @@ export const slugField: Slug = (fieldToUse = 'title', overrides = {}) =>
     {
       name: 'slug',
       type: 'text',
+      label: 'Slug',
       admin: {
         position: 'sidebar',
       },
@@ -19,7 +19,6 @@ export const slugField: Slug = (fieldToUse = 'title', overrides = {}) =>
       },
       index: true,
       unique: true,
-      label: 'Slug',
     },
     overrides,
   )

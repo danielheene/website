@@ -1,0 +1,12 @@
+.hero {
+  .hero__image {
+    flex-grow: 1 !important;
+    flex-shrink: 1 !important;
+    flex-basis: 45% !important;
+
+    .thumbnail img {
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+    }
+  }
+}
