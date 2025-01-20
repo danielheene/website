@@ -7,6 +7,7 @@ import resumeAboutMeData from './data/resumeAboutMe'
 import resumeAboutMePortraitImageData from './data/resumeAboutMePortraitImage'
 import resumeProjectsData from './data/resumeProjects'
 import resumeProjectsImage1Data from './data/resumeProjectsImage1'
+import resumeProjectsImage2Data from './data/resumeProjectsImage2'
 import resumeExperienceData from './data/resumeExperience'
 import resumeCustomersData from './data/resumeCustomers'
 import resumeContactData from './data/resumeContact'
@@ -141,11 +142,30 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
 
     payload.logger.info('    resumeProjects image1 uploaded')
 
+    const { id: resumeProjectsImage2Id } = await payload.create({
+      collection: 'media',
+      data: JSON.parse(JSON.stringify(resumeProjectsImage2Data)),
+      file: await fetchFileByURL({
+        src: '/seed/resumeProjects-image2.webp',
+        name: 'personal-website-screenshot.webp',
+      }),
+      context: {
+        isSeedContext: true,
+      },
+    })
+
+    payload.logger.info('    resumeProjects image2 uploaded')
+
     await payload.updateGlobal({
       slug: 'resumeProjects',
       data: JSON.parse(
-        JSON.stringify(resumeProjectsData).replace(/"<IMAGE_1>"/g, String(resumeProjectsImage1Id)),
+        JSON.stringify(resumeProjectsData)
+          .replace(/"<IMAGE_1>"/g, String(resumeProjectsImage1Id))
+          .replace(/"<IMAGE_2>"/g, String(resumeProjectsImage2Id)),
       ),
+      context: {
+        isSeedContext: true,
+      },
     })
 
     payload.logger.info('    resumeProjects data updated')
