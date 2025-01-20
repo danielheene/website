@@ -53,7 +53,7 @@ export const SectionNavigation = ({ className }: SectionNavigationProps) => {
             onClick={handleAnchorClick}
             className={cn([
               'vertical-writing-rl orientation-sideways-right rotate-180',
-              'my-4 px-2 transition-opacity duration-500 ease-in-out',
+              'my-4 px-2 transition-opacity duration-500 ease-in-out transform-gpu',
               'text-white text-lg font-mono tracking-wide mix-blend-difference',
               active ? 'opacity-100 font-bold' : 'opacity-60 font-light',
             ])}
