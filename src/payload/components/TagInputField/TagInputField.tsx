@@ -2,18 +2,11 @@
 
 import React, { ChangeEvent, KeyboardEvent, useCallback, useRef, useState } from 'react'
 import { deburr, kebabCase } from 'lodash-es'
-import { BaseValidateOptions, JSONFieldProps } from 'payload'
-import {
-  fieldBaseClass,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-  useField,
-  useFieldProps,
-} from '@payloadcms/ui'
+import { fieldBaseClass, FieldDescription, FieldError, useField } from '@payloadcms/ui'
 import styles from './TagInputField.module.scss'
 import { cn } from '@/utilities/cn'
 import { TagItem } from './TagItem'
+import { JSONFieldClientProps } from 'payload'
 
 type Tag = {
   id: string
@@ -44,31 +37,17 @@ const EVENT_KEY = {
 
 const baseClass = 'tag-field'
 
-export const TagInputField: React.FC<JSONFieldProps> = (props) => {
+export const TagInputField: React.FC<JSONFieldClientProps> = (props) => {
   const {
-    descriptionProps,
-    errorProps,
-    field,
+    path,
     field: {
-      name,
-      _path: pathFromProps,
-      admin: {
-        className,
-        description,
-        // editorOptions,
-        readOnly: readOnlyFromAdmin,
-        style,
-        width,
-      } = {},
-      // jsonSchema,
-      label,
-      required,
+      admin: { className, description, style, width } = {},
+      // jsonSchema, f
+      // label,
+      // required,
     },
-    labelProps,
-    readOnly: readOnlyFromTopLevelProps,
-    validate: validateFromTopLevelProps,
+    validate,
   } = props
-  const readOnlyFromProps = readOnlyFromTopLevelProps || readOnlyFromAdmin
 
   const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -77,36 +56,20 @@ export const TagInputField: React.FC<JSONFieldProps> = (props) => {
   // const [jsonError, setJsonError] = useState<string>()
   // const [hasLoadedValue, setHasLoadedValue] = useState(false)
 
-  const memoizedValidate = useCallback(
-    (value: string, options: BaseValidateOptions<Tag[], Tag[], string>) => {
-      if (typeof validateFromTopLevelProps === 'function') {
-        return validateFromTopLevelProps(value, {
-          type: 'json',
-          name,
-          ...options,
-          // jsonError,
-          required,
-        })
-      }
-    },
-    [validateFromTopLevelProps, name, required],
-  )
-
-  const { path: pathFromContext, readOnly: readOnlyFromContext } = useFieldProps()
-
   const {
     formInitializing,
     formProcessing,
-    path,
     setValue,
     showError,
+    readOnly,
+    errorMessage,
     value = [],
   } = useField<Tag[]>({
-    path: pathFromContext ?? pathFromProps ?? name,
-    validate: memoizedValidate,
+    path,
+    validate,
   })
 
-  const disabled = readOnlyFromProps || readOnlyFromContext || formProcessing || formInitializing
+  const disabled = readOnly || formProcessing || formInitializing
 
   const handleChange = useCallback(
     ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
@@ -203,18 +166,20 @@ export const TagInputField: React.FC<JSONFieldProps> = (props) => {
         width,
       }}
     >
-      <FieldLabel
-        Label={field?.admin?.components?.Label}
-        label={label}
-        required={required}
-        {...(labelProps || {})}
-      />
+      {/*<FieldLabel*/}
+      {/*  Label={field?.admin?.components?.Label}*/}
+      {/*  label={label}*/}
+      {/*  required={required}*/}
+      {/*  {...(labelProps || {})}*/}
+      {/*/>*/}
       <div className={cn([])}>
-        <FieldError
-          CustomError={field?.admin?.components?.Error}
-          path={path}
-          {...(errorProps || {})}
-        />
+        <FieldError path={path} message={errorMessage} showError={showError} />
+        {/*<FieldError*/}
+        {/*  CustomError={field?.admin?.components?.Error}*/}
+        {/*  path={path}*/}
+        {/*  {...(errorProps || {})}*/}
+        {/*/>*/}
+        {errorMessage}
         <div className={styles.TagInputField} onClick={() => inputRef.current?.focus()}>
           {value.map(({ id, label }) => (
             <TagItem key={id} id={id} onKeyDown={handleKeyDown} onDeleteAction={handleDeleteAction}>
@@ -232,11 +197,12 @@ export const TagInputField: React.FC<JSONFieldProps> = (props) => {
           />
         </div>
       </div>
-      <FieldDescription
-        Description={field?.admin?.components?.Description}
-        description={description}
-        {...(descriptionProps || {})}
-      />
+      <FieldDescription path={path} description={description} />
+      {/*<FieldDescription*/}
+      {/*  Description={field?.admin?.components?.Description}*/}
+      {/*  description={description}*/}
+      {/*  {...(descriptionProps || {})}*/}
+      {/*/>*/}
     </div>
   )
 }

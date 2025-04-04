@@ -1,6 +1,8 @@
 import { anyone } from '@/payload/access/anyone'
 import { createCollection } from '@/payload/utilities/schemaHelpers'
-import { CollectionSlug, Condition } from 'payload'
+import { Condition, WorkflowTypes } from 'payload'
+import { uniqueId } from 'lodash-es'
+import * as process from 'node:process'
 
 const isImage: Condition = (_, { type } = {}) => type === 'image'
 
@@ -14,9 +16,7 @@ export const Media = createCollection({
     group: 'general',
     defaultColumns: ['filename', 'type', 'extension', 'updatedAt'],
     components: {
-      edit: {
-        Description: false,
-      },
+      Description: false,
     },
   },
   access: {
@@ -44,6 +44,9 @@ export const Media = createCollection({
       name: 'blurHash',
       type: 'text',
       admin: {
+        components: {
+          Field: '/payload/components/BlurHash#Field',
+        },
         readOnly: true,
         condition: isImage,
         position: 'sidebar',
@@ -53,6 +56,9 @@ export const Media = createCollection({
       name: 'palette',
       type: 'json',
       admin: {
+        components: {
+          Field: '/payload/components/ColorPalette#Field',
+        },
         readOnly: true,
         condition: isImage,
         position: 'sidebar',
@@ -65,7 +71,7 @@ export const Media = createCollection({
         hidden: true,
       },
       hooks: {
-        beforeValidate: [async ({ data: { mimeType } }) => mimeType.split('/')[0]],
+        beforeValidate: [async ({ data: { mimeType } }) => mimeType?.split('/')?.[0]],
       },
     },
     {
@@ -75,69 +81,49 @@ export const Media = createCollection({
         hidden: true,
       },
       hooks: {
-        beforeValidate: [async ({ data: { mimeType } }) => mimeType.split('/')[1]],
+        beforeValidate: [async ({ data: { mimeType } }) => mimeType?.split('/')?.[1]],
       },
     },
   ],
   hooks: {
-    afterChange: [
-      async ({ collection, context, doc, operation, req }) => {
-        if (context.runHooksAfterChange === false) return
-        /** avoid running hooks when seeding as image references get lost */
-        if (context.isSeedContext === true) return
+    afterOperation: [
+      ({ operation, req, result }) => {
+        // /* avoid running hooks when seeding or   as image references get lost */
+        // if (req.context.isSeedContext === true) return
+        if (req.context.isQueueContext === true) return
 
-        if ((operation === 'create' || operation === 'update') && req.file) {
-          const imageUrl = new URL(doc.url, process.env.PAYLOAD_PUBLIC_SERVER_URL)
-
-          const fetchEndpoint = async <R>(apiUrl: string): Promise<R> =>
-            await fetch(new URL(apiUrl, process.env.PAYLOAD_PUBLIC_SERVER_URL), {
-              method: 'POST',
-              body: JSON.stringify({ imageUrl: imageUrl.toString() }),
-            }).then((response) => response.json())
-
-          const data = {
-            blurHash: null,
-            brightness: null,
-            palette: null,
+        if (['create', 'update', 'updateByID'].includes(operation) && req.file) {
+          const doc = {
+            ...result,
+            url: new URL(result.url, process.env.PAYLOAD_PUBLIC_SERVER_URL).toString(),
           }
 
-          try {
-            const json = await fetchEndpoint<{ blurHash?: string }>('/api/image/blurhash')
-            data.blurHash = json.blurHash
-          } catch (_) {
-            /* empty */
+          const base64 = req.file.data.toString('base64')
+          const queue = 'default'
+          const workflowParams = { doc, base64, workflowId: uniqueId(`media#${doc.id}#`) }
+          const workflowConfig = {
+            workflow: 'generateImageMeta' as WorkflowTypes,
+            input: workflowParams,
+            queue,
+            req,
           }
 
-          try {
-            const json = await fetchEndpoint<{ brightness?: string }>('/api/image/brightness')
-            data.brightness = json.brightness
-          } catch (_) {
-            /* empty */
-          }
-
-          try {
-            const json = await fetchEndpoint<{ palette?: string }>('/api/image/palette')
-            data.palette = json.palette
-          } catch (_) {
-            /* empty */
-          }
-
-          try {
-            await req.payload.update({
-              collection: collection.slug as CollectionSlug,
-              id: doc.id,
-              data: {
-                ...doc,
-                ...data,
-              },
-              context: {
-                runHooksAfterChange: false,
-              },
-              req,
+          Promise.resolve()
+            .then(() => {
+              req.payload.logger.info('----- adding workflow to queue')
+              return req.payload.jobs.queue(workflowConfig)
             })
-          } catch (e) {
-            console.log(e)
-          }
+            .then(() => {
+              req.payload.logger.info('----- running workflow from queue')
+              return req.payload.jobs.run({ queue })
+            })
+            .then((result) => {
+              req.payload.logger.info('----- finished workflow successfully')
+              req.payload.logger.debug(result)
+            })
+            .catch((error) => {
+              req.payload.logger.error(error, error?.message)
+            })
         }
       },
     ],

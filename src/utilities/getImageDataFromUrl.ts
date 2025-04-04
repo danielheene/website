@@ -23,3 +23,17 @@ export const getImageDataFromUrl = async (url: string): Promise<ImageData> => {
 
   return context.getImageData(0, 0, image.width, image.height)
 }
+
+/**
+ * creates a headless canvas on server and retrieves image date fom it
+ * @param source
+ */
+export const getImageData = async (source: Parameters<typeof loadImage>[0]): Promise<ImageData> => {
+  const image = await loadImage(source)
+  const canvas = createCanvas(image.width, image.height)
+  const context = canvas.getContext('2d')
+
+  context.drawImage(image, 0, 0)
+
+  return context.getImageData(0, 0, image.width, image.height)
+}

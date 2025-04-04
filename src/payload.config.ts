@@ -23,14 +23,22 @@ import { fileURLToPath } from 'url'
 import nodemailerSendgrid from 'nodemailer-sendgrid'
 import nodemailer from 'nodemailer'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
-import { Blog, General, Resume, Settings } from 'src/payload/schemas'
-import { filterCollections, filterGlobals } from '@/payload/utilities/schemaHelpers'
+import { resolveCollections, resolveGlobals } from '@/payload/utilities/schemaHelpers'
 import { seedHandler } from '@/payload/endpoints/seed'
+import * as process from 'node:process'
+import { createBlurHashTask } from '@/payload/tasks/createBlurHashTask'
+import { generateImageMetaWorkflow } from '@/payload/workflows/generateImageMetaWorkflow'
+import { createBrightnessTask } from '@/payload/tasks/createBrightnessTask'
+import { createPaletteTask } from '@/payload/tasks/createPaletteTask'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
+  jobs: {
+    tasks: [createBlurHashTask, createBrightnessTask, createPaletteTask],
+    workflows: [generateImageMetaWorkflow],
+  },
   admin: {
     components: {
       graphics: {
@@ -81,7 +89,7 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URL || '',
     },
   }),
-  collections: filterCollections(...Blog, ...General, ...Resume, ...Settings),
+  collections: await resolveCollections(['resume', 'blog', 'general', 'settings']),
   debug: process.env.NODE_ENV === 'development',
   email: process.env.SENDGRID_API_KEY
     ? nodemailerAdapter({
@@ -104,7 +112,7 @@ export default buildConfig({
       path: '/seed',
     },
   ],
-  globals: filterGlobals(...Blog, ...General, ...Resume, ...Settings),
+  globals: await resolveGlobals(['resume', 'blog', 'general', 'settings']),
   localization: {
     locales: [
       {
@@ -117,8 +125,13 @@ export default buildConfig({
   },
   plugins: [
     vercelBlobStorage({
+      enabled: true,
+      // clientUploads: true,
+      // addRandomSuffix: true,
       collections: {
-        media: true,
+        media: {
+          prefix: process.env.VERCEL_ENV || 'development',
+        },
       },
       token: process.env.BLOB_READ_WRITE_TOKEN || '',
     }),

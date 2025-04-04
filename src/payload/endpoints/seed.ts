@@ -1,18 +1,12 @@
 import { File, type PayloadHandler } from 'payload'
 
 import resumeHeroData from './data/resumeHero'
-import resumeHeroBackgroundImageData from './data/resumeHeroBackgroundImage'
-import resumeHeroPortraitImageData from './data/resumeHeroPortraitImage'
 import resumeAboutMeData from './data/resumeAboutMe'
-import resumeAboutMePortraitImageData from './data/resumeAboutMePortraitImage'
 import resumeProjectsData from './data/resumeProjects'
-import resumeProjectsImage1Data from './data/resumeProjectsImage1'
-import resumeProjectsImage2Data from './data/resumeProjectsImage2'
 import resumeExperienceData from './data/resumeExperience'
 import resumeCustomersData from './data/resumeCustomers'
 import resumeContactData from './data/resumeContact'
 import imprintData from './data/imprint'
-import imprintHeroImageData from './data/imprintHeroImage'
 import settingsNavigationData from './data/settingsNavigation'
 
 export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
@@ -30,10 +24,12 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
 
     const { id: resumeHeroBackgroundId } = await payload.create({
       collection: 'media',
-      data: JSON.parse(JSON.stringify(resumeHeroBackgroundImageData)),
+      data: {
+        alt: 'Resume Page Hero Section Background',
+      },
       file: await fetchFileByURL({
-        src: '/seed/resumeHero-background.webp',
-        name: 'resume-hero-background.webp',
+        src: '/seed/resumeHero-background.png',
+        name: 'resume-hero-background.png',
       }),
       context: {
         isSeedContext: true,
@@ -44,10 +40,12 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
 
     const { id: resumeHeroPortraitId } = await payload.create({
       collection: 'media',
-      data: JSON.parse(JSON.stringify(resumeHeroPortraitImageData)),
+      data: {
+        alt: 'Resume Page Hero Section Portrait',
+      },
       file: await fetchFileByURL({
-        src: '/seed/resumeHero-portrait.webp',
-        name: 'resume-hero-portrait.webp',
+        src: '/seed/resumeHero-portrait.png',
+        name: 'resume-hero-portrait.png',
       }),
       context: {
         isSeedContext: true,
@@ -79,10 +77,12 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
 
     const { id: resumeAboutMePortraitId } = await payload.create({
       collection: 'media',
-      data: JSON.parse(JSON.stringify(resumeAboutMePortraitImageData)),
+      data: {
+        alt: 'Resume Page About Me Section Portrait',
+      },
       file: await fetchFileByURL({
-        src: '/seed/resumeAboutMe-portrait.webp',
-        name: 'resume-about-me-portrait.webp',
+        src: '/seed/resumeAboutMe-portrait.png',
+        name: 'resume-about-me-portrait.png',
       }),
       context: {
         isSeedContext: true,
@@ -130,10 +130,12 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
 
     const { id: resumeProjectsImage1Id } = await payload.create({
       collection: 'media',
-      data: JSON.parse(JSON.stringify(resumeProjectsImage1Data)),
+      data: {
+        alt: 'Aktion Mensch download page screenshot',
+      },
       file: await fetchFileByURL({
-        src: '/seed/resumeProjects-image1.webp',
-        name: 'aktion-mensch-screenshot.webp',
+        src: '/seed/resumeProjects-image1.png',
+        name: 'aktion-mensch-screenshot.png',
       }),
       context: {
         isSeedContext: true,
@@ -144,10 +146,12 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
 
     const { id: resumeProjectsImage2Id } = await payload.create({
       collection: 'media',
-      data: JSON.parse(JSON.stringify(resumeProjectsImage2Data)),
+      data: {
+        alt: 'screenshot of the admin dashboard for my portfolio website',
+      },
       file: await fetchFileByURL({
-        src: '/seed/resumeProjects-image2.webp',
-        name: 'personal-website-screenshot.webp',
+        src: '/seed/resumeProjects-image2.png',
+        name: 'personal-website-screenshot.png',
       }),
       context: {
         isSeedContext: true,
@@ -219,8 +223,13 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
 
     const { id: imprintHeroId } = await payload.create({
       collection: 'media',
-      data: JSON.parse(JSON.stringify(imprintHeroImageData)),
-      file: await fetchFileByURL({ src: '/seed/imprint-hero.webp', name: 'imprint-hero.webp' }),
+      data: {
+        alt: 'Imprint Page Hero Image',
+      },
+      file: await fetchFileByURL({
+        src: '/seed/imprint-hero.png',
+        name: 'imprint-hero.png',
+      }),
       context: {
         isSeedContext: true,
       },
@@ -264,7 +273,7 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
     return Response.json({ success: true })
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error'
-    payload.logger.error(message)
+    payload.logger.error(error, message)
     return Response.json({ success: false, error: message }, { status: 500 })
   }
 }

@@ -15,15 +15,11 @@ type Args = {
   }>
 }
 
-export const generateMetadata = async (args: Args): Promise<Metadata> => {
-  const params = await args.params
-  const searchParams = await args.searchParams
+export const generateMetadata = ({ params, searchParams }: Args): Promise<Metadata> => {
   return generatePageMetadata({ config, params, searchParams })
 }
 
-const Page = async (args: Args) => {
-  const params = await args.params
-  const searchParams = await args.searchParams
+const Page = ({ params, searchParams }: Args) => {
   return RootPage({ config, params, searchParams, importMap })
 }
 

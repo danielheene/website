@@ -62,37 +62,146 @@ export type FooterNavItems =
       id?: string | null;
     }[]
   | null;
+/**
+ * Supported timezones in IANA format.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "supportedTimezones".
+ */
+export type SupportedTimezones =
+  | 'Pacific/Midway'
+  | 'Pacific/Niue'
+  | 'Pacific/Honolulu'
+  | 'Pacific/Rarotonga'
+  | 'America/Anchorage'
+  | 'Pacific/Gambier'
+  | 'America/Los_Angeles'
+  | 'America/Tijuana'
+  | 'America/Denver'
+  | 'America/Phoenix'
+  | 'America/Chicago'
+  | 'America/Guatemala'
+  | 'America/New_York'
+  | 'America/Bogota'
+  | 'America/Caracas'
+  | 'America/Santiago'
+  | 'America/Buenos_Aires'
+  | 'America/Sao_Paulo'
+  | 'Atlantic/South_Georgia'
+  | 'Atlantic/Azores'
+  | 'Atlantic/Cape_Verde'
+  | 'Europe/London'
+  | 'Europe/Berlin'
+  | 'Africa/Lagos'
+  | 'Europe/Athens'
+  | 'Africa/Cairo'
+  | 'Europe/Moscow'
+  | 'Asia/Riyadh'
+  | 'Asia/Dubai'
+  | 'Asia/Baku'
+  | 'Asia/Karachi'
+  | 'Asia/Tashkent'
+  | 'Asia/Calcutta'
+  | 'Asia/Dhaka'
+  | 'Asia/Almaty'
+  | 'Asia/Jakarta'
+  | 'Asia/Bangkok'
+  | 'Asia/Shanghai'
+  | 'Asia/Singapore'
+  | 'Asia/Tokyo'
+  | 'Asia/Seoul'
+  | 'Australia/Sydney'
+  | 'Pacific/Guam'
+  | 'Pacific/Noumea'
+  | 'Pacific/Auckland'
+  | 'Pacific/Fiji';
 
 export interface Config {
   auth: {
     users: UserAuthOperations;
   };
+  blocks: {};
   collections: {
+    resumeDummyCollection: ResumeDummyCollection;
+    blogDummyCollection: BlogDummyCollection;
     blogCategories: BlogCategory;
     blogTags: BlogTag;
     blogPosts: BlogPost;
+    generalDummyCollection: GeneralDummyCollection;
     media: Media;
     pages: Page;
     users: User;
+    settingsDummyCollection: SettingsDummyCollection;
+    'payload-jobs': PayloadJob;
+    'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
+  };
+  collectionsJoins: {};
+  collectionsSelect: {
+    resumeDummyCollection: ResumeDummyCollectionSelect<false> | ResumeDummyCollectionSelect<true>;
+    blogDummyCollection: BlogDummyCollectionSelect<false> | BlogDummyCollectionSelect<true>;
+    blogCategories: BlogCategoriesSelect<false> | BlogCategoriesSelect<true>;
+    blogTags: BlogTagsSelect<false> | BlogTagsSelect<true>;
+    blogPosts: BlogPostsSelect<false> | BlogPostsSelect<true>;
+    generalDummyCollection: GeneralDummyCollectionSelect<false> | GeneralDummyCollectionSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
+    settingsDummyCollection: SettingsDummyCollectionSelect<false> | SettingsDummyCollectionSelect<true>;
+    'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
+    'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
+    'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
+    'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
     defaultIDType: number;
   };
   globals: {
+    resumeDummyGlobal: ResumeDummyGlobal;
     resumeHero: ResumeHero;
     resumeAboutMe: ResumeAboutMe;
     resumeExperience: ResumeExperience;
     resumeProjects: ResumeProject;
     resumeCustomers: ResumeCustomer;
     resumeContact: ResumeContact;
+    blogDummyGlobal: BlogDummyGlobal;
+    generalDummyGlobal: GeneralDummyGlobal;
+    settingsDummyGlobal: SettingsDummyGlobal;
     settingsNavigation: SettingsNavigation;
     settingsMeta: SettingsMeta;
+  };
+  globalsSelect: {
+    resumeDummyGlobal: ResumeDummyGlobalSelect<false> | ResumeDummyGlobalSelect<true>;
+    resumeHero: ResumeHeroSelect<false> | ResumeHeroSelect<true>;
+    resumeAboutMe: ResumeAboutMeSelect<false> | ResumeAboutMeSelect<true>;
+    resumeExperience: ResumeExperienceSelect<false> | ResumeExperienceSelect<true>;
+    resumeProjects: ResumeProjectsSelect<false> | ResumeProjectsSelect<true>;
+    resumeCustomers: ResumeCustomersSelect<false> | ResumeCustomersSelect<true>;
+    resumeContact: ResumeContactSelect<false> | ResumeContactSelect<true>;
+    blogDummyGlobal: BlogDummyGlobalSelect<false> | BlogDummyGlobalSelect<true>;
+    generalDummyGlobal: GeneralDummyGlobalSelect<false> | GeneralDummyGlobalSelect<true>;
+    settingsDummyGlobal: SettingsDummyGlobalSelect<false> | SettingsDummyGlobalSelect<true>;
+    settingsNavigation: SettingsNavigationSelect<false> | SettingsNavigationSelect<true>;
+    settingsMeta: SettingsMetaSelect<false> | SettingsMetaSelect<true>;
   };
   locale: 'en';
   user: User & {
     collection: 'users';
+  };
+  jobs: {
+    tasks: {
+      createBlurHash: TaskCreateBlurHash;
+      createBrightness: TaskCreateBrightness;
+      createPalette: TaskCreatePalette;
+      inline: {
+        input: unknown;
+        output: unknown;
+      };
+    };
+    workflows: {
+      generateImageMeta: WorkflowGenerateImageMeta;
+    };
   };
 }
 export interface UserAuthOperations {
@@ -115,6 +224,24 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resumeDummyCollection".
+ */
+export interface ResumeDummyCollection {
+  id: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blogDummyCollection".
+ */
+export interface BlogDummyCollection {
+  id: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "blogCategories".
  */
 export interface BlogCategory {
@@ -123,6 +250,7 @@ export interface BlogCategory {
   slug?: string | null;
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -134,6 +262,7 @@ export interface BlogTag {
   slug?: string | null;
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -161,7 +290,10 @@ export interface BlogPost {
   categories?: (number | BlogCategory)[] | null;
   meta?: {
     title?: string | null;
-    image?: number | Media | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
     description?: string | null;
   };
   publishedAt?: string | null;
@@ -197,8 +329,10 @@ export interface Media {
     | null;
   type?: string | null;
   extension?: string | null;
+  prefix?: string | null;
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
   url?: string | null;
   thumbnailURL?: string | null;
   filename?: string | null;
@@ -218,6 +352,7 @@ export interface User {
   name?: string | null;
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
   email: string;
   resetPasswordToken?: string | null;
   resetPasswordExpiration?: string | null;
@@ -229,12 +364,21 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "generalDummyCollection".
+ */
+export interface GeneralDummyCollection {
+  id: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
  */
 export interface Page {
   id: number;
   title: string;
-  hero?: number | Media | null;
+  hero?: (number | null) | Media;
   content?: {
     root: {
       type: string;
@@ -252,7 +396,10 @@ export interface Page {
   } | null;
   meta?: {
     title?: string | null;
-    image?: number | Media | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
     description?: string | null;
   };
   publishedAt?: string | null;
@@ -260,6 +407,167 @@ export interface Page {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settingsDummyCollection".
+ */
+export interface SettingsDummyCollection {
+  id: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs".
+ */
+export interface PayloadJob {
+  id: number;
+  /**
+   * Input data provided to the job
+   */
+  input?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  taskStatus?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  completedAt?: string | null;
+  totalTried?: number | null;
+  /**
+   * If hasError is true this job will not be retried
+   */
+  hasError?: boolean | null;
+  /**
+   * If hasError is true, this is the error that caused it
+   */
+  error?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Task execution log
+   */
+  log?:
+    | {
+        executedAt: string;
+        completedAt: string;
+        taskSlug: 'inline' | 'createBlurHash' | 'createBrightness' | 'createPalette';
+        taskID: string;
+        input?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        output?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        state: 'failed' | 'succeeded';
+        error?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  workflowSlug?: 'generateImageMeta' | null;
+  taskSlug?: ('inline' | 'createBlurHash' | 'createBrightness' | 'createPalette') | null;
+  queue?: string | null;
+  waitUntil?: string | null;
+  processing?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-locked-documents".
+ */
+export interface PayloadLockedDocument {
+  id: number;
+  document?:
+    | ({
+        relationTo: 'resumeDummyCollection';
+        value: number | ResumeDummyCollection;
+      } | null)
+    | ({
+        relationTo: 'blogDummyCollection';
+        value: number | BlogDummyCollection;
+      } | null)
+    | ({
+        relationTo: 'blogCategories';
+        value: number | BlogCategory;
+      } | null)
+    | ({
+        relationTo: 'blogTags';
+        value: number | BlogTag;
+      } | null)
+    | ({
+        relationTo: 'blogPosts';
+        value: number | BlogPost;
+      } | null)
+    | ({
+        relationTo: 'generalDummyCollection';
+        value: number | GeneralDummyCollection;
+      } | null)
+    | ({
+        relationTo: 'media';
+        value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: number | User;
+      } | null)
+    | ({
+        relationTo: 'settingsDummyCollection';
+        value: number | SettingsDummyCollection;
+      } | null)
+    | ({
+        relationTo: 'payload-jobs';
+        value: number | PayloadJob;
+      } | null);
+  globalSlug?: string | null;
+  user: {
+    relationTo: 'users';
+    value: number | User;
+  };
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -297,12 +605,231 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resumeDummyCollection_select".
+ */
+export interface ResumeDummyCollectionSelect<T extends boolean = true> {
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blogDummyCollection_select".
+ */
+export interface BlogDummyCollectionSelect<T extends boolean = true> {
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blogCategories_select".
+ */
+export interface BlogCategoriesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blogTags_select".
+ */
+export interface BlogTagsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blogPosts_select".
+ */
+export interface BlogPostsSelect<T extends boolean = true> {
+  title?: T;
+  content?: T;
+  relatedPosts?: T;
+  categories?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        image?: T;
+        description?: T;
+      };
+  publishedAt?: T;
+  authors?: T;
+  populatedAuthors?:
+    | T
+    | {
+        id?: T;
+        name?: T;
+      };
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "generalDummyCollection_select".
+ */
+export interface GeneralDummyCollectionSelect<T extends boolean = true> {
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  brightness?: T;
+  blurHash?: T;
+  palette?: T;
+  type?: T;
+  extension?: T;
+  prefix?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  hero?: T;
+  content?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        image?: T;
+        description?: T;
+      };
+  publishedAt?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users_select".
+ */
+export interface UsersSelect<T extends boolean = true> {
+  name?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settingsDummyCollection_select".
+ */
+export interface SettingsDummyCollectionSelect<T extends boolean = true> {
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs_select".
+ */
+export interface PayloadJobsSelect<T extends boolean = true> {
+  input?: T;
+  taskStatus?: T;
+  completedAt?: T;
+  totalTried?: T;
+  hasError?: T;
+  error?: T;
+  log?:
+    | T
+    | {
+        executedAt?: T;
+        completedAt?: T;
+        taskSlug?: T;
+        taskID?: T;
+        input?: T;
+        output?: T;
+        state?: T;
+        error?: T;
+        id?: T;
+      };
+  workflowSlug?: T;
+  taskSlug?: T;
+  queue?: T;
+  waitUntil?: T;
+  processing?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-locked-documents_select".
+ */
+export interface PayloadLockedDocumentsSelect<T extends boolean = true> {
+  document?: T;
+  globalSlug?: T;
+  user?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-preferences_select".
+ */
+export interface PayloadPreferencesSelect<T extends boolean = true> {
+  user?: T;
+  key?: T;
+  value?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-migrations_select".
+ */
+export interface PayloadMigrationsSelect<T extends boolean = true> {
+  name?: T;
+  batch?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resumeDummyGlobal".
+ */
+export interface ResumeDummyGlobal {
+  id: number;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "resumeHero".
  */
 export interface ResumeHero {
   id: number;
-  background?: number | Media | null;
-  portrait?: number | Media | null;
+  background?: (number | null) | Media;
+  portrait?: (number | null) | Media;
   title?: string | null;
   caption?: {
     root: {
@@ -329,7 +856,7 @@ export interface ResumeHero {
  */
 export interface ResumeAboutMe {
   id: number;
-  portrait?: number | Media | null;
+  portrait?: (number | null) | Media;
   title?: string | null;
   content?: {
     root: {
@@ -457,7 +984,7 @@ export interface ResumeProject {
           };
           [k: string]: unknown;
         } | null;
-        image?: number | Media | null;
+        image?: (number | null) | Media;
         id?: string | null;
       }[]
     | null;
@@ -537,6 +1064,33 @@ export interface ResumeContact {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blogDummyGlobal".
+ */
+export interface BlogDummyGlobal {
+  id: number;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "generalDummyGlobal".
+ */
+export interface GeneralDummyGlobal {
+  id: number;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settingsDummyGlobal".
+ */
+export interface SettingsDummyGlobal {
+  id: number;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "settingsNavigation".
  */
 export interface SettingsNavigation {
@@ -557,7 +1111,7 @@ export interface SettingsMeta {
   titleTemplate?: string | null;
   fallbackTitle?: string | null;
   fallbackDescription?: string | null;
-  fallbackImage?: number | Media | null;
+  fallbackImage?: (number | null) | Media;
   keywords?: {
     id?: string;
     label?: string;
@@ -566,6 +1120,285 @@ export interface SettingsMeta {
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resumeDummyGlobal_select".
+ */
+export interface ResumeDummyGlobalSelect<T extends boolean = true> {
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resumeHero_select".
+ */
+export interface ResumeHeroSelect<T extends boolean = true> {
+  background?: T;
+  portrait?: T;
+  title?: T;
+  caption?: T;
+  _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resumeAboutMe_select".
+ */
+export interface ResumeAboutMeSelect<T extends boolean = true> {
+  portrait?: T;
+  title?: T;
+  content?: T;
+  anchor?: T;
+  _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resumeExperience_select".
+ */
+export interface ResumeExperienceSelect<T extends boolean = true> {
+  title?: T;
+  caption?: T;
+  entries?:
+    | T
+    | {
+        title?: T;
+        employer?: T;
+        startDate?: T;
+        endDate?: T;
+        richText?: T;
+        technologies?: T;
+        id?: T;
+      };
+  anchor?: T;
+  skillSummary?: T;
+  _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resumeProjects_select".
+ */
+export interface ResumeProjectsSelect<T extends boolean = true> {
+  title?: T;
+  caption?: T;
+  entries?:
+    | T
+    | {
+        headline?: T;
+        subline?: T;
+        richText?: T;
+        image?: T;
+        id?: T;
+      };
+  anchor?: T;
+  _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resumeCustomers_select".
+ */
+export interface ResumeCustomersSelect<T extends boolean = true> {
+  title?: T;
+  caption?: T;
+  entries?:
+    | T
+    | {
+        logo?: T;
+        title?: T;
+        id?: T;
+      };
+  anchor?: T;
+  _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resumeContact_select".
+ */
+export interface ResumeContactSelect<T extends boolean = true> {
+  title?: T;
+  caption?: T;
+  mailButton?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+      };
+  scheduleButton?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+      };
+  anchor?: T;
+  _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blogDummyGlobal_select".
+ */
+export interface BlogDummyGlobalSelect<T extends boolean = true> {
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "generalDummyGlobal_select".
+ */
+export interface GeneralDummyGlobalSelect<T extends boolean = true> {
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settingsDummyGlobal_select".
+ */
+export interface SettingsDummyGlobalSelect<T extends boolean = true> {
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settingsNavigation_select".
+ */
+export interface SettingsNavigationSelect<T extends boolean = true> {
+  headerNavItems?: T | HeaderNavItemsSelect<T>;
+  footerNavItems?: T | FooterNavItemsSelect<T>;
+  _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeaderNavItems_select".
+ */
+export interface HeaderNavItemsSelect<T extends boolean = true> {
+  link?:
+    | T
+    | {
+        type?: T;
+        newTab?: T;
+        reference?: T;
+        url?: T;
+        label?: T;
+      };
+  id?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FooterNavItems_select".
+ */
+export interface FooterNavItemsSelect<T extends boolean = true> {
+  link?:
+    | T
+    | {
+        type?: T;
+        newTab?: T;
+        reference?: T;
+        url?: T;
+        label?: T;
+      };
+  id?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settingsMeta_select".
+ */
+export interface SettingsMetaSelect<T extends boolean = true> {
+  siteName?: T;
+  titleTemplate?: T;
+  fallbackTitle?: T;
+  fallbackDescription?: T;
+  fallbackImage?: T;
+  keywords?: T;
+  _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCreateBlurHash".
+ */
+export interface TaskCreateBlurHash {
+  input: {
+    base64: string;
+  };
+  output: {
+    blurHash: string;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCreateBrightness".
+ */
+export interface TaskCreateBrightness {
+  input: {
+    base64: string;
+  };
+  output: {
+    brightness: number;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCreatePalette".
+ */
+export interface TaskCreatePalette {
+  input: {
+    base64: string;
+  };
+  output: {
+    palette:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "WorkflowGenerateImageMeta".
+ */
+export interface WorkflowGenerateImageMeta {
+  input: {
+    workflowId: string;
+    base64: string;
+    doc:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

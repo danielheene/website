@@ -1,5 +1,5 @@
 import { Metadata, ResolvedMetadata } from 'next'
-import { getPayloadHMR } from '@payloadcms/next/utilities'
+import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
 import React, { cache, Fragment } from 'react'
 
@@ -11,18 +11,18 @@ import { Headline } from '@/components/Headline'
 import RichText from '@/components/RichText'
 import { ImageMedia } from '@/components/ImageMedia'
 import { getCachedGlobal } from '@/utilities/getGlobals'
-
-export async function generateStaticParams() {
-  const payload = await getPayloadHMR({ config: configPromise })
-  const pages = await payload.find({
-    collection: 'pages',
-    draft: false,
-    limit: 1000,
-    overrideAccess: false,
-  })
-
-  return pages.docs.map(({ slug }) => slug)
-}
+//
+// export async function generateStaticParams() {
+//   const payload = await getPayload({ config: configPromise })
+//   const pages = await payload.find({
+//     collection: 'pages',
+//     draft: false,
+//     limit: 1000,
+//     overrideAccess: false,
+//   })
+//
+//   return pages.docs.map(({ slug }) => slug)
+// }
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -82,18 +82,17 @@ export async function generateMetadata(
 const queryPageBySlug = cache(async ({ slug }: { slug: string }): Promise<PageType | null> => {
   const { isEnabled: draft } = await draftMode()
 
-  const payload = await getPayloadHMR({ config: configPromise })
+  const payload = await getPayload({ config: configPromise })
 
   const result = await payload.find({
     collection: 'pages',
     draft,
-    limit: 1,
     overrideAccess: true,
-    where: {
-      slug: {
-        equals: slug,
-      },
-    },
+    // where: {
+    //   slug: {
+    //     equals: slug,
+    //   },
+    // },
   })
 
   return result.docs?.[0] || null

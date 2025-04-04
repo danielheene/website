@@ -2,6 +2,13 @@ import eslint from '@eslint/js'
 import tseslint from 'typescript-eslint'
 
 export default [
+  {
+    languageOptions: {
+      globals: {
+        process: 'readable',
+      },
+    },
+  },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -13,6 +20,9 @@ export default [
       '**/.pnp.*',
       '**/.svn',
       '**/.yarn/**',
+      '**/.storybook/**',
+      '**/stories/**',
+      '**.stories.**',
       '**/build/**',
       '**/dist/**',
       '**/node_modules/**',

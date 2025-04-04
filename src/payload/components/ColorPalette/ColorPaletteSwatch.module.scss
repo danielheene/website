@@ -1,0 +1,17 @@
+.ColorPaletteSwatch {
+  &_Container {
+    @apply flex flex-col justify-center p-3 shrink-0 grow min-w-fit;
+  }
+
+  &_Vibrancy {
+    @apply text-sm mb-4  font-semibold;
+  }
+
+  &_Color {
+    @apply text-3xl font-mono font-semibold leading-none tracking-wider uppercase;
+  }
+
+  &_Name {
+    @apply text-sm mt-1 font-mono font-semibold;
+  }
+}

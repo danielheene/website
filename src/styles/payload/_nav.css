@@ -12,7 +12,7 @@
     }
 
     .nav-group.resume {
-      order: 0
+      order: 0;
     }
 
     .nav-group.blog {
@@ -28,16 +28,17 @@
     }
 
     .nav-group {
-      @apply my-10;
+      @apply mb-10;
       order: 90;
 
       .nav-group__label {
-        @apply block text-white/40 bg-transparent font-mono font-extrabold text-lg uppercase mb-2;
+        @apply block text-primary-500 bg-transparent font-mono font-extrabold text-xl uppercase mb-1;
       }
 
       .nav__link {
-        @apply p-0 m-0;
+        @apply p-0 mb-1 no-underline;
         padding-block: 0;
+        text-decoration: none !important;
       }
     }
 

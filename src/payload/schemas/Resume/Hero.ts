@@ -1,5 +1,5 @@
 import { anyone } from '@/payload/access/anyone'
-import { CaptionField, SLUG, TitleField } from './_shared'
+import { CaptionField, SLUG } from './_shared'
 import { createGlobal } from '@/payload/utilities/schemaHelpers'
 import { revalidateHero } from '@/payload/schemas/Resume/hooks/revalidateHero'
 
@@ -44,8 +44,12 @@ export const Hero = createGlobal({
       ],
     },
     {
-      ...TitleField,
+      name: 'title',
       type: 'textarea',
+      label: false,
+      admin: {
+        placeholder: 'Title',
+      },
     },
     {
       ...CaptionField,
