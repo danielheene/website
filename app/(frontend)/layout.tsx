@@ -5,10 +5,13 @@ import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { Toasty } from '@/components/Toasty'
-
-import '@styles/frontend.css'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+
+import '@styles/fonts/inter.css'
+import '@styles/fonts/jetbrains-mono.css'
+import '@styles/fonts/pp-supply-mono.css'
+import '@styles/frontend.css'
 
 export default async function RootLayout({
   children,

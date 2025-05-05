@@ -21,6 +21,8 @@ const nextConfig: NextConfig = {
 
   images: {
     formats: ['image/avif', 'image/webp'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     remotePatterns: [
       !process.env['VERCEL_ENV'] ? { hostname: 'localhost', port: '3000' } : null,
       process.env['VERCEL_ENV'] ? { hostname: SERVER_URL, protocol: SERVER_PROTOCOL } : null,

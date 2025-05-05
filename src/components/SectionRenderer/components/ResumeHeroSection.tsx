@@ -35,6 +35,7 @@ export const ResumeHeroSection = ({
           width={background.width}
           height={background.height}
           blurDataURL={background.blurDataURL}
+          sizes="1920px"
           priority
           className="absolute top-0 right-0 left-0 bottom-0 z-0"
           fill
@@ -74,6 +75,7 @@ export const ResumeHeroSection = ({
               height={portrait.height}
               blurDataURL={portrait.blurDataURL}
               priority
+              sizes="(max-width: 48rem) 100vw, (max-width: 64rem) 33vw, (max-width: 80rem) 25vw, 400px"
               className={cn(
                 'w-full aspect-square rounded-full',
                 'bg-gradient-to-tr from-primary-500 to-primary-700',

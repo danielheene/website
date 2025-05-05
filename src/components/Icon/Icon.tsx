@@ -1,6 +1,7 @@
 import React, { JSX, memo, useMemo } from 'react'
 import {
   MdArrowDownward as ArrowDownwardIcon,
+  MdArrowForward as ArrowForwardIcon,
   MdAttachFile as AttachIcon,
   MdCalendarMonth as CalendarIcon,
   MdCheckCircle as SuccessIcon,
@@ -118,6 +119,7 @@ export const UI_ICONS = {
   SETTINGS: 'settings',
   CALENDAR: 'calendar',
   ARROW_DOWNWARD: 'arrow-downward',
+  ARROW_FORWARD: 'arrow-forward',
 } as const
 
 export const ICON_NAME = {
@@ -242,6 +244,8 @@ export const Icon = memo(({ name, ...iconBaseProps }: IconProps): JSX.Element =>
         return SettingsIcon
       case ICON_NAME.ARROW_DOWNWARD:
         return ArrowDownwardIcon
+      case ICON_NAME.ARROW_FORWARD:
+        return ArrowForwardIcon
       default:
         return React.Fragment
     }

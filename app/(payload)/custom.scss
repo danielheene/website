@@ -1,6 +1,5 @@
 //@tailwind base;
 
-@import "@styles/payload.css";
 
 html {
   font-size: 16px;
@@ -74,6 +73,10 @@ div.field-type.rich-text-lexical {
     &.btn--disabled {
       @apply bg-gray-500 saturate-50 contrast-50 text-white;
     }
+  }
+
+  .login .form-submit & {
+    @apply mt-6;
   }
 
   .btn__content {

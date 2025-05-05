@@ -21,8 +21,8 @@ export interface ImageMediaProps
   imgClassName?: string
   imgLoadedClassName?: string
   alt: string
-  width: number
-  height: number
+  width?: number
+  height?: number
   // onClick?: (event: SyntheticEvent<HTMLImageElement>) => void
   onLoadAction?: (event: SyntheticEvent<HTMLImageElement>) => void
   // priority?: boolean
@@ -59,7 +59,7 @@ export const ImageMedia = ({
     ? sizesFromProps
     : Object.entries(screens)
         .map(([, value]) => `(max-width: ${value}) ${value}`)
-        .join(', ')
+        .join(', ') + ', 1920px'
 
   return (
     <div

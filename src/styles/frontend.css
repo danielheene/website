@@ -1,6 +1,3 @@
-@import 'core/_fonts.inter.css';
-@import 'core/_fonts.jetbrains-mono.css';
-@import 'core/_fonts.pp-supply-mono.css';
 @import 'core/_fonts.base.css';
 @import 'core/_colors.tailwind.css';
 @import 'core/_colors.states.css';
@@ -40,11 +37,11 @@
     @apply h-full max-h-full overflow-y-scroll flex flex-col flex-nowrap;
 
     & > header {
-      @apply justify-self-start flex-grow-0 flex-shrink-0;
+      @apply justify-self-start flex-grow-0 flex-shrink-0 z-10;
     }
 
     & > footer {
-      @apply justify-self-end flex-grow-0 flex-shrink-0;
+      @apply justify-self-end flex-grow-0 flex-shrink-0 z-10;
     }
 
     & > :nth-last-child(2) {
