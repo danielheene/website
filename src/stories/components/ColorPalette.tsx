@@ -1,6 +1,6 @@
 import React, { Fragment, FunctionComponent } from 'react'
 
-import { styled, Theme } from '@storybook/theming'
+import { styled } from '@storybook/theming'
 
 import { readableColor, transparentize } from 'polished'
 
@@ -110,7 +110,7 @@ const PrimarySwatchColor = styled(SwatchColors)(() => ({
   },
 }))
 
-const PrimaryLabel = styled.span(({ theme, color }: { theme: Theme; color: string }) => ({
+const PrimaryLabel = styled.span(({ theme, color }) => ({
   position: 'absolute',
   inset: 0,
   display: 'flex',

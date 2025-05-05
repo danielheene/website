@@ -47,33 +47,6 @@ export const Contact = createGlobal({
                 },
               ],
             },
-            {
-              type: 'group',
-              name: 'scheduleButton',
-              admin: {
-                className: 'contact-button',
-              },
-              fields: [
-                {
-                  name: 'label',
-                  type: 'text',
-                  label: null,
-                  admin: {
-                    placeholder: 'Button Label',
-                    className: 'contact-button__field',
-                  },
-                },
-                {
-                  name: 'href',
-                  type: 'text',
-                  label: null,
-                  admin: {
-                    placeholder: 'Link Href',
-                    className: 'contact-button__field',
-                  },
-                },
-              ],
-            },
           ],
         },
       ],

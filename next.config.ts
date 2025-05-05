@@ -1,4 +1,6 @@
 import { withPayload } from '@payloadcms/next/withPayload'
+import { NextConfig } from 'next'
+import { RemotePattern } from 'next/dist/shared/lib/image-config'
 
 const SERVER_URL =
   process.env['VERCEL_ENV'] === 'production'
@@ -8,26 +10,14 @@ const SERVER_URL =
       : 'localhost:3000'
 const SERVER_PROTOCOL = process.env['VERCEL_ENV'] ? 'https' : 'http'
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  webpack: (config) => {
-    config.module.rules.push({
-      test: /\/toasty\/.(mp3|wav|aiff|m4a|aac)$/i,
-      type: 'asset/resource',
-      generator: {
-        filename: () => 'static/media/[hash][ext][query]',
-      },
-    })
-
-    return config
+const nextConfig: NextConfig = {
+  turbopack: {
+    resolveExtensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.wasm', '.json'],
   },
 
   reactStrictMode: true,
   serverExternalPackages: ['@napi-rs/canvas', 'node-vibrant', 'dompurify', 'svgo'],
   eslint: { ignoreDuringBuilds: true },
-  experimental: {
-    reactCompiler: false,
-  },
 
   images: {
     formats: ['image/avif', 'image/webp'],
@@ -37,7 +27,7 @@ const nextConfig = {
       { hostname: 'daniel.heene.io', protocol: 'https' },
       { hostname: 'daniel.heene.dev', protocol: 'https' },
       { hostname: '*.vercel.app', protocol: 'https' },
-    ].filter(Boolean),
+    ].filter(Boolean) as RemotePattern[],
   },
 
   env: {

@@ -1,5 +1,5 @@
 import { CollectionConfig, GlobalConfig } from 'payload'
-import { lowerCase } from 'lodash-es'
+import { lowerCase, merge } from 'lodash-es'
 
 export const createCollection = (
   config: CollectionConfig,
@@ -7,16 +7,37 @@ export const createCollection = (
   custom: CollectionConfig['custom'] & { type: 'collection' }
 } => ({
   ...config,
+  versions: merge(
+    {
+      drafts: true,
+      maxPerDoc: 10,
+    },
+    config.versions || {},
+  ) as CollectionConfig['versions'],
   custom: {
     ...config.custom,
     type: 'collection',
   },
 })
 
-export const filterCollections = (...schemas: (CollectionConfig | GlobalConfig)[]) => {
-  return schemas.filter(
-    (schema) => schema?.custom?.type === 'collection' || 'labels' in schema,
-  ) as CollectionConfig[]
+export const resolveCollections = async (order?: string[]) => {
+  const schemas = await import('./../schemas').then((m) =>
+    Object.values(m).reduce((prev, curr) => [...prev, ...curr], []),
+  )
+
+  const collections = schemas
+    .filter((schema) => schema?.custom?.type === 'collection' || 'labels' in schema)
+    .sort((a, b) => {
+      const aPos = order.indexOf(a.custom.group)
+      const bPos = order.indexOf(b.custom.group)
+
+      if (aPos === -1 && bPos === -1) return 0
+      if (aPos === -1) return 1
+      if (bPos === -1) return -1
+      return aPos - bPos
+    }) as CollectionConfig[]
+
+  return collections
 }
 
 export const createGlobal = (
@@ -25,20 +46,37 @@ export const createGlobal = (
   custom: GlobalConfig['custom'] & { type: 'global' }
 } => ({
   ...config,
+  versions: merge(
+    {
+      drafts: true,
+      max: 10,
+    },
+    config.versions || {},
+  ) as GlobalConfig['versions'],
   custom: {
     ...config.custom,
     type: 'global',
   },
-  versions: {
-    drafts: true,
-    max: 10,
-  },
 })
 
-export const filterGlobals = (...schemas: (CollectionConfig | GlobalConfig)[]) => {
-  return schemas.filter(
-    (schema) => schema?.custom?.type === 'global' || 'label' in schema,
-  ) as GlobalConfig[]
+export const resolveGlobals = async (order?: string[]) => {
+  const schemas = await import('./../schemas').then((m) =>
+    Object.values(m).reduce((prev, curr) => [...prev, ...curr], []),
+  )
+
+  const globals = schemas
+    .filter((schema) => schema?.custom?.type === 'global')
+    .sort((a, b) => {
+      const aPos = order.indexOf(a.custom.group)
+      const bPos = order.indexOf(b.custom.group)
+
+      if (aPos === -1 && bPos === -1) return 0
+      if (aPos === -1) return 1
+      if (bPos === -1) return -1
+      return aPos - bPos
+    }) as GlobalConfig[]
+
+  return globals
 }
 
 export const createSchemaGroup = (
@@ -46,9 +84,26 @@ export const createSchemaGroup = (
   schemas: (CollectionConfig | GlobalConfig)[],
   forceGroupPrefixInSlug: boolean = true,
 ): (CollectionConfig | GlobalConfig)[] => {
-  return schemas.map((currentValue) => {
-    const schemaGroup = lowerCase(name)
+  const schemaGroup = lowerCase(name)
 
+  const dummys = [
+    {
+      type: 'collection',
+      slug: `${schemaGroup}DummyCollection`,
+      admin: { hidden: true },
+      custom: { type: 'collection' },
+      fields: [],
+    } as CollectionConfig,
+    {
+      type: 'global',
+      slug: `${schemaGroup}DummyGlobal`,
+      admin: { hidden: true },
+      custom: { type: 'global' },
+      fields: [],
+    } as GlobalConfig,
+  ]
+
+  return [...dummys, ...schemas].map((currentValue) => {
     if (forceGroupPrefixInSlug && !lowerCase(currentValue.slug).startsWith(schemaGroup)) {
       throw new Error(`Schema "${currentValue.slug}" does not start with "${schemaGroup}"`)
     }

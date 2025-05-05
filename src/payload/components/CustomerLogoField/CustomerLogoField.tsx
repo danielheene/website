@@ -11,20 +11,28 @@ import {
   useMemo,
   useState,
 } from 'react'
+import { TextFieldClientProps } from 'payload'
+
 import { toast } from 'react-toastify'
 import styles from './CustomerLogoField.module.css'
 import { ClassValue, cn } from '@/utilities/cn'
 import { Image, XIcon } from 'lucide-react'
-import { useField, useFieldProps } from '@payloadcms/ui'
+import { useField } from '@payloadcms/ui'
 
-interface CustomerLogoFieldProps {
+interface CustomerLogoFieldProps extends TextFieldClientProps {
   className?: ClassValue
 }
 
-export const CustomerLogoField = ({ className }: CustomerLogoFieldProps): JSX.Element => {
+export const CustomerLogoField = ({
+  className,
+  path,
+  // field,
+  // readOnly,
+  // inputRef,
+  validate,
+}: CustomerLogoFieldProps): JSX.Element => {
   const id = useId()
-  const { path } = useFieldProps()
-  const { value, setValue } = useField<string>({ path })
+  const { value, setValue } = useField<string>({ path, validate })
   const [isDragging, setIsDragging] = useState<boolean>(false)
 
   const handleStart = useCallback(
@@ -56,9 +64,7 @@ export const CustomerLogoField = ({ className }: CustomerLogoFieldProps): JSX.El
         method: 'POST',
         body: JSON.stringify({ logo: event.target?.result }),
       })
-        .then((response) => {
-          return response.json()
-        })
+        .then((response) => response.json())
         .catch((error) => console.log(error))
 
       setValue(Buffer.from(logo).toString('base64'))

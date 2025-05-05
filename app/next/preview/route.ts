@@ -28,10 +28,10 @@ export async function GET(
   const user = jwt.decode(token, process.env.PAYLOAD_SECRET)
 
   if (!user) {
-    draftMode().disable()
+    await draftMode().then((draft) => draft.disable())
     return new Response('You are not allowed to preview this page', { status: 403 })
   }
 
-  draftMode().enable()
+  await draftMode().then((draft) => draft.enable())
   redirect(path)
 }

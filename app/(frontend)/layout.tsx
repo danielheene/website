@@ -4,7 +4,7 @@ import React, { JSX, ReactNode } from 'react'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
-import { Toasty } from '@/components/Toasty/Toasty'
+import { Toasty } from '@/components/Toasty'
 
 import '@styles/frontend.css'
 import { Analytics } from '@vercel/analytics/next'

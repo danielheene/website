@@ -23,11 +23,10 @@ export const ResumeAboutMeSection = ({
             <ImageMedia
               url={portrait.url}
               alt={portrait.alt}
-              blurHash={portrait.blurHash}
               height={portrait.height}
               width={portrait.width}
               duoTone
-              className="w-full h-auto -mb-2 mix-blend-darken opacity-45 lg:opacity-100"
+              className="w-full h-auto -mb-2 mix-blend-darken"
             />
           )}
         </div>

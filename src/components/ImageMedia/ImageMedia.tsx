@@ -8,20 +8,18 @@ import { screens } from '@tailwind-config'
 import { cn } from '@/utilities/cn'
 import React, { CSSProperties, SyntheticEvent, useCallback, useState } from 'react'
 import { Media } from '@payload-types'
-import { BlurhashCanvas } from 'react-blurhash'
 
 export interface ImageMediaProps
   extends Omit<
       ImageProps,
       'className' | 'alt' | 'src' | 'blurDataURL' | 'placeholder' | 'width' | 'height' | 'onLoad'
     >,
-    Pick<Media, 'brightness' | 'palette' | 'url'> {
+    Pick<Media, 'blurDataURL' | 'url'> {
   duoTone?: boolean
   className?: string
   loadedClassName?: string
   imgClassName?: string
   imgLoadedClassName?: string
-  blurHash?: string
   alt: string
   width: number
   height: number
@@ -45,7 +43,7 @@ export const ImageMedia = ({
   fill,
   width,
   height,
-  blurHash,
+  blurDataURL,
   onLoadAction = () => undefined,
   ...otherProps
 }: ImageMediaProps) => {
@@ -107,7 +105,7 @@ export const ImageMedia = ({
           duoTone && 'grayscale contrast-100 blur-0 [mix-blend-mode:var(--bg-blend)]',
           fill && 'object-cover',
 
-          loaded ? 'opacity-100' : 'opacity-0',
+          // loaded ? 'opacity-100' : 'opacity-0',
 
           imgClassName,
           loaded && imgLoadedClassName,
@@ -117,28 +115,13 @@ export const ImageMedia = ({
         width={!fill ? width : undefined}
         // onClick={onClick}
         onLoad={handleOnLoad}
-        // placeholder="blur"
+        blurDataURL={blurDataURL}
+        placeholder={blurDataURL ? 'blur' : 'empty'}
         // priority={priority}
         sizes={sizes}
         src={src}
         {...otherProps}
       />
-      {blurHash && (
-        <BlurhashCanvas
-          className={cn([
-            'h-full w-full object-contain',
-            'transition-all duration-500 ease-in-out',
-
-            fill && 'object-cover',
-
-            loaded ? 'opacity-0' : 'opacity-100',
-          ])}
-          hash={blurHash}
-          width={width}
-          height={height}
-          punch={1}
-        />
-      )}
     </div>
   )
 }

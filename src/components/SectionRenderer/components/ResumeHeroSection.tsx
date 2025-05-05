@@ -1,9 +1,12 @@
+'use client'
+
 import { Media } from '@payload-types'
 import { cn } from '@/utilities/cn'
 import { ImageMedia } from '@/components/ImageMedia'
 import RichText from '@/components/RichText'
 import { SectionContainer } from './SectionContainer'
 import { SectionProps } from '@custom-types'
+import { useState } from 'react'
 
 export const ResumeHeroSection = ({
   className,
@@ -16,6 +19,7 @@ export const ResumeHeroSection = ({
   const portrait = portraitMedia as Media
 
   const titleRows = title?.split('\n')
+  const [isReady, setIsReady] = useState<boolean>(false)
 
   return (
     <SectionContainer
@@ -28,16 +32,21 @@ export const ResumeHeroSection = ({
         <ImageMedia
           url={background.url}
           alt={background.alt}
-          blurHash={background.blurHash}
           width={background.width}
           height={background.height}
-          loading="lazy"
+          blurDataURL={background.blurDataURL}
+          priority
           className="absolute top-0 right-0 left-0 bottom-0 z-0"
           fill
           duoTone
         />
       )}
-      <div className="container h-full grid grid-cols-12 items-center relative">
+      <div
+        className={cn(
+          'container h-full grid grid-cols-12 items-center relative opacity-0 transition-opacity duration-200',
+          isReady && 'opacity-100',
+        )}
+      >
         <div className="col-span-10 col-start-2 md:col-span-5 md:col-start-2 text-center md:text-left">
           {title && (
             <h1>
@@ -45,7 +54,7 @@ export const ResumeHeroSection = ({
                 <span
                   key={index}
                   className={cn([
-                    'font-pp-supply-mono text-3xl sm:text-4xl md:text-5xl xl:text-6xl bg-clip-text bg-white',
+                    'font-pp-supply-mono text-4xl md:text-5xl xl:text-6xl bg-clip-text bg-white',
                   ])}
                 >
                   {row}
@@ -61,16 +70,16 @@ export const ResumeHeroSection = ({
             <ImageMedia
               url={portrait.url}
               alt={portrait.alt}
-              blurHash={portrait.blurHash}
               width={portrait.width}
               height={portrait.height}
-              loading="lazy"
+              blurDataURL={portrait.blurDataURL}
+              priority
               className={cn(
                 'w-full aspect-square rounded-full',
                 'bg-gradient-to-tr from-primary-500 to-primary-700',
-                'border-4 border-white opacity-0 transition-opacity duration-200',
+                'border-4 border-white',
               )}
-              loadedClassName="opacity-100"
+              onLoadAction={() => setIsReady(true)}
               fill
             />
           )}

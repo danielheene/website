@@ -1,5 +1,5 @@
 import { Metadata, ResolvedMetadata } from 'next'
-import { getPayloadHMR } from '@payloadcms/next/utilities'
+import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
 import React, { cache, Fragment } from 'react'
 
@@ -13,15 +13,27 @@ import { ImageMedia } from '@/components/ImageMedia'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 
 export async function generateStaticParams() {
-  const payload = await getPayloadHMR({ config: configPromise })
+  const payload = await getPayload({ config: configPromise })
   const pages = await payload.find({
     collection: 'pages',
     draft: false,
     limit: 1000,
     overrideAccess: false,
+    pagination: false,
+    select: {
+      slug: true,
+    },
   })
 
-  return pages.docs.map(({ slug }) => slug)
+  const params = pages.docs
+    ?.filter((doc) => {
+      return doc.slug !== 'home'
+    })
+    .map(({ slug }) => {
+      return { slug }
+    })
+
+  return params
 }
 
 type PageProps = {
@@ -44,7 +56,6 @@ export default async function Page({ params }: PageProps) {
             alt={`${title} Hero Image`}
             width={hero.width}
             height={hero.height}
-            blurHash={hero.blurHash}
             priority
             fill
             duoTone
@@ -82,13 +93,14 @@ export async function generateMetadata(
 const queryPageBySlug = cache(async ({ slug }: { slug: string }): Promise<PageType | null> => {
   const { isEnabled: draft } = await draftMode()
 
-  const payload = await getPayloadHMR({ config: configPromise })
+  const payload = await getPayload({ config: configPromise })
 
   const result = await payload.find({
     collection: 'pages',
     draft,
     limit: 1,
-    overrideAccess: true,
+    pagination: false,
+    overrideAccess: draft,
     where: {
       slug: {
         equals: slug,

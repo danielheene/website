@@ -1,13 +1,13 @@
 import configPromise from '@payload-config'
-import { getPayloadHMR } from '@payloadcms/next/utilities'
 import { unstable_cache } from 'next/cache'
 import { snakeCase } from 'lodash-es'
 import { Global, GlobalData } from '@custom-types'
+import { getPayload } from 'payload'
 
 async function getGlobal<S extends Global>(slug: S, depth = 1): Promise<GlobalData<S>> {
-  const payload = await getPayloadHMR({ config: configPromise })
+  const payload = await getPayload({ config: configPromise })
 
-  const data = await payload.findGlobal<S>({
+  const data = await payload.findGlobal({
     slug,
     draft: false,
     depth,
