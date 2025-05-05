@@ -1,6 +1,5 @@
 export default {
   title: 'Experience',
-
   caption: {
     root: {
       type: 'root',

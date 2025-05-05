@@ -10,7 +10,6 @@ const IMAGE_EXAMPLES: Record<string, ImageMediaProps> = {
     url: 'https://images.unsplash.com/photo-1517373116369-9bdb8cdc9f62',
     width: 1385,
     height: 923,
-    brightness: 12,
     alt: '',
   },
   'Image 2': {

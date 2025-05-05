@@ -1,6 +1,4 @@
-@import '~@payloadcms/ui/scss';
-
-@tailwind base;
+//@tailwind base;
 
 @import "@styles/payload.css";
 
@@ -52,7 +50,7 @@ div.field-type.rich-text-lexical {
 }
 
 .btn {
-  @apply min-h-10;
+  @apply inline-flex justify-center items-center min-h-10 no-underline m-0;
 
   &.btn--style-primary {
     @apply bg-primary text-white;
@@ -81,6 +79,18 @@ div.field-type.rich-text-lexical {
   .btn__content {
     @apply pt-px font-black font-mono uppercase;
   }
+}
+
+.tabs-field__tab-button.tabs-field__tab-button--active {
+
+  &::after {
+    @apply bg-primary-500;
+  }
+}
+
+.list-header,
+.file-field__dropzoneButtons {
+  @apply items-center;
 }
 
 .login__form__inputWrap + a {

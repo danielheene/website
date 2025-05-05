@@ -7,7 +7,7 @@ export const getBaseURL = async (): Promise<URL> => {
   // Server
   try {
     const { headers } = await import('next/headers')
-    const headersObj = Object.fromEntries(headers())
+    const headersObj = Object.fromEntries(await headers())
     return new URL(headersObj['x-forwarded-proto'] + '://' + headersObj['x-forwarded-host'])
   } catch {
     /* empty */

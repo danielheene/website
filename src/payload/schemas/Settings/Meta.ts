@@ -42,4 +42,5 @@ export const Meta = createGlobal({
     },
     tagInputField({ name: 'keywords' }),
   ],
+  versions: false,
 })

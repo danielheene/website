@@ -1,14 +1,17 @@
 'use client'
 
-import React, { JSX, memo, useEffect, useReducer, useRef } from 'react'
+import React, { JSX, useEffect, useReducer, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
+import { track } from '@vercel/analytics'
+import { data as ToastyAudioData, mime as ToastyAudioMime } from './Toasty.audio'
+import { data as ToastyImageData, mime as ToastyImageMime } from './Toasty.image'
 import { useCreatePortalHost } from '@/utilities/useCreatePortalHost'
 
 enum ActionType {
   KeyUp = 'Toasty/KeyUp',
   Reset = 'Toasty/Reset',
-  SetBuffer = 'Toasty/SetBuffer',
-  SetImage = 'Toasty/SetImage',
+  SetAudioBuffer = 'Toasty/SetAudioBuffer',
+  SetImageBlob = 'Toasty/SetImageBlob',
 }
 
 type Action =
@@ -20,19 +23,19 @@ type Action =
       type: `${ActionType.Reset}`
     }
   | {
-      type: `${ActionType.SetBuffer}`
+      type: `${ActionType.SetAudioBuffer}`
       payload: AudioBuffer
     }
   | {
-      type: `${ActionType.SetImage}`
-      payload: string
+      type: `${ActionType.SetImageBlob}`
+      payload: Blob
     }
 
 type State = {
   success: boolean
   code: string[]
-  buffer?: AudioBuffer
-  image?: string
+  audioBuffer?: AudioBuffer
+  imageBlob?: Blob
 }
 
 const keySequence: KeyboardEvent['key'][] = [
@@ -52,8 +55,8 @@ const keySequence: KeyboardEvent['key'][] = [
 export const initialState: State = Object.freeze<State>({
   success: false,
   code: [...keySequence],
-  image: undefined,
-  buffer: undefined,
+  imageBlob: undefined,
+  audioBuffer: undefined,
 })
 
 export const reducer = (state: State, action: Action): State => {
@@ -80,16 +83,16 @@ export const reducer = (state: State, action: Action): State => {
         code: initialState.code,
       }
 
-    case ActionType.SetBuffer:
+    case ActionType.SetAudioBuffer:
       return {
         ...state,
-        buffer: action.payload,
+        audioBuffer: action.payload,
       }
 
-    case ActionType.SetImage:
+    case ActionType.SetImageBlob:
       return {
         ...state,
-        image: action.payload,
+        imageBlob: action.payload,
       }
 
     default:
@@ -116,16 +119,14 @@ const printHintMessage = (): void => {
   )
 }
 
-let eventIsRegistered = false
-const PORTAL_ID = 'ToastyPortal'
+const imagePath = `data:${ToastyImageMime};base64,${ToastyImageData}`
+const audioPath = `data:${ToastyAudioMime};base64,${ToastyAudioData}`
 
-const imagePath = new URL('./static/image.webp', import.meta.url)
-const audioPath = new URL('./static/audio.mp3', import.meta.url)
-
-export const Toasty = memo((): JSX.Element => {
+export const Toasty = function Toasty(): JSX.Element {
   const audioContextRef = useRef<AudioContext>(null)
-  const portalRef = useCreatePortalHost(PORTAL_ID)
-  const [{ success, image, buffer }, dispatch] = useReducer(reducer, initialState)
+  const portalRef = useCreatePortalHost('ToastyPortal')
+  const [eventIsRegistered, setEventIsRegistered] = useState(false)
+  const [{ success, imageBlob, audioBuffer }, dispatch] = useReducer(reducer, initialState)
 
   /**
    *
@@ -139,14 +140,14 @@ export const Toasty = memo((): JSX.Element => {
     }
 
     if (eventIsRegistered === false) {
-      eventIsRegistered = true
       window.addEventListener('keyup', handleKeyUpEvent)
       printHintMessage()
+      setEventIsRegistered(true)
     }
 
     return (): void => {
       if (eventIsRegistered) {
-        eventIsRegistered = false
+        setEventIsRegistered(false)
         window.removeEventListener('keyup', handleKeyUpEvent)
       }
     }
@@ -156,7 +157,7 @@ export const Toasty = memo((): JSX.Element => {
    *
    */
   useEffect((): void => {
-    if (success && !buffer) {
+    if (success && !audioBuffer) {
       audioContextRef.current = new AudioContext()
 
       fetch(audioPath)
@@ -164,7 +165,7 @@ export const Toasty = memo((): JSX.Element => {
         .then((arrayBuffer) => audioContextRef.current.decodeAudioData(arrayBuffer))
         .then((audioBuffer) => {
           dispatch({
-            type: ActionType.SetBuffer,
+            type: ActionType.SetAudioBuffer,
             payload: audioBuffer,
           })
         })
@@ -172,47 +173,55 @@ export const Toasty = memo((): JSX.Element => {
           console.error('failed to load easter egg audio 😔\n', error.message)
         })
     }
-  }, [buffer, success])
+  }, [audioBuffer, success])
 
   /**
    *
    */
   useEffect((): void => {
-    fetch(imagePath)
-      .then(() => {
-        dispatch({
-          type: ActionType.SetImage,
-          payload: imagePath.toString(),
+    if (success && !imageBlob) {
+      fetch(imagePath)
+        .then((response) => response.blob())
+        .then((imageBlob) => {
+          dispatch({
+            type: ActionType.SetImageBlob,
+            payload: imageBlob,
+          })
         })
-      })
-      .catch((error: Error) => {
-        console.error('failed to load easter egg image 😔\n', error.message)
-      })
-  }, [])
+        .catch((error: Error) => {
+          console.error('failed to load easter egg image 😔\n', error.message)
+        })
+    }
+  }, [imageBlob, success])
 
   /**
    *
    */
   useEffect(() => {
-    if (buffer && image && success) {
-      const audioBuffer = audioContextRef.current.createBufferSource()
-      audioBuffer.buffer = buffer
-      audioBuffer.onended = () => {
+    if (audioBuffer && imageBlob && success) {
+      track('toasty', {
+        success: success,
+      })
+
+      const audioBufferNode = audioContextRef.current.createBufferSource()
+
+      audioBufferNode.buffer = audioBuffer
+      audioBufferNode.onended = () => {
         dispatch({
           type: ActionType.Reset,
         })
       }
-      audioBuffer.connect(audioContextRef.current.destination)
-      audioBuffer.start(0)
+      audioBufferNode.connect(audioContextRef.current.destination)
+      audioBufferNode.start(0)
     }
-  }, [buffer, image, success])
+  }, [audioBuffer, imageBlob, success])
 
-  if (!buffer || !image || !success || !portalRef.current) return null
+  if (!audioBuffer || !imageBlob || !success || !portalRef.current) return null
 
   return ReactDOM.createPortal(
     <React.Fragment>
       <div className="toasty" aria-hidden={true} tabIndex={-1}>
-        <img src={image} alt="" />
+        <img src={URL.createObjectURL(imageBlob)} alt="toasty" />
       </div>
       <style jsx>
         {`
@@ -245,8 +254,4 @@ export const Toasty = memo((): JSX.Element => {
     </React.Fragment>,
     portalRef.current,
   )
-})
-
-Toasty.displayName = 'Toasty'
-
-export default Toasty
+}

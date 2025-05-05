@@ -19,7 +19,8 @@
 
 
 .CustomerLogoFieldDelete {
-  @apply absolute top-2 right-2 text-3xl;
+  @apply absolute top-2 right-2 text-3xl p-0 m-0 border-none cursor-pointer;
+  line-height: 0;
 }
 
 .DropAreaLabel {
@@ -49,7 +50,8 @@
 
   & svg {
     @apply w-[80%] max-w-[80%] h-[80%] max-h-[80%];
-    @apply absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2;
+    @apply absolute left-1/2 top-1/2;
+    transform: translate(-50%, -50%);
   }
 
   & path {

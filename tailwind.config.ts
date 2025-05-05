@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+
 import { type Config, PluginUtils } from 'tailwindcss/types/config'
 import plugin from 'tailwindcss/plugin'
 import resolveConfig from 'tailwindcss/resolveConfig'

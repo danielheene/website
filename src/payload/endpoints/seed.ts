@@ -1,18 +1,12 @@
-import { File, type PayloadHandler } from 'payload'
+import { File, type PayloadHandler, PayloadRequest } from 'payload'
 
 import resumeHeroData from './data/resumeHero'
-import resumeHeroBackgroundImageData from './data/resumeHeroBackgroundImage'
-import resumeHeroPortraitImageData from './data/resumeHeroPortraitImage'
 import resumeAboutMeData from './data/resumeAboutMe'
-import resumeAboutMePortraitImageData from './data/resumeAboutMePortraitImage'
 import resumeProjectsData from './data/resumeProjects'
-import resumeProjectsImage1Data from './data/resumeProjectsImage1'
-import resumeProjectsImage2Data from './data/resumeProjectsImage2'
 import resumeExperienceData from './data/resumeExperience'
 import resumeCustomersData from './data/resumeCustomers'
 import resumeContactData from './data/resumeContact'
 import imprintData from './data/imprint'
-import imprintHeroImageData from './data/imprintHeroImage'
 import settingsNavigationData from './data/settingsNavigation'
 
 export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
@@ -23,6 +17,7 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
   }
 
   try {
+    const fetchFileByURL = createFileFetcher(req)
     /**
      *    RESUME HERO
      */
@@ -30,7 +25,10 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
 
     const { id: resumeHeroBackgroundId } = await payload.create({
       collection: 'media',
-      data: JSON.parse(JSON.stringify(resumeHeroBackgroundImageData)),
+      data: {
+        alt: 'Resume Page Hero Section Background',
+        _status: 'published',
+      },
       file: await fetchFileByURL({
         src: '/seed/resumeHero-background.webp',
         name: 'resume-hero-background.webp',
@@ -44,7 +42,10 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
 
     const { id: resumeHeroPortraitId } = await payload.create({
       collection: 'media',
-      data: JSON.parse(JSON.stringify(resumeHeroPortraitImageData)),
+      data: {
+        alt: 'Resume Page Hero Section Portrait',
+        _status: 'published',
+      },
       file: await fetchFileByURL({
         src: '/seed/resumeHero-portrait.webp',
         name: 'resume-hero-portrait.webp',
@@ -79,7 +80,10 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
 
     const { id: resumeAboutMePortraitId } = await payload.create({
       collection: 'media',
-      data: JSON.parse(JSON.stringify(resumeAboutMePortraitImageData)),
+      data: {
+        alt: 'Resume Page About Me Section Portrait',
+        _status: 'published',
+      },
       file: await fetchFileByURL({
         src: '/seed/resumeAboutMe-portrait.webp',
         name: 'resume-about-me-portrait.webp',
@@ -130,7 +134,10 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
 
     const { id: resumeProjectsImage1Id } = await payload.create({
       collection: 'media',
-      data: JSON.parse(JSON.stringify(resumeProjectsImage1Data)),
+      data: {
+        alt: 'Aktion Mensch download page screenshot',
+        _status: 'published',
+      },
       file: await fetchFileByURL({
         src: '/seed/resumeProjects-image1.webp',
         name: 'aktion-mensch-screenshot.webp',
@@ -144,7 +151,10 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
 
     const { id: resumeProjectsImage2Id } = await payload.create({
       collection: 'media',
-      data: JSON.parse(JSON.stringify(resumeProjectsImage2Data)),
+      data: {
+        alt: 'screenshot of the admin dashboard for my portfolio website',
+        _status: 'published',
+      },
       file: await fetchFileByURL({
         src: '/seed/resumeProjects-image2.webp',
         name: 'personal-website-screenshot.webp',
@@ -219,8 +229,14 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
 
     const { id: imprintHeroId } = await payload.create({
       collection: 'media',
-      data: JSON.parse(JSON.stringify(imprintHeroImageData)),
-      file: await fetchFileByURL({ src: '/seed/imprint-hero.webp', name: 'imprint-hero.webp' }),
+      data: {
+        alt: 'Imprint Page Hero Image',
+        _status: 'published',
+      },
+      file: await fetchFileByURL({
+        src: '/seed/imprint-hero.webp',
+        name: 'imprint-hero.webp',
+      }),
       context: {
         isSeedContext: true,
       },
@@ -269,23 +285,38 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
   }
 }
 
-async function fetchFileByURL({ src, name }: { src: string; name: string }): Promise<File> {
-  const url = new URL(src, process.env.PAYLOAD_PUBLIC_SERVER_URL)
-  const res = await fetch(url, {
+/**
+ * Factory function to create a file fetcher that retrieves a File from public seed folder
+ *
+ * @param {PayloadRequest} req - The payload request containing the URL and headers.
+ * @returns {function(string): Promise<File>} - Returns a function that fetches a file
+ * by its name and resolves to a `File` object.
+ */
+const createFileFetcher = (
+  req: PayloadRequest,
+): (({ src, name }: { src: string; name: string }) => Promise<File>) => {
+  const { origin } = new URL(req.url)
+  const requestInit: RequestInit = {
+    headers: new Headers(req.headers),
     credentials: 'include',
     method: 'GET',
-  })
-
-  if (!res.ok) {
-    throw new Error(`Failed to fetch file from ${url}, status: ${res.status}`)
   }
 
-  const data = await res.arrayBuffer()
+  return async function ({ src, name }: { src: string; name: string }): Promise<File> {
+    const url = new URL(src, origin)
+    const res = await fetch(url, requestInit)
 
-  return {
-    name,
-    data: Buffer.from(data),
-    mimetype: `image/${url.toString().split('.').pop()}`,
-    size: data.byteLength,
+    if (!res.ok) {
+      throw new Error(`Failed to fetch file from ${url}, status: ${res.status}`)
+    }
+
+    const data = await res.arrayBuffer()
+
+    return {
+      name,
+      data: Buffer.from(data),
+      mimetype: `image/${url.toString().split('.').pop()}`,
+      size: data.byteLength,
+    }
   }
 }

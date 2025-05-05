@@ -15,6 +15,7 @@ export const ResumeProjectsSectionImage = memo(function ResumeProjectsSectionIma
   image,
   odd,
 }: ResumeProjectsSectionImageProps) {
+  const [isReady, setIsReady] = useState<boolean>(false)
   const [showImage, setShowImage] = useState<boolean>(false)
 
   return (
@@ -25,12 +26,13 @@ export const ResumeProjectsSectionImage = memo(function ResumeProjectsSectionIma
       ])}
     >
       <div
-        style={{ aspectRatio: `${image.width + 50} / ${image.height + 50}` }}
+        style={{ aspectRatio: `${image.width} / ${image.height}` }}
         className={cn([
           'relative bg-white border-4 border-primary rounded-2xl',
-          showImage ? 'max-h-[1000px]' : 'max-h-40',
           'transition-all duration-300 ease-in-out',
-          'md:max-h-none md:h-full w-full md:w-auto overflow-hidden md:overflow-visible',
+          'md:max-h-none md:h-full w-full md:w-auto overflow-hidden',
+          showImage ? 'max-h-[1000px]' : 'max-h-40',
+          isReady ? 'opacity-100' : 'opacity-0',
           odd ? 'md:float-right' : 'md:float-left',
         ])}
       >
@@ -39,12 +41,10 @@ export const ResumeProjectsSectionImage = memo(function ResumeProjectsSectionIma
           alt={image.alt}
           height={image.height}
           width={image.width}
-          blurHash={image.blurHash}
           loading="lazy"
-          className={cn([
-            'absolute top-0 md:top-[25px] left-0 md:left-[25px] right-0 md:right-[25px] md:bottom-[25px] w-auto h-auto',
-          ])}
+          className="absolute -top-1 -left-1 -right-1 -bottom-1 w-auto h-auto"
           imgClassName="object-cover object-top md:object-contain md:object-center"
+          onLoadAction={() => setIsReady(true)}
         />
       </div>
       <div className="clear-both" />

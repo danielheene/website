@@ -5,7 +5,6 @@ import { SectionContainer } from './SectionContainer'
 import { SectionProps } from '@custom-types'
 import { Button } from '@/components/Button'
 import Link from 'next/link'
-import { ResumeContactSectionScheduleButton } from './ResumeContactSection.ScheduleButton'
 
 export const ResumeContactSection = ({
   className,
@@ -13,7 +12,6 @@ export const ResumeContactSection = ({
   title,
   caption,
   mailButton,
-  scheduleButton,
 }: SectionProps<'resumeContact'>) => {
   return (
     <SectionContainer id={anchor} className={cn(['bg-white', className])} title={title}>
@@ -24,24 +22,19 @@ export const ResumeContactSection = ({
           </div>
         )}
         {caption && (
-          <div className="col-span-12 md:col-start-2 md:col-span-10  my-8">
-            <RichText content={caption} enableGutter={false} />
+          <div className="col-span-12 md:col-start-2 md:col-span-10  my-8 text-xl">
+            <RichText content={caption} enableGutter={false} className="text-lg" />
           </div>
         )}
         {mailButton?.label && mailButton?.href && (
-          <Button
-            asChild
-            variant="default"
-            className="font-bold text-lg col-span-12 md:col-start-4 md:col-span-6  my-2"
-            type="submit"
-          >
-            <Link href={mailButton.href}>{mailButton.label}</Link>
+          <Button asChild variant="default" type="submit">
+            <Link
+              className="font-bold text-xl col-span-12 md:col-start-4 md:col-span-6 my-2 cursor-pointer"
+              href={mailButton.href}
+            >
+              {mailButton.label}
+            </Link>
           </Button>
-        )}
-        {scheduleButton?.label && scheduleButton?.href && (
-          <div className="col-span-12 md:col-start-3 md:col-span-8  my-2">
-            <ResumeContactSectionScheduleButton {...scheduleButton} />
-          </div>
         )}
       </div>
     </SectionContainer>

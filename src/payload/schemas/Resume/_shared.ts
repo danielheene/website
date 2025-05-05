@@ -13,7 +13,7 @@ import {
   UnderlineFeature,
   UnorderedListFeature,
 } from '@payloadcms/richtext-lexical'
-import { RichTextField, Tab, TextField } from 'payload'
+import { Field, RichTextField, Tab } from 'payload'
 
 export const SLUG = {
   HERO: 'resumeHero',
@@ -24,7 +24,7 @@ export const SLUG = {
   CONTACT: 'resumeContact',
 }
 
-export const TitleField: TextField = {
+export const TitleField: Field = {
   name: 'title',
   type: 'text',
   label: false,

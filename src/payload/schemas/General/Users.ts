@@ -1,6 +1,6 @@
 import * as duration from 'duration-fns'
 import { loginAfterCreate } from './hooks/loginAfterCreate'
-import { seedAfterCreate } from './hooks/seedAfterCreate'
+import { seedAfterLogin } from './hooks/seedAfterLogin'
 import { createCollection } from '@/payload/utilities/schemaHelpers'
 
 export const Users = createCollection({
@@ -17,7 +17,8 @@ export const Users = createCollection({
     },
   ],
   hooks: {
-    afterChange: [loginAfterCreate, seedAfterCreate],
+    afterChange: [loginAfterCreate],
+    afterLogin: [seedAfterLogin],
   },
   auth: {
     tokenExpiration: duration.toSeconds({ days: 7 }),
@@ -25,4 +26,5 @@ export const Users = createCollection({
     lockTime: duration.toMilliseconds({ minutes: 5 }),
   },
   timestamps: true,
+  versions: false,
 })
