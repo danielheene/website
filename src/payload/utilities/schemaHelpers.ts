@@ -79,6 +79,13 @@ export const resolveGlobals = async (order?: string[]) => {
   return globals
 }
 
+export const isCollectionSchema = (
+  schema: CollectionConfig | GlobalConfig,
+): schema is CollectionConfig => schema.custom.type === 'collection'
+
+export const isGlobalSchema = (schema: CollectionConfig | GlobalConfig): schema is GlobalConfig =>
+  schema.custom.type === 'global'
+
 export const createSchemaGroup = (
   name: string,
   schemas: (CollectionConfig | GlobalConfig)[],
@@ -108,7 +115,7 @@ export const createSchemaGroup = (
       throw new Error(`Schema "${currentValue.slug}" does not start with "${schemaGroup}"`)
     }
 
-    return {
+    const schema = {
       ...currentValue,
       admin: {
         ...currentValue.admin,
@@ -119,5 +126,8 @@ export const createSchemaGroup = (
         group: schemaGroup,
       },
     }
+
+    if (isCollectionSchema(currentValue)) return schema as CollectionConfig
+    if (isGlobalSchema(currentValue)) return schema as GlobalConfig
   })
 }
