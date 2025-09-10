@@ -12,6 +12,7 @@ export default function NotFound() {
         alt=""
         fill
         duoTone
+        priority
         url="/not-found.webp"
         className="absolute -bottom-2 -right-2 -top-2 -left-2 object-cover h-auto w-auto"
       />
