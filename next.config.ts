@@ -1,41 +1,64 @@
 import { withPayload } from '@payloadcms/next/withPayload'
 import { NextConfig } from 'next'
-import { RemotePattern } from 'next/dist/shared/lib/image-config'
 
-const SERVER_URL =
-  process.env['VERCEL_ENV'] === 'production'
-    ? process.env['VERCEL_PROJECT_PRODUCTION_URL']
-    : process.env['VERCEL_ENV'] === 'preview' || process.env['VERCEL_ENV'] === 'development'
-      ? process.env['VERCEL_URL']
-      : 'localhost:3000'
-const SERVER_PROTOCOL = process.env['VERCEL_ENV'] ? 'https' : 'http'
-
+/**
+ * Next.js configuration for the Payload CMS integration.
+ */
 const nextConfig: NextConfig = {
-  turbopack: {
-    resolveExtensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.wasm', '.json'],
-  },
-
   reactStrictMode: true,
-  serverExternalPackages: ['@napi-rs/canvas', 'node-vibrant', 'dompurify', 'svgo'],
-  eslint: { ignoreDuringBuilds: true },
-
+  productionBrowserSourceMaps: false,
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '10mb',
+    },
+  },
+  env: {
+    NEXT_PUBLIC_UMAMI_WEBSITE_ID: process.env['UMAMI_WEBSITE_ID'] || undefined,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  sassOptions: {
+    silenceDeprecations: ['import', 'legacy-js-api'],
+    implementation: 'sass',
+  },
+  serverExternalPackages: ['@react-pdf/renderer', 'dompurify', 'svgo'],
+  turbopack: {
+    resolveExtensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.wasm', '.json', '.css', '.scss', '.svg'],
+  },
   images: {
-    formats: ['image/avif', 'image/webp'],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    formats: ['image/webp'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    remotePatterns: [
-      !process.env['VERCEL_ENV'] ? { hostname: 'localhost', port: '3000' } : null,
-      process.env['VERCEL_ENV'] ? { hostname: SERVER_URL, protocol: SERVER_PROTOCOL } : null,
-      { hostname: 'daniel.heene.io', protocol: 'https' },
-      { hostname: 'daniel.heene.dev', protocol: 'https' },
-      { hostname: '*.vercel.app', protocol: 'https' },
-    ].filter(Boolean) as RemotePattern[],
+    remotePatterns: [new URL(`/api/media/**`, process.env.NEXT_PUBLIC_SERVER_URL)],
+    localPatterns: [{ pathname: '**' }],
+    contentDispositionType: 'inline',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    dangerouslyAllowSVG: true,
   },
 
-  env: {
-    NEXT_PUBLIC_SERVER_URL: `${SERVER_PROTOCOL}://${SERVER_URL}`,
-    PAYLOAD_PUBLIC_SERVER_URL: `${SERVER_PROTOCOL}://${SERVER_URL}`,
+  webpack: (webpackConfig) => {
+    webpackConfig.resolve.extensionAlias = {
+      '.cjs': ['.cts', '.cjs'],
+      '.js': ['.ts', '.tsx', '.js', '.jsx'],
+      '.mjs': ['.mts', '.mjs'],
+    }
+
+    return webpackConfig
+  },
+
+  async rewrites() {
+    const rewrites = []
+
+    if (process.env['UMAMI_HOST_URL']) {
+      rewrites.push({
+        source: '/stats/:match*',
+        destination: `${process.env['UMAMI_HOST_URL']}/:match*`,
+      })
+    }
+
+    return rewrites
   },
 }
 
-export default withPayload(nextConfig)
+export default withPayload(nextConfig, { devBundleServerPackages: false })

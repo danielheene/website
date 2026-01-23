@@ -19,6 +19,9 @@
       "@/*": [
         "./src/*"
       ],
+      "@imgs/*": [
+        "./public/payload/blocks/*"
+      ],
       "@payload-config": [
         "./src/payload.config.ts"
       ],
@@ -36,6 +39,9 @@
       ],
       "@styles/*": [
         "./src/styles/*"
+      ],
+      "@fonts/*": [
+        "./public/fonts/*"
       ]
     },
     "plugins": [
@@ -50,12 +56,15 @@
     "target": "es6"
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    ".next"
   ],
   "include": [
+    "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "next.config.ts"
+    "next.config.ts",
+    ".next/dev/types/**/*.ts"
   ]
 }

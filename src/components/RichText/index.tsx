@@ -1,42 +1,80 @@
-import { cn } from '../../utilities/cn'
-import React from 'react'
+'use client'
 
-import { serializeLexical } from './serialize'
+// import { MediaBlock } from '@/blocks/MediaBlock/Component'
 
-type Props = {
-  className?: string
-  content: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
-  enableGutter?: boolean
-  enableProse?: boolean
+// import { CodeBlock, CodeBlockProps } from '@/blocks/Code/Component'
+// import type { BannerBlock as BannerBlockProps, CallToActionBlock as CTABlockProps, MediaBlock as MediaBlockProps } from '@/payload-types'
+// import { BannerBlock } from '@/blocks/Banner/Component'
+// import { CallToActionBlock } from '@/blocks/CallToAction/Component'
+import { cn } from '@/utilities/cn'
+import { BlockData } from '@custom-types'
+import {
+  DefaultNodeTypes,
+  type DefaultTypedEditorState,
+  SerializedBlockNode,
+  SerializedLinkNode
+} from '@payloadcms/richtext-lexical'
+import {
+  JSXConvertersFunction,
+  LinkJSXConverter,
+  RichText as ConvertRichText
+} from '@payloadcms/richtext-lexical/react'
+import { HTMLAttributes } from 'react'
+
+type NodeTypes = DefaultNodeTypes | SerializedBlockNode<BlockData>
+
+const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
+  const { value, relationTo } = linkNode.fields.doc!
+  if (typeof value !== 'object') {
+    throw new Error('Expected value to be an object')
+  }
+  const slug = value.slug
+  return relationTo === 'posts' ? `/posts/${slug}` : `/${slug}`
 }
 
-const RichText: React.FC<Props> = ({
-  className,
-  content,
-  enableGutter = true,
-  enableProse = true,
-}) => {
-  if (!content) {
-    return null
-  }
+const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({
+  ...defaultConverters,
+  ...LinkJSXConverter({ internalDocToHref }),
+  blocks: {
+    // [BlockSlug.TwoColumnContent]: ({ node }) => <TwoColumnContentRenderer {...node.fields} />,
+    // banner: ({ node }) => <BannerBlock className="col-start-2 mb-4" {...node.fields} />,
+    // mediaBlock: ({ node }) => (
+    //   <MediaBlock
+    //     className="col-start-1 col-span-3"
+    //     imgClassName="m-0"
+    //     {...node.fields}
+    //     captionClassName="mx-auto max-w-[48rem]"
+    //     enableGutter={false}
+    //     disableInnerContainer={true}
+    //   />
+    // ),
+    // // [BlockSlug.Code]: ({ node }) => <CodeBlockRenderer className="col-start-2" {...node.fields} />,
+    // cta: ({ node }) => <CallToActionBlock {...node.fields} />,
+  },
+})
 
+type Props = {
+  data: DefaultTypedEditorState
+  enableGutter?: boolean
+  enableProse?: boolean
+} & HTMLAttributes<HTMLDivElement>
+
+export function RichText(props: Props) {
+  const { className, enableProse = true, enableGutter = true, ...rest } = props
   return (
-    <div
+    <ConvertRichText
+      converters={jsxConverters}
       className={cn(
+        'payload-richtext',
         {
-          'container ': enableGutter,
+          container: enableGutter,
           'max-w-none': !enableGutter,
-          'mx-auto prose dark:prose-invert ': enableProse,
+          'mx-auto prose md:prose-md dark:prose-invert': enableProse,
         },
         className,
       )}
-    >
-      {content &&
-        !Array.isArray(content) &&
-        typeof content === 'object' &&
-        'root' in content &&
-        serializeLexical({ nodes: content?.root?.children })}
-    </div>
+      {...rest}
+    />
   )
 }
 

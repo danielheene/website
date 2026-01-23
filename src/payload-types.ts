@@ -8,57 +8,69 @@
 
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "HeaderNavItems".
+ * via the `definition` "PageLayout".
  */
-export type HeaderNavItems =
+export type PageLayout = ('default' | 'home' | 'resume') | null;
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CustomerLogos".
+ */
+export type CustomerLogos =
   | {
-      link: {
-        type?: ('reference' | 'custom') | null;
-        newTab?: boolean | null;
-        reference?:
-          | ({
-              relationTo: 'pages';
-              value: number | Page;
-            } | null)
-          | ({
-              relationTo: 'blogPosts';
-              value: number | BlogPost;
-            } | null)
-          | ({
-              relationTo: 'blogCategories';
-              value: number | BlogCategory;
-            } | null);
-        url?: string | null;
-        label: string;
-      };
+      logo: string;
+      name: string;
       id?: string | null;
     }[]
   | null;
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "FooterNavItems".
+ * via the `definition` "JobHistory".
  */
-export type FooterNavItems =
+export type JobHistory =
   | {
-      link: {
-        type?: ('reference' | 'custom') | null;
-        newTab?: boolean | null;
-        reference?:
-          | ({
-              relationTo: 'pages';
-              value: number | Page;
-            } | null)
-          | ({
-              relationTo: 'blogPosts';
-              value: number | BlogPost;
-            } | null)
-          | ({
-              relationTo: 'blogCategories';
-              value: number | BlogCategory;
-            } | null);
-        url?: string | null;
-        label: string;
-      };
+      title: string;
+      employer: string;
+      startDate: string;
+      endDate?: string | null;
+      content?:
+        | {
+            item?: string | null;
+            id?: string | null;
+          }[]
+        | null;
+      tags?: (string | BlogTag)[] | null;
+      technologies?: {
+        id?: string;
+        label?: string;
+        [k: string]: unknown;
+      }[];
+      id?: string | null;
+    }[]
+  | null;
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ProjectList".
+ */
+export type ProjectList =
+  | {
+      preHeading: string;
+      heading: string;
+      image?: (string | null) | Media;
+      content?: {
+        root: {
+          type: string;
+          children: {
+            type: any;
+            version: number;
+            [k: string]: unknown;
+          }[];
+          direction: ('ltr' | 'rtl') | null;
+          format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+          indent: number;
+          version: number;
+        };
+        [k: string]: unknown;
+      } | null;
       id?: string | null;
     }[]
   | null;
@@ -68,128 +80,88 @@ export type FooterNavItems =
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "supportedTimezones".
  */
-export type SupportedTimezones =
-  | 'Pacific/Midway'
-  | 'Pacific/Niue'
-  | 'Pacific/Honolulu'
-  | 'Pacific/Rarotonga'
-  | 'America/Anchorage'
-  | 'Pacific/Gambier'
-  | 'America/Los_Angeles'
-  | 'America/Tijuana'
-  | 'America/Denver'
-  | 'America/Phoenix'
-  | 'America/Chicago'
-  | 'America/Guatemala'
-  | 'America/New_York'
-  | 'America/Bogota'
-  | 'America/Caracas'
-  | 'America/Santiago'
-  | 'America/Buenos_Aires'
-  | 'America/Sao_Paulo'
-  | 'Atlantic/South_Georgia'
-  | 'Atlantic/Azores'
-  | 'Atlantic/Cape_Verde'
-  | 'Europe/London'
-  | 'Europe/Berlin'
-  | 'Africa/Lagos'
-  | 'Europe/Athens'
-  | 'Africa/Cairo'
-  | 'Europe/Moscow'
-  | 'Asia/Riyadh'
-  | 'Asia/Dubai'
-  | 'Asia/Baku'
-  | 'Asia/Karachi'
-  | 'Asia/Tashkent'
-  | 'Asia/Calcutta'
-  | 'Asia/Dhaka'
-  | 'Asia/Almaty'
-  | 'Asia/Jakarta'
-  | 'Asia/Bangkok'
-  | 'Asia/Shanghai'
-  | 'Asia/Singapore'
-  | 'Asia/Tokyo'
-  | 'Asia/Seoul'
-  | 'Australia/Brisbane'
-  | 'Australia/Sydney'
-  | 'Pacific/Guam'
-  | 'Pacific/Noumea'
-  | 'Pacific/Auckland'
-  | 'Pacific/Fiji';
+export type SupportedTimezones = 'Europe/Berlin';
 
 export interface Config {
   auth: {
     users: UserAuthOperations;
   };
-  blocks: {};
+  blocks: {
+    LinkGroupBlock: LinkGroupBlock;
+    OneColumnContentBlock: OneColumnContentBlock;
+    TwoColumnContentBlock: TwoColumnContentBlock;
+    ResumeAboutMeBlock: ResumeAboutMeBlock;
+    ResumeContactBlock: ResumeContactBlock;
+    ResumeCustomersBlock: ResumeCustomersBlock;
+    ResumeDownloadsBlock: ResumeDownloadsBlock;
+    ResumeExperienceBlock: ResumeExperienceBlock;
+    ResumeProjectsBlock: ResumeProjectsBlock;
+  };
   collections: {
-    resumeDummyCollection: ResumeDummyCollection;
-    blogDummyCollection: BlogDummyCollection;
-    blogCategories: BlogCategory;
-    blogTags: BlogTag;
-    blogPosts: BlogPost;
-    generalDummyCollection: GeneralDummyCollection;
+    'blog-categories': BlogCategory;
+    'blog-posts': BlogPost;
     media: Media;
     pages: Page;
     users: User;
-    settingsDummyCollection: SettingsDummyCollection;
+    'blog-tags': BlogTag;
+    'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    'blog-categories': {
+      relatedPosts: 'blog-posts';
+    };
+  };
   collectionsSelect: {
-    resumeDummyCollection: ResumeDummyCollectionSelect<false> | ResumeDummyCollectionSelect<true>;
-    blogDummyCollection: BlogDummyCollectionSelect<false> | BlogDummyCollectionSelect<true>;
-    blogCategories: BlogCategoriesSelect<false> | BlogCategoriesSelect<true>;
-    blogTags: BlogTagsSelect<false> | BlogTagsSelect<true>;
-    blogPosts: BlogPostsSelect<false> | BlogPostsSelect<true>;
-    generalDummyCollection: GeneralDummyCollectionSelect<false> | GeneralDummyCollectionSelect<true>;
+    'blog-categories': BlogCategoriesSelect<false> | BlogCategoriesSelect<true>;
+    'blog-posts': BlogPostsSelect<false> | BlogPostsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
-    settingsDummyCollection: SettingsDummyCollectionSelect<false> | SettingsDummyCollectionSelect<true>;
+    'blog-tags': BlogTagsSelect<false> | BlogTagsSelect<true>;
+    'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: number;
+    defaultIDType: string;
   };
+  fallbackLocale: null;
   globals: {
-    resumeDummyGlobal: ResumeDummyGlobal;
-    resumeHero: ResumeHero;
-    resumeAboutMe: ResumeAboutMe;
-    resumeExperience: ResumeExperience;
-    resumeProjects: ResumeProject;
-    resumeCustomers: ResumeCustomer;
-    resumeContact: ResumeContact;
-    blogDummyGlobal: BlogDummyGlobal;
-    generalDummyGlobal: GeneralDummyGlobal;
-    settingsDummyGlobal: SettingsDummyGlobal;
-    settingsNavigation: SettingsNavigation;
-    settingsMeta: SettingsMeta;
+    'resume-about-me': ResumeAboutMeGlobalData;
+    'resume-contact': ResumeContactGlobalData;
+    'resume-customers': ResumeCustomersGlobalData;
+    'resume-downloads': ResumeDownloadsGlobalData;
+    'resume-experience': ResumeExperienceGlobalData;
+    'resume-projects': ResumeProjectsGlobalData;
+    'settings-header': SettingsHeaderGlobalData;
+    'settings-meta': SettingsMeta;
   };
   globalsSelect: {
-    resumeDummyGlobal: ResumeDummyGlobalSelect<false> | ResumeDummyGlobalSelect<true>;
-    resumeHero: ResumeHeroSelect<false> | ResumeHeroSelect<true>;
-    resumeAboutMe: ResumeAboutMeSelect<false> | ResumeAboutMeSelect<true>;
-    resumeExperience: ResumeExperienceSelect<false> | ResumeExperienceSelect<true>;
-    resumeProjects: ResumeProjectsSelect<false> | ResumeProjectsSelect<true>;
-    resumeCustomers: ResumeCustomersSelect<false> | ResumeCustomersSelect<true>;
-    resumeContact: ResumeContactSelect<false> | ResumeContactSelect<true>;
-    blogDummyGlobal: BlogDummyGlobalSelect<false> | BlogDummyGlobalSelect<true>;
-    generalDummyGlobal: GeneralDummyGlobalSelect<false> | GeneralDummyGlobalSelect<true>;
-    settingsDummyGlobal: SettingsDummyGlobalSelect<false> | SettingsDummyGlobalSelect<true>;
-    settingsNavigation: SettingsNavigationSelect<false> | SettingsNavigationSelect<true>;
-    settingsMeta: SettingsMetaSelect<false> | SettingsMetaSelect<true>;
+    'resume-about-me': ResumeAboutMeSelect<false> | ResumeAboutMeSelect<true>;
+    'resume-contact': ResumeContactSelect<false> | ResumeContactSelect<true>;
+    'resume-customers': ResumeCustomersSelect<false> | ResumeCustomersSelect<true>;
+    'resume-downloads': ResumeDownloadsSelect<false> | ResumeDownloadsSelect<true>;
+    'resume-experience': ResumeExperienceSelect<false> | ResumeExperienceSelect<true>;
+    'resume-projects': ResumeProjectsSelect<false> | ResumeProjectsSelect<true>;
+    'settings-header': SettingsHeaderSelect<false> | SettingsHeaderSelect<true>;
+    'settings-meta': SettingsMetaSelect<false> | SettingsMetaSelect<true>;
   };
-  locale: 'en';
+  locale: null;
   user: User & {
     collection: 'users';
   };
   jobs: {
-    tasks: unknown;
+    tasks: {
+      schedulePublish: TaskSchedulePublish;
+      inline: {
+        input: unknown;
+        output: unknown;
+      };
+    };
     workflows: unknown;
   };
 }
@@ -213,58 +185,182 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "resumeDummyCollection".
+ * via the `definition` "LinkGroupBlock".
  */
-export interface ResumeDummyCollection {
-  id: number;
-  updatedAt: string;
-  createdAt: string;
+export interface LinkGroupBlock {
+  links?: {
+    entries?:
+      | {
+          link: {
+            type?: ('reference' | 'custom' | 'mailto') | null;
+            newTab?: boolean | null;
+            icon?:
+              | (
+                  | 'react'
+                  | 'vercel'
+                  | 'sanity'
+                  | 'payload'
+                  | 'nextjs'
+                  | 'namecheap'
+                  | 'mail'
+                  | 'webstorm'
+                  | 'intellij'
+                  | 'github'
+                  | 'figma'
+                  | 'whatsapp'
+                  | 'wireguard'
+                  | 'zigbee'
+                  | 'javascript'
+                  | 'nodejs'
+                  | 'unsplash'
+                  | 'storybook'
+                  | 'tailscale'
+                  | 'rust'
+                  | 'cloudflare'
+                  | 'cloudflare-workers'
+                  | 'cloudflare-pages'
+                  | 'github-pages'
+                  | 'github-actions'
+                  | 'gitlab'
+                  | 'homeassistant'
+                  | 'synology'
+                  | 'one-password'
+                  | 'jetbrains'
+                  | 'pycharm'
+                  | 'phpstorm'
+                  | 'goland'
+                  | 'kubernetes'
+                  | 'docker'
+                  | 'rancher'
+                  | 'linux'
+                  | 'linkedin'
+                  | 'debian'
+                  | 'ubuntu'
+                  | 'archlinux'
+                  | 'error'
+                  | 'warning'
+                  | 'info'
+                  | 'success'
+                  | 'pause'
+                  | 'play'
+                  | 'stop'
+                  | 'repeat'
+                  | 'replay'
+                  | 'attach'
+                  | 'settings'
+                  | 'calendar'
+                  | 'arrow-downward'
+                  | 'arrow-forward'
+                  | 'close'
+                  | 'image'
+                )
+              | null;
+            label: string;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: string | Page;
+                } | null)
+              | ({
+                  relationTo: 'blog-posts';
+                  value: string | BlogPost;
+                } | null)
+              | ({
+                  relationTo: 'blog-categories';
+                  value: string | BlogCategory;
+                } | null)
+              | ({
+                  relationTo: 'blog-tags';
+                  value: string | BlogTag;
+                } | null);
+            url?: string | null;
+            address?: string | null;
+            subject?: string | null;
+            cc?: string | null;
+            body?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Choose how the links should be aligned.
+     */
+    alignment?: ('left' | 'right' | 'center' | 'list') | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'LinkGroupBlock';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blogDummyCollection".
+ * via the `definition` "pages".
  */
-export interface BlogDummyCollection {
-  id: number;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blogCategories".
- */
-export interface BlogCategory {
-  id: number;
+export interface Page {
+  id: string;
   title: string;
   slug?: string | null;
+  layout?: PageLayout;
+  hero: {
+    media: (string | Media)[];
+    contentType?: ('title' | 'custom') | null;
+    content?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
+  content: (
+    | LinkGroupBlock
+    | OneColumnContentBlock
+    | TwoColumnContentBlock
+    | ResumeAboutMeBlock
+    | ResumeContactBlock
+    | ResumeCustomersBlock
+    | ResumeDownloadsBlock
+    | ResumeExperienceBlock
+    | ResumeProjectsBlock
+  )[];
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
   _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blogTags".
+ * via the `definition` "media".
  */
-export interface BlogTag {
-  id: number;
-  title: string;
-  slug?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blogPosts".
- */
-export interface BlogPost {
-  id: number;
-  title: string;
-  content?: {
+export interface Media {
+  id: string;
+  alt?: string | null;
+  caption?: {
     root: {
       type: string;
       children: {
-        type: string;
+        type: any;
         version: number;
         [k: string]: unknown;
       }[];
@@ -275,43 +371,10 @@ export interface BlogPost {
     };
     [k: string]: unknown;
   } | null;
-  relatedPosts?: (number | BlogPost)[] | null;
-  categories?: (number | BlogCategory)[] | null;
-  meta?: {
-    title?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (number | null) | Media;
-    description?: string | null;
-  };
-  publishedAt?: string | null;
-  authors?: (number | User)[] | null;
-  populatedAuthors?:
-    | {
-        id?: string | null;
-        name?: string | null;
-      }[]
-    | null;
-  slug?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number;
-  alt?: string | null;
   blurDataURL?: string | null;
-  type?: string | null;
-  extension?: string | null;
   prefix?: string | null;
   updatedAt: string;
   createdAt: string;
-  _status?: ('draft' | 'published') | null;
   url?: string | null;
   thumbnailURL?: string | null;
   filename?: string | null;
@@ -321,17 +384,315 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "OneColumnContentBlock".
+ */
+export interface OneColumnContentBlock {
+  data?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'OneColumnContentBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TwoColumnContentBlock".
+ */
+export interface TwoColumnContentBlock {
+  left?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  right?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'TwoColumnContentBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ResumeAboutMeBlock".
+ */
+export interface ResumeAboutMeBlock {
+  data?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'ResumeAboutMeBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ResumeContactBlock".
+ */
+export interface ResumeContactBlock {
+  data?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'ResumeContactBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ResumeCustomersBlock".
+ */
+export interface ResumeCustomersBlock {
+  data?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'ResumeCustomersBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ResumeDownloadsBlock".
+ */
+export interface ResumeDownloadsBlock {
+  data?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'ResumeDownloadsBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ResumeExperienceBlock".
+ */
+export interface ResumeExperienceBlock {
+  data?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'ResumeExperienceBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ResumeProjectsBlock".
+ */
+export interface ResumeProjectsBlock {
+  data?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'ResumeProjectsBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blog-posts".
+ */
+export interface BlogPost {
+  id: string;
+  title: string;
+  slug?: string | null;
+  heroImage?: (string | null) | Media;
+  categories?: (string | null) | BlogCategory;
+  tags?: (string | BlogTag)[] | null;
+  relatedPosts?: (string | BlogPost)[] | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    description?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blog-categories".
+ */
+export interface BlogCategory {
+  id: string;
+  title: string;
+  slug?: string | null;
+  heroImage?: (string | null) | Media;
+  parent?: (string | null) | BlogCategory;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  breadcrumbs?:
+    | {
+        doc?: (string | null) | BlogCategory;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  breadcrumbsPath?: string | null;
+  relatedPosts?: {
+    docs?: (string | BlogPost)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blog-tags".
+ */
+export interface BlogTag {
+  id: string;
+  title: string;
+  slug?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    description?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
-  id: number;
-  name?: string | null;
+  id: string;
   updatedAt: string;
   createdAt: string;
-  _status?: ('draft' | 'published') | null;
   email: string;
   resetPasswordToken?: string | null;
   resetPasswordExpiration?: string | null;
@@ -350,56 +711,93 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "generalDummyCollection".
+ * via the `definition` "payload-jobs".
  */
-export interface GeneralDummyCollection {
-  id: number;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pages".
- */
-export interface Page {
-  id: number;
-  title: string;
-  hero?: (number | null) | Media;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
+export interface PayloadJob {
+  id: string;
+  /**
+   * Input data provided to the job
+   */
+  input?:
+    | {
         [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  meta?: {
-    title?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (number | null) | Media;
-    description?: string | null;
-  };
-  publishedAt?: string | null;
-  slug?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "settingsDummyCollection".
- */
-export interface SettingsDummyCollection {
-  id: number;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  taskStatus?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  completedAt?: string | null;
+  totalTried?: number | null;
+  /**
+   * If hasError is true this job will not be retried
+   */
+  hasError?: boolean | null;
+  /**
+   * If hasError is true, this is the error that caused it
+   */
+  error?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Task execution log
+   */
+  log?:
+    | {
+        executedAt: string;
+        completedAt: string;
+        taskSlug: 'inline' | 'schedulePublish';
+        taskID: string;
+        input?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        output?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        state: 'failed' | 'succeeded';
+        error?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  taskSlug?: ('inline' | 'schedulePublish') | null;
+  queue?: string | null;
+  waitUntil?: string | null;
+  processing?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -408,52 +806,36 @@ export interface SettingsDummyCollection {
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: number;
+  id: string;
   document?:
     | ({
-        relationTo: 'resumeDummyCollection';
-        value: number | ResumeDummyCollection;
+        relationTo: 'blog-categories';
+        value: string | BlogCategory;
       } | null)
     | ({
-        relationTo: 'blogDummyCollection';
-        value: number | BlogDummyCollection;
-      } | null)
-    | ({
-        relationTo: 'blogCategories';
-        value: number | BlogCategory;
-      } | null)
-    | ({
-        relationTo: 'blogTags';
-        value: number | BlogTag;
-      } | null)
-    | ({
-        relationTo: 'blogPosts';
-        value: number | BlogPost;
-      } | null)
-    | ({
-        relationTo: 'generalDummyCollection';
-        value: number | GeneralDummyCollection;
+        relationTo: 'blog-posts';
+        value: string | BlogPost;
       } | null)
     | ({
         relationTo: 'media';
-        value: number | Media;
+        value: string | Media;
       } | null)
     | ({
         relationTo: 'pages';
-        value: number | Page;
+        value: string | Page;
       } | null)
     | ({
         relationTo: 'users';
-        value: number | User;
+        value: string | User;
       } | null)
     | ({
-        relationTo: 'settingsDummyCollection';
-        value: number | SettingsDummyCollection;
+        relationTo: 'blog-tags';
+        value: string | BlogTag;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: number | User;
+    value: string | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -463,10 +845,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: number;
+  id: string;
   user: {
     relationTo: 'users';
-    value: number | User;
+    value: string | User;
   };
   key?: string | null;
   value?:
@@ -486,7 +868,7 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: number;
+  id: string;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
@@ -494,51 +876,41 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "resumeDummyCollection_select".
- */
-export interface ResumeDummyCollectionSelect<T extends boolean = true> {
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blogDummyCollection_select".
- */
-export interface BlogDummyCollectionSelect<T extends boolean = true> {
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blogCategories_select".
+ * via the `definition` "blog-categories_select".
  */
 export interface BlogCategoriesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
+  heroImage?: T;
+  parent?: T;
+  content?: T;
+  breadcrumbs?:
+    | T
+    | {
+        doc?: T;
+        url?: T;
+        label?: T;
+        id?: T;
+      };
+  breadcrumbsPath?: T;
+  relatedPosts?: T;
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
   _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blogTags_select".
- */
-export interface BlogTagsSelect<T extends boolean = true> {
-  title?: T;
-  slug?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blogPosts_select".
+ * via the `definition` "blog-posts_select".
  */
 export interface BlogPostsSelect<T extends boolean = true> {
   title?: T;
-  content?: T;
-  relatedPosts?: T;
+  slug?: T;
+  heroImage?: T;
   categories?: T;
+  tags?: T;
+  relatedPosts?: T;
+  content?: T;
   meta?:
     | T
     | {
@@ -546,26 +918,10 @@ export interface BlogPostsSelect<T extends boolean = true> {
         image?: T;
         description?: T;
       };
-  publishedAt?: T;
-  authors?: T;
-  populatedAuthors?:
-    | T
-    | {
-        id?: T;
-        name?: T;
-      };
-  slug?: T;
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
   _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "generalDummyCollection_select".
- */
-export interface GeneralDummyCollectionSelect<T extends boolean = true> {
-  updatedAt?: T;
-  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -573,13 +929,11 @@ export interface GeneralDummyCollectionSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  caption?: T;
   blurDataURL?: T;
-  type?: T;
-  extension?: T;
   prefix?: T;
   updatedAt?: T;
   createdAt?: T;
-  _status?: T;
   url?: T;
   thumbnailURL?: T;
   filename?: T;
@@ -589,6 +943,20 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -596,19 +964,19 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface PagesSelect<T extends boolean = true> {
   title?: T;
-  hero?: T;
-  content?: T;
-  meta?:
+  slug?: T;
+  layout?: T;
+  hero?:
     | T
     | {
-        title?: T;
-        image?: T;
-        description?: T;
+        media?: T;
+        contentType?: T;
+        content?: T;
       };
-  publishedAt?: T;
-  slug?: T;
+  content?: T | {};
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
   _status?: T;
 }
 /**
@@ -616,10 +984,8 @@ export interface PagesSelect<T extends boolean = true> {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
-  name?: T;
   updatedAt?: T;
   createdAt?: T;
-  _status?: T;
   email?: T;
   resetPasswordToken?: T;
   resetPasswordExpiration?: T;
@@ -637,9 +1003,51 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "settingsDummyCollection_select".
+ * via the `definition` "blog-tags_select".
  */
-export interface SettingsDummyCollectionSelect<T extends boolean = true> {
+export interface BlogTagsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  content?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        image?: T;
+        description?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  deletedAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs_select".
+ */
+export interface PayloadJobsSelect<T extends boolean = true> {
+  input?: T;
+  taskStatus?: T;
+  completedAt?: T;
+  totalTried?: T;
+  hasError?: T;
+  error?: T;
+  log?:
+    | T
+    | {
+        executedAt?: T;
+        completedAt?: T;
+        taskSlug?: T;
+        taskID?: T;
+        input?: T;
+        output?: T;
+        state?: T;
+        error?: T;
+        id?: T;
+      };
+  taskSlug?: T;
+  queue?: T;
+  waitUntil?: T;
+  processing?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -677,54 +1085,17 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "resumeDummyGlobal".
+ * via the `definition` "resume-about-me".
  */
-export interface ResumeDummyGlobal {
-  id: number;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "resumeHero".
- */
-export interface ResumeHero {
-  id: number;
-  background?: (number | null) | Media;
-  portrait?: (number | null) | Media;
-  title?: string | null;
-  caption?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  _status?: ('draft' | 'published') | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "resumeAboutMe".
- */
-export interface ResumeAboutMe {
-  id: number;
-  portrait?: (number | null) | Media;
-  title?: string | null;
+export interface ResumeAboutMeGlobalData {
+  id: string;
+  title: string;
+  portrait?: (string | null) | Media;
   content?: {
     root: {
       type: string;
       children: {
-        type: string;
+        type: any;
         version: number;
         [k: string]: unknown;
       }[];
@@ -735,23 +1106,22 @@ export interface ResumeAboutMe {
     };
     [k: string]: unknown;
   } | null;
-  anchor?: string | null;
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "resumeExperience".
+ * via the `definition` "resume-contact".
  */
-export interface ResumeExperience {
-  id: number;
-  title?: string | null;
+export interface ResumeContactGlobalData {
+  id: string;
+  title: string;
   caption?: {
     root: {
       type: string;
       children: {
-        type: string;
+        type: any;
         version: number;
         [k: string]: unknown;
       }[];
@@ -762,61 +1132,22 @@ export interface ResumeExperience {
     };
     [k: string]: unknown;
   } | null;
-  entries?:
-    | {
-        title: string;
-        employer: string;
-        startDate: string;
-        endDate?: string | null;
-        richText?: {
-          root: {
-            type: string;
-            children: {
-              type: string;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        } | null;
-        technologies?: {
-          id?: string;
-          label?: string;
-          [k: string]: unknown;
-        }[];
-        id?: string | null;
-      }[]
-    | null;
-  anchor?: string | null;
-  skillSummary?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "resumeProjects".
+ * via the `definition` "resume-customers".
  */
-export interface ResumeProject {
-  id: number;
-  title?: string | null;
+export interface ResumeCustomersGlobalData {
+  id: string;
+  title: string;
   caption?: {
     root: {
       type: string;
       children: {
-        type: string;
+        type: any;
         version: number;
         [k: string]: unknown;
       }[];
@@ -827,46 +1158,24 @@ export interface ResumeProject {
     };
     [k: string]: unknown;
   } | null;
-  entries?:
-    | {
-        headline: string;
-        subline: string;
-        richText?: {
-          root: {
-            type: string;
-            children: {
-              type: string;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        } | null;
-        image?: (number | null) | Media;
-        id?: string | null;
-      }[]
-    | null;
-  anchor?: string | null;
+  customerLogos?: CustomerLogos;
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "resumeCustomers".
+ * via the `definition` "resume-downloads".
  */
-export interface ResumeCustomer {
-  id: number;
-  title?: string | null;
+export interface ResumeDownloadsGlobalData {
+  id: string;
+  title: string;
+  documentPreview?: (string | null) | Media;
   caption?: {
     root: {
       type: string;
       children: {
-        type: string;
+        type: any;
         version: number;
         [k: string]: unknown;
       }[];
@@ -877,30 +1186,22 @@ export interface ResumeCustomer {
     };
     [k: string]: unknown;
   } | null;
-  entries?:
-    | {
-        logo?: string | null;
-        title?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  anchor?: string | null;
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "resumeContact".
+ * via the `definition` "resume-experience".
  */
-export interface ResumeContact {
-  id: number;
-  title?: string | null;
+export interface ResumeExperienceGlobalData {
+  id: string;
+  title: string;
   caption?: {
     root: {
       type: string;
       children: {
-        type: string;
+        type: any;
         version: number;
         [k: string]: unknown;
       }[];
@@ -911,90 +1212,200 @@ export interface ResumeContact {
     };
     [k: string]: unknown;
   } | null;
-  mailButton?: {
-    label?: string | null;
-    href?: string | null;
+  jobHistory?: JobHistory;
+  skillSummary?: {
+    /**
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` "^[A-Za-z0-9_-]+$".
+     */
+    [k: string]: {
+      label: string;
+      time: number;
+    };
   };
-  anchor?: string | null;
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blogDummyGlobal".
+ * via the `definition` "resume-projects".
  */
-export interface BlogDummyGlobal {
-  id: number;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "generalDummyGlobal".
- */
-export interface GeneralDummyGlobal {
-  id: number;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "settingsDummyGlobal".
- */
-export interface SettingsDummyGlobal {
-  id: number;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "settingsNavigation".
- */
-export interface SettingsNavigation {
-  id: number;
-  headerNavItems?: HeaderNavItems;
-  footerNavItems?: FooterNavItems;
+export interface ResumeProjectsGlobalData {
+  id: string;
+  title: string;
+  caption?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  projectList?: ProjectList;
   _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "settingsMeta".
+ * via the `definition` "settings-header".
+ */
+export interface SettingsHeaderGlobalData {
+  id: string;
+  navigation?:
+    | {
+        link: {
+          type?: ('reference' | 'custom' | 'mailto') | null;
+          newTab?: boolean | null;
+          icon?:
+            | (
+                | 'react'
+                | 'vercel'
+                | 'sanity'
+                | 'payload'
+                | 'nextjs'
+                | 'namecheap'
+                | 'mail'
+                | 'webstorm'
+                | 'intellij'
+                | 'github'
+                | 'figma'
+                | 'whatsapp'
+                | 'wireguard'
+                | 'zigbee'
+                | 'javascript'
+                | 'nodejs'
+                | 'unsplash'
+                | 'storybook'
+                | 'tailscale'
+                | 'rust'
+                | 'cloudflare'
+                | 'cloudflare-workers'
+                | 'cloudflare-pages'
+                | 'github-pages'
+                | 'github-actions'
+                | 'gitlab'
+                | 'homeassistant'
+                | 'synology'
+                | 'one-password'
+                | 'jetbrains'
+                | 'pycharm'
+                | 'phpstorm'
+                | 'goland'
+                | 'kubernetes'
+                | 'docker'
+                | 'rancher'
+                | 'linux'
+                | 'linkedin'
+                | 'debian'
+                | 'ubuntu'
+                | 'archlinux'
+                | 'error'
+                | 'warning'
+                | 'info'
+                | 'success'
+                | 'pause'
+                | 'play'
+                | 'stop'
+                | 'repeat'
+                | 'replay'
+                | 'attach'
+                | 'settings'
+                | 'calendar'
+                | 'arrow-downward'
+                | 'arrow-forward'
+                | 'close'
+                | 'image'
+              )
+            | null;
+          label: string;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: string | Page;
+              } | null)
+            | ({
+                relationTo: 'blog-posts';
+                value: string | BlogPost;
+              } | null)
+            | ({
+                relationTo: 'blog-categories';
+                value: string | BlogCategory;
+              } | null)
+            | ({
+                relationTo: 'blog-tags';
+                value: string | BlogTag;
+              } | null);
+          url?: string | null;
+          address?: string | null;
+          subject?: string | null;
+          cc?: string | null;
+          body?: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          } | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings-meta".
  */
 export interface SettingsMeta {
-  id: number;
+  id: string;
   siteName?: string | null;
   titleTemplate?: string | null;
-  fallbackTitle?: string | null;
   fallbackDescription?: string | null;
-  fallbackImage?: (number | null) | Media;
+  fallbackImage?: (string | null) | Media;
   keywords?: {
     id?: string;
     label?: string;
     [k: string]: unknown;
   }[];
-  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "resumeDummyGlobal_select".
+ * via the `definition` "resume-about-me_select".
  */
-export interface ResumeDummyGlobalSelect<T extends boolean = true> {
+export interface ResumeAboutMeSelect<T extends boolean = true> {
+  title?: T;
+  portrait?: T;
+  content?: T;
+  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "resumeHero_select".
+ * via the `definition` "resume-contact_select".
  */
-export interface ResumeHeroSelect<T extends boolean = true> {
-  background?: T;
-  portrait?: T;
+export interface ResumeContactSelect<T extends boolean = true> {
   title?: T;
   caption?: T;
   _status?: T;
@@ -1004,13 +1415,12 @@ export interface ResumeHeroSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "resumeAboutMe_select".
+ * via the `definition` "resume-customers_select".
  */
-export interface ResumeAboutMeSelect<T extends boolean = true> {
-  portrait?: T;
+export interface ResumeCustomersSelect<T extends boolean = true> {
   title?: T;
-  content?: T;
-  anchor?: T;
+  caption?: T;
+  customerLogos?: T | CustomerLogosSelect<T>;
   _status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1018,23 +1428,34 @@ export interface ResumeAboutMeSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "resumeExperience_select".
+ * via the `definition` "CustomerLogos_select".
+ */
+export interface CustomerLogosSelect<T extends boolean = true> {
+  logo?: T;
+  name?: T;
+  id?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resume-downloads_select".
+ */
+export interface ResumeDownloadsSelect<T extends boolean = true> {
+  title?: T;
+  documentPreview?: T;
+  caption?: T;
+  _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resume-experience_select".
  */
 export interface ResumeExperienceSelect<T extends boolean = true> {
   title?: T;
   caption?: T;
-  entries?:
-    | T
-    | {
-        title?: T;
-        employer?: T;
-        startDate?: T;
-        endDate?: T;
-        richText?: T;
-        technologies?: T;
-        id?: T;
-      };
-  anchor?: T;
+  jobHistory?: T | JobHistorySelect<T>;
   skillSummary?: T;
   _status?: T;
   updatedAt?: T;
@@ -1043,21 +1464,31 @@ export interface ResumeExperienceSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "resumeProjects_select".
+ * via the `definition` "JobHistory_select".
+ */
+export interface JobHistorySelect<T extends boolean = true> {
+  title?: T;
+  employer?: T;
+  startDate?: T;
+  endDate?: T;
+  content?:
+    | T
+    | {
+        item?: T;
+        id?: T;
+      };
+  tags?: T;
+  technologies?: T;
+  id?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resume-projects_select".
  */
 export interface ResumeProjectsSelect<T extends boolean = true> {
   title?: T;
   caption?: T;
-  entries?:
-    | T
-    | {
-        headline?: T;
-        subline?: T;
-        richText?: T;
-        image?: T;
-        id?: T;
-      };
-  anchor?: T;
+  projectList?: T | ProjectListSelect<T>;
   _status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1065,129 +1496,78 @@ export interface ResumeProjectsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "resumeCustomers_select".
+ * via the `definition` "ProjectList_select".
  */
-export interface ResumeCustomersSelect<T extends boolean = true> {
-  title?: T;
-  caption?: T;
-  entries?:
-    | T
-    | {
-        logo?: T;
-        title?: T;
-        id?: T;
-      };
-  anchor?: T;
-  _status?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "resumeContact_select".
- */
-export interface ResumeContactSelect<T extends boolean = true> {
-  title?: T;
-  caption?: T;
-  mailButton?:
-    | T
-    | {
-        label?: T;
-        href?: T;
-      };
-  anchor?: T;
-  _status?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blogDummyGlobal_select".
- */
-export interface BlogDummyGlobalSelect<T extends boolean = true> {
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "generalDummyGlobal_select".
- */
-export interface GeneralDummyGlobalSelect<T extends boolean = true> {
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "settingsDummyGlobal_select".
- */
-export interface SettingsDummyGlobalSelect<T extends boolean = true> {
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "settingsNavigation_select".
- */
-export interface SettingsNavigationSelect<T extends boolean = true> {
-  headerNavItems?: T | HeaderNavItemsSelect<T>;
-  footerNavItems?: T | FooterNavItemsSelect<T>;
-  _status?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "HeaderNavItems_select".
- */
-export interface HeaderNavItemsSelect<T extends boolean = true> {
-  link?:
-    | T
-    | {
-        type?: T;
-        newTab?: T;
-        reference?: T;
-        url?: T;
-        label?: T;
-      };
+export interface ProjectListSelect<T extends boolean = true> {
+  preHeading?: T;
+  heading?: T;
+  image?: T;
+  content?: T;
   id?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "FooterNavItems_select".
+ * via the `definition` "settings-header_select".
  */
-export interface FooterNavItemsSelect<T extends boolean = true> {
-  link?:
+export interface SettingsHeaderSelect<T extends boolean = true> {
+  navigation?:
     | T
     | {
-        type?: T;
-        newTab?: T;
-        reference?: T;
-        url?: T;
-        label?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              icon?: T;
+              label?: T;
+              reference?: T;
+              url?: T;
+              address?: T;
+              subject?: T;
+              cc?: T;
+              body?: T;
+            };
+        id?: T;
       };
-  id?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "settingsMeta_select".
+ * via the `definition` "settings-meta_select".
  */
 export interface SettingsMetaSelect<T extends boolean = true> {
   siteName?: T;
   titleTemplate?: T;
-  fallbackTitle?: T;
   fallbackDescription?: T;
   fallbackImage?: T;
   keywords?: T;
-  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskSchedulePublish".
+ */
+export interface TaskSchedulePublish {
+  input: {
+    type?: ('publish' | 'unpublish') | null;
+    locale?: string | null;
+    doc?:
+      | ({
+          relationTo: 'blog-posts';
+          value: string | BlogPost;
+        } | null)
+      | ({
+          relationTo: 'pages';
+          value: string | Page;
+        } | null);
+    global?: string | null;
+    user?: (string | null) | User;
+  };
+  output?: unknown;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -1,0 +1,196 @@
+@supports not (font-variation-settings: normal) {
+  /* jetbrains-mono-100-normal */
+  @font-face {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 100;
+    src: url(/fonts/jetbrains-mono/jetbrains-mono-100-normal.woff2) format('woff2');
+  }
+
+  /* jetbrains-mono-100-italic */
+  @font-face {
+    font-family: 'JetBrains Mono';
+    font-style: italic;
+    font-display: swap;
+    font-weight: 100;
+    src: url(/fonts/jetbrains-mono/jetbrains-mono-100-italic.woff2) format('woff2');
+  }
+
+  /* jetbrains-mono-200-normal */
+  @font-face {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 200;
+    src: url(/fonts/jetbrains-mono/jetbrains-mono-200-normal.woff2) format('woff2');
+  }
+
+  /* jetbrains-mono-200-italic */
+  @font-face {
+    font-family: 'JetBrains Mono';
+    font-style: italic;
+    font-display: swap;
+    font-weight: 200;
+    src: url(/fonts/jetbrains-mono/jetbrains-mono-200-italic.woff2) format('woff2');
+  }
+
+  /* jetbrains-mono-300-normal */
+  @font-face {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 300;
+    src: url(/fonts/jetbrains-mono/jetbrains-mono-300-normal.woff2) format('woff2');
+  }
+
+  /* jetbrains-mono-300-italic */
+  @font-face {
+    font-family: 'JetBrains Mono';
+    font-style: italic;
+    font-display: swap;
+    font-weight: 300;
+    src: url(/fonts/jetbrains-mono/jetbrains-mono-300-italic.woff2) format('woff2');
+  }
+
+  /* jetbrains-mono-400-normal */
+  @font-face {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 400;
+    src: url(/fonts/jetbrains-mono/jetbrains-mono-400-normal.woff2) format('woff2');
+  }
+
+  /* jetbrains-mono-400-italic */
+  @font-face {
+    font-family: 'JetBrains Mono';
+    font-style: italic;
+    font-display: swap;
+    font-weight: 400;
+    src: url(/fonts/jetbrains-mono/jetbrains-mono-400-italic.woff2) format('woff2');
+  }
+
+  /* jetbrains-mono-500-normal */
+  @font-face {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 500;
+    src: url(/fonts/jetbrains-mono/jetbrains-mono-500-normal.woff2) format('woff2');
+  }
+
+  /* jetbrains-mono-500-italic */
+  @font-face {
+    font-family: 'JetBrains Mono';
+    font-style: italic;
+    font-display: swap;
+    font-weight: 500;
+    src: url(/fonts/jetbrains-mono/jetbrains-mono-500-italic.woff2) format('woff2');
+  }
+
+  /* jetbrains-mono-600-normal */
+  @font-face {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 600;
+    src: url(/fonts/jetbrains-mono/jetbrains-mono-600-normal.woff2) format('woff2');
+  }
+
+  /* jetbrains-mono-600-italic */
+  @font-face {
+    font-family: 'JetBrains Mono';
+    font-style: italic;
+    font-display: swap;
+    font-weight: 600;
+    src: url(/fonts/jetbrains-mono/jetbrains-mono-600-italic.woff2) format('woff2');
+  }
+
+  /* jetbrains-mono-700-normal */
+  @font-face {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 700;
+    src: url(/fonts/jetbrains-mono/jetbrains-mono-700-normal.woff2) format('woff2');
+  }
+
+  /* jetbrains-mono-700-italic */
+  @font-face {
+    font-family: 'JetBrains Mono';
+    font-style: italic;
+    font-display: swap;
+    font-weight: 700;
+    src: url(/fonts/jetbrains-mono/jetbrains-mono-700-italic.woff2) format('woff2');
+  }
+
+  /* jetbrains-mono-800-normal */
+  @font-face {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 800;
+    src: url(/fonts/jetbrains-mono/jetbrains-mono-800-normal.woff2) format('woff2');
+  }
+
+  /* jetbrains-mono-800-italic */
+  @font-face {
+    font-family: 'JetBrains Mono';
+    font-style: italic;
+    font-display: swap;
+    font-weight: 800;
+    src: url(/fonts/jetbrains-mono/jetbrains-mono-800-italic.woff2) format('woff2');
+  }
+}
+
+@supports (font-variation-settings: normal) {
+  /* jetbrains-mono-variable-normal */
+  @font-face {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 100 800;
+    src: url(/fonts/jetbrains-mono/jetbrains-mono-variable-normal.woff2) format('woff2');
+  }
+  /* jetbrains-mono-variable-italic */
+  @font-face {
+    font-family: 'JetBrains Mono';
+    font-style: italic;
+    font-display: swap;
+    font-weight: 100 800;
+    src: url(/fonts/jetbrains-mono/jetbrains-mono-variable-italic.woff2) format('woff2');
+  }
+
+  @font-feature-values JetBrains Mono {
+    @character-variant {
+      cv01: 1; /* l with symmetrical lower stroke. (ss01) */
+      cv02: 2; /* t with curly tail. (ss02) */
+      cv03: 3; /* g with more complex construction. */
+      cv04: 4; /* j with curly descender. */
+      cv05: 5; /* l with curly tail. (ss02) */
+      cv06: 6; /* m with shorter leg. (ss02) */
+      cv07: 7; /* W w with lover middle connection. (ss02) */
+      cv08: 8; /* K k with sharp connection. (ss01) */
+      cv09: 9; /* f with additional horizontal stroke. (ss01) */
+      cv10: 10; /* r with more open construction. (ss01) */
+      cv11: 11; /* y with different ascender construction. (ss01) */
+      cv12: 12; /* u with traditional construction. (ss01) */
+      cv14: 14; /* $ with broken bar. */
+      cv15: 15; /* alternate & */
+      cv16: 16; /* Q with bent tail. */
+      cv17: 17; /* f with curly ascender. (ss02) */
+      cv18: 18; /* alternate 2 6 9 */
+      cv19: 19; /* old construction of 8. */
+      cv20: 20; /* old construction of 5 */
+      cv99: 99; /* Highlights Cyrillic C c for debugging purposes. */
+    }
+
+    @styleset {
+      ss01: 1;
+      ss02: 2;
+      ss19: 19;
+      ss20: 20;
+    }
+  }
+}

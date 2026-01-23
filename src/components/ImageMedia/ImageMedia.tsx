@@ -3,8 +3,6 @@
 import type { ImageProps } from 'next/image'
 import NextImage from 'next/image'
 
-import { screens } from '@tailwind-config'
-
 import { cn } from '@/utilities/cn'
 import React, { CSSProperties, SyntheticEvent, useCallback, useState } from 'react'
 import { Media } from '@payload-types'
@@ -57,17 +55,15 @@ export const ImageMedia = ({
   // NOTE: this is used by the browser to determine which image to download at different screen sizes
   const sizes = sizesFromProps
     ? sizesFromProps
-    : Object.entries(screens)
-        .map(([, value]) => `(max-width: ${value}) ${value}`)
-        .join(', ') + ', 1920px'
+    : ['(max-width: 768px) 100vw', '(max-width: 1200px) 50vw', '33vw'].join(', ')
 
   return (
     <div
       style={
         duoTone
           ? ({
-              '--fg-color': 'rgb(var(--color-primary) / 100%)',
-              '--bg-color': 'rgb(var(--color-white) / 100%)',
+              '--fg-color': 'var(--color-primary)',
+              '--bg-color': 'var(--color-white)',
               '--bg-blend': 'multiply',
               '--fg-blend': 'lighten',
             } as CSSProperties)
@@ -78,7 +74,7 @@ export const ImageMedia = ({
         'h-full overflow-hidden p-0 relative',
 
         duoTone && [
-          'bg-[var(--bg-color)]',
+          'bg-(--bg-color)',
           'before:absolute',
           'before:z-10',
           'before:left-0',
@@ -87,7 +83,7 @@ export const ImageMedia = ({
           'before:bottom-0',
           'before:w-full',
           'before:h-full',
-          'before:bg-[var(--fg-color)]',
+          'before:bg-(--fg-color)',
           'before:[mix-blend-mode:var(--fg-blend)]',
         ],
 
@@ -100,7 +96,7 @@ export const ImageMedia = ({
         className={cn([
           'flex-grow flex-shrink-0 basis-full relative',
           'h-full w-full max-w-full object-contain',
-          'transition-all duration-500 ease-in-out',
+          'transition-opacity duration-500 ease-in-out',
 
           duoTone && 'grayscale contrast-100 blur-0 [mix-blend-mode:var(--bg-blend)]',
           fill && 'object-cover',

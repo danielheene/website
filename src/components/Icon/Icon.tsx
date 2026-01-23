@@ -5,8 +5,10 @@ import {
   MdAttachFile as AttachIcon,
   MdCalendarMonth as CalendarIcon,
   MdCheckCircle as SuccessIcon,
+  MdClose as CloseIcon,
   MdError as ErrorIcon,
   MdInfo as InfoIcon,
+  MdOutlineImage as ImageIcon,
   MdPause as PauseIcon,
   MdPlayArrow as PlayIcon,
   MdRepeat as RepeatIcon,
@@ -120,6 +122,8 @@ export const UI_ICONS = {
   CALENDAR: 'calendar',
   ARROW_DOWNWARD: 'arrow-downward',
   ARROW_FORWARD: 'arrow-forward',
+  CLOSE: 'close',
+  IMAGE: 'image',
 } as const
 
 export const ICON_NAME = {
@@ -246,6 +250,10 @@ export const Icon = memo(({ name, ...iconBaseProps }: IconProps): JSX.Element =>
         return ArrowDownwardIcon
       case ICON_NAME.ARROW_FORWARD:
         return ArrowForwardIcon
+      case ICON_NAME.CLOSE:
+        return CloseIcon
+      case ICON_NAME.IMAGE:
+        return ImageIcon
       default:
         return React.Fragment
     }

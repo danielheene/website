@@ -1,1 +1,16 @@
-export const generatePreviewPath = ({ path }) => `/next/preview?path=${encodeURIComponent(path)}`
+'use server'
+
+import { generateContentPath } from '@/utilities/generateContentURL'
+
+export const generatePreviewPath = async (collection: string, slug: string): Promise<string | null> => {
+  if (slug === undefined || slug === null || slug === '') return null
+
+  const encodedParams = new URLSearchParams({
+    slug,
+    collection,
+    path: generateContentPath(collection, slug),
+    previewSecret: process.env.PREVIEW_SECRET || '',
+  })
+
+  return `/api/preview?${encodedParams.toString()}`
+}

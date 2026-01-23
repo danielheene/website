@@ -4,6 +4,7 @@ import Link from 'next/link'
 import React from 'react'
 
 import type { BlogCategory, BlogPost, BlogTag, Page } from '@payload-types'
+import { CollectionSlug } from '@custom-types'
 
 type CMSLinkType = {
   appearance?: 'inline' | ButtonProps['variant']
@@ -11,33 +12,34 @@ type CMSLinkType = {
   className?: string
   label?: string
   newTab?: boolean
-  reference?: {
-    relationTo: 'pages' | 'blogPosts' | 'blogCategories' | 'blogTags'
-    value: Page | BlogPost | BlogCategory | BlogTag | string | number
-  }
+  reference?:
+    | ({
+        relationTo: `${CollectionSlug.Pages}`
+        value: string | Page
+      } | null)
+    | ({
+        relationTo: `${CollectionSlug.BlogPosts}`
+        value: string | BlogPost
+      } | null)
+    | ({
+        relationTo: `${CollectionSlug.BlogCategories}`
+        value: string | BlogCategory
+      } | null)
+    | ({
+        relationTo: `${CollectionSlug.BlogTags}`
+        value: string | BlogTag
+      } | null)
   size?: ButtonProps['size']
-  type?: 'custom' | 'reference'
+  type?: 'custom' | 'reference' | 'mailto'
   url?: string
 }
 
 export const CMSLink: React.FC<CMSLinkType> = (props) => {
-  const {
-    type,
-    appearance = 'inline',
-    children,
-    className,
-    label,
-    newTab,
-    reference,
-    size: sizeFromProps,
-    url,
-  } = props
+  const { type, appearance = 'inline', children, className, label, newTab, reference, size: sizeFromProps, url } = props
 
   const href =
     type === 'reference' && typeof reference?.value === 'object' && reference.value.slug
-      ? `${reference?.relationTo !== 'pages' ? `/${reference?.relationTo}` : ''}/${
-          reference.value.slug
-        }`
+      ? `${reference?.relationTo !== CollectionSlug.Pages ? `/${reference?.relationTo}` : ''}/${reference.value.slug}`
       : url
 
   if (!href) return null

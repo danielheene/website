@@ -1,0 +1,13 @@
+@theme static {
+  /* ---------- fonts ---------- */
+  --font-inter: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-inter--font-feature-settings: 'cv01', 'cv02', 'cv03', 'cv04', 'cv09', 'zero';
+  --font-jetbrains-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --font-jetbrains-mono-font-feature-settings: 'cv15', 'zero';
+  --font-pp-supply-mono: 'PP Supply Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+
+  --font-inherit: inherit;
+
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+}

@@ -1,13 +1,11 @@
 import { File, type PayloadHandler, PayloadRequest } from 'payload'
-
-import resumeHeroData from './data/resumeHero'
 import resumeAboutMeData from './data/resumeAboutMe'
 import resumeProjectsData from './data/resumeProjects'
 import resumeExperienceData from './data/resumeExperience'
 import resumeCustomersData from './data/resumeCustomers'
 import resumeContactData from './data/resumeContact'
 import imprintData from './data/imprint'
-import settingsNavigationData from './data/settingsNavigation'
+import { GlobalSlug } from '@custom-types'
 
 export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
   const { payload, user } = req
@@ -18,60 +16,58 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
 
   try {
     const fetchFileByURL = createFileFetcher(req)
-    /**
-     *    RESUME HERO
-     */
-    payload.logger.info('-- Seeding: Resume Hero')
-
-    const { id: resumeHeroBackgroundId } = await payload.create({
-      collection: 'media',
-      data: {
-        alt: 'Resume Page Hero Section Background',
-        _status: 'published',
-      },
-      file: await fetchFileByURL({
-        src: '/seed/resumeHero-background.webp',
-        name: 'resume-hero-background.webp',
-      }),
-      context: {
-        isSeedContext: true,
-      },
-    })
-
-    payload.logger.info('    resumeHero background image created')
-
-    const { id: resumeHeroPortraitId } = await payload.create({
-      collection: 'media',
-      data: {
-        alt: 'Resume Page Hero Section Portrait',
-        _status: 'published',
-      },
-      file: await fetchFileByURL({
-        src: '/seed/resumeHero-portrait.webp',
-        name: 'resume-hero-portrait.webp',
-      }),
-      context: {
-        isSeedContext: true,
-      },
-    })
-
-    payload.logger.info('    resumeHero portrait image created')
-
-    await payload.updateGlobal({
-      slug: 'resumeHero',
-      data: JSON.parse(
-        JSON.stringify(resumeHeroData)
-          .replace(/"<BACKGROUND_IMAGE>"/g, String(resumeHeroBackgroundId))
-          .replace(/"<PORTRAIT_IMAGE>"/g, String(resumeHeroPortraitId)),
-      ),
-      depth: 0,
-      context: {
-        isSeedContext: true,
-      },
-    })
-
-    payload.logger.info('    resumeHero data updated')
-    payload.logger.info('')
+    // /**
+    //  *    RESUME HERO
+    //  */
+    // payload.loggerw.info('-- Seeding: Resume Hero')
+    //
+    // const { id: resumeHeroBackgroundId } = await payload.create({
+    //   collection: 'media',
+    //   data: {
+    //     alt: 'Resume Page Hero Section Background',
+    //   },
+    //   file: await fetchFileByURL({
+    //     src: '/seed/resumeHero-background.webp',
+    //     name: 'resume-hero-background.webp',
+    //   }),
+    //   context: {
+    //     isSeedContext: true,
+    //   },
+    // })
+    //
+    // payload.logger.info('    resumeHero background image created')
+    //
+    // const { id: resumeHeroPortraitId } = await payload.create({
+    //   collection: 'media',
+    //   data: {
+    //     alt: 'Resume Page Hero Section Portrait',
+    //   },
+    //   file: await fetchFileByURL({
+    //     src: '/seed/resumeHero-portrait.webp',
+    //     name: 'resume-hero-portrait.webp',
+    //   }),
+    //   context: {
+    //     isSeedContext: true,
+    //   },
+    // })
+    //
+    // payload.logger.info('    resumeHero portrait image created')
+    //
+    // await payload.updateGlobal({
+    //   slug: GlobalSlug.Hero,
+    //   data: JSON.parse(
+    //     JSON.stringify(resumeHeroData)
+    //       .replace(/"<BACKGROUND_IMAGE>"/g, String(resumeHeroBackgroundId))
+    //       .replace(/"<PORTRAIT_IMAGE>"/g, String(resumeHeroPortraitId)),
+    //   ),
+    //   depth: 0,
+    //   context: {
+    //     isSeedContext: true,
+    //   },
+    // })
+    //
+    // payload.logger.info('    resumeHero data updated')
+    // payload.logger.info('')
 
     /**
      *    RESUME ABOUT ME
@@ -82,7 +78,6 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
       collection: 'media',
       data: {
         alt: 'Resume Page About Me Section Portrait',
-        _status: 'published',
       },
       file: await fetchFileByURL({
         src: '/seed/resumeAboutMe-portrait.webp',
@@ -96,13 +91,8 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
     payload.logger.info('    resumeAboutMe portrait image created')
 
     await payload.updateGlobal({
-      slug: 'resumeAboutMe',
-      data: JSON.parse(
-        JSON.stringify(resumeAboutMeData).replace(
-          /"<PORTRAIT_IMAGE>"/g,
-          String(resumeAboutMePortraitId),
-        ),
-      ),
+      slug: GlobalSlug.ResumeAboutMe,
+      data: JSON.parse(JSON.stringify(resumeAboutMeData).replace(/"<PORTRAIT_IMAGE>"/g, String(resumeAboutMePortraitId))),
       context: {
         isSeedContext: true,
       },
@@ -117,7 +107,7 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
     payload.logger.info('-- Seeding: Resume Experience')
 
     await payload.updateGlobal({
-      slug: 'resumeExperience',
+      slug: GlobalSlug.ResumeExperience,
       data: JSON.parse(JSON.stringify(resumeExperienceData)),
       context: {
         isSeedContext: true,
@@ -136,7 +126,6 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
       collection: 'media',
       data: {
         alt: 'Aktion Mensch download page screenshot',
-        _status: 'published',
       },
       file: await fetchFileByURL({
         src: '/seed/resumeProjects-image1.webp',
@@ -153,7 +142,6 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
       collection: 'media',
       data: {
         alt: 'screenshot of the admin dashboard for my portfolio website',
-        _status: 'published',
       },
       file: await fetchFileByURL({
         src: '/seed/resumeProjects-image2.webp',
@@ -167,7 +155,7 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
     payload.logger.info('    resumeProjects image2 uploaded')
 
     await payload.updateGlobal({
-      slug: 'resumeProjects',
+      slug: GlobalSlug.ResumeProjects,
       data: JSON.parse(
         JSON.stringify(resumeProjectsData)
           .replace(/"<IMAGE_1>"/g, String(resumeProjectsImage1Id))
@@ -187,7 +175,7 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
     payload.logger.info('-- Seeding: Resume Customers')
 
     await payload.updateGlobal({
-      slug: 'resumeCustomers',
+      slug: GlobalSlug.ResumeCustomers,
       data: JSON.parse(JSON.stringify(resumeCustomersData)),
       context: {
         isSeedContext: true,
@@ -202,7 +190,7 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
     payload.logger.info('-- Seeding: Resume Contact')
 
     await payload.updateGlobal({
-      slug: 'resumeContact',
+      slug: GlobalSlug.ResumeContact,
       data: JSON.parse(JSON.stringify(resumeContactData)),
       context: {
         isSeedContext: true,
@@ -231,7 +219,6 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
       collection: 'media',
       data: {
         alt: 'Imprint Page Hero Image',
-        _status: 'published',
       },
       file: await fetchFileByURL({
         src: '/seed/imprint-hero.webp',
@@ -246,9 +233,7 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
 
     const { id: imprintPageId } = await payload.create({
       collection: 'pages',
-      data: JSON.parse(
-        JSON.stringify(imprintData).replace(/"<HERO_IMAGE>"/g, String(imprintHeroId)),
-      ),
+      data: JSON.parse(JSON.stringify(imprintData).replace(/"<HERO_IMAGE>"/g, String(imprintHeroId))),
       context: {
         isSeedContext: true,
       },
@@ -256,26 +241,21 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
     payload.logger.info('    imprint page data updated')
     payload.logger.info('')
 
-    /**
-     *    SETTINGS NAVIGATION
-     */
-    payload.logger.info('-- Seeding: Settings Navigation')
-
-    await payload.updateGlobal({
-      slug: 'settingsNavigation',
-      data: JSON.parse(
-        JSON.stringify(settingsNavigationData).replace(
-          /"<IMPRINT_PAGE_ID>"/g,
-          String(imprintPageId),
-        ),
-      ),
-      context: {
-        isSeedContext: true,
-      },
-    })
-
-    payload.logger.info('    settingsNavigation data updated')
-    payload.logger.info('')
+    // /**
+    //  *    SETTINGS NAVIGATION
+    //  */
+    // payload.logger.info('-- Seeding: Settings Navigation')
+    //
+    // await payload.updateGlobal({
+    //   slug: 'settingsNavigation',
+    //   data: JSON.parse(JSON.stringify(settingsNavigationData).replace(/"<IMPRINT_PAGE_ID>"/g, String(imprintPageId))),
+    //   context: {
+    //     isSeedContext: true,
+    //   },
+    // })
+    //
+    // payload.logger.info('    settingsNavigation data updated')
+    // payload.logger.info('')
 
     return Response.json({ success: true })
   } catch (error: unknown) {
@@ -292,9 +272,7 @@ export const seedHandler: PayloadHandler = async (req): Promise<Response> => {
  * @returns {function(string): Promise<File>} - Returns a function that fetches a file
  * by its name and resolves to a `File` object.
  */
-const createFileFetcher = (
-  req: PayloadRequest,
-): (({ src, name }: { src: string; name: string }) => Promise<File>) => {
+const createFileFetcher = (req: PayloadRequest): (({ src, name }: { src: string; name: string }) => Promise<File>) => {
   const { origin } = new URL(req.url)
   const requestInit: RequestInit = {
     headers: new Headers(req.headers),

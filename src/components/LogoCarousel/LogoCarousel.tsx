@@ -1,20 +1,17 @@
-import { Fragment, JSX, useMemo } from 'react'
-import useEmblaCarousel from 'embla-carousel-react'
-import Autoplay from 'embla-carousel-autoplay'
 import { cn } from '@/utilities/cn'
+import Autoplay from 'embla-carousel-autoplay'
+import useEmblaCarousel from 'embla-carousel-react'
+import { Fragment, JSX, useMemo } from 'react'
 
-export type LogoCarouselEntry = {
-  id: string
-  logo: string
-  title: string
-}
+type LogoCarouselEntry = { id: string; logo: string; name: string }
+type LogoCarouselRow = [LogoCarouselEntry, LogoCarouselEntry]
 
 export interface LogoCarouselProps {
   entries: LogoCarouselEntry[]
   className?: string
 }
 
-export const LogoCarousel = ({ entries, className }: LogoCarouselProps) => {
+export const LogoCarousel = ({ className, entries }: LogoCarouselProps) => {
   const [emblaRef] = useEmblaCarousel(
     {
       loop: true,
@@ -31,7 +28,7 @@ export const LogoCarousel = ({ entries, className }: LogoCarouselProps) => {
   }
 
   const rows = useMemo(
-    (): LogoCarouselEntry[][] =>
+    (): LogoCarouselRow[] =>
       entries
         .reduce((previousValue, currentValue, index) => {
           const rowIndex = Math.floor(index / 2)
@@ -82,18 +79,14 @@ export function LogoCarouselRow({ entries }: { entries: LogoCarouselEntry[] }) {
   )
 }
 
-export function LogoCarouselTile({ id, title, logo }: LogoCarouselEntry): JSX.Element {
+export function LogoCarouselTile({ id, name, logo }: LogoCarouselEntry): JSX.Element {
   return (
     <Fragment>
       <div
         key={id}
-        aria-label={title}
-        className={cn(
-          'aspect-4/3 w-full p-3 rounded',
-          'fill-primary bg-white',
-          '*:w-full *:h-full *:object-contain *:object-center',
-        )}
-        dangerouslySetInnerHTML={{ __html: Buffer.from(logo, 'base64').toString('utf-8') }}
+        aria-label={name}
+        className={cn('aspect-4/3 w-full p-3 rounded', 'fill-primary bg-white', '*:w-full *:h-full *:object-contain *:object-center')}
+        dangerouslySetInnerHTML={{ __html: logo }}
       />
     </Fragment>
   )

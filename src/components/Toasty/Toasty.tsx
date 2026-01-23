@@ -1,11 +1,9 @@
 'use client'
 
-import React, { JSX, useEffect, useReducer, useRef, useState } from 'react'
-import ReactDOM from 'react-dom'
-import { track } from '@vercel/analytics'
-import { data as ToastyAudioData, mime as ToastyAudioMime } from './Toasty.audio'
-import { data as ToastyImageData, mime as ToastyImageMime } from './Toasty.image'
+import { useUmami } from '@/contexts/Umami'
 import { useCreatePortalHost } from '@/utilities/useCreatePortalHost'
+import React from 'react'
+import ReactDOM from 'react-dom'
 
 enum ActionType {
   KeyUp = 'Toasty/KeyUp',
@@ -119,19 +117,17 @@ const printHintMessage = (): void => {
   )
 }
 
-const imagePath = `data:${ToastyImageMime};base64,${ToastyImageData}`
-const audioPath = `data:${ToastyAudioMime};base64,${ToastyAudioData}`
-
-export const Toasty = function Toasty(): JSX.Element {
-  const audioContextRef = useRef<AudioContext>(null)
+export const Toasty = function Toasty(): React.JSX.Element {
+  const { track } = useUmami()
+  const audioContextRef = React.useRef<AudioContext>(null)
   const portalRef = useCreatePortalHost('ToastyPortal')
-  const [eventIsRegistered, setEventIsRegistered] = useState(false)
-  const [{ success, imageBlob, audioBuffer }, dispatch] = useReducer(reducer, initialState)
+  const [eventIsRegistered, setEventIsRegistered] = React.useState(false)
+  const [{ success, imageBlob, audioBuffer }, dispatch] = React.useReducer(reducer, initialState)
 
   /**
    *
    */
-  useEffect(() => {
+  React.useEffect(() => {
     const handleKeyUpEvent = (event: KeyboardEvent): void => {
       dispatch({
         type: ActionType.KeyUp,
@@ -156,11 +152,12 @@ export const Toasty = function Toasty(): JSX.Element {
   /**
    *
    */
-  useEffect((): void => {
+  React.useEffect((): void => {
     if (success && !audioBuffer) {
       audioContextRef.current = new AudioContext()
 
-      fetch(audioPath)
+      import('./Toasty.audio')
+        .then(({ audioData }) => fetch(audioData))
         .then((response) => response.arrayBuffer())
         .then((arrayBuffer) => audioContextRef.current.decodeAudioData(arrayBuffer))
         .then((audioBuffer) => {
@@ -178,9 +175,10 @@ export const Toasty = function Toasty(): JSX.Element {
   /**
    *
    */
-  useEffect((): void => {
+  React.useEffect((): void => {
     if (success && !imageBlob) {
-      fetch(imagePath)
+      import('./Toasty.image')
+        .then(({ imageData }) => fetch(imageData))
         .then((response) => response.blob())
         .then((imageBlob) => {
           dispatch({
@@ -197,11 +195,9 @@ export const Toasty = function Toasty(): JSX.Element {
   /**
    *
    */
-  useEffect(() => {
+  React.useEffect(() => {
     if (audioBuffer && imageBlob && success) {
-      track('toasty', {
-        success: success,
-      })
+      track('Toasty!!')
 
       const audioBufferNode = audioContextRef.current.createBufferSource()
 
@@ -216,6 +212,9 @@ export const Toasty = function Toasty(): JSX.Element {
     }
   }, [audioBuffer, imageBlob, success])
 
+  /**
+   *
+   */
   if (!audioBuffer || !imageBlob || !success || !portalRef.current) return null
 
   return ReactDOM.createPortal(

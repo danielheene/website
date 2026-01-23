@@ -1,0 +1,24 @@
+@reference './../../styles/frontend.css';
+
+.Logo {
+  @apply h-full min-h-full w-auto max-w-full;
+
+  & > path {
+    fill: currentColor;
+    fill-rule: evenodd;
+    stroke: none;
+  }
+}
+
+
+.Logo--white {
+  @apply text-white;
+}
+
+.Logo--black {
+  @apply text-black;
+}
+
+.Logo--primary {
+  @apply text-primary;
+}

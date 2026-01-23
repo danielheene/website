@@ -48,8 +48,6 @@ environments faster. As a logged in user you can call `/api/seed` and import thi
 
 ---
 
-### legacy
+#### Legacy Code 
 
-- website-v2: [Code](https://github.com/danielheene/website/tree/homepage-v2) | [Deployment](https://daniel-heene-9ntmp4f8l-danielheene.vercel.app)
-
-- website-v1: [Code](https://github.com/danielheene/website/tree/homepage-v1)
+The following code of my previous websites is no longer maintained, but a dump of their code bases can still be found under the following tags: [website-v2](https://github.com/danielheene/website/tree/homepage-v2) | [website-v1](https://github.com/danielheene/website/tree/homepage-v1). 

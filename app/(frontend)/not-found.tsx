@@ -7,7 +7,7 @@ import { Icon } from '@/components/Icon'
 
 export default function NotFound() {
   return (
-    <div className="py-32 -mt-32 -mb-20 relative overflow-hidden">
+    <div className="pt-32 -mt-32 pb-20 -mb-20 relative overflow-hidden [&+footer]:text-white [&+footer]:bg-transparent">
       <ImageMedia
         alt=""
         fill

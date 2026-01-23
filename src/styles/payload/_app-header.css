@@ -4,7 +4,7 @@
   @apply mb-8;
 
   .step-nav.app-header__step-nav {
-    @apply text-xl font-mono tracking-tighter lowercase h-auto;
+    @apply text-xl font-mono tracking-tighter  h-auto;
 
     .step-nav__home {
       width: 1em !important;
@@ -14,15 +14,20 @@
     }
   }
 
-  .app-header__localizer {
-    display: none;
-  }
-
   .app-header__account {
     @apply w-10 h-10;
 
     img {
       @apply w-10 max-w-10 h-10 max-h-10 grow-0 shrink-0;
+    }
+  }
+
+  .localizer.app-header__localizer {
+    @apply right-32;
+
+    .popup-button,
+    .popup-button-list__button {
+      @apply text-lg font-mono tracking-tight;
     }
   }
 }

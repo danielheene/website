@@ -1,0 +1,1 @@
+export { CellWithThumbnail } from './CellWithThumbnail';

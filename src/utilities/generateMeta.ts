@@ -1,39 +1,48 @@
-import type { Metadata, ResolvedMetadata } from 'next'
+import type { BlogCategory, BlogPost, BlogTag, Config, Media, Page } from '@payload-types'
+import type { Metadata } from 'next'
+import { mergeOpenGraph } from './mergeOpenGraph'
 
-import type { BlogPost, Media, Page } from '@payload-types'
-import { GlobalData } from '@custom-types'
-import { template } from 'lodash-es'
+const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null) => {
+  const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL
+
+  let url = serverUrl + '/website-template-OG.webp'
+
+  if (image && typeof image === 'object' && 'url' in image) {
+    /* @ts-ignore */
+    const ogUrl = image.sizes?.og?.url
+
+    url = ogUrl ? serverUrl + ogUrl : serverUrl + image.url
+  }
+
+  return url
+}
 
 export const generateMeta = async (args: {
-  doc: Partial<Page | BlogPost>
-  globalMeta: GlobalData<'settingsMeta'>
-  parentMeta: ResolvedMetadata
+  doc: Partial<Page> | Partial<BlogPost> | Partial<BlogCategory> | Partial<BlogTag> | null
 }): Promise<Metadata> => {
-  const { doc, globalMeta, parentMeta } = args || {}
+  const { doc } = args
+  /* @ts-ignore */
+  const ogImage = getImageURL(doc?.meta?.image)
 
-  const image = (doc?.meta?.image || globalMeta?.fallbackImage) as Media
-  const ogImage = image?.url || parentMeta.openGraph?.images
-
-  const siteName = globalMeta?.siteName || process.env.NEXT_PUBLIC_SERVER_URL
-  const titleTemplate = template(globalMeta?.titleTemplate || '{{title}} | {{siteName}}', {
-    interpolate: /{{([\s\S]+?)}}/g,
-  })
-  const pageTitle = doc?.meta?.title || globalMeta?.fallbackTitle || parentMeta.title || ''
-
-  const title = titleTemplate({ title: pageTitle, siteName })
-  const description =
-    doc?.meta?.description || globalMeta?.fallbackDescription || parentMeta.description || ''
+  /* @ts-ignore */
+  const title = doc?.meta?.title ? doc?.meta?.title + ' | Payload Website Template' : 'Payload Website Template'
 
   return {
-    title,
-    description,
-    openGraph: {
-      type: 'website',
+    /* @ts-ignore */
+    description: doc?.meta?.description,
+    openGraph: mergeOpenGraph({
+      /* @ts-ignore */
+      description: doc?.meta?.description || '',
+      images: ogImage
+        ? [
+            {
+              url: ogImage,
+            },
+          ]
+        : undefined,
       title,
-      siteName,
-      description,
-      images: ogImage,
       url: Array.isArray(doc?.slug) ? doc?.slug.join('/') : '/',
-    },
+    }),
+    title,
   }
 }

@@ -1,0 +1,17 @@
+.Root {
+  display:       flex;
+  width:         100%;
+  font-family:   var(--font-mono), 'ui-monospace', 'monospace';
+  white-space:   nowrap;
+  text-overflow: ellipsis;
+}
+
+.Separator,
+.PreHeading {
+  opacity:     0.7;
+  font-weight: 600;
+}
+
+.Heading {
+  font-weight: 600;
+}

@@ -1,3 +1,5 @@
+@reference "../../../styles/payload.css";
+
 .ColorPaletteSwatch {
   &_Container {
     @apply flex flex-col justify-center p-3 shrink-0 grow min-w-fit;

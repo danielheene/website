@@ -1,38 +1,38 @@
-import eslint from '@eslint/js'
+import js from '@eslint/js'
+import { defineConfig } from 'eslint/config'
 import tseslint from 'typescript-eslint'
 
-export default [
-  {
-    languageOptions: {
-      globals: {
-        process: 'readable',
-      },
-    },
-  },
-  eslint.configs.recommended,
-  ...tseslint.configs.recommended,
+export default defineConfig([
+  // {
+  //   languageOptions: {
+  //     globals: {
+  //       process: 'readable',
+  //     },
+  //   },
+  // },
   {
     name: 'ignores',
-    ignores: [
-      '.eslintrc.js',
-      '**/.git',
-      '**/.hg',
-      '**/.pnp.*',
-      '**/.svn',
-      '**/.yarn/**',
-      '**/.storybook/**',
-      '**/stories/**',
-      '**.stories.**',
-      '**/build/**',
-      '**/dist/**',
-      '**/node_modules/**',
-      '**/temp/**',
-      '**/migrations/**',
-    ],
+    ignores: ['.git/', '.storybook/', 'build/', 'dist/', 'node_modules/', 'src/migrations/'],
+  },
+  {
+    name: 'general',
+    files: ['**/*.js', '**/*.jsx', '**/*.mjs', '**/*.cjs', '**/*.ts', '**/*.tsx'],
+    plugins: {
+      js,
+    },
+    extends: ['js/recommended'],
+    languageOptions: {
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+    },
   },
   {
     name: 'typescript',
     files: ['**/*.ts', '**/*.tsx'],
+    extends: [tseslint.configs.recommended],
     languageOptions: {
       parserOptions: {
         project: ['./tsconfig.json'],
@@ -58,4 +58,4 @@ export default [
       ],
     },
   },
-]
+])

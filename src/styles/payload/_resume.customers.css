@@ -8,6 +8,10 @@
   & > .collapsible__drag {
     @apply pointer-events-auto;
   }
+
+  .collapsible__actions-wrap {
+    @apply mr-0 ml-2;
+  }
 }
 
 
@@ -24,7 +28,9 @@
 
 
 .customers .array-field__draggable-rows {
-  @apply grid grid-cols-3 grid-flow-row auto-rows-auto gap-8;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
 }
 
 .customers.array-field {
@@ -35,7 +41,7 @@
   }
 
   & .collapsible__content {
-    @apply bg-purple-50;
+    @apply relative p-0;
   }
 }
 

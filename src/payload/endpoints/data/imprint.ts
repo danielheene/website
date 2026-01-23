@@ -1,5 +1,5 @@
 export default {
-  title: 'Imprint',
+  title: 'Legal Notice',
   content: {
     root: {
       type: 'root',
@@ -76,7 +76,7 @@ export default {
             },
             {
               mode: 'normal',
-              text: 'Von-wSparr-Str. 62',
+              text: 'Von-Sparr-Str. 62',
               type: 'text',
               style: '',
               detail: 0,
@@ -583,9 +583,8 @@ export default {
   },
   hero: '<HERO_IMAGE>',
   meta: {
-    title: 'Imprint',
+    title: 'Legal Notice',
     description: null,
   },
-  slug: 'imprint',
   _status: 'published',
 }

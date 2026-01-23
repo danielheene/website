@@ -1,0 +1,45 @@
+@theme static {
+  /* ---------- animations ---------- */
+  --animate-fade-in: fade-in 275ms ease-in;
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  --animate-blink: blink 1s step-end infinite;
+  @keyframes blink {
+    0% {
+      opacity: 1.0;
+    }
+    50% {
+      opacity: 0.0;
+    }
+    100% {
+      opacity: 1.0;
+    }
+  }
+
+  --animate-flip: flip 300ms forwards;
+  @keyframes flip {
+    0% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    47% {
+      transform: translateX(200%);
+      opacity: 0;
+    }
+    53% {
+      transform: translateX(-200%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+}

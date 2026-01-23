@@ -7,12 +7,8 @@ import { handleServerFunctions, RootLayout } from '@payloadcms/next/layouts'
 import React from 'react'
 
 import { importMap } from './admin/importMap.js'
-import '@styles/fonts/inter.css'
-import '@styles/fonts/jetbrains-mono.css'
-import '@styles/fonts/pp-supply-mono.css'
-import '@styles/payload.css'
 
-import './custom.scss'
+import '@styles/payload.css'
 
 type Args = {
   children: React.ReactNode
@@ -28,7 +24,12 @@ const serverFunction: ServerFunctionClient = async function (args) {
 }
 
 const Layout = ({ children }: Args) => (
-  <RootLayout config={config} importMap={importMap} serverFunction={serverFunction}>
+  <RootLayout
+    config={config}
+    importMap={importMap}
+    serverFunction={serverFunction}
+    htmlProps={{ suppressHydrationWarning: true }}
+  >
     {children}
   </RootLayout>
 )

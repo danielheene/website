@@ -2,10 +2,10 @@
 
 import { JSONFieldClientProps } from 'payload'
 import { FieldLabel, useField } from '@payloadcms/ui'
-import { ColorPaletteSwatchValues, ColorPaletteSwatchVibrancy } from '@custom-types'
 import styles from './ColorPaletteField.module.scss'
 import { ColorPaletteSwatch } from './ColorPaletteSwatch'
 import { useMemo } from 'react'
+import { ColorPaletteSwatchValues, ColorPaletteSwatchVibrancy } from './ColorPaletteField.types'
 
 interface ColorPaletteFieldProps extends JSONFieldClientProps {
   className?: string
@@ -42,13 +42,7 @@ export const ColorPaletteField = ({ path, className = '' }: ColorPaletteFieldPro
       <FieldLabel label="Color Palette" />
       <div className={`${styles.ColorPaletteField_Container} ${className}`}>
         {sortedPalette.map(([vibrancy, { background, foreground, name }]) => (
-          <ColorPaletteSwatch
-            key={vibrancy}
-            vibrancy={vibrancy}
-            background={background}
-            foreground={foreground}
-            name={name}
-          />
+          <ColorPaletteSwatch key={vibrancy} vibrancy={vibrancy} background={background} foreground={foreground} name={name} />
         ))}
       </div>
     </div>

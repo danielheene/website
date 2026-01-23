@@ -1,47 +1,91 @@
-import { postgresAdapter } from '@payloadcms/db-postgres'
-import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
+import { BLOCKS } from '@/blocks'
+import { COLLECTIONS } from '@/collections'
+import { GLOBALS } from '@/globals'
+import { seedHandler } from '@/payload/endpoints/seed'
+import { generateContentURL } from '@/utilities/generateContentURL'
+import { useSendAdapter } from '@/utilities/useSendAdapter'
+import { CollectionSlug, GlobalSlug } from '@custom-types'
+import { BlogCategory } from '@payload-types'
+import { mongooseAdapter } from '@payloadcms/db-mongodb'
+import { redisKVAdapter } from '@payloadcms/kv-redis'
+import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
+import { seoPlugin } from '@payloadcms/plugin-seo'
 import {
+  AlignFeature,
   BlockquoteFeature,
   BoldFeature,
+  ChecklistFeature,
+  EXPERIMENTAL_TableFeature,
   FixedToolbarFeature,
   HeadingFeature,
   HorizontalRuleFeature,
   IndentFeature,
   InlineCodeFeature,
+  InlineToolbarFeature,
   ItalicFeature,
   lexicalEditor,
   LinkFeature,
   OrderedListFeature,
   ParagraphFeature,
+  RelationshipFeature,
+  StrikethroughFeature,
   UnderlineFeature,
   UnorderedListFeature,
+  UploadFeature,
 } from '@payloadcms/richtext-lexical'
-import sharp from 'sharp'
+import { s3Storage } from '@payloadcms/storage-s3'
+import { template } from 'lodash-es'
+import * as process from 'node:process'
 import path from 'path'
 import { buildConfig } from 'payload'
+import sharp from 'sharp'
 import { fileURLToPath } from 'url'
-import nodemailerSendgrid from 'nodemailer-sendgrid'
-import nodemailer from 'nodemailer'
-import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
-import { resolveCollections, resolveGlobals } from '@/payload/utilities/schemaHelpers'
-import { seedHandler } from '@/payload/endpoints/seed'
-import * as process from 'node:process'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-export default buildConfig({
+export const config = buildConfig({
   admin: {
+    autoRefresh: true,
     components: {
       graphics: {
-        Icon: '/payload/components/Icon',
-        Logo: '/payload/components/Logo',
+        Icon: '@/components/AdminPanel#Icon',
+        Logo: '@/components/AdminPanel#Logo',
+      },
+      Nav: '@/components/AdminPanel#Nav',
+      views: {
+        dashboard: {
+          Component: '/payload/components/Dashboard',
+        },
       },
     },
     dateFormat: 'yyyy-MM-dd',
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    livePreview: {
+      breakpoints: [
+        {
+          label: 'Mobile',
+          name: 'mobile',
+          width: 375,
+          height: 667,
+        },
+        {
+          label: 'Tablet',
+          name: 'tablet',
+          width: 768,
+          height: 1024,
+        },
+        {
+          label: 'Desktop',
+          name: 'desktop',
+          width: 1440,
+          height: 900,
+        },
+      ],
+    },
+
     meta: {
       icons: [
         {
@@ -57,46 +101,131 @@ export default buildConfig({
         },
       ],
     },
-    user: 'users',
+    suppressHydrationWarning: true,
+    timezones: {
+      supportedTimezones: [
+        {
+          label: 'Europe/Berlin',
+          value: 'Europe/Berlin',
+        },
+      ],
+      defaultTimezone: 'Europe/Berlin',
+    },
+    user: CollectionSlug.Users,
+  },
+  blocks: BLOCKS,
+  csrf: [process.env.NEXT_PUBLIC_SERVER_URL],
+  cors: {
+    origins: [process.env.NEXT_PUBLIC_SERVER_URL],
+    headers: [],
   },
   editor: lexicalEditor({
+    admin: {
+      hideGutter: true,
+    },
     features: [
-      HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
-      ItalicFeature(),
-      BoldFeature(),
-      UnderlineFeature(),
+      /* format feature */
+      ParagraphFeature(),
+      HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4' /* 'h5', */ /* 'h6' */] }),
       OrderedListFeature(),
       UnorderedListFeature(),
-      ParagraphFeature(),
+      ChecklistFeature(),
       BlockquoteFeature(),
-      LinkFeature(),
-      HorizontalRuleFeature(),
-      IndentFeature(),
+      /* text feature */
+      BoldFeature(),
+      ItalicFeature(),
+      UnderlineFeature(),
+      StrikethroughFeature(),
+      // SubscriptFeature(),
+      // SuperscriptFeature(),
       InlineCodeFeature(),
-      FixedToolbarFeature(),
+
+      /* align feature */
+      AlignFeature(),
+
+      /* indent feature */
+      IndentFeature(),
+
+      LinkFeature(),
+      RelationshipFeature(),
+      UploadFeature(),
+      HorizontalRuleFeature(),
+      FixedToolbarFeature({
+        applyToFocusedEditor: true,
+        customGroups: {
+          /**
+           * text:
+           * paragraph, headings, ordered list, unordered list, check list, blockquote
+           */
+          text: {
+            type: 'dropdown',
+            order: 10,
+          },
+
+          /**
+           * format:
+           * bold, italic, underline, strikethrough, superscript, subscript, inline code
+           */
+          format: {
+            type: 'buttons',
+            order: 20,
+          },
+
+          /**
+           * alignment:
+           * left, center, right, justify
+           */
+          align: {
+            type: 'buttons',
+            order: 30,
+          },
+
+          /**
+           * indentation:
+           * increase, decrease
+           */
+          indent: {
+            type: 'buttons',
+            order: 40,
+          },
+
+          /**
+           * features:
+           * links, blockquote, hr, code */
+          features: {
+            type: 'buttons',
+            order: 40,
+          },
+
+          /**
+           * custom blocks:
+           */
+          add: {
+            type: 'dropdown',
+            order: 50,
+          },
+        },
+        disableIfParentHasFixedToolbar: true,
+      }), // BlocksFeature(),
+      InlineToolbarFeature(),
+      // TreeViewFeature(),
+      EXPERIMENTAL_TableFeature(),
+      // TextStateFeature(),
     ],
   }),
-  db: postgresAdapter({
-    pool: {
-      connectionString: process.env.DATABASE_URL || '',
-    },
+  db: mongooseAdapter({
+    url: process.env.DATABASE_URL,
   }),
-  collections: await resolveCollections(['resume', 'blog', 'general', 'settings']),
-  debug: process.env.NODE_ENV === 'development',
-  email: process.env.SENDGRID_API_KEY
-    ? nodemailerAdapter({
-        defaultFromAddress: 'no-reply@heene.io',
-        defaultFromName: 'Notifications from Daniel Heene',
-
-        transport: nodemailer.createTransport(
-          nodemailerSendgrid({
-            apiKey: process.env.SENDGRID_API_KEY,
-          }),
-        ),
-      })
-    : undefined,
+  collections: COLLECTIONS,
+  debug: process.env.NODE_ENV !== 'production',
+  email: useSendAdapter({
+    apiKey: process.env.USESEND_API_KEY,
+    useSendUrl: process.env.USESEND_URL,
+    defaultFromAddress: process.env.USESEND_DEFAULT_FROM_ADDRESS,
+    defaultFromName: process.env.USESEND_DEFAULT_FROM_NAME,
+  }),
   endpoints: [
-    // The seed endpoint is used to populate the database with some example data
+    // The seed endpoint is used to populate the database with some example data.
     // You should delete this endpoint before deploying your site to production
     {
       handler: seedHandler,
@@ -104,30 +233,52 @@ export default buildConfig({
       path: '/seed',
     },
   ],
-  globals: await resolveGlobals(['resume', 'blog', 'general', 'settings']),
-  localization: {
-    locales: [
-      {
-        label: 'English',
-        code: 'en',
-      },
-    ],
-    defaultLocale: 'en',
-    fallback: true,
-  },
+
+  globals: GLOBALS,
+  kv: redisKVAdapter({
+    redisURL: process.env.REDIS_URL,
+  }),
   plugins: [
-    vercelBlobStorage({
+    nestedDocsPlugin({
+      collections: [CollectionSlug.BlogCategories],
+      generateLabel: (_, { title }: Pick<BlogCategory, 'title'>) => title,
+      generateURL: (_, { slug }: Pick<BlogCategory, 'slug'>, { slug: collection }) => generateContentURL({ collection, slug }).toString(),
+      parentFieldSlug: 'parent',
+      breadcrumbsFieldSlug: 'breadcrumbs',
+    }),
+    seoPlugin({
+      generateTitle: async ({ doc: { title }, req }) => {
+        const { titleTemplate, siteName } = await req.payload.findGlobal({
+          slug: GlobalSlug.SettingsMeta,
+          draft: false,
+        })
+
+        const compiled = template(titleTemplate, { interpolate: /{{([\s\S]+?)}}/g })
+        return compiled({ title, siteName })
+      },
+      generateImage: ({ doc }) => doc?.heroImage?.url,
+      generateURL: ({ doc: { slug }, collectionSlug }) => generateContentURL({ collection: collectionSlug, slug }).toString(),
+    }),
+    s3Storage({
       enabled: true,
-      // clientUploads: true,
-      // addRandomSuffix: true,
       collections: {
-        media: {
-          prefix: process.env.VERCEL_ENV || 'development',
+        [CollectionSlug.Media]: {
+          prefix: process.env.NEXT_PUBLIC_SERVER_HOST, 
         },
       },
-      token: process.env.BLOB_READ_WRITE_TOKEN || '',
+      bucket: process.env.S3_BUCKET,
+      config: {
+        credentials: {
+          accessKeyId: process.env.S3_ACCESS_KEY!,
+          secretAccessKey: process.env.S3_SECRET_KEY!,
+        },
+        forcePathStyle: true,
+        endpoint: process.env.S3_ENDPOINT || 'http://localhost:9000',
+        region: process.env.S3_REGION,
+      },
     }),
   ],
+  serverURL: process.env.NEXT_PUBLIC_SERVER_URL,
   secret: process.env.PAYLOAD_SECRET,
   sharp,
   telemetry: false,
@@ -135,3 +286,5 @@ export default buildConfig({
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
 })
+
+export default config

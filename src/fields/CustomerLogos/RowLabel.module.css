@@ -1,0 +1,18 @@
+@reference "../../styles/payload.css";
+
+.RowLabel {
+  @apply w-full grow shrink-0;
+  @apply pointer-events-auto;
+}
+
+.RowLabel input {
+  @apply bg-transparent border-none rounded-sm;
+  @apply pointer-events-auto;
+}
+
+.RowLabel:hover input,
+.RowLabel input:focus {
+  @apply border border-transparent w-full;
+  background-color: var(--theme-input-bg);
+  border: 1px solid var(--theme-elevation-300) !important;
+}
