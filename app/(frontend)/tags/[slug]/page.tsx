@@ -2,6 +2,7 @@ import { Headline } from '@/components/Headline'
 import { PageContainer } from '@/components/PageContainer'
 import RichText from '@/components/RichText'
 import { generateMeta } from '@/utilities/generateMeta'
+import { JsonLd, generateCollectionPage, generateBreadcrumbList } from '@/utilities/jsonLd'
 import { CollectionSlug } from '@custom-types'
 
 import configPromise from '@payload-config'
@@ -32,10 +33,28 @@ type PageProps = {
 
 export default async function Page({ params: paramsPromise }: PageProps) {
   const { slug } = await paramsPromise
-  const { title, content } = await queryTagBySlug({ slug })
+  const tag = await queryTagBySlug({ slug })
+  const { title, content } = tag
+
+  const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://danielheene.de'
+  const tagUrl = `${baseUrl}/tags/${slug}`
+
+  // Generate CollectionPage schema
+  const collectionPageSchema = generateCollectionPage({
+    name: title,
+    url: tagUrl,
+  })
+
+  // Generate BreadcrumbList schema
+  const breadcrumbSchema = generateBreadcrumbList([
+    { name: 'Home', url: baseUrl },
+    { name: 'Tags', url: `${baseUrl}/tags` },
+    { name: title },
+  ])
 
   return (
     <PageContainer>
+      <JsonLd data={[collectionPageSchema, breadcrumbSchema]} />
       <div className="relative pt-32 h-screen">
         <Headline variant="page-title" className="relative z-10 mt-28 mb-32 text-white textshadow-lg shadow-primary/75">
           {title}
