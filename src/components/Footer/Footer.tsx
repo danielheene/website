@@ -1,29 +1,31 @@
-'use client'
+// 'use client'
+import { FooterNavGroup } from '@/components/Footer/FooterNavGroup'
 import { Logo } from '@/components/Logo'
+import { ServiceStatus } from '@/components/ServiceStatus'
 import ThemeSwitch from '@/components/ThemeSwitch'
-import { useUI } from '@/contexts/UI'
+import { getCachedFooterNavigationData } from '@/lib/getFooterNavigationData'
 import { cn } from '@/utilities/cn'
+import { FooterNavigationData } from '@payload-types'
 import Link from 'next/link'
 import React from 'react'
-import { useResizeObserver } from 'usehooks-ts'
 
 interface FooterProps {
   className?: string
 }
 
-export const Footer = ({ className = '' }: FooterProps) => {
-  // const { footerNavItems = [] }: SettingsNavigation = await getCachedGlobal('settingsNavigation')()
+export const Footer = async ({ className = '' }: FooterProps) => {
+  const { navGroups, socialLinks }: FooterNavigationData = await getCachedFooterNavigationData()
 
-  const { setFooterHeight } = useUI()
-  const footerRef = React.useRef<HTMLDivElement>(null)
-  useResizeObserver({
-    ref: footerRef,
-    box: 'border-box',
-    onResize: ({ height }) => setFooterHeight(height),
-  })
+  // const { setFooterHeight } = useUI()
+  // const footerRef = React.useRef<HTMLDivElement>(null)
+  // useResizeObserver({
+  //   ref: footerRef,
+  //   box: 'border-box',
+  //   onResize: ({ height }) => setFooterHeight(height),
+  // })
 
   return (
-    <footer ref={footerRef} className={cn(['transition-colors', 'bg-white text-primary', className])}>
+    <footer className={cn(['transition-colors', 'bg-white text-primary', className])}>
       <ThemeSwitch />
       <div className="container">
         <nav className="flex flex-row gap-3 items-center justify-end border-t-2 border-current py-5 h-20">
@@ -55,6 +57,9 @@ export const Footer = ({ className = '' }: FooterProps) => {
                 <p className="max-w-[70%] text-sm text-muted-foreground">
                   A collection of components for your startup business or side project.
                 </p>
+                <div>
+                  <ServiceStatus />
+                </div>
                 <ul className="flex items-center space-x-6 text-muted-foreground">
                   <li className="font-medium hover:text-primary">
                     <a href="#" aria-label="Instagram">
@@ -123,57 +128,13 @@ export const Footer = ({ className = '' }: FooterProps) => {
                 </ul>
               </div>
               <div className="grid w-full gap-6 md:grid-cols-3 lg:gap-20">
-                <div>
-                  <h3 className="mb-4 font-bold">Product</h3>
-                  <ul className="space-y-3 text-sm text-muted-foreground">
-                    <li className="font-medium hover:text-primary">
-                      <a href="#">Overview</a>
-                    </li>
-                    <li className="font-medium hover:text-primary">
-                      <a href="#">Pricing</a>
-                    </li>
-                    <li className="font-medium hover:text-primary">
-                      <a href="#">Marketplace</a>
-                    </li>
-                    <li className="font-medium hover:text-primary">
-                      <a href="#">Features</a>
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h3 className="mb-4 font-bold">Company</h3>
-                  <ul className="space-y-3 text-sm text-muted-foreground">
-                    <li className="font-medium hover:text-primary">
-                      <a href="#">About</a>
-                    </li>
-                    <li className="font-medium hover:text-primary">
-                      <a href="#">Team</a>
-                    </li>
-                    <li className="font-medium hover:text-primary">
-                      <a href="#">Blog</a>
-                    </li>
-                    <li className="font-medium hover:text-primary">
-                      <a href="#">Careers</a>
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h3 className="mb-4 font-bold">Resources</h3>
-                  <ul className="space-y-3 text-sm text-muted-foreground">
-                    <li className="font-medium hover:text-primary">
-                      <a href="#">Help</a>
-                    </li>
-                    <li className="font-medium hover:text-primary">
-                      <a href="#">Sales</a>
-                    </li>
-                    <li className="font-medium hover:text-primary">
-                      <a href="#">Advertise</a>
-                    </li>
-                    <li className="font-medium hover:text-primary">
-                      <a href="#">Privacy</a>
-                    </li>
-                  </ul>
-                </div>
+                {navGroups.map((group, i) => (
+                  <FooterNavGroup
+                    key={i}
+                    {...group}
+                    className={cn(['col-span-1', 'nth-last-[1]:-col-end-1', 'nth-last-[2]:-col-end-2', 'nth-last-[3]:-col-end-3'])}
+                  />
+                ))}
               </div>
             </div>
             <div className="mt-8 flex flex-col justify-between gap-4 border-t py-8 text-xs font-medium text-muted-foreground md:flex-row md:items-center md:text-left">

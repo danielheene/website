@@ -1,8 +1,8 @@
-import type { BlogCategory, BlogPost, BlogTag, Config, Media, Page } from '@payload-types'
+import type { BlogCategory, BlogPost, BlogTag, Config, MediaImage, Page } from '@payload-types'
 import type { Metadata } from 'next'
 import { mergeOpenGraph } from './mergeOpenGraph'
 
-const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null) => {
+const getImageURL = (image?: MediaImage | Config['db']['defaultIDType'] | null) => {
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL
 
   let url = serverUrl + '/website-template-OG.webp'

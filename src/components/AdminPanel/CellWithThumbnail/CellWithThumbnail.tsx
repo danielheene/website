@@ -1,3 +1,4 @@
+import { CollectionSlug } from '@custom-types'
 import { get } from 'lodash-es'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -23,7 +24,7 @@ export const CellWithThumbnail = async ({
 
   try {
     const { thumbnailURL, url } = await payload.findByID({
-      collection: 'media',
+      collection: CollectionSlug.MediaImages,
       id: get(rowData, thumbnailPath),
     })
     src = thumbnailURL || url

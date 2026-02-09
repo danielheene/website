@@ -1,6 +1,8 @@
 import { ResumeDownloads } from '@/globals/ResumeDownloads'
-import { SettingsHeader } from '@/globals/SettingsHeader'
-import { SettingsMeta } from '@/globals/SettingsMeta'
+import { SettingsFooterNavigation } from '@/globals/SettingsFooterNavigation'
+import { SettingsHeaderNavigation } from '@/globals/SettingsHeaderNavigation'
+import { SettingsSiteMeta } from '@/globals/SettingsSiteMeta'
+import { SettingsUserMeta } from '@/globals/SettingsUserMeta'
 import { RegisteredGlobalSlug } from '@custom-types'
 import { ResumeAboutMe } from './ResumeAboutMe'
 import { ResumeContact } from './ResumeContact'
@@ -15,8 +17,10 @@ export const GLOBALS = [
   ResumeDownloads,
   ResumeExperience,
   ResumeProjects,
-  SettingsHeader,
-  SettingsMeta,
+  SettingsHeaderNavigation,
+  SettingsFooterNavigation,
+  SettingsSiteMeta,
+  SettingsUserMeta,
 ]
 
 export const GLOBAL_SLUGS = GLOBALS.map((global) => global.slug) as RegisteredGlobalSlug[]

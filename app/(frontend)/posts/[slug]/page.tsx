@@ -2,11 +2,11 @@ import { Headline } from '@/components/Headline'
 import { PageContainer } from '@/components/PageContainer'
 import RichText from '@/components/RichText'
 import { generateMeta } from '@/utilities/generateMeta'
-import { JsonLd, generateBlogPosting, generateBreadcrumbList } from '@/utilities/jsonLd'
+import { generateBlogPosting, generateBreadcrumbList, JsonLd } from '@/utilities/jsonLd'
 import { CollectionSlug } from '@custom-types'
 
 import config from '@payload-config'
-import { BlogPost as BlogPostType, BlogCategory, BlogTag, Media as MediaType } from '@payload-types'
+import { BlogCategory, BlogPost as BlogPostType, BlogTag, MediaImage as MediaType } from '@payload-types'
 import { Metadata } from 'next'
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
@@ -55,9 +55,7 @@ export default async function Page({ params: paramsPromise }: PageProps) {
     : undefined
 
   // Extract keywords from tags
-  const postTags = tags
-    ? tags.map((tag) => (typeof tag === 'object' ? (tag as BlogTag).title : '')).filter(Boolean)
-    : undefined
+  const postTags = tags ? tags.map((tag) => (typeof tag === 'object' ? (tag as BlogTag).title : '')).filter(Boolean) : undefined
 
   // Get category name for breadcrumb
   const category = typeof categories === 'object' ? (categories as BlogCategory) : null

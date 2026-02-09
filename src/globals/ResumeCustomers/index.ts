@@ -3,7 +3,7 @@ import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { CustomerLogosField } from '@/fields/CustomerLogos'
 import { RichTextField } from '@/fields/RichText'
 import { TitleField } from '@/fields/Title'
-import { revalidateResumeSection } from '@/payload/hooks/revalidateResumeSection'
+import { revalidateResumeSection } from '@/utilities/revalidateResumeSection'
 import { AdminGroup, GlobalSlug } from '@custom-types'
 import { GlobalConfig } from 'payload'
 

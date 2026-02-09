@@ -14,7 +14,7 @@ export interface SectionContainerProps {
 }
 
 export const SectionContainer = ({ id: rawId, title, variant = 'default', children }: SectionContainerProps) => {
-  const [observerRef, isObserving] = useIntersectionObserver({ threshold: [0.1, 0.25], rootMargin: '-10%' })
+  const [observerRef, isObserving, entry] = useIntersectionObserver({ threshold: [0.1, 0.25], rootMargin: '-10%' })
   const { setActiveAnchor, registerAnchor } = useSectionNavigation()
 
   const id = slugify(rawId)
@@ -27,17 +27,18 @@ export const SectionContainer = ({ id: rawId, title, variant = 'default', childr
     if (id && isObserving) setActiveAnchor(id)
   }, [isObserving])
 
+  console.log(isObserving, id, entry)
   return (
     <section
       id={id}
       className={cn([
-        'relative w-[200%] -translate-x-1/4 shrink-0 grow-0',
-        '-rotate-2',
+        'relative m-0 p-0 shrink-0 grow-0',
+        'py-20 md:py-32 lg:py-40',
         variant === 'default' && 'bg-white text-black',
         variant === 'primary' && 'bg-primary text-white',
       ])}
     >
-      <div ref={observerRef} className="container mx-auto shrink-0 grow-0 rotate-2">
+      <div ref={observerRef} className="min-h-[50vh]">
         {children}
       </div>
     </section>

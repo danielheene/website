@@ -1,0 +1,48 @@
+@reference "../../../../styles/payload.css";
+
+.nav {
+  @apply relative border-0 opacity-100 overflow-hidden;
+  max-width: 100vw;
+  width:     calc(var(--nav-width-closed) + var(--nav-rail-width) + var(--nav-spacing));
+  height:    100%;
+
+  &--open {
+    @apply opacity-100;
+    width: calc(var(--nav-width-open) + var(--nav-rail-width) + var(--nav-spacing));
+  }
+
+  &--animate {
+    @apply transition-opacity duration-(--nav-trans-time) ease-in-out;
+  }
+
+  &--hydrated {
+    @apply opacity-100;
+  }
+
+
+  &__scroller {
+    @apply h-auto overflow-y-auto p-0 pt-(--app-header-height) z-10;
+    @apply absolute top-0 md:top-2 left-0 md:left-2 bottom-0 md:bottom-2 right-0 md:right-(--nav-rail-width);
+    @apply bg-sidebar border-0 md:border border-border md:rounded-md;
+  }
+
+  &__wrap {
+    @apply flex flex-col gap-4 w-full;
+  }
+
+
+  &__rail {
+    @apply hidden md:block;
+    @apply absolute top-0 bottom-0 right-0 w-(--nav-rail-width) z-20;
+    @apply m-0 p-0 bg-transparent border-0 cursor-e-resize;
+    @apply before:absolute before:top-0 before:left-1/2 before:bottom-0;
+    @apply before:block before:w-[2px] before:-ml-px before:bg-border;
+    @apply transition-all duration-100 ease-in-out opacity-0 hover:opacity-100;
+
+    .nav--open & {
+      @apply cursor-w-resize;
+    }
+  }
+}
+
+

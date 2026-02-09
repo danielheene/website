@@ -6,6 +6,18 @@ export interface CollectionPageData {
   url: string
 }
 
+/**
+ * Generates CollectionPage JSON-LD
+ *
+ * @example
+ * ```typescript
+ * const collectionPageLd = generateCollectionPage({
+ *   name: 'Category: TypeScript',
+ *   description: 'Posts categorized under TypeScript.',
+ *   url: 'https://danielheene.io/blog/categories/typescript'
+ * })
+ * ```
+ */
 export function generateCollectionPage(data: CollectionPageData): WithContext<CollectionPage> {
   const collectionPage: WithContext<CollectionPage> = {
     '@context': 'https://schema.org',

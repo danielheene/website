@@ -1,9 +1,9 @@
-import { Media, ProjectList } from '@payload-types'
-import { cn } from '@/utilities/cn'
 import { Headline } from '@/components/Headline'
 import RichText from '@/components/RichText'
-import { Image } from './Image'
+import { cn } from '@/utilities/cn'
+import { MediaImage, ProjectList } from '@payload-types'
 import { memo } from 'react'
+import { Image } from './Image'
 
 type ResumeProjectsSectionEntryProps = ProjectList[number] & {
   index: number
@@ -16,7 +16,7 @@ export const Entry = memo(function ResumeProjectsSectionEntry({
   image: imageMedia,
   index,
 }: ResumeProjectsSectionEntryProps) {
-  const image = imageMedia as Media
+  const image = imageMedia as MediaImage
 
   return (
     <article className={cn(['grid grid-cols-12 gap-4'])}>

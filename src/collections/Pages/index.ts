@@ -95,9 +95,8 @@ export const Pages: CollectionConfig<CollectionSlug.Pages> = {
             {
               name: 'media',
               type: 'upload',
-              relationTo: 'media',
+              relationTo: CollectionSlug.MediaImages,
               hasMany: true,
-              required: true,
               displayPreview: true,
               label: false,
             },
@@ -128,7 +127,6 @@ export const Pages: CollectionConfig<CollectionSlug.Pages> = {
               name: 'content',
               type: 'blocks',
               label: false,
-              required: true,
               blocks: [],
               blockReferences: BLOCK_SLUGS,
               minRows: 1,

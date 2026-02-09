@@ -76,7 +76,7 @@ export const JobHistoryField = (): ArrayField => ({
           type: 'textarea',
           name: 'item',
           label: false,
-          
+          localized: true,
           admin: {
             rows: 3,
           },
@@ -92,10 +92,11 @@ export const JobHistoryField = (): ArrayField => ({
     {
       type: 'relationship',
       relationTo: 'blog-tags',
-      name: 'tags',hasMany: true,
+      name: 'tags',
+      hasMany: true,
       admin: {
         appearance: 'select',
-      }
+      },
     },
     TagList({
       name: 'technologies',

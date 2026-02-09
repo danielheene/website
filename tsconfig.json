@@ -31,9 +31,6 @@
       "@custom-types": [
         "./src/custom-types.ts"
       ],
-      "@tailwind-config": [
-        "./tailwind.config.ts"
-      ],
       "react": [
         "./node_modules/@types/react"
       ],

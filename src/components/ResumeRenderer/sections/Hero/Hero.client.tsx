@@ -2,10 +2,10 @@
 
 import { ImageMedia } from '@/components/ImageMedia'
 import { cn } from '@/utilities/cn'
-import { Media } from '@payload-types'
+import { MediaImage } from '@payload-types'
 import { useState } from 'react'
 
-export const HeroClient = ({ title, background, portrait }: { title?: string; background?: Media; portrait?: Media }) => {
+export const HeroClient = ({ title, background, portrait }: { title?: string; background?: MediaImage; portrait?: MediaImage }) => {
   const titleRows = title?.split('\n')
   const [isReady, setIsReady] = useState<boolean>(false)
 

@@ -1,25 +1,26 @@
+
+:root {
+  @apply [--app-header-height:--spacing(20)];
+}
+
 .app-header {
-  --icon-size: 36px;
+  @apply h-20 m-0 p-0;
+  @apply border-b border-b-white;
 
-  @apply mb-8;
+  .step-nav.app-header__step-nav,
+  .react-select .rs__value-container > *,
+  .react-select .rs__menu .rs__option {
+    @apply text-xl font-mono font-medium tracking-tighter text-nowrap whitespace-nowrap h-auto;
 
-  .step-nav.app-header__step-nav {
-    @apply text-xl font-mono tracking-tighter  h-auto;
-
-    .step-nav__home {
-      width: 1em !important;
-      height: 1em !important;
-      font-size: var(--icon-size) !important;
-      @apply text-primary-500;
+    &:is(.rs__option) {
+      @apply text-sm cursor-pointer;
     }
   }
 
-  .app-header__account {
-    @apply w-10 h-10;
-
-    img {
-      @apply w-10 max-w-10 h-10 max-h-10 grow-0 shrink-0;
-    }
+  .app-header__step-nav > .step-nav__home,
+  .app-header__account > img {
+    @apply text-4xl grow-0 shrink-0;
+    @apply min-w-[1em] w-[1em] max-w-[1em] min-h-[1em] h-[1em] max-h-[1em];
   }
 
   .localizer.app-header__localizer {
@@ -30,4 +31,10 @@
       @apply text-lg font-mono tracking-tight;
     }
   }
+}
+
+.nav__header {
+  @apply h-[calc(var(--app-header-height)-(--spacing(2)))] m-0 p-0;
+  @apply border-b border-b-white;
+
 }

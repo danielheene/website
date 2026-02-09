@@ -47,7 +47,7 @@ export const BlogPosts: CollectionConfig<CollectionSlug.BlogPosts> = {
     {
       name: 'heroImage',
       type: 'upload',
-      relationTo: 'media',
+      relationTo: CollectionSlug.MediaImages,
       filterOptions: {
         mimeType: { contains: 'image' },
       },
@@ -120,7 +120,7 @@ export const BlogPosts: CollectionConfig<CollectionSlug.BlogPosts> = {
             }),
             MetaImageField({
               hasGenerateFn: true,
-              relationTo: 'media',
+              relationTo: CollectionSlug.MediaImages,
             }),
             MetaDescriptionField({}),
             PreviewField({

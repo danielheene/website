@@ -47,6 +47,8 @@ export const DashboardGroup: FC<Props> = ({ groupLabel, adminRoute, entities, pa
     return { isResumeGroup, isSettingsGroup, isRegularGroup }
   }, [groupLabel])
 
+  
+
   return (
     <section className={cn('@container')}>
       <p className="dashboard__label">{groupLabel}</p>

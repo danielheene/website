@@ -6,17 +6,17 @@ import { useUI } from '@/contexts/UI'
 
 import { cn } from '@/utilities/cn'
 import { generateContentURL } from '@/utilities/generateContentURL'
-import { SettingsHeaderGlobalData } from '@payload-types'
+import { HeaderNavigationData } from '@payload-types'
 import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintext'
 import Link from 'next/link'
 import React from 'react'
 import { useResizeObserver } from 'usehooks-ts'
 
 interface HeaderClientProps {
-  navigation?: SettingsHeaderGlobalData['navigation']
+  mainNavigation?: HeaderNavigationData['mainNavigation']
 }
 
-export const HeaderClient = ({ navigation }: HeaderClientProps) => {
+export const HeaderClient = ({ mainNavigation }: HeaderClientProps) => {
   const headerRef = React.useRef<HTMLDivElement>(null)
 
   const { setHeaderHeight } = useUI()
@@ -45,7 +45,7 @@ export const HeaderClient = ({ navigation }: HeaderClientProps) => {
         </Link>
 
         <nav className="flex gap-0 md:gap-4 lg:gap-8 items-center">
-          {navigation?.map(({ id, link }) => {
+          {mainNavigation?.map(({ id, link }) => {
             const { type, newTab, label, reference, address, url, subject, cc, icon, body } = link
 
             let href = url
@@ -65,7 +65,7 @@ export const HeaderClient = ({ navigation }: HeaderClientProps) => {
 
             return (
               <Link key={id} href={href} target={newTab ? '_blank' : '_self'}>
-                {icon && <Icon name={icon} />}
+                {icon && <Icon name={icon} icon={icon} />}
                 {label && label}
               </Link>
             )

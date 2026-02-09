@@ -1,7 +1,6 @@
 import { BLOCKS } from '@/blocks'
 import { COLLECTIONS } from '@/collections'
 import { GLOBALS } from '@/globals'
-import { seedHandler } from '@/payload/endpoints/seed'
 import { generateContentURL } from '@/utilities/generateContentURL'
 import { useSendAdapter } from '@/utilities/useSendAdapter'
 import { CollectionSlug, GlobalSlug } from '@custom-types'
@@ -45,6 +44,10 @@ const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export const config = buildConfig({
+  experimental: {
+    localizeStatus: true,
+  },
+
   admin: {
     autoRefresh: true,
     components: {
@@ -53,11 +56,22 @@ export const config = buildConfig({
         Logo: '@/components/AdminPanel#Logo',
       },
       Nav: '@/components/AdminPanel#Nav',
-      views: {
-        dashboard: {
-          Component: '/payload/components/Dashboard',
+      // providers: ['@/contexts/UmamiCharts#UmamiChartsProvider'],
+      // views: {
+      //   dashboard: {
+      //     Component: '/payload/components/Dashboard',
+      //   },
+      // },
+    },
+    dashboard: {
+      widgets: [
+        {
+          slug: 'dummy-widget',
+          ComponentPath: '@/components/AdminPanel#DummyWidget',
+          minWidth: 'x-small',
+          maxWidth: 'full',
         },
-      },
+      ],
     },
     dateFormat: 'yyyy-MM-dd',
     importMap: {
@@ -112,6 +126,7 @@ export const config = buildConfig({
       defaultTimezone: 'Europe/Berlin',
     },
     user: CollectionSlug.Users,
+    avatar: 'default',
   },
   blocks: BLOCKS,
   csrf: [process.env.NEXT_PUBLIC_SERVER_URL],
@@ -224,20 +239,25 @@ export const config = buildConfig({
     defaultFromAddress: process.env.USESEND_DEFAULT_FROM_ADDRESS,
     defaultFromName: process.env.USESEND_DEFAULT_FROM_NAME,
   }),
-  endpoints: [
-    // The seed endpoint is used to populate the database with some example data.
-    // You should delete this endpoint before deploying your site to production
-    {
-      handler: seedHandler,
-      method: 'get',
-      path: '/seed',
-    },
-  ],
-
+  endpoints: [],
   globals: GLOBALS,
   kv: redisKVAdapter({
     redisURL: process.env.REDIS_URL,
   }),
+  localization: {
+    locales: [
+      {
+        label: 'English',
+        code: 'en',
+      },
+      {
+        label: 'German',
+        code: 'de',
+      },
+    ],
+    defaultLocale: 'en',
+    fallback: true,
+  },
   plugins: [
     nestedDocsPlugin({
       collections: [CollectionSlug.BlogCategories],
@@ -249,21 +269,31 @@ export const config = buildConfig({
     seoPlugin({
       generateTitle: async ({ doc: { title }, req }) => {
         const { titleTemplate, siteName } = await req.payload.findGlobal({
-          slug: GlobalSlug.SettingsMeta,
+          slug: GlobalSlug.SettingsSiteMeta,
           draft: false,
         })
 
         const compiled = template(titleTemplate, { interpolate: /{{([\s\S]+?)}}/g })
         return compiled({ title, siteName })
       },
+      // generateDescription
       generateImage: ({ doc }) => doc?.heroImage?.url,
       generateURL: ({ doc: { slug }, collectionSlug }) => generateContentURL({ collection: collectionSlug, slug }).toString(),
     }),
     s3Storage({
       enabled: true,
       collections: {
-        [CollectionSlug.Media]: {
-          prefix: process.env.NEXT_PUBLIC_SERVER_HOST, 
+        [CollectionSlug.MediaImages]: {
+          prefix: 'images',
+        },
+        [CollectionSlug.MediaVideos]: {
+          prefix: 'videos',
+        },
+        [CollectionSlug.MediaDocuments]: {
+          prefix: 'documents',
+        },
+        [CollectionSlug.MediaAudio]: {
+          prefix: 'audios',
         },
       },
       bucket: process.env.S3_BUCKET,

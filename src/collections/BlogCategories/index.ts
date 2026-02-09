@@ -82,7 +82,7 @@ export const BlogCategories: CollectionConfig<CollectionSlug.BlogCategories> = {
     {
       name: 'heroImage',
       type: 'upload',
-      relationTo: 'media',
+      relationTo: CollectionSlug.MediaImages,
       filterOptions: {
         mimeType: { contains: 'image' },
       },

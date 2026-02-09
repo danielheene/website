@@ -42,8 +42,8 @@ import { Nav as Nav_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminP
 import { Icon as Icon_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { Logo as Logo_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
-import { default as default_85b72bc5c0d30238d51de444df4399a6 } from '../../../src/payload/components/Dashboard'
-import { CollectionCards as CollectionCards_ab83ff7e88da8d3530831f296ec4756a } from '@payloadcms/ui/rsc'
+import { DummyWidget as DummyWidget_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
+import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 export const importMap = {
   "@/components/AdminPanel#CellWithThumbnail": CellWithThumbnail_a316a6ec12a12cd0fe58ccec01a444ca,
@@ -90,6 +90,6 @@ export const importMap = {
   "@/components/AdminPanel#Icon": Icon_a316a6ec12a12cd0fe58ccec01a444ca,
   "@/components/AdminPanel#Logo": Logo_a316a6ec12a12cd0fe58ccec01a444ca,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
-  "/payload/components/Dashboard#default": default_85b72bc5c0d30238d51de444df4399a6,
-  "@payloadcms/ui/rsc#CollectionCards": CollectionCards_ab83ff7e88da8d3530831f296ec4756a
+  "@/components/AdminPanel#DummyWidget": DummyWidget_a316a6ec12a12cd0fe58ccec01a444ca,
+  "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

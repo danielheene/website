@@ -14,7 +14,17 @@ export const Users: CollectionConfig = {
     useAsTitle: 'email',
     group: AdminGroup.General,
   },
-  fields: [],
+  fields: [
+    {
+      type: 'text',
+      name: 'name',
+    },
+    {
+      type: 'upload',
+      name: 'avatar',
+      relationTo: CollectionSlug.MediaImages,
+    },
+  ],
   hooks: {
     afterChange: [loginAfterCreate],
   },

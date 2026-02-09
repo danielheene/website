@@ -2,7 +2,10 @@ import type { NavPreferences, Payload, TypedUser } from 'payload'
 
 import { cache } from 'react'
 
-export const fetchNavPreerencess = cache(
+/**
+ * Fetches navigation preferences for the admin panel.
+ */
+export const fetchNavPreferences = cache(
   async ({ payload, user }: { payload: Payload; user?: TypedUser }): Promise<NavPreferences | null> =>
     user
       ? await payload

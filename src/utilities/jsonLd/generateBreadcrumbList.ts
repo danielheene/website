@@ -5,6 +5,18 @@ export interface BreadcrumbItem {
   url?: string
 }
 
+/**
+ * Generates BreadcrumbList JSON-LD
+ *
+ * @example
+ * ```typescript
+ * const breadcrumbsLd = generateBreadcrumbList([
+ *   { name: 'Home', url: 'https://danielheene.io' },
+ *   { name: 'Blog', url: 'https://danielheene.io/blog' },
+ *   { name: 'My Post' }
+ * ])
+ * ```
+ */
 export function generateBreadcrumbList(items: BreadcrumbItem[]): WithContext<BreadcrumbList> {
   const listItems: ListItem[] = items.map((item, index) => ({
     '@type': 'ListItem',

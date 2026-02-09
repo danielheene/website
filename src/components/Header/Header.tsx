@@ -1,9 +1,9 @@
 import { HeaderClient } from '@/components/Header/Header.client'
-import { getCachedHeaderData } from '@/data/getHeaderData'
+import { getCachedHeaderNavigationData } from '@/lib/getHeaderNavigationData'
 import React from 'react'
 
 export const Header = async () => {
-  const { navigation } = await getCachedHeaderData()
+  const { mainNavigation } = await getCachedHeaderNavigationData()
 
-  return <HeaderClient navigation={navigation} />
+  return <HeaderClient mainNavigation={mainNavigation} />
 }

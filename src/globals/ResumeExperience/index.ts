@@ -3,7 +3,7 @@ import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { JobHistoryField } from '@/fields/JobHistory'
 import { RichTextField } from '@/fields/RichText'
 import { TitleField } from '@/fields/Title'
-import { revalidateResumeSection } from '@/payload/hooks/revalidateResumeSection'
+import { revalidateResumeSection } from '@/utilities/revalidateResumeSection'
 import { AdminGroup, GlobalSlug } from '@custom-types'
 import { GlobalConfig } from 'payload'
 import { calculateSkillSummary } from './hooks/calculateSkillSummary'
@@ -74,6 +74,7 @@ export const ResumeExperience: GlobalConfig<GlobalSlug.ResumeExperience> = {
     drafts: {
       autosave: false,
       schedulePublish: false,
+      localizeStatus: true,
     },
   },
 }

@@ -1,20 +1,23 @@
 {
   "$schema": "https://ui.shadcn.com/schema.json",
   "style": "new-york",
+  "rsc": true,
+  "tsx": true,
   "tailwind": {
     "config": "",
     "css": "src/styles/frontend.css",
     "baseColor": "neutral",
     "cssVariables": true
   },
-  "rsc": true,
-  "tsx": true,
+  "iconLibrary": "radix",
   "aliases": {
     "components": "@/components",
     "utils": "@/utilities",
-    "hooks": "@/hooks",
+    "ui": "@/components/ui",
     "lib": "@/lib",
-    "payload": "@/payload",
-    "ui": "@/components/ui"
+    "hooks": "@/hooks"
+  },
+  "registries": {
+    "@kibo-ui": "https://www.kibo-ui.com/r/{name}.json"
   }
 }

@@ -1,29 +1,17 @@
-.dashboard {
-  .dashboard__wrap {
-    @apply gap-16;
-  }
-
-  .dashboard__group {
+.modular-dashboard {
+  .collections {
     @apply gap-4;
-  }
 
-  .dashboard__group > .dashboard__label {
-    @apply text-white/40 bg-transparent font-mono font-extrabold text-xl uppercase;
-  }
-
-  .dashboard__group > .dashboard__card-list {
-    @apply grid grid-cols-12 gap-4;
-
-    & > li {
-      @apply col-span-3 ;
+    .collections__wrap {
+      @apply gap-8;
     }
 
-    & > li:nth-child(3n) {
-      @apply col-span-6 row-span-1 grid grid-cols-subgrid grid-rows-subgrid;
+    .collections__group {
+      @apply gap-2;
     }
 
-    & > li:nth-child(3n) > * {
-      @apply col-span-3;
+    .collections__label {
+      @apply text-white/40 bg-transparent font-mono font-extrabold text-sm uppercase;
     }
   }
 

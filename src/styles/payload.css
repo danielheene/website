@@ -39,8 +39,7 @@
   --color-elevation-1000: var(--theme-elevation-1000);
 }
 
-@import './payload/_nav.css';
-@import './payload/_app-header.css';
+@import './payload/_app-header.css' layer(components);
 @import './payload/_dashboard.css';
 @import './payload/_resume.hero.css';
 @import './payload/_resume.contact.css';
@@ -48,7 +47,6 @@
 @import './payload/_resume.experience.css';
 @import './payload/_resume.projects.css';
 
-@import "./payload/_link-field.css";
 
 @layer payload-default {
   :root {
@@ -96,7 +94,7 @@ html {
     }
 
     .editor-placeholder {
-      font-family: var(--font-mono);
+      font-family: var(--font-mono), monospace;
       left: var(--lexical-spacing-x);
     }
 
@@ -140,7 +138,7 @@ html {
       border: 1px solid transparent;
       font-size: 1.8rem;
       line-height: calc(2rem - 2px);
-      font-family: var(--font-mono);
+      font-family: var(--font-mono), monospace;
     }
 
     &:hover > * {
@@ -189,13 +187,18 @@ div.field-type.rich-text-lexical {
   }
 
   .list-header__content {
-    @apply flex flex-row justify-between pt-2.5;
+    @apply flex flex-row justify-between flex-wrap pt-2.5;
   }
 
   .list-header__title-and-actions,
   .list-header__title-actions,
-  .list-header__actions {
-    @apply flex items-center m-0 p-0;
+  .list-header__actions,
+  .list-header__actions > * {
+    @apply flex flex-row items-center flex-nowrap text-nowrap whitespace-nowrap m-0 p-0;
+
+    .btn {
+      @apply text-nowrap whitespace-nowrap;
+    }
   }
 
   .list-header__after-header-content > * {

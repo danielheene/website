@@ -62,7 +62,7 @@ export const BlogTags: CollectionConfig = {
             }),
             MetaImageField({
               hasGenerateFn: true,
-              relationTo: 'media',
+              relationTo: CollectionSlug.MediaImages,
             }),
             MetaDescriptionField({}),
             PreviewField({

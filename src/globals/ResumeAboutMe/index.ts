@@ -2,8 +2,8 @@ import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { RichTextField } from '@/fields/RichText'
 import { TitleField } from '@/fields/Title'
-import { revalidateResumeSection } from '@/payload/hooks/revalidateResumeSection'
-import { AdminGroup, GlobalSlug } from '@custom-types'
+import { revalidateResumeSection } from '@/utilities/revalidateResumeSection'
+import { AdminGroup, CollectionSlug, GlobalSlug } from '@custom-types'
 import { GlobalConfig } from 'payload'
 
 export const ResumeAboutMe: GlobalConfig<GlobalSlug.ResumeAboutMe> = {
@@ -32,7 +32,7 @@ export const ResumeAboutMe: GlobalConfig<GlobalSlug.ResumeAboutMe> = {
               name: 'portrait',
               type: 'upload',
               label: 'Portrait',
-              relationTo: 'media',
+              relationTo: CollectionSlug.MediaImages,
               filterOptions: {
                 mimeType: { contains: 'image' },
               },

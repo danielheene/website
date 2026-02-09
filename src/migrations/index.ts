@@ -1,9 +1,9 @@
-import * as migration_20260119_075700_migration from './20260119_075700_migration'
+import * as migration_01_initialize_page_framework from './01_initialize_page_framework'
 
 export const migrations = [
   {
-    up: migration_20260119_075700_migration.up,
-    down: migration_20260119_075700_migration.down,
-    name: '20260119_075700_migration',
+    up: migration_01_initialize_page_framework.up,
+    down: migration_01_initialize_page_framework.down,
+    name: '01_initialize_page_framework',
   },
 ]

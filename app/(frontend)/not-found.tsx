@@ -1,9 +1,8 @@
+import { Button } from '@/components/Button'
+import { Icon } from '@/components/Icon'
+import { ImageMedia } from '@/components/ImageMedia'
 import Link from 'next/link'
 import React from 'react'
-
-import { Button } from '@/components/Button'
-import { ImageMedia } from '@/components/ImageMedia'
-import { Icon } from '@/components/Icon'
 
 export default function NotFound() {
   return (
@@ -24,7 +23,7 @@ export default function NotFound() {
         <Button asChild variant="secondary" size="lg" className="text-xl font-mono">
           <Link href="/">
             GO TO HOMEPAGE
-            <Icon name="arrow-forward" className="ml-4" />
+            <Icon icon="mdi:arrow-forward" className="ml-4" />
           </Link>
         </Button>
       </div>

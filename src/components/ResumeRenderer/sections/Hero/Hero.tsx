@@ -3,7 +3,7 @@
 // import { getPayload } from 'payload'
 // import config from '@payload-config'
 // import { snakeCase } from 'lodash-es'
-// import { Media } from '@payload-types'
+// import { MediaImage } from '@payload-types'
 // import { HeroClient } from '@/components/ResumeRenderer/sections/Hero/Hero.client'
 //
 // const getHeroData = unstable_cache(
@@ -23,8 +23,8 @@
 // export const Hero = async () => {
 //   const { title, background, portrait } = (await getHeroData()) as {
 //     title?: string
-//     background?: Media
-//     portrait?: Media
+//     background?: MediaImage
+//     portrait?: MediaImage
 //   }
 //
 //   return <HeroClient title={title} background={background} portrait={portrait} />

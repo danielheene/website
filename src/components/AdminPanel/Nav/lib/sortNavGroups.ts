@@ -1,7 +1,7 @@
 import { AdminGroup, CollectionSlug, GlobalSlug } from '@custom-types'
 import { NavGroupType } from '@payloadcms/ui/utilities/groupNavItems'
 
-const NavGroupSortingOrder = [
+const NAV_GROUP_SORTING_ORDER = [
   [
     AdminGroup.Resume,
     [
@@ -14,19 +14,25 @@ const NavGroupSortingOrder = [
     ],
   ],
   [AdminGroup.Blog, [CollectionSlug.BlogPosts, CollectionSlug.BlogCategories, CollectionSlug.BlogTags]],
-  [AdminGroup.General, [CollectionSlug.Pages, CollectionSlug.Media, CollectionSlug.Users]],
-  [AdminGroup.Settings, [GlobalSlug.SettingsHeader, GlobalSlug.SettingsFooter, GlobalSlug.SettingsMeta]],
+  [AdminGroup.General, [CollectionSlug.Pages, CollectionSlug.MediaImages, CollectionSlug.Users]],
+  [
+    AdminGroup.Settings,
+    [GlobalSlug.SettingsUserMeta, GlobalSlug.SettingsHeaderNavigation, GlobalSlug.SettingsFooterNavigation, GlobalSlug.SettingsSiteMeta],
+  ],
 ] as const
 
+/**
+ * Sorts navigation groups based on predefined order.
+ */
 export const sortNavGroups = (groups: NavGroupType[]) =>
   groups
     .sort((a, b) => {
-      const aPos = NavGroupSortingOrder.findIndex(([group]) => group === a.label)
-      const bPos = NavGroupSortingOrder.findIndex(([group]) => group === b.label)
+      const aPos = NAV_GROUP_SORTING_ORDER.findIndex(([group]) => group === a.label)
+      const bPos = NAV_GROUP_SORTING_ORDER.findIndex(([group]) => group === b.label)
       return (aPos === -1 ? Number.MAX_SAFE_INTEGER : aPos) - (bPos === -1 ? Number.MAX_SAFE_INTEGER : bPos)
     })
     .map(({ entities, ...group }) => {
-      const entityOrder: readonly (GlobalSlug | CollectionSlug)[] = NavGroupSortingOrder.find(([g]) => g === group.label)[1]
+      const entityOrder: readonly (GlobalSlug | CollectionSlug)[] = NAV_GROUP_SORTING_ORDER.find(([g]) => g === group.label)[1]
 
       return {
         ...group,

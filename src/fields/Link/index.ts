@@ -1,4 +1,4 @@
-import { ICON_NAME } from '@/components/Icon'
+import { ICON } from '@/components/Icon'
 import { RichTextField } from '@/fields/RichText'
 import { CollectionSlug } from '@custom-types'
 import { startCase } from 'lodash-es'
@@ -82,8 +82,8 @@ export const LinkField = ({ withAppearanceSelect = false, overrides = {} }: Link
                 width: '25%',
               },
               options: [
-                ...Object.values(ICON_NAME).map((iconName) => ({
-                  label: startCase(iconName),
+                ...Object.entries(ICON).map(([iconLabel, iconName]) => ({
+                  label: startCase(iconLabel),
                   value: iconName,
                 })),
               ],
@@ -100,36 +100,49 @@ export const LinkField = ({ withAppearanceSelect = false, overrides = {} }: Link
           ],
         },
         {
-          name: 'reference',
-          type: 'relationship',
-          admin: {
-            width: '35%',
-            condition: (_, siblingData) => siblingData?.type === 'reference',
-          },
-          label: 'Document to link to',
-          maxDepth: 1,
-          relationTo: [CollectionSlug.Pages, CollectionSlug.BlogPosts, CollectionSlug.BlogCategories, CollectionSlug.BlogTags],
-          required: true,
-        },
-        {
-          name: 'url',
-          type: 'text',
-          admin: {
-            width: '35%',
-            condition: (_, siblingData) => siblingData?.type === 'custom',
-          },
-          label: 'Custom URL',
-          required: true,
-        },
-        {
-          name: 'address',
-          type: 'email',
-          admin: {
-            width: '35%',
-            condition: (_, siblingData) => siblingData?.type === 'mailto',
-          },
-          label: 'E-Mail Address',
-          required: true,
+          type: 'row',
+          fields: [
+            {
+              name: 'iconOnly',
+              type: 'checkbox',
+              admin: {
+                width: '25%',
+              },
+              label: 'Icon only',
+            },
+            {
+              name: 'reference',
+              type: 'relationship',
+              admin: {
+                width: '75%',
+                condition: (_, siblingData) => siblingData?.type === 'reference',
+              },
+              label: 'Document to link to',
+              maxDepth: 1,
+              relationTo: [CollectionSlug.Pages, CollectionSlug.BlogPosts, CollectionSlug.BlogCategories, CollectionSlug.BlogTags],
+              required: true,
+            },
+            {
+              name: 'url',
+              type: 'text',
+              admin: {
+                width: '75%',
+                condition: (_, siblingData) => siblingData?.type === 'custom',
+              },
+              label: 'Custom URL',
+              required: true,
+            },
+            {
+              name: 'address',
+              type: 'email',
+              admin: {
+                width: '75%',
+                condition: (_, siblingData) => siblingData?.type === 'mailto',
+              },
+              label: 'E-Mail Address',
+              required: true,
+            },
+          ],
         },
         {
           type: 'row',

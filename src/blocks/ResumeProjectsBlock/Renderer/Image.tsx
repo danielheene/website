@@ -3,18 +3,15 @@
 import { Icon } from '@/components/Icon'
 import { ImageMedia } from '@/components/ImageMedia'
 import { cn } from '@/utilities/cn'
-import { Media } from '@payload-types'
+import { MediaImage } from '@payload-types'
 import { memo, useState } from 'react'
 
 interface ResumeProjectsSectionImageProps {
-  image: Media
+  image: MediaImage
   odd: boolean
 }
 
-export const Image = memo(function ResumeProjectsSectionImage({
-  image,
-  odd,
-}: ResumeProjectsSectionImageProps) {
+export const Image = memo(function ResumeProjectsSectionImage({ image, odd }: ResumeProjectsSectionImageProps) {
   const [isReady, setIsReady] = useState<boolean>(false)
   const [showImage, setShowImage] = useState<boolean>(false)
 
@@ -59,7 +56,7 @@ export const Image = memo(function ResumeProjectsSectionImage({
         ])}
         onClick={() => setShowImage(!showImage)}
       >
-        <Icon name="arrow-downward" />
+        <Icon icon="mdi:arrow-downward" />
       </button>
     </div>
   )

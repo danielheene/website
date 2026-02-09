@@ -55,7 +55,7 @@ export type ProjectList =
   | {
       preHeading: string;
       heading: string;
-      image?: (string | null) | Media;
+      image?: (string | null) | MediaImage;
       content?: {
         root: {
           type: string;
@@ -100,7 +100,10 @@ export interface Config {
   collections: {
     'blog-categories': BlogCategory;
     'blog-posts': BlogPost;
-    media: Media;
+    'media-images': MediaImage;
+    'media-videos': MediaVideo;
+    'media-documents': MediaDocument;
+    'media-audio': MediaAudio;
     pages: Page;
     users: User;
     'blog-tags': BlogTag;
@@ -117,7 +120,10 @@ export interface Config {
   collectionsSelect: {
     'blog-categories': BlogCategoriesSelect<false> | BlogCategoriesSelect<true>;
     'blog-posts': BlogPostsSelect<false> | BlogPostsSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
+    'media-images': MediaImagesSelect<false> | MediaImagesSelect<true>;
+    'media-videos': MediaVideosSelect<false> | MediaVideosSelect<true>;
+    'media-documents': MediaDocumentsSelect<false> | MediaDocumentsSelect<true>;
+    'media-audio': MediaAudioSelect<false> | MediaAudioSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'blog-tags': BlogTagsSelect<false> | BlogTagsSelect<true>;
@@ -129,7 +135,7 @@ export interface Config {
   db: {
     defaultIDType: string;
   };
-  fallbackLocale: null;
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('en' | 'de') | ('en' | 'de')[];
   globals: {
     'resume-about-me': ResumeAboutMeGlobalData;
     'resume-contact': ResumeContactGlobalData;
@@ -137,8 +143,10 @@ export interface Config {
     'resume-downloads': ResumeDownloadsGlobalData;
     'resume-experience': ResumeExperienceGlobalData;
     'resume-projects': ResumeProjectsGlobalData;
-    'settings-header': SettingsHeaderGlobalData;
-    'settings-meta': SettingsMeta;
+    'settings-header-navigation': HeaderNavigationData;
+    'settings-footer-navigation': FooterNavigationData;
+    'settings-site-meta': SiteMetaData;
+    'settings-user-meta': UserMetaData;
   };
   globalsSelect: {
     'resume-about-me': ResumeAboutMeSelect<false> | ResumeAboutMeSelect<true>;
@@ -147,13 +155,13 @@ export interface Config {
     'resume-downloads': ResumeDownloadsSelect<false> | ResumeDownloadsSelect<true>;
     'resume-experience': ResumeExperienceSelect<false> | ResumeExperienceSelect<true>;
     'resume-projects': ResumeProjectsSelect<false> | ResumeProjectsSelect<true>;
-    'settings-header': SettingsHeaderSelect<false> | SettingsHeaderSelect<true>;
-    'settings-meta': SettingsMetaSelect<false> | SettingsMetaSelect<true>;
+    'settings-header-navigation': SettingsHeaderNavigationSelect<false> | SettingsHeaderNavigationSelect<true>;
+    'settings-footer-navigation': SettingsFooterNavigationSelect<false> | SettingsFooterNavigationSelect<true>;
+    'settings-site-meta': SettingsSiteMetaSelect<false> | SettingsSiteMetaSelect<true>;
+    'settings-user-meta': SettingsUserMetaSelect<false> | SettingsUserMetaSelect<true>;
   };
-  locale: null;
-  user: User & {
-    collection: 'users';
-  };
+  locale: 'en' | 'de';
+  user: User;
   jobs: {
     tasks: {
       schedulePublish: TaskSchedulePublish;
@@ -196,66 +204,83 @@ export interface LinkGroupBlock {
             newTab?: boolean | null;
             icon?:
               | (
-                  | 'react'
-                  | 'vercel'
-                  | 'sanity'
-                  | 'payload'
-                  | 'nextjs'
-                  | 'namecheap'
-                  | 'mail'
-                  | 'webstorm'
-                  | 'intellij'
-                  | 'github'
-                  | 'figma'
-                  | 'whatsapp'
-                  | 'wireguard'
-                  | 'zigbee'
-                  | 'javascript'
-                  | 'nodejs'
-                  | 'unsplash'
-                  | 'storybook'
-                  | 'tailscale'
-                  | 'rust'
-                  | 'cloudflare'
-                  | 'cloudflare-workers'
-                  | 'cloudflare-pages'
-                  | 'github-pages'
-                  | 'github-actions'
-                  | 'gitlab'
-                  | 'homeassistant'
-                  | 'synology'
-                  | 'one-password'
-                  | 'jetbrains'
-                  | 'pycharm'
-                  | 'phpstorm'
-                  | 'goland'
-                  | 'kubernetes'
-                  | 'docker'
-                  | 'rancher'
-                  | 'linux'
-                  | 'linkedin'
-                  | 'debian'
-                  | 'ubuntu'
-                  | 'archlinux'
-                  | 'error'
-                  | 'warning'
-                  | 'info'
-                  | 'success'
-                  | 'pause'
-                  | 'play'
-                  | 'stop'
-                  | 'repeat'
-                  | 'replay'
-                  | 'attach'
-                  | 'settings'
-                  | 'calendar'
-                  | 'arrow-downward'
-                  | 'arrow-forward'
-                  | 'close'
-                  | 'image'
+                  | 'simple-icons:react'
+                  | 'simple-icons:vercel'
+                  | 'simple-icons:sanity'
+                  | 'simple-icons:payload'
+                  | 'simple-icons:nextjs'
+                  | 'simple-icons:namecheap'
+                  | 'simple-icons:mail'
+                  | 'simple-icons:webstorm'
+                  | 'simple-icons:intellij'
+                  | 'simple-icons:github'
+                  | 'simple-icons:figma'
+                  | 'simple-icons:whatsapp'
+                  | 'simple-icons:wireguard'
+                  | 'simple-icons:zigbee'
+                  | 'simple-icons:javascript'
+                  | 'simple-icons:nodejs'
+                  | 'simple-icons:unsplash'
+                  | 'simple-icons:storybook'
+                  | 'simple-icons:tailscale'
+                  | 'simple-icons:rust'
+                  | 'simple-icons:cloudflare'
+                  | 'simple-icons:cloudflareworkers'
+                  | 'simple-icons:cloudflarepages'
+                  | 'simple-icons:githubpages'
+                  | 'simple-icons:githubactions'
+                  | 'simple-icons:gitlab'
+                  | 'simple-icons:homeassistant'
+                  | 'simple-icons:synology'
+                  | 'simple-icons:1password'
+                  | 'simple-icons:jetbrains'
+                  | 'simple-icons:pycharm'
+                  | 'simple-icons:phpstorm'
+                  | 'simple-icons:goland'
+                  | 'simple-icons:kubernetes'
+                  | 'simple-icons:docker'
+                  | 'simple-icons:rancher'
+                  | 'simple-icons:linux'
+                  | 'simple-icons:linkedin'
+                  | 'simple-icons:debian'
+                  | 'simple-icons:ubuntu'
+                  | 'simple-icons:archlinux'
+                  | 'material-symbols:fingerprint-sharp'
+                  | 'material-symbols:work-outline-sharp'
+                  | 'material-symbols:experiment-outline-sharp'
+                  | 'material-symbols:deployed-code-account-outline-sharp'
+                  | 'material-symbols:stacked-email-outline-sharp'
+                  | 'material-symbols:picture-as-pdf-outline-sharp'
+                  | 'material-symbols:post-outline'
+                  | 'material-symbols:contextual-token-outline-sharp'
+                  | 'material-symbols:label-outline-sharp'
+                  | 'material-symbols:animated-images-outline-sharp'
+                  | 'material-symbols:pages-outline-sharp'
+                  | 'material-symbols:account-box-outline-sharp'
+                  | 'material-symbols:settings-account-box-sharp'
+                  | 'material-symbols:page-header-outline-sharp'
+                  | 'material-symbols:page-footer-outline-sharp'
+                  | 'material-symbols:map-search-outline-sharp'
+                  | 'material-symbols:error'
+                  | 'material-symbols:warning'
+                  | 'material-symbols:info'
+                  | 'material-symbols:check-circle'
+                  | 'material-symbols:pause'
+                  | 'material-symbols:play'
+                  | 'material-symbols:stop'
+                  | 'material-symbols:repeat'
+                  | 'material-symbols:replay'
+                  | 'material-symbols:attach-file'
+                  | 'material-symbols:settings'
+                  | 'material-symbols:calendar'
+                  | 'material-symbols:arrow-downward'
+                  | 'material-symbols:arrow-forward'
+                  | 'material-symbols:close'
+                  | 'material-symbols:image-outline-sharp'
                 )
               | null;
             label: string;
+            iconOnly?: boolean | null;
             reference?:
               | ({
                   relationTo: 'pages';
@@ -314,8 +339,8 @@ export interface Page {
   title: string;
   slug?: string | null;
   layout?: PageLayout;
-  hero: {
-    media: (string | Media)[];
+  hero?: {
+    media?: (string | MediaImage)[] | null;
     contentType?: ('title' | 'custom') | null;
     content?: {
       root: {
@@ -333,17 +358,19 @@ export interface Page {
       [k: string]: unknown;
     } | null;
   };
-  content: (
-    | LinkGroupBlock
-    | OneColumnContentBlock
-    | TwoColumnContentBlock
-    | ResumeAboutMeBlock
-    | ResumeContactBlock
-    | ResumeCustomersBlock
-    | ResumeDownloadsBlock
-    | ResumeExperienceBlock
-    | ResumeProjectsBlock
-  )[];
+  content?:
+    | (
+        | LinkGroupBlock
+        | OneColumnContentBlock
+        | TwoColumnContentBlock
+        | ResumeAboutMeBlock
+        | ResumeContactBlock
+        | ResumeCustomersBlock
+        | ResumeDownloadsBlock
+        | ResumeExperienceBlock
+        | ResumeProjectsBlock
+      )[]
+    | null;
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -351,9 +378,9 @@ export interface Page {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
+ * via the `definition` "media-images".
  */
-export interface Media {
+export interface MediaImage {
   id: string;
   alt?: string | null;
   caption?: {
@@ -574,7 +601,7 @@ export interface BlogPost {
   id: string;
   title: string;
   slug?: string | null;
-  heroImage?: (string | null) | Media;
+  heroImage?: (string | null) | MediaImage;
   categories?: (string | null) | BlogCategory;
   tags?: (string | BlogTag)[] | null;
   relatedPosts?: (string | BlogPost)[] | null;
@@ -598,7 +625,7 @@ export interface BlogPost {
     /**
      * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
      */
-    image?: (string | null) | Media;
+    image?: (string | null) | MediaImage;
     description?: string | null;
   };
   updatedAt: string;
@@ -614,7 +641,7 @@ export interface BlogCategory {
   id: string;
   title: string;
   slug?: string | null;
-  heroImage?: (string | null) | Media;
+  heroImage?: (string | null) | MediaImage;
   parent?: (string | null) | BlogCategory;
   content?: {
     root: {
@@ -678,7 +705,7 @@ export interface BlogTag {
     /**
      * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
      */
-    image?: (string | null) | Media;
+    image?: (string | null) | MediaImage;
     description?: string | null;
   };
   updatedAt: string;
@@ -687,10 +714,114 @@ export interface BlogTag {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media-videos".
+ */
+export interface MediaVideo {
+  id: string;
+  caption?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  prefix?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media-documents".
+ */
+export interface MediaDocument {
+  id: string;
+  caption?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  prefix?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media-audio".
+ */
+export interface MediaAudio {
+  id: string;
+  caption?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  prefix?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
   id: string;
+  name?: string | null;
+  avatar?: (string | null) | MediaImage;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -708,6 +839,7 @@ export interface User {
       }[]
     | null;
   password?: string | null;
+  collection: 'users';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -817,8 +949,20 @@ export interface PayloadLockedDocument {
         value: string | BlogPost;
       } | null)
     | ({
-        relationTo: 'media';
-        value: string | Media;
+        relationTo: 'media-images';
+        value: string | MediaImage;
+      } | null)
+    | ({
+        relationTo: 'media-videos';
+        value: string | MediaVideo;
+      } | null)
+    | ({
+        relationTo: 'media-documents';
+        value: string | MediaDocument;
+      } | null)
+    | ({
+        relationTo: 'media-audio';
+        value: string | MediaAudio;
       } | null)
     | ({
         relationTo: 'pages';
@@ -925,9 +1069,9 @@ export interface BlogPostsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
+ * via the `definition` "media-images_select".
  */
-export interface MediaSelect<T extends boolean = true> {
+export interface MediaImagesSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
   blurDataURL?: T;
@@ -960,6 +1104,63 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media-videos_select".
+ */
+export interface MediaVideosSelect<T extends boolean = true> {
+  caption?: T;
+  prefix?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media-documents_select".
+ */
+export interface MediaDocumentsSelect<T extends boolean = true> {
+  caption?: T;
+  prefix?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media-audio_select".
+ */
+export interface MediaAudioSelect<T extends boolean = true> {
+  caption?: T;
+  prefix?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages_select".
  */
 export interface PagesSelect<T extends boolean = true> {
@@ -984,6 +1185,8 @@ export interface PagesSelect<T extends boolean = true> {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  name?: T;
+  avatar?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -1090,7 +1293,7 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 export interface ResumeAboutMeGlobalData {
   id: string;
   title: string;
-  portrait?: (string | null) | Media;
+  portrait?: (string | null) | MediaImage;
   content?: {
     root: {
       type: string;
@@ -1170,7 +1373,7 @@ export interface ResumeCustomersGlobalData {
 export interface ResumeDownloadsGlobalData {
   id: string;
   title: string;
-  documentPreview?: (string | null) | Media;
+  documentPreview?: (string | null) | MediaImage;
   caption?: {
     root: {
       type: string;
@@ -1256,77 +1459,94 @@ export interface ResumeProjectsGlobalData {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "settings-header".
+ * via the `definition` "settings-header-navigation".
  */
-export interface SettingsHeaderGlobalData {
+export interface HeaderNavigationData {
   id: string;
-  navigation?:
+  mainNavigation?:
     | {
         link: {
           type?: ('reference' | 'custom' | 'mailto') | null;
           newTab?: boolean | null;
           icon?:
             | (
-                | 'react'
-                | 'vercel'
-                | 'sanity'
-                | 'payload'
-                | 'nextjs'
-                | 'namecheap'
-                | 'mail'
-                | 'webstorm'
-                | 'intellij'
-                | 'github'
-                | 'figma'
-                | 'whatsapp'
-                | 'wireguard'
-                | 'zigbee'
-                | 'javascript'
-                | 'nodejs'
-                | 'unsplash'
-                | 'storybook'
-                | 'tailscale'
-                | 'rust'
-                | 'cloudflare'
-                | 'cloudflare-workers'
-                | 'cloudflare-pages'
-                | 'github-pages'
-                | 'github-actions'
-                | 'gitlab'
-                | 'homeassistant'
-                | 'synology'
-                | 'one-password'
-                | 'jetbrains'
-                | 'pycharm'
-                | 'phpstorm'
-                | 'goland'
-                | 'kubernetes'
-                | 'docker'
-                | 'rancher'
-                | 'linux'
-                | 'linkedin'
-                | 'debian'
-                | 'ubuntu'
-                | 'archlinux'
-                | 'error'
-                | 'warning'
-                | 'info'
-                | 'success'
-                | 'pause'
-                | 'play'
-                | 'stop'
-                | 'repeat'
-                | 'replay'
-                | 'attach'
-                | 'settings'
-                | 'calendar'
-                | 'arrow-downward'
-                | 'arrow-forward'
-                | 'close'
-                | 'image'
+                | 'simple-icons:react'
+                | 'simple-icons:vercel'
+                | 'simple-icons:sanity'
+                | 'simple-icons:payload'
+                | 'simple-icons:nextjs'
+                | 'simple-icons:namecheap'
+                | 'simple-icons:mail'
+                | 'simple-icons:webstorm'
+                | 'simple-icons:intellij'
+                | 'simple-icons:github'
+                | 'simple-icons:figma'
+                | 'simple-icons:whatsapp'
+                | 'simple-icons:wireguard'
+                | 'simple-icons:zigbee'
+                | 'simple-icons:javascript'
+                | 'simple-icons:nodejs'
+                | 'simple-icons:unsplash'
+                | 'simple-icons:storybook'
+                | 'simple-icons:tailscale'
+                | 'simple-icons:rust'
+                | 'simple-icons:cloudflare'
+                | 'simple-icons:cloudflareworkers'
+                | 'simple-icons:cloudflarepages'
+                | 'simple-icons:githubpages'
+                | 'simple-icons:githubactions'
+                | 'simple-icons:gitlab'
+                | 'simple-icons:homeassistant'
+                | 'simple-icons:synology'
+                | 'simple-icons:1password'
+                | 'simple-icons:jetbrains'
+                | 'simple-icons:pycharm'
+                | 'simple-icons:phpstorm'
+                | 'simple-icons:goland'
+                | 'simple-icons:kubernetes'
+                | 'simple-icons:docker'
+                | 'simple-icons:rancher'
+                | 'simple-icons:linux'
+                | 'simple-icons:linkedin'
+                | 'simple-icons:debian'
+                | 'simple-icons:ubuntu'
+                | 'simple-icons:archlinux'
+                | 'material-symbols:fingerprint-sharp'
+                | 'material-symbols:work-outline-sharp'
+                | 'material-symbols:experiment-outline-sharp'
+                | 'material-symbols:deployed-code-account-outline-sharp'
+                | 'material-symbols:stacked-email-outline-sharp'
+                | 'material-symbols:picture-as-pdf-outline-sharp'
+                | 'material-symbols:post-outline'
+                | 'material-symbols:contextual-token-outline-sharp'
+                | 'material-symbols:label-outline-sharp'
+                | 'material-symbols:animated-images-outline-sharp'
+                | 'material-symbols:pages-outline-sharp'
+                | 'material-symbols:account-box-outline-sharp'
+                | 'material-symbols:settings-account-box-sharp'
+                | 'material-symbols:page-header-outline-sharp'
+                | 'material-symbols:page-footer-outline-sharp'
+                | 'material-symbols:map-search-outline-sharp'
+                | 'material-symbols:error'
+                | 'material-symbols:warning'
+                | 'material-symbols:info'
+                | 'material-symbols:check-circle'
+                | 'material-symbols:pause'
+                | 'material-symbols:play'
+                | 'material-symbols:stop'
+                | 'material-symbols:repeat'
+                | 'material-symbols:replay'
+                | 'material-symbols:attach-file'
+                | 'material-symbols:settings'
+                | 'material-symbols:calendar'
+                | 'material-symbols:arrow-downward'
+                | 'material-symbols:arrow-forward'
+                | 'material-symbols:close'
+                | 'material-symbols:image-outline-sharp'
               )
             | null;
           label: string;
+          iconOnly?: boolean | null;
           reference?:
             | ({
                 relationTo: 'pages';
@@ -1372,19 +1592,346 @@ export interface SettingsHeaderGlobalData {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "settings-meta".
+ * via the `definition` "settings-footer-navigation".
  */
-export interface SettingsMeta {
+export interface FooterNavigationData {
+  id: string;
+  navGroups?:
+    | {
+        title?: string | null;
+        entries?:
+          | {
+              link: {
+                type?: ('reference' | 'custom' | 'mailto') | null;
+                newTab?: boolean | null;
+                icon?:
+                  | (
+                      | 'simple-icons:react'
+                      | 'simple-icons:vercel'
+                      | 'simple-icons:sanity'
+                      | 'simple-icons:payload'
+                      | 'simple-icons:nextjs'
+                      | 'simple-icons:namecheap'
+                      | 'simple-icons:mail'
+                      | 'simple-icons:webstorm'
+                      | 'simple-icons:intellij'
+                      | 'simple-icons:github'
+                      | 'simple-icons:figma'
+                      | 'simple-icons:whatsapp'
+                      | 'simple-icons:wireguard'
+                      | 'simple-icons:zigbee'
+                      | 'simple-icons:javascript'
+                      | 'simple-icons:nodejs'
+                      | 'simple-icons:unsplash'
+                      | 'simple-icons:storybook'
+                      | 'simple-icons:tailscale'
+                      | 'simple-icons:rust'
+                      | 'simple-icons:cloudflare'
+                      | 'simple-icons:cloudflareworkers'
+                      | 'simple-icons:cloudflarepages'
+                      | 'simple-icons:githubpages'
+                      | 'simple-icons:githubactions'
+                      | 'simple-icons:gitlab'
+                      | 'simple-icons:homeassistant'
+                      | 'simple-icons:synology'
+                      | 'simple-icons:1password'
+                      | 'simple-icons:jetbrains'
+                      | 'simple-icons:pycharm'
+                      | 'simple-icons:phpstorm'
+                      | 'simple-icons:goland'
+                      | 'simple-icons:kubernetes'
+                      | 'simple-icons:docker'
+                      | 'simple-icons:rancher'
+                      | 'simple-icons:linux'
+                      | 'simple-icons:linkedin'
+                      | 'simple-icons:debian'
+                      | 'simple-icons:ubuntu'
+                      | 'simple-icons:archlinux'
+                      | 'material-symbols:fingerprint-sharp'
+                      | 'material-symbols:work-outline-sharp'
+                      | 'material-symbols:experiment-outline-sharp'
+                      | 'material-symbols:deployed-code-account-outline-sharp'
+                      | 'material-symbols:stacked-email-outline-sharp'
+                      | 'material-symbols:picture-as-pdf-outline-sharp'
+                      | 'material-symbols:post-outline'
+                      | 'material-symbols:contextual-token-outline-sharp'
+                      | 'material-symbols:label-outline-sharp'
+                      | 'material-symbols:animated-images-outline-sharp'
+                      | 'material-symbols:pages-outline-sharp'
+                      | 'material-symbols:account-box-outline-sharp'
+                      | 'material-symbols:settings-account-box-sharp'
+                      | 'material-symbols:page-header-outline-sharp'
+                      | 'material-symbols:page-footer-outline-sharp'
+                      | 'material-symbols:map-search-outline-sharp'
+                      | 'material-symbols:error'
+                      | 'material-symbols:warning'
+                      | 'material-symbols:info'
+                      | 'material-symbols:check-circle'
+                      | 'material-symbols:pause'
+                      | 'material-symbols:play'
+                      | 'material-symbols:stop'
+                      | 'material-symbols:repeat'
+                      | 'material-symbols:replay'
+                      | 'material-symbols:attach-file'
+                      | 'material-symbols:settings'
+                      | 'material-symbols:calendar'
+                      | 'material-symbols:arrow-downward'
+                      | 'material-symbols:arrow-forward'
+                      | 'material-symbols:close'
+                      | 'material-symbols:image-outline-sharp'
+                    )
+                  | null;
+                label: string;
+                iconOnly?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: string | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'blog-posts';
+                      value: string | BlogPost;
+                    } | null)
+                  | ({
+                      relationTo: 'blog-categories';
+                      value: string | BlogCategory;
+                    } | null)
+                  | ({
+                      relationTo: 'blog-tags';
+                      value: string | BlogTag;
+                    } | null);
+                url?: string | null;
+                address?: string | null;
+                subject?: string | null;
+                cc?: string | null;
+                body?: {
+                  root: {
+                    type: string;
+                    children: {
+                      type: any;
+                      version: number;
+                      [k: string]: unknown;
+                    }[];
+                    direction: ('ltr' | 'rtl') | null;
+                    format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                    indent: number;
+                    version: number;
+                  };
+                  [k: string]: unknown;
+                } | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  socialLinks?: {
+    title?: string | null;
+    entries?:
+      | {
+          link: {
+            type?: ('reference' | 'custom' | 'mailto') | null;
+            newTab?: boolean | null;
+            icon?:
+              | (
+                  | 'simple-icons:react'
+                  | 'simple-icons:vercel'
+                  | 'simple-icons:sanity'
+                  | 'simple-icons:payload'
+                  | 'simple-icons:nextjs'
+                  | 'simple-icons:namecheap'
+                  | 'simple-icons:mail'
+                  | 'simple-icons:webstorm'
+                  | 'simple-icons:intellij'
+                  | 'simple-icons:github'
+                  | 'simple-icons:figma'
+                  | 'simple-icons:whatsapp'
+                  | 'simple-icons:wireguard'
+                  | 'simple-icons:zigbee'
+                  | 'simple-icons:javascript'
+                  | 'simple-icons:nodejs'
+                  | 'simple-icons:unsplash'
+                  | 'simple-icons:storybook'
+                  | 'simple-icons:tailscale'
+                  | 'simple-icons:rust'
+                  | 'simple-icons:cloudflare'
+                  | 'simple-icons:cloudflareworkers'
+                  | 'simple-icons:cloudflarepages'
+                  | 'simple-icons:githubpages'
+                  | 'simple-icons:githubactions'
+                  | 'simple-icons:gitlab'
+                  | 'simple-icons:homeassistant'
+                  | 'simple-icons:synology'
+                  | 'simple-icons:1password'
+                  | 'simple-icons:jetbrains'
+                  | 'simple-icons:pycharm'
+                  | 'simple-icons:phpstorm'
+                  | 'simple-icons:goland'
+                  | 'simple-icons:kubernetes'
+                  | 'simple-icons:docker'
+                  | 'simple-icons:rancher'
+                  | 'simple-icons:linux'
+                  | 'simple-icons:linkedin'
+                  | 'simple-icons:debian'
+                  | 'simple-icons:ubuntu'
+                  | 'simple-icons:archlinux'
+                  | 'material-symbols:fingerprint-sharp'
+                  | 'material-symbols:work-outline-sharp'
+                  | 'material-symbols:experiment-outline-sharp'
+                  | 'material-symbols:deployed-code-account-outline-sharp'
+                  | 'material-symbols:stacked-email-outline-sharp'
+                  | 'material-symbols:picture-as-pdf-outline-sharp'
+                  | 'material-symbols:post-outline'
+                  | 'material-symbols:contextual-token-outline-sharp'
+                  | 'material-symbols:label-outline-sharp'
+                  | 'material-symbols:animated-images-outline-sharp'
+                  | 'material-symbols:pages-outline-sharp'
+                  | 'material-symbols:account-box-outline-sharp'
+                  | 'material-symbols:settings-account-box-sharp'
+                  | 'material-symbols:page-header-outline-sharp'
+                  | 'material-symbols:page-footer-outline-sharp'
+                  | 'material-symbols:map-search-outline-sharp'
+                  | 'material-symbols:error'
+                  | 'material-symbols:warning'
+                  | 'material-symbols:info'
+                  | 'material-symbols:check-circle'
+                  | 'material-symbols:pause'
+                  | 'material-symbols:play'
+                  | 'material-symbols:stop'
+                  | 'material-symbols:repeat'
+                  | 'material-symbols:replay'
+                  | 'material-symbols:attach-file'
+                  | 'material-symbols:settings'
+                  | 'material-symbols:calendar'
+                  | 'material-symbols:arrow-downward'
+                  | 'material-symbols:arrow-forward'
+                  | 'material-symbols:close'
+                  | 'material-symbols:image-outline-sharp'
+                )
+              | null;
+            label: string;
+            iconOnly?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: string | Page;
+                } | null)
+              | ({
+                  relationTo: 'blog-posts';
+                  value: string | BlogPost;
+                } | null)
+              | ({
+                  relationTo: 'blog-categories';
+                  value: string | BlogCategory;
+                } | null)
+              | ({
+                  relationTo: 'blog-tags';
+                  value: string | BlogTag;
+                } | null);
+            url?: string | null;
+            address?: string | null;
+            subject?: string | null;
+            cc?: string | null;
+            body?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+    id?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings-site-meta".
+ */
+export interface SiteMetaData {
   id: string;
   siteName?: string | null;
+  /**
+   * This template is used for generating the title tag value on each page. Title refers to the actual document title which is suffixed with siteName.
+   */
   titleTemplate?: string | null;
-  fallbackDescription?: string | null;
-  fallbackImage?: (string | null) | Media;
+  /**
+   * This URL is used for generating website metadata.
+   */
+  siteUrl?: string | null;
+  /**
+   * This description is used for generating website metadata.This description is also used as fallback if no document description is available.
+   */
+  description?: string | null;
+  image?: (string | null) | MediaImage;
   keywords?: {
     id?: string;
     label?: string;
     [k: string]: unknown;
   }[];
+  /**
+   * This URL is used for generating website metadata.
+   */
+  searchUrl?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings-user-meta".
+ */
+export interface UserMetaData {
+  id: string;
+  name?: string | null;
+  jobTitle?: string | null;
+  url?: string | null;
+  image?: (string | null) | MediaImage;
+  email?: string | null;
+  telephone?: string | null;
+  description?: string | null;
+  sameAs?:
+    | {
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  duns?: string | null;
+  birthDate?: string | null;
+  birthPlace?: string | null;
+  gender?: string | null;
+  homeLocation?: string | null;
+  knowsLanguage?:
+    | {
+        language?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  vatID?: string | null;
+  workLocation?: string | null;
+  worksFor?: {
+    name?: string | null;
+    url?: string | null;
+  };
+  address?: {
+    streetAddress?: string | null;
+    addressLocality?: string | null;
+    addressRegion?: string | null;
+    postalCode?: string | null;
+    addressCountry?: string | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1507,10 +2054,10 @@ export interface ProjectListSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "settings-header_select".
+ * via the `definition` "settings-header-navigation_select".
  */
-export interface SettingsHeaderSelect<T extends boolean = true> {
-  navigation?:
+export interface SettingsHeaderNavigationSelect<T extends boolean = true> {
+  mainNavigation?:
     | T
     | {
         link?:
@@ -1520,6 +2067,7 @@ export interface SettingsHeaderSelect<T extends boolean = true> {
               newTab?: T;
               icon?: T;
               label?: T;
+              iconOnly?: T;
               reference?: T;
               url?: T;
               address?: T;
@@ -1535,14 +2083,127 @@ export interface SettingsHeaderSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "settings-meta_select".
+ * via the `definition` "settings-footer-navigation_select".
  */
-export interface SettingsMetaSelect<T extends boolean = true> {
+export interface SettingsFooterNavigationSelect<T extends boolean = true> {
+  navGroups?:
+    | T
+    | {
+        title?: T;
+        entries?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    icon?: T;
+                    label?: T;
+                    iconOnly?: T;
+                    reference?: T;
+                    url?: T;
+                    address?: T;
+                    subject?: T;
+                    cc?: T;
+                    body?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  socialLinks?:
+    | T
+    | {
+        title?: T;
+        entries?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    icon?: T;
+                    label?: T;
+                    iconOnly?: T;
+                    reference?: T;
+                    url?: T;
+                    address?: T;
+                    subject?: T;
+                    cc?: T;
+                    body?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings-site-meta_select".
+ */
+export interface SettingsSiteMetaSelect<T extends boolean = true> {
   siteName?: T;
   titleTemplate?: T;
-  fallbackDescription?: T;
-  fallbackImage?: T;
+  siteUrl?: T;
+  description?: T;
+  image?: T;
   keywords?: T;
+  searchUrl?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings-user-meta_select".
+ */
+export interface SettingsUserMetaSelect<T extends boolean = true> {
+  name?: T;
+  jobTitle?: T;
+  url?: T;
+  image?: T;
+  email?: T;
+  telephone?: T;
+  description?: T;
+  sameAs?:
+    | T
+    | {
+        url?: T;
+        id?: T;
+      };
+  duns?: T;
+  birthDate?: T;
+  birthPlace?: T;
+  gender?: T;
+  homeLocation?: T;
+  knowsLanguage?:
+    | T
+    | {
+        language?: T;
+        id?: T;
+      };
+  vatID?: T;
+  workLocation?: T;
+  worksFor?:
+    | T
+    | {
+        name?: T;
+        url?: T;
+      };
+  address?:
+    | T
+    | {
+        streetAddress?: T;
+        addressLocality?: T;
+        addressRegion?: T;
+        postalCode?: T;
+        addressCountry?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

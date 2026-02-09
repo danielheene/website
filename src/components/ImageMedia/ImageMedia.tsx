@@ -1,18 +1,15 @@
 'use client'
 
+import { cn } from '@/utilities/cn'
+import { MediaImage } from '@payload-types'
 import type { ImageProps } from 'next/image'
 import NextImage from 'next/image'
-
-import { cn } from '@/utilities/cn'
 import React, { CSSProperties, SyntheticEvent, useCallback, useState } from 'react'
-import { Media } from '@payload-types'
 
 export interface ImageMediaProps
-  extends Omit<
-      ImageProps,
-      'className' | 'alt' | 'src' | 'blurDataURL' | 'placeholder' | 'width' | 'height' | 'onLoad'
-    >,
-    Pick<Media, 'blurDataURL' | 'url'> {
+  extends
+    Omit<ImageProps, 'className' | 'alt' | 'src' | 'blurDataURL' | 'placeholder' | 'width' | 'height' | 'onLoad'>,
+    Pick<MediaImage, 'blurDataURL' | 'url'> {
   duoTone?: boolean
   className?: string
   loadedClassName?: string
@@ -26,7 +23,7 @@ export interface ImageMediaProps
   // priority?: boolean
   // size?: string
   // src?: StaticImport | string
-  // resource?: Media
+  // resource?: MediaImage
 }
 
 export const ImageMedia = ({
@@ -53,9 +50,7 @@ export const ImageMedia = ({
   }, [])
 
   // NOTE: this is used by the browser to determine which image to download at different screen sizes
-  const sizes = sizesFromProps
-    ? sizesFromProps
-    : ['(max-width: 768px) 100vw', '(max-width: 1200px) 50vw', '33vw'].join(', ')
+  const sizes = sizesFromProps ? sizesFromProps : ['(max-width: 768px) 100vw', '(max-width: 1200px) 50vw', '33vw'].join(', ')
 
   return (
     <div

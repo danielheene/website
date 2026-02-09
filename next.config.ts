@@ -50,6 +50,7 @@ const nextConfig: NextConfig = {
   async rewrites() {
     const rewrites = []
 
+
     if (process.env['UMAMI_HOST_URL']) {
       rewrites.push({
         source: '/stats/:match*',

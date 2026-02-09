@@ -16,6 +16,7 @@ import { PascalCase } from 'type-fest'
 export enum AdminGroup {
   Resume = 'resume',
   Blog = 'blog',
+  Media = 'media',
   General = 'general',
   Settings = 'settings',
 }
@@ -65,7 +66,10 @@ export enum CollectionSlug {
   BlogCategories = 'blog-categories',
   BlogPosts = 'blog-posts',
   BlogTags = 'blog-tags',
-  Media = 'media',
+  MediaImages = 'media-images',
+  MediaVideos = 'media-videos',
+  MediaDocuments = 'media-documents',
+  MediaAudio = 'media-audio',
   Pages = 'pages',
   Users = 'users',
 }
@@ -78,10 +82,11 @@ export type CollectionData<T extends RegisteredCollectionSlug = RegisteredCollec
  *
  */
 export enum GlobalSlug {
-  SettingsHeader = 'settings-header',
-  SettingsFooter = 'settings-footer',
+  SettingsHeaderNavigation = 'settings-header-navigation',
+  SettingsFooterNavigation = 'settings-footer-navigation',
   SettingsCache = 'settings-cache',
-  SettingsMeta = 'settings-meta',
+  SettingsUserMeta = 'settings-user-meta',
+  SettingsSiteMeta = 'settings-site-meta',
   ResumeAboutMe = 'resume-about-me',
   ResumeCustomers = 'resume-customers',
   ResumeDownloads = 'resume-downloads',
@@ -108,3 +113,39 @@ export const COLLECTION_PREFIX_MAP: Partial<Record<CollectionSlug, string>> = {
   [CollectionSlug.BlogCategories]: 'categories',
   [CollectionSlug.BlogTags]: 'tags',
 } as const
+
+export enum UptimeKumaHeartbeatStatus {
+  Down = 0,
+  Up = 1,
+  Pending = 2,
+  Maintenance = 3,
+}
+
+export enum UptimeKumaOverallStatus {
+  AllDown = 0,
+  AllUp = 1,
+  PartialDown = 2,
+  Maintenance = 3,
+  NoServices = -1,
+}
+
+export interface UptimeKumaHeartbeat {
+  status: UptimeKumaHeartbeatStatus
+  time: string
+  msg: string
+  ping: number
+}
+
+export interface UptimeKumaHeartbeatResponse {
+  heartbeatList: {
+    [key: string]: UptimeKumaHeartbeat[]
+  }
+  uptimeList: {
+    [key: string]: number
+  }
+}
+
+export interface InternalStatusResponse {
+  code: UptimeKumaOverallStatus
+  message: string
+}

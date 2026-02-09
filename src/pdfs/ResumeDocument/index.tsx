@@ -1,7 +1,7 @@
-import { Document, DocumentProps, Image, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
+import { registerFontInter, registerFontJetBrainsMono, registerFontPPSupplyMono } from '@/pdfs/utils'
 import { ResumeExperienceGlobalData } from '@payload-types'
 import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintext'
-import { registerFontInter, registerFontJetBrainsMono, registerFontPPSupplyMono } from '@/pdfs/utils'
+import { Document, DocumentProps, Image, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 
 registerFontInter()
 registerFontJetBrainsMono()
@@ -31,7 +31,7 @@ const Experience = ({ title, caption }: ResumeExperienceGlobalData) => {
     <View style={styles.section}>
       <Text>{title}</Text>
       <Text>{convertLexicalToPlaintext({ data: caption })}</Text>
-      <View style={{ flexDirection: 'column', gap: '0.5cm' }}>YE</View>
+      <Text style={{ flexDirection: 'column', gap: '0.5cm' }}>YE</Text>
     </View>
   )
 }
