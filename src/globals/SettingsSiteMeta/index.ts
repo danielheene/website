@@ -14,7 +14,8 @@ export const SettingsSiteMeta: GlobalConfig = {
   },
   hooks: {
     afterChange: [
-      async () => {
+      async ({ doc, context }) => {
+        if (context.skipRevalidate) return doc
         revalidateTag(GlobalSlug.SettingsSiteMeta)
       },
     ],

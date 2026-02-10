@@ -6,7 +6,9 @@ import type { BlogPost } from '@payload-types'
 import { revalidatePath } from 'next/cache'
 import type { CollectionAfterChangeHook } from 'payload'
 
-export const revalidateBlogPost: CollectionAfterChangeHook<BlogPost> = ({ doc, previousDoc, req: { payload } }) => {
+export const revalidateBlogPost: CollectionAfterChangeHook<BlogPost> = ({ doc, context, previousDoc, req: { payload } }) => {
+  if (context.skipRevalidate) return doc
+
   if (doc._status === 'published') {
     const path = generateContentPath(CollectionSlug.BlogPosts, doc.slug)
 

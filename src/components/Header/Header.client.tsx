@@ -2,7 +2,6 @@
 
 import { Icon } from '@/components/Icon'
 import { Logo } from '@/components/Logo'
-import { useUI } from '@/contexts/UI'
 
 import { cn } from '@/utilities/cn'
 import { generateContentURL } from '@/utilities/generateContentURL'
@@ -10,7 +9,6 @@ import { HeaderNavigationData } from '@payload-types'
 import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintext'
 import Link from 'next/link'
 import React from 'react'
-import { useResizeObserver } from 'usehooks-ts'
 
 interface HeaderClientProps {
   mainNavigation?: HeaderNavigationData['mainNavigation']
@@ -19,13 +17,13 @@ interface HeaderClientProps {
 export const HeaderClient = ({ mainNavigation }: HeaderClientProps) => {
   const headerRef = React.useRef<HTMLDivElement>(null)
 
-  const { setHeaderHeight } = useUI()
-
-  useResizeObserver({
-    ref: headerRef,
-    box: 'border-box',
-    onResize: ({ height }) => setHeaderHeight(height),
-  })
+  // const { setHeaderHeight } = useUI()
+  //
+  // useResizeObserver({
+  //   ref: headerRef,
+  //   box: 'border-box',
+  //   onResize: ({ height }) => setHeaderHeight(height),
+  // })
 
   return (
     <header ref={headerRef} className={`page-header container sticky top-0 z-50 -mb-(--header-height)`}>

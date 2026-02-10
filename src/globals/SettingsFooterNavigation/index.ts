@@ -35,7 +35,8 @@ export const SettingsFooterNavigation: GlobalConfig<GlobalSlug.SettingsFooterNav
   },
   hooks: {
     afterChange: [
-      async () => {
+      async ({ context, doc }) => {
+        if (context.skipRevalidate) return doc
         revalidateTag(GlobalSlug.SettingsFooterNavigation)
       },
     ],

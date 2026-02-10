@@ -14,7 +14,8 @@ export const SettingsHeaderNavigation: GlobalConfig<GlobalSlug.SettingsHeaderNav
   },
   hooks: {
     afterChange: [
-      async () => {
+      async ({ context, doc }) => {
+        if (context.skipRevalidate) return doc
         revalidateTag(GlobalSlug.SettingsHeaderNavigation)
       },
     ],

@@ -7,7 +7,9 @@ import type { GlobalAfterChangeHook } from 'payload'
 
 export const revalidateResumeSection =
   (slug: GlobalSlug): GlobalAfterChangeHook =>
-  async ({ doc, req: { payload } }) => {
+  async ({ doc, context, req: { payload } }) => {
+    if (context.skipRevalidate) return doc
+
     if ('_status' in doc && doc._status !== 'published') return
 
     payload.logger.info(`Revalidating Resume Section: ${doc.label}`)

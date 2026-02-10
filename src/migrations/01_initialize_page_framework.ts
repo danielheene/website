@@ -28,8 +28,12 @@ export async function up({ payload, req, session }: MigrateUpArgs): Promise<void
         title: resumeGlobal.title,
         _status: 'published',
       },
+      context: {
+        skipRevalidate: true,
+      },
       req,
     })
+    payload.logger.info(`Global: ${resumeGlobal.slug} updated successfully`)
   }
 
   const defaultPages = [
@@ -52,7 +56,7 @@ export async function up({ payload, req, session }: MigrateUpArgs): Promise<void
     })
 
     if (docs.length) {
-      payload.logger.info(`Page with slug ${defaultPage.slug} already exists`)
+      payload.logger.info(`Page: ${defaultPage.slug} already exists, updating...`)
       await payload.update({
         collection: CollectionSlug.Pages,
         where: {
@@ -65,24 +69,32 @@ export async function up({ payload, req, session }: MigrateUpArgs): Promise<void
           layout: defaultPage.layout,
           _status: 'published',
         },
+        context: {
+          skipRevalidate: true,
+        },
         draft: false,
         req,
       })
+      payload.logger.info(`Page: ${defaultPage.slug} updated successfully`)
     } else {
-      payload.logger.info(`Creating page with slug ${defaultPage.slug}`)
+      payload.logger.info(`Page: ${defaultPage.slug} does not exist, creating...`)
       await payload.create({
         collection: CollectionSlug.Pages,
         data: {
           ...defaultPage,
           _status: 'published',
         },
+        context: {
+          skipRevalidate: true,
+        },
         draft: false,
         req,
       })
+      payload.logger.info(`Page: ${defaultPage.slug} created successfully`)
     }
   }
 }
 
-export async function down({ payload, req, session }: MigrateDownArgs): Promise<void> {
+export async function down({ req, session }: MigrateDownArgs): Promise<void> {
   // Migration code
 }
