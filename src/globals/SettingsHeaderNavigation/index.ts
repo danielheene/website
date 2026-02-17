@@ -7,7 +7,7 @@ import { GlobalConfig } from 'payload'
 
 export const SettingsHeaderNavigation: GlobalConfig<GlobalSlug.SettingsHeaderNavigation> = {
   slug: GlobalSlug.SettingsHeaderNavigation,
-  label: 'Header Navigation',
+  label: 'Header Nav',
   access: {
     read: authenticatedOrPublished,
     update: authenticated,

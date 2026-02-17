@@ -1,7 +1,6 @@
 @layer fonts, theme, base, components, utilities;
 
-@import './fonts/_inter.css' layer(fonts);
-@import './fonts/_jetbrains-mono.css' layer(fonts);
+@import './fonts/_pp-frama.css' layer(fonts);
 @import './fonts/_pp-supply-mono.css' layer(fonts);
 
 @import "tailwindcss/theme.css" layer(theme);
@@ -51,8 +50,8 @@
 @layer payload-default {
   :root {
     --base-body-size: 16;
-    --font-body: var(--font-inter);
-    --font-mono: var(--font-jetbrains-mono);
+    --font-body: var(--font-pp-frama);
+    --font-mono: var(--font-pp-supply-mono);
   }
 }
 
@@ -183,7 +182,7 @@ div.field-type.rich-text-lexical {
 .list-header, .doc-header {
   .list-header__title,
   .doc-header__title {
-    @apply font-pp-supply-mono text-4xl leading-10 -mt-1.5;
+    @apply font-pp-supply-mono text-xl leading-10 -mt-0.5;
   }
 
   .list-header__content {
@@ -209,7 +208,7 @@ div.field-type.rich-text-lexical {
 .btn,
 .list-header__title-actions > [type="button"] {
   @apply inline-flex justify-center items-center;
-  @apply m-0 min-h-10 no-underline transition-all duration-150;
+  @apply m-0 min-h-8 no-underline transition-all duration-150;
 
   &.btn--style-primary,
   &.list-header__create-new-button,
@@ -271,9 +270,10 @@ div.field-type.rich-text-lexical {
 }
 
 .upload__dropzoneContent__buttons {
-  @apply items-center;
+  @apply flex flex-col xl:flex-row justify-center items-center w-full;
 
   & > button {
+    @apply block w-full xl:w-auto;
     --btn-padding-inline-start: 1rem;
     --btn-padding-inline-end: 1rem;
   }

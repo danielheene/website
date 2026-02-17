@@ -1,8 +1,8 @@
 'use client'
 
 import { cn } from '@/utilities/cn'
-import { MouseEvent, useCallback } from 'react'
 import { useCreatePortalHost } from '@/utilities/useCreatePortalHost'
+import { MouseEvent, useCallback } from 'react'
 import ReactDOM from 'react-dom'
 import { SectionNavigationAnchor, SetScrollingToAnchorFunction } from './SectionNavigation.types'
 
@@ -37,17 +37,18 @@ export const SectionNavigationDisplay = ({ anchors, setScrollingToAnchor }: Sect
     anchors.length > 0 &&
     portalHost.current &&
     ReactDOM.createPortal(
-      <nav className={cn(['fixed top-0 h-screen hidden md:flex flex-col justify-center animate-fade-in bg-white/30 backdrop-blur-sm'])}>
+      <nav className={cn(['fixed top-0 h-screen hidden md:flex flex-col justify-center animate-fade-in bg-white overflow-hidden'])}>
         {anchors.map(({ id, title, active }) => (
           <a
             key={id}
-            href={'#'+id}
+            href={'#' + id}
             onClick={handleAnchorClick}
+            vertical-writing-rl
             className={cn([
-              'vertical-writing-rl orientation-sideways-right rotate-180',
+              'vertical-writing-rl orientation-sideways rotate-180',
               'my-2 px-4 transition-opacity duration-500 ease-in-out transform-gpu',
-              'text-gray-900 font-mono opacity-80 font-medium',
-              active && 'opacity-100 font-extrabold animate-flip',
+              'text-neutral-500 font-mono font-light',
+              active && 'text-primary/100 font-bold animate-flip',
             ])}
           >
             {title}

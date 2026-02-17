@@ -1,7 +1,6 @@
 @layer fonts, theme, base, components, utilities;
 
-@import './fonts/_inter.css' layer(fonts);
-@import './fonts/_jetbrains-mono.css' layer(fonts);
+@import './fonts/_pp-frama.css' layer(fonts);
 @import './fonts/_pp-supply-mono.css' layer(fonts);
 
 @import "tailwindcss/theme.css" layer(theme);
@@ -162,7 +161,7 @@
 
   html,
   body {
-    @apply h-full min-h-full font-inter antialiased scroll-smooth;
+    @apply h-full min-h-full font-sans antialiased scroll-smooth;
   }
 
   body {
@@ -182,33 +181,12 @@
   }
 }
 
+@utility container {
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
 @layer utilities {
-  .container {
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-
-    @media (width >= 40rem) {
-      max-width: 40rem;
-    }
-    @media (width >= 48rem) {
-      max-width: 48rem;
-    }
-    @media (width >= 64rem) {
-      max-width: 64rem;
-    }
-    @media (width >= 80rem) {
-      max-width: 80rem;
-    }
-    @media (width >= 96rem) {
-      max-width: 96rem;
-    }
-  }
-
-  .container-fluid {
-    @apply w-full max-w-9xl mx-auto ;
-  }
-
   .horizontal-writing-tb {
     writing-mode: horizontal-tb;
   }
@@ -234,37 +212,31 @@
   }
 }
 
+
 @layer components {
   .prose {
-    --tw-prose-body: var(--color-foreground);
-    --tw-prose-invert-body: var(--color-background);
-    --tw-prose-bullets: var(--color-primary);
-    --tw-prose-headings: var(--color-primary);
-    --tw-prose-hr: var(--color-primary);
-    --tw-prose-links: var(--color-inherit);
-
     p {
-      @apply text-foreground leading-normal my-4;
+      @apply text-inherit leading-normal my-4;
     }
 
     h2 {
-      @apply text-4xl font-mono font-bold leading-normal mb-1;
+      @apply text-inherit text-4xl font-mono font-bold leading-normal mb-1;
     }
 
     h3 {
-      @apply text-3xl font-mono font-semibold leading-snug mb-0;
+      @apply text-inherit text-3xl font-mono font-semibold leading-snug mb-0;
     }
 
     h4 {
-      @apply text-3xl font-sans font-bold leading-snug mb-0;
+      @apply text-inherit text-3xl font-bold leading-snug mb-0;
     }
 
     h5 {
-      @apply text-2xl font-sans font-semibold leading-snug mb-0;
+      @apply text-inherit text-2xl font-semibold leading-snug mb-0;
     }
 
     h6 {
-      @apply text-xl font-sans font-medium leading-snug mb-0;
+      @apply text-inherit text-xl font-medium leading-snug mb-0;
     }
 
     a {

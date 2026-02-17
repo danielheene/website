@@ -11,8 +11,8 @@ export interface BreadcrumbItem {
  * @example
  * ```typescript
  * const breadcrumbsLd = generateBreadcrumbList([
- *   { name: 'Home', url: 'https://danielheene.io' },
- *   { name: 'Blog', url: 'https://danielheene.io/blog' },
+ *   { name: 'Home', url: 'https://daniel.heene.io' },
+ *   { name: 'Blog', url: 'https://daniel.heene.io/blog' },
  *   { name: 'My Post' }
  * ])
  * ```

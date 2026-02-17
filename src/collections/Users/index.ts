@@ -12,7 +12,8 @@ export const Users: CollectionConfig = {
       icon: 'user',
     },
     useAsTitle: 'email',
-    group: AdminGroup.General,
+    disableCopyToLocale: true,
+    group: AdminGroup.Settings,
   },
   fields: [
     {

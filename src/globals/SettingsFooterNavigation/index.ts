@@ -28,7 +28,7 @@ const navFields: Field[] = [
 
 export const SettingsFooterNavigation: GlobalConfig<GlobalSlug.SettingsFooterNavigation> = {
   slug: GlobalSlug.SettingsFooterNavigation,
-  label: 'Footer Navigation',
+  label: 'Footer Nav',
   access: {
     read: authenticatedOrPublished,
     update: authenticated,
@@ -64,6 +64,11 @@ export const SettingsFooterNavigation: GlobalConfig<GlobalSlug.SettingsFooterNav
         {
           label: 'Social Links',
           name: 'socialLinks',
+          fields: navFields,
+        },
+        {
+          label: 'Legal Links',
+          name: 'legalLinks',
           fields: navFields,
         },
       ],

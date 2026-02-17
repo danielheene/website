@@ -44,10 +44,13 @@ export const ImageMedia = ({
 }: ImageMediaProps) => {
   const [loaded, setLoaded] = useState<boolean>(false)
 
-  const handleOnLoad = useCallback((_event: SyntheticEvent<HTMLImageElement>) => {
-    setLoaded(true)
-    onLoadAction(_event)
-  }, [])
+  const handleOnLoad = useCallback(
+    (_event: SyntheticEvent<HTMLImageElement>) => {
+      setLoaded(true)
+      onLoadAction(_event)
+    },
+    [onLoadAction],
+  )
 
   // NOTE: this is used by the browser to determine which image to download at different screen sizes
   const sizes = sizesFromProps ? sizesFromProps : ['(max-width: 768px) 100vw', '(max-width: 1200px) 50vw', '33vw'].join(', ')
@@ -58,9 +61,9 @@ export const ImageMedia = ({
         duoTone
           ? ({
               '--fg-color': 'var(--color-primary)',
-              '--bg-color': 'var(--color-white)',
-              '--bg-blend': 'multiply',
-              '--fg-blend': 'lighten',
+              '--bg-color': 'var(--color-background)',
+              '--bg-blend': 'lighten',
+              '--fg-blend': 'darken',
             } as CSSProperties)
           : {}
       }
@@ -69,7 +72,7 @@ export const ImageMedia = ({
         'h-full overflow-hidden p-0 relative',
 
         duoTone && [
-          'bg-(--bg-color)',
+          'bg-background',
           'before:absolute',
           'before:z-10',
           'before:left-0',
@@ -78,8 +81,9 @@ export const ImageMedia = ({
           'before:bottom-0',
           'before:w-full',
           'before:h-full',
-          'before:bg-(--fg-color)',
-          'before:[mix-blend-mode:var(--fg-blend)]',
+          'before:bg-primary',
+          'before:mix-blend-lighten',
+          'dark:before:mix-blend-darken',
         ],
 
         className,
@@ -93,7 +97,7 @@ export const ImageMedia = ({
           'h-full w-full max-w-full object-contain',
           'transition-opacity duration-500 ease-in-out',
 
-          duoTone && 'grayscale contrast-100 blur-0 [mix-blend-mode:var(--bg-blend)]',
+          duoTone && 'grayscale contrast-100 blur-0 mix-blend-darken dark:mix-blend-lighten',
           fill && 'object-cover',
 
           // loaded ? 'opacity-100' : 'opacity-0',

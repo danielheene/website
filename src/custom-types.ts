@@ -1,3 +1,4 @@
+import { ResumeExperienceGlobalData } from '@payload-types'
 import {
   BlockSlug as RegisteredBlockSlug,
   CollectionSlug as RegisteredCollectionSlug,
@@ -106,6 +107,9 @@ export type ResumeLayoutBlockData<S extends RegisteredGlobalSlug> = {
   blockType: `${PascalCase<S>}Block`
   data: GlobalData<S>
 }
+
+export type Skill = ResumeExperienceGlobalData['skillSummary'][keyof ResumeExperienceGlobalData['skillSummary']]
+export type SkillSummary = Record<keyof ResumeExperienceGlobalData['skillSummary'], Skill>
 
 export const COLLECTION_PREFIX_MAP: Partial<Record<CollectionSlug, string>> = {
   [CollectionSlug.Pages]: '',

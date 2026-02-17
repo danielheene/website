@@ -1,14 +1,14 @@
 import { BLOCKS } from '@/blocks'
 import { COLLECTIONS } from '@/collections'
+import { LinkField } from '@/fields/Link'
 import { GLOBALS } from '@/globals'
 import { generateContentURL } from '@/utilities/generateContentURL'
 import { useSendAdapter } from '@/utilities/useSendAdapter'
-import { CollectionSlug, GlobalSlug } from '@custom-types'
+import { CollectionSlug } from '@custom-types'
 import { BlogCategory } from '@payload-types'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { redisKVAdapter } from '@payloadcms/kv-redis'
 import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
-import { seoPlugin } from '@payloadcms/plugin-seo'
 import {
   AlignFeature,
   BlockquoteFeature,
@@ -33,7 +33,6 @@ import {
   UploadFeature,
 } from '@payloadcms/richtext-lexical'
 import { s3Storage } from '@payloadcms/storage-s3'
-import { template } from 'lodash-es'
 import * as process from 'node:process'
 import path from 'path'
 import { buildConfig } from 'payload'
@@ -126,7 +125,6 @@ export const config = buildConfig({
       defaultTimezone: 'Europe/Berlin',
     },
     user: CollectionSlug.Users,
-    avatar: 'default',
   },
   blocks: BLOCKS,
   csrf: [process.env.NEXT_PUBLIC_SERVER_URL],
@@ -161,7 +159,9 @@ export const config = buildConfig({
       /* indent feature */
       IndentFeature(),
 
-      LinkFeature(),
+      LinkFeature({
+        fields: LinkField()['fields'],
+      }),
       RelationshipFeature(),
       UploadFeature(),
       HorizontalRuleFeature(),
@@ -266,20 +266,6 @@ export const config = buildConfig({
       parentFieldSlug: 'parent',
       breadcrumbsFieldSlug: 'breadcrumbs',
     }),
-    seoPlugin({
-      generateTitle: async ({ doc: { title }, req }) => {
-        const { titleTemplate, siteName } = await req.payload.findGlobal({
-          slug: GlobalSlug.SettingsSiteMeta,
-          draft: false,
-        })
-
-        const compiled = template(titleTemplate, { interpolate: /{{([\s\S]+?)}}/g })
-        return compiled({ title, siteName })
-      },
-      // generateDescription
-      generateImage: ({ doc }) => doc?.heroImage?.url,
-      generateURL: ({ doc: { slug }, collectionSlug }) => generateContentURL({ collection: collectionSlug, slug }).toString(),
-    }),
     s3Storage({
       enabled: true,
       collections: {
@@ -288,6 +274,12 @@ export const config = buildConfig({
         },
         [CollectionSlug.MediaVideos]: {
           prefix: 'videos',
+          signedDownloads: {
+            shouldUseSignedURL: ({ filename }) => {
+              return filename.endsWith('.mp4')
+            },
+            expiresIn: 3600,
+          },
         },
         [CollectionSlug.MediaDocuments]: {
           prefix: 'documents',
@@ -297,6 +289,7 @@ export const config = buildConfig({
         },
       },
       bucket: process.env.S3_BUCKET,
+
       config: {
         credentials: {
           accessKeyId: process.env.S3_ACCESS_KEY!,

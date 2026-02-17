@@ -50,6 +50,14 @@ export const SettingsSiteMeta: GlobalConfig = {
       },
     },
     {
+      name: 'category',
+      type: 'text',
+      defaultValue: 'website',
+      admin: {
+        description: 'This category is used for generating website metadata.',
+      },
+    },
+    {
       name: 'description',
       type: 'textarea',
       admin: {

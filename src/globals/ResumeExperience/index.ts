@@ -13,13 +13,20 @@ export const ResumeExperience: GlobalConfig<GlobalSlug.ResumeExperience> = {
   label: 'Experience',
   access: {
     read: authenticatedOrPublished,
+    readVersions: authenticated,
     update: authenticated,
   },
   hooks: {
-    afterChange: [calculateSkillSummary, revalidateResumeSection(GlobalSlug.ResumeExperience)],
+    beforeChange: [calculateSkillSummary],
+    afterChange: [revalidateResumeSection(GlobalSlug.ResumeExperience)],
   },
   admin: {
     group: AdminGroup.Resume,
+    components: {
+      elements: {
+        beforeDocumentControls: ['@/components/AdminPanel#LanguageToggle'],
+      },
+    },
   },
   typescript: { interface: 'ResumeExperienceGlobalData' },
   fields: [

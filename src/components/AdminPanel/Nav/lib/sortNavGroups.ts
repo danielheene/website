@@ -2,6 +2,8 @@ import { AdminGroup, CollectionSlug, GlobalSlug } from '@custom-types'
 import { NavGroupType } from '@payloadcms/ui/utilities/groupNavItems'
 
 const NAV_GROUP_SORTING_ORDER = [
+  [AdminGroup.General, [CollectionSlug.Pages]],
+  [AdminGroup.Blog, [CollectionSlug.BlogPosts, CollectionSlug.BlogCategories, CollectionSlug.BlogTags]],
   [
     AdminGroup.Resume,
     [
@@ -13,11 +15,16 @@ const NAV_GROUP_SORTING_ORDER = [
       GlobalSlug.ResumeDownloads,
     ],
   ],
-  [AdminGroup.Blog, [CollectionSlug.BlogPosts, CollectionSlug.BlogCategories, CollectionSlug.BlogTags]],
-  [AdminGroup.General, [CollectionSlug.Pages, CollectionSlug.MediaImages, CollectionSlug.Users]],
+  [AdminGroup.Media, [CollectionSlug.MediaImages, CollectionSlug.MediaVideos, CollectionSlug.MediaAudio, CollectionSlug.MediaDocuments]],
   [
     AdminGroup.Settings,
-    [GlobalSlug.SettingsUserMeta, GlobalSlug.SettingsHeaderNavigation, GlobalSlug.SettingsFooterNavigation, GlobalSlug.SettingsSiteMeta],
+    [
+      GlobalSlug.SettingsSiteMeta,
+      GlobalSlug.SettingsUserMeta,
+      GlobalSlug.SettingsHeaderNavigation,
+      GlobalSlug.SettingsFooterNavigation,
+      CollectionSlug.Users,
+    ],
   ],
 ] as const
 

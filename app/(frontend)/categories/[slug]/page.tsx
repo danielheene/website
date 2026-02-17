@@ -2,7 +2,7 @@ import { Headline } from '@/components/Headline'
 import { PageContainer } from '@/components/PageContainer'
 import RichText from '@/components/RichText'
 import { generateMeta } from '@/utilities/generateMeta'
-import { JsonLd, generateCollectionPage, generateBreadcrumbList } from '@/utilities/jsonLd'
+import { generateBreadcrumbList, generateCollectionPage, JsonLd } from '@/utilities/jsonLd'
 import { CollectionSlug } from '@custom-types'
 
 import configPromise from '@payload-config'
@@ -39,13 +39,13 @@ export default async function Page({ params: paramsPromise }: PageProps) {
   const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://danielheene.de'
   const categoryUrl = `${baseUrl}/categories/${slug}`
 
-  // Generate CollectionPage schema
+  // Generate CollectionPage Schema
   const collectionPageSchema = generateCollectionPage({
     name: title,
     url: categoryUrl,
   })
 
-  // Generate BreadcrumbList schema
+  // Generate BreadcrumbList Schema
   const breadcrumbSchema = generateBreadcrumbList([
     { name: 'Home', url: baseUrl },
     { name: 'Categories', url: `${baseUrl}/categories` },

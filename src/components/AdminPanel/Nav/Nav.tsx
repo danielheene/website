@@ -1,3 +1,4 @@
+import { isMediaImage } from '@/lib/typeGuards'
 import { RenderServerComponent } from '@payloadcms/ui/elements/RenderServerComponent'
 import { ServerProps } from 'payload'
 import { FC } from 'react'
@@ -71,7 +72,7 @@ export const Nav: FC<ServerProps> = async (props) => {
       })}
       <NavFooter
         user={{
-          avatar: Object.hasOwn(user, 'avatar') && typeof user.avatar === 'object' ? user.avatar.url : 'default',
+          avatar: isMediaImage(user.avatar) && user.avatar.url,
           name: user.name || '',
           email: user.email,
         }}

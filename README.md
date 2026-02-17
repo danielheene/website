@@ -1,53 +1,147 @@
-# website
+# Personal Website - Daniel Heene
 
-> This repository contains all code relevant to my personal website: http://daniel.heene.io which was initially based on
-> official [Payload Website Template](https://github.com/payloadcms/payload/blob/main/templates/website).
+This repository contains the source code for my personal website: [daniel.heene.io](https://daniel.heene.io).
 
-## development
+## Tech Stack
 
-**prerequisites**:
+- **Framework**: [Next.js 15](https://nextjs.org/) (App Router, React 19)
+- **CMS**: [Payload CMS 3.x](https://payloadcms.com/)
+- **Database**: [MongoDB](https://www.mongodb.com/) (via Mongoose)
+- **Cache/KV**: [Redis](https://redis.io/)
+- **Storage**: S3-compatible storage (local Minio in development)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
+- **Analytics**: [Umami](https://umami.is/) (Optional)
+- **Email**: [UseSend](https://usesend.com/) (Optional)
 
-- I used the Vercel Blob Storage to store media files. Either you also use this and provide the token as
-  `BLOB_READ_WRITE_TOKEN` or you replace the storage plugin with another adapter.
+## Requirements
 
-- I used the Vercel Postgres integration as database, but any other PostgresSQL database should also work. Simply enter
-  the connection string as `DATABASE_URL`
+- **Node.js**: `^22.0.0`
+- **pnpm**: `^10.0.0`
+- **Docker**: For running local database, cache, and storage services.
 
-**start local development**:
+## Setup & Local Development
 
+### 1. Environment Configuration
+
+Copy the example environment file and fill in the required secrets:
+
+```bash
+cp .env.example .env.local
 ```
-cp .env.example .env.local // adjust variables
+
+### 2. Start Services
+
+Launch the infrastructure (MongoDB, Redis, and Minio) using Docker Compose:
+
+```bash
+docker compose up -d
+```
+
+### 3. Install Dependencies
+
+```bash
 pnpm install
-pnpm run dev:app 
 ```
 
-**seed some data**:
+### 4. Generate Payload Artifacts
 
-During the development process i put part of my portfolio data into a seed function to be able to start test
-environments faster. As a logged in user you can call `/api/seed` and import this data.
+Payload requires generated TypeScript types and an import map for the admin panel:
 
-**ATTENTION**: this route should be deactivated if there are more users planned
+```bash
+pnpm generate
+```
 
------
+### 5. Run the Application
 
-### notable features:
+Start the development server:
 
-- **image metadata**: when uploading images, their average brightness, the most prominent colors as well as a BlurHash
-  are calculated
-- **embedded svgs**: to be able to adapt the logos of the previous clients to the website theme, the svgs are sent to an
-  internal APi to sanitize them and adapt their properties
+```bash
+pnpm dev
+```
 
-### planned features:
+- **Frontend**: [http://localhost:3000](http://localhost:3000)
+- **Admin Panel**: [http://localhost:3000/admin](http://localhost:3000/admin)
 
-- **Blog**: In the future I would like to use this site as a blog as well, which is why the backend has already been
-  adapted to this in places
-- **Storybook**: Some components already have matching stories, but currently no storybook is deployed, because I would
-  have to detach the deployment from vercel.
-- **Testing**: To implement tests, it would also have been necessary to detach the deployment from Vercel. But I haven't
-  had the time to do this yet
+## Environment Variables
+
+The project uses several environment variables for configuration. See `.env.example` for a complete list of required variables.
+
+- `DATABASE_URL`: MongoDB connection string.
+- `PAYLOAD_SECRET`: Secret used to encrypt Payload JWT tokens.
+- `PREVIEW_SECRET`: Secret used for Next.js/Payload draft previews.
+- `CRON_SECRET`: Secret for triggering cron tasks.
+- `NEXT_PUBLIC_SERVER_URL`: The public URL of the server.
+- `REDIS_URL`: Redis connection URL.
+- `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `S3_BUCKET`, `S3_REGION`, `S3_ENDPOINT`: S3-compatible storage configuration.
+- `USESEND_API_KEY`, `USESEND_URL`, `USESEND_DEFAULT_FROM_ADDRESS`, `USESEND_DEFAULT_FROM_NAME` (optional): Email provider configuration.
+- `UMAMI_HOST_URL`, `UMAMI_WEBSITE_ID` (optional): Analytics rewrite and site ID.
+
+## Available Scripts
+
+- `pnpm dev`: Starts the Next.js development server.
+- `pnpm build`: Builds the application for production.
+- `pnpm start`: Starts the production server.
+- `pnpm generate`: Runs `generate:types` and `generate:importmap` in parallel.
+- `pnpm payload`: Wrapper for Payload CLI.
+- `pnpm payload migrate`: Runs database migrations.
+- `pnpm ci`: Sequence for CI/CD (migration + build).
+- `pnpm lint`: Runs ESLint for code quality.
+
+## Project Structure
+
+```text
+.
+├── app/                  # Next.js App Router (Frontend and Payload routes)
+├── src/                  # Application Source
+│   ├── access/           # Payload Access Control
+│   ├── blocks/           # Reusable Payload Blocks
+│   ├── collections/      # Payload Collections (Media, Pages, Posts, etc.)
+│   ├── components/       # React Components
+│   ├── fields/           # Custom Payload Fields
+│   ├── globals/          # Payload Globals (Settings, Navigation, etc.)
+│   ├── migrations/       # Database Migrations
+│   ├── styles/           # CSS and Tailwind Styles
+│   └── utilities/        # Shared Utilities
+├── public/               # Static Assets
+├── tests/                # Unit and Integration Tests
+├── docker-compose.yml    # Local Infrastructure
+└── next.config.ts        # Next.js Configuration
+```
+
+## Entrypoints
+
+- Next.js App Router under `app/` (served via `pnpm dev` / `pnpm start`).
+- Payload CMS is configured in `src/payload.config.ts` and integrated via `withPayload` in `next.config.ts`.
+- File uploads are handled by Payload collections with the S3 storage plugin configured in `src/payload.config.ts`.
+
+## Testing
+
+The project uses the built-in Node.js test runner.
+
+- **Run all tests**: `node --test`
+- **Target specific test**: `node --test path/to/file.test.js`
+
+Tests are typically located in the `tests/` directory or co-located with source files using the `.test.js` extension.
+
+## Features
+
+- **Media Optimization**: Images are stored in S3 and automatically generate `alt` text and `blurDataURL` on upload using `sharp`.
+- **SVG Optimization**: Optimize SVGs for logos using `svgo` in the admin UI. TODO: Confirm if any server-side sanitization endpoint is used.
+- **Localization**: Full support for English (`en`) and German (`de`) with localized admin panel and content.
+- **Modern Styling**: Powered by Tailwind CSS v4.
+
+### Data Seeding (TODO)
+
+- Previous docs referenced a `/api/seed` route, but it is not present in the current codebase.
+- TODO: If seeding is needed, add a dedicated script or route and document usage here.
+
+## CI / Deployment
+
+- CI entrypoint: `pnpm ci` runs `payload migrate` then `next build`.
+- TODO: Document hosting provider and production environment configuration (e.g., Docker, Vercel, Fly.io).
 
 ---
 
-#### Legacy Code 
+#### Legacy Code
 
-The following code of my previous websites is no longer maintained, but a dump of their code bases can still be found under the following tags: [website-v2](https://github.com/danielheene/website/tree/homepage-v2) | [website-v1](https://github.com/danielheene/website/tree/homepage-v1). 
+The following code of my previous websites is no longer maintained, but a dump of their code bases can still be found under the following tags: [website-v2](https://github.com/danielheene/website/tree/homepage-v2) | [website-v1](https://github.com/danielheene/website/tree/homepage-v1).

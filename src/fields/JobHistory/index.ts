@@ -84,20 +84,6 @@ export const JobHistoryField = (): ArrayField => ({
       ],
     },
 
-    // RichTextField({
-    //   name: 'content',
-    //   editorVariant: 'inline',
-    //
-    // }),
-    {
-      type: 'relationship',
-      relationTo: 'blog-tags',
-      name: 'tags',
-      hasMany: true,
-      admin: {
-        appearance: 'select',
-      },
-    },
     TagList({
       name: 'technologies',
     }),

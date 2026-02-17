@@ -1,68 +1,63 @@
 import { Button, type ButtonProps } from '@/components/Button'
+import { Icon } from '@/components/Icon'
 import { cn } from '@/utilities/cn'
+import { generateContentPath } from '@/utilities/generateContentURL'
+
+import type { LinkFieldData } from '@payload-types'
 import Link from 'next/link'
 import React from 'react'
 
-import type { BlogCategory, BlogPost, BlogTag, Page } from '@payload-types'
-import { CollectionSlug } from '@custom-types'
-
-type CMSLinkType = {
+type CMSLinkType = LinkFieldData & {
   appearance?: 'inline' | ButtonProps['variant']
   children?: React.ReactNode
   className?: string
-  label?: string
   newTab?: boolean
-  reference?:
-    | ({
-        relationTo: `${CollectionSlug.Pages}`
-        value: string | Page
-      } | null)
-    | ({
-        relationTo: `${CollectionSlug.BlogPosts}`
-        value: string | BlogPost
-      } | null)
-    | ({
-        relationTo: `${CollectionSlug.BlogCategories}`
-        value: string | BlogCategory
-      } | null)
-    | ({
-        relationTo: `${CollectionSlug.BlogTags}`
-        value: string | BlogTag
-      } | null)
   size?: ButtonProps['size']
-  type?: 'custom' | 'reference' | 'mailto'
-  url?: string
 }
 
 export const CMSLink: React.FC<CMSLinkType> = (props) => {
-  const { type, appearance = 'inline', children, className, label, newTab, reference, size: sizeFromProps, url } = props
+  const {
+    type,
+    appearance = 'inline',
+    icon,
+    iconOnly,
+    cc,
+    subject,
+    address,
+    children,
+    className,
+    label,
+    newTab,
+    reference,
+    size: sizeFromProps,
+    url,
+  } = props
 
   const href =
     type === 'reference' && typeof reference?.value === 'object' && reference.value.slug
-      ? `${reference?.relationTo !== CollectionSlug.Pages ? `/${reference?.relationTo}` : ''}/${reference.value.slug}`
-      : url
+      ? generateContentPath(reference?.relationTo, reference.value.slug)
+      : type === 'mailto'
+        ? `mailto:${address}?subject=${subject || ''}&cc=${cc || ''}`
+        : url
 
   if (!href) return null
 
   const size = appearance === 'link' ? 'clear' : sizeFromProps
   const newTabProps = newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {}
 
-  /* Ensure we don't break any styles set by richText */
-  if (appearance === 'inline') {
-    return (
-      <Link className={cn(className)} href={href || url} {...newTabProps}>
-        {label && label}
-        {children && children}
-      </Link>
-    )
-  }
+  const link = (
+    <Link className={cn(className)} href={href || url} {...newTabProps} {...(icon && iconOnly ? { 'aria-label': label } : {})}>
+      {icon && <Icon icon={icon} />}
+      {((icon && !iconOnly) || !icon) && label && <span>{label}</span>}
+      {((icon && !iconOnly) || !icon) && children && children}
+    </Link>
+  )
 
-  return (
+  return appearance === 'inline' ? (
+    link
+  ) : (
     <Button asChild className={className} size={size} variant={appearance}>
-      <Link className={cn(className)} href={href || url} {...newTabProps}>
-        {label && label}
-        {children && children}
-      </Link>
+      {link}
     </Button>
   )
 }

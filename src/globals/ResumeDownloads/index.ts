@@ -11,6 +11,7 @@ export const ResumeDownloads: GlobalConfig<GlobalSlug.ResumeDownloads> = {
   label: 'Downloads',
   access: {
     read: authenticatedOrPublished,
+    readVersions: authenticated,
     update: authenticated,
   },
   hooks: {

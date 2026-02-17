@@ -1,48 +1,38 @@
-import type { BlogCategory, BlogPost, BlogTag, Config, MediaImage, Page } from '@payload-types'
+import { getCachedSiteMetaData } from '@/lib/getSiteMetaData'
+import { getCachedUserMetaData } from '@/lib/getUserMetaData'
+import type { BlogCategory, BlogPost, BlogTag, Page } from '@payload-types'
+import { template } from 'lodash-es'
 import type { Metadata } from 'next'
-import { mergeOpenGraph } from './mergeOpenGraph'
 
-const getImageURL = (image?: MediaImage | Config['db']['defaultIDType'] | null) => {
-  const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL
-
-  let url = serverUrl + '/website-template-OG.webp'
-
-  if (image && typeof image === 'object' && 'url' in image) {
-    /* @ts-ignore */
-    const ogUrl = image.sizes?.og?.url
-
-    url = ogUrl ? serverUrl + ogUrl : serverUrl + image.url
-  }
-
-  return url
+interface GenerateMetaArgs {
+  doc: Partial<Page> | Partial<BlogPost> | Partial<BlogCategory> | Partial<BlogTag> | null
 }
 
-export const generateMeta = async (args: {
-  doc: Partial<Page> | Partial<BlogPost> | Partial<BlogCategory> | Partial<BlogTag> | null
-}): Promise<Metadata> => {
-  const { doc } = args
+export const generateMeta = async ({ doc }: GenerateMetaArgs): Promise<Metadata> => {
+  const { siteName, siteUrl, titleTemplate, description, keywords, category } = await getCachedSiteMetaData()
+  const { name, url } = await getCachedUserMetaData()
+
+  const titleGenerator = template(titleTemplate, { interpolate: /{{([\s\S]+?)}}/g })
   /* @ts-ignore */
-  const ogImage = getImageURL(doc?.meta?.image)
+  // const ogImage = getImageURL(doc?.meta?.image)
 
   /* @ts-ignore */
-  const title = doc?.meta?.title ? doc?.meta?.title + ' | Payload Website Template' : 'Payload Website Template'
 
   return {
-    /* @ts-ignore */
-    description: doc?.meta?.description,
-    openGraph: mergeOpenGraph({
-      /* @ts-ignore */
-      description: doc?.meta?.description || '',
-      images: ogImage
-        ? [
-            {
-              url: ogImage,
-            },
-          ]
-        : undefined,
-      title,
-      url: Array.isArray(doc?.slug) ? doc?.slug.join('/') : '/',
-    }),
-    title,
+    title: titleGenerator({ title: doc.title || '', siteName }),
+    description,
+    keywords: keywords.map(({ label }) => label).join(','),
+    category,
+    creator: name,
+    authors: [{ name, url }],
+    robots: {
+      index: true,
+      follow: true,
+    },
+    // openGraph: {
+    //   type: 'website',
+    //   title: titleGenerator({ title: doc.title || '', siteName }),
+    //   description,
+    // },
   }
 }

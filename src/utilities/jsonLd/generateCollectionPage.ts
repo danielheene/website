@@ -10,11 +10,11 @@ export interface CollectionPageData {
  * Generates CollectionPage JSON-LD
  *
  * @example
- * ```typescript
+ * ```
  * const collectionPageLd = generateCollectionPage({
  *   name: 'Category: TypeScript',
  *   description: 'Posts categorized under TypeScript.',
- *   url: 'https://danielheene.io/blog/categories/typescript'
+ *   url: 'https://daniel.heene.io/blog/categories/typescript'
  * })
  * ```
  */

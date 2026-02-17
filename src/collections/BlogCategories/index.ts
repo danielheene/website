@@ -1,5 +1,6 @@
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
+import { MetaField } from '@/fields/Meta'
 import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
@@ -64,6 +65,7 @@ export const BlogCategories: CollectionConfig<CollectionSlug.BlogCategories> = {
     group: AdminGroup.Blog,
     useAsTitle: 'title',
     defaultColumns: ['title', 'breadcrumbsPath', 'slug'],
+    disableCopyToLocale: true,
     livePreview: {
       url: ({ data }) => generatePreviewPath(CollectionSlug.BlogCategories, data.slug),
     },
@@ -151,6 +153,10 @@ export const BlogCategories: CollectionConfig<CollectionSlug.BlogCategories> = {
               },
             },
           ],
+        },
+        {
+          label: 'SEO',
+          fields: [MetaField()],
         },
       ],
     },

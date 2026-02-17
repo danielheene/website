@@ -11,6 +11,7 @@ export const ResumeProjects: GlobalConfig<GlobalSlug.ResumeProjects> = {
   label: 'Projects',
   access: {
     read: authenticatedOrPublished,
+    readVersions: authenticated,
     update: authenticated,
   },
   hooks: {

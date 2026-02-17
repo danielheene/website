@@ -12,6 +12,7 @@ export const ResumeCustomers: GlobalConfig<GlobalSlug.ResumeCustomers> = {
   label: 'Customers',
   access: {
     read: authenticatedOrPublished,
+    readVersions: authenticated,
     update: authenticated,
   },
   hooks: {

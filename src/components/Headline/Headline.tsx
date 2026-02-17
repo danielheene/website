@@ -1,5 +1,5 @@
-import React, { memo, ReactNode, useMemo } from 'react'
 import { cn } from '@/utilities/cn'
+import React, { memo, ReactNode, useMemo } from 'react'
 
 interface HeadlineProps extends React.HTMLAttributes<HTMLHeadingElement> {
   children: ReactNode
@@ -8,13 +8,7 @@ interface HeadlineProps extends React.HTMLAttributes<HTMLHeadingElement> {
   className?: string
 }
 
-export const Headline = memo(function Headline({
-  children,
-  as,
-  variant = 'default',
-  className = '',
-  ...otherProps
-}: HeadlineProps) {
+export const Headline = memo(function Headline({ children, as, variant = 'default', className = '', ...otherProps }: HeadlineProps) {
   const Comp = useMemo(() => {
     if (variant === 'page-title') return as ?? 'h1'
     if (variant === 'section') return as ?? 'h2'
@@ -25,11 +19,11 @@ export const Headline = memo(function Headline({
   return (
     <Comp
       className={cn([
-        variant === 'default' && 'font-mono',
-        variant === 'page-title' &&
-          'container text-6xl leading-tight text-primary font-pp-supply-mono',
-        variant === 'section' && 'text-5xl text-inherit font-pp-supply-mono',
-        variant === 'subline' && 'text-3xl text-inherit font-mono',
+        'font-mono text-inherit',
+        variant === 'page-title' && 'text-6xl leading-tight',
+        variant === 'section' && 'text-5xl',
+        variant === 'subline' && 'text-3xl',
+        variant === 'default' && 'text-xl',
         className,
       ])}
       {...otherProps}

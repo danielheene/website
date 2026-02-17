@@ -6,8 +6,6 @@ import { TitleField } from '@/fields/Title'
 import { generatePreviewPath } from '@/payload/utilities/generatePreviewPath'
 import { AdminGroup, CollectionSlug } from '@custom-types'
 import { BlogPost } from '@payload-types'
-
-import { MetaDescriptionField, MetaImageField, MetaTitleField, OverviewField, PreviewField } from '@payloadcms/plugin-seo/fields'
 import { CollectionConfig } from 'payload'
 import { revalidateBlogPost } from './hooks/revalidateBlogPost'
 
@@ -90,48 +88,14 @@ export const BlogPosts: CollectionConfig<CollectionSlug.BlogPosts> = {
       relationTo: CollectionSlug.BlogPosts,
     },
 
-    /* -------------- Tabs Content -------------- */
-    {
-      type: 'tabs',
-      tabs: [
-        {
-          label: 'Content',
-          fields: [
-            RichTextField({
-              name: 'content',
-              editorVariant: 'caption',
-              overrides: {
-                label: false,
-              },
-            }),
-          ],
-        },
-        {
-          name: 'meta',
-          label: 'SEO',
-          fields: [
-            OverviewField({
-              titlePath: 'meta.title',
-              descriptionPath: 'meta.description',
-              imagePath: 'meta.image',
-            }),
-            MetaTitleField({
-              hasGenerateFn: true,
-            }),
-            MetaImageField({
-              hasGenerateFn: true,
-              relationTo: CollectionSlug.MediaImages,
-            }),
-            MetaDescriptionField({}),
-            PreviewField({
-              hasGenerateFn: true,
-              titlePath: 'meta.title',
-              descriptionPath: 'meta.description',
-            }),
-          ],
-        },
-      ],
-    },
+    /* -------------- Content -------------- */
+    RichTextField({
+      name: 'content',
+      editorVariant: 'caption',
+      overrides: {
+        label: false,
+      },
+    }),
   ],
   trash: true,
   versions: {

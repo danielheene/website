@@ -24,7 +24,7 @@
     }
 
     &__icon {
-      @apply w-[1em] h-[1em] mr-0;
+      @apply w-[1em] h-[1em] ml-0.5 mr-0;
 
       .nav-link--open & {
         @apply md:mr-2;

@@ -28,7 +28,7 @@ export const Pages: CollectionConfig<CollectionSlug.Pages> = {
       if (!user) return false
       return {
         slug: {
-          not_in: ['home', 'resume'],
+          not_in: ['home', 'resume', 'about-me', 'legal-notice', 'privacy-policy'],
         },
       }
     },
@@ -40,6 +40,7 @@ export const Pages: CollectionConfig<CollectionSlug.Pages> = {
     group: AdminGroup.General,
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'updatedAt'],
+    disableCopyToLocale: true,
     livePreview: {
       url: ({ data }) => generatePreviewPath(CollectionSlug.Pages, data.slug),
     },
@@ -65,7 +66,6 @@ export const Pages: CollectionConfig<CollectionSlug.Pages> = {
     /* -------------- Sidebar Content -------------- */
     SlugField({ fieldToUse: 'title' }),
 
-    /* -------------- Virtual Fields -------------- */
     {
       type: 'select',
       name: 'layout',
@@ -99,6 +99,11 @@ export const Pages: CollectionConfig<CollectionSlug.Pages> = {
               hasMany: true,
               displayPreview: true,
               label: false,
+              admin: {
+                disableListColumn: true,
+                disableListFilter: true,
+                disableGroupBy: true,
+              },
             },
             {
               name: 'contentType',
@@ -108,6 +113,11 @@ export const Pages: CollectionConfig<CollectionSlug.Pages> = {
                 { label: 'Use Title as Hero Content', value: 'title' },
                 { label: 'Use Custom Content', value: 'custom' },
               ],
+              admin: {
+                disableListColumn: true,
+                disableListFilter: true,
+                disableGroupBy: true,
+              },
             },
             RichTextField({
               name: 'content',
@@ -115,6 +125,9 @@ export const Pages: CollectionConfig<CollectionSlug.Pages> = {
               overrides: {
                 admin: {
                   condition: ({ hero }) => hero.contentType === 'custom',
+                  disableListColumn: true,
+                  disableListFilter: true,
+                  disableGroupBy: true,
                 },
               },
             }),
@@ -131,6 +144,11 @@ export const Pages: CollectionConfig<CollectionSlug.Pages> = {
               blockReferences: BLOCK_SLUGS,
               minRows: 1,
               filterOptions: ({ data }: FilterOptionsProps<Page>) => getFilteredBlocks(data),
+              admin: {
+                disableListColumn: true,
+                disableListFilter: true,
+                disableGroupBy: true,
+              },
             },
           ],
         },

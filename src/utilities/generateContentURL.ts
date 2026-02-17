@@ -2,14 +2,12 @@ import { COLLECTION_PREFIX_MAP } from '@custom-types'
 
 export const generateContentPath = (collection: string, slug: string = ''): string => {
   const path = [COLLECTION_PREFIX_MAP[collection], slug]
-
   return path.reduce((acc, curr) => {
-    if (typeof curr === 'string' && curr !== '' && curr !== '/' && curr !== 'home') {
-      return `${acc}/${curr}`
-    } else {
-      return acc
+    if (curr !== 'home') {
+      return acc.endsWith('/') ? `${acc}${curr}` : `${acc}/${curr}`
     }
-  }, '')
+    return acc
+  }, '/')
 }
 
 type GenerateContentURLProps =

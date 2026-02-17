@@ -50,7 +50,7 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": false,
-    "target": "es6"
+    "target": "esnext"
   },
   "exclude": [
     "node_modules",

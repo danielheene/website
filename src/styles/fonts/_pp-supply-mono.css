@@ -4,7 +4,7 @@
   font-style: normal;
   font-display: swap;
   font-weight: 100;
-  src: url(/fonts/pp-supply-mono/pp-supply-mono-100.woff2) format('woff2');
+  src: url(/fonts/pp-supply-mono/pp-supply-mono-200.woff2) format('woff2');
 }
 
 /* pp-supply-mono-200 */
@@ -13,7 +13,7 @@
   font-style: normal;
   font-display: swap;
   font-weight: 200;
-  src: url(/fonts/pp-supply-mono/pp-supply-mono-100.woff2) format('woff2');
+  src: url(/fonts/pp-supply-mono/pp-supply-mono-200.woff2) format('woff2');
 }
 
 /* pp-supply-mono-300 */
@@ -22,7 +22,7 @@
   font-style: normal;
   font-display: swap;
   font-weight: 300;
-  src: url(/fonts/pp-supply-mono/pp-supply-mono-100.woff2) format('woff2');
+  src: url(/fonts/pp-supply-mono/pp-supply-mono-400.woff2) format('woff2');
 }
 
 /* pp-supply-mono-400 */
@@ -40,7 +40,7 @@
   font-style: normal;
   font-display: swap;
   font-weight: 500;
-  src: url(/fonts/pp-supply-mono/pp-supply-mono-400.woff2) format('woff2');
+  src: url(/fonts/pp-supply-mono/pp-supply-mono-500.woff2) format('woff2');
 }
 
 /* pp-supply-mono-600 */
@@ -49,7 +49,7 @@
   font-style: normal;
   font-display: swap;
   font-weight: 600;
-  src: url(/fonts/pp-supply-mono/pp-supply-mono-400.woff2) format('woff2');
+  src: url(/fonts/pp-supply-mono/pp-supply-mono-500.woff2) format('woff2');
 }
 
 /* pp-supply-mono-700 */
@@ -58,7 +58,7 @@
   font-style: normal;
   font-display: swap;
   font-weight: 700;
-  src: url(/fonts/pp-supply-mono/pp-supply-mono-400.woff2) format('woff2');
+  src: url(/fonts/pp-supply-mono/pp-supply-mono-700.woff2) format('woff2');
 }
 
 /* pp-supply-mono-800 */
@@ -67,7 +67,7 @@
   font-style: normal;
   font-display: swap;
   font-weight: 800;
-  src: url(/fonts/pp-supply-mono/pp-supply-mono-400.woff2) format('woff2');
+  src: url(/fonts/pp-supply-mono/pp-supply-mono-700.woff2) format('woff2');
 }
 
 /* pp-supply-mono-900 */
@@ -76,5 +76,5 @@
   font-style: normal;
   font-display: swap;
   font-weight: 900;
-  src: url(/fonts/pp-supply-mono/pp-supply-mono-400.woff2) format('woff2');
+  src: url(/fonts/pp-supply-mono/pp-supply-mono-700.woff2) format('woff2');
 }

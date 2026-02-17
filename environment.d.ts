@@ -28,4 +28,6 @@ namespace NodeJS {
 
     OPENAI_API_KEY: string
   }
+
+  type ReadableStream = import('typescript').ReadableStream
 }

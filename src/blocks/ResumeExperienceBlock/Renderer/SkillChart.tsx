@@ -1,19 +1,20 @@
 'use client'
 
 import { cn } from '@/utilities/cn'
-import { memo, useCallback, useMemo, useState } from 'react'
 import { useIntersectionObserver } from '@/utilities/useIntersectionObserver'
-
-type SkillSummary = Record<string, { label: string; time: number }>
+import { SkillSummary } from '@custom-types'
+import { memo, useCallback, useMemo, useState } from 'react'
 
 interface ResumeExperienceSectionSkillChartProps {
   skillSummary: SkillSummary
   className?: string
+  maxSkillsToShow?: number
 }
 
-export const SkillChart = memo(function ResumeExperienceSectionSkillSummary({
+export const SkillChart = memo(function SkillChart({
   skillSummary,
   className,
+  maxSkillsToShow = 5,
 }: ResumeExperienceSectionSkillChartProps) {
   const [inView, ref] = useIntersectionObserver<HTMLDivElement>({
     triggerOnce: true,
@@ -23,12 +24,17 @@ export const SkillChart = memo(function ResumeExperienceSectionSkillSummary({
 
   const [transitionStage, setTransitionStage] = useState<number>(0)
 
-  const largestSkillTime = useMemo(
-    () => Object.values(skillSummary).reduce((prev, { time: curr }) => (curr > prev ? curr : prev), 0),
-    [skillSummary],
+  const renderedSkills = useMemo(
+    () =>
+      Object.values(skillSummary)
+        .sort(({ time: aTime }, { time: bTime }) => bTime - aTime)
+        .slice(0, maxSkillsToShow),
+    [skillSummary, maxSkillsToShow],
   )
 
-  const calculateSkillWidth = useCallback((time: number) => `${(time / largestSkillTime) * 100}%`, [])
+  const largestSkillTime = useMemo(() => renderedSkills.reduce((prev, { time: curr }) => (curr > prev ? curr : prev), 0), [renderedSkills])
+
+  const calculateSkillWidth = useCallback((time: number) => `${Math.round((time / largestSkillTime) * 100)}%`, [largestSkillTime])
 
   const nextTransitionWhen = useCallback((whenStage: number) => {
     setTransitionStage((prev) => {
@@ -45,11 +51,11 @@ export const SkillChart = memo(function ResumeExperienceSectionSkillSummary({
       onTransitionEnd={() => nextTransitionWhen(0)}
     >
       <div className="border-l-4 border-white w-full flex flex-col nowrap gap-2 py-4 ">
-        {Object.entries(skillSummary).map(([key, { label, time }], index) => {
+        {renderedSkills.map(({ label, time }, index) => {
           const width = calculateSkillWidth(time)
 
           return (
-            <div key={key} className={cn('relative block h-10')}>
+            <div key={index} className={cn('relative block h-10')}>
               <div
                 className={cn('bg-white absolute top-0 bottom-0 left-0', 'transition-all ease-in-out duration-150 delay-100')}
                 style={{ width: transitionStage > index ? width : '0' }}
@@ -58,8 +64,8 @@ export const SkillChart = memo(function ResumeExperienceSectionSkillSummary({
                 className={cn(
                   'absolute top-0 bottom-0 left-0 right-0 px-6',
                   'flex flex-row items-center justify-between',
-                  'text-transparent font-mono font-semibold bg-clip-text',
-                  'transition-all ease-in-out duration-75 delay-150',
+                  'text-transparent font-mono font-medium bg-clip-text',
+                  'transition-all ease-in-out duration-150 delay-300',
                   transitionStage > index ? 'opacity-100' : 'opacity-0',
                 )}
                 style={{
@@ -69,7 +75,7 @@ export const SkillChart = memo(function ResumeExperienceSectionSkillSummary({
                 onTransitionEnd={() => nextTransitionWhen(index + 1)}
               >
                 <span className="uppercase">{label}</span>
-                <span>{(Math.round((time / 12) * 2) / 2).toFixed(1)} years</span>
+                <span>{(Math.round((time / 12) * 10) / 10).toFixed(1)} years</span>
               </div>
             </div>
           )

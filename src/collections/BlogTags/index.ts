@@ -4,7 +4,6 @@ import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
 import { AdminGroup, CollectionSlug } from '@custom-types'
-import { MetaDescriptionField, MetaImageField, MetaTitleField, OverviewField, PreviewField } from '@payloadcms/plugin-seo/fields'
 import { CollectionConfig } from 'payload'
 
 export const BlogTags: CollectionConfig = {
@@ -17,6 +16,7 @@ export const BlogTags: CollectionConfig = {
   disableDuplicate: true,
   admin: {
     useAsTitle: 'title',
+    disableCopyToLocale: true,
     group: AdminGroup.Blog,
   },
   access: {
@@ -32,48 +32,14 @@ export const BlogTags: CollectionConfig = {
     /* -------------- Sidebar Content -------------- */
     SlugField({ fieldToUse: 'title' }),
 
-    /* -------------- Tabs Content -------------- */
-    {
-      type: 'tabs',
-      tabs: [
-        {
-          label: 'Content',
-          fields: [
-            RichTextField({
-              name: 'content',
-              editorVariant: 'caption',
-              overrides: {
-                label: false,
-              },
-            }),
-          ],
-        },
-        {
-          name: 'meta',
-          label: 'SEO',
-          fields: [
-            OverviewField({
-              titlePath: 'meta.title',
-              descriptionPath: 'meta.description',
-              imagePath: 'meta.image',
-            }),
-            MetaTitleField({
-              hasGenerateFn: true,
-            }),
-            MetaImageField({
-              hasGenerateFn: true,
-              relationTo: CollectionSlug.MediaImages,
-            }),
-            MetaDescriptionField({}),
-            PreviewField({
-              hasGenerateFn: true,
-              titlePath: 'meta.title',
-              descriptionPath: 'meta.description',
-            }),
-          ],
-        },
-      ],
-    },
+    /* -------------- Content -------------- */
+    RichTextField({
+      name: 'content',
+      editorVariant: 'caption',
+      overrides: {
+        label: false,
+      },
+    }),
   ],
   trash: true,
 }

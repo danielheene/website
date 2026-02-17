@@ -38,7 +38,7 @@ export const NavLink = ({ slug, type, label }: NavLinkProps): JSX.Element => {
 
   const linkContent = (
     <Link className={cn(['nav-link', navOpen && 'nav-link--open', active && 'nav-link--active'])} href={href} prefetch={false}>
-      <Icon className="nav-liml__icon" icon={resolveIconNameBySlug(slug)} />
+      <Icon className="nav-link__icon" icon={resolveIconNameBySlug(slug)} />
       <span className="nav-link__label">{getTranslation(label, i18n)}</span>
     </Link>
   )

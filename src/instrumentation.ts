@@ -1,8 +1,12 @@
+import { initializeLogsExporter } from '@/lib/otel/log-exporter'
 import { OTLPHttpJsonTraceExporter, registerOTel } from '@vercel/otel'
 
 export function register() {
   registerOTel({
-    serviceName: process.env.OTEL_SERVICE_NAME,
+    serviceName: process.env.NEXT_PUBLIC_OTEL_SERVICE_NAME,
+    attributes: {
+      NODE_ENV: process.env.NODE_ENV,
+    },
     traceExporter: new OTLPHttpJsonTraceExporter({ url: process.env.NEXT_PUBLIC_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }),
     instrumentationConfig: {
       fetch: {
@@ -12,4 +16,8 @@ export function register() {
       },
     },
   })
+
+  if (process.env.NEXT_RUNTIME === 'nodejs') {
+    initializeLogsExporter()
+  }
 }

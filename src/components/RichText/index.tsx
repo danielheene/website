@@ -7,6 +7,7 @@
 // import { BannerBlock } from '@/blocks/Banner/Component'
 // import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { cn } from '@/utilities/cn'
+import { generateContentPath } from '@/utilities/generateContentURL'
 import { BlockData } from '@custom-types'
 import {
   DefaultNodeTypes,
@@ -28,8 +29,8 @@ const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
   if (typeof value !== 'object') {
     throw new Error('Expected value to be an object')
   }
-  const slug = value.slug
-  return relationTo === 'posts' ? `/posts/${slug}` : `/${slug}`
+
+  return generateContentPath(relationTo, value.slug as string)
 }
 
 const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({
@@ -69,7 +70,7 @@ export function RichText(props: Props) {
         {
           container: enableGutter,
           'max-w-none': !enableGutter,
-          'mx-auto prose md:prose-md dark:prose-invert': enableProse,
+          'mx-auto prose': enableProse,
         },
         className,
       )}

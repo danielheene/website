@@ -1,17 +1,9 @@
+import { LinkFieldData, ResumeAboutMeBlock } from '@payload-types'
+import { DefaultNodeTypes, SerializedBlockNode } from '@payloadcms/richtext-lexical'
 import React, { Fragment, JSX } from 'react'
 import { CMSLink } from '../Link'
-import { DefaultNodeTypes, SerializedBlockNode } from '@payloadcms/richtext-lexical'
 
-import {
-  IS_BOLD,
-  IS_CODE,
-  IS_ITALIC,
-  IS_STRIKETHROUGH,
-  IS_SUBSCRIPT,
-  IS_SUPERSCRIPT,
-  IS_UNDERLINE,
-} from './nodeFormat'
-import { ResumeAboutMeBlock } from '@payload-types'
+import { IS_BOLD, IS_CODE, IS_ITALIC, IS_STRIKETHROUGH, IS_SUBSCRIPT, IS_SUPERSCRIPT, IS_UNDERLINE } from './nodeFormat'
 
 export type NodeTypes = DefaultNodeTypes | SerializedBlockNode<ResumeAboutMeBlock>
 
@@ -163,17 +155,10 @@ export function serializeLexical({ nodes }: Props): JSX.Element {
             )
           }
           case 'link': {
-            const fields = node.fields
+            const fields = node.fields as unknown as LinkFieldData
 
             return (
-              <CMSLink
-                key={index}
-                newTab={Boolean(fields?.newTab)}
-                // eslint-disable-next-line
-                reference={fields.doc as unknown as any}
-                type={fields.linkType === 'internal' ? 'reference' : 'custom'}
-                url={fields.url}
-              >
+              <CMSLink key={index} {...fields}>
                 {serializedChildren}
               </CMSLink>
             )

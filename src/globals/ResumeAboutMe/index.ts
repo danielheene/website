@@ -11,6 +11,7 @@ export const ResumeAboutMe: GlobalConfig<GlobalSlug.ResumeAboutMe> = {
   label: 'About Me',
   access: {
     read: authenticatedOrPublished,
+    readVersions: authenticated,
     update: authenticated,
   },
   hooks: {

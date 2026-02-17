@@ -38,7 +38,6 @@ export type JobHistory =
             id?: string | null;
           }[]
         | null;
-      tags?: (string | BlogTag)[] | null;
       technologies?: {
         id?: string;
         label?: string;
@@ -199,125 +198,7 @@ export interface LinkGroupBlock {
   links?: {
     entries?:
       | {
-          link: {
-            type?: ('reference' | 'custom' | 'mailto') | null;
-            newTab?: boolean | null;
-            icon?:
-              | (
-                  | 'simple-icons:react'
-                  | 'simple-icons:vercel'
-                  | 'simple-icons:sanity'
-                  | 'simple-icons:payload'
-                  | 'simple-icons:nextjs'
-                  | 'simple-icons:namecheap'
-                  | 'simple-icons:mail'
-                  | 'simple-icons:webstorm'
-                  | 'simple-icons:intellij'
-                  | 'simple-icons:github'
-                  | 'simple-icons:figma'
-                  | 'simple-icons:whatsapp'
-                  | 'simple-icons:wireguard'
-                  | 'simple-icons:zigbee'
-                  | 'simple-icons:javascript'
-                  | 'simple-icons:nodejs'
-                  | 'simple-icons:unsplash'
-                  | 'simple-icons:storybook'
-                  | 'simple-icons:tailscale'
-                  | 'simple-icons:rust'
-                  | 'simple-icons:cloudflare'
-                  | 'simple-icons:cloudflareworkers'
-                  | 'simple-icons:cloudflarepages'
-                  | 'simple-icons:githubpages'
-                  | 'simple-icons:githubactions'
-                  | 'simple-icons:gitlab'
-                  | 'simple-icons:homeassistant'
-                  | 'simple-icons:synology'
-                  | 'simple-icons:1password'
-                  | 'simple-icons:jetbrains'
-                  | 'simple-icons:pycharm'
-                  | 'simple-icons:phpstorm'
-                  | 'simple-icons:goland'
-                  | 'simple-icons:kubernetes'
-                  | 'simple-icons:docker'
-                  | 'simple-icons:rancher'
-                  | 'simple-icons:linux'
-                  | 'simple-icons:linkedin'
-                  | 'simple-icons:debian'
-                  | 'simple-icons:ubuntu'
-                  | 'simple-icons:archlinux'
-                  | 'material-symbols:fingerprint-sharp'
-                  | 'material-symbols:work-outline-sharp'
-                  | 'material-symbols:experiment-outline-sharp'
-                  | 'material-symbols:deployed-code-account-outline-sharp'
-                  | 'material-symbols:stacked-email-outline-sharp'
-                  | 'material-symbols:picture-as-pdf-outline-sharp'
-                  | 'material-symbols:post-outline'
-                  | 'material-symbols:contextual-token-outline-sharp'
-                  | 'material-symbols:label-outline-sharp'
-                  | 'material-symbols:animated-images-outline-sharp'
-                  | 'material-symbols:pages-outline-sharp'
-                  | 'material-symbols:account-box-outline-sharp'
-                  | 'material-symbols:settings-account-box-sharp'
-                  | 'material-symbols:page-header-outline-sharp'
-                  | 'material-symbols:page-footer-outline-sharp'
-                  | 'material-symbols:map-search-outline-sharp'
-                  | 'material-symbols:error'
-                  | 'material-symbols:warning'
-                  | 'material-symbols:info'
-                  | 'material-symbols:check-circle'
-                  | 'material-symbols:pause'
-                  | 'material-symbols:play'
-                  | 'material-symbols:stop'
-                  | 'material-symbols:repeat'
-                  | 'material-symbols:replay'
-                  | 'material-symbols:attach-file'
-                  | 'material-symbols:settings'
-                  | 'material-symbols:calendar'
-                  | 'material-symbols:arrow-downward'
-                  | 'material-symbols:arrow-forward'
-                  | 'material-symbols:close'
-                  | 'material-symbols:image-outline-sharp'
-                )
-              | null;
-            label: string;
-            iconOnly?: boolean | null;
-            reference?:
-              | ({
-                  relationTo: 'pages';
-                  value: string | Page;
-                } | null)
-              | ({
-                  relationTo: 'blog-posts';
-                  value: string | BlogPost;
-                } | null)
-              | ({
-                  relationTo: 'blog-categories';
-                  value: string | BlogCategory;
-                } | null)
-              | ({
-                  relationTo: 'blog-tags';
-                  value: string | BlogTag;
-                } | null);
-            url?: string | null;
-            address?: string | null;
-            subject?: string | null;
-            cc?: string | null;
-            body?: {
-              root: {
-                type: string;
-                children: {
-                  type: any;
-                  version: number;
-                  [k: string]: unknown;
-                }[];
-                direction: ('ltr' | 'rtl') | null;
-                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                indent: number;
-                version: number;
-              };
-              [k: string]: unknown;
-            } | null;
-          };
+          link: LinkFieldData;
           id?: string | null;
         }[]
       | null;
@@ -329,6 +210,118 @@ export interface LinkGroupBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'LinkGroupBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LinkFieldData".
+ */
+export interface LinkFieldData {
+  type?: ('reference' | 'custom' | 'mailto') | null;
+  newTab?: boolean | null;
+  icon?:
+    | (
+        | 'simple-icons:archlinux'
+        | 'simple-icons:cloudflare'
+        | 'simple-icons:cloudflarepages'
+        | 'simple-icons:cloudflareworkers'
+        | 'simple-icons:debian'
+        | 'simple-icons:docker'
+        | 'simple-icons:figma'
+        | 'simple-icons:github'
+        | 'simple-icons:githubactions'
+        | 'simple-icons:githubpages'
+        | 'simple-icons:gitlab'
+        | 'simple-icons:goland'
+        | 'simple-icons:homeassistant'
+        | 'simple-icons:intellij'
+        | 'simple-icons:javascript'
+        | 'simple-icons:jetbrains'
+        | 'simple-icons:kubernetes'
+        | 'simple-icons:linkedin'
+        | 'simple-icons:linux'
+        | 'simple-icons:maildotru'
+        | 'simple-icons:namecheap'
+        | 'simple-icons:nextjs'
+        | 'simple-icons:nodejs'
+        | 'simple-icons:1password'
+        | 'simple-icons:payload'
+        | 'simple-icons:phpstorm'
+        | 'simple-icons:pycharm'
+        | 'simple-icons:rancher'
+        | 'simple-icons:react'
+        | 'simple-icons:rust'
+        | 'simple-icons:sanity'
+        | 'simple-icons:storybook'
+        | 'simple-icons:synology'
+        | 'simple-icons:tailscale'
+        | 'simple-icons:ubuntu'
+        | 'simple-icons:unsplash'
+        | 'simple-icons:vercel'
+        | 'simple-icons:webstorm'
+        | 'simple-icons:whatsapp'
+        | 'simple-icons:wireguard'
+        | 'simple-icons:xing'
+        | 'simple-icons:zigbee'
+        | 'material-symbols:contextual-token-outline-sharp'
+        | 'material-symbols:post-outline'
+        | 'material-symbols:label-outline-sharp'
+        | 'material-symbols:contact-page-outline-sharp'
+        | 'material-symbols:video-file-outline-sharp'
+        | 'material-symbols:audio-file-outline-sharp'
+        | 'material-symbols:picture-as-pdf-outline-sharp'
+        | 'material-symbols:pages-outline-sharp'
+        | 'material-symbols:fingerprint-sharp'
+        | 'material-symbols:stacked-email-outline-sharp'
+        | 'material-symbols:deployed-code-account-outline-sharp'
+        | 'material-symbols:work-outline-sharp'
+        | 'material-symbols:experiment-outline-sharp'
+        | 'material-symbols:page-footer-outline-sharp'
+        | 'material-symbols:page-header-outline-sharp'
+        | 'material-symbols:map-search-outline-sharp'
+        | 'material-symbols:settings-account-box-sharp'
+        | 'material-symbols:account-box-outline-sharp'
+        | 'material-symbols:error'
+        | 'material-symbols:warning'
+        | 'material-symbols:info'
+        | 'material-symbols:check-circle'
+        | 'material-symbols:pause'
+        | 'material-symbols:play'
+        | 'material-symbols:stop'
+        | 'material-symbols:repeat'
+        | 'material-symbols:replay'
+        | 'material-symbols:attach-file'
+        | 'material-symbols:settings'
+        | 'material-symbols:calendar'
+        | 'material-symbols:arrow-downward'
+        | 'material-symbols:arrow-forward'
+        | 'material-symbols:close'
+        | 'material-symbols:image-outline-sharp'
+        | 'material-symbols:logout-sharp'
+      )
+    | null;
+  label: string;
+  iconOnly?: boolean | null;
+  reference?:
+    | ({
+        relationTo: 'pages';
+        value: string | Page;
+      } | null)
+    | ({
+        relationTo: 'blog-posts';
+        value: string | BlogPost;
+      } | null)
+    | ({
+        relationTo: 'blog-categories';
+        value: string | BlogCategory;
+      } | null)
+    | ({
+        relationTo: 'blog-tags';
+        value: string | BlogTag;
+      } | null);
+  url?: string | null;
+  address?: string | null;
+  subject?: string | null;
+  cc?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -620,14 +613,6 @@ export interface BlogPost {
     };
     [k: string]: unknown;
   } | null;
-  meta?: {
-    title?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (string | null) | MediaImage;
-    description?: string | null;
-  };
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -672,6 +657,11 @@ export interface BlogCategory {
     hasNextPage?: boolean;
     totalDocs?: number;
   };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    keywords?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -700,14 +690,6 @@ export interface BlogTag {
     };
     [k: string]: unknown;
   } | null;
-  meta?: {
-    title?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (string | null) | MediaImage;
-    description?: string | null;
-  };
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -1038,6 +1020,13 @@ export interface BlogCategoriesSelect<T extends boolean = true> {
       };
   breadcrumbsPath?: T;
   relatedPosts?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        keywords?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -1055,13 +1044,6 @@ export interface BlogPostsSelect<T extends boolean = true> {
   tags?: T;
   relatedPosts?: T;
   content?: T;
-  meta?:
-    | T
-    | {
-        title?: T;
-        image?: T;
-        description?: T;
-      };
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -1212,13 +1194,6 @@ export interface BlogTagsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   content?: T;
-  meta?:
-    | T
-    | {
-        title?: T;
-        image?: T;
-        description?: T;
-      };
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -1465,125 +1440,7 @@ export interface HeaderNavigationData {
   id: string;
   mainNavigation?:
     | {
-        link: {
-          type?: ('reference' | 'custom' | 'mailto') | null;
-          newTab?: boolean | null;
-          icon?:
-            | (
-                | 'simple-icons:react'
-                | 'simple-icons:vercel'
-                | 'simple-icons:sanity'
-                | 'simple-icons:payload'
-                | 'simple-icons:nextjs'
-                | 'simple-icons:namecheap'
-                | 'simple-icons:mail'
-                | 'simple-icons:webstorm'
-                | 'simple-icons:intellij'
-                | 'simple-icons:github'
-                | 'simple-icons:figma'
-                | 'simple-icons:whatsapp'
-                | 'simple-icons:wireguard'
-                | 'simple-icons:zigbee'
-                | 'simple-icons:javascript'
-                | 'simple-icons:nodejs'
-                | 'simple-icons:unsplash'
-                | 'simple-icons:storybook'
-                | 'simple-icons:tailscale'
-                | 'simple-icons:rust'
-                | 'simple-icons:cloudflare'
-                | 'simple-icons:cloudflareworkers'
-                | 'simple-icons:cloudflarepages'
-                | 'simple-icons:githubpages'
-                | 'simple-icons:githubactions'
-                | 'simple-icons:gitlab'
-                | 'simple-icons:homeassistant'
-                | 'simple-icons:synology'
-                | 'simple-icons:1password'
-                | 'simple-icons:jetbrains'
-                | 'simple-icons:pycharm'
-                | 'simple-icons:phpstorm'
-                | 'simple-icons:goland'
-                | 'simple-icons:kubernetes'
-                | 'simple-icons:docker'
-                | 'simple-icons:rancher'
-                | 'simple-icons:linux'
-                | 'simple-icons:linkedin'
-                | 'simple-icons:debian'
-                | 'simple-icons:ubuntu'
-                | 'simple-icons:archlinux'
-                | 'material-symbols:fingerprint-sharp'
-                | 'material-symbols:work-outline-sharp'
-                | 'material-symbols:experiment-outline-sharp'
-                | 'material-symbols:deployed-code-account-outline-sharp'
-                | 'material-symbols:stacked-email-outline-sharp'
-                | 'material-symbols:picture-as-pdf-outline-sharp'
-                | 'material-symbols:post-outline'
-                | 'material-symbols:contextual-token-outline-sharp'
-                | 'material-symbols:label-outline-sharp'
-                | 'material-symbols:animated-images-outline-sharp'
-                | 'material-symbols:pages-outline-sharp'
-                | 'material-symbols:account-box-outline-sharp'
-                | 'material-symbols:settings-account-box-sharp'
-                | 'material-symbols:page-header-outline-sharp'
-                | 'material-symbols:page-footer-outline-sharp'
-                | 'material-symbols:map-search-outline-sharp'
-                | 'material-symbols:error'
-                | 'material-symbols:warning'
-                | 'material-symbols:info'
-                | 'material-symbols:check-circle'
-                | 'material-symbols:pause'
-                | 'material-symbols:play'
-                | 'material-symbols:stop'
-                | 'material-symbols:repeat'
-                | 'material-symbols:replay'
-                | 'material-symbols:attach-file'
-                | 'material-symbols:settings'
-                | 'material-symbols:calendar'
-                | 'material-symbols:arrow-downward'
-                | 'material-symbols:arrow-forward'
-                | 'material-symbols:close'
-                | 'material-symbols:image-outline-sharp'
-              )
-            | null;
-          label: string;
-          iconOnly?: boolean | null;
-          reference?:
-            | ({
-                relationTo: 'pages';
-                value: string | Page;
-              } | null)
-            | ({
-                relationTo: 'blog-posts';
-                value: string | BlogPost;
-              } | null)
-            | ({
-                relationTo: 'blog-categories';
-                value: string | BlogCategory;
-              } | null)
-            | ({
-                relationTo: 'blog-tags';
-                value: string | BlogTag;
-              } | null);
-          url?: string | null;
-          address?: string | null;
-          subject?: string | null;
-          cc?: string | null;
-          body?: {
-            root: {
-              type: string;
-              children: {
-                type: any;
-                version: number;
-                [k: string]: unknown;
-              }[];
-              direction: ('ltr' | 'rtl') | null;
-              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-              indent: number;
-              version: number;
-            };
-            [k: string]: unknown;
-          } | null;
-        };
+        link: LinkFieldData;
         id?: string | null;
       }[]
     | null;
@@ -1601,125 +1458,7 @@ export interface FooterNavigationData {
         title?: string | null;
         entries?:
           | {
-              link: {
-                type?: ('reference' | 'custom' | 'mailto') | null;
-                newTab?: boolean | null;
-                icon?:
-                  | (
-                      | 'simple-icons:react'
-                      | 'simple-icons:vercel'
-                      | 'simple-icons:sanity'
-                      | 'simple-icons:payload'
-                      | 'simple-icons:nextjs'
-                      | 'simple-icons:namecheap'
-                      | 'simple-icons:mail'
-                      | 'simple-icons:webstorm'
-                      | 'simple-icons:intellij'
-                      | 'simple-icons:github'
-                      | 'simple-icons:figma'
-                      | 'simple-icons:whatsapp'
-                      | 'simple-icons:wireguard'
-                      | 'simple-icons:zigbee'
-                      | 'simple-icons:javascript'
-                      | 'simple-icons:nodejs'
-                      | 'simple-icons:unsplash'
-                      | 'simple-icons:storybook'
-                      | 'simple-icons:tailscale'
-                      | 'simple-icons:rust'
-                      | 'simple-icons:cloudflare'
-                      | 'simple-icons:cloudflareworkers'
-                      | 'simple-icons:cloudflarepages'
-                      | 'simple-icons:githubpages'
-                      | 'simple-icons:githubactions'
-                      | 'simple-icons:gitlab'
-                      | 'simple-icons:homeassistant'
-                      | 'simple-icons:synology'
-                      | 'simple-icons:1password'
-                      | 'simple-icons:jetbrains'
-                      | 'simple-icons:pycharm'
-                      | 'simple-icons:phpstorm'
-                      | 'simple-icons:goland'
-                      | 'simple-icons:kubernetes'
-                      | 'simple-icons:docker'
-                      | 'simple-icons:rancher'
-                      | 'simple-icons:linux'
-                      | 'simple-icons:linkedin'
-                      | 'simple-icons:debian'
-                      | 'simple-icons:ubuntu'
-                      | 'simple-icons:archlinux'
-                      | 'material-symbols:fingerprint-sharp'
-                      | 'material-symbols:work-outline-sharp'
-                      | 'material-symbols:experiment-outline-sharp'
-                      | 'material-symbols:deployed-code-account-outline-sharp'
-                      | 'material-symbols:stacked-email-outline-sharp'
-                      | 'material-symbols:picture-as-pdf-outline-sharp'
-                      | 'material-symbols:post-outline'
-                      | 'material-symbols:contextual-token-outline-sharp'
-                      | 'material-symbols:label-outline-sharp'
-                      | 'material-symbols:animated-images-outline-sharp'
-                      | 'material-symbols:pages-outline-sharp'
-                      | 'material-symbols:account-box-outline-sharp'
-                      | 'material-symbols:settings-account-box-sharp'
-                      | 'material-symbols:page-header-outline-sharp'
-                      | 'material-symbols:page-footer-outline-sharp'
-                      | 'material-symbols:map-search-outline-sharp'
-                      | 'material-symbols:error'
-                      | 'material-symbols:warning'
-                      | 'material-symbols:info'
-                      | 'material-symbols:check-circle'
-                      | 'material-symbols:pause'
-                      | 'material-symbols:play'
-                      | 'material-symbols:stop'
-                      | 'material-symbols:repeat'
-                      | 'material-symbols:replay'
-                      | 'material-symbols:attach-file'
-                      | 'material-symbols:settings'
-                      | 'material-symbols:calendar'
-                      | 'material-symbols:arrow-downward'
-                      | 'material-symbols:arrow-forward'
-                      | 'material-symbols:close'
-                      | 'material-symbols:image-outline-sharp'
-                    )
-                  | null;
-                label: string;
-                iconOnly?: boolean | null;
-                reference?:
-                  | ({
-                      relationTo: 'pages';
-                      value: string | Page;
-                    } | null)
-                  | ({
-                      relationTo: 'blog-posts';
-                      value: string | BlogPost;
-                    } | null)
-                  | ({
-                      relationTo: 'blog-categories';
-                      value: string | BlogCategory;
-                    } | null)
-                  | ({
-                      relationTo: 'blog-tags';
-                      value: string | BlogTag;
-                    } | null);
-                url?: string | null;
-                address?: string | null;
-                subject?: string | null;
-                cc?: string | null;
-                body?: {
-                  root: {
-                    type: string;
-                    children: {
-                      type: any;
-                      version: number;
-                      [k: string]: unknown;
-                    }[];
-                    direction: ('ltr' | 'rtl') | null;
-                    format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                    indent: number;
-                    version: number;
-                  };
-                  [k: string]: unknown;
-                } | null;
-              };
+              link: LinkFieldData;
               id?: string | null;
             }[]
           | null;
@@ -1730,125 +1469,17 @@ export interface FooterNavigationData {
     title?: string | null;
     entries?:
       | {
-          link: {
-            type?: ('reference' | 'custom' | 'mailto') | null;
-            newTab?: boolean | null;
-            icon?:
-              | (
-                  | 'simple-icons:react'
-                  | 'simple-icons:vercel'
-                  | 'simple-icons:sanity'
-                  | 'simple-icons:payload'
-                  | 'simple-icons:nextjs'
-                  | 'simple-icons:namecheap'
-                  | 'simple-icons:mail'
-                  | 'simple-icons:webstorm'
-                  | 'simple-icons:intellij'
-                  | 'simple-icons:github'
-                  | 'simple-icons:figma'
-                  | 'simple-icons:whatsapp'
-                  | 'simple-icons:wireguard'
-                  | 'simple-icons:zigbee'
-                  | 'simple-icons:javascript'
-                  | 'simple-icons:nodejs'
-                  | 'simple-icons:unsplash'
-                  | 'simple-icons:storybook'
-                  | 'simple-icons:tailscale'
-                  | 'simple-icons:rust'
-                  | 'simple-icons:cloudflare'
-                  | 'simple-icons:cloudflareworkers'
-                  | 'simple-icons:cloudflarepages'
-                  | 'simple-icons:githubpages'
-                  | 'simple-icons:githubactions'
-                  | 'simple-icons:gitlab'
-                  | 'simple-icons:homeassistant'
-                  | 'simple-icons:synology'
-                  | 'simple-icons:1password'
-                  | 'simple-icons:jetbrains'
-                  | 'simple-icons:pycharm'
-                  | 'simple-icons:phpstorm'
-                  | 'simple-icons:goland'
-                  | 'simple-icons:kubernetes'
-                  | 'simple-icons:docker'
-                  | 'simple-icons:rancher'
-                  | 'simple-icons:linux'
-                  | 'simple-icons:linkedin'
-                  | 'simple-icons:debian'
-                  | 'simple-icons:ubuntu'
-                  | 'simple-icons:archlinux'
-                  | 'material-symbols:fingerprint-sharp'
-                  | 'material-symbols:work-outline-sharp'
-                  | 'material-symbols:experiment-outline-sharp'
-                  | 'material-symbols:deployed-code-account-outline-sharp'
-                  | 'material-symbols:stacked-email-outline-sharp'
-                  | 'material-symbols:picture-as-pdf-outline-sharp'
-                  | 'material-symbols:post-outline'
-                  | 'material-symbols:contextual-token-outline-sharp'
-                  | 'material-symbols:label-outline-sharp'
-                  | 'material-symbols:animated-images-outline-sharp'
-                  | 'material-symbols:pages-outline-sharp'
-                  | 'material-symbols:account-box-outline-sharp'
-                  | 'material-symbols:settings-account-box-sharp'
-                  | 'material-symbols:page-header-outline-sharp'
-                  | 'material-symbols:page-footer-outline-sharp'
-                  | 'material-symbols:map-search-outline-sharp'
-                  | 'material-symbols:error'
-                  | 'material-symbols:warning'
-                  | 'material-symbols:info'
-                  | 'material-symbols:check-circle'
-                  | 'material-symbols:pause'
-                  | 'material-symbols:play'
-                  | 'material-symbols:stop'
-                  | 'material-symbols:repeat'
-                  | 'material-symbols:replay'
-                  | 'material-symbols:attach-file'
-                  | 'material-symbols:settings'
-                  | 'material-symbols:calendar'
-                  | 'material-symbols:arrow-downward'
-                  | 'material-symbols:arrow-forward'
-                  | 'material-symbols:close'
-                  | 'material-symbols:image-outline-sharp'
-                )
-              | null;
-            label: string;
-            iconOnly?: boolean | null;
-            reference?:
-              | ({
-                  relationTo: 'pages';
-                  value: string | Page;
-                } | null)
-              | ({
-                  relationTo: 'blog-posts';
-                  value: string | BlogPost;
-                } | null)
-              | ({
-                  relationTo: 'blog-categories';
-                  value: string | BlogCategory;
-                } | null)
-              | ({
-                  relationTo: 'blog-tags';
-                  value: string | BlogTag;
-                } | null);
-            url?: string | null;
-            address?: string | null;
-            subject?: string | null;
-            cc?: string | null;
-            body?: {
-              root: {
-                type: string;
-                children: {
-                  type: any;
-                  version: number;
-                  [k: string]: unknown;
-                }[];
-                direction: ('ltr' | 'rtl') | null;
-                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                indent: number;
-                version: number;
-              };
-              [k: string]: unknown;
-            } | null;
-          };
+          link: LinkFieldData;
+          id?: string | null;
+        }[]
+      | null;
+    id?: string | null;
+  };
+  legalLinks?: {
+    title?: string | null;
+    entries?:
+      | {
+          link: LinkFieldData;
           id?: string | null;
         }[]
       | null;
@@ -1872,6 +1503,10 @@ export interface SiteMetaData {
    * This URL is used for generating website metadata.
    */
   siteUrl?: string | null;
+  /**
+   * This category is used for generating website metadata.
+   */
+  category?: string | null;
   /**
    * This description is used for generating website metadata.This description is also used as fallback if no document description is available.
    */
@@ -1898,6 +1533,7 @@ export interface UserMetaData {
   name?: string | null;
   jobTitle?: string | null;
   url?: string | null;
+  github?: string | null;
   image?: (string | null) | MediaImage;
   email?: string | null;
   telephone?: string | null;
@@ -2024,7 +1660,6 @@ export interface JobHistorySelect<T extends boolean = true> {
         item?: T;
         id?: T;
       };
-  tags?: T;
   technologies?: T;
   id?: T;
 }
@@ -2060,26 +1695,28 @@ export interface SettingsHeaderNavigationSelect<T extends boolean = true> {
   mainNavigation?:
     | T
     | {
-        link?:
-          | T
-          | {
-              type?: T;
-              newTab?: T;
-              icon?: T;
-              label?: T;
-              iconOnly?: T;
-              reference?: T;
-              url?: T;
-              address?: T;
-              subject?: T;
-              cc?: T;
-              body?: T;
-            };
+        link?: T | LinkFieldDataSelect<T>;
         id?: T;
       };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LinkFieldData_select".
+ */
+export interface LinkFieldDataSelect<T extends boolean = true> {
+  type?: T;
+  newTab?: T;
+  icon?: T;
+  label?: T;
+  iconOnly?: T;
+  reference?: T;
+  url?: T;
+  address?: T;
+  subject?: T;
+  cc?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2093,21 +1730,7 @@ export interface SettingsFooterNavigationSelect<T extends boolean = true> {
         entries?:
           | T
           | {
-              link?:
-                | T
-                | {
-                    type?: T;
-                    newTab?: T;
-                    icon?: T;
-                    label?: T;
-                    iconOnly?: T;
-                    reference?: T;
-                    url?: T;
-                    address?: T;
-                    subject?: T;
-                    cc?: T;
-                    body?: T;
-                  };
+              link?: T | LinkFieldDataSelect<T>;
               id?: T;
             };
         id?: T;
@@ -2119,21 +1742,19 @@ export interface SettingsFooterNavigationSelect<T extends boolean = true> {
         entries?:
           | T
           | {
-              link?:
-                | T
-                | {
-                    type?: T;
-                    newTab?: T;
-                    icon?: T;
-                    label?: T;
-                    iconOnly?: T;
-                    reference?: T;
-                    url?: T;
-                    address?: T;
-                    subject?: T;
-                    cc?: T;
-                    body?: T;
-                  };
+              link?: T | LinkFieldDataSelect<T>;
+              id?: T;
+            };
+        id?: T;
+      };
+  legalLinks?:
+    | T
+    | {
+        title?: T;
+        entries?:
+          | T
+          | {
+              link?: T | LinkFieldDataSelect<T>;
               id?: T;
             };
         id?: T;
@@ -2150,6 +1771,7 @@ export interface SettingsSiteMetaSelect<T extends boolean = true> {
   siteName?: T;
   titleTemplate?: T;
   siteUrl?: T;
+  category?: T;
   description?: T;
   image?: T;
   keywords?: T;
@@ -2166,6 +1788,7 @@ export interface SettingsUserMetaSelect<T extends boolean = true> {
   name?: T;
   jobTitle?: T;
   url?: T;
+  github?: T;
   image?: T;
   email?: T;
   telephone?: T;

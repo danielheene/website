@@ -21,6 +21,11 @@ export const SettingsUserMeta: GlobalConfig = {
   },
   admin: {
     group: AdminGroup.Settings,
+    components: {
+      elements: {
+        beforeDocumentControls: ['@/components/AdminPanel#LanguageToggle'],
+      },
+    },
   },
   typescript: { interface: 'UserMetaData' },
   fields: [
@@ -34,6 +39,10 @@ export const SettingsUserMeta: GlobalConfig = {
     },
     {
       name: 'url',
+      type: 'text',
+    },
+    {
+      name: 'github',
       type: 'text',
     },
     {
@@ -52,6 +61,7 @@ export const SettingsUserMeta: GlobalConfig = {
     {
       name: 'description',
       type: 'text',
+      localized: true,
     },
     {
       name: 'sameAs',
@@ -70,6 +80,11 @@ export const SettingsUserMeta: GlobalConfig = {
     {
       name: 'birthDate',
       type: 'date',
+      admin: {
+        date: {
+          displayFormat: 'yyyy-MM-dd',
+        },
+      },
     },
     {
       name: 'birthPlace',
@@ -90,6 +105,7 @@ export const SettingsUserMeta: GlobalConfig = {
         {
           name: 'language',
           type: 'text',
+          localized: true,
         },
       ],
     },
@@ -118,6 +134,7 @@ export const SettingsUserMeta: GlobalConfig = {
     {
       name: 'address',
       type: 'group',
+      localized: true,
       fields: [
         {
           name: 'streetAddress',

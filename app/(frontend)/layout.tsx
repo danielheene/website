@@ -1,5 +1,6 @@
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
+import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { Toasty } from '@/components/Toasty'
 
 import '@styles/frontend.css'
@@ -10,9 +11,11 @@ import { getCachedUserMetaData } from '@/lib/getUserMetaData'
 import { generatePersonSchema, generateWebSiteSchema, JsonLd } from '@/utilities/jsonLd'
 import type { Metadata, Viewport } from 'next'
 import { ThemeProvider } from 'next-themes'
+import { draftMode } from 'next/headers'
 import React, { JSX, ReactNode } from 'react'
 
 export default async function RootLayout({ children }: { children: ReactNode | ReactNode[] }): Promise<JSX.Element> {
+  const { isEnabled: draft } = await draftMode()
   const userMetaData = await getCachedUserMetaData()
   const siteMetaData = await getCachedSiteMetaData()
   const personSchema = generatePersonSchema(userMetaData)
@@ -24,6 +27,7 @@ export default async function RootLayout({ children }: { children: ReactNode | R
         <JsonLd data={[personSchema, webSiteSchema]} />
       </head>
       <body>
+        {draft && <LivePreviewListener />}
         <WebVitalsProvider>
           <ThemeProvider disableTransitionOnChange enableColorScheme enableSystem>
             <UmamiProvider src="/stats/script.js" websiteId={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}>
@@ -40,24 +44,12 @@ export default async function RootLayout({ children }: { children: ReactNode | R
 }
 
 export const metadata: Metadata = {
-  title: {
-    default: process.env.NEXT_PUBLIC_SERVER_URL,
-    template: '%s | ' + process.env.NEXT_PUBLIC_SERVER_URL,
-  },
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SERVER_URL),
+  title: process.env.NEXT_PUBLIC_SERVER_URL,
   icons: [
     { rel: 'icon', url: '/favicon.ico', sizes: '32x32' },
     { rel: 'icon', url: '/favicon.svg', type: 'image/svg+xml' },
   ],
-
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SERVER_URL),
-
-  category: 'website',
-
-  creator: 'Daniel Heene',
-  publisher: 'Daniel Heene',
-  openGraph: {
-    images: `/og-image.webp`,
-  },
 }
 
 export const viewport: Viewport = {

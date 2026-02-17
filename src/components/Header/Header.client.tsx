@@ -1,12 +1,10 @@
 'use client'
 
-import { Icon } from '@/components/Icon'
+import { CMSLink } from '@/components/Link'
 import { Logo } from '@/components/Logo'
 
 import { cn } from '@/utilities/cn'
-import { generateContentURL } from '@/utilities/generateContentURL'
 import { HeaderNavigationData } from '@payload-types'
-import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintext'
 import Link from 'next/link'
 import React from 'react'
 
@@ -33,7 +31,7 @@ export const HeaderClient = ({ mainNavigation }: HeaderClientProps) => {
           'h-12 md:h-16 lg:h-20  border-none ',
           'flex items-center justify-between gap-6',
           'pointer-events-auto relative z-10',
-          'text-white font-pp-supply-mono drop-shadow-xl',
+          'text-foreground font-mono',
           'text-lg sm:text-xl md:text-2xl lg:text-3xl',
         ])}
       >
@@ -42,33 +40,13 @@ export const HeaderClient = ({ mainNavigation }: HeaderClientProps) => {
           <Logo variant="square" className="text-4xl md:hidden" />
         </Link>
 
-        <nav className="flex gap-0 md:gap-4 lg:gap-8 items-center">
-          {mainNavigation?.map(({ id, link }) => {
-            const { type, newTab, label, reference, address, url, subject, cc, icon, body } = link
-
-            let href = url
-            if (type === 'reference') {
-              const collection = reference.relationTo
-              const slug = typeof reference.value === 'string' ? reference.value : reference.value.slug
-              href = generateContentURL({ collection, slug }).toString()
-            }
-            if (type === 'mailto') {
-              const params = new URLSearchParams({
-                subject,
-                cc,
-                body: convertLexicalToPlaintext({ data: body }),
-              })
-              href = `mailto:${address}?${params.toString()}`
-            }
-
-            return (
-              <Link key={id} href={href} target={newTab ? '_blank' : '_self'}>
-                {icon && <Icon name={icon} icon={icon} />}
-                {label && label}
-              </Link>
-            )
-          })}
-        </nav>
+        <ul className="flex flex-row md:gap-4 lg:gap-8 items-center">
+          {mainNavigation?.map(({ id, link }) => (
+            <li key={id}>
+              <CMSLink {...link} className="text-foreground hover:text-current" />
+            </li>
+          ))}
+        </ul>
       </div>
       {/*</div>*/}
     </header>

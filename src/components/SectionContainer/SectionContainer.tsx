@@ -34,8 +34,8 @@ export const SectionContainer = ({ id: rawId, title, variant = 'default', childr
       className={cn([
         'relative m-0 p-0 shrink-0 grow-0',
         'py-20 md:py-32 lg:py-40',
-        variant === 'default' && 'bg-white text-black',
-        variant === 'primary' && 'bg-primary text-white',
+        variant === 'default' && 'bg-background text-foreground',
+        variant === 'primary' && 'bg-primary text-primary-foreground',
       ])}
     >
       <div ref={observerRef} className="min-h-[50vh]">

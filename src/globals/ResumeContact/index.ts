@@ -11,6 +11,7 @@ export const ResumeContact: GlobalConfig<GlobalSlug.ResumeContact> = {
   label: 'Contact',
   access: {
     read: authenticatedOrPublished,
+    readVersions: authenticated,
     update: authenticated,
   },
   hooks: {

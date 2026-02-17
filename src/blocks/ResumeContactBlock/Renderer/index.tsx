@@ -1,13 +1,13 @@
-import { cn } from '@/utilities/cn'
 import { Headline } from '@/components/Headline'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
+import { cn } from '@/utilities/cn'
 import { GlobalSlug, ResumeLayoutBlockData } from '@custom-types'
 
 export const Renderer = ({ blockType, data: { title, caption } }: ResumeLayoutBlockData<GlobalSlug.ResumeContact>) => {
   return (
     <SectionContainer id={blockType} title={title} variant="default">
-      <div className={cn('container grid grid-cols-12 py-32', 'text-center text-primary')}>
+      <div className={cn('container grid grid-cols-12 py-32', 'text-center')}>
         {title && (
           <div className="col-span-12 md:col-start-3 md:col-span-8">
             <Headline variant="section">{title}</Headline>

@@ -17,7 +17,7 @@ export const Renderer = ({
       <div className={cn('col-span-10 col-start-2 lg:col-span-5 lg:col-start-1 xl:col-span-4 my-24 lg:my-48')}>
         <div className={cn('text-center lg:text-left lg:sticky lg:top-12 flex flex-col gap-12')}>
           {title && <Headline variant="section">{title}</Headline>}
-          {caption && <RichText className="dark" data={caption} enableGutter={false} />}
+          {caption && <RichText data={caption} enableGutter={false} />}
           {skillSummary && (
             <SkillChart
               skillSummary={skillSummary as any /* eslint-disable-line @typescript-eslint/no-explicit-any */}

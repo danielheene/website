@@ -1,5 +1,4 @@
 import { ICON } from '@/components/Icon'
-import { RichTextField } from '@/fields/RichText'
 import { CollectionSlug } from '@custom-types'
 import { startCase } from 'lodash-es'
 import { deepMerge, Field, GroupField, OptionObject } from 'payload'
@@ -9,6 +8,7 @@ export const appearanceOptions: Record<string, OptionObject> = {
     label: 'Default',
     value: 'default',
   },
+
   outline: {
     label: 'Outline',
     value: 'outline',
@@ -27,6 +27,7 @@ export const LinkField = ({ withAppearanceSelect = false, overrides = {} }: Link
       name: 'link',
       type: 'group',
       label: false,
+      interfaceName: 'LinkFieldData',
       admin: {
         className: 'link-field',
         hideGutter: true,
@@ -168,16 +169,6 @@ export const LinkField = ({ withAppearanceSelect = false, overrides = {} }: Link
             },
           ],
         },
-        RichTextField({
-          name: 'body',
-          editorVariant: 'inline',
-          overrides: {
-            admin: {
-              condition: (_, siblingData) => siblingData?.type === 'mailto',
-            },
-            label: false,
-          },
-        }),
         withAppearanceSelect
           ? {
               name: 'appearance',

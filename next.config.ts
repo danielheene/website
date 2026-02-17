@@ -27,10 +27,15 @@ const nextConfig: NextConfig = {
     resolveExtensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.wasm', '.json', '.css', '.scss', '.svg'],
   },
   images: {
-    formats: ['image/webp'],
+    formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    remotePatterns: [new URL(`/api/media/**`, process.env.NEXT_PUBLIC_SERVER_URL)],
+    remotePatterns: [
+      new URL(`${process.env.NEXT_PUBLIC_SERVER_URL}/**`),
+      new URL('https://daniel.heene.dev/**'),
+      new URL('https://daniel.heene.io/**'),
+      new URL('https://cdn.pixabay.com/**'),
+    ],
     localPatterns: [{ pathname: '**' }],
     contentDispositionType: 'inline',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
@@ -49,7 +54,6 @@ const nextConfig: NextConfig = {
 
   async rewrites() {
     const rewrites = []
-
 
     if (process.env['UMAMI_HOST_URL']) {
       rewrites.push({

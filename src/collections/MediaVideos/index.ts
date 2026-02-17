@@ -11,10 +11,10 @@ export const MediaVideos: CollectionConfig<CollectionSlug.MediaVideos> = {
     plural: 'Videos',
   },
   admin: {
-    disableCopyToLocale: true,
-    group: AdminGroup.General,
+    group: AdminGroup.Media,
     useAsTitle: 'filename',
     defaultColumns: ['filename', 'type', 'extension', 'updatedAt'],
+    disableCopyToLocale: true,
     components: {
       Description: false,
     },

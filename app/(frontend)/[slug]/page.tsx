@@ -2,6 +2,7 @@ import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { Headline } from '@/components/Headline'
 import { ImageMedia } from '@/components/ImageMedia'
 import { PageContainer } from '@/components/PageContainer'
+import { isMediaImage } from '@/lib/typeGuards'
 import { generateMeta } from '@/utilities/generateMeta'
 import { CollectionSlug } from '@custom-types'
 
@@ -48,11 +49,11 @@ export default async function Page({ params: paramsPromise }: PageProps) {
   return (
     <PageContainer layout={layout}>
       <div className="relative pt-32 h-screen">
-        {hero && hero.media && Array.isArray(hero.media) && typeof hero.media[0] === 'object' && (
+        {hero && hero.media && Array.isArray(hero.media) && isMediaImage(hero.media[0]) && (
           <ImageMedia
             url={hero.media[0].url}
             className="absolute top-0 left-0 right-0 bottom-0 border-b-2 border-b-primary"
-            alt={`${title} Hero Image`}
+            alt={hero.media[0].alt || title || 'Hero Image'}
             width={hero.media[0].width}
             height={hero.media[0].height}
             sizes="100vw"
@@ -61,9 +62,11 @@ export default async function Page({ params: paramsPromise }: PageProps) {
             duoTone
           />
         )}
-        <Headline variant="page-title" className="relative z-10 mt-28 mb-32 text-white textshadow-lg shadow-primary/75">
-          {title}
-        </Headline>
+        {title && (
+          <Headline variant="page-title" className="relative z-10 mt-28 mb-32 text-white textshadow-lg shadow-primary/75">
+            {title}
+          </Headline>
+        )}
       </div>
       <RenderBlocks blocks={content} />
 
