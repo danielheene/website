@@ -1,3 +1,8 @@
+import { AdminGroup, CollectionSlug } from '@custom-types'
+import type { BlogCategory } from '@payload-types'
+import { createBreadcrumbsField, createParentField } from '@payloadcms/plugin-nested-docs'
+import type { AccessArgs, CollectionConfig } from 'payload'
+
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { MetaField } from '@/fields/Meta'
@@ -5,10 +10,7 @@ import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
 import { generatePreviewPath } from '@/payload/utilities/generatePreviewPath'
-import { AdminGroup, CollectionSlug } from '@custom-types'
-import { BlogCategory } from '@payload-types'
-import { createBreadcrumbsField, createParentField } from '@payloadcms/plugin-nested-docs'
-import { AccessArgs, CollectionConfig } from 'payload'
+
 import { generateBreadcrumbsPath } from './hooks/generateBreadcrumbsPath'
 import { revalidateBlogCategory } from './hooks/revalidateBlogCategory'
 

@@ -1,9 +1,10 @@
+import type { GlobalSlug, ResumeLayoutBlockData } from '@custom-types'
+
 import { Headline } from '@/components/Headline'
 import { ImageMedia } from '@/components/ImageMedia'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
 import { cn } from '@/utilities/cn'
-import { GlobalSlug, ResumeLayoutBlockData } from '@custom-types'
 
 export const Renderer = ({ blockType, data: { title, content, portrait } }: ResumeLayoutBlockData<GlobalSlug.ResumeAboutMe>) => {
   return (

@@ -1,7 +1,7 @@
 import {
-  InternalStatusResponse,
-  UptimeKumaHeartbeat,
-  UptimeKumaHeartbeatResponse,
+  type InternalStatusResponse,
+  type UptimeKumaHeartbeat,
+  type UptimeKumaHeartbeatResponse,
   UptimeKumaHeartbeatStatus,
   UptimeKumaOverallStatus,
 } from '@custom-types'

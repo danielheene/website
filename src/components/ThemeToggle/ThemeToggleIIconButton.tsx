@@ -1,7 +1,8 @@
 'use client'
 
+import { LuMoon as Moon, LuSun as Sun } from 'react-icons/lu'
+
 import { Button } from '@/components/ui/button'
-import { Moon, Sun } from 'lucide-react'
 
 interface ThemeToggleIconButtonProps {
   theme?: string

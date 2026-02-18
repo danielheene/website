@@ -2,8 +2,8 @@ import { CollectionSlug } from '@custom-types'
 import { get } from 'lodash-es'
 import Image from 'next/image'
 import Link from 'next/link'
-import { DefaultServerCellComponentProps } from 'payload'
-import { CSSProperties } from 'react'
+import type { DefaultServerCellComponentProps } from 'payload'
+import type { CSSProperties } from 'react'
 
 const style: CSSProperties = {
   width: '40px',

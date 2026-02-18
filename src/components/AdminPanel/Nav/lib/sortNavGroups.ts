@@ -1,5 +1,5 @@
 import { AdminGroup, CollectionSlug, GlobalSlug } from '@custom-types'
-import { NavGroupType } from '@payloadcms/ui/utilities/groupNavItems'
+import type { NavGroupType } from '@payloadcms/ui/utilities/groupNavItems'
 
 const NAV_GROUP_SORTING_ORDER = [
   [AdminGroup.General, [CollectionSlug.Pages]],
@@ -45,8 +45,8 @@ export const sortNavGroups = (groups: NavGroupType[]) =>
         ...group,
         entities: entityOrder
           ? entities.sort((a, b) => {
-              const aPos = entityOrder.findIndex((slug) => slug === a.slug)
-              const bPos = entityOrder.findIndex((slug) => slug === b.slug)
+              const aPos = entityOrder.indexOf(a.slug as GlobalSlug | CollectionSlug)
+              const bPos = entityOrder.indexOf(b.slug as GlobalSlug | CollectionSlug)
               return aPos - bPos
             })
           : entities,

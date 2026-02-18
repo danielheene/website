@@ -1,7 +1,8 @@
-import { ICON } from '@/components/Icon'
 import { CollectionSlug } from '@custom-types'
 import { startCase } from 'lodash-es'
-import { deepMerge, Field, GroupField, OptionObject } from 'payload'
+import { deepMerge, type Field, type GroupField, type OptionObject } from 'payload'
+
+import { ICON } from '@/components/Icon'
 
 export const appearanceOptions: Record<string, OptionObject> = {
   default: {

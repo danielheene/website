@@ -1,6 +1,6 @@
 import { CollectionSlug, GlobalSlug } from '@custom-types'
-import { Page } from '@payload-types'
-import { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-mongodb'
+import type { Page } from '@payload-types'
+import type { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-mongodb'
 
 export async function up({ payload, req, session }: MigrateUpArgs): Promise<void> {
   const resumeGlobals = [

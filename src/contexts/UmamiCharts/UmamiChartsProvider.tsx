@@ -1,10 +1,11 @@
 'use client'
 
+import { subWeeks } from 'date-fns'
+import { type JSX, type ReactNode, useCallback, useEffect, useState } from 'react'
+
 import { fetchPaths } from '@/contexts/UmamiCharts/lib/fetchPaths'
 import { UmamiChartsContext } from '@/contexts/UmamiCharts/UmamiCharts.context'
-import { UmamiChartsInternalState } from '@/contexts/UmamiCharts/UmamiCharts.types'
-import { subWeeks } from 'date-fns'
-import { JSX, ReactNode, useCallback, useEffect, useState } from 'react'
+import type { UmamiChartsInternalState } from '@/contexts/UmamiCharts/UmamiCharts.types'
 
 interface UmamiChartsProviderProps {
   children: ReactNode
@@ -16,7 +17,7 @@ const initialState: UmamiChartsInternalState = {
 }
 
 export const UmamiChartsProvider = ({ children }: UmamiChartsProviderProps): JSX.Element => {
-  const [{ startAt, endAt }, setState] = useState(initialState)
+  const [{ startAt, endAt }, _setState] = useState(initialState)
 
   const [paths, setPaths] = useState<Record<string, string>[]>([])
 
@@ -29,7 +30,7 @@ export const UmamiChartsProvider = ({ children }: UmamiChartsProviderProps): JSX
 
   useEffect(() => {
     fetchDate()
-  }, [])
+  }, [fetchDate])
 
   console.log(paths)
   return <UmamiChartsContext value={{ paths }}>{children}</UmamiChartsContext>

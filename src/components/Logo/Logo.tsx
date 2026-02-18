@@ -1,4 +1,5 @@
-import React, { JSX, Ref, SVGAttributes, useMemo } from 'react'
+import { type JSX, type Ref, type SVGAttributes, useMemo } from 'react'
+
 import { cn } from '@/utilities/cn'
 
 export enum LogoColor {
@@ -41,7 +42,7 @@ export const Logo = ({
         blink && '[&>.bar]:animate-blink',
         classNameProp,
       ]),
-    [classNameProp],
+    [classNameProp, blink, color],
   )
 
   const { width, height } = useMemo(() => {
@@ -51,6 +52,7 @@ export const Logo = ({
   }, [variant])
 
   return (
+    // biome-ignore lint/a11y/noSvgWithoutTitle: <TODO>
     <svg
       {...externalSVGProps}
       className={className}

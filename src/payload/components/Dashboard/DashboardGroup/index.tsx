@@ -1,11 +1,13 @@
-import { cn } from '@/utilities/cn'
 import { AdminGroup } from '@custom-types'
 import { formatAdminURL } from '@payloadcms/ui/shared'
 import Link from 'next/link'
-import { BasePayload, EntityType, StaticLabel } from 'payload'
+import type { BasePayload, EntityType, StaticLabel } from 'payload'
+
+import { cn } from '@/utilities/cn'
 
 import './index.scss'
-import { FC, useMemo } from 'react'
+
+import { type FC, useMemo } from 'react'
 
 type Props = {
   adminRoute: string
@@ -46,8 +48,6 @@ export const DashboardGroup: FC<Props> = ({ groupLabel, adminRoute, entities, pa
     const isRegularGroup = !isResumeGroup && !isSettingsGroup
     return { isResumeGroup, isSettingsGroup, isRegularGroup }
   }, [groupLabel])
-
-  
 
   return (
     <section className={cn('@container')}>

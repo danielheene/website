@@ -1,4 +1,5 @@
-import { deepMerge, TextField } from 'payload'
+import { deepMerge, type TextField } from 'payload'
+
 import { generateSlugHook } from './hooks/generateSlug'
 
 type SlugFieldOverrides = Partial<Omit<TextField, 'name' | 'type' | 'index' | 'unique' | 'label' | 'required' | 'hooks'>>

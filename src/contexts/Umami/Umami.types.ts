@@ -12,9 +12,7 @@ export type IdentifyFunction = {
   (uniqueId: string, data: Record<string, unknown>): void
 }
 
-export type BeforeSendFunction = {
-  (type?: string, payload?: Record<string, unknown>): Record<string, unknown> | false | null | undefined
-}
+export type BeforeSendFunction = (type?: string, payload?: Record<string, unknown>) => Record<string, unknown> | false | null | undefined
 
 export interface UmamiContextValue {
   track: TrackFunction

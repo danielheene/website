@@ -1,8 +1,9 @@
+import type { GlobalSlug, ResumeLayoutBlockData } from '@custom-types'
+
 import { Headline } from '@/components/Headline'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
 import { cn } from '@/utilities/cn'
-import { GlobalSlug, ResumeLayoutBlockData } from '@custom-types'
 
 export const Renderer = ({ blockType, data: { title, caption } }: ResumeLayoutBlockData<GlobalSlug.ResumeContact>) => {
   return (

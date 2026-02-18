@@ -1,9 +1,10 @@
 'use client'
 
+import type { MediaImage } from '@payload-types'
+import { useState } from 'react'
+
 import { ImageMedia } from '@/components/ImageMedia'
 import { cn } from '@/utilities/cn'
-import { MediaImage } from '@payload-types'
-import { useState } from 'react'
 
 export const HeroClient = ({ title, background, portrait }: { title?: string; background?: MediaImage; portrait?: MediaImage }) => {
   const titleRows = title?.split('\n')

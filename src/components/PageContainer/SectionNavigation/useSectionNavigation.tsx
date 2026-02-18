@@ -1,8 +1,9 @@
 'use client'
 
 import React from 'react'
-import { SectionNavigationContextValue } from './SectionNavigation.types'
+
 import { SectionNavigationContext } from './SectionNavigation.context'
+import type { SectionNavigationContextValue } from './SectionNavigation.types'
 
 export const useSectionNavigation = () => {
   const context = React.useContext<SectionNavigationContextValue>(SectionNavigationContext)

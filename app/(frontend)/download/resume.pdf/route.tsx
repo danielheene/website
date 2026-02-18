@@ -1,7 +1,8 @@
+import ReactPDF from '@react-pdf/renderer'
+import type { NextRequest } from 'next/server'
+
 import { getCachedResumeDocumentData } from '@/lib/getResumeDocumentData'
 import { ResumeDocument } from '@/pdfs/ResumeDocument'
-import ReactPDF from '@react-pdf/renderer'
-import { NextRequest } from 'next/server'
 
 export async function GET(request: NextRequest) {
   const localeParam = request.nextUrl.searchParams.get('locale')

@@ -2,8 +2,7 @@
 
 import { Button, useDocumentInfo } from '@payloadcms/ui'
 import { usePathname } from 'next/navigation.js'
-import { DocumentTabClientProps } from 'payload'
-import React from 'react'
+import type { DocumentTabClientProps } from 'payload'
 
 export default function ResumePdfTabComponent({ path }: DocumentTabClientProps) {
   const { collectionSlug, data } = useDocumentInfo()

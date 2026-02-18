@@ -1,15 +1,16 @@
 'use client'
 
+import type { GlobalSlug, ResumeLayoutBlockData } from '@custom-types'
+import Image from 'next/image'
+import Link from 'next/link'
+import type { JSX } from 'react'
+
 import { Button } from '@/components/Button'
 import { Headline } from '@/components/Headline'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
 import { isMediaImage } from '@/lib/typeGuards'
 import { cn } from '@/utilities/cn'
-import { GlobalSlug, ResumeLayoutBlockData } from '@custom-types'
-import Image from 'next/image'
-import Link from 'next/link'
-import { JSX } from 'react'
 
 export const Renderer = ({
   blockType,

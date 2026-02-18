@@ -25,7 +25,7 @@
   --color-secondary-900: oklch(26.285% 0.04726 174.24);
   --color-secondary-950: oklch(16.406% 0.02809 177.61);
   --color-secondary: var(--color-secondary-500, oklch(85.784% 0.16293 171.99));
-  
+
   /* ---------- tailwind colors ---------- */
   --color-slate-50: oklch(0.984 0.003 247.858);
   --color-slate-100: oklch(0.968 0.007 247.896);
@@ -367,7 +367,6 @@
   --color-error: var(--color-red-500);
 }
 
-
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
@@ -450,7 +449,6 @@
   --muted-2: hsl(0, 0%, 18%);
   --muted-2-foreground: hsl(240, 2%, 75%);
 }
-
 
 @theme inline {
   /* ---------- theme colors ---------- */

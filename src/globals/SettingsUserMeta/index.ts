@@ -1,8 +1,9 @@
-import { authenticated } from '@/access/authenticated'
-import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { AdminGroup, CollectionSlug, GlobalSlug } from '@custom-types'
 import { revalidateTag } from 'next/cache'
-import { GlobalConfig } from 'payload'
+import type { GlobalConfig } from 'payload'
+
+import { authenticated } from '@/access/authenticated'
+import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 
 export const SettingsUserMeta: GlobalConfig = {
   slug: GlobalSlug.SettingsUserMeta,

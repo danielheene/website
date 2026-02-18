@@ -1,11 +1,11 @@
 'use client'
 
-import { ChangeEvent, DragEvent, Fragment, JSX, useCallback, useId, useMemo, useState } from 'react'
-import { UIFieldClientProps } from 'payload'
 import { toast, useField } from '@payloadcms/ui'
+import type { UIFieldClientProps } from 'payload'
+import { type ChangeEvent, type DragEvent, Fragment, type JSX, useCallback, useId, useMemo, useState } from 'react'
 import { optimize } from 'svgo/browser'
 
-import { ClassValue, cn } from '@/utilities/cn'
+import { type ClassValue, cn } from '@/utilities/cn'
 import { extractErrorMessage } from '@/utilities/extractErrorMessage'
 
 import styles from './LogoField.module.css'
@@ -43,77 +43,83 @@ const LogoField = ({ path }: LogoFieldProps): JSX.Element => {
   /**
    * Handles the file upload process with sanitization and error handling.
    */
-  const handleFileUpload = useCallback(async (file: File) => {
-    setIsUploading(true)
+  const handleFileUpload = useCallback(
+    async (file: File) => {
+      setIsUploading(true)
 
-    const reader = new FileReader()
+      const reader = new FileReader()
 
-    reader.addEventListener('load', async (event: ProgressEvent<FileReader>) => {
-      if (!event.target?.result) {
-        toast.error('Uploaded file seems to be empty. Please try again.')
-        return
-      }
+      reader.addEventListener('load', async (event: ProgressEvent<FileReader>) => {
+        if (!event.target?.result) {
+          toast.error('Uploaded file seems to be empty. Please try again.')
+          return
+        }
 
-      try {
-        const svg = event.target.result.toString()
-        const { data } = optimize(svg, {
-          multipass: true,
-          plugins: [
-            {
-              name: 'preset-default', // includes: removeXMLProcInst removeComments removeEmptyAttrs removeEmptyContainers
-              params: {
-                floatPrecision: 3,
-                transformPrecision: 3,
+        try {
+          const svg = event.target.result.toString()
+          const { data } = optimize(svg, {
+            multipass: true,
+            plugins: [
+              {
+                name: 'preset-default', // includes: removeXMLProcInst removeComments removeEmptyAttrs removeEmptyContainers
+                params: {
+                  floatPrecision: 3,
+                  transformPrecision: 3,
+                },
               },
-            },
-            'removeRasterImages',
-            'removeScripts',
-            'removeStyleElement',
-            {
-              name: 'removeAttrs',
-              params: {
-                attrs: ['class', 'style', 'fill', 'id', 'width', 'height'],
-                elemSeparator: ':',
-                preserveCurrentColor: true,
+              'removeRasterImages',
+              'removeScripts',
+              'removeStyleElement',
+              {
+                name: 'removeAttrs',
+                params: {
+                  attrs: ['class', 'style', 'fill', 'id', 'width', 'height'],
+                  elemSeparator: ':',
+                  preserveCurrentColor: true,
+                },
               },
-            },
-          ],
-        })
+            ],
+          })
 
-        setValue(data)
-        toast.success('Logo uploaded successfully!')
-      } catch (error: unknown) {
-        toast.error(`Requesting logo sanitization failed: ${extractErrorMessage(error)}`)
-      } finally {
+          setValue(data)
+          toast.success('Logo uploaded successfully!')
+        } catch (error: unknown) {
+          toast.error(`Requesting logo sanitization failed: ${extractErrorMessage(error)}`)
+        } finally {
+          setIsUploading(false)
+        }
+      })
+
+      /**
+       * Handles the error event when reading the file.
+       */
+      reader.addEventListener('error', (event: ProgressEvent<FileReader>): void => {
+        toast.error(`Processing uploaded file has failed: ${extractErrorMessage(event)}`)
         setIsUploading(false)
-      }
-    })
+      })
 
-    /**
-     * Handles the error event when reading the file.
-     */
-    reader.addEventListener('error', (event: ProgressEvent<FileReader>): void => {
-      toast.error(`Processing uploaded file has failed: ${extractErrorMessage(event)}`)
-      setIsUploading(false)
-    })
-
-    reader.readAsText(file, 'UTF-8')
-  }, [])
+      reader.readAsText(file, 'UTF-8')
+    },
+    [setValue],
+  )
 
   /**
    * Handles the file change event.
    */
-  const handleFileChange = useCallback(async (event: DragEvent<HTMLLabelElement> | ChangeEvent<HTMLInputElement>) => {
-    handleEnd(event)
+  const handleFileChange = useCallback(
+    async (event: DragEvent<HTMLLabelElement> | ChangeEvent<HTMLInputElement>) => {
+      handleEnd(event)
 
-    const file = 'dataTransfer' in event ? event.dataTransfer.files[0] : 'target' in event ? event.target.files[0] : null
+      const file = 'dataTransfer' in event ? event.dataTransfer.files[0] : 'target' in event ? event.target.files[0] : null
 
-    if (!file || !file.type.includes('svg')) {
-      toast.error('The uploaded file must be an SVG.')
-    } else {
-      await handleFileUpload(file)
-    }
-  }, [])
+      if (!file || !file.type.includes('svg')) {
+        toast.error('The uploaded file must be an SVG.')
+      } else {
+        await handleFileUpload(file)
+      }
+    },
+    [handleEnd, handleFileUpload],
+  )
 
   const logoContent = useMemo(() => {
     return value ? optimize(value, { js2svg: { indent: 2, pretty: true } }).data : null
@@ -132,6 +138,7 @@ const LogoField = ({ path }: LogoFieldProps): JSX.Element => {
         {!logoContent && !isUploading && (
           <Fragment>
             <div className={cn([styles.DropAreaIcon])}>
+              {/** biome-ignore lint/a11y/noSvgWithoutTitle: <TODO> */}
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <path fill="currentColor" d="M23 18H1l7.25-9.67l2 2.67L14 6zm-11.5-5.33L14 16h5l-5-6.67zM5 16h6.5l-3.25-4.33z" />
               </svg>
@@ -141,6 +148,7 @@ const LogoField = ({ path }: LogoFieldProps): JSX.Element => {
         )}
         {isUploading && (
           <span className={cn([styles.DropAreaIcon, styles.DropAreaSpinner])}>
+            {/** biome-ignore lint/a11y/noSvgWithoutTitle: <TODO> */}
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
               <path
                 fill="currentColor"
@@ -149,11 +157,8 @@ const LogoField = ({ path }: LogoFieldProps): JSX.Element => {
             </svg>
           </span>
         )}
-        {logoContent && !isUploading && (
-          <Fragment>
-            <div className={styles.LogoFieldImage} dangerouslySetInnerHTML={{ __html: logoContent }} />
-          </Fragment>
-        )}
+        {/** biome-ignore lint/security/noDangerouslySetInnerHtml: <sanitized contents> */}
+        {logoContent && !isUploading && <div className={styles.LogoFieldImage} dangerouslySetInnerHTML={{ __html: logoContent }} />}
       </label>
       <input id={id} type="file" accept="image/svg+xml" onChange={handleFileChange} hidden />
     </div>

@@ -14,5 +14,5 @@
 .RowLabel input:focus {
   @apply border border-transparent w-full;
   background-color: var(--theme-input-bg);
-  border: 1px solid var(--theme-elevation-300) !important;
+  border: 1px solid var(--theme-elevation-300);
 }

@@ -1,10 +1,8 @@
 import configPromise from '@payload-config'
-
 import { draftMode } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { NextRequest } from 'next/server'
-import type { CollectionSlug, PayloadRequest } from 'payload'
-import { getPayload } from 'payload'
+import type { NextRequest } from 'next/server'
+import { type CollectionSlug, getPayload, type PayloadRequest } from 'payload'
 
 export async function GET(req: NextRequest): Promise<Response> {
   const payload = await getPayload({ config: configPromise })
@@ -29,6 +27,7 @@ export async function GET(req: NextRequest): Promise<Response> {
     return new Response('This endpoint can only be used for relative previews', { status: 500 })
   }
 
+  // biome-ignore lint/suspicious/noImplicitAnyLet: <TODO>
   let user
 
   try {

@@ -4,15 +4,17 @@ import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { Toasty } from '@/components/Toasty'
 
 import '@styles/frontend.css'
+
+import type { Metadata, Viewport } from 'next'
+import { draftMode } from 'next/headers'
+import { ThemeProvider } from 'next-themes'
+import type { JSX, ReactNode } from 'react'
+
 import { WebVitalsProvider } from '@/components/WebVitalsProvider'
 import { UmamiProvider } from '@/contexts/Umami'
 import { getCachedSiteMetaData } from '@/lib/getSiteMetaData'
 import { getCachedUserMetaData } from '@/lib/getUserMetaData'
 import { generatePersonSchema, generateWebSiteSchema, JsonLd } from '@/utilities/jsonLd'
-import type { Metadata, Viewport } from 'next'
-import { ThemeProvider } from 'next-themes'
-import { draftMode } from 'next/headers'
-import React, { JSX, ReactNode } from 'react'
 
 export default async function RootLayout({ children }: { children: ReactNode | ReactNode[] }): Promise<JSX.Element> {
   const { isEnabled: draft } = await draftMode()

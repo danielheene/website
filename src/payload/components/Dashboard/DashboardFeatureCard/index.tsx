@@ -1,8 +1,10 @@
 'use client'
+
+import type React from 'react'
 import type { ElementType } from 'react'
-import React from 'react'
 
 import './index.scss'
+
 import { Button } from '@payloadcms/ui'
 
 export type Props = {

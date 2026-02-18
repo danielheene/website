@@ -14,18 +14,16 @@
   }
 }
 
-
 /* disable background transition on array field row headers */
 .customers .collapsible--hovered > .collapsible__toggle-wrap > .collapsible__toggle {
-  background: rgba(0, 0, 0, 0) !important;
+  background: rgba(0, 0, 0, 0);
 }
 
 /* hide array list header and collapse controls */
 .customers .array-field__header,
 .customers .collapsible__toggle-wrap .collapsible__indicator {
-  display: none !important;
+  display: none;
 }
-
 
 .customers .array-field__draggable-rows {
   display: grid;
@@ -36,15 +34,10 @@
 .customers.array-field {
   @apply gap-8;
 
-  & .array-field__draggable-rows {
-
-  }
-
   & .collapsible__content {
     @apply relative p-0;
   }
 }
-
 
 .customers .customers__row {
   & .row__fields {
@@ -52,14 +45,11 @@
   }
 
   & .render-fields {
-    flex-wrap: nowrap !important;
+    flex-wrap: nowrap;
   }
 
   & .group-field__header {
-    margin: 0 !important;
-  }
-
-  & .customer {
+    margin: 0;
   }
 }
 

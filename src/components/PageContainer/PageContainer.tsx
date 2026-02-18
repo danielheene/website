@@ -1,8 +1,9 @@
 'use client'
 
+import type { PageLayout } from '@payload-types'
+import type { JSX, ReactNode } from 'react'
+
 import { SectionNavigationProvider } from '@/components/PageContainer/SectionNavigation'
-import { PageLayout } from '@payload-types'
-import { JSX, ReactNode } from 'react'
 
 interface PageContainerProps {
   layout?: PageLayout

@@ -1,14 +1,15 @@
 'use client'
 
-import { JSX, memo, useCallback, useMemo, useRef, useState } from 'react'
-import {
+import { type JSX, memo, useCallback, useMemo, useRef, useState } from 'react'
+
+import { SectionNavigationContext } from './SectionNavigation.context'
+import type {
   RegisterAnchorFunction,
   SectionNavigationAnchor,
   SectionNavigationProviderProps,
   SetActiveAnchorFunction,
   SetScrollingToAnchorFunction,
 } from './SectionNavigation.types'
-import { SectionNavigationContext } from './SectionNavigation.context'
 import { SectionNavigationDisplay } from './SectionNavigationDisplay'
 
 /**
@@ -46,11 +47,14 @@ export const SectionNavigationProvider = memo(({ children }: SectionNavigationPr
   /**
    * set anchor with matching id to active and activate scroll lock
    */
-  const setScrollingToAnchor = useCallback<SetScrollingToAnchorFunction>((id: string) => {
-    scrollingToLockRef.current = null
-    setActiveAnchor(id)
-    scrollingToLockRef.current = id
-  }, [])
+  const setScrollingToAnchor = useCallback<SetScrollingToAnchorFunction>(
+    (id: string) => {
+      scrollingToLockRef.current = null
+      setActiveAnchor(id)
+      scrollingToLockRef.current = id
+    },
+    [setActiveAnchor],
+  )
 
   /**
    * memoize the context value to prevent unnecessary re-renders

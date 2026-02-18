@@ -1,4 +1,4 @@
-import { MediaAudio, MediaDocument, MediaImage, MediaVideo } from '@payload-types'
+import type { MediaAudio, MediaDocument, MediaImage, MediaVideo } from '@payload-types'
 
 export const isMediaImage = (media: unknown): media is MediaImage =>
   media && typeof media === 'object' && 'mimeType' in media && typeof media.mimeType === 'string' && media.mimeType.startsWith('image/')

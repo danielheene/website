@@ -1,9 +1,11 @@
 'use client'
 
-import { cn } from '@/utilities/cn'
 import slugify from '@sindresorhus/slugify'
-import { ReactNode, useEffect } from 'react'
+import { type ReactNode, useEffect } from 'react'
 import { useIntersectionObserver } from 'usehooks-ts'
+
+import { cn } from '@/utilities/cn'
+
 import { useSectionNavigation } from '../PageContainer/SectionNavigation'
 
 export interface SectionContainerProps {
@@ -21,11 +23,11 @@ export const SectionContainer = ({ id: rawId, title, variant = 'default', childr
 
   useEffect(() => {
     if (id && title) registerAnchor({ id, title })
-  }, [])
+  }, [id, registerAnchor, title])
 
   useEffect(() => {
     if (id && isObserving) setActiveAnchor(id)
-  }, [isObserving])
+  }, [isObserving, id, setActiveAnchor])
 
   console.log(isObserving, id, entry)
   return (

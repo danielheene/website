@@ -1,6 +1,7 @@
-import { CollectionBeforeValidateHook } from 'payload'
-import { Page } from '@payload-types'
-import { BlockData } from '@custom-types'
+import type { BlockData } from '@custom-types'
+import type { Page } from '@payload-types'
+import type { CollectionBeforeValidateHook } from 'payload'
+
 import { getFilteredBlocks } from '../utils/getFilteredBlocks'
 
 export const removeInvalidBlockData =

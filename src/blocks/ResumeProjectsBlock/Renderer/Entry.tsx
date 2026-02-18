@@ -1,8 +1,10 @@
+import type { MediaImage, ProjectList } from '@payload-types'
+import { memo } from 'react'
+
 import { Headline } from '@/components/Headline'
 import RichText from '@/components/RichText'
 import { cn } from '@/utilities/cn'
-import { MediaImage, ProjectList } from '@payload-types'
-import { memo } from 'react'
+
 import { Image } from './Image'
 
 type ResumeProjectsSectionEntryProps = ProjectList[number] & {

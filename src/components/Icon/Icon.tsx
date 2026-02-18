@@ -1,5 +1,5 @@
 import { Icon as IconifyIconComponent } from '@iconify-icon/react'
-import React, { ComponentProps, JSX, memo } from 'react'
+import { type ComponentProps, type JSX, memo } from 'react'
 
 export const BRAND_ICON = {
   ARCHLINUX: 'simple-icons:archlinux',

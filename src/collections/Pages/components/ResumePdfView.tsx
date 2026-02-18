@@ -1,8 +1,8 @@
-import ResumePdfViewClientComponent from '@/collections/Pages/components/ResumePdfView.client'
-import { getGlobal } from '@/utilities/getGlobals'
 import { GlobalSlug } from '@custom-types'
 import type { AdminViewServerProps } from 'payload'
-import React from 'react'
+
+import ResumePdfViewClientComponent from '@/collections/Pages/components/ResumePdfView.client'
+import { getGlobal } from '@/utilities/getGlobals'
 
 export default async function ResumePdfViewComponent({ initPageResult }: AdminViewServerProps) {
   const {

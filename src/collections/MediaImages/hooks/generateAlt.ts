@@ -1,5 +1,6 @@
+import type { CollectionBeforeChangeHook } from 'payload'
+
 import { generateImageAlternativeText } from '@/lib/generateImageAlternativeText'
-import { CollectionBeforeChangeHook } from 'payload'
 
 /**
  * Generate alt text for a media image.

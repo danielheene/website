@@ -1,9 +1,10 @@
 'use client'
 
-import { useUmami } from '@/contexts/Umami'
-import { useCreatePortalHost } from '@/utilities/useCreatePortalHost'
 import React from 'react'
 import ReactDOM from 'react-dom'
+
+import { useUmami } from '@/contexts/Umami'
+import { useCreatePortalHost } from '@/utilities/useCreatePortalHost'
 
 enum ActionType {
   KeyUp = 'Toasty/KeyUp',
@@ -147,7 +148,7 @@ export const Toasty = function Toasty(): React.JSX.Element {
         window.removeEventListener('keyup', handleKeyUpEvent)
       }
     }
-  }, [])
+  }, [eventIsRegistered])
 
   /**
    *
@@ -210,7 +211,7 @@ export const Toasty = function Toasty(): React.JSX.Element {
       audioBufferNode.connect(audioContextRef.current.destination)
       audioBufferNode.start(0)
     }
-  }, [audioBuffer, imageBlob, success])
+  }, [audioBuffer, imageBlob, success, track])
 
   /**
    *
@@ -220,6 +221,7 @@ export const Toasty = function Toasty(): React.JSX.Element {
   return ReactDOM.createPortal(
     <React.Fragment>
       <div className="toasty" aria-hidden={true} tabIndex={-1}>
+        {/** biome-ignore lint/performance/noImgElement: <TODO> */}
         <img src={URL.createObjectURL(imageBlob)} alt="toasty" />
       </div>
       <style jsx>

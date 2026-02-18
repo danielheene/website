@@ -1,6 +1,12 @@
-import { I18nClient } from '@payloadcms/translations'
-import { EntityToGroup, groupNavItems, NavGroupType } from '@payloadcms/ui/utilities/groupNavItems'
-import { EntityType, SanitizedCollectionConfig, SanitizedGlobalConfig, SanitizedPermissions, VisibleEntities } from 'payload'
+import type { I18nClient } from '@payloadcms/translations'
+import { type EntityToGroup, groupNavItems, type NavGroupType } from '@payloadcms/ui/utilities/groupNavItems'
+import {
+  EntityType,
+  type SanitizedCollectionConfig,
+  type SanitizedGlobalConfig,
+  type SanitizedPermissions,
+  type VisibleEntities,
+} from 'payload'
 
 interface BuildNavGroupsParams {
   collections: SanitizedCollectionConfig[]

@@ -1,5 +1,5 @@
-import { ResumeExperienceGlobalData } from '@payload-types'
-import {
+import type { ResumeExperienceGlobalData } from '@payload-types'
+import type {
   BlockSlug as RegisteredBlockSlug,
   CollectionSlug as RegisteredCollectionSlug,
   GlobalSlug as RegisteredGlobalSlug,
@@ -7,7 +7,7 @@ import {
   TypedCollection,
   TypedGlobal,
 } from 'payload'
-import { PascalCase } from 'type-fest'
+import type { PascalCase } from 'type-fest'
 
 /**
  *
@@ -74,6 +74,7 @@ export enum CollectionSlug {
   Pages = 'pages',
   Users = 'users',
 }
+
 export type { CollectionSlug as RegisteredCollectionSlug } from 'payload'
 export type CollectionData<T extends RegisteredCollectionSlug = RegisteredCollectionSlug> = TypedCollection[T]
 
@@ -95,6 +96,7 @@ export enum GlobalSlug {
   ResumeProjects = 'resume-projects',
   ResumeContact = 'resume-contact',
 }
+
 export type { GlobalSlug as RegisteredGlobalSlug } from 'payload'
 export type GlobalData<T extends RegisteredGlobalSlug> = TypedGlobal[T]
 

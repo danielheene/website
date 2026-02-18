@@ -1,7 +1,8 @@
 'use client'
 
-import { UIContextFunctions, UIContextValues } from '@/contexts/UI/UI.types'
 import { createContext } from 'react'
+
+import type { UIContextFunctions, UIContextValues } from '@/contexts/UI/UI.types'
 
 export const initialUIContextValues: UIContextValues = {
   headerHeight: null,

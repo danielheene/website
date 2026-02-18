@@ -1,7 +1,8 @@
-import { cn } from '@/utilities/cn'
 import Autoplay from 'embla-carousel-autoplay'
 import useEmblaCarousel from 'embla-carousel-react'
-import { Fragment, JSX, useMemo } from 'react'
+import { type JSX, useMemo } from 'react'
+
+import { cn } from '@/utilities/cn'
 
 type LogoCarouselEntry = { id: string; logo: string; name: string }
 type LogoCarouselRow = [LogoCarouselEntry, LogoCarouselEntry]
@@ -81,13 +82,13 @@ export function LogoCarouselRow({ entries }: { entries: LogoCarouselEntry[] }) {
 
 export function LogoCarouselTile({ id, name, logo }: LogoCarouselEntry): JSX.Element {
   return (
-    <Fragment>
-      <div
-        key={id}
-        aria-label={name}
-        className={cn('aspect-4/3 w-full p-3 rounded', 'fill-primary bg-white', '*:w-full *:h-full *:object-contain *:object-center')}
-        dangerouslySetInnerHTML={{ __html: logo }}
-      />
-    </Fragment>
+    // biome-ignore lint/a11y/useAriaPropsSupportedByRole: <TODO>
+    <div
+      key={id}
+      aria-label={name}
+      className={cn('aspect-4/3 w-full p-3 rounded', 'fill-primary bg-white', '*:w-full *:h-full *:object-contain *:object-center')}
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: <sanitized contents>
+      dangerouslySetInnerHTML={{ __html: logo }}
+    />
   )
 }

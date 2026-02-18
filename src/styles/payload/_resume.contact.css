@@ -1,8 +1,7 @@
-
 .contact-button .render-fields {
   @apply grid grid-cols-2 gap-8;
 
   .contact-button__field {
-    @apply mb-0
+    @apply mb-0;
   }
 }

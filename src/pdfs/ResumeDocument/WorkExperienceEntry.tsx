@@ -1,8 +1,9 @@
-import { colors } from '@/pdfs/colors'
-import { registerFonts } from '@/pdfs/fonts'
-import { JobHistory } from '@payload-types'
+import type { JobHistory } from '@payload-types'
 import { StyleSheet, Text, View } from '@react-pdf/renderer'
 import { formatDate } from 'date-fns'
+
+import { colors } from '@/pdfs/colors'
+import { registerFonts } from '@/pdfs/fonts'
 
 type JobHistoryEntry = JobHistory[number]
 

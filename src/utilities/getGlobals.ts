@@ -1,7 +1,7 @@
+import type { GlobalData, RegisteredGlobalSlug } from '@custom-types'
 import { config } from '@payload-config'
-import { unstable_cache } from 'next/cache'
 import { snakeCase } from 'lodash-es'
-import { GlobalData, RegisteredGlobalSlug } from '@custom-types'
+import { unstable_cache } from 'next/cache'
 import { getPayload } from 'payload'
 
 export const getGlobal = async <S extends RegisteredGlobalSlug>(slug: S, depth = 2): Promise<GlobalData<S>> => {

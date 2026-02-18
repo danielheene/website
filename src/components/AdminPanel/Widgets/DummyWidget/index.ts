@@ -1,1 +1,1 @@
-export * from './DummyWidget';
+export * from './DummyWidget'

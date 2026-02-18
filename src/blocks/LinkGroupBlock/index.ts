@@ -1,6 +1,7 @@
-import { LinkGroupField } from '@/fields/LinkGroup'
 import { BlockGroup, BlockSlug } from '@custom-types'
-import { Block } from 'payload'
+import type { Block } from 'payload'
+
+import { LinkGroupField } from '@/fields/LinkGroup'
 
 export const LinkGroupBlock: Block = {
   slug: BlockSlug.LinkGroup,

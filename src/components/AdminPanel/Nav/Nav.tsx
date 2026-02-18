@@ -1,7 +1,9 @@
-import { isMediaImage } from '@/lib/typeGuards'
 import { RenderServerComponent } from '@payloadcms/ui/elements/RenderServerComponent'
-import { ServerProps } from 'payload'
-import { FC } from 'react'
+import type { ServerProps } from 'payload'
+import type { FC } from 'react'
+
+import { isMediaImage } from '@/lib/typeGuards'
+
 import { buildNavGroups } from './lib/buildNavGroups'
 import { fetchNavPreferences } from './lib/fetchNavPreferences'
 import { sortNavGroups } from './lib/sortNavGroups'
@@ -21,14 +23,14 @@ export const Nav: FC<ServerProps> = async (props) => {
 
   const {
     admin: {
-      components: { afterNavLinks, beforeNavLinks, logout },
+      components: { afterNavLinks, beforeNavLinks },
     },
     collections,
     globals,
   } = payload.config
 
   const navGroups = sortNavGroups(buildNavGroups({ collections, globals, visibleEntities, permissions, i18n }))
-  const navPreferences = await fetchNavPreferences({ payload, user })
+  const _navPreferences = await fetchNavPreferences({ payload, user })
 
   return (
     <NavWrapper>

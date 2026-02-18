@@ -1,5 +1,6 @@
-import { cn } from '@/utilities/cn'
 import { ImageResponse } from 'next/og'
+
+import { cn } from '@/utilities/cn'
 //
 // const interMedium = fetch(new URL('/fonts/pp-frama/pp-frama-500-normal.ttf', process.env.NEXT_PUBLIC_SERVER_URL)).then((res) =>
 //   res.arrayBuffer(),
@@ -33,6 +34,7 @@ export default async function Image() {
               mode === 'dark' ? 'bg-white text-black' : 'bg-neutral-800 text-white',
             )}
           >
+            {/** biome-ignore lint/a11y/noSvgWithoutTitle: <TODO> */}
             <svg
               fill="none"
               height={30}
@@ -68,6 +70,7 @@ export default async function Image() {
           mode === 'dark' ? 'border-neutral-700/70' : 'border-neutral-200',
         )}
       >
+        {/** biome-ignore lint/performance/noImgElement: <TODO> */}
         <img
           alt="Akash Moradiya"
           src="https://cdn.pixabay.com/photo/2020/12/14/15/48/stair-5831253_1280.jpg"

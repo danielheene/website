@@ -1,5 +1,9 @@
 'use client'
 
+import { useTheme } from '@payloadcms/ui'
+import Link from 'next/link'
+import { LuChevronsUpDown as ChevronsUpDown, LuLogOut as LogOut, LuSettings as Settings, LuUser as UserIcon } from 'react-icons/lu'
+
 import { ThemeToggleDropdownItem } from '@/components/ThemeToggle'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -13,9 +17,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/utilities/cn'
-import { useTheme } from '@payloadcms/ui'
-import { ChevronsUpDown, LogOut, Settings, User as UserIcon } from 'lucide-react'
-import Link from 'next/link'
 
 interface NavFooterProps {
   user?: {
@@ -66,7 +67,7 @@ export function NavFooter({
             variant="outline"
             className={cn([
               'data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground',
-              'w-full border-0 flex flex-row cursor-pointer [ m-0 h-14',
+              'w-full border-0 flex flex-row cursor-pointer m-0 h-14',
             ])}
           >
             {avatar}

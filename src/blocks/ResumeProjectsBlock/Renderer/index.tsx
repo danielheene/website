@@ -1,10 +1,12 @@
-import { cn } from '@/utilities/cn'
+import type { GlobalSlug, ResumeLayoutBlockData } from '@custom-types'
+import type { JSX } from 'react'
+
 import { Headline } from '@/components/Headline'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
+import { cn } from '@/utilities/cn'
+
 import { Entry } from './Entry'
-import { JSX } from 'react'
-import { GlobalSlug, ResumeLayoutBlockData } from '@custom-types'
 
 export const Renderer = ({
   blockType,

@@ -1,5 +1,4 @@
 import type { NavPreferences, Payload, TypedUser } from 'payload'
-
 import { cache } from 'react'
 
 /**

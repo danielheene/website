@@ -1,5 +1,5 @@
-import { MediaImage } from '@payload-types'
-import { CollectionBeforeChangeHook } from 'payload'
+import type { MediaImage } from '@payload-types'
+import type { CollectionBeforeChangeHook } from 'payload'
 import sharp from 'sharp'
 
 /**

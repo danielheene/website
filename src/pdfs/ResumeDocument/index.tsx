@@ -1,5 +1,5 @@
-import { WorkExperience } from '@/pdfs/ResumeDocument/WorkExperience'
-import {
+/** biome-ignore-all lint/correctness/noUnusedFunctionParameters: <explanation> */
+import type {
   ResumeAboutMeGlobalData,
   ResumeContactGlobalData,
   ResumeCustomersGlobalData,
@@ -9,11 +9,14 @@ import {
   UserMetaData,
 } from '@payload-types'
 import { Document, Page, StyleSheet } from '@react-pdf/renderer'
+
+import { WorkExperience } from '@/pdfs/ResumeDocument/WorkExperience'
+
 import { registerFonts } from '../fonts'
 import { Header } from './Header'
 import { Introduction } from './Introduction'
 
-const { PPFramerText, PPFramer, PPSupplyMono } = registerFonts(['PPSupplyMono', 'PPFramer', 'PPFramerText'])
+const { PPSupplyMono } = registerFonts(['PPSupplyMono', 'PPFramer', 'PPFramerText'])
 
 // Create styles
 const styles = StyleSheet.create({

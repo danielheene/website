@@ -1,5 +1,5 @@
 import { OpenAI } from 'openai'
-import sharp, { SharpInput } from 'sharp'
+import sharp, { type SharpInput } from 'sharp'
 
 /**
  * Generates an image alternative text based on the image

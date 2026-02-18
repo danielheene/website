@@ -1,7 +1,7 @@
 'use client'
 
-import { ChangeEvent, useEffect, useRef } from 'react'
 import { TextInput, toast, useField, useRowLabel } from '@payloadcms/ui'
+import { type ChangeEvent, useEffect, useRef } from 'react'
 
 import styles from './RowLabel.module.css'
 

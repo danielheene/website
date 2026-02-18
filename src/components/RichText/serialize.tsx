@@ -1,8 +1,9 @@
-import { LinkFieldData, ResumeAboutMeBlock } from '@payload-types'
-import { DefaultNodeTypes, SerializedBlockNode } from '@payloadcms/richtext-lexical'
-import React, { Fragment, JSX } from 'react'
-import { CMSLink } from '../Link'
+// biome-ignore-all lint: <external code>
+import type { LinkFieldData, ResumeAboutMeBlock } from '@payload-types'
+import type { DefaultNodeTypes, SerializedBlockNode } from '@payloadcms/richtext-lexical'
+import React, { Fragment, type JSX } from 'react'
 
+import { CMSLink } from '../Link'
 import { IS_BOLD, IS_CODE, IS_ITALIC, IS_STRIKETHROUGH, IS_SUBSCRIPT, IS_SUPERSCRIPT, IS_UNDERLINE } from './nodeFormat'
 
 export type NodeTypes = DefaultNodeTypes | SerializedBlockNode<ResumeAboutMeBlock>
@@ -58,7 +59,7 @@ export function serializeLexical({ nodes }: Props): JSX.Element {
         // https://github.com/facebook/lexical/blob/d10c4e6e55261b2fdd7d1845aed46151d0f06a8c/packages/lexical-list/src/LexicalListItemNode.ts#L133
         // which does not return checked: false (only true - i.e. there is no prop for false)
         const serializedChildrenFn = (node: NodeTypes): JSX.Element | null => {
-          // @ts-ignore
+          // @ts-expect-error
           if (node?.children === null) {
             return null
           } else {
@@ -71,7 +72,7 @@ export function serializeLexical({ nodes }: Props): JSX.Element {
                 }
               }
             }
-            // @ts-ignore
+            // @ts-expect-error
             return serializeLexical({ nodes: node.children as NodeTypes[] })
           }
         }
@@ -132,7 +133,6 @@ export function serializeLexical({ nodes }: Props): JSX.Element {
                   aria-checked={node.checked ? 'true' : 'false'}
                   className={` ${node.checked ? '' : ''}`}
                   key={index}
-                  role="checkbox"
                   tabIndex={-1}
                   value={node?.value}
                 >

@@ -1,5 +1,6 @@
-import { generateSlug } from '@/utilities/generateSlug'
 import type { FieldHook } from 'payload'
+
+import { generateSlug } from '@/utilities/generateSlug'
 
 export const generateSlugHook =
   (fieldToUse: string): FieldHook =>

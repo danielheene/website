@@ -14,6 +14,6 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
       },
     ],
     host: process.env.NEXT_PUBLIC_SERVER_URL,
-    sitemap: process.env.NEXT_PUBLIC_SERVER_URL + '/sitemap.xml',
+    sitemap: `${process.env.NEXT_PUBLIC_SERVER_URL}/sitemap.xml`,
   }
 }

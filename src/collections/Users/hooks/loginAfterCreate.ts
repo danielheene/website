@@ -1,11 +1,6 @@
-import { CollectionAfterChangeHook } from 'payload'
+import type { CollectionAfterChangeHook } from 'payload'
 
-export const loginAfterCreate: CollectionAfterChangeHook = async ({
-  doc,
-  req,
-  req: { payload, data = {} },
-  operation,
-}) => {
+export const loginAfterCreate: CollectionAfterChangeHook = async ({ doc, req, req: { payload, data = {} }, operation }) => {
   const { totalDocs: existingUsers } = await payload.count({ collection: 'users' })
   if (operation === 'create' && !req.user && existingUsers === 1) {
     const { email, password } = data as { email: string; password: string }

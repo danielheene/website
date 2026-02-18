@@ -1,17 +1,17 @@
+import { CollectionSlug } from '@custom-types'
+import config from '@payload-config'
+import type { BlogCategory, BlogPost as BlogPostType, BlogTag, MediaImage as MediaType } from '@payload-types'
+import type { Metadata } from 'next'
+import { draftMode } from 'next/headers'
+import { notFound } from 'next/navigation'
+import { getPayload } from 'payload'
+import { cache } from 'react'
+
 import { Headline } from '@/components/Headline'
 import { PageContainer } from '@/components/PageContainer'
 import RichText from '@/components/RichText'
 import { generateMeta } from '@/utilities/generateMeta'
 import { generateBlogPosting, generateBreadcrumbList, JsonLd } from '@/utilities/jsonLd'
-import { CollectionSlug } from '@custom-types'
-
-import config from '@payload-config'
-import { BlogCategory, BlogPost as BlogPostType, BlogTag, MediaImage as MediaType } from '@payload-types'
-import { Metadata } from 'next'
-import { draftMode } from 'next/headers'
-import { notFound } from 'next/navigation'
-import { getPayload } from 'payload'
-import React, { cache } from 'react'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config })

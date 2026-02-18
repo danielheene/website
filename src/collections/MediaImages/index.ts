@@ -1,8 +1,10 @@
+import { AdminGroup, CollectionSlug } from '@custom-types'
+import type { CollectionConfig } from 'payload'
+
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
 import { RichTextField } from '@/fields/RichText'
-import { AdminGroup, CollectionSlug } from '@custom-types'
-import { CollectionConfig } from 'payload'
+
 import { generateAlt } from './hooks/generateAlt'
 import { generateBlurDataURL } from './hooks/generateBlurDataURL'
 

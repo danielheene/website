@@ -1,9 +1,11 @@
+import type { RegisteredGlobalSlug } from '@custom-types'
+
 import { ResumeDownloads } from '@/globals/ResumeDownloads'
 import { SettingsFooterNavigation } from '@/globals/SettingsFooterNavigation'
 import { SettingsHeaderNavigation } from '@/globals/SettingsHeaderNavigation'
 import { SettingsSiteMeta } from '@/globals/SettingsSiteMeta'
 import { SettingsUserMeta } from '@/globals/SettingsUserMeta'
-import { RegisteredGlobalSlug } from '@custom-types'
+
 import { ResumeAboutMe } from './ResumeAboutMe'
 import { ResumeContact } from './ResumeContact'
 import { ResumeCustomers } from './ResumeCustomers'

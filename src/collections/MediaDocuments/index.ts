@@ -1,8 +1,9 @@
+import { AdminGroup, CollectionSlug } from '@custom-types'
+import type { CollectionConfig } from 'payload'
+
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
 import { RichTextField } from '@/fields/RichText'
-import { AdminGroup, CollectionSlug } from '@custom-types'
-import { CollectionConfig } from 'payload'
 
 export const MediaDocuments: CollectionConfig<CollectionSlug.MediaDocuments> = {
   slug: CollectionSlug.MediaDocuments,

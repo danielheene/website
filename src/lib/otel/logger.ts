@@ -1,5 +1,6 @@
-import { exportLogEntry } from '@/lib/otel/log-exporter'
 import { trace } from '@opentelemetry/api'
+
+import { exportLogEntry } from '@/lib/otel/log-exporter'
 
 export interface LogContext {
   traceId?: string

@@ -1,5 +1,5 @@
 import { CollectionSlug, GlobalSlug } from '@custom-types'
-import { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-mongodb'
+import type { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-mongodb'
 
 export async function up({ payload, req, session }: MigrateUpArgs): Promise<void> {
   const pages = {

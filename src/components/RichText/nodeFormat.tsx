@@ -38,14 +38,7 @@ export const IS_SUPERSCRIPT = 1 << 6
 export const IS_HIGHLIGHT = 1 << 7
 
 export const IS_ALL_FORMATTING =
-  IS_BOLD |
-  IS_ITALIC |
-  IS_STRIKETHROUGH |
-  IS_UNDERLINE |
-  IS_CODE |
-  IS_SUBSCRIPT |
-  IS_SUPERSCRIPT |
-  IS_HIGHLIGHT
+  IS_BOLD | IS_ITALIC | IS_STRIKETHROUGH | IS_UNDERLINE | IS_CODE | IS_SUBSCRIPT | IS_SUPERSCRIPT | IS_HIGHLIGHT
 
 // Text node details
 export const IS_DIRECTIONLESS = 1
@@ -68,14 +61,11 @@ export const DOUBLE_LINE_BREAK = '\n\n'
 // in a stuck state.
 
 const RTL = '\u0591-\u07FF\uFB1D-\uFDFD\uFE70-\uFEFC'
-const LTR =
-  'A-Za-z\u00C0-\u00D6\u00D8-\u00F6' +
-  '\u00F8-\u02B8\u0300-\u0590\u0800-\u1FFF\u200E\u2C00-\uFB1C' +
-  '\uFE00-\uFE6F\uFEFD-\uFFFF'
+const LTR = 'A-Za-z\u00C0-\u00D6\u00D8-\u00F6' + '\u00F8-\u02B8\u0300-\u0590\u0800-\u1FFF\u200E\u2C00-\uFB1C' + '\uFE00-\uFE6F\uFEFD-\uFFFF'
 
-export const RTL_REGEX = new RegExp('^[^' + LTR + ']*[' + RTL + ']') // eslint-disable-line no-misleading-character-class
+export const RTL_REGEX = new RegExp(`^[^${LTR}]*[${RTL}]`) // eslint-disable-line no-misleading-character-class
 
-export const LTR_REGEX = new RegExp('^[^' + RTL + ']*[' + LTR + ']') // eslint-disable-line no-misleading-character-class
+export const LTR_REGEX = new RegExp(`^[^${RTL}]*[${LTR}]`) // eslint-disable-line no-misleading-character-class
 
 export const TEXT_TYPE_TO_FORMAT: Record<TextFormatType | string, number> = {
   bold: IS_BOLD,

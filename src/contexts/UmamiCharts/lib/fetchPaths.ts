@@ -23,7 +23,7 @@ export async function fetchPaths({ startAt, endAt }: FetchPathsArgs) {
       start: new Date(minTime),
       end: new Date(),
     }).getTime(),
-    endAt: new Date().getTime(),
+    endAt: Date.now(),
     type: 'path',
   })
 

@@ -1,4 +1,4 @@
-import { deepMerge, JSONField } from 'payload'
+import { deepMerge, type JSONField } from 'payload'
 
 type JSONFieldOverrides = Partial<Omit<JSONField, 'name' | 'defaultValue' | 'jsonSchema' | 'type'>>
 

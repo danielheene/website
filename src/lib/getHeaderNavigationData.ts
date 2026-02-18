@@ -2,7 +2,7 @@
 
 import { GlobalSlug } from '@custom-types'
 import config from '@payload-config'
-import { HeaderNavigationData } from '@payload-types'
+import type { HeaderNavigationData } from '@payload-types'
 import { unstable_cache } from 'next/cache'
 import { getPayload } from 'payload'
 

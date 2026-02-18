@@ -1,8 +1,9 @@
+import type { ResumeExperienceGlobalData } from '@payload-types'
+import { StyleSheet, Text, View } from '@react-pdf/renderer'
+
 import { colors } from '@/pdfs/colors'
 import { registerFonts } from '@/pdfs/fonts'
 import { WorkExperienceEntry } from '@/pdfs/ResumeDocument/WorkExperienceEntry'
-import { ResumeExperienceGlobalData } from '@payload-types'
-import { StyleSheet, Text, View } from '@react-pdf/renderer'
 
 interface WorkExperienceProps extends ResumeExperienceGlobalData {
   locale?: string

@@ -1,10 +1,11 @@
+import { AdminGroup, CollectionSlug } from '@custom-types'
+import type { CollectionConfig } from 'payload'
+
 import { anyone } from '@/access/anyone'
 import { revalidateBlogTag } from '@/collections/BlogTags/hooks/revalidateBlogTag'
 import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
-import { AdminGroup, CollectionSlug } from '@custom-types'
-import { CollectionConfig } from 'payload'
 
 export const BlogTags: CollectionConfig = {
   slug: CollectionSlug.BlogTags,

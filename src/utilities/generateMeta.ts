@@ -1,22 +1,20 @@
-import { getCachedSiteMetaData } from '@/lib/getSiteMetaData'
-import { getCachedUserMetaData } from '@/lib/getUserMetaData'
 import type { BlogCategory, BlogPost, BlogTag, Page } from '@payload-types'
 import { template } from 'lodash-es'
 import type { Metadata } from 'next'
+
+import { getCachedSiteMetaData } from '@/lib/getSiteMetaData'
+import { getCachedUserMetaData } from '@/lib/getUserMetaData'
 
 interface GenerateMetaArgs {
   doc: Partial<Page> | Partial<BlogPost> | Partial<BlogCategory> | Partial<BlogTag> | null
 }
 
 export const generateMeta = async ({ doc }: GenerateMetaArgs): Promise<Metadata> => {
-  const { siteName, siteUrl, titleTemplate, description, keywords, category } = await getCachedSiteMetaData()
+  const { siteName, titleTemplate, description, keywords, category } = await getCachedSiteMetaData()
   const { name, url } = await getCachedUserMetaData()
 
   const titleGenerator = template(titleTemplate, { interpolate: /{{([\s\S]+?)}}/g })
-  /* @ts-ignore */
   // const ogImage = getImageURL(doc?.meta?.image)
-
-  /* @ts-ignore */
 
   return {
     title: titleGenerator({ title: doc.title || '', siteName }),

@@ -1,7 +1,7 @@
 'use client'
 
 import { useDocumentInfo, useField, useForm, useLivePreviewContext } from '@payloadcms/ui'
-import { GroupFieldClientProps } from 'payload'
+import type { GroupFieldClientProps } from 'payload'
 
 export const FieldComponent = (props: GroupFieldClientProps) => {
   console.log(props)

@@ -1,8 +1,9 @@
 'use client'
 
+import { LuMoon as Moon, LuSun as Sun } from 'react-icons/lu'
+
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
-import { Moon, Sun } from 'lucide-react'
 
 interface ThemeToggleDropdownItemProps {
   theme?: string

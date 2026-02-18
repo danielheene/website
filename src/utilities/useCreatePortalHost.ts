@@ -2,11 +2,13 @@
 
 import React from 'react'
 
-export const useCreatePortalHost = function <
+export const useCreatePortalHost = <
   ElementTag extends keyof HTMLElementTagNameMap = 'div',
-  ElementRef extends
-    HTMLElementTagNameMap[keyof HTMLElementTagNameMap] = HTMLElementTagNameMap[ElementTag],
->(id: string, elementTag: ElementTag = 'div' as ElementTag): React.RefObject<ElementRef> {
+  ElementRef extends HTMLElementTagNameMap[keyof HTMLElementTagNameMap] = HTMLElementTagNameMap[ElementTag],
+>(
+  id: string,
+  elementTag: ElementTag = 'div' as ElementTag,
+): React.RefObject<ElementRef> => {
   const hostRef = React.useRef<ElementRef>(null)
 
   React.useEffect(() => {
@@ -33,7 +35,7 @@ export const useCreatePortalHost = function <
 
     // pass empty dependencies to avoid updates on render,
     // because the portal is bound to the host after mounting
-  }, [])
+  }, [elementTag, id])
 
   return hostRef
 }

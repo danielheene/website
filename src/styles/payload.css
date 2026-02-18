@@ -1,18 +1,19 @@
+/** biome-ignore-all lint/correctness/noInvalidPositionAtImportRule: <explanation> */
 @layer fonts, theme, base, components, utilities;
 
-@import './fonts/_pp-frama.css' layer(fonts);
-@import './fonts/_pp-supply-mono.css' layer(fonts);
+@import "./fonts/_pp-frama.css" layer(fonts);
+@import "./fonts/_pp-supply-mono.css" layer(fonts);
 
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities);
 
-@import './theme/_animations.css' layer(theme);
-@import './theme/_aspects.css' layer(theme);
-@import './theme/_colors.css' layer(theme);
-@import './theme/_fonts.css' layer(theme);
-@import './theme/_radii.css' layer(theme);
-@import './theme/_sizes.css' layer(theme);
-@import './theme/_text-shadows.css' layer(theme);
+@import "./theme/_animations.css" layer(theme);
+@import "./theme/_aspects.css" layer(theme);
+@import "./theme/_colors.css" layer(theme);
+@import "./theme/_fonts.css" layer(theme);
+@import "./theme/_radii.css" layer(theme);
+@import "./theme/_sizes.css" layer(theme);
+@import "./theme/_text-shadows.css" layer(theme);
 
 @theme static {
   --color-elevation-0: var(--theme-elevation-0);
@@ -38,14 +39,13 @@
   --color-elevation-1000: var(--theme-elevation-1000);
 }
 
-@import './payload/_app-header.css' layer(components);
-@import './payload/_dashboard.css';
-@import './payload/_resume.hero.css';
-@import './payload/_resume.contact.css';
-@import './payload/_resume.customers.css';
-@import './payload/_resume.experience.css';
-@import './payload/_resume.projects.css';
-
+@import "./payload/_app-header.css" layer(components);
+@import "./payload/_dashboard.css";
+@import "./payload/_resume.hero.css";
+@import "./payload/_resume.contact.css";
+@import "./payload/_resume.customers.css";
+@import "./payload/_resume.experience.css";
+@import "./payload/_resume.projects.css";
 
 @layer payload-default {
   :root {
@@ -64,7 +64,7 @@
 }
 
 html {
-  font-size: 16px !important;
+  font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -106,7 +106,7 @@ html {
     }
   }
 
-  [data-lexical-editor=true] {
+  [data-lexical-editor="true"] {
     flex-grow: 1;
     padding-left: var(--lexical-spacing-x);
     padding-right: var(--lexical-spacing-x);
@@ -115,8 +115,8 @@ html {
       display: none;
     }
 
-    [data-lexical-decorator=true] {
-      width: 100% !important;
+    [data-lexical-decorator="true"] {
+      width: 100%;
 
       .collapsible__toggle-wrap .btn {
         @apply min-h-px;
@@ -129,7 +129,7 @@ html {
   }
 
   .insert-paragraph-at-end {
-    padding: 0 !important;
+    padding: 0;
     height: 2rem;
     margin-top: -2rem;
 
@@ -151,12 +151,10 @@ html {
     height: 2px;
   }
 
-
   .add-block-menu {
     display: none;
   }
 }
-
 
 .radio-input {
   .radio-input__styled-radio::before {
@@ -164,22 +162,17 @@ html {
   }
 }
 
-
-div.field-type.text > [for='field-meta__title'],
-div.field-type.textarea > [for='field-meta__description'] {
+div.field-type.text > [for="field-meta__title"],
+div.field-type.textarea > [for="field-meta__description"] {
   display: none;
-}
-
-div.field-type.rich-text-lexical {
-
-
 }
 
 .tabs-field__tabs .tabs-field__tab-button {
   @apply font-pp-supply-mono text-lg tracking-wider;
 }
 
-.list-header, .doc-header {
+.list-header,
+.doc-header {
   .list-header__title,
   .doc-header__title {
     @apply font-pp-supply-mono text-xl leading-10 -mt-0.5;
@@ -258,7 +251,6 @@ div.field-type.rich-text-lexical {
 
 .fixed-toolbar__dropdown-items,
 .tabs-field__tab-button.tabs-field__tab-button--active {
-
   &::after {
     @apply bg-primary-500;
   }
@@ -279,7 +271,6 @@ div.field-type.rich-text-lexical {
   }
 }
 
-
 .login__form__inputWrap > .field-type input {
   @apply font-mono text-base;
 }
@@ -288,12 +279,12 @@ label.field-label:not(.unstyled) {
   @apply font-mono text-base;
 }
 
-.forgot-password, .login {
+.forgot-password,
+.login {
   a {
     @apply font-mono text-sm opacity-60;
   }
 }
-
 
 @media (min-width: 768px) {
   .tabs-field--vertical {

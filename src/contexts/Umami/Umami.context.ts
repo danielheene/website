@@ -1,7 +1,8 @@
 'use client'
 
 import React from 'react'
-import { UmamiContextValue } from './Umami.types'
+
+import type { UmamiContextValue } from './Umami.types'
 
 export const initialUmamiContextValue: UmamiContextValue = {
   track: () => undefined,

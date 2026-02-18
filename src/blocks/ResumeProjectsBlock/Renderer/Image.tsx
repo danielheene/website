@@ -1,10 +1,11 @@
 'use client'
 
+import type { MediaImage } from '@payload-types'
+import { memo, useState } from 'react'
+
 import { Icon } from '@/components/Icon'
 import { ImageMedia } from '@/components/ImageMedia'
 import { cn } from '@/utilities/cn'
-import { MediaImage } from '@payload-types'
-import { memo, useState } from 'react'
 
 interface ResumeProjectsSectionImageProps {
   image: MediaImage
@@ -46,6 +47,7 @@ export const Image = memo(function ResumeProjectsSectionImage({ image, odd }: Re
       </div>
       <div className="clear-both" />
       <button
+        type="button"
         className={cn([
           'md:hidden',
           'relative z-10 w-10 h-10 mx-auto -mt-5',

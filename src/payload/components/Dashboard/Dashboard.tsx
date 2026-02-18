@@ -1,10 +1,11 @@
-import { DashboardBanner } from '@/payload/components/Dashboard/DashboardBanner'
-import { NavGroupType } from '@payloadcms/ui/utilities/groupNavItems'
+import type { NavGroupType } from '@payloadcms/ui/utilities/groupNavItems'
 import { getClient } from '@umami/api-client'
 import { subWeeks } from 'date-fns'
-import { AdminViewServerProps, ServerProps } from 'payload'
-import { FC, Fragment } from 'react'
-import { Merge } from 'type-fest'
+import type { AdminViewServerProps, ServerProps } from 'payload'
+import { type FC, Fragment } from 'react'
+import type { Merge } from 'type-fest'
+
+import { DashboardBanner } from '@/payload/components/Dashboard/DashboardBanner'
 
 const client = getClient()
 
@@ -16,7 +17,7 @@ export const Dashboard: FC<DashboardProps> = async (props) => {
   await (async () => {
     const { ok, data, status, error } = await client.getWebsiteStats('018a28eb-9ee8-4f43-851d-7ccc285f0aba', {
       startAt: subWeeks(new Date(), 2).getTime(),
-      endAt: new Date().getTime(),
+      endAt: Date.now(),
     })
     console.log(ok, data, status, error)
   })()
@@ -24,7 +25,7 @@ export const Dashboard: FC<DashboardProps> = async (props) => {
   await (async () => {
     const { ok, data, status, error } = await client.getWebsiteMetrics('018a28eb-9ee8-4f43-851d-7ccc285f0aba', {
       startAt: subWeeks(new Date(), 2).getTime(),
-      endAt: new Date().getTime(),
+      endAt: Date.now(),
 
       type: 'pageviews',
     })

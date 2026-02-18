@@ -1,16 +1,18 @@
 'use client'
 
-import { Icon } from '@/components/Icon'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { useIsMobile } from '@/hooks/use-mobile'
-import { cn } from '@/utilities/cn'
 import { getTranslation } from '@payloadcms/translations'
 import { useConfig, useNav, useTranslation } from '@payloadcms/ui'
 import { formatAdminURL } from '@payloadcms/ui/shared'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { EntityType, StaticLabel } from 'payload'
-import { JSX } from 'react'
+import type { EntityType, StaticLabel } from 'payload'
+import type { JSX } from 'react'
+
+import { Icon } from '@/components/Icon'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { useIsMobile } from '@/hooks/use-mobile'
+import { cn } from '@/utilities/cn'
+
 import { resolveIconNameBySlug } from '../lib/resolveIconNameBySlug'
 
 import './NavLink.styles.scss'
@@ -51,6 +53,6 @@ export const NavLink = ({ slug, type, label }: NavLinkProps): JSX.Element => {
       </TooltipContent>
     </Tooltip>
   ) : (
-    <>{linkContent}</>
+    linkContent
   )
 }

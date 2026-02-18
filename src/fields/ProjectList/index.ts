@@ -1,6 +1,7 @@
-import { RichTextField } from '@/fields/RichText'
 import { CollectionSlug } from '@custom-types'
-import { ArrayField } from 'payload'
+import type { ArrayField } from 'payload'
+
+import { RichTextField } from '@/fields/RichText'
 
 export const ProjectListField = (): ArrayField => ({
   name: 'projectList',

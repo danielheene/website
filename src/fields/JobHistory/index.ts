@@ -1,5 +1,7 @@
+import type { ArrayField } from 'payload'
+
 import { TagList } from '@/fields/TagList'
-import { ArrayField } from 'payload'
+
 import { sortJobHistoryByStartDate } from './hooks/sortJobHistoryByStartDate'
 
 export const JobHistoryField = (): ArrayField => ({

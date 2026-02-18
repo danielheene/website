@@ -1,9 +1,10 @@
+import { AdminGroup, GlobalSlug } from '@custom-types'
+import { revalidateTag } from 'next/cache'
+import type { Field, GlobalConfig } from 'payload'
+
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { LinkField } from '@/fields/Link'
-import { AdminGroup, GlobalSlug } from '@custom-types'
-import { revalidateTag } from 'next/cache'
-import { Field, GlobalConfig } from 'payload'
 
 const navFields: Field[] = [
   {

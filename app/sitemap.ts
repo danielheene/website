@@ -1,8 +1,9 @@
-import { generateContentURL } from '@/utilities/generateContentURL'
 import { CollectionSlug } from '@custom-types'
 import config from '@payload-config'
-import { MetadataRoute } from 'next'
+import type { MetadataRoute } from 'next'
 import { getPayload } from 'payload'
+
+import { generateContentURL } from '@/utilities/generateContentURL'
 
 type RenderedCollection = CollectionSlug.Pages | CollectionSlug.BlogPosts | CollectionSlug.BlogCategories | CollectionSlug.BlogTags
 

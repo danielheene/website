@@ -1,8 +1,10 @@
-import { isMediaImage } from '@/lib/typeGuards'
-import { registerFonts } from '@/pdfs/fonts'
-import { UserMetaData } from '@payload-types'
+import type { UserMetaData } from '@payload-types'
 import { Image, Link, StyleSheet, Text, View } from '@react-pdf/renderer'
 import parsePhoneNumber from 'libphonenumber-js'
+
+import { isMediaImage } from '@/lib/typeGuards'
+import { registerFonts } from '@/pdfs/fonts'
+
 import { colors } from '../colors'
 
 interface HeaderProps extends UserMetaData {

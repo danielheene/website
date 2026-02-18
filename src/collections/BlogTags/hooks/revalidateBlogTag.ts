@@ -1,10 +1,9 @@
-import { generateContentPath } from '@/utilities/generateContentURL'
 import { CollectionSlug } from '@custom-types'
-
 import type { BlogTag } from '@payload-types'
-
 import { revalidatePath } from 'next/cache'
 import type { CollectionAfterChangeHook } from 'payload'
+
+import { generateContentPath } from '@/utilities/generateContentURL'
 
 export const revalidateBlogTag: CollectionAfterChangeHook<BlogTag> = ({ doc, context, req: { payload } }) => {
   if (context.skipRevalidate) return doc

@@ -1,7 +1,8 @@
 'use client'
 
-import type { LogContext } from '@/lib/otel/logger'
 import { trace } from '@opentelemetry/api'
+
+import type { LogContext } from '@/lib/otel/logger'
 
 // A simplified LogEntry type for the browser
 interface BrowserLogEntry {
@@ -51,7 +52,7 @@ class BrowserLogger {
   }
 
   private generateSessionId() {
-    return 'session_' + (Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15))
+    return `session_${Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)}`
   }
 
   private getSessionId() {

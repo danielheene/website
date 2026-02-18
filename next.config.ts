@@ -22,7 +22,7 @@ const nextConfig: NextConfig = {
     silenceDeprecations: ['import', 'legacy-js-api'],
     implementation: 'sass',
   },
-  serverExternalPackages: ['@react-pdf/renderer', 'dompurify', 'svgo'],
+  serverExternalPackages: ['@react-pdf/renderer', 'svgo'],
   turbopack: {
     resolveExtensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.wasm', '.json', '.css', '.scss', '.svg'],
   },
@@ -38,7 +38,7 @@ const nextConfig: NextConfig = {
     ],
     localPatterns: [{ pathname: '**' }],
     contentDispositionType: 'inline',
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    contentSecurityPolicy: 'default-src \'self\'; script-src \'none\'; sandbox;',
     dangerouslyAllowSVG: true,
   },
 

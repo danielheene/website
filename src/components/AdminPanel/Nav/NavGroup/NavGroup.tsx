@@ -1,6 +1,7 @@
 import { AdminGroup } from '@custom-types'
-import { NavGroupType } from '@payloadcms/ui/utilities/groupNavItems'
-import { JSX } from 'react'
+import type { NavGroupType } from '@payloadcms/ui/utilities/groupNavItems'
+import type { JSX } from 'react'
+
 import { NavLink } from '../NavLink'
 
 import './NavGroup.styles.scss'

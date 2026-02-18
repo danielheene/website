@@ -1,12 +1,12 @@
 'use client'
 
-import { CMSLink } from '@/components/Link'
-import { Logo } from '@/components/Logo'
-
-import { cn } from '@/utilities/cn'
-import { HeaderNavigationData } from '@payload-types'
+import type { HeaderNavigationData } from '@payload-types'
 import Link from 'next/link'
 import React from 'react'
+
+import { CMSLink } from '@/components/Link'
+import { Logo } from '@/components/Logo'
+import { cn } from '@/utilities/cn'
 
 interface HeaderClientProps {
   mainNavigation?: HeaderNavigationData['mainNavigation']

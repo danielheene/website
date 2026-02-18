@@ -23,11 +23,9 @@
     @apply flex justify-end items-center text-2xl;
 
     .btn__icon {
-      @apply flex justify-end items-center text-4xl ;
+      @apply flex justify-end items-center text-4xl;
       @apply bg-primary-500 border-none text-white;
       @apply w-8 h-8 text-center;
     }
   }
 }
-
-

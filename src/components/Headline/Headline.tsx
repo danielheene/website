@@ -1,5 +1,7 @@
+import type React from 'react'
+import { memo, type ReactNode, useMemo } from 'react'
+
 import { cn } from '@/utilities/cn'
-import React, { memo, ReactNode, useMemo } from 'react'
 
 interface HeadlineProps extends React.HTMLAttributes<HTMLHeadingElement> {
   children: ReactNode

@@ -1,1 +1,1 @@
-export { CellWithThumbnail } from './CellWithThumbnail';
+export { CellWithThumbnail } from './CellWithThumbnail'

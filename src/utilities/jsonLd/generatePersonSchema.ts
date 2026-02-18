@@ -1,4 +1,4 @@
-import { UserMetaData } from '@payload-types'
+import type { UserMetaData } from '@payload-types'
 import type { Person, WithContext } from 'schema-dts'
 
 /**

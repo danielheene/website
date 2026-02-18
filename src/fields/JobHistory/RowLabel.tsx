@@ -1,8 +1,10 @@
 'use client'
 
 import { useRowLabel } from '@payloadcms/ui'
-import styles from './RowLabel.module.scss'
+
 import { useExperienceTimeSpan } from '@/utilities/useExperienceTimeSpan'
+
+import styles from './RowLabel.module.scss'
 
 type RowLabelData = {
   title: string

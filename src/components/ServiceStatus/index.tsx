@@ -1,9 +1,10 @@
 'use client'
 
-import { cn } from '@/utilities/cn'
-import { InternalStatusResponse, UptimeKumaOverallStatus } from '@custom-types'
+import { type InternalStatusResponse, UptimeKumaOverallStatus } from '@custom-types'
 import Link from 'next/link'
-import { JSX, useEffect, useState } from 'react'
+import { type JSX, useEffect, useState } from 'react'
+
+import { cn } from '@/utilities/cn'
 
 interface ServiceStatusProps {
   className?: string

@@ -1,10 +1,12 @@
 'use client'
 
+import { type MouseEvent, useCallback } from 'react'
+import ReactDOM from 'react-dom'
+
 import { cn } from '@/utilities/cn'
 import { useCreatePortalHost } from '@/utilities/useCreatePortalHost'
-import { MouseEvent, useCallback } from 'react'
-import ReactDOM from 'react-dom'
-import { SectionNavigationAnchor, SetScrollingToAnchorFunction } from './SectionNavigation.types'
+
+import type { SectionNavigationAnchor, SetScrollingToAnchorFunction } from './SectionNavigation.types'
 
 export interface SectionNavigationDisplayProps {
   anchors: SectionNavigationAnchor[]
@@ -14,24 +16,27 @@ export interface SectionNavigationDisplayProps {
 export const SectionNavigationDisplay = ({ anchors, setScrollingToAnchor }: SectionNavigationDisplayProps) => {
   const portalHost = useCreatePortalHost('anchor-navigation')
 
-  const handleAnchorClick = useCallback((event: MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault()
+  const handleAnchorClick = useCallback(
+    (event: MouseEvent<HTMLAnchorElement>) => {
+      event.preventDefault()
 
-    if ('getAttribute' in event.target && typeof event.target.getAttribute === 'function') {
-      const id = event.target.getAttribute('href')?.replace(/^#/, '')
-      const scrollTarget = document.getElementById(id)
+      if ('getAttribute' in event.target && typeof event.target.getAttribute === 'function') {
+        const id = event.target.getAttribute('href')?.replace(/^#/, '')
+        const scrollTarget = document.getElementById(id)
 
-      if (scrollTarget) {
-        setScrollingToAnchor(id)
+        if (scrollTarget) {
+          setScrollingToAnchor(id)
 
-        scrollTarget.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-          inline: 'center',
-        })
+          scrollTarget.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+            inline: 'center',
+          })
+        }
       }
-    }
-  }, [])
+    },
+    [setScrollingToAnchor],
+  )
 
   return (
     anchors.length > 0 &&
@@ -41,7 +46,7 @@ export const SectionNavigationDisplay = ({ anchors, setScrollingToAnchor }: Sect
         {anchors.map(({ id, title, active }) => (
           <a
             key={id}
-            href={'#' + id}
+            href={`#${id}`}
             onClick={handleAnchorClick}
             vertical-writing-rl
             className={cn([

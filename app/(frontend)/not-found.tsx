@@ -1,8 +1,8 @@
+import Link from 'next/link'
+
 import { Button } from '@/components/Button'
 import { Icon } from '@/components/Icon'
 import { ImageMedia } from '@/components/ImageMedia'
-import Link from 'next/link'
-import React from 'react'
 
 export default function NotFound() {
   return (

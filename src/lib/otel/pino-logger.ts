@@ -1,6 +1,7 @@
-import type { LogContext } from '@/lib/otel/logger'
 import { trace } from '@opentelemetry/api'
 import pino, { type LoggerOptions } from 'pino'
+
+import type { LogContext } from '@/lib/otel/logger'
 
 const createPinoConfig = (environment: string = process.env.NODE_ENV ?? 'development'): LoggerOptions => ({
   name: 'nextjs-observability-demo',

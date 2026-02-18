@@ -1,9 +1,10 @@
-import type { LogEntry } from '@/lib/otel/logger' // We will create this type in the next step
-import { LogRecord, logs } from '@opentelemetry/api-logs'
+import { type LogRecord, logs } from '@opentelemetry/api-logs'
 import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http'
 import { resourceFromAttributes } from '@opentelemetry/resources'
 import { BatchLogRecordProcessor, LoggerProvider } from '@opentelemetry/sdk-logs'
 import { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } from '@opentelemetry/semantic-conventions'
+
+import type { LogEntry } from '@/lib/otel/logger' // We will create this type in the next step
 
 let isInitialized = false
 let loggerProvider: LoggerProvider | null = null

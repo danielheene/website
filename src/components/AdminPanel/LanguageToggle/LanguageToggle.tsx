@@ -1,9 +1,10 @@
 'use client'
 
-import { cn } from '@/utilities/cn'
 import { useLocale, useRouteTransition } from '@payloadcms/ui'
 import { useLocaleLoading } from '@payloadcms/ui/providers/Locale'
 import { useRouter } from 'next/navigation'
+
+import { cn } from '@/utilities/cn'
 
 export const LanguageToggle = () => {
   const router = useRouter()
@@ -13,6 +14,7 @@ export const LanguageToggle = () => {
 
   return (
     <button
+      type="button"
       className={cn('btn btn--style-secondary h-8 w-12 p-0 m-0 bg-white text-primary font-mono relative')}
       onClick={() => {
         setLocaleIsLoading(true)

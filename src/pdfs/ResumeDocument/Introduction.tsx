@@ -1,5 +1,6 @@
-import { UserMetaData } from '@payload-types'
+import type { UserMetaData } from '@payload-types'
 import { StyleSheet, Text, View } from '@react-pdf/renderer'
+
 import { colors } from '../colors'
 import { registerFonts } from '../fonts'
 

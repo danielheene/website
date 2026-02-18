@@ -1,8 +1,9 @@
 'use client'
 
-import { UIContext } from '@/contexts/UI/UI.context'
-import { UIContextFunctions, UIContextValues } from '@/contexts/UI/UI.types'
 import React from 'react'
+
+import { UIContext } from '@/contexts/UI/UI.context'
+import type { UIContextFunctions, UIContextValues } from '@/contexts/UI/UI.types'
 
 export const useUI = () => {
   const context = React.useContext<UIContextValues & UIContextFunctions>(UIContext)

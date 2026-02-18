@@ -1,6 +1,7 @@
-import { cn } from '@/utilities/cn'
 import Link from 'next/link'
 import { memo } from 'react'
+
+import { cn } from '@/utilities/cn'
 
 export interface ResumeLayoutBlockProps {
   imageSrc: string
@@ -21,7 +22,8 @@ export const ResumeLayoutBlock = memo(({ imageSrc, editHref, backgroundColor = '
         'group-hover/resume-layout-block:grayscale-100',
       ])}
     >
-      <img className={cn(['aspect-16-9 max-h-[500px] mx-auto'])} src={imageSrc} role="presentation" alt="" />
+      {/** biome-ignore lint/performance/noImgElement: <used for payload blocks> */}
+      <img className={cn(['aspect-16-9 max-h-[500px] mx-auto'])} src={imageSrc} alt="" />
     </div>
     <div
       className={cn([

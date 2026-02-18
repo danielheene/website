@@ -1,11 +1,11 @@
 'use client'
 
-import type { BlocksFieldClientProps } from 'payload'
-import { useDocumentInfo, useField } from '@payloadcms/ui'
-import { useRef } from 'react'
-// @ts-ignore
-import { LexicalRichTextField } from '@payloadcms/richtext-lexical/dist/types'
 import { RenderLexical } from '@payloadcms/richtext-lexical/client'
+// @ts-expect-error
+import type { LexicalRichTextField } from '@payloadcms/richtext-lexical/dist/types'
+import { useDocumentInfo, useField } from '@payloadcms/ui'
+import type { BlocksFieldClientProps } from 'payload'
+import { useRef } from 'react'
 import { useDebounceCallback, useResizeObserver } from 'usehooks-ts'
 
 const BlockComponent = ({ schemaPath }: BlocksFieldClientProps) => {

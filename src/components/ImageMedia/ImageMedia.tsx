@@ -1,14 +1,14 @@
 'use client'
 
-import { cn } from '@/utilities/cn'
-import { MediaImage } from '@payload-types'
+import type { MediaImage } from '@payload-types'
 import type { ImageProps } from 'next/image'
 import NextImage from 'next/image'
-import React, { CSSProperties, SyntheticEvent, useCallback, useState } from 'react'
+import { type CSSProperties, type SyntheticEvent, useCallback, useState } from 'react'
+
+import { cn } from '@/utilities/cn'
 
 export interface ImageMediaProps
-  extends
-    Omit<ImageProps, 'className' | 'alt' | 'src' | 'blurDataURL' | 'placeholder' | 'width' | 'height' | 'onLoad'>,
+  extends Omit<ImageProps, 'className' | 'alt' | 'src' | 'blurDataURL' | 'placeholder' | 'width' | 'height' | 'onLoad'>,
     Pick<MediaImage, 'blurDataURL' | 'url'> {
   duoTone?: boolean
   className?: string

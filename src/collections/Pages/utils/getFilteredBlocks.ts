@@ -1,5 +1,6 @@
+import type { Page } from '@payload-types'
+
 import { BLOCK_SLUGS } from '@/blocks'
-import { Page } from '@payload-types'
 
 export const getFilteredBlocks = ({ layout }: Partial<Page>) => {
   let allowedSlugs = Object.values(BLOCK_SLUGS)

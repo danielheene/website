@@ -1,12 +1,14 @@
+import { AdminGroup, CollectionSlug } from '@custom-types'
+import type { BlogPost } from '@payload-types'
+import type { CollectionConfig } from 'payload'
+
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
 import { generatePreviewPath } from '@/payload/utilities/generatePreviewPath'
-import { AdminGroup, CollectionSlug } from '@custom-types'
-import { BlogPost } from '@payload-types'
-import { CollectionConfig } from 'payload'
+
 import { revalidateBlogPost } from './hooks/revalidateBlogPost'
 
 export const BlogPosts: CollectionConfig<CollectionSlug.BlogPosts> = {

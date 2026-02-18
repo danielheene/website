@@ -1,2 +1,2 @@
-export { ResumeLayoutBlock } from './ResumeLayoutBlock'
 export type { ResumeLayoutBlockProps } from './ResumeLayoutBlock'
+export { ResumeLayoutBlock } from './ResumeLayoutBlock'

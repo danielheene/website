@@ -1,10 +1,11 @@
+import { AdminGroup, CollectionSlug, GlobalSlug } from '@custom-types'
+import type { GlobalConfig } from 'payload'
+
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { RichTextField } from '@/fields/RichText'
 import { TitleField } from '@/fields/Title'
 import { revalidateResumeSection } from '@/utilities/revalidateResumeSection'
-import { AdminGroup, CollectionSlug, GlobalSlug } from '@custom-types'
-import { GlobalConfig } from 'payload'
 
 export const ResumeAboutMe: GlobalConfig<GlobalSlug.ResumeAboutMe> = {
   slug: GlobalSlug.ResumeAboutMe,

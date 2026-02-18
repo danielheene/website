@@ -6,9 +6,7 @@ interface Options extends IntersectionObserverInit {
   triggerOnce?: boolean
 }
 
-export const useIntersectionObserver = <E extends HTMLElement = HTMLElement>(
-  options?: Options,
-): [boolean, React.RefObject<E>] => {
+export const useIntersectionObserver = <E extends HTMLElement = HTMLElement>(options?: Options): [boolean, React.RefObject<E>] => {
   const { triggerOnce = false } = options || {}
   const elementRef = React.useRef<E | null>(null)
   const previousScrollPosition = useRef<number>(0)
@@ -50,7 +48,7 @@ export const useIntersectionObserver = <E extends HTMLElement = HTMLElement>(
         observer.unobserve(elementRef.current)
       }
     }
-  }, [])
+  }, [isIntersecting, options, scrollDirection, triggerOnce])
 
   return [isIntersecting, elementRef]
 }

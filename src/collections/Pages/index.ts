@@ -1,3 +1,7 @@
+import { AdminGroup, CollectionSlug } from '@custom-types'
+import type { Page } from '@payload-types'
+import type { AccessArgs, CollectionConfig, FilterOptionsProps } from 'payload'
+
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { BLOCK_SLUGS } from '@/blocks'
@@ -6,9 +10,7 @@ import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
 import { generatePreviewPath } from '@/payload/utilities/generatePreviewPath'
-import { AdminGroup, CollectionSlug } from '@custom-types'
-import { Page } from '@payload-types'
-import { AccessArgs, CollectionConfig, FilterOptionsProps } from 'payload'
+
 import { mapResumeValuesToBlocks } from './hooks/mapResumeValuesToBlocks'
 import { removeInvalidBlockData } from './hooks/removeInvalidBlockData'
 import { getFilteredBlocks } from './utils/getFilteredBlocks'

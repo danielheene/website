@@ -1,5 +1,6 @@
-import { IconName, SIDEBAR_ICON } from '@/components/Icon'
 import { CollectionSlug, GlobalSlug } from '@custom-types'
+
+import { type IconName, SIDEBAR_ICON } from '@/components/Icon'
 
 export const SLUG_ICON_NAME_MAP: Partial<Record<CollectionSlug | GlobalSlug, IconName>> = {
   [GlobalSlug.ResumeAboutMe]: SIDEBAR_ICON.RESUME_ABOUT_ME,

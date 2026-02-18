@@ -1,5 +1,6 @@
-import { initializeLogsExporter } from '@/lib/otel/log-exporter'
 import { OTLPHttpJsonTraceExporter, registerOTel } from '@vercel/otel'
+
+import { initializeLogsExporter } from '@/lib/otel/log-exporter'
 
 export function register() {
   registerOTel({

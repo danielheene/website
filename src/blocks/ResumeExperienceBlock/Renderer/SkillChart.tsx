@@ -1,9 +1,10 @@
 'use client'
 
+import type { SkillSummary } from '@custom-types'
+import { memo, useCallback, useMemo, useState } from 'react'
+
 import { cn } from '@/utilities/cn'
 import { useIntersectionObserver } from '@/utilities/useIntersectionObserver'
-import { SkillSummary } from '@custom-types'
-import { memo, useCallback, useMemo, useState } from 'react'
 
 interface ResumeExperienceSectionSkillChartProps {
   skillSummary: SkillSummary

@@ -1,10 +1,10 @@
 'use client'
 
 import Script from 'next/script'
-import { JSX, ReactNode, useMemo, useState } from 'react'
+import { type JSX, type ReactNode, useMemo, useState } from 'react'
 
 import { initialUmamiContextValue, UmamiContext } from './Umami.context'
-import { BeforeSendFunction, UmamiContextValue, UmamiScriptOptions } from './Umami.types'
+import type { BeforeSendFunction, UmamiContextValue, UmamiScriptOptions } from './Umami.types'
 
 declare global {
   interface Window {

@@ -3,7 +3,6 @@
   z-index: 1;
 }
 
-
 /* set grid gutter between rows and button to same */
 .experience.array-field,
 .experience.array-field .array-field__draggable-rows {
@@ -18,11 +17,11 @@
 
 /* disable background transition on array field row headers */
 .experience .collapsible--hovered > .collapsible__toggle-wrap > .collapsible__toggle {
-  background: rgba(0, 0, 0, 0) !important;
+  background: rgba(0, 0, 0, 0);
 }
 
 /* hide array list header and collapse controls */
 .experience .array-field__header,
 .experience .collapsible__toggle-wrap .collapsible__indicator {
-  display: none !important;
+  display: none;
 }

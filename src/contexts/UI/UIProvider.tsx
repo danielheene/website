@@ -1,11 +1,12 @@
 'use client'
 
-import { initialUIContextValues, UIContext } from '@/contexts/UI/UI.context'
-import { Action, ActionType, UIContextValues, UIProviderProps } from '@/contexts/UI/UI.types'
 import { useDebouncedCallback } from '@payloadcms/ui'
 import { kebabCase } from 'lodash-es'
-import { JSX, useEffect, useMemo, useReducer } from 'react'
+import { type JSX, useEffect, useMemo, useReducer } from 'react'
 import { useDebounceCallback } from 'usehooks-ts'
+
+import { initialUIContextValues, UIContext } from '@/contexts/UI/UI.context'
+import { type Action, ActionType, type UIContextValues, type UIProviderProps } from '@/contexts/UI/UI.types'
 
 function reducer(state: UIContextValues, action: Action) {
   switch (action.type) {
@@ -16,7 +17,7 @@ function reducer(state: UIContextValues, action: Action) {
       return { ...state, footerHeight: action.payload }
     }
     default: {
-      // @ts-ignore
+      // @ts-expect-error
       throw new Error(`Unhandled action type: ${action.type}`)
     }
   }

@@ -8,7 +8,7 @@ export interface JsonLdProps {
  * Component to render JSON-LD structured data
  * Can accept a single schema or an array of schemas
  *
- * Note: JSON.stringify() is safe here as it escapes HTML characters automatically
+ * Note: JSON.stringify() is safe here as it escapes HTML characters automatically,
  * and we control the data source (generated from our utility functions)
  */
 export function JsonLd({ data }: JsonLdProps) {
@@ -20,6 +20,7 @@ export function JsonLd({ data }: JsonLdProps) {
         <script
           key={index}
           type="application/ld+json"
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: <stringified json>
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(schema),
           }}

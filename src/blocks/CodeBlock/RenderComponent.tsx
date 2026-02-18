@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { RenderComponentClient } from './RenderComponent.client'
 
 export type CodeBlockProps = {

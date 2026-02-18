@@ -1,7 +1,8 @@
 'use client'
 
-import { ProjectList } from '@payload-types'
+import type { ProjectList } from '@payload-types'
 import { useRowLabel } from '@payloadcms/ui'
+
 import styles from './RowLabel.module.scss'
 
 type RowLabelData = ProjectList[number]

@@ -1,6 +1,7 @@
-import { isMediaImage } from '@/lib/typeGuards'
-import { SiteMetaData } from '@payload-types'
+import type { SiteMetaData } from '@payload-types'
 import type { WebSite, WithContext } from 'schema-dts'
+
+import { isMediaImage } from '@/lib/typeGuards'
 
 /**
  * Generates WebSite JSON-LD

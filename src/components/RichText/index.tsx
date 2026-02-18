@@ -2,29 +2,22 @@
 
 // import { MediaBlock } from '@/blocks/MediaBlock/Component'
 
+import type { BlockData } from '@custom-types'
+import type { DefaultNodeTypes, DefaultTypedEditorState, SerializedBlockNode, SerializedLinkNode } from '@payloadcms/richtext-lexical'
+import { RichText as ConvertRichText, type JSXConvertersFunction, LinkJSXConverter } from '@payloadcms/richtext-lexical/react'
+import type { HTMLAttributes } from 'react'
+
 // import { CodeBlock, CodeBlockProps } from '@/blocks/Code/Component'
 // import type { BannerBlock as BannerBlockProps, CallToActionBlock as CTABlockProps, MediaBlock as MediaBlockProps } from '@/payload-types'
 // import { BannerBlock } from '@/blocks/Banner/Component'
 // import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { cn } from '@/utilities/cn'
 import { generateContentPath } from '@/utilities/generateContentURL'
-import { BlockData } from '@custom-types'
-import {
-  DefaultNodeTypes,
-  type DefaultTypedEditorState,
-  SerializedBlockNode,
-  SerializedLinkNode
-} from '@payloadcms/richtext-lexical'
-import {
-  JSXConvertersFunction,
-  LinkJSXConverter,
-  RichText as ConvertRichText
-} from '@payloadcms/richtext-lexical/react'
-import { HTMLAttributes } from 'react'
 
 type NodeTypes = DefaultNodeTypes | SerializedBlockNode<BlockData>
 
 const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
+  // biome-ignore lint/style/noNonNullAssertion: <external code>
   const { value, relationTo } = linkNode.fields.doc!
   if (typeof value !== 'object') {
     throw new Error('Expected value to be an object')

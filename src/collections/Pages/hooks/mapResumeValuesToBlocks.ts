@@ -1,7 +1,8 @@
-import { CollectionBeforeReadHook } from 'payload'
-import { BlockData } from '@custom-types'
-import { Page } from '@payload-types'
+import type { BlockData } from '@custom-types'
+import type { Page } from '@payload-types'
 import { camelCase, upperFirst } from 'lodash-es'
+import type { CollectionBeforeReadHook } from 'payload'
+
 import { GLOBAL_SLUGS } from '@/globals'
 
 export const mapResumeValuesToBlocks =

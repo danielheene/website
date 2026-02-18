@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 export enum ActionType {
   SetHeaderHeight = 'SET_HEADER_HEIGHT',

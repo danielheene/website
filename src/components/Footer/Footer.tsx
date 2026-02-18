@@ -1,12 +1,13 @@
+import type { FooterNavigationData } from '@payload-types'
+import Link from 'next/link'
+
 import { FooterLegalLinks } from '@/components/Footer/FooterLegalLinks'
 import { FooterNavGroups } from '@/components/Footer/FooterNavGroups'
 import { Logo } from '@/components/Logo'
 import { ServiceStatus } from '@/components/ServiceStatus'
 import { getCachedFooterNavigationData } from '@/lib/getFooterNavigationData'
 import { cn } from '@/utilities/cn'
-import { FooterNavigationData } from '@payload-types'
-import Link from 'next/link'
-import React from 'react'
+
 import { FooterSocialLinks } from './FooterSocialLinks'
 import { FooterThemeSwitcher } from './FooterThemeSwitcher'
 

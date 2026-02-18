@@ -1,15 +1,15 @@
+import { CollectionSlug } from '@custom-types'
+import configPromise from '@payload-config'
+import type { Metadata } from 'next'
+import { draftMode } from 'next/headers'
+import { getPayload } from 'payload'
+import { cache } from 'react'
+
 import { Headline } from '@/components/Headline'
 import { PageContainer } from '@/components/PageContainer'
 import RichText from '@/components/RichText'
 import { generateMeta } from '@/utilities/generateMeta'
-import { JsonLd, generateCollectionPage, generateBreadcrumbList } from '@/utilities/jsonLd'
-import { CollectionSlug } from '@custom-types'
-
-import configPromise from '@payload-config'
-import { Metadata } from 'next'
-import { draftMode } from 'next/headers'
-import { getPayload } from 'payload'
-import React, { cache } from 'react'
+import { generateBreadcrumbList, generateCollectionPage, JsonLd } from '@/utilities/jsonLd'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })

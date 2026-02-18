@@ -1,4 +1,4 @@
-import * as Umami from '@umami/api-client'
+import type * as Umami from '@umami/api-client'
 
 export interface UmamiChartsContextValue {
   paths: Array<Umami.WebsiteMetric>

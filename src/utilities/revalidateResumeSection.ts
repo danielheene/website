@@ -1,9 +1,9 @@
-import { generateContentPath } from '@/utilities/generateContentURL'
-import { CollectionSlug, GlobalSlug } from '@custom-types'
-import { PageLayout } from '@payload-types'
-
+import { CollectionSlug, type GlobalSlug } from '@custom-types'
+import type { PageLayout } from '@payload-types'
 import { revalidatePath, revalidateTag } from 'next/cache'
 import type { GlobalAfterChangeHook } from 'payload'
+
+import { generateContentPath } from '@/utilities/generateContentURL'
 
 export const revalidateResumeSection =
   (slug: GlobalSlug): GlobalAfterChangeHook =>

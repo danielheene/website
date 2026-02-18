@@ -1,11 +1,9 @@
-import { BLOCKS } from '@/blocks'
-import { COLLECTIONS } from '@/collections'
-import { LinkField } from '@/fields/Link'
-import { GLOBALS } from '@/globals'
-import { generateContentURL } from '@/utilities/generateContentURL'
-import { useSendAdapter } from '@/utilities/useSendAdapter'
+import path from 'node:path'
+import * as process from 'node:process'
+import { fileURLToPath } from 'node:url'
+
 import { CollectionSlug } from '@custom-types'
-import { BlogCategory } from '@payload-types'
+import type { BlogCategory } from '@payload-types'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { redisKVAdapter } from '@payloadcms/kv-redis'
 import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
@@ -22,8 +20,8 @@ import {
   InlineCodeFeature,
   InlineToolbarFeature,
   ItalicFeature,
-  lexicalEditor,
   LinkFeature,
+  lexicalEditor,
   OrderedListFeature,
   ParagraphFeature,
   RelationshipFeature,
@@ -33,11 +31,15 @@ import {
   UploadFeature,
 } from '@payloadcms/richtext-lexical'
 import { s3Storage } from '@payloadcms/storage-s3'
-import * as process from 'node:process'
-import path from 'path'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
-import { fileURLToPath } from 'url'
+
+import { BLOCKS } from '@/blocks'
+import { COLLECTIONS } from '@/collections'
+import { LinkField } from '@/fields/Link'
+import { GLOBALS } from '@/globals'
+import { generateContentURL } from '@/utilities/generateContentURL'
+import { useSendAdapter } from '@/utilities/useSendAdapter'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -160,7 +162,7 @@ export const config = buildConfig({
       IndentFeature(),
 
       LinkFeature({
-        fields: LinkField()['fields'],
+        fields: LinkField().fields,
       }),
       RelationshipFeature(),
       UploadFeature(),

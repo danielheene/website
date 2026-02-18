@@ -1,5 +1,5 @@
-import { BlogCategory } from '@payload-types'
-import { CollectionBeforeChangeHook } from 'payload'
+import type { BlogCategory } from '@payload-types'
+import type { CollectionBeforeChangeHook } from 'payload'
 
 export const generateBreadcrumbsPath: CollectionBeforeChangeHook<BlogCategory> = ({ data }) => {
   const { breadcrumbs = [] } = data

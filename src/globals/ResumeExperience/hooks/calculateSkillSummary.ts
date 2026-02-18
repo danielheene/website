@@ -1,6 +1,6 @@
-import { SkillSummary } from '@custom-types'
+import type { SkillSummary } from '@custom-types'
 import { differenceInMonths } from 'date-fns'
-import { GlobalBeforeChangeHook } from 'payload'
+import type { GlobalBeforeChangeHook } from 'payload'
 
 export const calculateSkillSummary: GlobalBeforeChangeHook = async ({ data }) => {
   const summarizedSkills: SkillSummary = data.jobHistory.reduce((prevValue: SkillSummary, { startDate, endDate, technologies }) => {

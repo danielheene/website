@@ -1,1 +1,1 @@
-export { NavGroup } from './NavGroup';
+export { NavGroup } from './NavGroup'

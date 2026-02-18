@@ -1,6 +1,7 @@
-import { RichTextField } from '@/fields/RichText'
 import { BlockGroup, BlockSlug } from '@custom-types'
-import { Block } from 'payload'
+import type { Block } from 'payload'
+
+import { RichTextField } from '@/fields/RichText'
 
 export const OneColumnContentBlock: Block = {
   slug: BlockSlug.OneColumnContent,

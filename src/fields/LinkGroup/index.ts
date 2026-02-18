@@ -1,5 +1,6 @@
+import { deepMerge, type GroupField, type OptionObject } from 'payload'
+
 import { LinkField } from '@/fields/Link'
-import { deepMerge, GroupField, OptionObject } from 'payload'
 
 export const alignmentOptions: Record<string, OptionObject> = {
   left: {

@@ -1,15 +1,16 @@
 'use client'
 
-import { JSX, useMemo } from 'react'
-import { LogoCarousel } from '@/components/LogoCarousel'
+import type { GlobalSlug, ResumeLayoutBlockData } from '@custom-types'
+import type { CustomerLogos } from '@payload-types'
 import { isNull, isString } from 'lodash-es'
-import { SetNonNullable } from 'type-fest'
+import { type JSX, useMemo } from 'react'
+import type { SetNonNullable } from 'type-fest'
+
 import { Headline } from '@/components/Headline'
-import { SectionContainer } from '@/components/SectionContainer'
-import { CustomerLogos } from '@payload-types'
-import { LogoCarouselProps } from '@/components/LogoCarousel/LogoCarousel'
-import { GlobalSlug, ResumeLayoutBlockData } from '@custom-types'
+import { LogoCarousel } from '@/components/LogoCarousel'
+import type { LogoCarouselProps } from '@/components/LogoCarousel/LogoCarousel'
 import RichText from '@/components/RichText'
+import { SectionContainer } from '@/components/SectionContainer'
 
 export const Renderer = ({
   blockType,

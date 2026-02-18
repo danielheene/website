@@ -1,9 +1,9 @@
 'use client'
 
 import { useContext } from 'react'
-import { UmamiContext } from './Umami.context'
 
-import { UmamiContextValue } from './Umami.types'
+import { UmamiContext } from './Umami.context'
+import type { UmamiContextValue } from './Umami.types'
 
 export const useUmami = (): UmamiContextValue => {
   const context = useContext(UmamiContext)

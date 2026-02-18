@@ -1,10 +1,13 @@
 'use client'
 
-import { cn } from '@/utilities/cn'
-import { fieldBaseClass, FieldDescription, FieldError, FieldLabel, useField } from '@payloadcms/ui'
+import { FieldDescription, FieldError, FieldLabel, fieldBaseClass, useField } from '@payloadcms/ui'
 import { deburr, kebabCase } from 'lodash-es'
-import { JSONFieldClientProps } from 'payload'
-import React, { ChangeEvent, KeyboardEvent, useCallback, useRef, useState } from 'react'
+import type { JSONFieldClientProps } from 'payload'
+import type React from 'react'
+import { type ChangeEvent, type KeyboardEvent, useCallback, useRef, useState } from 'react'
+
+import { cn } from '@/utilities/cn'
+
 import { TagItem } from './TagItem'
 import styles from './TagListComponent.module.scss'
 
@@ -49,7 +52,7 @@ const TagListComponent: React.FC<JSONFieldClientProps> = ({
       if (disabled) return
       setStringValue(value.replaceAll(/[^a-zA-Z0-9-.]+/g, ''))
     },
-    [disabled, setStringValue],
+    [disabled],
   )
 
   const handleEnterKey = useCallback(
@@ -89,12 +92,14 @@ const TagListComponent: React.FC<JSONFieldClientProps> = ({
       if (hasFocusedInput && stringValue.length === 0) {
         const lastTagElement = containerRef.current.querySelector<HTMLButtonElement>('[data-tag-id]:last-of-type')
         // const lastTagElement = Array.from(allTagElements).pop()
+        // biome-ignore lint/correctness/noVoidTypeReturn: <TODO>
         return lastTagElement?.focus()
       }
 
       if (hasFocusedLabel) {
         const deleteId = document.activeElement.getAttribute('data-tag-id')
         containerRef.current.querySelector('input').focus()
+        // biome-ignore lint/correctness/noVoidTypeReturn: <TODO>
         return setValue(value.filter(({ id }) => id !== deleteId))
       }
     },
@@ -128,6 +133,8 @@ const TagListComponent: React.FC<JSONFieldClientProps> = ({
       <div className={cn([])}>
         <FieldLabel path={path} label={label} />
         <FieldError path={path} message={errorMessage} showError={showError} />
+        {/** biome-ignore lint/a11y/useKeyWithClickEvents: <TODO> */}
+        {/** biome-ignore lint/a11y/noStaticElementInteractions: <TODO> */}
         <div className={styles.TagList} onClick={() => inputRef.current?.focus()}>
           {value.map(({ id, label }) => (
             <TagItem key={id} id={id} onKeyDown={handleKeyDown} onDeleteAction={handleDeleteAction}>

@@ -1,4 +1,4 @@
-import { deepMerge, TextField } from 'payload'
+import { deepMerge, type TextField } from 'payload'
 
 type TitleFieldOverrides = Partial<Omit<TextField, 'name' | 'type' | 'required' | 'validate'>>
 

@@ -1,5 +1,6 @@
 import React from 'react'
-import { SectionNavigationContextValue } from './SectionNavigation.types'
+
+import type { SectionNavigationContextValue } from './SectionNavigation.types'
 
 export const initialSectionNavigationContextValue: SectionNavigationContextValue = {
   registerAnchor: () => undefined,

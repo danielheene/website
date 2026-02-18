@@ -1,6 +1,7 @@
+import type { TwoColumnContentBlock } from '@payload-types'
+
 import RichText from '@/components/RichText'
 import { cn } from '@/utilities/cn'
-import { TwoColumnContentBlock } from '@payload-types'
 
 type TwoColumnContentRendererProps = {
   className?: string

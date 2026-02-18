@@ -1,6 +1,7 @@
+import { type NextRequest, NextResponse } from 'next/server'
+
 import { initializeLogsExporter } from '@/lib/otel/log-exporter'
 import { logger } from '@/lib/otel/logger' // Use our Step 5 logger
-import { NextRequest, NextResponse } from 'next/server'
 
 // Initialize the OTLP exporter when this route is first hit
 initializeLogsExporter()
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Re-construct the error object on the server
-      let err: Error | undefined = undefined
+      let err: Error | undefined
       if (error) {
         err = new Error(error.message)
         err.name = error.name

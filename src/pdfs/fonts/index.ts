@@ -1,8 +1,8 @@
 import { Font } from '@react-pdf/renderer'
+
 import Inter from './inter'
 import JetbrainsMono from './jetbrains-mono'
 import PPFramer from './pp-framer'
-
 import PPFramerText from './pp-framer-text'
 import PPSupplyMono from './pp-supply-mono'
 
@@ -14,9 +14,9 @@ const fontMap = {
   PPFramer: PPFramer,
 }
 
-type Font = keyof typeof fontMap
+type FontName = keyof typeof fontMap
 
-export const registerFonts = <T extends Font[], K extends T[number]>(fonts: T) => {
+export const registerFonts = <T extends FontName[], K extends T[number]>(fonts: T) => {
   const registeredFonts = {}
 
   for (const font of fonts) {

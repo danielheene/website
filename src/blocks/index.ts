@@ -1,3 +1,5 @@
+import type { BlockSlug as RegisteredBlockSlug } from 'payload'
+
 import { LinkGroupBlock } from '@/blocks/LinkGroupBlock'
 import { OneColumnContentBlock } from '@/blocks/OneColumnContentBlock'
 import { ResumeAboutMeBlock } from '@/blocks/ResumeAboutMeBlock'
@@ -7,7 +9,6 @@ import { ResumeDownloadsBlock } from '@/blocks/ResumeDownloadsBlock'
 import { ResumeExperienceBlock } from '@/blocks/ResumeExperienceBlock'
 import { ResumeProjectsBlock } from '@/blocks/ResumeProjectsBlock'
 import { TwoColumnContentBlock } from '@/blocks/TwoColumnContentBlock'
-import { BlockSlug as RegisteredBlockSlug } from 'payload'
 
 export const BLOCKS = [
   /* general blocks */
