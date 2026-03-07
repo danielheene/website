@@ -5,6 +5,7 @@ import {
   UptimeKumaHeartbeatStatus,
   UptimeKumaOverallStatus,
 } from '@custom-types'
+import { logger } from '@/lib/otel/logger'
 
 /**
  *
@@ -12,19 +13,26 @@ import {
  */
 export const GET = async () => {
   if (!process.env.STATUS_PAGE_HEARTBEAT_API_URL) {
+    logger.error('STATUS_PAGE_HEARTBEAT_API_URL is not set')
     return new Response('Not configured', { status: 500 })
   }
 
-  const { heartbeatList }: UptimeKumaHeartbeatResponse = await fetch(process.env.STATUS_PAGE_HEARTBEAT_API_URL).then((res) => res.json())
+  try {
+    logger.info('Fetching status...')
+    const { heartbeatList }: UptimeKumaHeartbeatResponse = await fetch(process.env.STATUS_PAGE_HEARTBEAT_API_URL).then((res) => res.json())
+    const latestHeartbeats = Object.values(heartbeatList).map((heartbeats) => heartbeats[heartbeats.length - 1])
+    const code = resolveOverallStatus(latestHeartbeats)
+    const message = resolveOverallStatusMessage(code)
 
-  const latestHeartbeats = Object.values(heartbeatList).map((heartbeats) => heartbeats[heartbeats.length - 1])
-  const code = resolveOverallStatus(latestHeartbeats)
-  const message = resolveOverallStatusMessage(code)
-
-  return Response.json({
-    code,
-    message,
-  } as InternalStatusResponse)
+    logger.info('Status fetched successfully')
+    return Response.json({
+      code,
+      message,
+    } as InternalStatusResponse)
+  } catch (error) {
+    logger.error('Error fetching status:', error)
+    return new Response('Error fetching status', { status: 500 })
+  }
 }
 
 /**
