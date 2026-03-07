@@ -6,7 +6,7 @@
 
     &:hover,
     &--active {
-      @apply bg-sidebar-accent/20 rounded-md;
+      @apply bg-sidebar-accent/20 rounded-sm;
     }
 
     &--open {

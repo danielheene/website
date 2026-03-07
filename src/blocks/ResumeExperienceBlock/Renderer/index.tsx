@@ -38,7 +38,7 @@ export const Renderer = ({
         {jobHistory.map(({ id, title, employer, startDate, endDate, content, technologies }) => {
           const timeString = useExperienceTimeSpan(startDate, endDate)
           return (
-            <article key={id} className={cn('flex flex-col gap-4 p-4', 'lg:gap-8 lg:p-8', 'bg-white', 'text-black', 'rounded-2xl')}>
+            <article key={id} className={cn('flex flex-col gap-4 p-4', 'lg:gap-8 lg:p-8', 'bg-white', 'text-black', 'rounded-sm')}>
               <header className="flex row justify-between font-mono">
                 <h3 className="flex flex-col">
                   <span className="text-sm lg:text-lg font-medium">{employer}</span>

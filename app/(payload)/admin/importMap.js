@@ -38,8 +38,11 @@ import { ResumeLayoutBlock as ResumeLayoutBlock_a316a6ec12a12cd0fe58ccec01a444ca
 import { Nav as Nav_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { Icon as Icon_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { Logo as Logo_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
+import { UmamiChartsProvider as UmamiChartsProvider_777b157ac49ee337c57a996fa5aceaac } from '@/contexts/UmamiCharts'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
-import { DummyWidget as DummyWidget_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
+import { UmamiControlBar as UmamiControlBar_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
+import { UmamiPageViewsWidget as UmamiPageViewsWidget_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
+import { UmamiPathsWidget as UmamiPathsWidget_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 export const importMap = {
@@ -83,7 +86,10 @@ export const importMap = {
   "@/components/AdminPanel#Nav": Nav_a316a6ec12a12cd0fe58ccec01a444ca,
   "@/components/AdminPanel#Icon": Icon_a316a6ec12a12cd0fe58ccec01a444ca,
   "@/components/AdminPanel#Logo": Logo_a316a6ec12a12cd0fe58ccec01a444ca,
+  "@/contexts/UmamiCharts#UmamiChartsProvider": UmamiChartsProvider_777b157ac49ee337c57a996fa5aceaac,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
-  "@/components/AdminPanel#DummyWidget": DummyWidget_a316a6ec12a12cd0fe58ccec01a444ca,
+  "@/components/AdminPanel#UmamiControlBar": UmamiControlBar_a316a6ec12a12cd0fe58ccec01a444ca,
+  "@/components/AdminPanel#UmamiPageViewsWidget": UmamiPageViewsWidget_a316a6ec12a12cd0fe58ccec01a444ca,
+  "@/components/AdminPanel#UmamiPathsWidget": UmamiPathsWidget_a316a6ec12a12cd0fe58ccec01a444ca,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

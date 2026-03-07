@@ -5,7 +5,6 @@ import { Toasty } from '@/components/Toasty'
 
 import '@styles/frontend.css'
 import { WebVitalsProvider } from '@/components/WebVitalsProvider'
-import { UmamiProvider } from '@/contexts/Umami'
 import { getCachedSiteMetaData } from '@/lib/getSiteMetaData'
 import { getCachedUserMetaData } from '@/lib/getUserMetaData'
 import { generatePersonSchema, generateWebSiteSchema, JsonLd } from '@/utilities/jsonLd'
@@ -28,16 +27,13 @@ export default async function RootLayout({ children }: { children: ReactNode | R
       </head>
       <body>
         {draft && <LivePreviewListener />}
-        <WebVitalsProvider>
-          <ThemeProvider disableTransitionOnChange enableColorScheme enableSystem>
-            <UmamiProvider src="/stats/script.js" websiteId={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}>
-              <Header />
-              {children}
-              <Footer />
-              <Toasty />
-            </UmamiProvider>
-          </ThemeProvider>
-        </WebVitalsProvider>
+        <ThemeProvider disableTransitionOnChange enableColorScheme enableSystem>
+          <Header />
+          {children}
+          <Footer />
+        </ThemeProvider>
+        <Toasty />
+        <WebVitalsProvider />
       </body>
     </html>
   )

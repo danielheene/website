@@ -25,7 +25,7 @@ export const Image = memo(function ResumeProjectsSectionImage({ image, odd }: Re
       <div
         style={{ aspectRatio: `${image.width} / ${image.height}` }}
         className={cn([
-          'relative bg-white border-4 border-primary rounded-2xl',
+          'relative bg-white border-4 border-primary rounded-sm',
           'transition-all duration-300 ease-in-out',
           'md:max-h-none md:h-full w-full md:w-auto overflow-hidden',
           showImage ? 'max-h-[1000px]' : 'max-h-40',
