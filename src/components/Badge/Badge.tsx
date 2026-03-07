@@ -1,9 +1,8 @@
-import { cva, type VariantProps } from 'class-variance-authority'
-import type { ReactNode } from 'react'
-
 import { cn } from '@/utilities/cn'
+import { ReactNode } from 'react'
+import { cva, type VariantProps } from 'class-variance-authority'
 
-export const badgeVariants = cva('inline-flex items-center rounded-md px-2 py-1 font-medium font-mono select-none', {
+export const badgeVariants = cva('inline-flex items-center rounded-sm px-2 py-1 font-medium font-mono select-none', {
   defaultVariants: {
     color: 'gray',
     size: 'default',

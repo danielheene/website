@@ -48,7 +48,6 @@ export const SectionNavigationDisplay = ({ anchors, setScrollingToAnchor }: Sect
             key={id}
             href={`#${id}`}
             onClick={handleAnchorClick}
-            vertical-writing-rl
             className={cn([
               'vertical-writing-rl orientation-sideways rotate-180',
               'my-2 px-4 transition-opacity duration-500 ease-in-out transform-gpu',

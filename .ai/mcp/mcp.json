@@ -1,0 +1,32 @@
+{
+  "mcpServers": {
+    "next-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "next-devtools-mcp@latest"
+      ]
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@latest"
+      ]
+    },
+    "read-website-fast": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@just-every/mcp-read-website-fast"
+      ]
+    },
+    "screenshot-website-fast": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@just-every/mcp-screenshot-website-fast"
+      ]
+    }
+  }
+}

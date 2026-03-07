@@ -57,24 +57,31 @@ export const config = buildConfig({
         Logo: '@/components/AdminPanel#Logo',
       },
       Nav: '@/components/AdminPanel#Nav',
-      // providers: ['@/contexts/UmamiCharts#UmamiChartsProvider'],
-      // views: {
-      //   dashboard: {
-      //     Component: '/payload/components/Dashboard',
-      //   },
-      // },
+      providers: ['@/contexts/UmamiCharts#UmamiChartsProvider'],
     },
     dashboard: {
       widgets: [
         {
-          slug: 'dummy-widget',
-          ComponentPath: '@/components/AdminPanel#DummyWidget',
-          minWidth: 'x-small',
+          slug: 'umami-control-barr',
+          ComponentPath: '@/components/AdminPanel#UmamiControlBar',
+          minWidth: 'medium',
           maxWidth: 'full',
+        },
+        {
+          slug: 'umami-pageviews-widget',
+          ComponentPath: '@/components/AdminPanel#UmamiPageViewsWidget',
+          minWidth: 'medium',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'umami-paths-widget',
+          ComponentPath: '@/components/AdminPanel#UmamiPathsWidget',
+          minWidth: 'x-small',
+          maxWidth: 'medium',
         },
       ],
     },
-    dateFormat: 'yyyy-MM-dd',
+    dateFormat: 'yyyy-MM-dd HH:mm',
     importMap: {
       baseDir: path.resolve(dirname),
     },

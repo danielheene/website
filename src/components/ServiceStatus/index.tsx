@@ -26,7 +26,7 @@ export const ServiceStatus = ({ className }: ServiceStatusProps): JSX.Element =>
       rel="noopener noreferrer"
       className={cn([
         'inline-flex gap-2 items-center grow-0 shrink-0 font-mono text-sm',
-        'border border-current/40 rounded-md px-2 py-1',
+        'border border-current/40 rounded-sm px-2 py-1',
         'transition-colors bg-current/0 hover:bg-current/10',
         status.code === UptimeKumaOverallStatus.NoServices && 'text-neutral-500',
         status.code === UptimeKumaOverallStatus.PartialDown && 'text-warning',
