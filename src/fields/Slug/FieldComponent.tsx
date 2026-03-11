@@ -6,7 +6,7 @@ import type React from 'react'
 import { useCallback, useRef, useState } from 'react'
 import { RxLockClosed, RxLockOpen2, RxReload } from 'react-icons/rx'
 
-import { generateSlug } from '@/utilities/generateSlug'
+import { generateSlug } from '@/lib/generateSlug'
 
 import './FieldComponent.styles.scss'
 
@@ -66,7 +66,8 @@ const FieldComponent: React.FC<SlugComponentProps> = ({ field, fieldToUse, path,
           readOnly={Boolean(readOnlyFromProps || isLocked)}
         />
 
-        <button type="button" className="input-button input-button--reload" disabled={isLocked} onClick={handleGenerate}>
+        <button type="button" className="input-button input-button--reload" disabled={isLocked}
+                onClick={handleGenerate}>
           <RxReload />
         </button>
       </div>

@@ -4,7 +4,7 @@ import type { SkillSummary } from '@custom-types'
 import { memo, useCallback, useMemo, useState } from 'react'
 
 import { cn } from '@/utilities/cn'
-import { useIntersectionObserver } from '@/utilities/useIntersectionObserver'
+import { useIntersectionObserver } from 'usehooks-ts'
 
 interface ResumeExperienceSectionSkillChartProps {
   skillSummary: SkillSummary
@@ -13,13 +13,12 @@ interface ResumeExperienceSectionSkillChartProps {
 }
 
 export const SkillChart = memo(function SkillChart({
-  skillSummary,
-  className,
-  maxSkillsToShow = 5,
-}: ResumeExperienceSectionSkillChartProps) {
-  const [inView, ref] = useIntersectionObserver<HTMLDivElement>({
-    triggerOnce: true,
-    root: null,
+                                                     skillSummary,
+                                                     className,
+                                                     maxSkillsToShow = 5,
+                                                   }: ResumeExperienceSectionSkillChartProps) {
+  const [ref, inView] = useIntersectionObserver({
+    freezeOnceVisible: true,
     threshold: 0.5,
   })
 

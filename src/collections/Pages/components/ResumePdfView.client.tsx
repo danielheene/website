@@ -5,13 +5,16 @@ import type { ComponentProps } from 'react'
 
 import { ResumeDocument } from '@/pdfs/ResumeDocument'
 
-type ResumePdfViewClientComponentProps = ComponentProps<typeof ResumeDocument>
 
-export default function ResumePdfViewClientComponent(props: ResumePdfViewClientComponentProps) {
+export default function ResumePdfViewClientComponent(props: ComponentProps<typeof ResumeDocument>) {
   return (
     <PDFViewer
-      showToolbar={false}
-      style={{ width: '100%', height: 'calc(100% - var(--app-header-height) - var(--doc-controls-height))', border: 'none' }}
+      showToolbar={true}
+      style={{
+        width: '100%',
+        height: 'calc(100vh - var(--app-header-height) - var(--doc-controls-height))',
+        border: 'none',
+      }}
     >
       <ResumeDocument {...props} />
     </PDFViewer>

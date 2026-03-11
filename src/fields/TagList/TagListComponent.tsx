@@ -24,11 +24,14 @@ const EVENT_KEY = {
 const baseClass = 'tag-field'
 
 const TagListComponent: React.FC<JSONFieldClientProps> = ({
-  path,
-  field: { label, admin: { className, description, style, width } = {} },
-  readOnly,
-  validate,
-}: JSONFieldClientProps) => {
+                                                            path,
+                                                            field: {
+                                                              label,
+                                                              admin: { className, description, style, width } = {},
+                                                            },
+                                                            readOnly,
+                                                            validate,
+                                                          }: JSONFieldClientProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const [stringValue, setStringValue] = useState<string>('')
@@ -120,7 +123,7 @@ const TagListComponent: React.FC<JSONFieldClientProps> = ({
   )
 
   const handleDeleteAction = useCallback((deleteId: string) => setValue(value.filter(({ id }) => id !== deleteId)), [setValue, value])
-
+  
   return (
     <div
       ref={containerRef}

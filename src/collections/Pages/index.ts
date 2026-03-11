@@ -9,7 +9,7 @@ import { revalidatePage } from '@/collections/Pages/hooks/revalidatePage'
 import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
-import { generatePreviewPath } from '@/payload/utilities/generatePreviewPath'
+import { generatePreviewPath } from '@/lib/generatePreviewPath'
 
 import { mapResumeValuesToBlocks } from './hooks/mapResumeValuesToBlocks'
 import { removeInvalidBlockData } from './hooks/removeInvalidBlockData'
@@ -41,7 +41,7 @@ export const Pages: CollectionConfig<CollectionSlug.Pages> = {
   admin: {
     group: AdminGroup.General,
     useAsTitle: 'title',
-    defaultColumns: ['title', 'slug', 'updatedAt'],
+    defaultColumns: ['title', 'slug', 'status', 'updatedAt'],
     disableCopyToLocale: true,
     livePreview: {
       url: ({ data }) => generatePreviewPath(CollectionSlug.Pages, data.slug),

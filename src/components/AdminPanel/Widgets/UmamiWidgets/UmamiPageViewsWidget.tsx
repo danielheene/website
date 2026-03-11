@@ -6,6 +6,7 @@ import { CardHeader, Card, CardTitle, CardDescription, CardContent } from '@/com
 import { ChartContainer } from '@/components/ui/chart'
 import { AreaChart, CartesianGrid, XAxis, YAxis, Area, Tooltip } from 'recharts'
 import { Skeleton } from '@/components/ui/skeleton'
+import { cn } from '@/utilities/cn'
 
 interface CustomTooltipProps {
   active?: boolean
@@ -18,8 +19,8 @@ interface CustomTooltipProps {
   }>
 }
 
-const primaryColor = 'var(--primary-color)'
-const secondaryColor = 'var(--secondary-color)'
+const primaryColor = '#1D27F2FF'
+const secondaryColor = '#1DF2C4FF'
 
 export const UmamiPageViewsWidget = () => {
   const {
@@ -53,16 +54,15 @@ export const UmamiPageViewsWidget = () => {
   }, [data])
 
   return (
-    <Card className="col-span-full lg:col-span-2">
+    <Card className="col-span-full lg:col-span-2 h-full">
       <CardHeader>
-        <CardTitle>Traffic Overview</CardTitle>
-        <CardDescription>Pageviews and unique visitors over the last 30 days</CardDescription>
+        <CardTitle>Pageviews</CardTitle>
       </CardHeader>
       <CardContent>
         {!data || dataIsLoading ? (
-          <Skeleton className="h-[300px] w-full" />
+          <Skeleton className="h-[400px] w-full" />
         ) : (
-          <ChartContainer config={chartConfig} className="h-[300px] w-full">
+          <ChartContainer config={chartConfig} className={cn(['h-[400px] w-full'])}>
             <AreaChart data={refinedData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="pageviewsGradient" x1="0" y1="0" x2="0" y2="1">

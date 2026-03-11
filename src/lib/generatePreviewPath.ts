@@ -1,7 +1,12 @@
 'use server'
 
-import { generateContentPath } from '@/utilities/generateContentURL'
+import { generateContentPath } from './generateContentPath'
 
+/**
+ * Generates a preview path for a content item
+ * @param collection
+ * @param slug
+ */
 export const generatePreviewPath = async (collection: string, slug: string): Promise<string | null> => {
   if (slug === undefined || slug === null || slug === '') return null
 

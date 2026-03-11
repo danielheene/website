@@ -12,7 +12,7 @@
   "iconLibrary": "radix",
   "aliases": {
     "components": "@/components",
-    "utils": "@/utilities",
+    "utils": "@/lib/utils",
     "ui": "@/components/ui",
     "lib": "@/lib",
     "hooks": "@/hooks"

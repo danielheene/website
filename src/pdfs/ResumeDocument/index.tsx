@@ -1,4 +1,8 @@
 /** biome-ignore-all lint/correctness/noUnusedFunctionParameters: <explanation> */
+
+import { hyphenateSync as hyphenateDE } from 'hyphen/de'
+import { hyphenateSync as hyphenateEN } from 'hyphen/en'
+
 import type {
   ResumeAboutMeGlobalData,
   ResumeContactGlobalData,
@@ -8,7 +12,7 @@ import type {
   ResumeProjectsGlobalData,
   UserMetaData,
 } from '@payload-types'
-import { Document, Page, StyleSheet } from '@react-pdf/renderer'
+import { Document, Page, StyleSheet, Font } from '@react-pdf/renderer'
 
 import { WorkExperience } from '@/pdfs/ResumeDocument/WorkExperience'
 
@@ -52,17 +56,22 @@ interface ResumeDocumentProps {
 }
 
 export const ResumeDocument = ({
-  isPreview = false,
-  debug: { page: debugPage = false, view: debugView = false } = {},
-  locale = 'en',
-  userMetaData,
-  aboutMe,
-  contact,
-  customers,
-  downloads,
-  experience,
-}: ResumeDocumentProps) => {
+                                 isPreview = false,
+                                 debug: { page: debugPage = false, view: debugView = false } = {},
+                                 locale = 'en',
+                                 userMetaData,
+                                 aboutMe,
+                                 contact,
+                                 customers,
+                                 downloads,
+                                 experience,
+                               }: ResumeDocumentProps) => {
   const documentTitle = locale === 'en' ? `Resume of ${userMetaData.name}` : `Lebenslauf von ${userMetaData.name}`
+
+  Font.registerHyphenationCallback((word) => {
+    const hyphenatedWords = locale === 'en' ? hyphenateEN(word) : hyphenateDE(word)
+    return hyphenatedWords.split('\u00AD')
+  })
 
   return (
     <Document author={userMetaData.name} title={documentTitle} creator={userMetaData.name}>
@@ -70,6 +79,7 @@ export const ResumeDocument = ({
         <Header locale={locale} {...userMetaData} />
         <Introduction locale={locale} {...userMetaData} />
         <WorkExperience locale={locale} {...experience} />
+        
       </Page>
     </Document>
   )

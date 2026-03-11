@@ -6,6 +6,7 @@ interface MetricsTableData {
   valueName: string
   data: { x: string; y: number }[]
 }
+
 export const MetricsTable = ({ metricName, valueName, data }: MetricsTableData) => {
   const maxValue = useMemo(() => {
     if (!data) return 0
@@ -13,16 +14,17 @@ export const MetricsTable = ({ metricName, valueName, data }: MetricsTableData) 
   }, [data])
 
   return (
-    <div className="grid grid-cols-[auto_min-content] font-mono">
-      <MetricsTableRow renderMetric={() => metricName} renderValue={() => valueName} />
+    <div className="grid grid-cols-[auto_min-content] font-mono gap-y-3">
+      {/*<MetricsTableRow renderMetric={() => metricName} renderValue={() => valueName} />*/}
       {data.map(({ x: metric, y: value }, index) => (
         <MetricsTableRow
-          key={metric}
+          key={index}
           renderMetric={() => (
             <>
               <span className="min-w-1px">{metric}</span>
               <div className="h-1.5 mt-1 w-full rounded-full bg-muted overflow-hidden">
-                <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${(value / maxValue) * 100}%` }} />
+                <div className="h-full rounded-full bg-primary transition-all"
+                     style={{ width: `${(value / maxValue) * 100}%` }} />
               </div>
             </>
           )}
@@ -34,18 +36,18 @@ export const MetricsTable = ({ metricName, valueName, data }: MetricsTableData) 
 }
 
 const MetricsTableRow = ({
-  renderMetric,
-  renderValue,
-  className,
-}: {
+                           renderMetric,
+                           renderValue,
+                           className,
+                         }: {
   renderMetric: () => ReactNode
   renderValue: () => ReactNode
   className?: string
 }) => {
   return (
-    <div className={cn('grid col-span-2 grid-cols-subgrid max-w-full', className)}>
-      <div className="whitespace-nowrap overflow-ellipsis overflow-hidden p-2">{renderMetric()}</div>
-      <div className="min-w-12 text-right tabular-nums p-2">{renderValue()}</div>
+    <div className={cn('grid col-span-2 grid-cols-subgrid max-w-full gap-x-5', className)}>
+      <div className="whitespace-nowrap overflow-ellipsis overflow-hidden">{renderMetric()}</div>
+      <div className="text-right tabular-nums">{renderValue()}</div>
     </div>
   )
 }

@@ -9,7 +9,7 @@ import { MetaField } from '@/fields/Meta'
 import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
-import { generatePreviewPath } from '@/payload/utilities/generatePreviewPath'
+import { generatePreviewPath } from '@/lib/generatePreviewPath'
 
 import { generateBreadcrumbsPath } from './hooks/generateBreadcrumbsPath'
 import { revalidateBlogCategory } from './hooks/revalidateBlogCategory'

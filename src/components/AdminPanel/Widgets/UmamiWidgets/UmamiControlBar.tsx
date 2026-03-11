@@ -26,16 +26,15 @@ export const UmamiControlBar = () => {
     return matchers.length > 0 ? matchers : undefined
   }, [website])
 
-  console.log(matcher)
   return (
-    <div className="w-full flex flex-row justify-between">
+    <div className="w-full flex flex-row justify-between py-4">
       {!website ? (<Skeleton className='h-12 w-60"' />) : (
-        <div className="text-xl md:text-4xl lg:text-5xl xl:text-6xl font-mono">Umami Controls</div>)}
+        <div className="text-xl md:text-2xl lg:text-3xl font-mono">Umami Controls</div>)}
       {!website ? (<Skeleton className='h-12 w-60"' />) : (
-        <CalendarDatePicker
-          date={{ from: new Date(selectedTimeSpan.startAt), to: new Date(selectedTimeSpan.endAt) }}
-          onDateSelect={({ from, to }) => setSelectedTimeSpan(from, to)}
-          disabled={matcher}
+        <CalendarDatePicker variant="secondary"
+                            date={{ from: new Date(selectedTimeSpan.startAt), to: new Date(selectedTimeSpan.endAt) }}
+                            onDateSelect={({ from, to }) => setSelectedTimeSpan(from, to)}
+                            disabled={matcher}
         />
       )}
     </div>

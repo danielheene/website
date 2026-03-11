@@ -14,7 +14,7 @@ export const ServiceStatus = ({ className }: ServiceStatusProps): JSX.Element =>
   const [status, setStatus] = useState<InternalStatusResponse | null>(null)
 
   useEffect(() => {
-    fetch('/api/status')
+    fetch('/api/service-status')
       .then((res) => res.json())
       .then(setStatus)
   }, [])

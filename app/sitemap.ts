@@ -3,9 +3,13 @@ import config from '@payload-config'
 import type { MetadataRoute } from 'next'
 import { getPayload } from 'payload'
 
-import { generateContentURL } from '@/utilities/generateContentURL'
+import { generateContentURL } from '@/lib/generateContentURL'
 
-type RenderedCollection = CollectionSlug.Pages | CollectionSlug.BlogPosts | CollectionSlug.BlogCategories | CollectionSlug.BlogTags
+type RenderedCollection =
+  CollectionSlug.Pages
+  | CollectionSlug.BlogPosts
+  | CollectionSlug.BlogCategories
+  | CollectionSlug.BlogTags
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const pages = await getCollectionSitemapEntries(CollectionSlug.Pages)
@@ -37,7 +41,7 @@ async function getCollectionSitemapEntries<T extends RenderedCollection>(collect
   const index = createIndex ? [{ slug: '', updatedAt: data?.[0]?.updatedAt ?? new Date().toISOString() }] : []
 
   return [...index, ...data].map(({ slug, updatedAt }) => ({
-    url: generateContentURL({ collection, slug }).toString(),
+    url: generateContentURL({ collection, slug }),
     lastModified: updatedAt,
   }))
 }

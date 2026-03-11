@@ -15,7 +15,7 @@ const NAV_GROUP_SORTING_ORDER = [
       GlobalSlug.ResumeDownloads,
     ],
   ],
-  [AdminGroup.Media, [CollectionSlug.MediaImages, CollectionSlug.MediaVideos, CollectionSlug.MediaAudio, CollectionSlug.MediaDocuments]],
+  [AdminGroup.Media, [CollectionSlug.MediaImages, CollectionSlug.MediaVideos, CollectionSlug.MediaAudios, CollectionSlug.MediaDocuments]],
   [
     AdminGroup.Settings,
     [
@@ -45,10 +45,10 @@ export const sortNavGroups = (groups: NavGroupType[]) =>
         ...group,
         entities: entityOrder
           ? entities.sort((a, b) => {
-              const aPos = entityOrder.indexOf(a.slug as GlobalSlug | CollectionSlug)
-              const bPos = entityOrder.indexOf(b.slug as GlobalSlug | CollectionSlug)
-              return aPos - bPos
-            })
+            const aPos = entityOrder.indexOf(a.slug as GlobalSlug | CollectionSlug)
+            const bPos = entityOrder.indexOf(b.slug as GlobalSlug | CollectionSlug)
+            return aPos - bPos
+          })
           : entities,
       }
     })

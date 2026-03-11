@@ -7,7 +7,7 @@ import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
-import { generatePreviewPath } from '@/payload/utilities/generatePreviewPath'
+import { generatePreviewPath } from '@/lib/generatePreviewPath'
 
 import { revalidateBlogPost } from './hooks/revalidateBlogPost'
 

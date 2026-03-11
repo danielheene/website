@@ -42,7 +42,7 @@ const reducer = (state: UmamiChartsState, action: UmamiChartsAction) => {
   }
 }
 
-const preferencesKey = 'umamiCharts:timeRange'
+const preferencesKey = 'umami-charts:time-range'
 
 export const UmamiChartsProvider = ({ children }: UmamiChartsProviderProps): JSX.Element => {
   const { getPreference, setPreference } = usePreferences()
@@ -58,7 +58,10 @@ export const UmamiChartsProvider = ({ children }: UmamiChartsProviderProps): JSX
 
   useEffect(() => {
     const asyncGetPreferences = async () => {
-      const { startAt, endAt } = await getPreference<{ startAt: string; endAt: string }>(preferencesKey)
+      const { startAt = null, endAt = null } = await getPreference<{
+        startAt?: string;
+        endAt?: string
+      }>(preferencesKey) || {}
       if (startAt && endAt) setSelectedTimeSpan(new Date(startAt), new Date(endAt))
     }
     asyncGetPreferences()

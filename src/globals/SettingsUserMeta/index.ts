@@ -1,9 +1,10 @@
 import { AdminGroup, CollectionSlug, GlobalSlug } from '@custom-types'
 import { revalidateTag } from 'next/cache'
-import type { GlobalConfig } from 'payload'
+import type { GlobalConfig, FieldHookArgs } from 'payload'
 
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
+import { generateGeoCoordinates } from '@/lib/generateGeoCoordinates'
 
 export const SettingsUserMeta: GlobalConfig = {
   slug: GlobalSlug.SettingsUserMeta,
@@ -70,7 +71,11 @@ export const SettingsUserMeta: GlobalConfig = {
       fields: [
         {
           name: 'url',
+          label: false,
           type: 'text',
+          admin: {
+            placeholder: 'URL',
+          },
         },
       ],
     },
@@ -136,26 +141,126 @@ export const SettingsUserMeta: GlobalConfig = {
       name: 'address',
       type: 'group',
       localized: true,
+      interfaceName: 'UserMetaAddress',
+      hooks: {
+        beforeValidate: [
+          async ({ value, previousValue, req, context }: FieldHookArgs) => {
+            if (context.disableHook) return value
+
+            const requiredKeys = ['street', 'number', 'postCode', 'place', 'countryCode']
+            const requiredKeysChanged = requiredKeys.some(key => previousValue[key] !== value[key])
+            const requiredKeysAvailable = requiredKeys.every(key => Object.hasOwn(value, key) && value[key] !== '')
+
+            if (!requiredKeysChanged || !requiredKeysAvailable) return value
+
+            const locale = req.locale === 'de' ? 'de' : 'en'
+            context.otherLocale = locale === 'de' ? 'en' : 'de'
+            return await generateGeoCoordinates({ locale, ...value })
+          },
+        ],
+        afterChange: [
+          async ({ value, req, context }: FieldHookArgs) => {
+            if (context.disableHook) return
+
+            const locale = context.otherLocale === 'de' ? 'de' : 'en'
+            const address = await generateGeoCoordinates({ locale, ...value })
+
+            await req.payload.updateGlobal({
+              slug: GlobalSlug.SettingsUserMeta,
+              data: {
+                address,
+              },
+              context: {
+                disableHook: true,
+              },
+              locale,
+            })
+          },
+        ],
+      },
       fields: [
         {
-          name: 'streetAddress',
-          type: 'text',
+          type: 'row',
+          fields: [
+            {
+              name: 'street',
+              type: 'text',
+              defaultValue: '',
+            },
+            {
+              name: 'number',
+              type: 'text',
+              defaultValue: '',
+            },
+          ],
         },
         {
-          name: 'addressLocality',
-          type: 'text',
+          type: 'row',
+          fields: [
+            {
+              name: 'postCode',
+              type: 'text',
+              defaultValue: '',
+            },
+            {
+              name: 'place',
+              type: 'text',
+              defaultValue: '',
+            },
+          ],
         },
         {
-          name: 'addressRegion',
-          type: 'text',
+          type: 'row',
+          fields: [
+            {
+              name: 'region',
+              type: 'text',
+              defaultValue: '',
+              admin: {
+                readOnly: true,
+              },
+            },
+            {
+              name: 'locality',
+              type: 'text',
+              defaultValue: '',
+              admin: {
+                readOnly: true,
+              },
+            },
+          ],
         },
         {
-          name: 'postalCode',
-          type: 'text',
+          type: 'row',
+          fields: [
+            {
+              name: 'countryCode',
+              type: 'text',
+              minLength: 2,
+              maxLength: 2,
+              defaultValue: '',
+              validate: (value: string) => {
+                if (!value) return true
+                return /^[A-Z]{2}$/.test(value) || 'Invalid country code'
+              },
+            },
+            {
+              name: 'countryName',
+              type: 'text',
+              defaultValue: '',
+              admin: {
+                readOnly: true,
+              },
+            },
+          ],
         },
         {
-          name: 'addressCountry',
-          type: 'text',
+          name: 'location',
+          type: 'point',
+          defaultValue: ['', ''],
+          admin: {
+            readOnly: true,
+          },
         },
       ],
     },

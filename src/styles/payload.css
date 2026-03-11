@@ -173,6 +173,8 @@ div.field-type.textarea > [for="field-meta__description"] {
 
 .list-header,
 .doc-header {
+  @apply mt-0;
+
   .list-header__title,
   .doc-header__title {
     @apply font-pp-supply-mono text-xl leading-10 -mt-0.5;

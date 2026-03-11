@@ -1,4 +1,4 @@
-import { generateBlogPosting, generateBreadcrumbList } from '@/utilities/jsonLd'
+import { generateBlogPosting, generateBreadcrumbList } from '@/lib/jsonLd'
 import { CollectionSlug } from '@custom-types'
 
 import config from '@payload-config'
@@ -44,11 +44,11 @@ export default async function Page({ params: paramsPromise }: PageProps) {
   const hero = typeof heroImage === 'object' ? (heroImage as MediaType) : null
   const heroImageData = hero?.url
     ? {
-        url: `${baseUrl}${hero.url}`,
-        width: hero.width || undefined,
-        height: hero.height || undefined,
-        alt: hero.alt || title,
-      }
+      url: `${baseUrl}${hero.url}`,
+      width: hero.width || undefined,
+      height: hero.height || undefined,
+      alt: hero.alt || title,
+    }
     : undefined
 
   // Extract keywords from tags
@@ -81,11 +81,14 @@ export default async function Page({ params: paramsPromise }: PageProps) {
   ])
 
   return (
-    <div className="flex min-h-svh w-full flex-col bg-background text-foreground" id="screenshot" data-theme-scope="preview">
+    <div className="flex min-h-svh w-full flex-col bg-background text-foreground" id="screenshot"
+         data-theme-scope="preview">
       <div className="flex flex-1 items-center justify-center">
         <section className="pb-32 w-full">
-          <div className="bg-muted bg-[url('https://deifkwefumgah.cloudfront.net/shadcnblocks/block/patterns/dot-pattern-2.svg')] bg-[length:3.125rem_3.125rem] bg-repeat py-20">
-            <div className="container flex flex-col items-start justify-start gap-16 py-20 lg:flex-row lg:items-end lg:justify-between">
+          <div
+            className="bg-muted bg-[url('https://deifkwefumgah.cloudfront.net/shadcnblocks/block/patterns/dot-pattern-2.svg')] bg-[length:3.125rem_3.125rem] bg-repeat py-20">
+            <div
+              className="container flex flex-col items-start justify-start gap-16 py-20 lg:flex-row lg:items-end lg:justify-between">
               <div className="flex w-full flex-col items-center justify-center gap-12">
                 <div className="flex w-full max-w-[36rem] flex-col items-center justify-center gap-8">
                   <nav aria-label="breadcrumb" data-slot="breadcrumb" className="">
@@ -98,7 +101,8 @@ export default async function Page({ params: paramsPromise }: PageProps) {
                           Resources
                         </a>
                       </li>
-                      <li data-slot="breadcrumb-separator" role="presentation" aria-hidden="true" className="[&>svg]:size-3.5">
+                      <li data-slot="breadcrumb-separator" role="presentation" aria-hidden="true"
+                          className="[&>svg]:size-3.5">
                         /
                       </li>
                       <li data-slot="breadcrumb-item" className="gap-1.5 inline-flex items-center">
@@ -118,7 +122,8 @@ export default async function Page({ params: paramsPromise }: PageProps) {
                       Building Better Components
                     </h1>
                     <p className="text-center text-xl leading-[1.4] font-semibold text-foreground">
-                      The best blog is one that captivates readers with engaging, well-researched content presented in a clear and relatable
+                      The best blog is one that captivates readers with engaging, well-researched content presented in a
+                      clear and relatable
                       way.
                     </p>
                     <div className="flex items-center justify-center gap-2.5">
@@ -142,7 +147,8 @@ export default async function Page({ params: paramsPromise }: PageProps) {
                           className="lucide lucide-twitter"
                           aria-hidden="true"
                         >
-                          <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
+                          <path
+                            d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
                         </svg>
                       </a>
                       <a
@@ -223,41 +229,58 @@ export default async function Page({ params: paramsPromise }: PageProps) {
                 <div className="prose dark:prose-invert">
                   <h2>Key Takeaways</h2>
                   <p>
-                    - UI components are foundational, reusable elements in web development that encapsulate both design and behavior to
+                    - UI components are foundational, reusable elements in web development that encapsulate both design
+                    and behavior to
                     promote consistency and efficiency.
                   </p>
                   <p>
-                    - Leveraging component libraries and frameworks streamlines the development process and ensures accessibility and
+                    - Leveraging component libraries and frameworks streamlines the development process and ensures
+                    accessibility and
                     cross-device compatibility.
                   </p>
                   <p>
-                    - Understanding different types of UI components enables developers to create structured, scalable, and maintainable
+                    - Understanding different types of UI components enables developers to create structured, scalable,
+                    and maintainable
                     user interfaces.
                   </p>
                   <p>
-                    In the evolving landscape of modern web development, UI components have emerged as indispensable tools for crafting
-                    user-friendly interfaces. These components, ranging from simple buttons to complex data tables, are the building blocks
-                    that help shape the overall user experience. By modularizing the interface into smaller, manageable pieces, UI
-                    components not only streamline the development process but also promote consistency across an application's design. As
-                    digital products become more complex, the role of well-structured UI components becomes even more critical in meeting
+                    In the evolving landscape of modern web development, UI components have emerged as indispensable
+                    tools for crafting
+                    user-friendly interfaces. These components, ranging from simple buttons to complex data tables, are
+                    the building blocks
+                    that help shape the overall user experience. By modularizing the interface into smaller, manageable
+                    pieces, UI
+                    components not only streamline the development process but also promote consistency across an
+                    application's design. As
+                    digital products become more complex, the role of well-structured UI components becomes even more
+                    critical in meeting
                     user expectations and maintaining code quality.
                   </p>
                   <h2 id="heading-1" className="scroll-mt-24">
                     The Role of UI Components in Development
                   </h2>
                   <p>
-                    UI components serve as self-contained units of functionality and presentation, often designed to be reused across
-                    multiple parts of an application. By encapsulating both logic and styling, components reduce duplication and improve the
-                    maintainability of codebases. For example, a single button component can be reused with different props or styles,
-                    ensuring a uniform look and feel throughout the application. This modular approach also allows for parallel development,
+                    UI components serve as self-contained units of functionality and presentation, often designed to be
+                    reused across
+                    multiple parts of an application. By encapsulating both logic and styling, components reduce
+                    duplication and improve the
+                    maintainability of codebases. For example, a single button component can be reused with different
+                    props or styles,
+                    ensuring a uniform look and feel throughout the application. This modular approach also allows for
+                    parallel development,
                     where teams can work on separate components without interfering with each other's work.
                   </p>
                   <p>
-                    Popular frameworks like React, Vue, and Angular are built around component-based architectures, encouraging developers
-                    to think in terms of reusable blocks rather than monolithic pages. This shift not only enhances scalability but also
-                    simplifies testing and debugging. Additionally, many UI libraries such as Material UI, Chakra UI, and Radix UI provide
-                    pre-built, accessible components that accelerate development and ensure consistency with design systems. Embracing
-                    components as first-class citizens in frontend architecture leads to better code organization, faster prototyping, and a
+                    Popular frameworks like React, Vue, and Angular are built around component-based architectures,
+                    encouraging developers
+                    to think in terms of reusable blocks rather than monolithic pages. This shift not only enhances
+                    scalability but also
+                    simplifies testing and debugging. Additionally, many UI libraries such as Material UI, Chakra UI,
+                    and Radix UI provide
+                    pre-built, accessible components that accelerate development and ensure consistency with design
+                    systems. Embracing
+                    components as first-class citizens in frontend architecture leads to better code organization,
+                    faster prototyping, and a
                     more seamless user experience.
                   </p>
                   <h2 id="heading-2" className="scroll-mt-24">
@@ -265,9 +288,12 @@ export default async function Page({ params: paramsPromise }: PageProps) {
                   </h2>
                   <h3>1. Input Components</h3>
                   <p>
-                    Input components are interactive elements that allow users to provide information. These include text inputs,
-                    checkboxes, radio buttons, sliders, and file upload fields. They are essential in forms and user settings, enabling data
-                    collection and customization. A well-designed input component handles validation, displays feedback, and provides a
+                    Input components are interactive elements that allow users to provide information. These include
+                    text inputs,
+                    checkboxes, radio buttons, sliders, and file upload fields. They are essential in forms and user
+                    settings, enabling data
+                    collection and customization. A well-designed input component handles validation, displays feedback,
+                    and provides a
                     seamless experience across different devices and screen readers, ensuring inclusivity and usability.
                   </p>
                   <a href="#">Explore more</a>
@@ -280,10 +306,14 @@ export default async function Page({ params: paramsPromise }: PageProps) {
                   </div>
                   <h3>2. Navigation Components</h3>
                   <p>
-                    Navigation components guide users through an application's structure. These include elements like top bars, side menus,
-                    breadcrumbs, tabs, and pagination. Effective navigation improves discoverability and helps users find the content they
-                    need without friction. Good navigation design considers user flow, accessibility (such as keyboard navigation and ARIA
-                    labels), and responsiveness, ensuring the interface is intuitive and adaptive to various screen sizes.
+                    Navigation components guide users through an application's structure. These include elements like
+                    top bars, side menus,
+                    breadcrumbs, tabs, and pagination. Effective navigation improves discoverability and helps users
+                    find the content they
+                    need without friction. Good navigation design considers user flow, accessibility (such as keyboard
+                    navigation and ARIA
+                    labels), and responsiveness, ensuring the interface is intuitive and adaptive to various screen
+                    sizes.
                   </p>
                   <div className="w-full max-w-[40rem] overflow-hidden">
                     <img
@@ -294,9 +324,12 @@ export default async function Page({ params: paramsPromise }: PageProps) {
                   </div>
                   <h3>3. Feedback Components</h3>
                   <p>
-                    Feedback components provide users with visual or textual cues in response to their actions. Examples include modals,
-                    toast notifications, progress bars, and tooltips. These elements inform users about the success or failure of their
-                    operations or alert them to required actions. They enhance interactivity and reduce confusion, especially when
+                    Feedback components provide users with visual or textual cues in response to their actions. Examples
+                    include modals,
+                    toast notifications, progress bars, and tooltips. These elements inform users about the success or
+                    failure of their
+                    operations or alert them to required actions. They enhance interactivity and reduce confusion,
+                    especially when
                     performing asynchronous actions like form submissions or file uploads.
                   </p>
                   <div className="w-full max-w-[40rem] overflow-hidden">
@@ -308,9 +341,12 @@ export default async function Page({ params: paramsPromise }: PageProps) {
                   </div>
                   <h3>4. Layout Components</h3>
                   <p>
-                    Layout components organize content visually on the page. Common examples include containers, rows, columns, and grid
-                    systems. These components help define the structure of a page and control the spacing, alignment, and responsiveness of
-                    child elements. A strong layout system ensures consistency in visual hierarchy and supports scalability as the
+                    Layout components organize content visually on the page. Common examples include containers, rows,
+                    columns, and grid
+                    systems. These components help define the structure of a page and control the spacing, alignment,
+                    and responsiveness of
+                    child elements. A strong layout system ensures consistency in visual hierarchy and supports
+                    scalability as the
                     application grows in complexity.
                   </p>
                   <div className="w-full max-w-[40rem] overflow-hidden">
@@ -324,19 +360,26 @@ export default async function Page({ params: paramsPromise }: PageProps) {
                     End Paragraph
                   </h2>
                   <p>
-                    Mastering the use of UI components is a key step toward building reliable, scalable, and aesthetically consistent web
-                    applications. By breaking down interfaces into smaller parts, developers can achieve greater flexibility, encourage
-                    reuse, and reduce the likelihood of errors. UI components also bridge the gap between design and development, creating a
+                    Mastering the use of UI components is a key step toward building reliable, scalable, and
+                    aesthetically consistent web
+                    applications. By breaking down interfaces into smaller parts, developers can achieve greater
+                    flexibility, encourage
+                    reuse, and reduce the likelihood of errors. UI components also bridge the gap between design and
+                    development, creating a
                     more collaborative and efficient workflow that benefits both developers and end users.
                   </p>
                 </div>
                 <div className="prose rounded-lg bg-muted p-5 dark:prose-invert [&>h2]:mt-0">
                   <h2>Conclusion</h2>
                   <p>
-                    UI components are more than just visual elements—they are strategic assets in a modern developer's toolkit. When
-                    designed thoughtfully and used effectively, they empower teams to deliver high-quality interfaces with speed,
-                    consistency, and confidence. As frontend development continues to evolve, investing in reusable, accessible, and
-                    well-documented UI components will remain essential for building user-centric, maintainable digital products.
+                    UI components are more than just visual elements—they are strategic assets in a modern developer's
+                    toolkit. When
+                    designed thoughtfully and used effectively, they empower teams to deliver high-quality interfaces
+                    with speed,
+                    consistency, and confidence. As frontend development continues to evolve, investing in reusable,
+                    accessible, and
+                    well-documented UI components will remain essential for building user-centric, maintainable digital
+                    products.
                   </p>
                 </div>
                 <div className="flex flex-col gap-4 rounded-lg bg-muted p-5">
@@ -355,11 +398,13 @@ export default async function Page({ params: paramsPromise }: PageProps) {
                     </span>
                     <div>
                       <div className="text-sm leading-normal font-normal">Jane Doe</div>
-                      <div className="text-sm leading-normal font-normal text-muted-foreground">CEO &amp; Cofounder</div>
+                      <div className="text-sm leading-normal font-normal text-muted-foreground">CEO &amp; Cofounder
+                      </div>
                     </div>
                   </div>
                   <p>
-                    An avid storyteller with a passion for crafting compelling narratives, love to explore the human experience through
+                    An avid storyteller with a passion for crafting compelling narratives, love to explore the human
+                    experience through
                     vivid characters and thought-provoking themes.{' '}
                   </p>
                   <div className="flex items-center gap-2.5">
@@ -383,7 +428,8 @@ export default async function Page({ params: paramsPromise }: PageProps) {
                         className="lucide lucide-twitter"
                         aria-hidden="true"
                       >
-                        <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
+                        <path
+                          d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
                       </svg>
                     </a>
                     <a

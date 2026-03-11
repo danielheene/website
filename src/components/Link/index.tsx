@@ -5,7 +5,7 @@ import type React from 'react'
 import { Button, type ButtonProps } from '@/components/Button'
 import { Icon } from '@/components/Icon'
 import { cn } from '@/utilities/cn'
-import { generateContentPath } from '@/utilities/generateContentURL'
+import { generateContentPath } from '@/lib/generateContentPath'
 
 type CMSLinkType = LinkFieldData & {
   appearance?: 'inline' | ButtonProps['variant']
@@ -46,7 +46,8 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   const newTabProps = newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {}
 
   const link = (
-    <Link className={cn(className)} href={href || url} {...newTabProps} {...(icon && iconOnly ? { 'aria-label': label } : {})}>
+    <Link className={cn(className)}
+          href={href || url} {...newTabProps} {...(icon && iconOnly ? { 'aria-label': label } : {})}>
       {icon && <Icon icon={icon} />}
       {((icon && !iconOnly) || !icon) && label && <span>{label}</span>}
       {((icon && !iconOnly) || !icon) && children && children}

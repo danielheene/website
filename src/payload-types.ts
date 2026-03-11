@@ -99,10 +99,10 @@ export interface Config {
   collections: {
     'blog-categories': BlogCategory;
     'blog-posts': BlogPost;
-    'media-images': MediaImage;
-    'media-videos': MediaVideo;
-    'media-documents': MediaDocument;
-    'media-audio': MediaAudio;
+    images: MediaImage;
+    videos: MediaVideo;
+    documents: MediaDocument;
+    audios: MediaAudio;
     pages: Page;
     users: User;
     'blog-tags': BlogTag;
@@ -119,10 +119,10 @@ export interface Config {
   collectionsSelect: {
     'blog-categories': BlogCategoriesSelect<false> | BlogCategoriesSelect<true>;
     'blog-posts': BlogPostsSelect<false> | BlogPostsSelect<true>;
-    'media-images': MediaImagesSelect<false> | MediaImagesSelect<true>;
-    'media-videos': MediaVideosSelect<false> | MediaVideosSelect<true>;
-    'media-documents': MediaDocumentsSelect<false> | MediaDocumentsSelect<true>;
-    'media-audio': MediaAudioSelect<false> | MediaAudioSelect<true>;
+    images: ImagesSelect<false> | ImagesSelect<true>;
+    videos: VideosSelect<false> | VideosSelect<true>;
+    documents: DocumentsSelect<false> | DocumentsSelect<true>;
+    audios: AudiosSelect<false> | AudiosSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'blog-tags': BlogTagsSelect<false> | BlogTagsSelect<true>;
@@ -160,6 +160,14 @@ export interface Config {
     'settings-user-meta': SettingsUserMetaSelect<false> | SettingsUserMetaSelect<true>;
   };
   locale: 'en' | 'de';
+  widgets: {
+    'umami-control-bar': UmamiControlBarWidget;
+    'umami-stats-widget': UmamiStatsWidgetWidget;
+    'umami-pageviews-widget': UmamiPageviewsWidgetWidget;
+    'umami-paths-widget': UmamiPathsWidgetWidget;
+    'umami-events-widget': UmamiEventsWidgetWidget;
+    collections: CollectionsWidget;
+  };
   user: User;
   jobs: {
     tasks: {
@@ -292,8 +300,21 @@ export interface LinkFieldData {
         | 'material-symbols:attach-file'
         | 'material-symbols:settings'
         | 'material-symbols:calendar'
-        | 'material-symbols:arrow-downward'
-        | 'material-symbols:arrow-forward'
+        | 'material-symbols:keyboard-arrow-down'
+        | 'material-symbols:keyboard-arrow-up'
+        | 'material-symbols:keyboard-arrow-left'
+        | 'material-symbols:keyboard-arrow-right'
+        | 'material-symbols:trending-up'
+        | 'material-symbols:trending-down'
+        | 'material-symbols:trending-flat'
+        | 'material-symbols:touch-app'
+        | 'material-symbols:person'
+        | 'material-symbols:group'
+        | 'material-symbols:web-traffic'
+        | 'material-symbols:highlight-mouse-cursor'
+        | 'material-symbols:undo'
+        | 'material-symbols:nest-clock-farsight-analog-outline'
+        | 'material-symbols:multimodal-hand-eye'
         | 'material-symbols:close'
         | 'material-symbols:image-outline-sharp'
         | 'material-symbols:logout-sharp'
@@ -353,15 +374,162 @@ export interface Page {
   };
   content?:
     | (
-        | LinkGroupBlock
-        | OneColumnContentBlock
-        | TwoColumnContentBlock
-        | ResumeAboutMeBlock
-        | ResumeContactBlock
-        | ResumeCustomersBlock
-        | ResumeDownloadsBlock
-        | ResumeExperienceBlock
-        | ResumeProjectsBlock
+        | {
+            links?: {
+              entries?:
+                | {
+                    link: LinkFieldData;
+                    id?: string | null;
+                  }[]
+                | null;
+              /**
+               * Choose how the links should be aligned.
+               */
+              alignment?: ('left' | 'right' | 'center' | 'list') | null;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'LinkGroupBlock';
+          }
+        | {
+            data?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'OneColumnContentBlock';
+          }
+        | {
+            left?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            right?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'TwoColumnContentBlock';
+          }
+        | {
+            data?:
+              | {
+                  [k: string]: unknown;
+                }
+              | unknown[]
+              | string
+              | number
+              | boolean
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ResumeAboutMeBlock';
+          }
+        | {
+            data?:
+              | {
+                  [k: string]: unknown;
+                }
+              | unknown[]
+              | string
+              | number
+              | boolean
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ResumeContactBlock';
+          }
+        | {
+            data?:
+              | {
+                  [k: string]: unknown;
+                }
+              | unknown[]
+              | string
+              | number
+              | boolean
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ResumeCustomersBlock';
+          }
+        | {
+            data?:
+              | {
+                  [k: string]: unknown;
+                }
+              | unknown[]
+              | string
+              | number
+              | boolean
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ResumeDownloadsBlock';
+          }
+        | {
+            data?:
+              | {
+                  [k: string]: unknown;
+                }
+              | unknown[]
+              | string
+              | number
+              | boolean
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ResumeExperienceBlock';
+          }
+        | {
+            data?:
+              | {
+                  [k: string]: unknown;
+                }
+              | unknown[]
+              | string
+              | number
+              | boolean
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ResumeProjectsBlock';
+          }
       )[]
     | null;
   updatedAt: string;
@@ -371,7 +539,7 @@ export interface Page {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media-images".
+ * via the `definition` "images".
  */
 export interface MediaImage {
   id: string;
@@ -414,6 +582,114 @@ export interface MediaImage {
       filename?: string | null;
     };
   };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blog-posts".
+ */
+export interface BlogPost {
+  id: string;
+  title: string;
+  slug?: string | null;
+  heroImage?: (string | null) | MediaImage;
+  categories?: (string | null) | BlogCategory;
+  tags?: (string | BlogTag)[] | null;
+  relatedPosts?: (string | BlogPost)[] | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blog-categories".
+ */
+export interface BlogCategory {
+  id: string;
+  title: string;
+  slug?: string | null;
+  heroImage?: (string | null) | MediaImage;
+  parent?: (string | null) | BlogCategory;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  breadcrumbs?:
+    | {
+        doc?: (string | null) | BlogCategory;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  breadcrumbsPath?: string | null;
+  relatedPosts?: {
+    docs?: (string | BlogPost)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    keywords?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blog-tags".
+ */
+export interface BlogTag {
+  id: string;
+  title: string;
+  slug?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -588,115 +864,7 @@ export interface ResumeProjectsBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blog-posts".
- */
-export interface BlogPost {
-  id: string;
-  title: string;
-  slug?: string | null;
-  heroImage?: (string | null) | MediaImage;
-  categories?: (string | null) | BlogCategory;
-  tags?: (string | BlogTag)[] | null;
-  relatedPosts?: (string | BlogPost)[] | null;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  updatedAt: string;
-  createdAt: string;
-  deletedAt?: string | null;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blog-categories".
- */
-export interface BlogCategory {
-  id: string;
-  title: string;
-  slug?: string | null;
-  heroImage?: (string | null) | MediaImage;
-  parent?: (string | null) | BlogCategory;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  breadcrumbs?:
-    | {
-        doc?: (string | null) | BlogCategory;
-        url?: string | null;
-        label?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  breadcrumbsPath?: string | null;
-  relatedPosts?: {
-    docs?: (string | BlogPost)[];
-    hasNextPage?: boolean;
-    totalDocs?: number;
-  };
-  meta?: {
-    title?: string | null;
-    description?: string | null;
-    keywords?: string | null;
-  };
-  updatedAt: string;
-  createdAt: string;
-  deletedAt?: string | null;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blog-tags".
- */
-export interface BlogTag {
-  id: string;
-  title: string;
-  slug?: string | null;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  updatedAt: string;
-  createdAt: string;
-  deletedAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media-videos".
+ * via the `definition` "videos".
  */
 export interface MediaVideo {
   id: string;
@@ -730,7 +898,7 @@ export interface MediaVideo {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media-documents".
+ * via the `definition` "documents".
  */
 export interface MediaDocument {
   id: string;
@@ -764,7 +932,7 @@ export interface MediaDocument {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media-audio".
+ * via the `definition` "audios".
  */
 export interface MediaAudio {
   id: string;
@@ -931,19 +1099,19 @@ export interface PayloadLockedDocument {
         value: string | BlogPost;
       } | null)
     | ({
-        relationTo: 'media-images';
+        relationTo: 'images';
         value: string | MediaImage;
       } | null)
     | ({
-        relationTo: 'media-videos';
+        relationTo: 'videos';
         value: string | MediaVideo;
       } | null)
     | ({
-        relationTo: 'media-documents';
+        relationTo: 'documents';
         value: string | MediaDocument;
       } | null)
     | ({
-        relationTo: 'media-audio';
+        relationTo: 'audios';
         value: string | MediaAudio;
       } | null)
     | ({
@@ -1051,9 +1219,9 @@ export interface BlogPostsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media-images_select".
+ * via the `definition` "images_select".
  */
-export interface MediaImagesSelect<T extends boolean = true> {
+export interface ImagesSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
   blurDataURL?: T;
@@ -1086,9 +1254,9 @@ export interface MediaImagesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media-videos_select".
+ * via the `definition` "videos_select".
  */
-export interface MediaVideosSelect<T extends boolean = true> {
+export interface VideosSelect<T extends boolean = true> {
   caption?: T;
   prefix?: T;
   updatedAt?: T;
@@ -1105,9 +1273,9 @@ export interface MediaVideosSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media-documents_select".
+ * via the `definition` "documents_select".
  */
-export interface MediaDocumentsSelect<T extends boolean = true> {
+export interface DocumentsSelect<T extends boolean = true> {
   caption?: T;
   prefix?: T;
   updatedAt?: T;
@@ -1124,9 +1292,9 @@ export interface MediaDocumentsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media-audio_select".
+ * via the `definition` "audios_select".
  */
-export interface MediaAudioSelect<T extends boolean = true> {
+export interface AudiosSelect<T extends boolean = true> {
   caption?: T;
   prefix?: T;
   updatedAt?: T;
@@ -1561,15 +1729,28 @@ export interface UserMetaData {
     name?: string | null;
     url?: string | null;
   };
-  address?: {
-    streetAddress?: string | null;
-    addressLocality?: string | null;
-    addressRegion?: string | null;
-    postalCode?: string | null;
-    addressCountry?: string | null;
-  };
+  address?: UserMetaAddress;
   updatedAt?: string | null;
   createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "UserMetaAddress".
+ */
+export interface UserMetaAddress {
+  street?: string | null;
+  number?: string | null;
+  postCode?: string | null;
+  place?: string | null;
+  region?: string | null;
+  locality?: string | null;
+  countryCode?: string | null;
+  countryName?: string | null;
+  /**
+   * @minItems 2
+   * @maxItems 2
+   */
+  location?: [number, number] | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1818,18 +1999,85 @@ export interface SettingsUserMetaSelect<T extends boolean = true> {
         name?: T;
         url?: T;
       };
-  address?:
-    | T
-    | {
-        streetAddress?: T;
-        addressLocality?: T;
-        addressRegion?: T;
-        postalCode?: T;
-        addressCountry?: T;
-      };
+  address?: T | UserMetaAddressSelect<T>;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "UserMetaAddress_select".
+ */
+export interface UserMetaAddressSelect<T extends boolean = true> {
+  street?: T;
+  number?: T;
+  postCode?: T;
+  place?: T;
+  region?: T;
+  locality?: T;
+  countryCode?: T;
+  countryName?: T;
+  location?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "umami-control-bar_widget".
+ */
+export interface UmamiControlBarWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "umami-stats-widget_widget".
+ */
+export interface UmamiStatsWidgetWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "umami-pageviews-widget_widget".
+ */
+export interface UmamiPageviewsWidgetWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'medium' | 'large' | 'x-large' | 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "umami-paths-widget_widget".
+ */
+export interface UmamiPathsWidgetWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "umami-events-widget_widget".
+ */
+export interface UmamiEventsWidgetWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'x-small' | 'small' | 'medium';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "collections_widget".
+ */
+export interface CollectionsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

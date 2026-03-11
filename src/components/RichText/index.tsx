@@ -3,8 +3,17 @@
 // import { MediaBlock } from '@/blocks/MediaBlock/Component'
 
 import type { BlockData } from '@custom-types'
-import type { DefaultNodeTypes, DefaultTypedEditorState, SerializedBlockNode, SerializedLinkNode } from '@payloadcms/richtext-lexical'
-import { RichText as ConvertRichText, type JSXConvertersFunction, LinkJSXConverter } from '@payloadcms/richtext-lexical/react'
+import type {
+  DefaultNodeTypes,
+  DefaultTypedEditorState,
+  SerializedBlockNode,
+  SerializedLinkNode,
+} from '@payloadcms/richtext-lexical'
+import {
+  RichText as ConvertRichText,
+  type JSXConvertersFunction,
+  LinkJSXConverter,
+} from '@payloadcms/richtext-lexical/react'
 import type { HTMLAttributes } from 'react'
 
 // import { CodeBlock, CodeBlockProps } from '@/blocks/Code/Component'
@@ -12,7 +21,7 @@ import type { HTMLAttributes } from 'react'
 // import { BannerBlock } from '@/blocks/Banner/Component'
 // import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { cn } from '@/utilities/cn'
-import { generateContentPath } from '@/utilities/generateContentURL'
+import { generateContentPath } from '@/lib/generateContentPath'
 
 type NodeTypes = DefaultNodeTypes | SerializedBlockNode<BlockData>
 

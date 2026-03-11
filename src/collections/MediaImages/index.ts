@@ -10,6 +10,9 @@ import { generateBlurDataURL } from './hooks/generateBlurDataURL'
 
 export const MediaImages: CollectionConfig<CollectionSlug.MediaImages> = {
   slug: CollectionSlug.MediaImages,
+  typescript: {
+    interface: 'MediaImage',
+  },
   labels: {
     singular: 'Image',
     plural: 'Images',
@@ -58,11 +61,6 @@ export const MediaImages: CollectionConfig<CollectionSlug.MediaImages> = {
       name: 'alt',
       type: 'text',
       admin: {
-        condition: ({ mimeType, file }: Partial<{ mimeType: string; file: Partial<File> }>) => {
-          const { type } = file || {}
-          /* mimeType when already uploaded, file.type when selected for upload */
-          return mimeType?.includes('image') || type?.includes('image')
-        },
         disableGroupBy: true,
         disableListColumn: true,
         disableListFilter: true,
@@ -77,7 +75,6 @@ export const MediaImages: CollectionConfig<CollectionSlug.MediaImages> = {
       type: 'text',
       defaultValue: '',
       admin: {
-        condition: ({ mimeType }) => mimeType?.includes('image'),
         disableGroupBy: true,
         disableListColumn: true,
         disableListFilter: true,

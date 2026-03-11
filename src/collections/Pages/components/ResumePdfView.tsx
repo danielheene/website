@@ -1,17 +1,30 @@
-import { GlobalSlug } from '@custom-types'
+'use server'
+
 import type { AdminViewServerProps } from 'payload'
 
 import ResumePdfViewClientComponent from '@/collections/Pages/components/ResumePdfView.client'
-import { getGlobal } from '@/utilities/getGlobals'
+import { getCachedResumeDocumentData } from '@/lib/getResumeDocumentData'
+import { CollectionSlug } from '@custom-types'
 
-export default async function ResumePdfViewComponent({ initPageResult }: AdminViewServerProps) {
-  const {
-    req: { user, data },
-  } = initPageResult
+export default async function ResumePdfViewComponent({
+                                                       initPageResult,
+                                                       locale,
+                                                       user,
+                                                     }: AdminViewServerProps) {
 
-  if (!user || data.slug !== 'resume') return null
 
-  const experience = await getGlobal(GlobalSlug.ResumeExperience, 1)
+  if (!user) return null
 
-  return <ResumePdfViewClientComponent experience={experience} />
+
+  const data = await initPageResult.req.payload.findByID({
+    collection: CollectionSlug.Pages,
+    id: initPageResult.docID,
+  })
+
+  if (!data) return null
+  if (!('layout' in data) || ('layout' in data && data.layout !== 'resume')) return null
+
+  const documentData = await getCachedResumeDocumentData(locale.code === 'de' ? 'de' : 'en')
+
+  return <ResumePdfViewClientComponent {...documentData} />
 }

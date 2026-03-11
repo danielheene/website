@@ -2,7 +2,7 @@
 
 import { useRowLabel } from '@payloadcms/ui'
 
-import { useExperienceTimeSpan } from '@/utilities/useExperienceTimeSpan'
+import { generateExperienceTimeSpan } from '@/lib/generateExperienceTimeSpan'
 
 import styles from './RowLabel.module.scss'
 
@@ -15,7 +15,7 @@ type RowLabelData = {
 
 const RowLabel = () => {
   const { data: { title, employer, startDate, endDate } = {} } = useRowLabel<RowLabelData>()
-  const timeString = useExperienceTimeSpan(startDate, endDate)
+  const timeString = generateExperienceTimeSpan({ startDate, endDate })
 
   return (
     <div className={styles.RowLabel_Container}>

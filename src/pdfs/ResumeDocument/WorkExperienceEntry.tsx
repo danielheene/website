@@ -1,9 +1,9 @@
 import type { JobHistory } from '@payload-types'
 import { StyleSheet, Text, View } from '@react-pdf/renderer'
-import { formatDate } from 'date-fns'
 
 import { colors } from '@/pdfs/colors'
 import { registerFonts } from '@/pdfs/fonts'
+import { generateExperienceTimeSpan } from '@/lib/generateExperienceTimeSpan'
 
 type JobHistoryEntry = JobHistory[number]
 
@@ -58,10 +58,15 @@ const styles = StyleSheet.create({
   },
 })
 
-export const WorkExperienceEntry = ({ title, employer, startDate, endDate, content, locale }: WorkExperienceEntryProps) => {
-  const timeSpan = endDate
-    ? `${formatDate(startDate, 'MM/yyyy')} - ${formatDate(endDate, 'MM/yyyy')}`
-    : `${locale === 'de' ? 'Seit' : 'Since'} ${formatDate(startDate, 'MM/yyyy')}`
+export const WorkExperienceEntry = ({
+                                      title,
+                                      employer,
+                                      startDate,
+                                      endDate,
+                                      content,
+                                      locale,
+                                    }: WorkExperienceEntryProps) => {
+  const timeSpan = generateExperienceTimeSpan({ startDate, endDate, locale })
   const jobTitle = `${title}, ${employer}`
 
   return (

@@ -50,8 +50,8 @@ export const Header = ({ image, telephone, email, url, github, address }: Header
     <View style={styles.container} fixed>
       {portraitUrl && <Image src={portraitUrl} style={styles.portrait} />}
       <View style={styles.column}>
-        <Text style={styles.text}>{address.streetAddress}</Text>
-        <Text style={styles.text}>{`${address.postalCode} ${address.addressLocality}`}</Text>
+        <Text style={styles.text}>{`${address.street} ${address.number}`}</Text>
+        <Text style={styles.text}>{`${address.postCode} ${address.place}`}</Text>
       </View>
       <View style={styles.column}>
         <Link style={styles.text} href={phone.getURI()}>

@@ -14,7 +14,7 @@ export const SLUG_ICON_NAME_MAP: Partial<Record<CollectionSlug | GlobalSlug, Ico
   [CollectionSlug.BlogTags]: SIDEBAR_ICON.BLOG_TAGS,
   [CollectionSlug.MediaImages]: SIDEBAR_ICON.MEDIA_IMAGES,
   [CollectionSlug.MediaVideos]: SIDEBAR_ICON.MEDIA_VIDEOS,
-  [CollectionSlug.MediaAudio]: SIDEBAR_ICON.MEDIA_AUDIOS,
+  [CollectionSlug.MediaAudios]: SIDEBAR_ICON.MEDIA_AUDIOS,
   [CollectionSlug.MediaDocuments]: SIDEBAR_ICON.MEDIA_DOCUMENTS,
   [CollectionSlug.Pages]: SIDEBAR_ICON.PAGES,
   [CollectionSlug.Users]: SIDEBAR_ICON.USERS,

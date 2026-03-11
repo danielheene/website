@@ -1,8 +1,12 @@
-import { OpenAI } from 'openai'
 import sharp, { type SharpInput } from 'sharp'
+import { generateText } from 'ai'
+import dedent from 'dedent'
+import { createAnthropic } from '@ai-sdk/anthropic'
+
 
 /**
  * Generates an image alternative text based on the image
+ * @param input
  */
 export const generateImageAlternativeText = async (input: SharpInput): Promise<string> => {
   'use server'
@@ -13,29 +17,36 @@ export const generateImageAlternativeText = async (input: SharpInput): Promise<s
     .jpeg({ quality: 75 })
     .toBuffer()
 
-  const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+  const anthropic = createAnthropic({
+    apiKey: process.env['ANTHROPIC_API_KEY'],
   })
 
-  const { output_text } = await openai.responses.create({
-    model: 'gpt-4.1-mini',
-    input: [
-      {
-        role: 'developer',
-        content: 'Describe the following image in one, short, descriptive sentence for web accessibility.',
-      },
+  const { text } = await generateText({
+    model: anthropic('claude-sonnet-4-6'),
+    system: dedent`
+      Write a short but meaningful sentence that explains the attached image and helps improve its accessibility by describing the content of the image, adapted for visually impaired people or users of screen readers.
+
+      Your alt text should follow these guidelines:
+        - Keep it concise (typically one sentence, under 125 characters when possible)
+        - Describe the most important or relevant content in the image
+        - Be specific and factual about what is shown
+        - Avoid starting with phrases like "Image of..." or "Picture of..." - just describe what's there
+        - Focus on information that would be useful to someone who cannot see the image
+        - If there is text in the image that is important to understanding it, include that text in your description
+        - Avoid subjective interpretations unless the mood/tone is clearly the main point of the image
+    `,
+    messages: [
       {
         role: 'user',
         content: [
           {
-            type: 'input_image',
-            detail: 'auto',
-            image_url: `data:image/jpeg;base64,${resizedImageBuffer.toString('base64')}`,
+            type: 'image',
+            image: resizedImageBuffer,
           },
         ],
       },
     ],
   })
 
-  return output_text
+  return text
 }

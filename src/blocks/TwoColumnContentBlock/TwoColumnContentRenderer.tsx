@@ -1,3 +1,5 @@
+'use client'
+
 import type { TwoColumnContentBlock } from '@payload-types'
 
 import RichText from '@/components/RichText'

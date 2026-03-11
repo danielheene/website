@@ -13,7 +13,7 @@ import type { JSX, ReactNode } from 'react'
 import { WebVitalsProvider } from '@/components/WebVitalsProvider'
 import { getCachedSiteMetaData } from '@/lib/getSiteMetaData'
 import { getCachedUserMetaData } from '@/lib/getUserMetaData'
-import { generatePersonSchema, generateWebSiteSchema, JsonLd } from '@/utilities/jsonLd'
+import { generatePersonSchema, generateWebSiteSchema, JsonLd } from '@/lib/jsonLd'
 
 export default async function RootLayout({ children }: { children: ReactNode | ReactNode[] }): Promise<JSX.Element> {
   const { isEnabled: draft } = await draftMode()
@@ -24,19 +24,19 @@ export default async function RootLayout({ children }: { children: ReactNode | R
 
   return (
     <html lang="en" data-theme="system" data-scroll-behavior="smooth" suppressHydrationWarning>
-      <head>
-        <JsonLd data={[personSchema, webSiteSchema]} />
-      </head>
-      <body>
-        {draft && <LivePreviewListener />}
-        <ThemeProvider disableTransitionOnChange enableColorScheme enableSystem>
-          <Header />
-          {children}
-          <Footer />
-        </ThemeProvider>
-        <Toasty />
-        <WebVitalsProvider />
-      </body>
+    <head>
+      <JsonLd data={[personSchema, webSiteSchema]} />
+    </head>
+    <body>
+    {draft && <LivePreviewListener />}
+    <ThemeProvider disableTransitionOnChange enableColorScheme enableSystem>
+      <Header />
+      {children}
+      <Footer />
+    </ThemeProvider>
+    <Toasty />
+    <WebVitalsProvider />
+    </body>
     </html>
   )
 }

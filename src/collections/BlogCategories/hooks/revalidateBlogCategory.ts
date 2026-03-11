@@ -3,7 +3,7 @@ import type { BlogCategory } from '@payload-types'
 import { revalidatePath } from 'next/cache'
 import type { CollectionAfterChangeHook } from 'payload'
 
-import { generateContentPath } from '@/utilities/generateContentURL'
+import { generateContentPath } from '@/lib/generateContentPath'
 
 export const revalidateBlogCategory: CollectionAfterChangeHook<BlogCategory> = ({ doc, context, req: { payload } }) => {
   if (context.skipRevalidate) return doc

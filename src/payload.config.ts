@@ -2,7 +2,7 @@ import path from 'node:path'
 import * as process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
-import { CollectionSlug } from '@custom-types'
+import { CollectionSlug, BlockSlug } from '@custom-types'
 import type { BlogCategory } from '@payload-types'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { redisKVAdapter } from '@payloadcms/kv-redis'
@@ -28,7 +28,7 @@ import {
   StrikethroughFeature,
   UnderlineFeature,
   UnorderedListFeature,
-  UploadFeature,
+  UploadFeature, BlocksFeature,
 } from '@payloadcms/richtext-lexical'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { buildConfig } from 'payload'
@@ -38,8 +38,9 @@ import { BLOCKS } from '@/blocks'
 import { COLLECTIONS } from '@/collections'
 import { LinkField } from '@/fields/Link'
 import { GLOBALS } from '@/globals'
-import { generateContentURL } from '@/utilities/generateContentURL'
+import { generateContentURL } from '@/lib/generateContentURL'
 import { useSendAdapter } from '@/utilities/useSendAdapter'
+import { TwoColumnContentBlock } from '@/blocks/TwoColumnContentBlock'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -60,22 +61,46 @@ export const config = buildConfig({
       providers: ['@/contexts/UmamiCharts#UmamiChartsProvider'],
     },
     dashboard: {
+      defaultLayout: [
+        { widgetSlug: 'umami-control-bar', width: 'full' },
+        { widgetSlug: 'umami-stats-widget', width: 'full' },
+        { widgetSlug: 'umami-pageviews-widget', width: 'medium' },
+        { widgetSlug: 'umami-paths-widget', width: 'x-small' },
+        { widgetSlug: 'umami-events-widget', width: 'x-small' },
+      ],
       widgets: [
         {
-          slug: 'umami-control-barr',
-          ComponentPath: '@/components/AdminPanel#UmamiControlBar',
-          minWidth: 'medium',
+          slug: 'umami-control-bar',
+          label: 'Umami: Control Bar',
+          Component: '@/components/AdminPanel#UmamiControlBar',
+          minWidth: 'full',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'umami-stats-widget',
+          label: 'Umami: Stats',
+          Component: '@/components/AdminPanel#UmamiStatsWidget',
+          minWidth: 'full',
           maxWidth: 'full',
         },
         {
           slug: 'umami-pageviews-widget',
-          ComponentPath: '@/components/AdminPanel#UmamiPageViewsWidget',
+          label: 'Umami: PageViews',
+          Component: '@/components/AdminPanel#UmamiPageViewsWidget',
           minWidth: 'medium',
           maxWidth: 'full',
         },
         {
           slug: 'umami-paths-widget',
-          ComponentPath: '@/components/AdminPanel#UmamiPathsWidget',
+          label: 'Umami: Paths',
+          Component: '@/components/AdminPanel#UmamiPathsWidget',
+          minWidth: 'x-small',
+          maxWidth: 'medium',
+        },
+        {
+          slug: 'umami-events-widget',
+          label: 'Umami: Events',
+          Component: '@/components/AdminPanel#UmamiEventsWidget',
           minWidth: 'x-small',
           maxWidth: 'medium',
         },
@@ -230,7 +255,12 @@ export const config = buildConfig({
           },
         },
         disableIfParentHasFixedToolbar: true,
-      }), // BlocksFeature(),
+      }),
+      BlocksFeature({
+        blocks: [
+          BlockSlug.LinkGroup,
+        ],
+      }),
       InlineToolbarFeature(),
       // TreeViewFeature(),
       EXPERIMENTAL_TableFeature(),
@@ -271,7 +301,10 @@ export const config = buildConfig({
     nestedDocsPlugin({
       collections: [CollectionSlug.BlogCategories],
       generateLabel: (_, { title }: Pick<BlogCategory, 'title'>) => title,
-      generateURL: (_, { slug }: Pick<BlogCategory, 'slug'>, { slug: collection }) => generateContentURL({ collection, slug }).toString(),
+      generateURL: (_, { slug }: Pick<BlogCategory, 'slug'>, { slug: collection }) => generateContentURL({
+        collection,
+        slug,
+      }),
       parentFieldSlug: 'parent',
       breadcrumbsFieldSlug: 'breadcrumbs',
     }),
@@ -293,7 +326,7 @@ export const config = buildConfig({
         [CollectionSlug.MediaDocuments]: {
           prefix: 'documents',
         },
-        [CollectionSlug.MediaAudio]: {
+        [CollectionSlug.MediaAudios]: {
           prefix: 'audios',
         },
       },

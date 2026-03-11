@@ -29,7 +29,6 @@ export const SectionContainer = ({ id: rawId, title, variant = 'default', childr
     if (id && isObserving) setActiveAnchor(id)
   }, [isObserving, id, setActiveAnchor])
 
-  console.log(isObserving, id, entry)
   return (
     <section
       id={id}

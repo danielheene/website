@@ -1,5 +1,5 @@
 import { generateMeta } from '@/utilities/generateMeta'
-import { generateCollectionPage, generateBreadcrumbList } from '@/utilities/jsonLd'
+import { generateCollectionPage, generateBreadcrumbList } from '@/lib/jsonLd'
 import { CollectionSlug } from '@custom-types'
 
 import config from '@payload-config'
@@ -50,7 +50,8 @@ export default async function Page({ params: paramsPromise }: PageProps) {
   ])
 
   return (
-    <div className="flex min-h-svh w-full flex-col bg-background text-foreground dark" id="screenshot" data-theme-scope="preview">
+    <div className="flex min-h-svh w-full flex-col bg-background text-foreground dark" id="screenshot"
+         data-theme-scope="preview">
       <div className="flex flex-1 items-center justify-center">
         <section className="py-32 w-full">
           <div className="container mx-auto">
@@ -64,7 +65,8 @@ export default async function Page({ params: paramsPromise }: PageProps) {
               </span>
               <h2 className="mb-3 text-3xl font-semibold text-pretty md:mb-4 md:text-5xl lg:mb-6">Blog Posts</h2>
               <p className="mb-12 text-muted-foreground md:text-base lg:text-lg">
-                Discover the latest trends, tips, and best practices in modern web development. From UI components to design systems, stay
+                Discover the latest trends, tips, and best practices in modern web development. From UI components to
+                design systems, stay
                 updated with our expert insights.
               </p>
             </div>
@@ -76,7 +78,8 @@ export default async function Page({ params: paramsPromise }: PageProps) {
               >
                 <div className="flex flex-col gap-6 sm:flex-row">
                   <div className="shrink-0">
-                    <a href="https://shadcnblocks.com" target="_blank" className="block transition-opacity duration-200 hover:opacity-90">
+                    <a href="https://shadcnblocks.com" target="_blank"
+                       className="block transition-opacity duration-200 hover:opacity-90">
                       <img
                         alt="Getting Started with shadcn/ui Components"
                         className="aspect-16/9 w-full rounded-lg object-cover object-center sm:w-[260px]"
@@ -102,10 +105,12 @@ export default async function Page({ params: paramsPromise }: PageProps) {
                       </a>
                     </h3>
                     <p className="text-base text-muted-foreground">
-                      Learn how to quickly integrate and customize shadcn/ui components in your Next.js projects. We'll cover installation,
+                      Learn how to quickly integrate and customize shadcn/ui components in your Next.js projects. We'll
+                      cover installation,
                       theming, and best practices for building modern interfaces.
                     </p>
-                    <a href="https://shadcnblocks.com" target="_blank" className="inline-flex items-center text-primary hover:underline">
+                    <a href="https://shadcnblocks.com" target="_blank"
+                       className="inline-flex items-center text-primary hover:underline">
                       Read more
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -134,7 +139,8 @@ export default async function Page({ params: paramsPromise }: PageProps) {
               >
                 <div className="flex flex-col gap-6 sm:flex-row">
                   <div className="shrink-0">
-                    <a href="https://shadcnblocks.com" target="_blank" className="block transition-opacity duration-200 hover:opacity-90">
+                    <a href="https://shadcnblocks.com" target="_blank"
+                       className="block transition-opacity duration-200 hover:opacity-90">
                       <img
                         alt="Building Accessible Web Applications"
                         className="aspect-16/9 w-full rounded-lg object-cover object-center sm:w-[260px]"
@@ -160,10 +166,12 @@ export default async function Page({ params: paramsPromise }: PageProps) {
                       </a>
                     </h3>
                     <p className="text-base text-muted-foreground">
-                      Explore how to create inclusive web experiences using shadcn/ui's accessible components. Discover practical tips for
+                      Explore how to create inclusive web experiences using shadcn/ui's accessible components. Discover
+                      practical tips for
                       implementing ARIA labels, keyboard navigation, and semantic HTML.
                     </p>
-                    <a href="https://shadcnblocks.com" target="_blank" className="inline-flex items-center text-primary hover:underline">
+                    <a href="https://shadcnblocks.com" target="_blank"
+                       className="inline-flex items-center text-primary hover:underline">
                       Read more
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -192,7 +200,8 @@ export default async function Page({ params: paramsPromise }: PageProps) {
               >
                 <div className="flex flex-col gap-6 sm:flex-row">
                   <div className="shrink-0">
-                    <a href="https://shadcnblocks.com" target="_blank" className="block transition-opacity duration-200 hover:opacity-90">
+                    <a href="https://shadcnblocks.com" target="_blank"
+                       className="block transition-opacity duration-200 hover:opacity-90">
                       <img
                         alt="Modern Design Systems with Tailwind CSS"
                         className="aspect-16/9 w-full rounded-lg object-cover object-center sm:w-[260px]"
@@ -218,10 +227,12 @@ export default async function Page({ params: paramsPromise }: PageProps) {
                       </a>
                     </h3>
                     <p className="text-base text-muted-foreground">
-                      Dive into creating scalable design systems using Tailwind CSS and shadcn/ui. Learn how to maintain consistency while
+                      Dive into creating scalable design systems using Tailwind CSS and shadcn/ui. Learn how to maintain
+                      consistency while
                       building flexible and maintainable component libraries.
                     </p>
-                    <a href="https://shadcnblocks.com" target="_blank" className="inline-flex items-center text-primary hover:underline">
+                    <a href="https://shadcnblocks.com" target="_blank"
+                       className="inline-flex items-center text-primary hover:underline">
                       Read more
                       <svg
                         xmlns="http://www.w3.org/2000/svg"

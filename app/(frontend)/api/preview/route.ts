@@ -6,7 +6,7 @@ import { type CollectionSlug, getPayload, type PayloadRequest } from 'payload'
 
 export async function GET(req: NextRequest): Promise<Response> {
   const payload = await getPayload({ config: configPromise })
-  console.log('req.url', req.url)
+
   const url = req.url
   const { searchParams } = new URL(url)
 

@@ -13,9 +13,9 @@ import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
 
 export const Renderer = ({
-  blockType,
-  data: { title, caption, customerLogos },
-}: ResumeLayoutBlockData<GlobalSlug.ResumeCustomers>): JSX.Element => {
+                           blockType,
+                           data: { title, caption, customerLogos },
+                         }: ResumeLayoutBlockData<GlobalSlug.ResumeCustomers>): JSX.Element => {
   const filteredEntries: LogoCarouselProps['entries'] = useMemo(
     () =>
       customerLogos.filter(
@@ -29,7 +29,7 @@ export const Renderer = ({
     <SectionContainer id={blockType} title={title} variant="primary">
       <div className="container py-16 lg:py-32">
         <div className="grid grid-cols-12 items-center gap-8">
-          <div className="col-span-12 lg:col-span-6 items-center mb-16 lg:mb-0">
+          <div className="col-span-12 lg:col-span-4 lg:col-start-2 items-center mb-16 lg:mb-0">
             {title && <Headline variant="section">{title}</Headline>}
             {caption && <RichText className="mt-12 text-lg leading-8" data={caption} enableGutter={false} />}
           </div>

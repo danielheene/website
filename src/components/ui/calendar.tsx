@@ -1,6 +1,10 @@
 'use client'
 
-import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
+import {
+  LuChevronDown as ChevronDownIcon,
+  LuChevronLeft as ChevronLeftIcon,
+  LuChevronRight as ChevronRightIcon,
+} from 'react-icons/lu'
 import * as React from 'react'
 import { type DayButton, DayPicker, getDefaultClassNames } from 'react-day-picker'
 
@@ -8,15 +12,15 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import { cn } from '@/utilities/cn'
 
 function Calendar({
-  className,
-  classNames,
-  showOutsideDays = true,
-  captionLayout = 'label',
-  buttonVariant = 'ghost',
-  formatters,
-  components,
-  ...props
-}: React.ComponentProps<typeof DayPicker> & {
+                    className,
+                    classNames,
+                    showOutsideDays = true,
+                    captionLayout = 'label',
+                    buttonVariant = 'ghost',
+                    formatters,
+                    components,
+                    ...props
+                  }: React.ComponentProps<typeof DayPicker> & {
   buttonVariant?: React.ComponentProps<typeof Button>['variant']
 }) {
   const defaultClassNames = getDefaultClassNames()

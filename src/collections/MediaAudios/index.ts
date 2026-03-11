@@ -5,8 +5,11 @@ import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
 import { RichTextField } from '@/fields/RichText'
 
-export const MediaAudio: CollectionConfig<CollectionSlug.MediaAudio> = {
-  slug: CollectionSlug.MediaAudio,
+export const MediaAudios: CollectionConfig<CollectionSlug.MediaAudios> = {
+  slug: CollectionSlug.MediaAudios,
+  typescript: {
+    interface: 'MediaAudio',
+  },
   labels: {
     singular: 'Audio',
     plural: 'Audios',

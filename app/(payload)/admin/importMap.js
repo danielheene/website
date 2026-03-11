@@ -21,6 +21,7 @@ import { RelationshipFeatureClient as RelationshipFeatureClient_e70f5e05f09f93e0
 import { UploadFeatureClient as UploadFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { HorizontalRuleFeatureClient as HorizontalRuleFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { FixedToolbarFeatureClient as FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { InlineToolbarFeatureClient as InlineToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { TableFeatureClient as TableFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { default as default_9f25bc4d901952d4af47df3ecdad63b6 } from '@/fields/Meta/FieldComponent'
@@ -41,8 +42,10 @@ import { Logo as Logo_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/Admi
 import { UmamiChartsProvider as UmamiChartsProvider_777b157ac49ee337c57a996fa5aceaac } from '@/contexts/UmamiCharts'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 import { UmamiControlBar as UmamiControlBar_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
+import { UmamiStatsWidget as UmamiStatsWidget_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { UmamiPageViewsWidget as UmamiPageViewsWidget_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { UmamiPathsWidget as UmamiPathsWidget_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
+import { UmamiEventsWidget as UmamiEventsWidget_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 export const importMap = {
@@ -69,6 +72,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#UploadFeatureClient": UploadFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#HorizontalRuleFeatureClient": HorizontalRuleFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#FixedToolbarFeatureClient": FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@payloadcms/richtext-lexical/client#BlocksFeatureClient": BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#InlineToolbarFeatureClient": InlineToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#TableFeatureClient": TableFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/fields/Meta/FieldComponent#default": default_9f25bc4d901952d4af47df3ecdad63b6,
@@ -89,7 +93,9 @@ export const importMap = {
   "@/contexts/UmamiCharts#UmamiChartsProvider": UmamiChartsProvider_777b157ac49ee337c57a996fa5aceaac,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
   "@/components/AdminPanel#UmamiControlBar": UmamiControlBar_a316a6ec12a12cd0fe58ccec01a444ca,
+  "@/components/AdminPanel#UmamiStatsWidget": UmamiStatsWidget_a316a6ec12a12cd0fe58ccec01a444ca,
   "@/components/AdminPanel#UmamiPageViewsWidget": UmamiPageViewsWidget_a316a6ec12a12cd0fe58ccec01a444ca,
   "@/components/AdminPanel#UmamiPathsWidget": UmamiPathsWidget_a316a6ec12a12cd0fe58ccec01a444ca,
+  "@/components/AdminPanel#UmamiEventsWidget": UmamiEventsWidget_a316a6ec12a12cd0fe58ccec01a444ca,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

@@ -2,17 +2,17 @@ import type { ResumeExperienceGlobalData } from '@payload-types'
 
 import { Badge } from '@/components/Badge'
 import { cn } from '@/utilities/cn'
-import { useExperienceTimeSpan } from '@/utilities/useExperienceTimeSpan'
+import { generateExperienceTimeSpan } from '@/lib/generateExperienceTimeSpan'
 
 export const JobEntry = ({
-  title,
-  employer,
-  startDate,
-  endDate,
-  content,
-  technologies,
-}: ResumeExperienceGlobalData['jobHistory'][number]) => {
-  const timeString = useExperienceTimeSpan(startDate, endDate)
+                           title,
+                           employer,
+                           startDate,
+                           endDate,
+                           content,
+                           technologies,
+                         }: ResumeExperienceGlobalData['jobHistory'][number]) => {
+  const timeString = generateExperienceTimeSpan({ startDate, endDate })
 
   return (
     <article className={cn('flex flex-col gap-4 p-4', 'lg:gap-8 lg:p-8', 'bg-white', 'text-black', 'rounded-2xl')}>

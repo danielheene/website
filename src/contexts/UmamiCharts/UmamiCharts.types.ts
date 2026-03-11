@@ -1,4 +1,10 @@
-import type { UmamiEvents, UmamiEventsParams, UmamiPageViews, UmamiPaths, UmamiStats, UmamiWebsite } from '@/lib/UmamiHandler'
+import type {
+  UmamiPageViews,
+  UmamiStats,
+  UmamiWebsite,
+  UmamiEvent,
+  UmamiPath,
+} from '@/lib/UmamiHandler'
 
 export type UmamiChartsState = {
   selectedTimeSpan: {
@@ -13,12 +19,12 @@ export type UmamiChartsState = {
   }
   events: {
     hasWidget: boolean
-    data: UmamiEvents | null
+    data: UmamiEvent[] | null
     dataIsLoading: boolean
   }
   paths: {
     hasWidget: boolean
-    data: UmamiPaths | null
+    data: UmamiPath[] | null
     dataIsLoading: boolean
   }
   pageViews: {
@@ -43,9 +49,9 @@ export type UmamiChartsAction =
   | { type: 'UNREGISTER_WIDGET'; payload: { widgetId: 'stats' | 'events' | 'paths' | 'pageViews' } }
   | { type: 'SET_STATS_DATA'; payload: { data: UmamiStats | null } }
   | { type: 'SET_STATS_LOADING'; payload: { isLoading: boolean } }
-  | { type: 'SET_EVENTS_DATA'; payload: { data: UmamiEvents | null } }
+  | { type: 'SET_EVENTS_DATA'; payload: { data: UmamiEvent[] | null } }
   | { type: 'SET_EVENTS_LOADING'; payload: { isLoading: boolean } }
-  | { type: 'SET_PATHS_DATA'; payload: { data: UmamiPaths | null } }
+  | { type: 'SET_PATHS_DATA'; payload: { data: UmamiPath[] | null } }
   | { type: 'SET_PATHS_LOADING'; payload: { isLoading: boolean } }
   | { type: 'SET_PAGE_VIEWS_DATA'; payload: { data: UmamiPageViews | null } }
   | { type: 'SET_PAGE_VIEWS_LOADING'; payload: { isLoading: boolean } }

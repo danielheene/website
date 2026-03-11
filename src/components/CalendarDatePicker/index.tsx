@@ -3,11 +3,21 @@
 'use client'
 
 import { cva, type VariantProps } from 'class-variance-authority'
-import { endOfDay, endOfMonth, endOfWeek, endOfYear, startOfDay, startOfMonth, startOfWeek, startOfYear, subDays } from 'date-fns'
+import {
+  endOfDay,
+  endOfMonth,
+  endOfWeek,
+  endOfYear,
+  startOfDay,
+  startOfMonth,
+  startOfWeek,
+  startOfYear,
+  subDays,
+} from 'date-fns'
 import { formatInTimeZone, toDate } from 'date-fns-tz'
-import { CalendarIcon } from 'lucide-react'
+import { LuCalendar as CalendarIcon } from 'react-icons/lu'
 import * as React from 'react'
-import type { DateRange, Matcher, DayPicker } from 'react-day-picker'
+import type { DateRange, DayPicker } from 'react-day-picker'
 
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
@@ -418,7 +428,7 @@ export const CalendarDatePicker = React.forwardRef<HTMLButtonElement, CalendarDa
             <PopoverContent
               className="w-auto"
               align="center"
-              avoidCollisions={false}
+              avoidCollisions={true}
               onInteractOutside={handleClose}
               onEscapeKeyDown={handleClose}
               style={{
@@ -461,7 +471,8 @@ export const CalendarDatePicker = React.forwardRef<HTMLButtonElement, CalendarDa
                         }}
                         value={monthFrom ? months[monthFrom.getMonth()] : undefined}
                       >
-                        <SelectTrigger className="hidden sm:flex w-[122px] focus:ring-0 focus:ring-offset-0 font-medium hover:bg-accent hover:text-accent-foreground">
+                        <SelectTrigger
+                          className="hidden sm:flex w-[122px] focus:ring-0 focus:ring-offset-0 font-medium hover:bg-accent hover:text-accent-foreground">
                           <SelectValue placeholder="Month" />
                         </SelectTrigger>
                         <SelectContent>
@@ -479,7 +490,8 @@ export const CalendarDatePicker = React.forwardRef<HTMLButtonElement, CalendarDa
                         }}
                         value={yearFrom ? yearFrom.toString() : undefined}
                       >
-                        <SelectTrigger className="hidden sm:flex w-[122px] focus:ring-0 focus:ring-offset-0 font-medium hover:bg-accent hover:text-accent-foreground">
+                        <SelectTrigger
+                          className="hidden sm:flex w-[122px] focus:ring-0 focus:ring-offset-0 font-medium hover:bg-accent hover:text-accent-foreground">
                           <SelectValue placeholder="Year" />
                         </SelectTrigger>
                         <SelectContent>
@@ -500,7 +512,8 @@ export const CalendarDatePicker = React.forwardRef<HTMLButtonElement, CalendarDa
                           }}
                           value={monthTo ? months[monthTo.getMonth()] : undefined}
                         >
-                          <SelectTrigger className="hidden sm:flex w-[122px] focus:ring-0 focus:ring-offset-0 font-medium hover:bg-accent hover:text-accent-foreground">
+                          <SelectTrigger
+                            className="hidden sm:flex w-[122px] focus:ring-0 focus:ring-offset-0 font-medium hover:bg-accent hover:text-accent-foreground">
                             <SelectValue placeholder="Month" />
                           </SelectTrigger>
                           <SelectContent>
@@ -518,7 +531,8 @@ export const CalendarDatePicker = React.forwardRef<HTMLButtonElement, CalendarDa
                           }}
                           value={yearTo ? yearTo.toString() : undefined}
                         >
-                          <SelectTrigger className="hidden sm:flex w-[122px] focus:ring-0 focus:ring-offset-0 font-medium hover:bg-accent hover:text-accent-foreground">
+                          <SelectTrigger
+                            className="hidden sm:flex w-[122px] focus:ring-0 focus:ring-offset-0 font-medium hover:bg-accent hover:text-accent-foreground">
                             <SelectValue placeholder="Year" />
                           </SelectTrigger>
                           <SelectContent>

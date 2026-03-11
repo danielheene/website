@@ -7,6 +7,9 @@ import { RichTextField } from '@/fields/RichText'
 
 export const MediaVideos: CollectionConfig<CollectionSlug.MediaVideos> = {
   slug: CollectionSlug.MediaVideos,
+  typescript: {
+    interface: 'MediaVideo',
+  },
   labels: {
     singular: 'Video',
     plural: 'Videos',

@@ -42,7 +42,8 @@ export const SectionNavigationDisplay = ({ anchors, setScrollingToAnchor }: Sect
     anchors.length > 0 &&
     portalHost.current &&
     ReactDOM.createPortal(
-      <nav className={cn(['fixed top-0 h-screen hidden md:flex flex-col justify-center animate-fade-in bg-white overflow-hidden'])}>
+      <nav
+        className={cn(['fixed top-0 h-screen hidden md:flex flex-col justify-center animate-fade-in bg-background/60 backdrop-blur-md overflow-hidden z-50'])}>
         {anchors.map(({ id, title, active }) => (
           <a
             key={id}
@@ -50,9 +51,9 @@ export const SectionNavigationDisplay = ({ anchors, setScrollingToAnchor }: Sect
             onClick={handleAnchorClick}
             className={cn([
               'vertical-writing-rl orientation-sideways rotate-180',
-              'my-2 px-4 transition-opacity duration-500 ease-in-out transform-gpu',
-              'text-neutral-500 font-mono font-light',
-              active && 'text-primary/100 font-bold animate-flip',
+              'my-1 px-4 transition-opacity duration-500 ease-in-out transform-gpu',
+              'text-foreground/80 dark:text-foreground/50 text-sm font-mono font-light',
+              active && 'text-primary/100 dark:text-foreground font-medium animate-flip',
             ])}
           >
             {title}

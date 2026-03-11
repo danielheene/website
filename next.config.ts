@@ -18,6 +18,7 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+
   sassOptions: {
     silenceDeprecations: ['import', 'legacy-js-api'],
     implementation: 'sass',
