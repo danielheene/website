@@ -23,7 +23,7 @@ const nextConfig: NextConfig = {
     silenceDeprecations: ['import', 'legacy-js-api'],
     implementation: 'sass',
   },
-  serverExternalPackages: ['@react-pdf/renderer', 'svgo'],
+  serverExternalPackages: ['@react-pdf/renderer', 'svgo', 'pdf-parse'],
   turbopack: {
     resolveExtensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.wasm', '.json', '.css', '.scss', '.svg'],
   },

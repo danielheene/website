@@ -27,12 +27,12 @@ import { TableFeatureClient as TableFeatureClient_e70f5e05f09f93e00b997edb1ef0c8
 import { default as default_9f25bc4d901952d4af47df3ecdad63b6 } from '@/fields/Meta/FieldComponent'
 import { default as default_de8505f706b861b1b2f9a47fb94c326d } from '@/collections/Pages/components/ResumePdfView'
 import { default as default_848538b3ed73982ca2ebf699d6e2bbb6 } from '@/collections/Pages/components/ResumePdfTab'
+import { LanguageToggle as LanguageToggle_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { default as default_1c5f6ef1783af04f64e217a06cdb8ed2 } from '@/fields/CustomerLogos/LogoField'
 import { default as default_26b90e57c09869890b7e6b94ad7b1146 } from '@/fields/CustomerLogos/RowLabel'
 import { default as default_3d46db2b9e855badd40aef08837b7b09 } from '@/fields/TagList/TagListComponent'
 import { default as default_4c793a8acfeeaa7cc010a4e3ca6d9b65 } from '@/fields/JobHistory/CSSInjector'
 import { default as default_792b8f1d1c183321848c9949d8645973 } from '@/fields/JobHistory/RowLabel'
-import { LanguageToggle as LanguageToggle_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { default as default_106b14459d3dd8ad7b6fc5ab43801e7b } from '@/fields/ProjectList/RowLabel'
 import { default as default_a5a6dbfcc6dddf72439b636a74829cfe } from '@/blocks/TwoColumnContentBlock/BlockComponent'
 import { ResumeLayoutBlock as ResumeLayoutBlock_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
@@ -78,12 +78,12 @@ export const importMap = {
   "@/fields/Meta/FieldComponent#default": default_9f25bc4d901952d4af47df3ecdad63b6,
   "@/collections/Pages/components/ResumePdfView#default": default_de8505f706b861b1b2f9a47fb94c326d,
   "@/collections/Pages/components/ResumePdfTab#default": default_848538b3ed73982ca2ebf699d6e2bbb6,
+  "@/components/AdminPanel#LanguageToggle": LanguageToggle_a316a6ec12a12cd0fe58ccec01a444ca,
   "@/fields/CustomerLogos/LogoField#default": default_1c5f6ef1783af04f64e217a06cdb8ed2,
   "@/fields/CustomerLogos/RowLabel#default": default_26b90e57c09869890b7e6b94ad7b1146,
   "@/fields/TagList/TagListComponent#default": default_3d46db2b9e855badd40aef08837b7b09,
   "@/fields/JobHistory/CSSInjector#default": default_4c793a8acfeeaa7cc010a4e3ca6d9b65,
   "@/fields/JobHistory/RowLabel#default": default_792b8f1d1c183321848c9949d8645973,
-  "@/components/AdminPanel#LanguageToggle": LanguageToggle_a316a6ec12a12cd0fe58ccec01a444ca,
   "@/fields/ProjectList/RowLabel#default": default_106b14459d3dd8ad7b6fc5ab43801e7b,
   "@/blocks/TwoColumnContentBlock/BlockComponent#default": default_a5a6dbfcc6dddf72439b636a74829cfe,
   "@/components/AdminPanel#ResumeLayoutBlock": ResumeLayoutBlock_a316a6ec12a12cd0fe58ccec01a444ca,

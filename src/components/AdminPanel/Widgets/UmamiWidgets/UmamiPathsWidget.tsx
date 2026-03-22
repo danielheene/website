@@ -20,6 +20,8 @@ export const UmamiPathsWidget = () => {
   }, [])
 
   const { hasPrevPage, hasNextPage, content, setPrevPage, setNextPage } = useArrayPagination(data || [], 10)
+  const maxMetricValue = Math.max(...(data?.map(({ y }) => y) || []), 0)
+  const contentClass = 'h-[410px]'
 
   return (
     <Card className="col-span-full lg:col-span-2 h-full">
@@ -33,8 +35,8 @@ export const UmamiPathsWidget = () => {
         />
       </CardHeader>
       <CardContent className="flex flex-col">
-        {!data || dataIsLoading ? <Skeleton className="h-[400px]" /> :
-          <MetricsTable data={content} metricName="Path" valueName="Hits" />}
+        {!data || dataIsLoading ? <Skeleton className={contentClass} /> :
+          <MetricsTable data={content} maxValue={maxMetricValue} className={contentClass} />}
       </CardContent>
     </Card>
   )

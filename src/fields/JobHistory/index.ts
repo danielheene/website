@@ -3,6 +3,7 @@ import type { ArrayField } from 'payload'
 import { TagList } from '@/fields/TagList'
 
 import { sortJobHistoryByStartDate } from './hooks/sortJobHistoryByStartDate'
+import { CollectionSlug } from '@custom-types'
 
 export const JobHistoryField = (): ArrayField => ({
   name: 'jobHistory',
@@ -84,6 +85,18 @@ export const JobHistoryField = (): ArrayField => ({
           },
         },
       ],
+    },
+    {
+      type: 'relationship',
+      name: 'skills',
+      relationTo: CollectionSlug.ResumeSkills,
+      hasMany: true,
+      required: true,
+      admin: {
+        appearance: 'drawer',
+        allowCreate: true,
+        allowEdit: true,
+      },
     },
 
     TagList({

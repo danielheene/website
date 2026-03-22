@@ -21,16 +21,18 @@ export const TitleField = ({ listViewThumbnailPath, overrides = {} }: TitleField
           Label: false, // remove label component to avoid displaying label in edit view
           ...(listViewThumbnailPath
             ? {
-                Cell: {
-                  path: '@/components/AdminPanel#CellWithThumbnail',
-                  serverProps: {
-                    thumbnailPath: listViewThumbnailPath,
-                  },
+              Cell: {
+                path: '@/components/AdminPanel#CellWithThumbnail',
+                serverProps: {
+                  thumbnailPath: listViewThumbnailPath,
                 },
-              }
+              },
+            }
             : {}),
         },
       },
     },
     overrides,
   )
+
+export default TitleField

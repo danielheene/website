@@ -7,35 +7,38 @@ import { Matcher } from 'react-day-picker'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export const UmamiControlBar = () => {
-  const { selectedTimeSpan, website, setSelectedTimeSpan, registerControlBar } = useUmamiCharts()
+  const {
+    selectedTimeSpan,
+    website,
+    setSelectedTimeSpan,
+    registerControlBar,
+  } = useUmamiCharts()
+  const { createdAt, deletedAt, resetAt, name, domain } = website || {}
 
   useEffect(registerControlBar, [])
 
-  const matcher: Matcher[] | undefined = useMemo(() => {
-    const matchers = []
-    if (website && website.createdAt) {
-      matchers.push({
-        before: new Date(website.createdAt),
-      })
-    }
-    if (website && website.deletedAt) {
-      matchers.push({
-        after: new Date(website.deletedAt),
-      })
-    }
-    return matchers.length > 0 ? matchers : undefined
-  }, [website])
+  const matcher: Matcher[] = useMemo(() => {
+    const beforeDate = resetAt ? new Date(resetAt) : createdAt ? new Date(createdAt) : undefined
+    const afterDate = deletedAt ? new Date(deletedAt) : undefined
+
+    return [
+      { before: beforeDate },
+      { after: afterDate },
+    ]
+  }, [createdAt, deletedAt, resetAt])
 
   return (
     <div className="w-full flex flex-row justify-between py-4">
-      {!website ? (<Skeleton className='h-12 w-60"' />) : (
-        <div className="text-xl md:text-2xl lg:text-3xl font-mono">Umami Controls</div>)}
-      {!website ? (<Skeleton className='h-12 w-60"' />) : (
-        <CalendarDatePicker variant="secondary"
-                            date={{ from: new Date(selectedTimeSpan.startAt), to: new Date(selectedTimeSpan.endAt) }}
-                            onDateSelect={({ from, to }) => setSelectedTimeSpan(from, to)}
-                            disabled={matcher}
-        />
+      {!website ? (<Skeleton className='h-12 w-full"' />) : (
+        <>
+          <div className="text-xl md:text-2xl lg:text-3xl font-mono">Umami Controls</div>
+          <CalendarDatePicker
+            variant="secondary"
+            date={{ from: new Date(selectedTimeSpan.startAt), to: new Date(selectedTimeSpan.endAt) }}
+            onDateSelect={({ from, to }) => setSelectedTimeSpan(from, to)}
+            disabled={matcher}
+          />
+        </>
       )}
     </div>
   )

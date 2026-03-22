@@ -7,6 +7,7 @@ import { RichTextField } from '@/fields/RichText'
 
 import { generateAlt } from './hooks/generateAlt'
 import { generateBlurDataURL } from './hooks/generateBlurDataURL'
+import { nanoid } from 'nanoid'
 
 export const MediaImages: CollectionConfig<CollectionSlug.MediaImages> = {
   slug: CollectionSlug.MediaImages,
@@ -58,6 +59,19 @@ export const MediaImages: CollectionConfig<CollectionSlug.MediaImages> = {
   },
   fields: [
     {
+      name: 'slug',
+      type: 'text',
+      label: 'Slug that does not change between filename changes or uploads',
+      unique: true,
+      defaultValue: () => nanoid(10),
+      admin: {
+        hidden: true,
+        disableGroupBy: true,
+        disableListColumn: true,
+        disableListFilter: true,
+      },
+    },
+    {
       name: 'alt',
       type: 'text',
       admin: {
@@ -67,12 +81,13 @@ export const MediaImages: CollectionConfig<CollectionSlug.MediaImages> = {
       },
     },
     RichTextField({
-      name: 'caption',
+      name: 'credits',
       editorVariant: 'caption',
     }),
     {
       name: 'blurDataURL',
       type: 'text',
+      label: 'Blur Data URL',
       defaultValue: '',
       admin: {
         disableGroupBy: true,
@@ -84,5 +99,9 @@ export const MediaImages: CollectionConfig<CollectionSlug.MediaImages> = {
   ],
   hooks: {
     beforeChange: [generateBlurDataURL, generateAlt],
+  },
+  versions: {
+    drafts: false,
+    maxPerDoc: 0,
   },
 }

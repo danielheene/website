@@ -79,7 +79,7 @@ export const ResumeDocument = ({
         <Header locale={locale} {...userMetaData} />
         <Introduction locale={locale} {...userMetaData} />
         <WorkExperience locale={locale} {...experience} />
-        
+
       </Page>
     </Document>
   )

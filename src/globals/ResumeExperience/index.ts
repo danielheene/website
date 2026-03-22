@@ -80,10 +80,7 @@ export const ResumeExperience: GlobalConfig<GlobalSlug.ResumeExperience> = {
     },
   ],
   versions: {
-    drafts: {
-      autosave: false,
-      schedulePublish: false,
-      localizeStatus: true,
-    },
+    drafts: false,
+    max: 0,
   },
 }

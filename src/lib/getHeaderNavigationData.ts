@@ -6,6 +6,9 @@ import type { HeaderNavigationData } from '@payload-types'
 import { unstable_cache } from 'next/cache'
 import { getPayload } from 'payload'
 
+/**
+ * Fetches the header navigation data from Payload
+ */
 export const getHeaderNavigationData = async (): Promise<HeaderNavigationData> => {
   const payload = await getPayload({ config })
 

@@ -1,4 +1,7 @@
-import type { ResumeExperienceGlobalData } from '@payload-types'
+import type {
+  ResumeExperienceGlobalData, ResumeAboutMeGlobalData, ResumeCustomersGlobalData,
+  ResumeDownloadsGlobalData, ResumeProjectsGlobalData, ResumeContactGlobalData, UserMetaData,
+} from '@payload-types'
 import type {
   BlockSlug as RegisteredBlockSlug,
   CollectionSlug as RegisteredCollectionSlug,
@@ -72,6 +75,7 @@ export enum CollectionSlug {
   MediaDocuments = 'documents',
   MediaAudios = 'audios',
   Pages = 'pages',
+  ResumeSkills = 'resume-skills',
   Users = 'users',
 }
 
@@ -155,3 +159,16 @@ export interface InternalStatusResponse {
   code: UptimeKumaOverallStatus
   message: string
 }
+
+
+export type ResumeDocumentData = {
+  locale: string,
+  userMetaData: UserMetaData | null,
+  aboutMe: ResumeAboutMeGlobalData | null,
+  customers: ResumeCustomersGlobalData | null,
+  downloads: ResumeDownloadsGlobalData | null,
+  experience: ResumeExperienceGlobalData | null,
+  projects: ResumeProjectsGlobalData | null,
+  contact: ResumeContactGlobalData | null,
+}
+

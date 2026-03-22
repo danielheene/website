@@ -28,7 +28,8 @@ import {
   StrikethroughFeature,
   UnderlineFeature,
   UnorderedListFeature,
-  UploadFeature, BlocksFeature,
+  UploadFeature,
+  BlocksFeature,
 } from '@payloadcms/richtext-lexical'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { buildConfig } from 'payload'
@@ -40,10 +41,19 @@ import { LinkField } from '@/fields/Link'
 import { GLOBALS } from '@/globals'
 import { generateContentURL } from '@/lib/generateContentURL'
 import { useSendAdapter } from '@/utilities/useSendAdapter'
-import { TwoColumnContentBlock } from '@/blocks/TwoColumnContentBlock'
+import getResumeDocumentDataTask from '@/tasks/getResumeDocumentDataTask'
+import generateResumeDocumentWorkflow from '@/workflows/generateResumeDocumentWorkflow'
+import getResumeDocumentFileNamesTask from '@/tasks/getResumeDocumentFileNamesTask'
+import generateResumeDocumentFileTask from '@/tasks/generateResumeDocumentFileTask'
+import generateResumeDocumentImageTask from '@/tasks/generateResumeDocumentImageTask'
+import createOrUpdateResumeDocumentFileTask from '@/tasks/createOrUpdateResumeDocumentFileTask'
+import createOrUpdateResumeDocumentImageTask from '@/tasks/createOrUpdateResumeDocumentImageTask'
+import generateDocumentThumbnailWorkflow from '@/workflows/generateDocumentThumbnailWorkflow'
+import generateResumeDocument from '@/tasks/generateResumeDocument'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
 
 export const config = buildConfig({
   experimental: {
@@ -280,6 +290,29 @@ export const config = buildConfig({
   }),
   endpoints: [],
   globals: GLOBALS,
+  jobs: {
+    enableConcurrencyControl: true,
+    deleteJobOnComplete: true,
+    tasks: [
+      generateResumeDocument,
+      getResumeDocumentDataTask,
+      getResumeDocumentFileNamesTask,
+      generateResumeDocumentFileTask,
+      generateResumeDocumentImageTask,
+      createOrUpdateResumeDocumentFileTask,
+      createOrUpdateResumeDocumentImageTask,
+    ],
+    shouldAutoRun: () => process.env.ENABLE_JOB_WORKERS === 'true',
+    autoRun: [{
+      cron: '* * * * *',
+      queue: 'default',
+      limit: 50,
+    }],
+    workflows: [
+      generateResumeDocumentWorkflow,
+      generateDocumentThumbnailWorkflow,
+    ],
+  },
   kv: redisKVAdapter({
     redisURL: process.env.REDIS_URL,
   }),

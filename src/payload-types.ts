@@ -38,6 +38,7 @@ export type JobHistory =
             id?: string | null;
           }[]
         | null;
+      skills: (string | ResumeSkill)[];
       technologies?: {
         id?: string;
         label?: string;
@@ -106,6 +107,7 @@ export interface Config {
     pages: Page;
     users: User;
     'blog-tags': BlogTag;
+    'resume-skills': ResumeSkill;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -126,6 +128,7 @@ export interface Config {
     pages: PagesSelect<false> | PagesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'blog-tags': BlogTagsSelect<false> | BlogTagsSelect<true>;
+    'resume-skills': ResumeSkillsSelect<false> | ResumeSkillsSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -171,13 +174,23 @@ export interface Config {
   user: User;
   jobs: {
     tasks: {
+      generateResumeDocument: TaskGenerateResumeDocument;
+      getResumeDocumentDataTask: TaskGetResumeDocumentDataTask;
+      getResumeDocumentFileNamesTask: TaskGetResumeDocumentFileNamesTask;
+      generateResumeDocumentFileTask: TaskGenerateResumeDocumentFileTask;
+      generateResumeDocumentImageTask: TaskGenerateResumeDocumentImageTask;
+      createOrUpdateResumeDocumentFileTask: TaskCreateOrUpdateResumeDocumentFileTask;
+      createOrUpdateResumeDocumentImageTask: TaskCreateOrUpdateResumeDocumentImageTask;
       schedulePublish: TaskSchedulePublish;
       inline: {
         input: unknown;
         output: unknown;
       };
     };
-    workflows: unknown;
+    workflows: {
+      generateResumeDocumentWorkflow: WorkflowGenerateResumeDocumentWorkflow;
+      generateDocumentThumbnailWorkflow: WorkflowGenerateDocumentThumbnailWorkflow;
+    };
   };
 }
 export interface UserAuthOperations {
@@ -374,162 +387,15 @@ export interface Page {
   };
   content?:
     | (
-        | {
-            links?: {
-              entries?:
-                | {
-                    link: LinkFieldData;
-                    id?: string | null;
-                  }[]
-                | null;
-              /**
-               * Choose how the links should be aligned.
-               */
-              alignment?: ('left' | 'right' | 'center' | 'list') | null;
-            };
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'LinkGroupBlock';
-          }
-        | {
-            data?: {
-              root: {
-                type: string;
-                children: {
-                  type: any;
-                  version: number;
-                  [k: string]: unknown;
-                }[];
-                direction: ('ltr' | 'rtl') | null;
-                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                indent: number;
-                version: number;
-              };
-              [k: string]: unknown;
-            } | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'OneColumnContentBlock';
-          }
-        | {
-            left?: {
-              root: {
-                type: string;
-                children: {
-                  type: any;
-                  version: number;
-                  [k: string]: unknown;
-                }[];
-                direction: ('ltr' | 'rtl') | null;
-                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                indent: number;
-                version: number;
-              };
-              [k: string]: unknown;
-            } | null;
-            right?: {
-              root: {
-                type: string;
-                children: {
-                  type: any;
-                  version: number;
-                  [k: string]: unknown;
-                }[];
-                direction: ('ltr' | 'rtl') | null;
-                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                indent: number;
-                version: number;
-              };
-              [k: string]: unknown;
-            } | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'TwoColumnContentBlock';
-          }
-        | {
-            data?:
-              | {
-                  [k: string]: unknown;
-                }
-              | unknown[]
-              | string
-              | number
-              | boolean
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'ResumeAboutMeBlock';
-          }
-        | {
-            data?:
-              | {
-                  [k: string]: unknown;
-                }
-              | unknown[]
-              | string
-              | number
-              | boolean
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'ResumeContactBlock';
-          }
-        | {
-            data?:
-              | {
-                  [k: string]: unknown;
-                }
-              | unknown[]
-              | string
-              | number
-              | boolean
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'ResumeCustomersBlock';
-          }
-        | {
-            data?:
-              | {
-                  [k: string]: unknown;
-                }
-              | unknown[]
-              | string
-              | number
-              | boolean
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'ResumeDownloadsBlock';
-          }
-        | {
-            data?:
-              | {
-                  [k: string]: unknown;
-                }
-              | unknown[]
-              | string
-              | number
-              | boolean
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'ResumeExperienceBlock';
-          }
-        | {
-            data?:
-              | {
-                  [k: string]: unknown;
-                }
-              | unknown[]
-              | string
-              | number
-              | boolean
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'ResumeProjectsBlock';
-          }
+        | LinkGroupBlock
+        | OneColumnContentBlock
+        | TwoColumnContentBlock
+        | ResumeAboutMeBlock
+        | ResumeContactBlock
+        | ResumeCustomersBlock
+        | ResumeDownloadsBlock
+        | ResumeExperienceBlock
+        | ResumeProjectsBlock
       )[]
     | null;
   updatedAt: string;
@@ -543,8 +409,9 @@ export interface Page {
  */
 export interface MediaImage {
   id: string;
+  slug?: string | null;
   alt?: string | null;
-  caption?: {
+  credits?: {
     root: {
       type: string;
       children: {
@@ -582,114 +449,6 @@ export interface MediaImage {
       filename?: string | null;
     };
   };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blog-posts".
- */
-export interface BlogPost {
-  id: string;
-  title: string;
-  slug?: string | null;
-  heroImage?: (string | null) | MediaImage;
-  categories?: (string | null) | BlogCategory;
-  tags?: (string | BlogTag)[] | null;
-  relatedPosts?: (string | BlogPost)[] | null;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  updatedAt: string;
-  createdAt: string;
-  deletedAt?: string | null;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blog-categories".
- */
-export interface BlogCategory {
-  id: string;
-  title: string;
-  slug?: string | null;
-  heroImage?: (string | null) | MediaImage;
-  parent?: (string | null) | BlogCategory;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  breadcrumbs?:
-    | {
-        doc?: (string | null) | BlogCategory;
-        url?: string | null;
-        label?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  breadcrumbsPath?: string | null;
-  relatedPosts?: {
-    docs?: (string | BlogPost)[];
-    hasNextPage?: boolean;
-    totalDocs?: number;
-  };
-  meta?: {
-    title?: string | null;
-    description?: string | null;
-    keywords?: string | null;
-  };
-  updatedAt: string;
-  createdAt: string;
-  deletedAt?: string | null;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blog-tags".
- */
-export interface BlogTag {
-  id: string;
-  title: string;
-  slug?: string | null;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  updatedAt: string;
-  createdAt: string;
-  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -864,6 +623,114 @@ export interface ResumeProjectsBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blog-posts".
+ */
+export interface BlogPost {
+  id: string;
+  title: string;
+  slug?: string | null;
+  heroImage?: (string | null) | MediaImage;
+  categories?: (string | null) | BlogCategory;
+  tags?: (string | BlogTag)[] | null;
+  relatedPosts?: (string | BlogPost)[] | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blog-categories".
+ */
+export interface BlogCategory {
+  id: string;
+  title: string;
+  slug?: string | null;
+  heroImage?: (string | null) | MediaImage;
+  parent?: (string | null) | BlogCategory;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  breadcrumbs?:
+    | {
+        doc?: (string | null) | BlogCategory;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  breadcrumbsPath?: string | null;
+  relatedPosts?: {
+    docs?: (string | BlogPost)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    keywords?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blog-tags".
+ */
+export interface BlogTag {
+  id: string;
+  title: string;
+  slug?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "videos".
  */
 export interface MediaVideo {
@@ -902,21 +769,9 @@ export interface MediaVideo {
  */
 export interface MediaDocument {
   id: string;
-  caption?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
+  documentKey?: string | null;
+  thumbnail?: (string | null) | MediaImage;
+  blurDataURL?: string | null;
   prefix?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -993,6 +848,16 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resume-skills".
+ */
+export interface ResumeSkill {
+  id: string;
+  name: string;
+  slug?: string | null;
+  type?: ('skill' | 'tool' | 'language' | 'framework') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-jobs".
  */
 export interface PayloadJob {
@@ -1043,7 +908,16 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'schedulePublish';
+        taskSlug:
+          | 'inline'
+          | 'generateResumeDocument'
+          | 'getResumeDocumentDataTask'
+          | 'getResumeDocumentFileNamesTask'
+          | 'generateResumeDocumentFileTask'
+          | 'generateResumeDocumentImageTask'
+          | 'createOrUpdateResumeDocumentFileTask'
+          | 'createOrUpdateResumeDocumentImageTask'
+          | 'schedulePublish';
         taskID: string;
         input?:
           | {
@@ -1076,10 +950,27 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'schedulePublish') | null;
+  workflowSlug?: ('generateResumeDocumentWorkflow' | 'generateDocumentThumbnailWorkflow') | null;
+  taskSlug?:
+    | (
+        | 'inline'
+        | 'generateResumeDocument'
+        | 'getResumeDocumentDataTask'
+        | 'getResumeDocumentFileNamesTask'
+        | 'generateResumeDocumentFileTask'
+        | 'generateResumeDocumentImageTask'
+        | 'createOrUpdateResumeDocumentFileTask'
+        | 'createOrUpdateResumeDocumentImageTask'
+        | 'schedulePublish'
+      )
+    | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
+  /**
+   * Used for concurrency control. Jobs with the same key are subject to exclusive/supersedes rules.
+   */
+  concurrencyKey?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1125,6 +1016,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'blog-tags';
         value: string | BlogTag;
+      } | null)
+    | ({
+        relationTo: 'resume-skills';
+        value: string | ResumeSkill;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1222,8 +1117,9 @@ export interface BlogPostsSelect<T extends boolean = true> {
  * via the `definition` "images_select".
  */
 export interface ImagesSelect<T extends boolean = true> {
+  slug?: T;
   alt?: T;
-  caption?: T;
+  credits?: T;
   blurDataURL?: T;
   prefix?: T;
   updatedAt?: T;
@@ -1276,7 +1172,9 @@ export interface VideosSelect<T extends boolean = true> {
  * via the `definition` "documents_select".
  */
 export interface DocumentsSelect<T extends boolean = true> {
-  caption?: T;
+  documentKey?: T;
+  thumbnail?: T;
+  blurDataURL?: T;
   prefix?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1368,6 +1266,15 @@ export interface BlogTagsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resume-skills_select".
+ */
+export interface ResumeSkillsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  type?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-jobs_select".
  */
 export interface PayloadJobsSelect<T extends boolean = true> {
@@ -1390,10 +1297,12 @@ export interface PayloadJobsSelect<T extends boolean = true> {
         error?: T;
         id?: T;
       };
+  workflowSlug?: T;
   taskSlug?: T;
   queue?: T;
   waitUntil?: T;
   processing?: T;
+  concurrencyKey?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1452,7 +1361,6 @@ export interface ResumeAboutMeGlobalData {
     };
     [k: string]: unknown;
   } | null;
-  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1478,7 +1386,6 @@ export interface ResumeContactGlobalData {
     };
     [k: string]: unknown;
   } | null;
-  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1505,7 +1412,6 @@ export interface ResumeCustomersGlobalData {
     [k: string]: unknown;
   } | null;
   customerLogos?: CustomerLogos;
-  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1532,7 +1438,6 @@ export interface ResumeDownloadsGlobalData {
     };
     [k: string]: unknown;
   } | null;
-  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1569,7 +1474,6 @@ export interface ResumeExperienceGlobalData {
       time: number;
     };
   };
-  _status?: ('draft' | 'published') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1760,7 +1664,6 @@ export interface ResumeAboutMeSelect<T extends boolean = true> {
   title?: T;
   portrait?: T;
   content?: T;
-  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1772,7 +1675,6 @@ export interface ResumeAboutMeSelect<T extends boolean = true> {
 export interface ResumeContactSelect<T extends boolean = true> {
   title?: T;
   caption?: T;
-  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1785,7 +1687,6 @@ export interface ResumeCustomersSelect<T extends boolean = true> {
   title?: T;
   caption?: T;
   customerLogos?: T | CustomerLogosSelect<T>;
-  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1807,7 +1708,6 @@ export interface ResumeDownloadsSelect<T extends boolean = true> {
   title?: T;
   documentPreview?: T;
   caption?: T;
-  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1821,7 +1721,6 @@ export interface ResumeExperienceSelect<T extends boolean = true> {
   caption?: T;
   jobHistory?: T | JobHistorySelect<T>;
   skillSummary?: T;
-  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1841,6 +1740,7 @@ export interface JobHistorySelect<T extends boolean = true> {
         item?: T;
         id?: T;
       };
+  skills?: T;
   technologies?: T;
   id?: T;
 }
@@ -2081,6 +1981,173 @@ export interface CollectionsWidget {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskGenerateResumeDocument".
+ */
+export interface TaskGenerateResumeDocument {
+  input: {
+    locale?: string | null;
+  };
+  output: {
+    documentID?: string | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskGetResumeDocumentDataTask".
+ */
+export interface TaskGetResumeDocumentDataTask {
+  input: {
+    locale: string;
+  };
+  output: {
+    locale?: string | null;
+    userMetaData?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    aboutMe?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    contact?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    customers?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    downloads?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    experience?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    projects?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskGetResumeDocumentFileNamesTask".
+ */
+export interface TaskGetResumeDocumentFileNamesTask {
+  input: {
+    authorName: string;
+    locale: string;
+    id: string;
+  };
+  output: {
+    filename?: string | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskGenerateResumeDocumentFileTask".
+ */
+export interface TaskGenerateResumeDocumentFileTask {
+  input: {
+    locale: string;
+    data:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+  output: {
+    b64File?: string | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskGenerateResumeDocumentImageTask".
+ */
+export interface TaskGenerateResumeDocumentImageTask {
+  input: {
+    b64File?: string | null;
+  };
+  output: {
+    b64Image?: string | null;
+    height?: number | null;
+    width?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCreateOrUpdateResumeDocumentFileTask".
+ */
+export interface TaskCreateOrUpdateResumeDocumentFileTask {
+  input: {
+    filename: string;
+    b64File: string;
+    imageID: string;
+    locale: string;
+  };
+  output: {
+    fileID?: string | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCreateOrUpdateResumeDocumentImageTask".
+ */
+export interface TaskCreateOrUpdateResumeDocumentImageTask {
+  input: {
+    filename: string;
+    b64Image: string;
+    width: number;
+    height: number;
+    locale: string;
+  };
+  output: {
+    imageID?: string | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "TaskSchedulePublish".
  */
 export interface TaskSchedulePublish {
@@ -2100,6 +2167,26 @@ export interface TaskSchedulePublish {
     user?: (string | null) | User;
   };
   output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "WorkflowGenerateResumeDocumentWorkflow".
+ */
+export interface WorkflowGenerateResumeDocumentWorkflow {
+  input: {
+    locale: string;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "WorkflowGenerateDocumentThumbnailWorkflow".
+ */
+export interface WorkflowGenerateDocumentThumbnailWorkflow {
+  input: {
+    id: string;
+    filename: string;
+    b64File: string;
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

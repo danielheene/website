@@ -7,7 +7,7 @@
   }
 }
 
-.slug-field-component {
+.text-field-with-lock-and-generate {
   .label-wrapper {
     display:         flex;
     justify-content: space-between;
@@ -55,20 +55,31 @@
       border-bottom-right-radius: 0;
     }
 
-    &--reload {
+    &--generate {
       border-top-left-radius:    0;
       border-bottom-left-radius: 0;
     }
   }
 
   .input-field {
-    --style-radius-s: 0;
-    flex:             1;
-    margin-left:      -1px;
-    margin-right:     -1px;
+    flex: 1;
 
-    &.field-type input {
-      border-radius: 0;
+    &.input-field--has-lock {
+      margin-left: -1px;
+
+      input {
+        border-top-left-radius:    0;
+        border-bottom-left-radius: 0;
+      }
+    }
+
+    &.input-field--has-generate {
+      margin-right: -1px;
+
+      input {
+        border-top-right-radius:    0;
+        border-bottom-right-radius: 0;
+      }
     }
   }
 }

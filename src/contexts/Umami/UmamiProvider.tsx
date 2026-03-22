@@ -19,17 +19,17 @@ interface TrackingProviderProps extends UmamiScriptOptions {
 }
 
 export const UmamiProvider = ({
-  children,
-  src,
-  websiteId,
-  autoTrack = true,
-  doNotTrack = false,
-  tag = undefined,
-  domains = undefined,
-  excludeHash = false,
-  excludeSearch = false,
-  hostUrl = undefined,
-}: TrackingProviderProps): JSX.Element => {
+                                children,
+                                src,
+                                websiteId,
+                                autoTrack = true,
+                                doNotTrack = false,
+                                tag = undefined,
+                                domains = undefined,
+                                excludeHash = false,
+                                excludeSearch = false,
+                                hostUrl = undefined,
+                              }: TrackingProviderProps): JSX.Element => {
   const [context, setContext] = useState<UmamiContextValue>(initialUmamiContextValue)
 
   const renderScript = useMemo(

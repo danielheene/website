@@ -49,9 +49,7 @@ export const ResumeDownloads: GlobalConfig<GlobalSlug.ResumeDownloads> = {
     },
   ],
   versions: {
-    drafts: {
-      autosave: false,
-      schedulePublish: false,
-    },
+    drafts: false,
+    max: 0,
   },
 }

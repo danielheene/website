@@ -26,9 +26,19 @@ export const LanguageToggle = () => {
         })
       }}
     >
-      <span className={cn('absolute top-0 left-0.5', locale.code === 'en' ? 'text-primary' : 'text-gray-400')}>EN</span>
-      <span className="absolute left-1/2 top-1/2 -translate-1/2 px-1 bg-white before:content-[''] before:block before:w-[2px] before:h-[1.25em] before:bg-primary rotate-30" />
-      <span className={cn('absolute bottom-0 right-0.5', locale.code === 'de' ? 'text-primary' : 'text-gray-400')}>DE</span>
+      <span className={cn([
+        'absolute top-0 left-0.5',
+        locale.code === 'en' ? 'text-primary' : 'text-gray-400',
+      ])}>EN</span>
+      <span className={cn([
+        'absolute left-1/2 top-1/2 px-1',
+        '-translate-1/2 bg-white rotate-30',
+        'before:content-[\'\'] before:block before:w-[2px] before:h-[1.25em] before:bg-primary',
+      ])} />
+      <span className={cn([
+        'absolute bottom-0 right-0.5',
+        locale.code === 'de' ? 'text-primary' : 'text-gray-400',
+      ])}>DE</span>
     </button>
   )
 }

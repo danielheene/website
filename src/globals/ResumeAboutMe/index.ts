@@ -49,9 +49,7 @@ export const ResumeAboutMe: GlobalConfig<GlobalSlug.ResumeAboutMe> = {
     },
   ],
   versions: {
-    drafts: {
-      autosave: false,
-      schedulePublish: false,
-    },
+    drafts: false,
+    max: 0,
   },
 }

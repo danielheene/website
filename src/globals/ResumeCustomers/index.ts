@@ -45,9 +45,7 @@ export const ResumeCustomers: GlobalConfig<GlobalSlug.ResumeCustomers> = {
     },
   ],
   versions: {
-    drafts: {
-      autosave: false,
-      schedulePublish: false,
-    },
+    drafts: false,
+    max: 0,
   },
 }

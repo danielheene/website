@@ -40,9 +40,7 @@ export const ResumeContact: GlobalConfig<GlobalSlug.ResumeContact> = {
     },
   ],
   versions: {
-    drafts: {
-      autosave: false,
-      schedulePublish: false,
-    },
+    drafts: false,
+    max: 0,
   },
 }
