@@ -63,11 +63,6 @@ export const SettingsFooterNavigation: GlobalConfig<GlobalSlug.SettingsFooterNav
           ],
         },
         {
-          label: 'Social Links',
-          name: 'socialLinks',
-          fields: navFields,
-        },
-        {
           label: 'Legal Links',
           name: 'legalLinks',
           fields: navFields,

@@ -90,6 +90,13 @@ export const JobHistoryField = (): ArrayField => ({
       type: 'relationship',
       name: 'skills',
       relationTo: CollectionSlug.ResumeSkills,
+      filterOptions: ({ relationTo, req, siblingData, data }) => {
+        return {
+          type: {
+            not_in: ['language', 'privateInterest'],
+          },
+        }
+      },
       hasMany: true,
       required: true,
       admin: {

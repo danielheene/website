@@ -10,15 +10,12 @@ interface FooterLegalLinksProps extends Pick<FooterNavigationData, 'legalLinks'>
 export const FooterLegalLinks = ({ legalLinks, className }: FooterLegalLinksProps) => {
   const { title, entries } = legalLinks
   return (
-    // biome-ignore lint/a11y/useSemanticElements: <TODO>
-    <ul className={cn('order-1 flex flex-col gap-2 md:order-2 md:flex-row', className)} aria-label={title}
-        role="navigation">
+    <nav className={cn('order-1 flex flex-col gap-2 md:order-2 md:flex-row', className)} aria-label={title}>
       {entries.map(({ link, id }) => (
-        <li className={cn('not-first:before:content-["•"] before:mr-2 before:font-bold')}
-            key={id}>
+        <div className={cn('not-first:before:content-["•"] before:mr-2 before:font-bold')} key={id}>
           <CMSLink {...link} className="text-current/75 hover:text-current" />
-        </li>
+        </div>
       ))}
-    </ul>
+    </nav>
   )
 }

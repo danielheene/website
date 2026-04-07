@@ -1,19 +1,17 @@
 'use client'
 
+import { useForm } from '@payloadcms/ui'
 import type { TextFieldClientProps } from 'payload'
-import React, { useCallback } from 'react'
-
-import { generateSlug } from '@/lib/generateSlug'
+import type React from 'react'
 
 import { TextFieldWithLockAndGenerate } from '@/components/AdminPanel/TextFieldWithLockAndGenerate'
-import { useForm } from '@payloadcms/ui'
+import { generateSlug } from '@/lib/generateSlug'
 
 type SlugComponentProps = {
   fieldToUse: string
 } & TextFieldClientProps
 
 const FieldComponent: React.FC<SlugComponentProps> = ({ fieldToUse, ...fieldProps }) => {
-
   const { getDataByPath } = useForm()
 
   const generateValue = async () => {
@@ -21,14 +19,7 @@ const FieldComponent: React.FC<SlugComponentProps> = ({ fieldToUse, ...fieldProp
     if (data) return generateSlug(data)
   }
 
-  return (
-    <TextFieldWithLockAndGenerate
-      hasLock={true}
-      hasGenerate={true}
-      generateFunction={generateValue}
-      {...fieldProps}
-    />
-  )
+  return <TextFieldWithLockAndGenerate hasLock={true} hasGenerate={true} generateFunction={generateValue} {...fieldProps} />
 }
 
 export default FieldComponent

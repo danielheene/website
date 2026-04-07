@@ -1,8 +1,8 @@
 'use client'
 
-import { useTheme } from '@payloadcms/ui'
+import { useNav, useTheme } from '@payloadcms/ui'
 import Link from 'next/link'
-import { LuChevronsUpDown as ChevronsUpDown, LuLogOut as LogOut, LuSettings as Settings, LuUser as UserIcon } from 'react-icons/lu'
+import { LuChevronsUpDown as ChevronsUpDown, LuLogOut as LogOut, LuSettings as Settings } from 'react-icons/lu'
 
 import { ThemeToggleDropdownItem } from '@/components/ThemeToggle'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -41,25 +41,28 @@ export function NavFooter({
     .toUpperCase()
     .slice(0, 2)
 
+  const { navOpen } = useNav()
+
   const avatar = (
-    <>
-      <Avatar className="size-10 rounded-lg">
-        {user.avatar && <AvatarImage className="object-cover" src={user.avatar} alt={user.name} />}
-        {!user.avatar && (
-          <AvatarFallback className="rounded-lg bg-linear-to-r/oklch from-primary-500 to-cyan-500 text-primary-foreground font-medium">
-            {initials}
-          </AvatarFallback>
-        )}
-      </Avatar>
-      <div className="grid flex-1 text-left text-sm leading-tight">
-        <span className="truncate font-semibold">{user.name}</span>
-        <span className="truncate text-xs text-muted-foreground">{user.email}</span>
-      </div>
-    </>
+    <Avatar className="size-10 rounded-lg">
+      {user.avatar && <AvatarImage className="object-cover" src={user.avatar} alt={user.name} />}
+      {!user.avatar && (
+        <AvatarFallback className="rounded-lg bg-linear-to-r/oklch from-primary-500 to-cyan-500 text-primary-foreground font-medium">
+          {initials}
+        </AvatarFallback>
+      )}
+    </Avatar>
+  )
+
+  const name = (
+    <div className="grid flex-1 text-left text-sm leading-tight">
+      <span className="truncate font-semibold">{user.name}</span>
+      <span className="truncate text-xs text-muted-foreground">{user.email}</span>
+    </div>
   )
 
   return (
-    <footer className="absolute left-2 right-2 bottom-2">
+    <footer className="absolute left-1 right-1 bottom-1">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -68,27 +71,32 @@ export function NavFooter({
             className={cn([
               'data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground',
               'w-full border-0 flex flex-row cursor-pointer m-0 h-14',
+              !navOpen && 'p-0 w-10',
             ])}
           >
             {avatar}
-            <ChevronsUpDown className="ml-auto size-4 text-muted-foreground" />
+            {navOpen && (
+              <>
+                {name}
+                <ChevronsUpDown className="ml-auto size-4 text-muted-foreground" />
+              </>
+            )}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
-          className="w-(--radix-dropdown-menu-trigger-width) min-w-full rounded-xl border-0 "
+          className="w-(--radix-dropdown-menu-trigger-width) a min-w-full rounded-xl border-0 z-50"
           side="top"
           align="start"
           sideOffset={8}
         >
           <DropdownMenuLabel className="p-0 font-normal">
-            <div className="flex items-center gap-3 px-2 py-2 text-left">{avatar}</div>
+            <div className="flex items-center gap-3 px-2 py-2 text-left">
+              {avatar}
+              {name}
+            </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem>
-              <UserIcon className="size-4" />
-              <span>Profile</span>
-            </DropdownMenuItem>
             <DropdownMenuItem>
               <Link href="/admin/account" className="no-underline cursor-pointer text-inherit w-full">
                 <Settings className="size-4 mr-2" />

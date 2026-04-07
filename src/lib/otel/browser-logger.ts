@@ -34,25 +34,8 @@ class BrowserLogger {
     })
   }
 
-  // --- Public API ---
-  info(message: string, context?: LogContext) {
-    this.log('info', message, context)
-  }
-
-  debug(message: string, context?: LogContext) {
-    this.log('debug', message, context)
-  }
-
-  warn(message: string, context?: LogContext) {
-    this.log('warn', message, context)
-  }
-
-  error(message: string, error: Error, context?: LogContext) {
-    this.log('error', message, context, error)
-  }
-
   private generateSessionId() {
-    return `session_${Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)}`
+    return 'session_' + (Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15))
   }
 
   private getSessionId() {
@@ -130,6 +113,20 @@ class BrowserLogger {
       // If sending fails, put logs back in the queue
       this.logs = logsToSend.concat(this.logs)
     }
+  }
+
+  // --- Public API ---
+  info(message: string, context?: LogContext) {
+    this.log('info', message, context)
+  }
+  debug(message: string, context?: LogContext) {
+    this.log('debug', message, context)
+  }
+  warn(message: string, context?: LogContext) {
+    this.log('warn', message, context)
+  }
+  error(message: string, error: Error, context?: LogContext) {
+    this.log('error', message, context, error)
   }
 
   private setupGlobalErrorHandlers() {

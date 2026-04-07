@@ -21,8 +21,7 @@ export default async function ResumePdfViewComponent({
     id: initPageResult.docID,
   })
 
-  if (!data) return null
-  if (!('layout' in data) || ('layout' in data && data.layout !== 'resume')) return null
+  if (!data || !('layout' in data) || ('layout' in data && data.layout !== 'resume')) return null
 
   const documentData = await getCachedResumeDocumentData(locale.code === 'de' ? 'de' : 'en')
 

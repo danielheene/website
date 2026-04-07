@@ -4,8 +4,8 @@ import type React from 'react'
 
 import { Button, type ButtonProps } from '@/components/Button'
 import { Icon } from '@/components/Icon'
-import { cn } from '@/utilities/cn'
 import { generateContentPath } from '@/lib/generateContentPath'
+import { cn } from '@/utilities/cn'
 
 type CMSLinkType = LinkFieldData & {
   appearance?: 'inline' | ButtonProps['variant']
@@ -21,8 +21,6 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     appearance = 'inline',
     icon,
     iconOnly,
-    cc,
-    subject,
     address,
     children,
     className,
@@ -37,7 +35,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     type === 'reference' && typeof reference?.value === 'object' && reference.value.slug
       ? generateContentPath(reference?.relationTo, reference.value.slug)
       : type === 'mailto'
-        ? `mailto:${address}?subject=${subject || ''}&cc=${cc || ''}`
+        ? `mailto:${address}`
         : url
 
   if (!href) return null
@@ -46,8 +44,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   const newTabProps = newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {}
 
   const link = (
-    <Link className={cn(className)}
-          href={href || url} {...newTabProps} {...(icon && iconOnly ? { 'aria-label': label } : {})}>
+    <Link className={cn(className)} href={href || url} {...newTabProps} {...(icon && iconOnly ? { 'aria-label': label } : {})}>
       {icon && <Icon icon={icon} />}
       {((icon && !iconOnly) || !icon) && label && <span>{label}</span>}
       {((icon && !iconOnly) || !icon) && children && children}

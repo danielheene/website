@@ -1,12 +1,13 @@
 'use client'
 
-import { useUmamiCharts } from '@/contexts/UmamiCharts'
 import { useEffect, useMemo } from 'react'
-import { CardHeader, CardTitle, CardContent, Card } from '@/components/ui/card'
-import { Icon, ICON, IconName } from '@/components/Icon'
-import { UmamiStats } from '@/lib/UmamiHandler'
-import { formatSecondsToDuration } from '@/lib/formatSecondsToDuration'
+
+import { ICON, Icon, type IconName } from '@/components/Icon'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useUmamiCharts } from '@/contexts/UmamiCharts'
+import { formatSecondsToDuration } from '@/lib/formatSecondsToDuration'
+import type { UmamiStats } from '@/lib/UmamiHandler'
 
 const CONFIG = {
   visitors: {
@@ -40,18 +41,20 @@ const CONFIG = {
   totaltime: {
     title: 'Visit Duration',
     order: 4,
-    transform: (data) => data['totaltime'] > 0 && data['visits'] > 0 ? data['totaltime'] / data['visits'] : 0,
+    transform: (data) => (data['totaltime'] > 0 && data['visits'] > 0 ? data['totaltime'] / data['visits'] : 0),
     format: (v) => `${formatSecondsToDuration(v)}`,
     icon: ICON.CLOCK,
   },
-} as Record<Exclude<keyof UmamiStats, 'comparison'>, {
-  title: string,
-  order: number,
-  transform: (data: Record<Exclude<keyof UmamiStats, 'comparison'>, number>) => number,
-  format: (v: number) => string,
-  icon: IconName
-}>
-
+} as Record<
+  Exclude<keyof UmamiStats, 'comparison'>,
+  {
+    title: string
+    order: number
+    transform: (data: Record<Exclude<keyof UmamiStats, 'comparison'>, number>) => number
+    format: (v: number) => string
+    icon: IconName
+  }
+>
 
 export const UmamiStatsWidget = () => {
   const {
@@ -62,35 +65,36 @@ export const UmamiStatsWidget = () => {
   useEffect(() => {
     const unregister = registerWidget('stats')
     return () => unregister()
-  }, [])
+  }, [registerWidget])
 
   const stats = useMemo(() => {
     const dataIsReady = !dataIsLoading && data && typeof data === 'object'
 
-    return Object.keys(CONFIG).sort((a, b) => CONFIG[a]?.order - CONFIG[b]?.order).map(k => {
-      const { title, transform, format, icon } = CONFIG[k]
+    return Object.keys(CONFIG)
+      .sort((a, b) => CONFIG[a]?.order - CONFIG[b]?.order)
+      .map((k) => {
+        const { title, transform, format, icon } = CONFIG[k]
 
-      const value = dataIsReady ? format(transform(data)) : undefined
-      const prevValue = dataIsReady ? format(transform(data.comparison)) : undefined
+        const value = dataIsReady ? format(transform(data)) : undefined
+        const prevValue = dataIsReady ? format(transform(data.comparison)) : undefined
 
-      return ({
-        title,
-        icon,
-        value,
-        prevValue,
+        return {
+          title,
+          icon,
+          value,
+          prevValue,
+        }
       })
-    })
-  }, [data, dataIsLoading, CONFIG])
+  }, [data, dataIsLoading])
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
       {stats.map((stat, index) => (
-        <StatCard key={index}{...stat} />
+        <StatCard key={index} {...stat} />
       ))}
     </div>
   )
 }
-
 
 interface StatCardProps {
   title: string
@@ -100,13 +104,10 @@ interface StatCardProps {
 }
 
 function StatCard({ title, value, prevValue, icon }: StatCardProps) {
-
   return (
     <Card className="overflow-hidden">
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>
-          {title}
-        </CardTitle>
+        <CardTitle>{title}</CardTitle>
         <Icon icon={icon} className="text-2xl text-muted-foreground" />
       </CardHeader>
       <CardContent>

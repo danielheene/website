@@ -7,7 +7,6 @@ import { RichTextField } from '@/fields/RichText'
 
 import { generateAlt } from './hooks/generateAlt'
 import { generateBlurDataURL } from './hooks/generateBlurDataURL'
-import { nanoid } from 'nanoid'
 
 export const MediaImages: CollectionConfig<CollectionSlug.MediaImages> = {
   slug: CollectionSlug.MediaImages,
@@ -27,6 +26,7 @@ export const MediaImages: CollectionConfig<CollectionSlug.MediaImages> = {
       Description: false,
     },
   },
+
   access: {
     create: authenticated,
     delete: authenticated,
@@ -42,7 +42,8 @@ export const MediaImages: CollectionConfig<CollectionSlug.MediaImages> = {
         name: 'thumbnail',
         width: 500,
         height: 500,
-        fit: 'cover',
+        fit: 'contain',
+        background: 'transparent',
         position: 'center',
         generateImageName: ({ originalName, sizeName, extension }) => {
           return `${originalName}-${sizeName}.${extension}`
@@ -58,19 +59,6 @@ export const MediaImages: CollectionConfig<CollectionSlug.MediaImages> = {
     mimeTypes: ['image/*'],
   },
   fields: [
-    {
-      name: 'slug',
-      type: 'text',
-      label: 'Slug that does not change between filename changes or uploads',
-      unique: true,
-      defaultValue: () => nanoid(10),
-      admin: {
-        hidden: true,
-        disableGroupBy: true,
-        disableListColumn: true,
-        disableListFilter: true,
-      },
-    },
     {
       name: 'alt',
       type: 'text',

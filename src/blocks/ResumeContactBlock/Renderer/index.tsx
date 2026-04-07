@@ -5,7 +5,7 @@ import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
 import { cn } from '@/utilities/cn'
 
-export const Renderer = ({ blockType, data: { title, caption } }: ResumeLayoutBlockData<GlobalSlug.ResumeContact>) => {
+export const ResumeContactBlockRenderer = ({ blockType, data: { title, caption } }: ResumeLayoutBlockData<GlobalSlug.ResumeContact>) => {
   return (
     <SectionContainer id={blockType} title={title} variant="default">
       <div className={cn('container grid grid-cols-12 py-32', 'text-center')}>

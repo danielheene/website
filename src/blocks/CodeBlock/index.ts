@@ -43,9 +43,9 @@ export const CodeBlock: Block = {
           fontSize: 16,
           padding: { top: 12, bottom: 12 },
         },
+        language: 'typescript',
+        editorProps: {},
       },
     },
   ],
 }
-
-export { CodeBlockRenderer } from './RenderComponent'

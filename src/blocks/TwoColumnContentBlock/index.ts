@@ -13,33 +13,35 @@ export const TwoColumnContentBlock: Block = {
   admin: {
     group: BlockGroup.General,
     disableBlockName: true,
-    components: {
-      Block: `@/blocks/${BlockSlug.TwoColumnContent}/BlockComponent`,
-    },
   },
   fields: [
     {
       type: 'row',
+      admin: {
+        className: '*:mb-0',
+      },
       fields: [
         RichTextField({
-          name: 'left',
+          name: 'contentLeft',
           editorVariant: 'inline',
           overrides: {
             label: false,
-            admin: { width: '50%' },
+            admin: {
+              width: '50%',
+            },
           },
         }),
         RichTextField({
-          name: 'right',
+          name: 'contentRight',
           editorVariant: 'inline',
           overrides: {
             label: false,
-            admin: { width: '50%' },
+            admin: {
+              width: '50%',
+            },
           },
         }),
       ],
     },
   ],
 }
-
-export { TwoColumnContentRenderer } from './TwoColumnContentRenderer'

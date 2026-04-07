@@ -40,5 +40,3 @@ export const ResumeExperienceBlock: Block = {
     },
   ],
 }
-
-export { Renderer as ResumeExperienceBlockRenderer } from './Renderer'

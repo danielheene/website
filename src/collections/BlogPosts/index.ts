@@ -40,7 +40,9 @@ export const BlogPosts: CollectionConfig<CollectionSlug.BlogPosts> = {
   },
   fields: [
     /* -------------- Main  Content -------------- */
-    TitleField({ listViewThumbnailPath: 'heroImage' }),
+    TitleField({
+      listViewThumbnailPath: 'heroImage',
+    }),
 
     /* -------------- Sidebar Content -------------- */
     SlugField({ fieldToUse: 'title' }),
@@ -93,7 +95,7 @@ export const BlogPosts: CollectionConfig<CollectionSlug.BlogPosts> = {
     /* -------------- Content -------------- */
     RichTextField({
       name: 'content',
-      editorVariant: 'caption',
+      editorVariant: 'post',
       overrides: {
         label: false,
       },

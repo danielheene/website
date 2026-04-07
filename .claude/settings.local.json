@@ -1,12 +1,13 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(npx skills:*)"
+    ]
+  },
   "enabledMcpjsonServers": [
     "github",
     "context7",
     "memory"
   ],
-  "permissions": {
-    "allow": [
-      "Bash(npx skills:*)"
-    ]
-  }
+  "enabledPlugins": {}
 }

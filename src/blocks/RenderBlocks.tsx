@@ -1,18 +1,20 @@
 import { type BlockData, BlockSlug } from '@custom-types'
 
-import { ResumeDownloadsBlockRenderer } from '@/blocks/ResumeDownloadsBlock'
-
-import { ResumeAboutMeBlockRenderer } from './ResumeAboutMeBlock'
-import { ResumeContactBlockRenderer } from './ResumeContactBlock'
-import { ResumeCustomersBlockRenderer } from './ResumeCustomersBlock'
-import { ResumeExperienceBlockRenderer } from './ResumeExperienceBlock'
-import { ResumeProjectsBlockRenderer } from './ResumeProjectsBlock'
+import { CodeBlockRenderer } from './CodeBlock/Renderer'
+import { LinkGroupBlockRenderer } from './LinkGroupBlock/Renderer'
+import { ResumeAboutMeBlockRenderer } from './ResumeAboutMeBlock/Renderer'
+import { ResumeContactBlockRenderer } from './ResumeContactBlock/Renderer'
+import { ResumeCustomersBlockRenderer } from './ResumeCustomersBlock/Renderer'
+import { ResumeDownloadsBlockRenderer } from './ResumeDownloadsBlock/Renderer'
+import { ResumeExperienceBlockRenderer } from './ResumeExperienceBlock/Renderer'
+import { ResumeProjectsBlockRenderer } from './ResumeProjectsBlock/Renderer'
+import { TwoColumnContentBlockRenderer } from './TwoColumnContentBlock/Renderer'
 
 const blockComponentMap = {
   [BlockSlug.OneColumnContent]: () => <>OneColumnContent</>,
-  [BlockSlug.TwoColumnContent]: () => <>TwoColumnContent</>,
-  [BlockSlug.LinkGroup]: () => <>LinkGroup</>,
-  // [BlockSlug.Code]: CodeBlockRenderer,
+  [BlockSlug.TwoColumnContent]: TwoColumnContentBlockRenderer,
+  [BlockSlug.LinkGroup]: () => LinkGroupBlockRenderer,
+  [BlockSlug.Code]: CodeBlockRenderer,
   [BlockSlug.ResumeAboutMe]: ResumeAboutMeBlockRenderer,
   [BlockSlug.ResumeCustomers]: ResumeCustomersBlockRenderer,
   [BlockSlug.ResumeContact]: ResumeContactBlockRenderer,

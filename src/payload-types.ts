@@ -87,6 +87,7 @@ export interface Config {
     users: UserAuthOperations;
   };
   blocks: {
+    CodeBlock: CodeBlock;
     LinkGroupBlock: LinkGroupBlock;
     OneColumnContentBlock: OneColumnContentBlock;
     TwoColumnContentBlock: TwoColumnContentBlock;
@@ -112,6 +113,7 @@ export interface Config {
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
+    'payload-query-presets': PayloadQueryPreset;
   };
   collectionsJoins: {
     'blog-categories': {
@@ -133,6 +135,7 @@ export interface Config {
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
+    'payload-query-presets': PayloadQueryPresetsSelect<false> | PayloadQueryPresetsSelect<true>;
   };
   db: {
     defaultIDType: string;
@@ -174,23 +177,15 @@ export interface Config {
   user: User;
   jobs: {
     tasks: {
-      generateResumeDocument: TaskGenerateResumeDocument;
-      getResumeDocumentDataTask: TaskGetResumeDocumentDataTask;
-      getResumeDocumentFileNamesTask: TaskGetResumeDocumentFileNamesTask;
-      generateResumeDocumentFileTask: TaskGenerateResumeDocumentFileTask;
-      generateResumeDocumentImageTask: TaskGenerateResumeDocumentImageTask;
-      createOrUpdateResumeDocumentFileTask: TaskCreateOrUpdateResumeDocumentFileTask;
-      createOrUpdateResumeDocumentImageTask: TaskCreateOrUpdateResumeDocumentImageTask;
+      generateDocumentThumbnailTask: TaskGenerateDocumentThumbnailTask;
+      generateResumeDocumentTask: TaskGenerateResumeDocumentTask;
       schedulePublish: TaskSchedulePublish;
       inline: {
         input: unknown;
         output: unknown;
       };
     };
-    workflows: {
-      generateResumeDocumentWorkflow: WorkflowGenerateResumeDocumentWorkflow;
-      generateDocumentThumbnailWorkflow: WorkflowGenerateDocumentThumbnailWorkflow;
-    };
+    workflows: unknown;
   };
 }
 export interface UserAuthOperations {
@@ -210,6 +205,17 @@ export interface UserAuthOperations {
     email: string;
     password: string;
   };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CodeBlock".
+ */
+export interface CodeBlock {
+  language?: ('typescript' | 'javascript' | 'css') | null;
+  code: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'CodeBlock';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -254,7 +260,7 @@ export interface LinkFieldData {
         | 'simple-icons:gitlab'
         | 'simple-icons:goland'
         | 'simple-icons:homeassistant'
-        | 'simple-icons:intellij'
+        | 'simple-icons:intellijidea'
         | 'simple-icons:javascript'
         | 'simple-icons:jetbrains'
         | 'simple-icons:kubernetes'
@@ -262,10 +268,10 @@ export interface LinkFieldData {
         | 'simple-icons:linux'
         | 'simple-icons:maildotru'
         | 'simple-icons:namecheap'
-        | 'simple-icons:nextjs'
-        | 'simple-icons:nodejs'
+        | 'simple-icons:nextdotjs'
+        | 'simple-icons:nodedotjs'
         | 'simple-icons:1password'
-        | 'simple-icons:payload'
+        | 'simple-icons:payloadcms'
         | 'simple-icons:phpstorm'
         | 'simple-icons:pycharm'
         | 'simple-icons:rancher'
@@ -305,14 +311,15 @@ export interface LinkFieldData {
         | 'material-symbols:warning'
         | 'material-symbols:info'
         | 'material-symbols:check-circle'
+        | 'material-symbols:call'
         | 'material-symbols:pause'
-        | 'material-symbols:play'
+        | 'material-symbols:play-arrow'
         | 'material-symbols:stop'
         | 'material-symbols:repeat'
         | 'material-symbols:replay'
         | 'material-symbols:attach-file'
         | 'material-symbols:settings'
-        | 'material-symbols:calendar'
+        | 'material-symbols:calendar-month'
         | 'material-symbols:keyboard-arrow-down'
         | 'material-symbols:keyboard-arrow-up'
         | 'material-symbols:keyboard-arrow-left'
@@ -354,8 +361,6 @@ export interface LinkFieldData {
       } | null);
   url?: string | null;
   address?: string | null;
-  subject?: string | null;
-  cc?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -387,6 +392,7 @@ export interface Page {
   };
   content?:
     | (
+        | CodeBlock
         | LinkGroupBlock
         | OneColumnContentBlock
         | TwoColumnContentBlock
@@ -398,6 +404,10 @@ export interface Page {
         | ResumeProjectsBlock
       )[]
     | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -409,7 +419,6 @@ export interface Page {
  */
 export interface MediaImage {
   id: string;
-  slug?: string | null;
   alt?: string | null;
   credits?: {
     root: {
@@ -455,7 +464,7 @@ export interface MediaImage {
  * via the `definition` "OneColumnContentBlock".
  */
 export interface OneColumnContentBlock {
-  data?: {
+  content?: {
     root: {
       type: string;
       children: {
@@ -479,7 +488,7 @@ export interface OneColumnContentBlock {
  * via the `definition` "TwoColumnContentBlock".
  */
 export interface TwoColumnContentBlock {
-  left?: {
+  contentLeft?: {
     root: {
       type: string;
       children: {
@@ -494,7 +503,7 @@ export interface TwoColumnContentBlock {
     };
     [k: string]: unknown;
   } | null;
-  right?: {
+  contentRight?: {
     root: {
       type: string;
       children: {
@@ -695,7 +704,6 @@ export interface BlogCategory {
   meta?: {
     title?: string | null;
     description?: string | null;
-    keywords?: string | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -769,9 +777,7 @@ export interface MediaVideo {
  */
 export interface MediaDocument {
   id: string;
-  documentKey?: string | null;
   thumbnail?: (string | null) | MediaImage;
-  blurDataURL?: string | null;
   prefix?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -854,7 +860,7 @@ export interface ResumeSkill {
   id: string;
   name: string;
   slug?: string | null;
-  type?: ('skill' | 'tool' | 'language' | 'framework') | null;
+  type?: ('technology' | 'programmingLanguage' | 'methodology' | 'language' | 'privateInterest') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -908,16 +914,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug:
-          | 'inline'
-          | 'generateResumeDocument'
-          | 'getResumeDocumentDataTask'
-          | 'getResumeDocumentFileNamesTask'
-          | 'generateResumeDocumentFileTask'
-          | 'generateResumeDocumentImageTask'
-          | 'createOrUpdateResumeDocumentFileTask'
-          | 'createOrUpdateResumeDocumentImageTask'
-          | 'schedulePublish';
+        taskSlug: 'inline' | 'generateDocumentThumbnailTask' | 'generateResumeDocumentTask' | 'schedulePublish';
         taskID: string;
         input?:
           | {
@@ -950,20 +947,7 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  workflowSlug?: ('generateResumeDocumentWorkflow' | 'generateDocumentThumbnailWorkflow') | null;
-  taskSlug?:
-    | (
-        | 'inline'
-        | 'generateResumeDocument'
-        | 'getResumeDocumentDataTask'
-        | 'getResumeDocumentFileNamesTask'
-        | 'generateResumeDocumentFileTask'
-        | 'generateResumeDocumentImageTask'
-        | 'createOrUpdateResumeDocumentFileTask'
-        | 'createOrUpdateResumeDocumentImageTask'
-        | 'schedulePublish'
-      )
-    | null;
+  taskSlug?: ('inline' | 'generateDocumentThumbnailTask' | 'generateResumeDocumentTask' | 'schedulePublish') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -1065,6 +1049,55 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-query-presets".
+ */
+export interface PayloadQueryPreset {
+  id: string;
+  title: string;
+  isShared?: boolean | null;
+  access?: {
+    read?: {
+      constraint?: ('everyone' | 'onlyMe' | 'specificUsers') | null;
+      users?: (string | User)[] | null;
+    };
+    update?: {
+      constraint?: ('everyone' | 'onlyMe' | 'specificUsers') | null;
+      users?: (string | User)[] | null;
+    };
+    delete?: {
+      constraint?: ('everyone' | 'onlyMe' | 'specificUsers') | null;
+      users?: (string | User)[] | null;
+    };
+  };
+  where?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  columns?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  groupBy?: string | null;
+  relatedCollection: 'documents';
+  /**
+   * This is a temporary field used to determine if updating the preset would remove the user's access to it. When `true`, this record will be deleted after running the preset's `validate` function.
+   */
+  isTemp?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "blog-categories_select".
  */
 export interface BlogCategoriesSelect<T extends boolean = true> {
@@ -1088,7 +1121,6 @@ export interface BlogCategoriesSelect<T extends boolean = true> {
     | {
         title?: T;
         description?: T;
-        keywords?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1117,7 +1149,6 @@ export interface BlogPostsSelect<T extends boolean = true> {
  * via the `definition` "images_select".
  */
 export interface ImagesSelect<T extends boolean = true> {
-  slug?: T;
   alt?: T;
   credits?: T;
   blurDataURL?: T;
@@ -1172,9 +1203,7 @@ export interface VideosSelect<T extends boolean = true> {
  * via the `definition` "documents_select".
  */
 export interface DocumentsSelect<T extends boolean = true> {
-  documentKey?: T;
   thumbnail?: T;
-  blurDataURL?: T;
   prefix?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1223,6 +1252,12 @@ export interface PagesSelect<T extends boolean = true> {
         content?: T;
       };
   content?: T | {};
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -1297,7 +1332,6 @@ export interface PayloadJobsSelect<T extends boolean = true> {
         error?: T;
         id?: T;
       };
-  workflowSlug?: T;
   taskSlug?: T;
   queue?: T;
   waitUntil?: T;
@@ -1335,6 +1369,43 @@ export interface PayloadPreferencesSelect<T extends boolean = true> {
 export interface PayloadMigrationsSelect<T extends boolean = true> {
   name?: T;
   batch?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-query-presets_select".
+ */
+export interface PayloadQueryPresetsSelect<T extends boolean = true> {
+  title?: T;
+  isShared?: T;
+  access?:
+    | T
+    | {
+        read?:
+          | T
+          | {
+              constraint?: T;
+              users?: T;
+            };
+        update?:
+          | T
+          | {
+              constraint?: T;
+              users?: T;
+            };
+        delete?:
+          | T
+          | {
+              constraint?: T;
+              users?: T;
+            };
+      };
+  where?: T;
+  columns?: T;
+  groupBy?: T;
+  relatedCollection?: T;
+  isTemp?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1422,6 +1493,10 @@ export interface ResumeCustomersGlobalData {
 export interface ResumeDownloadsGlobalData {
   id: string;
   title: string;
+  documents?: {
+    en?: (string | null) | MediaDocument;
+    de?: (string | null) | MediaDocument;
+  };
   documentPreview?: (string | null) | MediaImage;
   caption?: {
     root: {
@@ -1537,16 +1612,6 @@ export interface FooterNavigationData {
         id?: string | null;
       }[]
     | null;
-  socialLinks?: {
-    title?: string | null;
-    entries?:
-      | {
-          link: LinkFieldData;
-          id?: string | null;
-        }[]
-      | null;
-    id?: string | null;
-  };
   legalLinks?: {
     title?: string | null;
     entries?:
@@ -1602,54 +1667,344 @@ export interface SiteMetaData {
  */
 export interface UserMetaData {
   id: string;
+  image?: (string | null) | MediaImage;
+  url?: string | null;
   name?: string | null;
   jobTitle?: string | null;
-  url?: string | null;
-  github?: string | null;
-  image?: (string | null) | MediaImage;
-  email?: string | null;
+  gender?: string | null;
+  homeLocation?: string | null;
+  birthPlace?: string | null;
+  birthDate?: string | null;
+  languages?:
+    | {
+        language?:
+          | (
+              | 'aa'
+              | 'ab'
+              | 'ae'
+              | 'af'
+              | 'ak'
+              | 'am'
+              | 'an'
+              | 'ar'
+              | 'as'
+              | 'av'
+              | 'ay'
+              | 'az'
+              | 'ba'
+              | 'be'
+              | 'bg'
+              | 'bi'
+              | 'bm'
+              | 'bn'
+              | 'bo'
+              | 'br'
+              | 'bs'
+              | 'ca'
+              | 'ce'
+              | 'ch'
+              | 'co'
+              | 'cr'
+              | 'cs'
+              | 'cu'
+              | 'cv'
+              | 'cy'
+              | 'da'
+              | 'de'
+              | 'dv'
+              | 'dz'
+              | 'ee'
+              | 'el'
+              | 'en'
+              | 'eo'
+              | 'es'
+              | 'et'
+              | 'eu'
+              | 'fa'
+              | 'ff'
+              | 'fi'
+              | 'fj'
+              | 'fo'
+              | 'fr'
+              | 'fy'
+              | 'ga'
+              | 'gd'
+              | 'gl'
+              | 'gn'
+              | 'gu'
+              | 'gv'
+              | 'ha'
+              | 'he'
+              | 'hi'
+              | 'ho'
+              | 'hr'
+              | 'ht'
+              | 'hu'
+              | 'hy'
+              | 'hz'
+              | 'ia'
+              | 'id'
+              | 'ie'
+              | 'ig'
+              | 'ii'
+              | 'ik'
+              | 'io'
+              | 'is'
+              | 'it'
+              | 'iu'
+              | 'ja'
+              | 'jv'
+              | 'ka'
+              | 'kg'
+              | 'ki'
+              | 'kj'
+              | 'kk'
+              | 'kl'
+              | 'km'
+              | 'kn'
+              | 'ko'
+              | 'kr'
+              | 'ks'
+              | 'ku'
+              | 'kv'
+              | 'kw'
+              | 'ky'
+              | 'la'
+              | 'lb'
+              | 'lg'
+              | 'li'
+              | 'ln'
+              | 'lo'
+              | 'lt'
+              | 'lu'
+              | 'lv'
+              | 'mg'
+              | 'mh'
+              | 'mi'
+              | 'mk'
+              | 'ml'
+              | 'mn'
+              | 'mr'
+              | 'ms'
+              | 'mt'
+              | 'my'
+              | 'na'
+              | 'nb'
+              | 'nd'
+              | 'ne'
+              | 'ng'
+              | 'nl'
+              | 'nn'
+              | 'no'
+              | 'nr'
+              | 'nv'
+              | 'ny'
+              | 'oc'
+              | 'oj'
+              | 'om'
+              | 'or'
+              | 'os'
+              | 'pa'
+              | 'pi'
+              | 'pl'
+              | 'ps'
+              | 'pt'
+              | 'qu'
+              | 'rm'
+              | 'rn'
+              | 'ro'
+              | 'ru'
+              | 'rw'
+              | 'sa'
+              | 'sc'
+              | 'sd'
+              | 'se'
+              | 'sg'
+              | 'si'
+              | 'sk'
+              | 'sl'
+              | 'sm'
+              | 'sn'
+              | 'so'
+              | 'sq'
+              | 'sr'
+              | 'ss'
+              | 'st'
+              | 'su'
+              | 'sv'
+              | 'sw'
+              | 'ta'
+              | 'te'
+              | 'tg'
+              | 'th'
+              | 'ti'
+              | 'tk'
+              | 'tl'
+              | 'tn'
+              | 'to'
+              | 'tr'
+              | 'ts'
+              | 'tt'
+              | 'tw'
+              | 'ty'
+              | 'ug'
+              | 'uk'
+              | 'ur'
+              | 'uz'
+              | 've'
+              | 'vi'
+              | 'vo'
+              | 'wa'
+              | 'wo'
+              | 'xh'
+              | 'yi'
+              | 'yo'
+              | 'za'
+              | 'zh'
+              | 'zu'
+            )
+          | null;
+        proficiency?: ('A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2') | null;
+        id?: string | null;
+      }[]
+    | null;
+  taxID?: string | null;
+  vatID?: string | null;
+  duns?: string | null;
   telephone?: string | null;
-  description?: string | null;
+  email?: string | null;
+  /**
+   * This section describes links to your profiles on other platforms, such as social media accounts or personal websites.
+   */
   sameAs?:
     | {
+        icon?:
+          | (
+              | 'simple-icons:archlinux'
+              | 'simple-icons:cloudflare'
+              | 'simple-icons:cloudflarepages'
+              | 'simple-icons:cloudflareworkers'
+              | 'simple-icons:debian'
+              | 'simple-icons:docker'
+              | 'simple-icons:figma'
+              | 'simple-icons:github'
+              | 'simple-icons:githubactions'
+              | 'simple-icons:githubpages'
+              | 'simple-icons:gitlab'
+              | 'simple-icons:goland'
+              | 'simple-icons:homeassistant'
+              | 'simple-icons:intellijidea'
+              | 'simple-icons:javascript'
+              | 'simple-icons:jetbrains'
+              | 'simple-icons:kubernetes'
+              | 'simple-icons:linkedin'
+              | 'simple-icons:linux'
+              | 'simple-icons:maildotru'
+              | 'simple-icons:namecheap'
+              | 'simple-icons:nextdotjs'
+              | 'simple-icons:nodedotjs'
+              | 'simple-icons:1password'
+              | 'simple-icons:payloadcms'
+              | 'simple-icons:phpstorm'
+              | 'simple-icons:pycharm'
+              | 'simple-icons:rancher'
+              | 'simple-icons:react'
+              | 'simple-icons:rust'
+              | 'simple-icons:sanity'
+              | 'simple-icons:storybook'
+              | 'simple-icons:synology'
+              | 'simple-icons:tailscale'
+              | 'simple-icons:ubuntu'
+              | 'simple-icons:unsplash'
+              | 'simple-icons:vercel'
+              | 'simple-icons:webstorm'
+              | 'simple-icons:whatsapp'
+              | 'simple-icons:wireguard'
+              | 'simple-icons:xing'
+              | 'simple-icons:zigbee'
+              | 'material-symbols:contextual-token-outline-sharp'
+              | 'material-symbols:post-outline'
+              | 'material-symbols:label-outline-sharp'
+              | 'material-symbols:contact-page-outline-sharp'
+              | 'material-symbols:video-file-outline-sharp'
+              | 'material-symbols:audio-file-outline-sharp'
+              | 'material-symbols:picture-as-pdf-outline-sharp'
+              | 'material-symbols:pages-outline-sharp'
+              | 'material-symbols:fingerprint-sharp'
+              | 'material-symbols:stacked-email-outline-sharp'
+              | 'material-symbols:deployed-code-account-outline-sharp'
+              | 'material-symbols:work-outline-sharp'
+              | 'material-symbols:experiment-outline-sharp'
+              | 'material-symbols:page-footer-outline-sharp'
+              | 'material-symbols:page-header-outline-sharp'
+              | 'material-symbols:map-search-outline-sharp'
+              | 'material-symbols:settings-account-box-sharp'
+              | 'material-symbols:account-box-outline-sharp'
+              | 'material-symbols:error'
+              | 'material-symbols:warning'
+              | 'material-symbols:info'
+              | 'material-symbols:check-circle'
+              | 'material-symbols:call'
+              | 'material-symbols:pause'
+              | 'material-symbols:play-arrow'
+              | 'material-symbols:stop'
+              | 'material-symbols:repeat'
+              | 'material-symbols:replay'
+              | 'material-symbols:attach-file'
+              | 'material-symbols:settings'
+              | 'material-symbols:calendar-month'
+              | 'material-symbols:keyboard-arrow-down'
+              | 'material-symbols:keyboard-arrow-up'
+              | 'material-symbols:keyboard-arrow-left'
+              | 'material-symbols:keyboard-arrow-right'
+              | 'material-symbols:trending-up'
+              | 'material-symbols:trending-down'
+              | 'material-symbols:trending-flat'
+              | 'material-symbols:touch-app'
+              | 'material-symbols:person'
+              | 'material-symbols:group'
+              | 'material-symbols:web-traffic'
+              | 'material-symbols:highlight-mouse-cursor'
+              | 'material-symbols:undo'
+              | 'material-symbols:nest-clock-farsight-analog-outline'
+              | 'material-symbols:multimodal-hand-eye'
+              | 'material-symbols:close'
+              | 'material-symbols:image-outline-sharp'
+              | 'material-symbols:logout-sharp'
+            )
+          | null;
+        name?: string | null;
         url?: string | null;
         id?: string | null;
       }[]
     | null;
-  duns?: string | null;
-  birthDate?: string | null;
-  birthPlace?: string | null;
-  gender?: string | null;
-  homeLocation?: string | null;
-  knowsLanguage?:
-    | {
-        language?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  vatID?: string | null;
-  workLocation?: string | null;
+  description?: string | null;
+  /**
+   * This section describes the organization you work for.
+   * It can be used to generate structured data about your employment.
+   */
   worksFor?: {
     name?: string | null;
     url?: string | null;
+    address?: AddressData;
   };
-  address?: UserMetaAddress;
+  address?: AddressData;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "UserMetaAddress".
+ * via the `definition` "AddressData".
  */
-export interface UserMetaAddress {
+export interface AddressData {
   street?: string | null;
   number?: string | null;
   postCode?: string | null;
   place?: string | null;
-  region?: string | null;
-  locality?: string | null;
   countryCode?: string | null;
   countryName?: string | null;
+  region?: string | null;
+  locality?: string | null;
   /**
    * @minItems 2
    * @maxItems 2
@@ -1706,6 +2061,12 @@ export interface CustomerLogosSelect<T extends boolean = true> {
  */
 export interface ResumeDownloadsSelect<T extends boolean = true> {
   title?: T;
+  documents?:
+    | T
+    | {
+        en?: T;
+        de?: T;
+      };
   documentPreview?: T;
   caption?: T;
   updatedAt?: T;
@@ -1796,8 +2157,6 @@ export interface LinkFieldDataSelect<T extends boolean = true> {
   reference?: T;
   url?: T;
   address?: T;
-  subject?: T;
-  cc?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1805,18 +2164,6 @@ export interface LinkFieldDataSelect<T extends boolean = true> {
  */
 export interface SettingsFooterNavigationSelect<T extends boolean = true> {
   navGroups?:
-    | T
-    | {
-        title?: T;
-        entries?:
-          | T
-          | {
-              link?: T | LinkFieldDataSelect<T>;
-              id?: T;
-            };
-        id?: T;
-      };
-  socialLinks?:
     | T
     | {
         title?: T;
@@ -1866,57 +2213,60 @@ export interface SettingsSiteMetaSelect<T extends boolean = true> {
  * via the `definition` "settings-user-meta_select".
  */
 export interface SettingsUserMetaSelect<T extends boolean = true> {
+  image?: T;
+  url?: T;
   name?: T;
   jobTitle?: T;
-  url?: T;
-  github?: T;
-  image?: T;
-  email?: T;
-  telephone?: T;
-  description?: T;
-  sameAs?:
-    | T
-    | {
-        url?: T;
-        id?: T;
-      };
-  duns?: T;
-  birthDate?: T;
-  birthPlace?: T;
   gender?: T;
   homeLocation?: T;
-  knowsLanguage?:
+  birthPlace?: T;
+  birthDate?: T;
+  languages?:
     | T
     | {
         language?: T;
+        proficiency?: T;
         id?: T;
       };
+  taxID?: T;
   vatID?: T;
-  workLocation?: T;
+  duns?: T;
+  telephone?: T;
+  email?: T;
+  sameAs?:
+    | T
+    | {
+        icon?: T;
+        name?: T;
+        url?: T;
+        id?: T;
+      };
+  description?: T;
   worksFor?:
     | T
     | {
         name?: T;
         url?: T;
+        address?: T | AddressDataSelect<T>;
       };
-  address?: T | UserMetaAddressSelect<T>;
+  address?: T | AddressDataSelect<T>;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "UserMetaAddress_select".
+ * via the `definition` "AddressData_select".
  */
-export interface UserMetaAddressSelect<T extends boolean = true> {
+export interface AddressDataSelect<T extends boolean = true> {
   street?: T;
   number?: T;
   postCode?: T;
   place?: T;
-  region?: T;
-  locality?: T;
   countryCode?: T;
   countryName?: T;
+  region?: T;
+  locality?: T;
   location?: T;
 }
 /**
@@ -1981,170 +2331,23 @@ export interface CollectionsWidget {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TaskGenerateResumeDocument".
+ * via the `definition` "TaskGenerateDocumentThumbnailTask".
  */
-export interface TaskGenerateResumeDocument {
+export interface TaskGenerateDocumentThumbnailTask {
   input: {
-    locale?: string | null;
+    documentId: string;
   };
-  output: {
-    documentID?: string | null;
-  };
+  output?: unknown;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TaskGetResumeDocumentDataTask".
+ * via the `definition` "TaskGenerateResumeDocumentTask".
  */
-export interface TaskGetResumeDocumentDataTask {
+export interface TaskGenerateResumeDocumentTask {
   input: {
     locale: string;
   };
-  output: {
-    locale?: string | null;
-    userMetaData?:
-      | {
-          [k: string]: unknown;
-        }
-      | unknown[]
-      | string
-      | number
-      | boolean
-      | null;
-    aboutMe?:
-      | {
-          [k: string]: unknown;
-        }
-      | unknown[]
-      | string
-      | number
-      | boolean
-      | null;
-    contact?:
-      | {
-          [k: string]: unknown;
-        }
-      | unknown[]
-      | string
-      | number
-      | boolean
-      | null;
-    customers?:
-      | {
-          [k: string]: unknown;
-        }
-      | unknown[]
-      | string
-      | number
-      | boolean
-      | null;
-    downloads?:
-      | {
-          [k: string]: unknown;
-        }
-      | unknown[]
-      | string
-      | number
-      | boolean
-      | null;
-    experience?:
-      | {
-          [k: string]: unknown;
-        }
-      | unknown[]
-      | string
-      | number
-      | boolean
-      | null;
-    projects?:
-      | {
-          [k: string]: unknown;
-        }
-      | unknown[]
-      | string
-      | number
-      | boolean
-      | null;
-  };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TaskGetResumeDocumentFileNamesTask".
- */
-export interface TaskGetResumeDocumentFileNamesTask {
-  input: {
-    authorName: string;
-    locale: string;
-    id: string;
-  };
-  output: {
-    filename?: string | null;
-  };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TaskGenerateResumeDocumentFileTask".
- */
-export interface TaskGenerateResumeDocumentFileTask {
-  input: {
-    locale: string;
-    data:
-      | {
-          [k: string]: unknown;
-        }
-      | unknown[]
-      | string
-      | number
-      | boolean
-      | null;
-  };
-  output: {
-    b64File?: string | null;
-  };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TaskGenerateResumeDocumentImageTask".
- */
-export interface TaskGenerateResumeDocumentImageTask {
-  input: {
-    b64File?: string | null;
-  };
-  output: {
-    b64Image?: string | null;
-    height?: number | null;
-    width?: number | null;
-  };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TaskCreateOrUpdateResumeDocumentFileTask".
- */
-export interface TaskCreateOrUpdateResumeDocumentFileTask {
-  input: {
-    filename: string;
-    b64File: string;
-    imageID: string;
-    locale: string;
-  };
-  output: {
-    fileID?: string | null;
-  };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TaskCreateOrUpdateResumeDocumentImageTask".
- */
-export interface TaskCreateOrUpdateResumeDocumentImageTask {
-  input: {
-    filename: string;
-    b64Image: string;
-    width: number;
-    height: number;
-    locale: string;
-  };
-  output: {
-    imageID?: string | null;
-  };
+  output?: unknown;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2167,26 +2370,6 @@ export interface TaskSchedulePublish {
     user?: (string | null) | User;
   };
   output?: unknown;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "WorkflowGenerateResumeDocumentWorkflow".
- */
-export interface WorkflowGenerateResumeDocumentWorkflow {
-  input: {
-    locale: string;
-  };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "WorkflowGenerateDocumentThumbnailWorkflow".
- */
-export interface WorkflowGenerateDocumentThumbnailWorkflow {
-  input: {
-    id: string;
-    filename: string;
-    b64File: string;
-  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

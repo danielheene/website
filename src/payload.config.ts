@@ -2,7 +2,7 @@ import path from 'node:path'
 import * as process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
-import { CollectionSlug, BlockSlug } from '@custom-types'
+import { BlockSlug, CollectionSlug } from '@custom-types'
 import type { BlogCategory } from '@payload-types'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { redisKVAdapter } from '@payloadcms/kv-redis'
@@ -10,6 +10,7 @@ import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
 import {
   AlignFeature,
   BlockquoteFeature,
+  BlocksFeature,
   BoldFeature,
   ChecklistFeature,
   EXPERIMENTAL_TableFeature,
@@ -29,7 +30,6 @@ import {
   UnderlineFeature,
   UnorderedListFeature,
   UploadFeature,
-  BlocksFeature,
 } from '@payloadcms/richtext-lexical'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { buildConfig } from 'payload'
@@ -40,20 +40,12 @@ import { COLLECTIONS } from '@/collections'
 import { LinkField } from '@/fields/Link'
 import { GLOBALS } from '@/globals'
 import { generateContentURL } from '@/lib/generateContentURL'
+import generateDocumentThumbnailTask from '@/tasks/generateDocumentThumbnailTask'
+import generateResumeDocumentTask from '@/tasks/generateResumeDocumentTask'
 import { useSendAdapter } from '@/utilities/useSendAdapter'
-import getResumeDocumentDataTask from '@/tasks/getResumeDocumentDataTask'
-import generateResumeDocumentWorkflow from '@/workflows/generateResumeDocumentWorkflow'
-import getResumeDocumentFileNamesTask from '@/tasks/getResumeDocumentFileNamesTask'
-import generateResumeDocumentFileTask from '@/tasks/generateResumeDocumentFileTask'
-import generateResumeDocumentImageTask from '@/tasks/generateResumeDocumentImageTask'
-import createOrUpdateResumeDocumentFileTask from '@/tasks/createOrUpdateResumeDocumentFileTask'
-import createOrUpdateResumeDocumentImageTask from '@/tasks/createOrUpdateResumeDocumentImageTask'
-import generateDocumentThumbnailWorkflow from '@/workflows/generateDocumentThumbnailWorkflow'
-import generateResumeDocument from '@/tasks/generateResumeDocument'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
-
 
 export const config = buildConfig({
   experimental: {
@@ -176,6 +168,7 @@ export const config = buildConfig({
     origins: [process.env.NEXT_PUBLIC_SERVER_URL],
     headers: [],
   },
+  defaultDepth: 4,
   editor: lexicalEditor({
     admin: {
       hideGutter: true,
@@ -267,9 +260,7 @@ export const config = buildConfig({
         disableIfParentHasFixedToolbar: true,
       }),
       BlocksFeature({
-        blocks: [
-          BlockSlug.LinkGroup,
-        ],
+        blocks: [BlockSlug.LinkGroup],
       }),
       InlineToolbarFeature(),
       // TreeViewFeature(),
@@ -282,6 +273,7 @@ export const config = buildConfig({
   }),
   collections: COLLECTIONS,
   debug: process.env.NODE_ENV !== 'production',
+  // biome-ignore lint/correctness/useHookAtTopLevel: <useSend is a mailing service, not a React hook>
   email: useSendAdapter({
     apiKey: process.env.USESEND_API_KEY,
     useSendUrl: process.env.USESEND_URL,
@@ -293,25 +285,8 @@ export const config = buildConfig({
   jobs: {
     enableConcurrencyControl: true,
     deleteJobOnComplete: true,
-    tasks: [
-      generateResumeDocument,
-      getResumeDocumentDataTask,
-      getResumeDocumentFileNamesTask,
-      generateResumeDocumentFileTask,
-      generateResumeDocumentImageTask,
-      createOrUpdateResumeDocumentFileTask,
-      createOrUpdateResumeDocumentImageTask,
-    ],
-    shouldAutoRun: () => process.env.ENABLE_JOB_WORKERS === 'true',
-    autoRun: [{
-      cron: '* * * * *',
-      queue: 'default',
-      limit: 50,
-    }],
-    workflows: [
-      generateResumeDocumentWorkflow,
-      generateDocumentThumbnailWorkflow,
-    ],
+    tasks: [generateDocumentThumbnailTask, generateResumeDocumentTask],
+    autoRun: [{ cron: '* * * * *', queue: 'default', limit: 50 }],
   },
   kv: redisKVAdapter({
     redisURL: process.env.REDIS_URL,
@@ -334,10 +309,11 @@ export const config = buildConfig({
     nestedDocsPlugin({
       collections: [CollectionSlug.BlogCategories],
       generateLabel: (_, { title }: Pick<BlogCategory, 'title'>) => title,
-      generateURL: (_, { slug }: Pick<BlogCategory, 'slug'>, { slug: collection }) => generateContentURL({
-        collection,
-        slug,
-      }),
+      generateURL: (_, { slug }: Pick<BlogCategory, 'slug'>, { slug: collection }) =>
+        generateContentURL({
+          collection,
+          slug,
+        }),
       parentFieldSlug: 'parent',
       breadcrumbsFieldSlug: 'breadcrumbs',
     }),
@@ -363,12 +339,13 @@ export const config = buildConfig({
           prefix: 'audios',
         },
       },
+      clientUploads: true,
+      disableLocalStorage: true,
       bucket: process.env.S3_BUCKET,
-
       config: {
         credentials: {
-          accessKeyId: process.env.S3_ACCESS_KEY!,
-          secretAccessKey: process.env.S3_SECRET_KEY!,
+          accessKeyId: process.env.S3_ACCESS_KEY,
+          secretAccessKey: process.env.S3_SECRET_KEY,
         },
         forcePathStyle: true,
         endpoint: process.env.S3_ENDPOINT || 'http://localhost:9000',

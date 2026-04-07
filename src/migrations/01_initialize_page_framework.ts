@@ -26,7 +26,6 @@ export async function up({ payload, req, session }: MigrateUpArgs): Promise<void
       slug: resumeGlobal.slug,
       data: {
         title: resumeGlobal.title,
-        _status: 'published',
       },
       context: {
         skipRevalidate: true,

@@ -11,6 +11,7 @@ import { ThemeProvider } from 'next-themes'
 import type { JSX, ReactNode } from 'react'
 
 import { WebVitalsProvider } from '@/components/WebVitalsProvider'
+import { UmamiProvider } from '@/contexts/Umami'
 import { getCachedSiteMetaData } from '@/lib/getSiteMetaData'
 import { getCachedUserMetaData } from '@/lib/getUserMetaData'
 import { generatePersonSchema, generateWebSiteSchema, JsonLd } from '@/lib/jsonLd'
@@ -24,19 +25,22 @@ export default async function RootLayout({ children }: { children: ReactNode | R
 
   return (
     <html lang="en" data-theme="system" data-scroll-behavior="smooth" suppressHydrationWarning>
-    <head>
-      <JsonLd data={[personSchema, webSiteSchema]} />
-    </head>
-    <body>
-    {draft && <LivePreviewListener />}
-    <ThemeProvider disableTransitionOnChange enableColorScheme enableSystem>
-      <Header />
-      {children}
-      <Footer />
-    </ThemeProvider>
-    <Toasty />
-    <WebVitalsProvider />
-    </body>
+      <head>
+        <JsonLd data={[personSchema, webSiteSchema]} />
+      </head>
+      <body>
+        <WebVitalsProvider>
+          {draft && <LivePreviewListener />}
+          <ThemeProvider disableTransitionOnChange enableColorScheme enableSystem>
+            <UmamiProvider websiteId={process.env.NEXT_PUBLIC_UMAMI_SITE_ID}>
+              <Header />
+              {children}
+              <Footer />
+            </UmamiProvider>
+          </ThemeProvider>
+          <Toasty />
+        </WebVitalsProvider>
+      </body>
     </html>
   )
 }

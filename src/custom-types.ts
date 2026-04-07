@@ -1,6 +1,11 @@
 import type {
-  ResumeExperienceGlobalData, ResumeAboutMeGlobalData, ResumeCustomersGlobalData,
-  ResumeDownloadsGlobalData, ResumeProjectsGlobalData, ResumeContactGlobalData, UserMetaData,
+  ResumeAboutMeGlobalData,
+  ResumeContactGlobalData,
+  ResumeCustomersGlobalData,
+  ResumeDownloadsGlobalData,
+  ResumeExperienceGlobalData,
+  ResumeProjectsGlobalData,
+  UserMetaData,
 } from '@payload-types'
 import type {
   BlockSlug as RegisteredBlockSlug,
@@ -102,7 +107,7 @@ export enum GlobalSlug {
 }
 
 export type { GlobalSlug as RegisteredGlobalSlug } from 'payload'
-export type GlobalData<T extends RegisteredGlobalSlug> = TypedGlobal[T]
+export type GlobalData<T extends RegisteredGlobalSlug = RegisteredGlobalSlug> = TypedGlobal[T]
 
 /**
  * generic for resume blocks which only wraps data of its respective global
@@ -160,15 +165,13 @@ export interface InternalStatusResponse {
   message: string
 }
 
-
 export type ResumeDocumentData = {
-  locale: string,
-  userMetaData: UserMetaData | null,
-  aboutMe: ResumeAboutMeGlobalData | null,
-  customers: ResumeCustomersGlobalData | null,
-  downloads: ResumeDownloadsGlobalData | null,
-  experience: ResumeExperienceGlobalData | null,
-  projects: ResumeProjectsGlobalData | null,
-  contact: ResumeContactGlobalData | null,
+  locale: string
+  userMetaData: UserMetaData | null
+  aboutMe: ResumeAboutMeGlobalData | null
+  customers: ResumeCustomersGlobalData | null
+  downloads: ResumeDownloadsGlobalData | null
+  experience: ResumeExperienceGlobalData | null
+  projects: ResumeProjectsGlobalData | null
+  contact: ResumeContactGlobalData | null
 }
-

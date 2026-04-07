@@ -8,7 +8,7 @@ import { cn } from '@/utilities/cn'
 
 import { Entry } from './Entry'
 
-export const Renderer = ({
+export const ResumeProjectsBlockRenderer = ({
   blockType,
   data: { title, caption, projectList },
 }: ResumeLayoutBlockData<GlobalSlug.ResumeProjects>): JSX.Element => (

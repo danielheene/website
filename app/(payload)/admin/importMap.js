@@ -24,17 +24,26 @@ import { FixedToolbarFeatureClient as FixedToolbarFeatureClient_e70f5e05f09f93e0
 import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { InlineToolbarFeatureClient as InlineToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { TableFeatureClient as TableFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
-import { default as default_9f25bc4d901952d4af47df3ecdad63b6 } from '@/fields/Meta/FieldComponent'
+import { default as default_084e443fb768db7fe56868b034c5abeb } from '@/fields/Meta/SerpField'
+import { default as default_d914712db25857640e7226fe3a8ce437 } from '@/fields/Meta/DescriptionField'
 import { default as default_de8505f706b861b1b2f9a47fb94c326d } from '@/collections/Pages/components/ResumePdfView'
 import { default as default_848538b3ed73982ca2ebf699d6e2bbb6 } from '@/collections/Pages/components/ResumePdfTab'
 import { LanguageToggle as LanguageToggle_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
+import { QueryPresetsAccessCell as QueryPresetsAccessCell_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
+import { QueryPresetsWhereCell as QueryPresetsWhereCell_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
+import { QueryPresetsWhereField as QueryPresetsWhereField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
+import { QueryPresetsColumnsCell as QueryPresetsColumnsCell_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
+import { QueryPresetsColumnField as QueryPresetsColumnField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
+import { QueryPresetsGroupByCell as QueryPresetsGroupByCell_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
+import { QueryPresetsGroupByField as QueryPresetsGroupByField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { default as default_1c5f6ef1783af04f64e217a06cdb8ed2 } from '@/fields/CustomerLogos/LogoField'
 import { default as default_26b90e57c09869890b7e6b94ad7b1146 } from '@/fields/CustomerLogos/RowLabel'
 import { default as default_3d46db2b9e855badd40aef08837b7b09 } from '@/fields/TagList/TagListComponent'
 import { default as default_4c793a8acfeeaa7cc010a4e3ca6d9b65 } from '@/fields/JobHistory/CSSInjector'
 import { default as default_792b8f1d1c183321848c9949d8645973 } from '@/fields/JobHistory/RowLabel'
 import { default as default_106b14459d3dd8ad7b6fc5ab43801e7b } from '@/fields/ProjectList/RowLabel'
-import { default as default_a5a6dbfcc6dddf72439b636a74829cfe } from '@/blocks/TwoColumnContentBlock/BlockComponent'
+import { DescriptionWithNewline as DescriptionWithNewline_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
+import { default as default_91cd159dcaa78b2e3a779731c7b62c17 } from '@/globals/SettingsUserMeta/components/SameAsRowLabel'
 import { ResumeLayoutBlock as ResumeLayoutBlock_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { Nav as Nav_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { Icon as Icon_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
@@ -75,17 +84,26 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BlocksFeatureClient": BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#InlineToolbarFeatureClient": InlineToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#TableFeatureClient": TableFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
-  "@/fields/Meta/FieldComponent#default": default_9f25bc4d901952d4af47df3ecdad63b6,
+  "@/fields/Meta/SerpField#default": default_084e443fb768db7fe56868b034c5abeb,
+  "@/fields/Meta/DescriptionField#default": default_d914712db25857640e7226fe3a8ce437,
   "@/collections/Pages/components/ResumePdfView#default": default_de8505f706b861b1b2f9a47fb94c326d,
   "@/collections/Pages/components/ResumePdfTab#default": default_848538b3ed73982ca2ebf699d6e2bbb6,
   "@/components/AdminPanel#LanguageToggle": LanguageToggle_a316a6ec12a12cd0fe58ccec01a444ca,
+  "@payloadcms/next/client#QueryPresetsAccessCell": QueryPresetsAccessCell_2b8867833a34864a02ddf429b0728a40,
+  "@payloadcms/next/client#QueryPresetsWhereCell": QueryPresetsWhereCell_2b8867833a34864a02ddf429b0728a40,
+  "@payloadcms/next/client#QueryPresetsWhereField": QueryPresetsWhereField_2b8867833a34864a02ddf429b0728a40,
+  "@payloadcms/next/client#QueryPresetsColumnsCell": QueryPresetsColumnsCell_2b8867833a34864a02ddf429b0728a40,
+  "@payloadcms/next/client#QueryPresetsColumnField": QueryPresetsColumnField_2b8867833a34864a02ddf429b0728a40,
+  "@payloadcms/next/client#QueryPresetsGroupByCell": QueryPresetsGroupByCell_2b8867833a34864a02ddf429b0728a40,
+  "@payloadcms/next/client#QueryPresetsGroupByField": QueryPresetsGroupByField_2b8867833a34864a02ddf429b0728a40,
   "@/fields/CustomerLogos/LogoField#default": default_1c5f6ef1783af04f64e217a06cdb8ed2,
   "@/fields/CustomerLogos/RowLabel#default": default_26b90e57c09869890b7e6b94ad7b1146,
   "@/fields/TagList/TagListComponent#default": default_3d46db2b9e855badd40aef08837b7b09,
   "@/fields/JobHistory/CSSInjector#default": default_4c793a8acfeeaa7cc010a4e3ca6d9b65,
   "@/fields/JobHistory/RowLabel#default": default_792b8f1d1c183321848c9949d8645973,
   "@/fields/ProjectList/RowLabel#default": default_106b14459d3dd8ad7b6fc5ab43801e7b,
-  "@/blocks/TwoColumnContentBlock/BlockComponent#default": default_a5a6dbfcc6dddf72439b636a74829cfe,
+  "@/components/AdminPanel#DescriptionWithNewline": DescriptionWithNewline_a316a6ec12a12cd0fe58ccec01a444ca,
+  "@/globals/SettingsUserMeta/components/SameAsRowLabel#default": default_91cd159dcaa78b2e3a779731c7b62c17,
   "@/components/AdminPanel#ResumeLayoutBlock": ResumeLayoutBlock_a316a6ec12a12cd0fe58ccec01a444ca,
   "@/components/AdminPanel#Nav": Nav_a316a6ec12a12cd0fe58ccec01a444ca,
   "@/components/AdminPanel#Icon": Icon_a316a6ec12a12cd0fe58ccec01a444ca,

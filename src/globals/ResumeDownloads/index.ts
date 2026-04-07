@@ -31,6 +31,45 @@ export const ResumeDownloads: GlobalConfig<GlobalSlug.ResumeDownloads> = {
           fields: [
             TitleField(),
             {
+              type: 'group',
+              name: 'documents',
+              label: 'Documents',
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'en',
+                      type: 'upload',
+                      label: 'English',
+                      relationTo: CollectionSlug.MediaDocuments,
+                      admin: {
+                        width: '50%',
+                        disableGroupBy: true,
+                        disableListColumn: true,
+                        disableListFilter: true,
+                        readOnly: true,
+                      },
+                    },
+                    {
+                      name: 'de',
+                      type: 'upload',
+                      label: 'German',
+                      relationTo: CollectionSlug.MediaDocuments,
+                      admin: {
+                        width: '50%',
+                        disableGroupBy: true,
+                        disableListColumn: true,
+                        disableListFilter: true,
+                        readOnly: true,
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+
+            {
               name: 'documentPreview',
               type: 'upload',
               label: 'Document Preview',

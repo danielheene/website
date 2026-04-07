@@ -16,7 +16,7 @@ export const OneColumnContentBlock: Block = {
   },
   fields: [
     RichTextField({
-      name: 'data',
+      name: 'content',
       editorVariant: 'inline',
       overrides: {
         label: false,

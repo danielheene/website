@@ -2,6 +2,7 @@ import type { UserMetaData } from '@payload-types'
 import { Image, Link, StyleSheet, Text, View } from '@react-pdf/renderer'
 import parsePhoneNumber from 'libphonenumber-js'
 
+import { generateContentURL } from '@/lib/generateContentURL'
 import { isMediaImage } from '@/lib/typeGuards'
 import { registerFonts } from '@/pdfs/fonts'
 
@@ -42,13 +43,25 @@ const styles = StyleSheet.create({
   },
 })
 
-export const Header = ({ image, telephone, email, url, github, address }: HeaderProps) => {
-  const portraitUrl = isMediaImage(image) ? image.url : undefined
+export const Header = ({ image, telephone, email, url, sameAs, address }: HeaderProps) => {
+  let duoToneUrl: string | undefined
+  if (isMediaImage(image)) {
+    duoToneUrl = generateContentURL({
+      path: '/api/duotone',
+      params: {
+        image: image.url,
+        w: '200',
+        h: '200',
+      },
+    })
+  }
+
   const phone = parsePhoneNumber(telephone)
+  const github = sameAs?.find(({ url }) => url.includes('github'))?.url
 
   return (
     <View style={styles.container} fixed>
-      {portraitUrl && <Image src={portraitUrl} style={styles.portrait} />}
+      {duoToneUrl && <Image src={duoToneUrl} style={styles.portrait} />}
       <View style={styles.column}>
         <Text style={styles.text}>{`${address.street} ${address.number}`}</Text>
         <Text style={styles.text}>{`${address.postCode} ${address.place}`}</Text>
@@ -63,11 +76,13 @@ export const Header = ({ image, telephone, email, url, github, address }: Header
       </View>
       <View style={styles.column}>
         <Link style={styles.text} href={url}>
-          {url.replace(/^https?:\/\//, '')}
+          {url?.replace(/^https?:\/\//, '')}
         </Link>
-        <Link style={styles.text} href={github}>
-          {github.replace(/^https?:\/\//, '')}
-        </Link>
+        {github && (
+          <Link style={styles.text} href={github}>
+            {github?.replace(/^https?:\/\//, '')}
+          </Link>
+        )}
       </View>
     </View>
   )

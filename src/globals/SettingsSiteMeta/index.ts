@@ -28,11 +28,13 @@ export const SettingsSiteMeta: GlobalConfig = {
   fields: [
     {
       name: 'siteName',
+      label: 'Site Name',
       defaultValue: process.env.NEXT_PUBLIC_SERVER_HOST,
       type: 'text',
     },
     {
       name: 'titleTemplate',
+      label: 'Title Template',
       type: 'text',
       defaultValue: '{{title}} | {{siteName}}',
       admin: {
@@ -43,6 +45,7 @@ export const SettingsSiteMeta: GlobalConfig = {
     },
     {
       name: 'siteUrl',
+      label: 'Site URL',
       type: 'text',
       defaultValue: process.env.NEXT_PUBLIC_SERVER_HOST,
       admin: {

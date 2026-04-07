@@ -6,6 +6,7 @@ import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { BLOCK_SLUGS } from '@/blocks'
 import { revalidatePage } from '@/collections/Pages/hooks/revalidatePage'
+import { MetaField } from '@/fields/Meta'
 import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
@@ -133,6 +134,13 @@ export const Pages: CollectionConfig<CollectionSlug.Pages> = {
                 },
               },
             }),
+            {
+              type: 'row',
+              admin: {
+                condition: ({ hero }) => hero.contentType === 'custom',
+              },
+              fields: [],
+            },
           ],
         },
         {
@@ -154,33 +162,10 @@ export const Pages: CollectionConfig<CollectionSlug.Pages> = {
             },
           ],
         },
-        // {
-        //   name: 'meta',
-        //   label: 'SEO',
-        //   fields: []
-        //     OverviewField({
-        //       titlePath: 'title',
-        //       descriptionPath: 'content',
-        //       imagePath: 'hero',
-        //     }),
-        //     MetaTitleField({
-        //       // hasGenerateFn: true,
-        //     }),
-        //     MetaImageField({
-        //       // hasGenerateFn: true,
-        //       relationTo: 'media',
-        //     }),
-        //     MetaDescriptionField({}),
-        //     PreviewField({
-        //       // if the `generateUrl` function is configured
-        //       // hasGenerateFn: true,
-        //
-        //       // field paths to match the target field for data
-        //       titlePath: 'meta.title',
-        //       descriptionPath: 'meta.description',
-        //     }),
-        //   ],
-        // },
+        {
+          label: 'SEO',
+          fields: [MetaField()],
+        },
       ],
     },
   ],

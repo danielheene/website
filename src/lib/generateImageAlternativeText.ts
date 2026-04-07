@@ -1,8 +1,7 @@
-import sharp, { type SharpInput } from 'sharp'
+import { createAnthropic } from '@ai-sdk/anthropic'
 import { generateText } from 'ai'
 import dedent from 'dedent'
-import { createAnthropic } from '@ai-sdk/anthropic'
-
+import sharp, { type SharpInput } from 'sharp'
 
 /**
  * Generates an image alternative text based on the image
@@ -18,7 +17,7 @@ export const generateImageAlternativeText = async (input: SharpInput): Promise<s
     .toBuffer()
 
   const anthropic = createAnthropic({
-    apiKey: process.env['ANTHROPIC_API_KEY'],
+    apiKey: process.env.ANTHROPIC_API_KEY,
   })
 
   const { text } = await generateText({

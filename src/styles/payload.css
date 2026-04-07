@@ -162,11 +162,6 @@ html {
   }
 }
 
-div.field-type.text > [for="field-meta__title"],
-div.field-type.textarea > [for="field-meta__description"] {
-  display: none;
-}
-
 .tabs-field__tabs .tabs-field__tab-button {
   @apply font-pp-supply-mono text-lg tracking-wider;
 }

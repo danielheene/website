@@ -1,0 +1,12 @@
+diff --git a/legacy/build/pdf.mjs b/legacy/build/pdf.mjs
+--- a/legacy/build/pdf.mjs
++++ b/legacy/build/pdf.mjs
+@@ -21368,7 +21368,7 @@ class PDFWorker {
+       const worker = await import(
+       /*webpackIgnore: true*/
+       /*@vite-ignore*/
+-      this.workerSrc);
++      this.workerSrc ?? "./pdf.worker.mjs"); // https://github.com/vercel/next.js/issues/65406
+       return worker.WorkerMessageHandler;
+     };
+     return shadow(this, "_setupFakeWorkerGlobal", loader());

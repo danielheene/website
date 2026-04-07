@@ -4,32 +4,31 @@ import Script from 'next/script'
 import { type JSX, type ReactNode, useMemo, useState } from 'react'
 
 import { initialUmamiContextValue, UmamiContext } from './Umami.context'
-import type { BeforeSendFunction, UmamiContextValue, UmamiScriptOptions } from './Umami.types'
+import type { UmamiContextValue, UmamiScriptOptions } from './Umami.types'
 
 declare global {
   interface Window {
     umami: UmamiContextValue
-    umamiBeforeSend?: BeforeSendFunction
   }
 }
 
 interface TrackingProviderProps extends UmamiScriptOptions {
   children: ReactNode
-  src: string
+  src?: string
 }
 
 export const UmamiProvider = ({
-                                children,
-                                src,
-                                websiteId,
-                                autoTrack = true,
-                                doNotTrack = false,
-                                tag = undefined,
-                                domains = undefined,
-                                excludeHash = false,
-                                excludeSearch = false,
-                                hostUrl = undefined,
-                              }: TrackingProviderProps): JSX.Element => {
+  children,
+  src = '/stats/script.js',
+  websiteId,
+  autoTrack = true,
+  doNotTrack = false,
+  tag = undefined,
+  domains = undefined,
+  excludeHash = false,
+  excludeSearch = false,
+  hostUrl = undefined,
+}: TrackingProviderProps): JSX.Element => {
   const [context, setContext] = useState<UmamiContextValue>(initialUmamiContextValue)
 
   const renderScript = useMemo(

@@ -35,18 +35,26 @@ export const pinoLogger = pino(createPinoConfig())
 export class PinoLogger {
   constructor(private readonly logger = pinoLogger) {}
 
+  private enrich(context: LogContext = {}): LogContext {
+    const span = trace.getActiveSpan()
+    const ctx = span?.spanContext()
+    return {
+      traceId: ctx?.traceId,
+      spanId: ctx?.spanId,
+      timestamp: new Date().toISOString(),
+      ...context,
+    }
+  }
+
   info(message: string, context?: LogContext) {
     this.logger.info(this.enrich(context), message)
   }
-
   debug(message: string, context?: LogContext) {
     this.logger.debug(this.enrich(context), message)
   }
-
   warn(message: string, context?: LogContext) {
     this.logger.warn(this.enrich(context), message)
   }
-
   error(message: string, error?: Error, context?: LogContext) {
     const enriched = this.enrich(context)
     if (error) {
@@ -57,17 +65,6 @@ export class PinoLogger {
       }
     }
     this.logger.error(enriched, message)
-  }
-
-  private enrich(context: LogContext = {}): LogContext {
-    const span = trace.getActiveSpan()
-    const ctx = span?.spanContext()
-    return {
-      traceId: ctx?.traceId,
-      spanId: ctx?.spanId,
-      timestamp: new Date().toISOString(),
-      ...context,
-    }
   }
 }
 

@@ -11,8 +11,8 @@ let loggerProvider: LoggerProvider | null = null
 
 function createLoggerProvider() {
   const resource = resourceFromAttributes({
-    [ATTR_SERVICE_NAME]: process.env.NEXT_PUBLIC_OTEL_SERVICE_NAME ?? 'nextjs-observability-demo',
-    [ATTR_SERVICE_VERSION]: process.env.npm_package_version ?? '1.0.0',
+    [ATTR_SERVICE_NAME]: process.env.NEXT_PUBLIC_OTEL_SERVICE_NAME,
+    [ATTR_SERVICE_VERSION]: process.env.npm_package_version,
   })
 
   const exporter = new OTLPLogExporter({

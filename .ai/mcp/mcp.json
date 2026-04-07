@@ -1,5 +1,16 @@
 {
   "mcpServers": {
+    "dokploy-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@ahdev/dokploy-mcp"
+      ],
+      "env": {
+        "DOKPLOY_URL": "https://dokploy.heene.io/api",
+        "DOKPLOY_API_KEY": "FIiMTKDCkYKQjeFxCBPtpuSsluvcUbVsGzMaTdQjhxghqqdsCitdOmJwBvobTLCK"
+      }
+    },
     "next-devtools": {
       "command": "npx",
       "args": [

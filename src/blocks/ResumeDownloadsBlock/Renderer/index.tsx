@@ -9,30 +9,43 @@ import { Button } from '@/components/Button'
 import { Headline } from '@/components/Headline'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
-import { isMediaImage } from '@/lib/typeGuards'
+import { isMediaDocument, isMediaImage } from '@/lib/typeGuards'
 import { cn } from '@/utilities/cn'
-import { formatDate } from 'date-fns'
 
-export const Renderer = ({
-                           blockType,
-                           data: { title, caption, documentPreview },
-                         }: ResumeLayoutBlockData<GlobalSlug.ResumeDownloads>): JSX.Element => {
+export const ResumeDownloadsBlockRenderer = ({
+  blockType,
+  data: { title, caption, documentPreview, documents },
+}: ResumeLayoutBlockData<GlobalSlug.ResumeDownloads>): JSX.Element => {
   return (
     <SectionContainer id={blockType} title={title} variant="default">
       <div className="container">
-        <div
-          className="relative flex flex-col p-6 md:p-12 lg:p-20 md:flex-row overflow-hidden bg-primary text-primary-foreground rounded-md">
+        <div className="relative flex flex-col p-6 md:p-12 lg:p-20 md:flex-row overflow-hidden bg-primary text-primary-foreground rounded-md">
           <div className="flex flex-col justify-center items-center mb-72 md:mb-0 gap-8 md:w-2/3 lg:shrink-0 xl:w-1/2">
             <Headline variant="section">{title}</Headline>
             <RichText data={caption} enableGutter={false} className="text-primary-foreground px-8" />
 
             <div className="flex flex-col md:flex-row justify-center gap-8 text-background-foreground">
-              <ResumeDownloadButton locale="en" label="Download" subline="English Version" />
-              <ResumeDownloadButton locale="de" label="Download" subline="German Version" />
+              {isMediaDocument(documents.en) && (
+                <ResumeDownloadButton
+                  locale="en"
+                  url={documents.en.url}
+                  fileName={documents.en.filename}
+                  label="Download"
+                  subline="English Version"
+                />
+              )}
+              {isMediaDocument(documents.de) && (
+                <ResumeDownloadButton
+                  locale="de"
+                  url={documents.de.url}
+                  fileName={documents.de.filename}
+                  label="Download"
+                  subline="German Version"
+                />
+              )}
             </div>
           </div>
-          <div
-            className="absolute right-1/2 bottom-0 mr-6 h-min w-[110%] max-w-md translate-x-1/2 md:-right-36 md:mr-0 md:w-3/4 md:max-w-xl md:translate-x-0 lg:mt-auto xl:relative xl:right-0 xl:h-full xl:w-full xl:max-w-full">
+          <div className="absolute right-1/2 bottom-0 mr-6 h-min w-[110%] max-w-md translate-x-1/2 md:-right-36 md:mr-0 md:w-3/4 md:max-w-xl md:translate-x-0 lg:mt-auto xl:relative xl:right-0 xl:h-full xl:w-full xl:max-w-full">
             <div className="relative aspect-8/5 h-full min-h-[16rem] w-full">
               {isMediaImage(documentPreview) && (
                 <>
@@ -90,18 +103,24 @@ export const Renderer = ({
   )
 }
 
-
-function ResumeDownloadButton({ locale, label, subline }: { locale: 'en' | 'de'; label: string; subline: string }) {
+function ResumeDownloadButton({
+  url,
+  fileName,
+  locale,
+  label,
+  subline,
+}: {
+  url: string
+  fileName: string
+  locale: string
+  label: string
+  subline: string
+}) {
   return (
     <Button type="button" variant="secondary" className="uppercase" asChild>
-      <Link href={`/download/resume.pdf?locale=${locale}`}
-            download={`DanielHeene_Resume_${locale.toUpperCase()}_${formatDate(new Date(), 'yyyy-MM-dd')}`}>
+      <Link href={url} download={fileName}>
         <div className="flex items-center gap-6">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-10 w-10 text-foreground/80 dark:text-background/80"
-            viewBox="0 0 124 124"
-          >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-foreground/80 dark:text-background/80" viewBox="0 0 124 124">
             {locale === 'en' && (
               <path
                 fill="currentColor"

@@ -41,5 +41,3 @@ export const ResumeContactBlock: Block = {
     },
   ],
 }
-
-export { Renderer as ResumeContactBlockRenderer } from './Renderer'

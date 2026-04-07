@@ -1,14 +1,14 @@
-import * as React from 'react'
+import type * as React from 'react'
 
-import { cn } from '@/utilities/cn'
-import { ICON, Icon } from '@/components/Icon'
 import { Button } from '@/components/Button'
+import { ICON, Icon } from '@/components/Icon'
+import { cn } from '@/utilities/cn'
 
 function Card({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card"
-      className={cn('bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm', className)}
+      className={cn('bg-card text-card-foreground flex flex-col gap-6 rounded-xl border border-border py-6 shadow-sm', className)}
       {...props}
     />
   )
@@ -27,20 +27,23 @@ function CardHeader({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
-function CardHeaderPagination({ hasPrevPage, hasNextPage, setPrevPage, setNextPage }: {
-  hasPrevPage: boolean,
-  hasNextPage: boolean,
-  setPrevPage: () => void,
+function CardHeaderPagination({
+  hasPrevPage,
+  hasNextPage,
+  setPrevPage,
+  setNextPage,
+}: {
+  hasPrevPage: boolean
+  hasNextPage: boolean
+  setPrevPage: () => void
   setNextPage: () => void
 }) {
   return (
     <div className="inline-flex">
-      <Button size="icon" variant="outline" className="text-3xl pr-0.5" onClick={setPrevPage}
-              disabled={!hasPrevPage}>
+      <Button size="icon" variant="outline" className="text-3xl pr-0.5" onClick={setPrevPage} disabled={!hasPrevPage}>
         <Icon icon={ICON.ARROW_LEFT} />
       </Button>
-      <Button size="icon" variant="outline" className="text-3xl pl-0.5" onClick={setNextPage}
-              disabled={!hasNextPage}>
+      <Button size="icon" variant="outline" className="text-3xl pl-0.5" onClick={setNextPage} disabled={!hasNextPage}>
         <Icon icon={ICON.ARROW_RIGHT} />
       </Button>
     </div>
@@ -57,8 +60,7 @@ function CardDescription({ className, ...props }: React.ComponentProps<'div'>) {
 
 function CardAction({ className, ...props }: React.ComponentProps<'div'>) {
   return (
-    <div data-slot="card-action"
-         className={cn('col-start-2 row-span-2 row-start-1 self-start justify-self-end', className)} {...props} />
+    <div data-slot="card-action" className={cn('col-start-2 row-span-2 row-start-1 self-start justify-self-end', className)} {...props} />
   )
 }
 
@@ -70,4 +72,4 @@ function CardFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return <div data-slot="card-footer" className={cn('flex items-center px-6 [.border-t]:pt-6', className)} {...props} />
 }
 
-export { Card, CardHeader, CardFooter, CardTitle, CardAction, CardDescription, CardContent, CardHeaderPagination }
+export { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardHeaderPagination, CardTitle }

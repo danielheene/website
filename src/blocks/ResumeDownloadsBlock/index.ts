@@ -41,5 +41,3 @@ export const ResumeDownloadsBlock: Block = {
     },
   ],
 }
-
-export { Renderer as ResumeDownloadsBlockRenderer } from './Renderer'

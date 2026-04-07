@@ -249,6 +249,7 @@ export const Toasty = function Toasty(): React.JSX.Element {
           .toasty img {
             width: 250px;
             height: 250px;
+            image-rendering: pixelated;
           }
         `}
       </style>

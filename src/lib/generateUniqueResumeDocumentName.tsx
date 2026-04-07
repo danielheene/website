@@ -27,7 +27,7 @@ export const generateUniqueResumeDocumentName = ({ authorName, locale }: Params)
     'Resume',
     `${locale.toUpperCase()}`,
     `${formatDate(new Date(), 'yyyyMMdd')}`,
-    `[${nanoid()}]`,
+    `[${nanoid()}].pdf`,
   ]
     .filter(Boolean)
     .join('_')

@@ -1,11 +1,14 @@
-import type { FooterNavigationData } from '@payload-types'
+import type { FooterNavigationData, LinkFieldData } from '@payload-types'
+import parsePhoneNumber from 'libphonenumber-js'
 import Link from 'next/link'
 
 import { FooterLegalLinks } from '@/components/Footer/FooterLegalLinks'
 import { FooterNavGroups } from '@/components/Footer/FooterNavGroups'
+import { ICON } from '@/components/Icon'
 import { Logo } from '@/components/Logo'
 import { ServiceStatus } from '@/components/ServiceStatus'
 import { getCachedFooterNavigationData } from '@/lib/getFooterNavigationData'
+import { getCachedUserMetaData } from '@/lib/getUserMetaData'
 import { cn } from '@/utilities/cn'
 
 import { FooterSocialLinks } from './FooterSocialLinks'
@@ -16,7 +19,32 @@ interface FooterProps {
 }
 
 export const Footer = async ({ className = '' }: FooterProps) => {
-  const { navGroups, socialLinks, legalLinks }: FooterNavigationData = await getCachedFooterNavigationData()
+  const { navGroups, legalLinks }: FooterNavigationData = await getCachedFooterNavigationData()
+  const { telephone, email, sameAs } = await getCachedUserMetaData()
+
+  const socialLinks: { id: string; link: LinkFieldData }[] = [
+    {
+      id: 'email',
+      link: { type: 'mailto', address: email, label: 'Email', icon: ICON.MAIL, iconOnly: true, newTab: true },
+    },
+    {
+      id: 'telephone',
+      link: {
+        type: 'custom',
+        url: parsePhoneNumber(telephone).getURI(),
+        label: 'Telephone',
+        icon: ICON.CALL,
+        newTab: true,
+        iconOnly: true,
+      },
+    },
+    ...sameAs.map(({ id, name, url, icon }) => {
+      return {
+        id,
+        link: { type: 'custom', url, label: name, icon, iconOnly: true, newTab: true } as LinkFieldData,
+      }
+    }),
+  ]
 
   return (
     <footer className={cn(['transition-colors', 'bg-background text-foreground', className])}>
@@ -32,8 +60,7 @@ export const Footer = async ({ className = '' }: FooterProps) => {
             {socialLinks && <FooterSocialLinks socialLinks={socialLinks} className="w-full" />}
             {navGroups && <FooterNavGroups navGroups={navGroups} className="w-full" />}
           </div>
-          <div
-            className="mt-8 flex flex-col justify-between gap-4 border-t py-8 text-xs font-medium text-muted-foreground md:flex-row md:items-center md:text-left">
+          <div className="mt-8 flex flex-col justify-between gap-4 border-t py-8 text-xs font-medium text-muted-foreground md:flex-row md:items-center md:text-left">
             <ServiceStatus className="mr-auto" />
             {legalLinks && <FooterLegalLinks legalLinks={legalLinks} />}
           </div>

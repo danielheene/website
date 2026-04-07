@@ -28,6 +28,13 @@ export function generatePersonSchema(data: UserMetaData): WithContext<Person> {
     name: data.name,
   }
 
+  if (data.image && typeof data.image === 'object' && 'url' in data.image && typeof data.image.url === 'string') {
+    person.image = {
+      '@type': 'ImageObject',
+      url: data.image.url,
+    }
+  }
+
   if (data.jobTitle) person.jobTitle = data.jobTitle
   if (data.url) person.url = data.url
   if (data.email) person.email = data.email
@@ -40,9 +47,21 @@ export function generatePersonSchema(data: UserMetaData): WithContext<Person> {
   if (data.birthDate) person.birthDate = data.birthDate
   if (data.gender) person.gender = data.gender
   if (data.vatID) person.vatID = data.vatID
+  if (data.taxID) person.taxID = data.taxID
 
-  if (data.knowsLanguage && Array.isArray(data.knowsLanguage) && data.knowsLanguage.length > 0) {
-    person.knowsLanguage = data.knowsLanguage.map(({ language }) => language).join()
+  if (data.address) {
+    person.address = {
+      '@type': 'PostalAddress',
+      ...data.address,
+    }
+  }
+
+  if (data.languages && Array.isArray(data.languages) && data.languages.length > 0) {
+    person.knowsLanguage = data.languages.map(({ language }) => ({
+      '@type': 'Language',
+      name: new Intl.DisplayNames(['en'], { type: 'language' }).of(language),
+      alternateName: language,
+    }))
   }
 
   if (data.birthPlace) {
@@ -59,32 +78,17 @@ export function generatePersonSchema(data: UserMetaData): WithContext<Person> {
     }
   }
 
-  if (data.workLocation) {
-    person.workLocation = {
-      '@type': 'Place',
-      name: data.workLocation,
-    }
-  }
-
   if (data.worksFor && typeof data.worksFor === 'object' && 'name' in data.worksFor && typeof data.worksFor.name === 'string') {
     person.worksFor = {
       '@type': 'Organization',
       name: data.worksFor.name,
       ...(data.worksFor.url && { url: data.worksFor.url }),
-    }
-  }
-
-  if (data.image && typeof data.image === 'object' && 'url' in data.image && typeof data.image.url === 'string') {
-    person.image = {
-      '@type': 'ImageObject',
-      url: data.image.url,
-    }
-  }
-
-  if (data.address) {
-    person.address = {
-      '@type': 'PostalAddress',
-      ...data.address,
+      ...(data.worksFor.address && {
+        address: {
+          '@type': 'PostalAddress',
+          ...data.worksFor.address,
+        },
+      }),
     }
   }
 

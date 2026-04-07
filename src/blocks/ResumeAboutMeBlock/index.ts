@@ -41,5 +41,3 @@ export const ResumeAboutMeBlock: Block = {
     },
   ],
 }
-
-export { Renderer as ResumeAboutMeBlockRenderer } from './Renderer'

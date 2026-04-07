@@ -1,4 +1,4 @@
-import { trace } from '@opentelemetry/api'
+import { trace,  } from '@opentelemetry/api'
 
 import { exportLogEntry } from '@/lib/otel/log-exporter'
 

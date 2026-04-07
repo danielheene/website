@@ -3,9 +3,9 @@ import type { CollectionConfig } from 'payload'
 
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
-import { customAlphabet } from 'nanoid'
+import { generateContentURL } from '@/lib/generateContentURL'
 
-const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 10)
+import { generateDocumentThumbnail } from './hooks/generateDocumentThumbnail'
 
 export const MediaDocuments: CollectionConfig<CollectionSlug.MediaDocuments> = {
   slug: CollectionSlug.MediaDocuments,
@@ -34,16 +34,62 @@ export const MediaDocuments: CollectionConfig<CollectionSlug.MediaDocuments> = {
   upload: {
     disableLocalStorage: true,
     withMetadata: false,
+    hideRemoveFile: true,
+    displayPreview: true,
     mimeTypes: ['application/pdf'],
+    adminThumbnail: ({ doc }) => {
+      const thumbnailFilename = String(doc.filename).replace(/(\.pdf)$/, '-thumbnail.png')
+      return generateContentURL({
+        path: `/api/${CollectionSlug.MediaImages}/file/${thumbnailFilename}`,
+      })
+    },
   },
   fields: [
     {
-      name: 'documentKey',
+      name: 'filename',
       type: 'text',
-      label: 'Document Key which does not change between filename changes or uploads',
-      unique: true,
-      minLength: 10,
-      defaultValue: () => `generated:${nanoid()}`,
+      label: 'File Name',
+      admin: {
+        disableGroupBy: true,
+        disableListColumn: false,
+        disableListFilter: true,
+      },
+    },
+    {
+      name: 'prefix',
+      type: 'text',
+      label: 'Prefix',
+      admin: {
+        hidden: true,
+        disableGroupBy: true,
+        disableListColumn: true,
+        disableListFilter: true,
+      },
+    },
+    {
+      name: 'width',
+      type: 'number',
+      label: 'Width',
+      admin: {
+        disableGroupBy: true,
+        disableListColumn: true,
+        disableListFilter: true,
+      },
+    },
+    {
+      name: 'height',
+      type: 'number',
+      label: 'Height',
+      admin: {
+        disableGroupBy: true,
+        disableListColumn: true,
+        disableListFilter: true,
+      },
+    },
+    {
+      name: 'mimeType',
+      type: 'text',
+      label: 'MIME Type',
       admin: {
         hidden: true,
         disableGroupBy: true,
@@ -55,44 +101,41 @@ export const MediaDocuments: CollectionConfig<CollectionSlug.MediaDocuments> = {
       name: 'thumbnail',
       type: 'upload',
       label: 'Thumbnail',
+      maxDepth: 5,
       relationTo: CollectionSlug.MediaImages,
+      admin: {
+        disableGroupBy: true,
+        disableListColumn: true,
+        disableListFilter: true,
+      },
     },
     {
       name: 'thumbnailURL',
       type: 'text',
       label: 'Thumbnail URL',
-      virtual: 'thumbnail.url',
       admin: {
+        hidden: true,
         disableGroupBy: true,
         disableListColumn: true,
         disableListFilter: true,
       },
     },
-    {
-      name: 'blurDataURL',
-      type: 'text',
-      label: 'Blur Data URL',
-      virtual: 'thumbnail.blurDataURL',
-      admin: {
-        disableGroupBy: true,
-        disableListColumn: true,
-        disableListFilter: true,
-      },
-    },
+    // {
+    //   name: 'blurDataURL',
+    //   type: 'text',
+    //   label: 'Blur Data URL',
+    //   admin: {
+    //     readOnly: true,
+    //     disableGroupBy: true,
+    //     disableListColumn: true,
+    //     disableListFilter: true,
+    //   },
+    // },
   ],
   hooks: {
-
-    afterChange: [
-      async ({ operation, req, data, doc }) => {
-        console.log('operation:', operation)
-        console.log('data:', data)
-        console.log('doc:', doc)
-        if (operation === 'create' && req.file) {
-          console.log('File uploaded successfully:', req.file.name)
-        }
-      },
-    ],
+    // afterChange: [generateDocumentThumbnail],
   },
+  enableQueryPresets: true,
   versions: {
     drafts: false,
     maxPerDoc: 0,

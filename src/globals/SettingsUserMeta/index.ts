@@ -1,10 +1,14 @@
 import { AdminGroup, CollectionSlug, GlobalSlug } from '@custom-types'
+import dedent from 'dedent'
+import ISO6391 from 'iso-639-1'
 import { revalidateTag } from 'next/cache'
-import type { GlobalConfig, FieldHookArgs } from 'payload'
+import type { GlobalConfig } from 'payload'
 
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
-import { generateGeoCoordinates } from '@/lib/generateGeoCoordinates'
+import { AddressField } from '@/fields/Address'
+import { IconField } from '@/fields/Icon'
+import { getProficiencyLabel, PROFICIENCY_LEVEL } from '@/lib/languageProficiency'
 
 export const SettingsUserMeta: GlobalConfig = {
   slug: GlobalSlug.SettingsUserMeta,
@@ -32,238 +36,254 @@ export const SettingsUserMeta: GlobalConfig = {
   typescript: { interface: 'UserMetaData' },
   fields: [
     {
-      name: 'name',
-      type: 'text',
+      type: 'group',
+      label: 'Personal Information',
+      admin: {
+        description: dedent`
+            This section describes personal information about you.
+        `,
+        components: {
+          Description: '@/components/AdminPanel#DescriptionWithNewline',
+        },
+      },
+      fields: [
+        {
+          name: 'image',
+          type: 'upload',
+          relationTo: CollectionSlug.MediaImages,
+        },
+        {
+          name: 'url',
+          type: 'text',
+          defaultValue: process.env.NEXT_PUBLIC_SERVER_URL,
+          admin: {
+            hidden: true,
+          },
+        },
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'name',
+              type: 'text',
+            },
+            {
+              name: 'jobTitle',
+              type: 'text',
+            },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'gender',
+              type: 'text',
+              admin: {
+                width: '50%',
+              },
+            },
+            {
+              name: 'homeLocation',
+              type: 'text',
+              admin: {
+                width: '50%',
+              },
+            },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'birthPlace',
+              type: 'text',
+              admin: {
+                width: '50%',
+              },
+            },
+            {
+              name: 'birthDate',
+              type: 'date',
+              admin: {
+                width: '50%',
+                date: {
+                  displayFormat: 'yyyy-MM-dd',
+                },
+              },
+            },
+          ],
+        },
+      ],
     },
     {
-      name: 'jobTitle',
-      type: 'text',
+      name: 'languages',
+      label: 'Languages',
+      type: 'array',
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'language',
+              type: 'select',
+              options: ISO6391.getAllCodes().map((code) => ({
+                value: code,
+                label: {
+                  de: `${new Intl.DisplayNames(['de'], { type: 'language' }).of(code)}`,
+                  en: `${new Intl.DisplayNames(['en'], { type: 'language' }).of(code)}`,
+                },
+              })),
+            },
+            {
+              name: 'proficiency',
+              type: 'select',
+              options: Object.values(PROFICIENCY_LEVEL).map((level) => ({
+                value: level,
+                label: {
+                  de: `${level}: ${getProficiencyLabel(level, 'de')}`,
+                  en: `${level}: ${getProficiencyLabel(level, 'en')}`,
+                },
+              })),
+            },
+          ],
+        },
+      ],
     },
+
     {
-      name: 'url',
-      type: 'text',
+      type: 'row',
+      fields: [
+        {
+          name: 'taxID',
+          label: 'Tax ID',
+          type: 'text',
+          admin: {
+            width: '33.3%',
+          },
+        },
+        {
+          name: 'vatID',
+          label: 'VAT ID',
+          type: 'text',
+          admin: {
+            width: '33.3%',
+          },
+        },
+        {
+          name: 'duns',
+          label: 'DUNS',
+          type: 'text',
+          admin: {
+            width: '33.3%',
+          },
+        },
+      ],
     },
+
     {
-      name: 'github',
-      type: 'text',
+      type: 'group',
+      label: 'Contact Information',
+      admin: {
+        description: dedent`
+          This section describes your contact details, including your phone number and email address.
+          These details are used on the website like in the footer section, to generate structured data and to render the resume document.
+        `,
+        components: {
+          Description: '@/components/AdminPanel#DescriptionWithNewline',
+        },
+      },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'telephone',
+              type: 'text',
+            },
+            {
+              name: 'email',
+              label: 'Email',
+              type: 'email',
+            },
+          ],
+        },
+        {
+          name: 'sameAs',
+          type: 'array',
+          admin: {
+            description: dedent`
+              This section describes links to your profiles on other platforms, such as social media accounts or personal websites.
+            `,
+            components: {
+              Description: '@/components/AdminPanel#DescriptionWithNewline',
+              RowLabel: '@/globals/SettingsUserMeta/components/SameAsRowLabel',
+            },
+          },
+          fields: [
+            {
+              type: 'row',
+              fields: [
+                IconField({ overrides: { admin: { width: '20%' } } }),
+                {
+                  name: 'name',
+                  type: 'text',
+                  admin: {
+                    width: '40%',
+                  },
+                },
+                {
+                  name: 'url',
+                  label: 'URL',
+                  type: 'text',
+                  admin: {
+                    width: '40%',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
     },
-    {
-      name: 'image',
-      type: 'upload',
-      relationTo: CollectionSlug.MediaImages,
-    },
-    {
-      name: 'email',
-      type: 'email',
-    },
-    {
-      name: 'telephone',
-      type: 'text',
-    },
+
     {
       name: 'description',
       type: 'text',
       localized: true,
     },
-    {
-      name: 'sameAs',
-      type: 'array',
-      fields: [
-        {
-          name: 'url',
-          label: false,
-          type: 'text',
-          admin: {
-            placeholder: 'URL',
-          },
-        },
-      ],
-    },
-    {
-      name: 'duns',
-      type: 'text',
-    },
-    {
-      name: 'birthDate',
-      type: 'date',
-      admin: {
-        date: {
-          displayFormat: 'yyyy-MM-dd',
-        },
-      },
-    },
-    {
-      name: 'birthPlace',
-      type: 'text',
-    },
-    {
-      name: 'gender',
-      type: 'text',
-    },
-    {
-      name: 'homeLocation',
-      type: 'text',
-    },
-    {
-      name: 'knowsLanguage',
-      type: 'array',
-      fields: [
-        {
-          name: 'language',
-          type: 'text',
-          localized: true,
-        },
-      ],
-    },
-    {
-      name: 'vatID',
-      type: 'text',
-    },
-    {
-      name: 'workLocation',
-      type: 'text',
-    },
+
     {
       name: 'worksFor',
       type: 'group',
-      fields: [
-        {
-          name: 'name',
-          type: 'text',
+      admin: {
+        description: dedent`
+           This section describes the organization you work for.
+           It can be used to generate structured data about your employment.
+        `,
+        components: {
+          Description: '@/components/AdminPanel#DescriptionWithNewline',
         },
-        {
-          name: 'url',
-          type: 'text',
-        },
-      ],
-    },
-    {
-      name: 'address',
-      type: 'group',
-      localized: true,
-      interfaceName: 'UserMetaAddress',
-      hooks: {
-        beforeValidate: [
-          async ({ value, previousValue, req, context }: FieldHookArgs) => {
-            if (context.disableHook) return value
-
-            const requiredKeys = ['street', 'number', 'postCode', 'place', 'countryCode']
-            const requiredKeysChanged = requiredKeys.some(key => previousValue[key] !== value[key])
-            const requiredKeysAvailable = requiredKeys.every(key => Object.hasOwn(value, key) && value[key] !== '')
-
-            if (!requiredKeysChanged || !requiredKeysAvailable) return value
-
-            const locale = req.locale === 'de' ? 'de' : 'en'
-            context.otherLocale = locale === 'de' ? 'en' : 'de'
-            return await generateGeoCoordinates({ locale, ...value })
-          },
-        ],
-        afterChange: [
-          async ({ value, req, context }: FieldHookArgs) => {
-            if (context.disableHook) return
-
-            const locale = context.otherLocale === 'de' ? 'de' : 'en'
-            const address = await generateGeoCoordinates({ locale, ...value })
-
-            await req.payload.updateGlobal({
-              slug: GlobalSlug.SettingsUserMeta,
-              data: {
-                address,
-              },
-              context: {
-                disableHook: true,
-              },
-              locale,
-            })
-          },
-        ],
       },
       fields: [
         {
           type: 'row',
           fields: [
             {
-              name: 'street',
+              name: 'name',
               type: 'text',
-              defaultValue: '',
             },
             {
-              name: 'number',
+              name: 'url',
+              label: 'URL',
               type: 'text',
-              defaultValue: '',
             },
           ],
         },
-        {
-          type: 'row',
-          fields: [
-            {
-              name: 'postCode',
-              type: 'text',
-              defaultValue: '',
-            },
-            {
-              name: 'place',
-              type: 'text',
-              defaultValue: '',
-            },
-          ],
-        },
-        {
-          type: 'row',
-          fields: [
-            {
-              name: 'region',
-              type: 'text',
-              defaultValue: '',
-              admin: {
-                readOnly: true,
-              },
-            },
-            {
-              name: 'locality',
-              type: 'text',
-              defaultValue: '',
-              admin: {
-                readOnly: true,
-              },
-            },
-          ],
-        },
-        {
-          type: 'row',
-          fields: [
-            {
-              name: 'countryCode',
-              type: 'text',
-              minLength: 2,
-              maxLength: 2,
-              defaultValue: '',
-              validate: (value: string) => {
-                if (!value) return true
-                return /^[A-Z]{2}$/.test(value) || 'Invalid country code'
-              },
-            },
-            {
-              name: 'countryName',
-              type: 'text',
-              defaultValue: '',
-              admin: {
-                readOnly: true,
-              },
-            },
-          ],
-        },
-        {
-          name: 'location',
-          type: 'point',
-          defaultValue: ['', ''],
-          admin: {
-            readOnly: true,
-          },
-        },
+        AddressField(),
       ],
     },
+    AddressField(),
   ],
   versions: false,
 }

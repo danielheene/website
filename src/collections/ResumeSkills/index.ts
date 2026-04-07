@@ -42,18 +42,38 @@ export const ResumeSkills: CollectionConfig<CollectionSlug.ResumeSkills> = {
       type: 'text',
       required: true,
       localized: true,
+      hooks: {
+        // beforeChange: [
+        //   async ({ operation, req, data, path, collection, originalDoc }) => {
+        //     const existingDoc = await req.payload.db.findOne({
+        //       collection: collection.slug,
+        //       where: {
+        //         _id: { equals: originalDoc._id },
+        //       },
+        //       locale: 'all',
+        //     })
+        //     console.log('existingDoc:', existingDoc)
+        //     console.log('operation:', operation)
+        //     console.log('data:', data)
+        //     if (operation === 'create' && req.file) {
+        //       console.log('File uploaded successfully:', req.file.name)
+        //     }
+        //   },
+        // ],
+      },
     },
     SlugField({ fieldToUse: 'name' }),
     {
       name: 'type',
       type: 'select',
       options: [
-        { label: 'Skill', value: 'skill' },
-        { label: 'Tool', value: 'tool' },
+        { label: 'Technology', value: 'technology' },
+        { label: 'Programming Language', value: 'programmingLanguage' },
+        { label: 'Methodology', value: 'methodology' },
         { label: 'Language', value: 'language' },
-        { label: 'Framework', value: 'framework' },
+        { label: 'Private Interest', value: 'privateInterest' },
       ],
-      defaultValue: 'skill',
+      defaultValue: 'technology',
       admin: {
         position: 'sidebar',
       },

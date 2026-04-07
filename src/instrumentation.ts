@@ -11,7 +11,15 @@ export function register() {
     traceExporter: new OTLPHttpJsonTraceExporter({ url: process.env.NEXT_PUBLIC_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT }),
     instrumentationConfig: {
       fetch: {
-        propagateContextUrls: [/jsonplaceholder\.typicode\.com/, /httpbin\.org/, /api\.openweathermap\.org/],
+        propagateContextUrls: [
+          /heene.review/,
+          /heene.dev/,
+          /heene.io/,
+          /api.anthropic.com/,
+          /api.openai.com/,
+          /api.mapbox.com/,
+          /api.cloudflare.com/,
+        ],
         ignoreUrls: [],
         resourceNameTemplate: '{http.method} {http.host}{http.target}',
       },

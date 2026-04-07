@@ -12,8 +12,6 @@ export type IdentifyFunction = {
   (uniqueId: string, data: Record<string, unknown>): void
 }
 
-export type BeforeSendFunction = (type?: string, payload?: Record<string, unknown>) => Record<string, unknown> | false | null | undefined
-
 export interface UmamiContextValue {
   track: TrackFunction
   identify: IdentifyFunction
@@ -35,6 +33,4 @@ export interface UmamiScriptOptions {
   excludeHash?: boolean
   /** Respect users' Do Not Track browser setting. */
   doNotTrack?: boolean
-  /** Allows you to specify a function that will be called before data is sent. You can then inspect and modify the payload or cancel the sending entirely. The function will take two parameters, type and payload. To continue with sending, you return a payload object. To cancel the sending, return a false-y value. */
-  beforeSend?: BeforeSendFunction
 }

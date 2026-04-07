@@ -1,4 +1,5 @@
 export * from './CellWithThumbnail'
+export * from './DescriptionWithNewline'
 export * from './Icon'
 export * from './LanguageToggle'
 export * from './Logo'

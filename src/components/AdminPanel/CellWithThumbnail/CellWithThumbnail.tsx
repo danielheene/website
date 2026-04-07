@@ -1,8 +1,8 @@
-import { CollectionSlug } from '@custom-types'
-import { get } from 'lodash-es'
+import type { MediaImage } from '@payload-types'
+import { get, upperFirst } from 'lodash-es'
 import Image from 'next/image'
 import Link from 'next/link'
-import type { DefaultServerCellComponentProps } from 'payload'
+import type { DefaultServerCellComponentProps, TextFieldClient } from 'payload'
 import type { CSSProperties } from 'react'
 
 const style: CSSProperties = {
@@ -16,26 +16,44 @@ const style: CSSProperties = {
 export const CellWithThumbnail = async ({
   rowData,
   cellData,
+  field,
   payload,
   collectionSlug,
   thumbnailPath,
-}: DefaultServerCellComponentProps & { thumbnailPath: string }) => {
-  let src = null
+  onClick,
+}: DefaultServerCellComponentProps<TextFieldClient> & { thumbnailPath: string }) => {
+  let thumbnailSrc = null
 
   try {
-    const { thumbnailURL, url } = await payload.findByID({
-      collection: CollectionSlug.MediaImages,
-      id: get(rowData, thumbnailPath),
+    const document = await payload.findByID({
+      collection: collectionSlug,
+      id: rowData.id,
     })
-    src = thumbnailURL || url
+    const { thumbnailURL, url } = get(document, thumbnailPath.replace(/(\.thumbnailURL)$/, '')) as MediaImage
+    thumbnailSrc = thumbnailURL || url
   } catch (_) {
     /* no media found */
   }
 
-  return (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
-      {src ? <Image src={src} alt="" width={40} height={40} style={style} /> : <div style={style} />}
-      <Link href={`/admin/collections/${collectionSlug}/${rowData.id}`}>{cellData}</Link>
-    </div>
+  const handleClick = async () => {
+    'use server'
+    typeof onClick === 'function' && onClick({ collectionSlug, rowData, cellData })
+  }
+
+  const innerElements = (
+    <>
+      {thumbnailSrc ? <Image src={thumbnailSrc} style={style} width={40} height={40} alt="" /> : <div style={style} />}
+      <span>{cellData || `<No ${upperFirst('name' in field ? field.name : 'Value')}>`}</span>
+    </>
+  )
+
+  return typeof onClick === 'function' ? (
+    <button style={{ display: 'flex', alignItems: 'center' }} type="button" onClick={handleClick}>
+      {innerElements}
+    </button>
+  ) : (
+    <Link style={{ display: 'flex', alignItems: 'center' }} href={`/admin/collections/${collectionSlug}/${rowData.id}`}>
+      {innerElements}
+    </Link>
   )
 }

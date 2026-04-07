@@ -4,18 +4,24 @@ import { revalidatePath, revalidateTag } from 'next/cache'
 import type { GlobalAfterChangeHook } from 'payload'
 
 import { generateContentPath } from '@/lib/generateContentPath'
+import { logger } from '@/lib/otel/logger'
 
 export const revalidateResumeSection =
   (slug: GlobalSlug): GlobalAfterChangeHook =>
-    async ({ doc, context, req: { payload, locale: reqLocale } }) => {
-      if (context.skipRevalidate) return doc
+  async ({ doc, context, req: { payload, locale: reqLocale } }) => {
+    if (context.skipRevalidate) return doc
 
-      if ('_status' in doc && doc._status !== 'published') return
+    if ('_status' in doc && doc._status !== 'published') return
 
-      const locale = reqLocale === 'de' ? 'de' : 'en'
-      payload.logger.info(`Revalidating Resume Section: ${slug} for locale: ${locale}`)
-      revalidateTag(slug)
+    const locale = reqLocale === 'de' ? 'de' : 'en'
+    payload.logger.info(`Revalidating Resume Section: ${slug} for locale: ${locale}`)
+    revalidateTag(slug)
 
+    /**
+     * Revalidate all Pages including resumne layouts
+     */
+    try {
+      console.info(`Fetching pages that are using the Resume layout: ${slug} for locale: ${locale}`)
       const { docs } = await payload.find({
         collection: CollectionSlug.Pages,
         draft: false,
@@ -30,22 +36,37 @@ export const revalidateResumeSection =
         },
       })
 
+      console.info(`Found ${docs.length} pages using the Resume layout for locale: ${locale}`)
+
       docs.forEach(({ slug }) => {
+        console.info(`Revalidating Page: ${slug}`)
         const path = generateContentPath(CollectionSlug.Pages, slug)
-        payload.logger.info(`Revalidating Page: ${path}`)
         revalidatePath(path)
       })
-      //
-      // await payload.jobs.queue({
-      //   workflow: 'generateResumeDocumentWorkflow',
-      //   input: { locale },
-      // })
+    } catch (error) {
+      console.error(`Failed to revalidate resume section with slug: ${slug} for locale: ${locale}`, error)
+    }
 
-
-      await payload.jobs.queue({
-        task: 'generateResumeDocument',
-        input: { locale },
+    /**
+     * Create Resume Document Regeneration
+     */
+    try {
+      const documentEnglish = await payload.jobs.queue({
+        task: 'generateResumeDocumentTask',
+        queue: 'default',
+        input: { locale: 'en' },
       })
 
-      return doc
+      const documentGerman = await payload.jobs.queue({
+        task: 'generateResumeDocumentTask',
+        queue: 'default',
+        input: { locale: 'de' },
+      })
+
+      console.info(`Added a new task to the queue to create the most recent resume document with locale: ${locale}`, { locale })
+    } catch (error) {
+      console.error(`Failed to add task to queue for resume document generation with locale: ${locale}`, error)
     }
+
+    return doc
+  }

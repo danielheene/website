@@ -1,4 +1,4 @@
-import ReactPDF from '@react-pdf/renderer'
+import { renderToBuffer } from '@react-pdf/renderer'
 import type { NextRequest } from 'next/server'
 
 import { getCachedResumeDocumentData } from '@/lib/getResumeDocumentData'
@@ -9,9 +9,9 @@ export async function GET(request: NextRequest) {
   const locale = localeParam === 'de' ? 'de' : 'en'
 
   const documentData = await getCachedResumeDocumentData(locale)
-  const stream: ReadableStream = await ReactPDF.renderToStream(<ResumeDocument {...documentData} />)
-
-  return new Response(stream, {
+  const buffer = await renderToBuffer(<ResumeDocument {...documentData} />)
+  const blob = new Blob([Buffer.from(buffer)], { type: 'application/pdf' })
+  return new Response(blob, {
     status: 200,
     headers: {
       'Content-Type': 'application/pdf',

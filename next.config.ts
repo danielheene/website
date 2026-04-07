@@ -6,19 +6,11 @@ import { NextConfig } from 'next'
  */
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  poweredByHeader: false,
   productionBrowserSourceMaps: false,
-  experimental: {
-    serverActions: {
-      bodySizeLimit: '10mb',
-    },
-  },
-  env: {
-    NEXT_PUBLIC_UMAMI_WEBSITE_ID: process.env['UMAMI_WEBSITE_ID'] || undefined,
-  },
   eslint: {
     ignoreDuringBuilds: true,
   },
-
   sassOptions: {
     silenceDeprecations: ['import', 'legacy-js-api'],
     implementation: 'sass',
@@ -34,6 +26,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       new URL(`${process.env.NEXT_PUBLIC_SERVER_URL}/**`),
       new URL('https://daniel.heene.dev/**'),
+      new URL('https://daniel.heene.review/**'),
       new URL('https://daniel.heene.io/**'),
       new URL('https://cdn.pixabay.com/**'),
     ],

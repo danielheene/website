@@ -51,6 +51,9 @@
       "recommended": true,
       "suspicious": {
         "noArrayIndexKey": "off"
+      },
+      "a11y": {
+        "noSvgWithoutTitle": "off"
       }
     }
   },

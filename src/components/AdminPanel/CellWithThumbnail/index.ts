@@ -1,1 +1,1 @@
-export { CellWithThumbnail } from './CellWithThumbnail'
+export { CellWithThumbnail, CellWithThumbnail as default } from './CellWithThumbnail'

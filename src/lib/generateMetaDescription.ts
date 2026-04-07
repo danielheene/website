@@ -1,6 +1,6 @@
+import { createAnthropic } from '@ai-sdk/anthropic'
 import { generateText } from 'ai'
 import dedent from 'dedent'
-import { createAnthropic } from '@ai-sdk/anthropic'
 
 /**
  * Generates a meta-description based on the URL
@@ -10,7 +10,7 @@ export const generateMetaDescription = async (url: string): Promise<string> => {
   'use server'
 
   const anthropic = createAnthropic({
-    apiKey: process.env['ANTHROPIC_API_KEY'],
+    apiKey: process.env.ANTHROPIC_API_KEY,
   })
 
   const { text } = await generateText({

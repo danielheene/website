@@ -1,8 +1,8 @@
 import { CollectionSlug } from '@custom-types'
-import { startCase } from 'lodash-es'
+import type { LinkFieldData } from '@payload-types'
 import { deepMerge, type Field, type GroupField, type OptionObject } from 'payload'
 
-import { ICON } from '@/components/Icon'
+import { IconField } from '@/fields/Icon'
 
 export const appearanceOptions: Record<string, OptionObject> = {
   default: {
@@ -77,19 +77,7 @@ export const LinkField = ({ withAppearanceSelect = false, overrides = {} }: Link
         {
           type: 'row',
           fields: [
-            {
-              name: 'icon',
-              type: 'select',
-              admin: {
-                width: '25%',
-              },
-              options: [
-                ...Object.entries(ICON).map(([iconLabel, iconName]) => ({
-                  label: startCase(iconLabel),
-                  value: iconName,
-                })),
-              ],
-            },
+            IconField({ overrides: { admin: { width: '25%' } } }),
             {
               name: 'label',
               type: 'text',
@@ -117,7 +105,7 @@ export const LinkField = ({ withAppearanceSelect = false, overrides = {} }: Link
               type: 'relationship',
               admin: {
                 width: '75%',
-                condition: (_, siblingData) => siblingData?.type === 'reference',
+                condition: (_, siblingData: LinkFieldData) => siblingData?.type === 'reference',
               },
               label: 'Document to link to',
               maxDepth: 1,
@@ -129,7 +117,7 @@ export const LinkField = ({ withAppearanceSelect = false, overrides = {} }: Link
               type: 'text',
               admin: {
                 width: '75%',
-                condition: (_, siblingData) => siblingData?.type === 'custom',
+                condition: (_, siblingData: LinkFieldData) => siblingData?.type === 'custom',
               },
               label: 'Custom URL',
               required: true,
@@ -139,34 +127,10 @@ export const LinkField = ({ withAppearanceSelect = false, overrides = {} }: Link
               type: 'email',
               admin: {
                 width: '75%',
-                condition: (_, siblingData) => siblingData?.type === 'mailto',
+                condition: (_, siblingData: LinkFieldData) => siblingData?.type === 'mailto',
               },
               label: 'E-Mail Address',
               required: true,
-            },
-          ],
-        },
-        {
-          type: 'row',
-          admin: {
-            condition: (_, siblingData) => siblingData?.type === 'mailto',
-          },
-          fields: [
-            {
-              name: 'subject',
-              type: 'text',
-              admin: {
-                width: '50%',
-              },
-              label: 'Subject',
-            },
-            {
-              name: 'cc',
-              type: 'text',
-              admin: {
-                width: '50%',
-              },
-              label: 'CC',
             },
           ],
         },

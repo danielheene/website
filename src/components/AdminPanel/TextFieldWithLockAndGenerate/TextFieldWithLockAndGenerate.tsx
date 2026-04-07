@@ -1,44 +1,48 @@
 'use client'
 
-import { TextFieldClientProps } from 'payload'
-import React, { useState, useCallback } from 'react'
-import { useField, TextInput, FieldLabel } from '@payloadcms/ui'
+import { FieldLabel, TextInput, useField } from '@payloadcms/ui'
+import type { TextFieldClientProps } from 'payload'
+import type React from 'react'
+import { useCallback, useState } from 'react'
 import { RxLockClosed, RxLockOpen2, RxReload } from 'react-icons/rx'
 
 import './TextFieldWithLockAndGenerate.styles.scss'
+
 import { cn } from '@/utilities/cn'
 
-export type TextFieldGenerateFunction = () => (string | Promise<string>)
+export type TextFieldGenerateFunction = () => string | Promise<string>
 
-type TextFieldWithLockAndGenerateProps = ({
-  hasLock?: boolean
-  hasGenerate?: true
-  generateFunction: TextFieldGenerateFunction
-} | {
-  hasLock?: boolean
-  hasGenerate?: false
-  generateFunction?: never
-}) & TextFieldClientProps
+type TextFieldWithLockAndGenerateProps = (
+  | {
+      hasLock?: boolean
+      hasGenerate?: true
+      generateFunction: TextFieldGenerateFunction
+    }
+  | {
+      hasLock?: boolean
+      hasGenerate?: false
+      generateFunction?: never
+    }
+) &
+  TextFieldClientProps
 
 export const TextFieldWithLockAndGenerate: React.FC<TextFieldWithLockAndGenerateProps> = ({
-                                                                                            field,
-                                                                                            hasGenerate,
-                                                                                            hasLock,
-                                                                                            path,
-                                                                                            readOnly: readOnlyFromProps,
-                                                                                            generateFunction,
-                                                                                            inputRef,
-                                                                                          }) => {
+  field,
+  hasGenerate,
+  hasLock,
+  path,
+  readOnly: readOnlyFromProps,
+  generateFunction,
+  inputRef,
+}) => {
   const {
     label,
     name,
     admin: { placeholder },
   } = field
 
-
   const { value, setValue } = useField<string>({ path })
   const [isLocked, setIsLocked] = useState<boolean>(hasLock && readOnlyFromProps !== true)
-
 
   const handleUnlockClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
@@ -57,7 +61,7 @@ export const TextFieldWithLockAndGenerate: React.FC<TextFieldWithLockAndGenerate
         if (nextValue && nextValue !== value) setValue(nextValue)
       })
     },
-    [setValue, value],
+    [setValue, value, generateFunction],
   )
 
   return (
@@ -66,7 +70,8 @@ export const TextFieldWithLockAndGenerate: React.FC<TextFieldWithLockAndGenerate
         <FieldLabel label={label} path={path} htmlFor={inputRef?.current?.id} />
       </div>
       <div className="input-wrapper">
-        {hasLock && (<button
+        {hasLock && (
+          <button
             type="button"
             className="input-button input-button--lock"
             onClick={handleUnlockClick}
@@ -76,25 +81,16 @@ export const TextFieldWithLockAndGenerate: React.FC<TextFieldWithLockAndGenerate
           </button>
         )}
         <TextInput
-          className={cn(
-            'input-field',
-            hasLock && 'input-field--has-lock',
-            hasGenerate && 'input-field--has-generate',
-          )}
+          className={cn('input-field', hasLock && 'input-field--has-lock', hasGenerate && 'input-field--has-generate')}
           value={value}
           onChange={setValue}
           placeholder={placeholder}
-          path={path || field.name}
+          path={path || name}
           readOnly={Boolean(readOnlyFromProps || isLocked)}
           inputRef={inputRef}
         />
         {hasGenerate && (
-          <button
-            type="button"
-            className="input-button input-button--generate"
-            disabled={isLocked}
-            onClick={handleGenerateClick}
-          >
+          <button type="button" className="input-button input-button--generate" disabled={isLocked} onClick={handleGenerateClick}>
             <RxReload />
           </button>
         )}

@@ -1,5 +1,9 @@
-import { Icon as IconifyIconComponent } from '@iconify-icon/react'
+import { addAPIProvider, Icon as IconifyIconComponent } from '@iconify-icon/react'
 import { type ComponentProps, type JSX, memo } from 'react'
+
+addAPIProvider('', {
+  resources: ['https://icons.heene.io'],
+})
 
 export const BRAND_ICON = {
   ARCHLINUX: 'simple-icons:archlinux',
@@ -15,7 +19,7 @@ export const BRAND_ICON = {
   GITLAB: 'simple-icons:gitlab',
   GOLAND: 'simple-icons:goland',
   HOME_ASSISTANT: 'simple-icons:homeassistant',
-  INTELLIJ: 'simple-icons:intellij',
+  INTELLIJ: 'simple-icons:intellijidea',
   JAVASCRIPT: 'simple-icons:javascript',
   JETBRAINS: 'simple-icons:jetbrains',
   KUBERNETES: 'simple-icons:kubernetes',
@@ -23,10 +27,10 @@ export const BRAND_ICON = {
   LINUX: 'simple-icons:linux',
   MAIL: 'simple-icons:maildotru',
   NAMECHEAP: 'simple-icons:namecheap',
-  NEXTJS: 'simple-icons:nextjs',
-  NODEJS: 'simple-icons:nodejs',
+  NEXTJS: 'simple-icons:nextdotjs',
+  NODEJS: 'simple-icons:nodedotjs',
   ONE_PASSWORD: 'simple-icons:1password',
-  PAYLOAD: 'simple-icons:payload',
+  PAYLOAD: 'simple-icons:payloadcms',
   PHPSTORM: 'simple-icons:phpstorm',
   PYCHARM: 'simple-icons:pycharm',
   RANCHER: 'simple-icons:rancher',
@@ -73,14 +77,15 @@ export const UI_ICON = {
   WARNING: 'material-symbols:warning',
   INFO: 'material-symbols:info',
   SUCCESS: 'material-symbols:check-circle',
+  CALL: 'material-symbols:call',
   PAUSE: 'material-symbols:pause',
-  PLAY: 'material-symbols:play',
+  PLAY: 'material-symbols:play-arrow',
   STOP: 'material-symbols:stop',
   REPEAT: 'material-symbols:repeat',
   REPLAY: 'material-symbols:replay',
   ATTACH: 'material-symbols:attach-file',
   SETTINGS: 'material-symbols:settings',
-  CALENDAR: 'material-symbols:calendar',
+  CALENDAR: 'material-symbols:calendar-month',
   ARROW_DOWN: 'material-symbols:keyboard-arrow-down',
   ARROW_UP: 'material-symbols:keyboard-arrow-up',
   ARROW_LEFT: 'material-symbols:keyboard-arrow-left',

@@ -1,7 +1,7 @@
 'use server'
 
-import Redis from 'ioredis'
 import { hoursToSeconds } from 'date-fns'
+import Redis from 'ioredis'
 
 let token: string | null = null
 let redis: Redis | null = null
@@ -63,35 +63,34 @@ export const getCache = async (key: string): Promise<JSON> => {
   return data ? JSON.parse(data) : null
 }
 
-const
-  fetcher = async <T>(url: URL | string): Promise<T | null> => {
-    const data = await getCache(url.toString())
-    if (data) return data as T
+const fetcher = async <T>(url: URL | string): Promise<T | null> => {
+  const data = await getCache(url.toString())
+  if (data) return data as T
 
-    const token = await getToken()
-    const response = await fetch(url, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
+  const token = await getToken()
+  const response = await fetch(url, {
+    headers: {
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  })
 
-    const json: T = await response.json()
+  const json: T = await response.json()
 
-    await setCache(url.toString(), json as JSON)
-    return json
-  }
+  await setCache(url.toString(), json as JSON)
+  return json
+}
 
 const buildApiUrl = (path: string, params?: Pick<AllApiParams, 'startAt' | 'endAt'> & Partial<Omit<AllApiParams, 'startAt' | 'endAt'>>) => {
   const searchParams = params
     ? new URLSearchParams({
-      ...params,
-      startAt: params.startAt.getTime().toString(),
-      endAt: params.endAt.getTime().toString(),
-    }).toString()
+        ...params,
+        startAt: params.startAt.getTime().toString(),
+        endAt: params.endAt.getTime().toString(),
+      }).toString()
     : ''
 
-  return new URL(`/api/websites/${process.env.UMAMI_SITE_ID}/${path}?${searchParams}`, process.env.UMAMI_HOST_URL)
+  return new URL(`/api/websites/${process.env.NEXT_PUBLIC_UMAMI_SITE_ID}/${path}?${searchParams}`, process.env.UMAMI_HOST_URL)
 }
 
 type Metric = { x: string; y: number }
@@ -162,12 +161,7 @@ export const fetchPaths = async ({ startAt, endAt }: UmamiPathsParams): Promise<
   return await fetcher<UmamiPath[]>(url)
 }
 
-export const fetchPageViews = async ({
-                                       startAt,
-                                       endAt,
-                                       timezone,
-                                       unit,
-                                     }: UmamiPageViewsParams): Promise<UmamiPageViews | null> => {
+export const fetchPageViews = async ({ startAt, endAt, timezone, unit }: UmamiPageViewsParams): Promise<UmamiPageViews | null> => {
   const url = buildApiUrl('pageviews', { startAt, endAt, timezone, unit })
   return await fetcher<UmamiPageViews>(url)
 }

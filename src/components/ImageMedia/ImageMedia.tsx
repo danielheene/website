@@ -68,7 +68,7 @@ export const ImageMedia = ({
           : {}
       }
       className={cn([
-        'flex flex-grow flex-shrink-0 basis-full',
+        'flex grow shrink-0 basis-full',
         'h-full overflow-hidden p-0 relative',
 
         duoTone && [
@@ -93,7 +93,7 @@ export const ImageMedia = ({
       <NextImage
         alt={alt}
         className={cn([
-          'flex-grow flex-shrink-0 basis-full relative',
+          'grow shrink-0 basis-full relative',
           'h-full w-full max-w-full object-contain',
           'transition-opacity duration-500 ease-in-out',
 

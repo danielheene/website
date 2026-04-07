@@ -12,10 +12,10 @@ import type { LogoCarouselProps } from '@/components/LogoCarousel/LogoCarousel'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
 
-export const Renderer = ({
-                           blockType,
-                           data: { title, caption, customerLogos },
-                         }: ResumeLayoutBlockData<GlobalSlug.ResumeCustomers>): JSX.Element => {
+export const ResumeCustomersBlockRenderer = ({
+  blockType,
+  data: { title, caption, customerLogos },
+}: ResumeLayoutBlockData<GlobalSlug.ResumeCustomers>): JSX.Element => {
   const filteredEntries: LogoCarouselProps['entries'] = useMemo(
     () =>
       customerLogos.filter(

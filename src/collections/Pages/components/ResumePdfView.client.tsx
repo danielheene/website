@@ -1,6 +1,6 @@
 'use client'
 
-import { PDFViewer } from '@react-pdf/renderer'
+import { PDFViewer, usePDF } from '@react-pdf/renderer'
 import type { ComponentProps } from 'react'
 
 import { ResumeDocument } from '@/pdfs/ResumeDocument'

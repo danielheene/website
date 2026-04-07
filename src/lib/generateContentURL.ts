@@ -22,7 +22,7 @@ type GenerateContentURLProps =
  * @param path
  */
 export const generateContentURL = ({ collection, slug, params, path }: GenerateContentURLProps): string => {
-  const urlPath = path || generateContentPath(collection, slug)
+  const urlPath = encodeURI(path || generateContentPath(collection, slug))
   const urlParams = params ? `?${new URLSearchParams(params).toString()}` : ''
 
   return new URL(`${urlPath}${urlParams}`, process.env.NEXT_PUBLIC_SERVER_URL).toString()

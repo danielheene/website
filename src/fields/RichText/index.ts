@@ -1,8 +1,8 @@
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import type { RichTextField as PayloadRichTextField } from 'payload'
 import { deepMerge } from 'payload'
 
-type RichTextEditorVariant = 'inline' | 'caption'
+type RichTextEditorVariant = 'inline' | 'caption' | 'nested' | 'post'
 type RichTextFieldOverrides = Partial<Omit<PayloadRichTextField, 'name' | 'type' | 'editor'>>
 
 type RichTextFieldProps = {
@@ -75,6 +75,11 @@ function createRichTextEditor(variant: RichTextEditorVariant) {
         // }),
         // InlineToolbarFeature(),
       ],
+    })
+  }
+  if (variant === 'post') {
+    return lexicalEditor({
+      features: ({ rootFeatures }) => [...rootFeatures, BlocksFeature({ blocks: ['TwoColumnContentBlock'] })],
     })
   }
   if (variant === 'caption') {

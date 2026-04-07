@@ -1,35 +1,30 @@
 'use client'
 
-import { useUmamiCharts } from '@/contexts/UmamiCharts'
-import { CalendarDatePicker } from '@/components/CalendarDatePicker'
 import { useEffect, useMemo } from 'react'
-import { Matcher } from 'react-day-picker'
+import type { Matcher } from 'react-day-picker'
+
+import { CalendarDatePicker } from '@/components/CalendarDatePicker'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useUmamiCharts } from '@/contexts/UmamiCharts'
 
 export const UmamiControlBar = () => {
-  const {
-    selectedTimeSpan,
-    website,
-    setSelectedTimeSpan,
-    registerControlBar,
-  } = useUmamiCharts()
+  const { selectedTimeSpan, website, setSelectedTimeSpan, registerControlBar } = useUmamiCharts()
   const { createdAt, deletedAt, resetAt, name, domain } = website || {}
 
-  useEffect(registerControlBar, [])
+  useEffect(() => registerControlBar(), [registerControlBar])
 
   const matcher: Matcher[] = useMemo(() => {
     const beforeDate = resetAt ? new Date(resetAt) : createdAt ? new Date(createdAt) : undefined
     const afterDate = deletedAt ? new Date(deletedAt) : undefined
 
-    return [
-      { before: beforeDate },
-      { after: afterDate },
-    ]
+    return [{ before: beforeDate }, { after: afterDate }]
   }, [createdAt, deletedAt, resetAt])
 
   return (
     <div className="w-full flex flex-row justify-between py-4">
-      {!website ? (<Skeleton className='h-12 w-full"' />) : (
+      {!website ? (
+        <Skeleton className='h-12 w-full"' />
+      ) : (
         <>
           <div className="text-xl md:text-2xl lg:text-3xl font-mono">Umami Controls</div>
           <CalendarDatePicker

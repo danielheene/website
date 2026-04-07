@@ -6,7 +6,10 @@ import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
 import { cn } from '@/utilities/cn'
 
-export const Renderer = ({ blockType, data: { title, content, portrait } }: ResumeLayoutBlockData<GlobalSlug.ResumeAboutMe>) => {
+export const ResumeAboutMeBlockRenderer = ({
+  blockType,
+  data: { title, content, portrait },
+}: ResumeLayoutBlockData<GlobalSlug.ResumeAboutMe>) => {
   return (
     <SectionContainer id={blockType} title={title} variant="default">
       <div className="container grid grid-cols-12 min-h-screen">

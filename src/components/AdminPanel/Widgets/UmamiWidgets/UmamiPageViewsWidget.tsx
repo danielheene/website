@@ -1,11 +1,12 @@
 'use client'
 
-import { useUmamiCharts } from '@/contexts/UmamiCharts'
 import { useEffect, useMemo } from 'react'
-import { CardHeader, Card, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
+import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts'
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChartContainer } from '@/components/ui/chart'
-import { AreaChart, CartesianGrid, XAxis, YAxis, Area, Tooltip } from 'recharts'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useUmamiCharts } from '@/contexts/UmamiCharts'
 import { cn } from '@/utilities/cn'
 
 interface CustomTooltipProps {
@@ -31,7 +32,7 @@ export const UmamiPageViewsWidget = () => {
   useEffect(() => {
     const unregister = registerWidget('pageViews')
     return () => unregister()
-  }, [])
+  }, [registerWidget])
 
   const chartConfig = {
     pageviews: {
@@ -88,10 +89,8 @@ export const UmamiPageViewsWidget = () => {
               />
               <YAxis tickLine={false} axisLine={false} tickMargin={8} className="text-xs fill-muted-foreground" />
               <Tooltip content={<CustomTooltip />} cursor={{ stroke: primaryColor, strokeOpacity: 0.2 }} />
-              <Area type="monotone" dataKey="pageviews" stroke={primaryColor} strokeWidth={2}
-                    fill="url(#pageviewsGradient)" />
-              <Area type="monotone" dataKey="visitors" stroke={secondaryColor} strokeWidth={2}
-                    fill="url(#visitorsGradient)" />
+              <Area type="monotone" dataKey="pageviews" stroke={primaryColor} strokeWidth={2} fill="url(#pageviewsGradient)" />
+              <Area type="monotone" dataKey="visitors" stroke={secondaryColor} strokeWidth={2} fill="url(#visitorsGradient)" />
             </AreaChart>
           </ChartContainer>
         )}
