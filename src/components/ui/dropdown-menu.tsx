@@ -4,7 +4,7 @@ import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
 import type * as React from 'react'
 import { LuCheck as CheckIcon, LuChevronRight as ChevronRightIcon, LuCircle as CircleIcon } from 'react-icons/lu'
 
-import { cn } from '@/utilities/cn'
+import { cn } from '@/lib/cn'
 
 function DropdownMenu({ ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
   return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />

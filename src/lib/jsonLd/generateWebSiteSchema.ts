@@ -1,13 +1,15 @@
-import type { SiteMetaData } from '@payload-types'
 import type { WebSite, WithContext } from 'schema-dts'
 
 import { isMediaImage } from '@/lib/typeGuards'
+import type { SiteConfigurationData } from '@/types/payload'
 
 /**
  * Generates WebSite JSON-LD
  * @param data
  */
-export function generateWebSiteSchema(data: SiteMetaData): WithContext<WebSite> {
+export function generateWebSiteSchema(
+  data: SiteConfigurationData,
+): WithContext<WebSite> {
   const webSite: WithContext<WebSite> = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -24,10 +26,6 @@ export function generateWebSiteSchema(data: SiteMetaData): WithContext<WebSite> 
       '@type': 'ImageObject',
       url: data.image.url,
     }
-  }
-
-  if (data.keywords && data.keywords.length > 0) {
-    webSite.keywords = data.keywords.join(', ')
   }
 
   if (data.searchUrl) {

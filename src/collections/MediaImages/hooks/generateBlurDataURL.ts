@@ -1,4 +1,4 @@
-import type { MediaImage } from '@payload-types'
+import type { MediaImage } from '@/types/payload'
 import type { CollectionBeforeChangeHook } from 'payload'
 import sharp from 'sharp'
 

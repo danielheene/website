@@ -1,11 +1,10 @@
 import {
-  type InternalStatusResponse,
-  type UptimeKumaHeartbeat,
-  type UptimeKumaHeartbeatResponse,
-  UptimeKumaHeartbeatStatus,
-  UptimeKumaOverallStatus,
-} from '@custom-types'
-import { logger } from '@/lib/otel/logger'
+  type Heartbeat,
+  type HeartbeatResponse,
+  HeartbeatStatus,
+  OverallStatus,
+  type OverallStatusResponse,
+} from '@/types/uptime-kuma'
 
 /**
  *
@@ -13,25 +12,33 @@ import { logger } from '@/lib/otel/logger'
  */
 export const GET = async () => {
   if (!process.env.STATUS_PAGE_HEARTBEAT_API_URL) {
-    logger.error('STATUS_PAGE_HEARTBEAT_API_URL is not set')
-    return new Response('Not configured', { status: 500 })
+    console.error('STATUS_PAGE_HEARTBEAT_API_URL is not set')
+    return new Response('Not configured', {
+      status: 500,
+    })
   }
 
   try {
-    logger.info('Fetching status...')
-    const { heartbeatList }: UptimeKumaHeartbeatResponse = await fetch(process.env.STATUS_PAGE_HEARTBEAT_API_URL).then((res) => res.json())
-    const latestHeartbeats = Object.values(heartbeatList).map((heartbeats) => heartbeats[heartbeats.length - 1])
+    console.info('Fetching status...')
+    const { heartbeatList }: HeartbeatResponse = await fetch(
+      process.env.STATUS_PAGE_HEARTBEAT_API_URL,
+    ).then((res) => res.json())
+    const latestHeartbeats = Object.values(heartbeatList).map(
+      (heartbeats) => heartbeats[heartbeats.length - 1],
+    )
     const code = resolveOverallStatus(latestHeartbeats)
     const message = resolveOverallStatusMessage(code)
 
-    logger.info('Status fetched successfully')
+    console.info('Status fetched successfully')
     return Response.json({
       code,
       message,
-    } as InternalStatusResponse)
+    } as OverallStatusResponse)
   } catch (error) {
-    logger.error('Error fetching status:', error)
-    return new Response('Error fetching status', { status: 500 })
+    console.error('Error fetching status:', error)
+    return new Response('Error fetching status', {
+      status: 500,
+    })
   }
 }
 
@@ -40,22 +47,22 @@ export const GET = async () => {
  * @param heartbeats - The list of heartbeats to evaluate.
  * @returns The overall status of the system.
  */
-function resolveOverallStatus(heartbeats: UptimeKumaHeartbeat[]): UptimeKumaOverallStatus {
+function resolveOverallStatus(heartbeats: Heartbeat[]): OverallStatus {
   const statuses = heartbeats.map((heartbeat) => heartbeat.status)
 
   if (statuses.length === 0) {
-    return UptimeKumaOverallStatus.NoServices
+    return OverallStatus.NoServices
   }
-  if (statuses.every((status) => status === UptimeKumaHeartbeatStatus.Down)) {
-    return UptimeKumaOverallStatus.AllDown
+  if (statuses.every((status) => status === HeartbeatStatus.Down)) {
+    return OverallStatus.AllDown
   }
-  if (statuses.some((status) => status === UptimeKumaHeartbeatStatus.Down)) {
-    return UptimeKumaOverallStatus.PartialDown
+  if (statuses.some((status) => status === HeartbeatStatus.Down)) {
+    return OverallStatus.PartialDown
   }
-  if (statuses.some((status) => status === UptimeKumaHeartbeatStatus.Maintenance)) {
-    return UptimeKumaOverallStatus.Maintenance
+  if (statuses.some((status) => status === HeartbeatStatus.Maintenance)) {
+    return OverallStatus.Maintenance
   }
-  return UptimeKumaOverallStatus.AllUp
+  return OverallStatus.AllUp
 }
 
 /**
@@ -63,15 +70,15 @@ function resolveOverallStatus(heartbeats: UptimeKumaHeartbeat[]): UptimeKumaOver
  * @param overallStatus - The overall status of the system.
  * @returns The message to display for the overall status of the system.
  */
-function resolveOverallStatusMessage(overallStatus: UptimeKumaOverallStatus): string {
+function resolveOverallStatusMessage(overallStatus: OverallStatus): string {
   switch (overallStatus) {
-    case UptimeKumaOverallStatus.AllDown:
+    case OverallStatus.AllDown:
       return 'Degraded Service'
-    case UptimeKumaOverallStatus.PartialDown:
+    case OverallStatus.PartialDown:
       return 'Partially Degraded Service'
-    case UptimeKumaOverallStatus.Maintenance:
+    case OverallStatus.Maintenance:
       return 'Under Maintenance'
-    case UptimeKumaOverallStatus.NoServices:
+    case OverallStatus.NoServices:
       return 'No Services Available'
     default:
       return 'All Systems Operational'

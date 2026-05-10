@@ -1,17 +1,20 @@
 'use server'
 
-import { GlobalSlug } from '@custom-types'
 import config from '@payload-config'
 import { unstable_cache } from 'next/cache'
 import { getPayload } from 'payload'
 
+import { reduceDataToLocale } from '@/lib/reduceDataToLocale'
+import { GlobalSlug } from '@/types/globals'
+
 export const getResumeDocumentData = async (locale: 'en' | 'de' = 'en') => {
-  const payload = await getPayload({ config })
+  const payload = await getPayload({
+    config,
+  })
 
   const sharedOptions = {
     draft: false,
     depth: 10,
-    locale,
   }
 
   const aboutMe = await payload.findGlobal({
@@ -44,14 +47,14 @@ export const getResumeDocumentData = async (locale: 'en' | 'de' = 'en') => {
     ...sharedOptions,
   })
 
-  const userMetaData = await payload.findGlobal({
-    slug: GlobalSlug.SettingsUserMeta,
+  const userConfigurationData = await payload.findGlobal({
+    slug: GlobalSlug.SettingsUserConfiguration,
     ...sharedOptions,
   })
 
-  return {
+  const rawData = {
     locale,
-    userMetaData,
+    userConfigurationData,
     aboutMe,
     contact,
     customers,
@@ -59,16 +62,24 @@ export const getResumeDocumentData = async (locale: 'en' | 'de' = 'en') => {
     experience,
     projects,
   }
+
+  const localizedData = reduceDataToLocale(rawData, locale)
+  console.log('localizedData', localizedData)
+  return localizedData
 }
 
-export const getCachedResumeDocumentData = unstable_cache(getResumeDocumentData, [], {
-  tags: [
-    GlobalSlug.SettingsUserMeta,
-    GlobalSlug.ResumeAboutMe,
-    GlobalSlug.ResumeContact,
-    GlobalSlug.ResumeCustomers,
-    GlobalSlug.ResumeDownloads,
-    GlobalSlug.ResumeExperience,
-    GlobalSlug.ResumeProjects,
-  ],
-})
+export const getCachedResumeDocumentData = unstable_cache(
+  getResumeDocumentData,
+  [],
+  {
+    tags: [
+      GlobalSlug.SettingsUserConfiguration,
+      GlobalSlug.ResumeAboutMe,
+      GlobalSlug.ResumeContact,
+      GlobalSlug.ResumeCustomers,
+      GlobalSlug.ResumeDownloads,
+      GlobalSlug.ResumeExperience,
+      GlobalSlug.ResumeProjects,
+    ],
+  },
+)

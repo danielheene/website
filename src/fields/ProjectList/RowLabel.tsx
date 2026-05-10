@@ -1,6 +1,6 @@
 'use client'
 
-import type { ProjectList } from '@payload-types'
+import type { ProjectList } from '@/types/payload'
 import { useRowLabel } from '@payloadcms/ui'
 
 import styles from './RowLabel.module.scss'

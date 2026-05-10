@@ -1,4 +1,4 @@
-import { formatDuration, intervalToDuration, FormatDurationOptions } from 'date-fns'
+import { type FormatDurationOptions, formatDuration, intervalToDuration } from 'date-fns'
 
 /**
  * Formats seconds to a human-readable duration string
@@ -14,9 +14,13 @@ export const formatSecondsToDuration = (seconds: number = 0) => {
     locale: { formatDistance: (token: string, count: number) => formatDistanceLocale[token].replace('{{count}}', count.toString()) },
   } as FormatDurationOptions
 
-  return seconds > 0 ? formatDuration(
-    intervalToDuration({
-      start: 0,
-      end: seconds * 1000,
-    }), durationOptions) : '0s'
+  return seconds > 0
+    ? formatDuration(
+        intervalToDuration({
+          start: 0,
+          end: seconds * 1000,
+        }),
+        durationOptions,
+      )
+    : '0s'
 }

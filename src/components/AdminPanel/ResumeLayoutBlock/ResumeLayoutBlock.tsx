@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { memo } from 'react'
 
-import { cn } from '@/utilities/cn'
+import { cn } from '@/lib/cn'
 
 export interface ResumeLayoutBlockProps {
   imageSrc: string

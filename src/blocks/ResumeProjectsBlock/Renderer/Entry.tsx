@@ -1,9 +1,9 @@
-import type { MediaImage, ProjectList } from '@payload-types'
+import type { MediaImage, ProjectList } from '@/types/payload'
 import { memo } from 'react'
 
 import { Headline } from '@/components/Headline'
 import RichText from '@/components/RichText'
-import { cn } from '@/utilities/cn'
+import { cn } from '@/lib/cn'
 
 import { Image } from './Image'
 

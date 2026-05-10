@@ -1,18 +1,20 @@
-import type { UserMetaData } from '@payload-types'
 import { Image, Link, StyleSheet, Text, View } from '@react-pdf/renderer'
 import parsePhoneNumber from 'libphonenumber-js'
 
-import { generateContentURL } from '@/lib/generateContentURL'
+import type { DeepReduced } from '@/lib/reduceDataToLocale'
 import { isMediaImage } from '@/lib/typeGuards'
 import { registerFonts } from '@/pdfs/fonts'
+import type { UserConfigurationData } from '@/types/payload'
 
 import { colors } from '../colors'
 
-interface HeaderProps extends UserMetaData {
+interface HeaderProps extends DeepReduced<UserConfigurationData> {
   locale?: string
 }
 
-const { PPSupplyMono } = registerFonts(['PPSupplyMono'])
+const { PPSupplyMono } = registerFonts([
+  'PPSupplyMono',
+])
 
 const styles = StyleSheet.create({
   container: {
@@ -43,28 +45,30 @@ const styles = StyleSheet.create({
   },
 })
 
-export const Header = ({ image, telephone, email, url, sameAs, address }: HeaderProps) => {
-  let duoToneUrl: string | undefined
-  if (isMediaImage(image)) {
-    duoToneUrl = generateContentURL({
-      path: '/api/duotone',
-      params: {
-        image: image.url,
-        w: '200',
-        h: '200',
-      },
-    })
-  }
+export const Header = ({
+  portrait,
+  telephone,
+  email,
+  url,
+  sameAs,
+  address,
+  locale,
+}: HeaderProps) => {
+  const imageUrl = isMediaImage(portrait.regular)
+    ? portrait.regular.url
+    : undefined
 
   const phone = parsePhoneNumber(telephone)
   const github = sameAs?.find(({ url }) => url.includes('github'))?.url
 
   return (
     <View style={styles.container} fixed>
-      {duoToneUrl && <Image src={duoToneUrl} style={styles.portrait} />}
+      {imageUrl && <Image src={imageUrl} style={styles.portrait} />}
       <View style={styles.column}>
         <Text style={styles.text}>{`${address.street} ${address.number}`}</Text>
-        <Text style={styles.text}>{`${address.postCode} ${address.place}`}</Text>
+        <Text
+          style={styles.text}
+        >{`${address.postCode} ${address.place}`}</Text>
       </View>
       <View style={styles.column}>
         <Link style={styles.text} href={phone.getURI()}>

@@ -1,12 +1,21 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.2/schema.json",
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["/*.js", "/*.jsx", "/*.ts", "/*.tsx", "/*.json", "src/**/*", "app/**", "public/**"],
+    "includes": [
+      "/*.js",
+      "/*.jsx",
+      "/*.ts",
+      "/*.tsx",
+      "/*.json",
+      "src/**/*",
+      "app/**",
+      "public/**"
+    ],
     "ignoreUnknown": false
   },
   "formatter": {
@@ -15,11 +24,11 @@
     "indentStyle": "space",
     "indentWidth": 2,
     "lineEnding": "lf",
-    "lineWidth": 140,
+    "lineWidth": 80,
     "attributePosition": "auto",
     "bracketSameLine": false,
     "bracketSpacing": true,
-    "expand": "auto",
+    "expand": "always",
     "useEditorconfig": true,
     "includes": [
       "**",
@@ -64,6 +73,7 @@
   },
   "javascript": {
     "formatter": {
+      "enabled": true,
       "jsxQuoteStyle": "double",
       "quoteProperties": "asNeeded",
       "trailingCommas": "all",
@@ -76,8 +86,14 @@
       "trailingNewline": true
     }
   },
+  "json": {
+    "formatter": {
+      "enabled": true
+    }
+  },
   "html": {
     "formatter": {
+      "enabled": true,
       "indentScriptAndStyle": false,
       "selfCloseVoidElements": "always"
     }
@@ -90,13 +106,36 @@
           "level": "on",
           "options": {
             "groups": [
-              ":URL:",
+              [
+                ":URL:",
+                "!@/**"
+              ],
               ":BLANK_LINE",
-              [":BUN:", ":NODE:"],
+              [
+                "!@/**",
+                ":BUN:",
+                ":NODE:"
+              ],
               ":BLANK_LINE:",
-              [":PACKAGE:", ":PACKAGE_WITH_PROTOCOL:"],
+              [
+                "!@custom-types",
+                "!@/*",
+                "react",
+                "react-dom",
+                "react*",
+                "next",
+                "payload",
+                "@payloadcms/*",
+                ":PACKAGE:",
+                ":PACKAGE_WITH_PROTOCOL:"
+              ],
               ":BLANK_LINE:",
-              [":ALIAS:", "@/**"],
+              [
+                ":ALIAS:",
+                "@/*",
+                "@components/**",
+                "@/components/**"
+              ],
               ":BLANK_LINE:",
               ":PATH:"
             ]

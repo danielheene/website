@@ -1,11 +1,15 @@
-import type { LinkGroupBlock } from '@payload-types'
-
 import { CMSLink } from '@/components/Link'
-import { cn } from '@/utilities/cn'
+import { cn } from '@/lib/cn'
+import type { LinkGroupBlock } from '@/types/payload'
 
-type LinkGroupBlockRendererProps = { className?: string } & LinkGroupBlock
+type LinkGroupBlockRendererProps = {
+  className?: string
+} & LinkGroupBlock
 
-export const LinkGroupBlockRenderer = ({ className, links: { alignment, entries } }: LinkGroupBlockRendererProps) => {
+export const LinkGroupBlockRenderer = ({
+  className,
+  links: { alignment, entries },
+}: LinkGroupBlockRendererProps) => {
   return (
     <ul
       className={cn([

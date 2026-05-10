@@ -1,7 +1,8 @@
-import { BlockGroup, BlockSlug, GlobalSlug } from '@custom-types'
 import type { Block } from 'payload'
 
 import type { ResumeLayoutBlockProps } from '@/components/AdminPanel'
+import { BlockGroup, BlockSlug } from '@/types/blocks'
+import { GlobalSlug } from '@/types/globals'
 
 const BlockComponent = {
   path: '@/components/AdminPanel#ResumeLayoutBlock',

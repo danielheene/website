@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
 
-import { cn } from '@/utilities/cn'
+import { cn } from '@/lib/cn'
 //
 // const interMedium = fetch(new URL('/fonts/pp-frama/pp-frama-500-normal.ttf', process.env.NEXT_PUBLIC_SERVER_URL)).then((res) =>
 //   res.arrayBuffer(),

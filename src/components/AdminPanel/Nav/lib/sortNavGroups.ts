@@ -1,9 +1,23 @@
-import { AdminGroup, CollectionSlug, GlobalSlug } from '@custom-types'
+import { AdminGroup } from '@custom-types'
 import type { NavGroupType } from '@payloadcms/ui/utilities/groupNavItems'
 
+import { CollectionSlug } from '@/types/collections'
+import { GlobalSlug } from '@/types/globals'
+
 const NAV_GROUP_SORTING_ORDER = [
-  [AdminGroup.General, [CollectionSlug.Pages]],
-  [AdminGroup.Blog, [CollectionSlug.BlogPosts, CollectionSlug.BlogCategories, CollectionSlug.BlogTags]],
+  [
+    AdminGroup.General,
+    [
+      CollectionSlug.Pages,
+    ],
+  ],
+  [
+    AdminGroup.Blog,
+    [
+      CollectionSlug.BlogPosts,
+      CollectionSlug.BlogTags,
+    ],
+  ],
   [
     AdminGroup.Resume,
     [
@@ -15,14 +29,22 @@ const NAV_GROUP_SORTING_ORDER = [
       GlobalSlug.ResumeDownloads,
     ],
   ],
-  [AdminGroup.Media, [CollectionSlug.MediaImages, CollectionSlug.MediaVideos, CollectionSlug.MediaAudios, CollectionSlug.MediaDocuments]],
+  [
+    AdminGroup.Media,
+    [
+      CollectionSlug.MediaImages,
+      CollectionSlug.MediaVideos,
+      CollectionSlug.MediaAudios,
+      CollectionSlug.MediaDocuments,
+    ],
+  ],
   [
     AdminGroup.Settings,
     [
-      GlobalSlug.SettingsSiteMeta,
-      GlobalSlug.SettingsUserMeta,
-      GlobalSlug.SettingsHeaderNavigation,
-      GlobalSlug.SettingsFooterNavigation,
+      GlobalSlug.SettingsSiteConfiguration,
+      GlobalSlug.SettingsUserConfiguration,
+      GlobalSlug.SettingsPageHeader,
+      GlobalSlug.SettingsPageFooter,
       CollectionSlug.Users,
     ],
   ],
@@ -34,21 +56,39 @@ const NAV_GROUP_SORTING_ORDER = [
 export const sortNavGroups = (groups: NavGroupType[]) =>
   groups
     .sort((a, b) => {
-      const aPos = NAV_GROUP_SORTING_ORDER.findIndex(([group]) => group === a.label)
-      const bPos = NAV_GROUP_SORTING_ORDER.findIndex(([group]) => group === b.label)
-      return (aPos === -1 ? Number.MAX_SAFE_INTEGER : aPos) - (bPos === -1 ? Number.MAX_SAFE_INTEGER : bPos)
+      const aPos = NAV_GROUP_SORTING_ORDER.findIndex(
+        ([group]) => group === a.label,
+      )
+      const bPos = NAV_GROUP_SORTING_ORDER.findIndex(
+        ([group]) => group === b.label,
+      )
+      return (
+        (aPos === -1 ? Number.MAX_SAFE_INTEGER : aPos) -
+        (bPos === -1 ? Number.MAX_SAFE_INTEGER : bPos)
+      )
     })
     .map(({ entities, ...group }) => {
-      const entityOrder: readonly (GlobalSlug | CollectionSlug)[] = NAV_GROUP_SORTING_ORDER.find(([g]) => g === group.label)[1]
+      const entityOrder: readonly (GlobalSlug | CollectionSlug)[] =
+        NAV_GROUP_SORTING_ORDER.find(([g]) => g === group.label)[1]
 
       return {
         ...group,
         entities: entityOrder
-          ? entities.sort((a, b) => {
-            const aPos = entityOrder.indexOf(a.slug as GlobalSlug | CollectionSlug)
-            const bPos = entityOrder.indexOf(b.slug as GlobalSlug | CollectionSlug)
-            return aPos - bPos
-          })
+          ? entities
+              .filter((entity) =>
+                entityOrder.includes(
+                  entity.slug as GlobalSlug | CollectionSlug,
+                ),
+              )
+              .sort((a, b) => {
+                const aPos = entityOrder.indexOf(
+                  a.slug as GlobalSlug | CollectionSlug,
+                )
+                const bPos = entityOrder.indexOf(
+                  b.slug as GlobalSlug | CollectionSlug,
+                )
+                return aPos - bPos
+              })
           : entities,
       }
     })

@@ -1,4 +1,4 @@
-import { AdminGroup, GlobalSlug } from '@custom-types'
+import { AdminGroup } from '@custom-types'
 import type { GlobalConfig } from 'payload'
 
 import { authenticated } from '@/access/authenticated'
@@ -6,7 +6,8 @@ import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { CustomerLogosField } from '@/fields/CustomerLogos'
 import { RichTextField } from '@/fields/RichText'
 import { TitleField } from '@/fields/Title'
-import { revalidateResumeSection } from '@/utilities/revalidateResumeSection'
+import { revalidateResumeSection } from '@/lib/hooks/revalidateResumeSection'
+import { GlobalSlug } from '@/types/globals'
 
 export const ResumeCustomers: GlobalConfig<GlobalSlug.ResumeCustomers> = {
   slug: GlobalSlug.ResumeCustomers,
@@ -17,12 +18,16 @@ export const ResumeCustomers: GlobalConfig<GlobalSlug.ResumeCustomers> = {
     update: authenticated,
   },
   hooks: {
-    afterChange: [revalidateResumeSection(GlobalSlug.ResumeCustomers)],
+    afterChange: [
+      revalidateResumeSection(GlobalSlug.ResumeCustomers),
+    ],
   },
   admin: {
     group: AdminGroup.Resume,
   },
-  typescript: { interface: 'ResumeCustomersGlobalData' },
+  typescript: {
+    interface: 'ResumeCustomersGlobalData',
+  },
   fields: [
     {
       type: 'tabs',
@@ -39,13 +44,12 @@ export const ResumeCustomers: GlobalConfig<GlobalSlug.ResumeCustomers> = {
         },
         {
           label: 'Customer Logos',
-          fields: [CustomerLogosField()],
+          fields: [
+            CustomerLogosField(),
+          ],
         },
       ],
     },
   ],
-  versions: {
-    drafts: false,
-    max: 0,
-  },
+  versions: false,
 }

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "baseUrl": ".",
+    "rootDir": ".",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
@@ -22,23 +22,14 @@
       "@imgs/*": [
         "./public/payload/blocks/*"
       ],
-      "@payload-config": [
-        "./src/payload.config.ts"
-      ],
-      "@payload-types": [
-        "./src/payload-types.ts"
-      ],
       "@custom-types": [
         "./src/custom-types.ts"
       ],
+      "@payload-config": [
+        "./payload.config.ts"
+      ],
       "react": [
         "./node_modules/@types/react"
-      ],
-      "@styles/*": [
-        "./src/styles/*"
-      ],
-      "@fonts/*": [
-        "./public/fonts/*"
       ]
     },
     "plugins": [

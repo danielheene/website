@@ -1,5 +1,5 @@
-import { CollectionSlug } from '@custom-types'
-import type { BlogTag } from '@payload-types'
+import { CollectionSlug } from '@/types/collections'
+import type { BlogTag } from '@/types/payload'
 import { revalidatePath } from 'next/cache'
 import type { CollectionAfterChangeHook } from 'payload'
 

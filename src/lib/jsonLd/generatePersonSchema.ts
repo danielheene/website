@@ -1,5 +1,8 @@
-import type { UserMetaData } from '@payload-types'
 import type { Person, WithContext } from 'schema-dts'
+
+import { getLanguageName } from '@/lib/languageNames'
+import { isMediaImage } from '@/lib/typeGuards'
+import type { UserConfigurationData } from '@/types/payload'
 
 /**
  * Generates Person JSON-LD
@@ -21,17 +24,32 @@ import type { Person, WithContext } from 'schema-dts'
  * })
  * ```
  */
-export function generatePersonSchema(data: UserMetaData): WithContext<Person> {
+export function generatePersonSchema(
+  data: UserConfigurationData,
+): WithContext<Person> {
   const person: WithContext<Person> = {
     '@context': 'https://schema.org',
     '@type': 'Person',
     name: data.name,
   }
 
-  if (data.image && typeof data.image === 'object' && 'url' in data.image && typeof data.image.url === 'string') {
+  const hasPortraitObject =
+    data.portrait &&
+    typeof data.portrait === 'object' &&
+    'regular' in data.portrait &&
+    'duotone' in data.portrait
+
+  const portraitUrl =
+    hasPortraitObject && isMediaImage(data.portrait.regular)
+      ? data.portrait.regular.url
+      : hasPortraitObject && isMediaImage(data.portrait.duotone)
+        ? data.portrait.duotone.url
+        : null
+
+  if (portraitUrl) {
     person.image = {
       '@type': 'ImageObject',
-      url: data.image.url,
+      url: portraitUrl,
     }
   }
 
@@ -39,7 +57,7 @@ export function generatePersonSchema(data: UserMetaData): WithContext<Person> {
   if (data.url) person.url = data.url
   if (data.email) person.email = data.email
   if (data.telephone) person.telephone = data.telephone
-  if (data.description) person.description = data.description
+  // if (data.description) person.description = data.description
   if (data.sameAs && Array.isArray(data.sameAs) && data.sameAs.length > 0) {
     person.sameAs = data.sameAs.map(({ url }) => url)
   }
@@ -56,10 +74,14 @@ export function generatePersonSchema(data: UserMetaData): WithContext<Person> {
     }
   }
 
-  if (data.languages && Array.isArray(data.languages) && data.languages.length > 0) {
+  if (
+    data.languages &&
+    Array.isArray(data.languages) &&
+    data.languages.length > 0
+  ) {
     person.knowsLanguage = data.languages.map(({ language }) => ({
       '@type': 'Language',
-      name: new Intl.DisplayNames(['en'], { type: 'language' }).of(language),
+      name: getLanguageName(language),
       alternateName: language,
     }))
   }
@@ -78,11 +100,18 @@ export function generatePersonSchema(data: UserMetaData): WithContext<Person> {
     }
   }
 
-  if (data.worksFor && typeof data.worksFor === 'object' && 'name' in data.worksFor && typeof data.worksFor.name === 'string') {
+  if (
+    data.worksFor &&
+    typeof data.worksFor === 'object' &&
+    'name' in data.worksFor &&
+    typeof data.worksFor.name === 'string'
+  ) {
     person.worksFor = {
       '@type': 'Organization',
       name: data.worksFor.name,
-      ...(data.worksFor.url && { url: data.worksFor.url }),
+      ...(data.worksFor.url && {
+        url: data.worksFor.url,
+      }),
       ...(data.worksFor.address && {
         address: {
           '@type': 'PostalAddress',

@@ -3,9 +3,9 @@
 import { useNav } from '@payloadcms/ui'
 import type React from 'react'
 
-import { cn } from '@/utilities/cn'
+import { cn } from '@/lib/cn'
 
-import './NavWrapper.styles.scss'
+import './NavWrapper.styles.css'
 
 interface NavWrapperProps {
   children: React.ReactNode
@@ -14,7 +14,8 @@ interface NavWrapperProps {
 export const NavWrapper = ({ children }: NavWrapperProps) => {
   const { hydrated, navOpen, navRef, shouldAnimate, setNavOpen } = useNav()
   return (
-    <aside className={cn(['nav', navOpen && 'nav--open', shouldAnimate && 'nav--animate', hydrated && 'nav--hydrated'])}>
+    <aside
+      className={cn(['nav', navOpen && 'nav--open', shouldAnimate && 'nav--animate', hydrated && 'nav--hydrated'])}>
       <div className="nav__scroller" ref={navRef}>
         <nav className="nav__wrap">{children}</nav>
       </div>

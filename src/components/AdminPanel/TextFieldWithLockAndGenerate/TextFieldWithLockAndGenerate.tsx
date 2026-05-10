@@ -1,18 +1,21 @@
 'use client'
 
-import { FieldLabel, TextInput, useField } from '@payloadcms/ui'
 import type { TextFieldClientProps } from 'payload'
 import type React from 'react'
 import { useCallback, useState } from 'react'
 import { RxLockClosed, RxLockOpen2, RxReload } from 'react-icons/rx'
 
-import './TextFieldWithLockAndGenerate.styles.scss'
+import './TextFieldWithLockAndGenerate.styles.css'
 
-import { cn } from '@/utilities/cn'
+import { useField } from '@payloadcms/ui'
+import { FieldLabel } from '@payloadcms/ui/fields/FieldLabel'
+import { TextInput } from '@payloadcms/ui/fields/Text'
+
+import { cn } from '@/lib/cn'
 
 export type TextFieldGenerateFunction = () => string | Promise<string>
 
-type TextFieldWithLockAndGenerateProps = (
+export type TextFieldWithLockAndGenerateProps = (
   | {
       hasLock?: boolean
       hasGenerate?: true
@@ -26,7 +29,9 @@ type TextFieldWithLockAndGenerateProps = (
 ) &
   TextFieldClientProps
 
-export const TextFieldWithLockAndGenerate: React.FC<TextFieldWithLockAndGenerateProps> = ({
+export const TextFieldWithLockAndGenerate: React.FC<
+  TextFieldWithLockAndGenerateProps
+> = ({
   field,
   hasGenerate,
   hasLock,
@@ -41,17 +46,27 @@ export const TextFieldWithLockAndGenerate: React.FC<TextFieldWithLockAndGenerate
     admin: { placeholder },
   } = field
 
-  const { value, setValue } = useField<string>({ path })
-  const [isLocked, setIsLocked] = useState<boolean>(hasLock && readOnlyFromProps !== true)
+  const { value, setValue } = useField<string>({
+    path,
+  })
+  const [isLocked, setIsLocked] = useState<boolean>(
+    hasLock && readOnlyFromProps !== true,
+  )
 
-  const handleUnlockClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault()
-  }, [])
+  const handleUnlockClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault()
+    },
+    [],
+  )
 
-  const handleUnlockDoubleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault()
-    setIsLocked((lockedState) => !lockedState)
-  }, [])
+  const handleUnlockDoubleClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault()
+      setIsLocked((lockedState) => !lockedState)
+    },
+    [],
+  )
 
   const handleGenerateClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -61,7 +76,11 @@ export const TextFieldWithLockAndGenerate: React.FC<TextFieldWithLockAndGenerate
         if (nextValue && nextValue !== value) setValue(nextValue)
       })
     },
-    [setValue, value, generateFunction],
+    [
+      setValue,
+      value,
+      generateFunction,
+    ],
   )
 
   return (
@@ -81,7 +100,11 @@ export const TextFieldWithLockAndGenerate: React.FC<TextFieldWithLockAndGenerate
           </button>
         )}
         <TextInput
-          className={cn('input-field', hasLock && 'input-field--has-lock', hasGenerate && 'input-field--has-generate')}
+          className={cn(
+            'input-field',
+            hasLock && 'input-field--has-lock',
+            hasGenerate && 'input-field--has-generate',
+          )}
           value={value}
           onChange={setValue}
           placeholder={placeholder}
@@ -90,7 +113,12 @@ export const TextFieldWithLockAndGenerate: React.FC<TextFieldWithLockAndGenerate
           inputRef={inputRef}
         />
         {hasGenerate && (
-          <button type="button" className="input-button input-button--generate" disabled={isLocked} onClick={handleGenerateClick}>
+          <button
+            type="button"
+            className="input-button input-button--generate"
+            disabled={isLocked}
+            onClick={handleGenerateClick}
+          >
             <RxReload />
           </button>
         )}

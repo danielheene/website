@@ -3,7 +3,7 @@
 import type { SkillSummary } from '@custom-types'
 import { memo, useCallback, useMemo, useState } from 'react'
 
-import { cn } from '@/utilities/cn'
+import { cn } from '@/lib/cn'
 import { useIntersectionObserver } from 'usehooks-ts'
 
 interface ResumeExperienceSectionSkillChartProps {

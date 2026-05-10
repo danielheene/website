@@ -1,4 +1,5 @@
-import type { JobHistory } from '@payload-types'
+import type { JobHistory } from '@/types/payload'
+import type { DeepReduced } from '@/lib/reduceDataToLocale'
 import { StyleSheet, Text, View } from '@react-pdf/renderer'
 
 import { colors } from '@/pdfs/colors'
@@ -7,7 +8,7 @@ import { generateExperienceTimeSpan } from '@/lib/generateExperienceTimeSpan'
 
 type JobHistoryEntry = JobHistory[number]
 
-interface WorkExperienceEntryProps extends JobHistoryEntry {
+interface WorkExperienceEntryProps extends DeepReduced<JobHistoryEntry> {
   locale: string
 }
 

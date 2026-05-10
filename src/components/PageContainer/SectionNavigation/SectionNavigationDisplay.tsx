@@ -3,8 +3,8 @@
 import { type MouseEvent, useCallback } from 'react'
 import ReactDOM from 'react-dom'
 
-import { cn } from '@/utilities/cn'
-import { useCreatePortalHost } from '@/utilities/useCreatePortalHost'
+import { cn } from '@/lib/cn'
+import { useCreatePortalHost } from '@/lib/useCreatePortalHost'
 
 import type { SectionNavigationAnchor, SetScrollingToAnchorFunction } from './SectionNavigation.types'
 

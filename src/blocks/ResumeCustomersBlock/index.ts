@@ -1,15 +1,16 @@
-import { BlockGroup, BlockSlug, GlobalSlug } from '@custom-types'
 import type { Block } from 'payload'
 
 import type { ResumeLayoutBlockProps } from '@/components/AdminPanel'
+import { BlockGroup, BlockSlug } from '@/types/blocks'
+import { GlobalSlug } from '@/types/globals'
 
 const BlockComponent = {
   path: '@/components/AdminPanel#ResumeLayoutBlock',
   clientProps: {
     backgroundColor: 'primary',
-    imageSrc: '/payload/blocks/resume-customers.svg',
+    imageSrc: `/payload/blocks/${GlobalSlug.ResumeCustomers}-thumbnail.svg`,
     editHref: `/admin/globals/${GlobalSlug.ResumeCustomers}`,
-  } satisfies ResumeLayoutBlockProps,
+  } as ResumeLayoutBlockProps,
 }
 
 export const ResumeCustomersBlock: Block = {
@@ -19,12 +20,15 @@ export const ResumeCustomersBlock: Block = {
     singular: 'Customers Section',
     plural: 'Customers Sections',
   },
-  imageURL: '/payload/blocks/resume-customers.svg',
   admin: {
     group: BlockGroup.Resume,
     disableBlockName: true,
     components: {
       Block: BlockComponent,
+    },
+    images: {
+      icon: `/payload/blocks/${BlockSlug.ResumeCustomers}-icon.svg`,
+      thumbnail: `/payload/blocks/${BlockSlug.ResumeCustomers}-thumbnail.svg`,
     },
   },
   fields: [

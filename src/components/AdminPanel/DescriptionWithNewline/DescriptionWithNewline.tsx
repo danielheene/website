@@ -1,7 +1,7 @@
 import type { GroupFieldDescriptionServerComponent } from 'payload'
 import { Fragment } from 'react'
 
-import { cn } from '@/utilities/cn'
+import { cn } from '@/lib/cn'
 
 export const DescriptionWithNewline: GroupFieldDescriptionServerComponent = async ({
   field: { admin: { description } = {} } = { admin: {} },

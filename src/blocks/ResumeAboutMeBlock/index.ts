@@ -1,7 +1,8 @@
-import { BlockGroup, BlockSlug, GlobalSlug } from '@custom-types'
 import type { Block } from 'payload'
 
 import type { ResumeLayoutBlockProps } from '@/components/AdminPanel/ResumeLayoutBlock'
+import { BlockGroup, BlockSlug } from '@/types/blocks'
+import { GlobalSlug } from '@/types/globals'
 
 const BlockComponent = {
   path: '@/components/AdminPanel#ResumeLayoutBlock',
@@ -25,6 +26,10 @@ export const ResumeAboutMeBlock: Block = {
     disableBlockName: true,
     components: {
       Block: BlockComponent,
+    },
+    images: {
+      icon: `/payload/blocks/${BlockSlug.ResumeAboutMe}-icon.svg`,
+      thumbnail: `/payload/blocks/${BlockSlug.ResumeAboutMe}-thumbnail.svg`,
     },
   },
   fields: [

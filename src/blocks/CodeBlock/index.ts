@@ -1,5 +1,6 @@
-import { BlockGroup, BlockSlug } from '@custom-types'
 import type { Block } from 'payload'
+
+import { BlockGroup, BlockSlug } from '@/types/blocks'
 
 export const CodeBlock: Block = {
   slug: BlockSlug.Code,
@@ -8,10 +9,13 @@ export const CodeBlock: Block = {
     singular: 'Code Block',
     plural: 'Code Block',
   },
-  imageURL: '/payload/blocks/general-code.svg',
   admin: {
     group: BlockGroup.General,
     disableBlockName: true,
+    images: {
+      thumbnail: '/payload/blocks/general-code-thumbnail.svg',
+      icon: '/payload/blocks/general-code-icon.svg',
+    },
   },
   fields: [
     {
@@ -41,7 +45,10 @@ export const CodeBlock: Block = {
       admin: {
         editorOptions: {
           fontSize: 16,
-          padding: { top: 12, bottom: 12 },
+          padding: {
+            top: 12,
+            bottom: 12,
+          },
         },
         language: 'typescript',
         editorProps: {},

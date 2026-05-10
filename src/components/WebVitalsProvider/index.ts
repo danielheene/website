@@ -1,1 +1,0 @@
-export { WebVitalsProvider } from './WebVitalsProvider'

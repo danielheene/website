@@ -1,6 +1,8 @@
-import { AdminGroup, CollectionSlug } from '@custom-types'
+import { AdminGroup } from '@custom-types'
 import { hoursToSeconds, minutesToMilliseconds } from 'date-fns'
 import type { CollectionConfig } from 'payload'
+
+import { CollectionSlug } from '@/types/collections'
 
 import { loginAfterCreate } from './hooks/loginAfterCreate'
 
@@ -12,7 +14,6 @@ export const Users: CollectionConfig = {
       icon: 'user',
     },
     useAsTitle: 'email',
-    disableCopyToLocale: true,
     group: AdminGroup.Settings,
   },
   fields: [
@@ -27,7 +28,9 @@ export const Users: CollectionConfig = {
     },
   ],
   hooks: {
-    afterChange: [loginAfterCreate],
+    afterChange: [
+      loginAfterCreate,
+    ],
   },
   auth: {
     tokenExpiration: hoursToSeconds(24 * 14),

@@ -1,8 +1,6 @@
 'use client'
 
 import { getTranslation } from '@payloadcms/translations'
-import { useConfig, useNav, useTranslation } from '@payloadcms/ui'
-import { formatAdminURL } from '@payloadcms/ui/shared'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import type { EntityType, StaticLabel } from 'payload'
@@ -11,11 +9,15 @@ import type { JSX } from 'react'
 import { Icon } from '@/components/Icon'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { cn } from '@/utilities/cn'
+import { cn } from '@/lib/cn'
 
 import { resolveIconNameBySlug } from '../lib/resolveIconNameBySlug'
 
-import './NavLink.styles.scss'
+import './NavLink.styles.css'
+
+import { useConfig, useNav } from '@payloadcms/ui'
+import { useTranslation } from '@payloadcms/ui/providers/Translation'
+import { formatAdminURL } from '@payloadcms/ui/utilities/formatAdminURL'
 
 interface NavLinkProps {
   slug: string

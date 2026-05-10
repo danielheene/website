@@ -1,0 +1,11 @@
+@reference "../../../../styles/payload.css";
+
+@layer components {
+  .nav-header {
+    @apply absolute top-2 left-2 right-2 h-(--app-header-height) flex items-start justify-center;
+  }
+
+  .nav-header__logo {
+    @apply h-10 w-auto;
+  }
+}

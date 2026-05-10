@@ -59,17 +59,19 @@ Payload CMS is embedded inside Next.js via `withPayload` in `next.config.ts`. Th
 |-------|-------------|
 | `@/*` | `./src/*` |
 | `@payload-config` | `./src/payload.config.ts` |
-| `@payload-types` | `./src/payload-types.ts` |
+| `@/types/payload` | `./src/payload-types.ts` |
 | `@custom-types` | `./src/custom-types.ts` |
-| `@styles/*` | `./src/styles/*` |
+| `@/styles/*` | `./src/styles/*` |
 | `@fonts/*` | `./public/fonts/*` |
 
 ### Enums and Slugs
 
-All collection, global, and block slugs are defined as TypeScript enums in `src/custom-types.ts`. Always import from `@custom-types` rather than using raw string literals:
+All collection, global, and block slugs are defined as TypeScript enums in `src/types/`. Always import from their respective locations rather than using raw string literals:
 
 ```ts
-import { CollectionSlug, GlobalSlug, BlockSlug } from '@custom-types'
+import { CollectionSlug } from '@/types/collections'
+import { GlobalSlug } from '@/types/globals'
+import { BlockSlug } from '@/types/blocks'
 ```
 
 ### Resume System
@@ -89,7 +91,7 @@ Defined in `src/collections/`, exported as `COLLECTIONS` array from `src/collect
 
 Defined in `src/globals/`, exported as `GLOBALS` array from `src/globals/index.ts`:
 - **Resume data**: `ResumeAboutMe`, `ResumeContact`, `ResumeExperience`, `ResumeProjects`, `ResumeDownloads`, `ResumeCustomers`
-- **Settings**: `SettingsUserMeta`, `SettingsSiteMeta`, `SettingsHeaderNavigation`, `SettingsFooterNavigation`
+- **Settings**: `SettingsUserConfiguration`, `SettingsSiteConfiguration`, `SettingsPageHeader`, `SettingsPageFooter`
 
 ### Custom Fields
 

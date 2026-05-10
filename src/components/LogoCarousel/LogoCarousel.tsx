@@ -2,7 +2,7 @@ import Autoplay from 'embla-carousel-autoplay'
 import useEmblaCarousel from 'embla-carousel-react'
 import { type JSX, useMemo } from 'react'
 
-import { cn } from '@/utilities/cn'
+import { cn } from '@/lib/cn'
 
 type LogoCarouselEntry = { id: string; logo: string; name: string }
 type LogoCarouselRow = [LogoCarouselEntry, LogoCarouselEntry]

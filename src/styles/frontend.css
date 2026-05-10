@@ -1,23 +1,19 @@
 @layer fonts, theme, base, components, utilities;
 
-@import './fonts/_pp-frama.css' layer(fonts);
-@import './fonts/_pp-supply-mono.css' layer(fonts);
-
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/preflight.css" layer(base);
 @import "tailwindcss/utilities.css" layer(utilities);
 @import "tw-animate-css";
 
-@import './theme/_animations.css' layer(theme);
-@import './theme/_aspects.css' layer(theme);
-@import './theme/_colors.css' layer(theme);
-@import './theme/_fonts.css' layer(theme);
-@import './theme/_radii.css' layer(theme);
-@import './theme/_sizes.css' layer(theme);
-@import './theme/_text-shadows.css' layer(theme);
+@import "./theme/_animations.css" layer(theme);
+@import "./theme/_aspects.css" layer(theme);
+@import "./theme/_colors.css" layer(theme);
+@import "./theme/_fonts.css" layer(theme);
+@import "./theme/_radii.css" layer(theme);
+@import "./theme/_sizes.css" layer(theme);
+@import "./theme/_text-shadows.css" layer(theme);
 
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
-
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 @layer base {
   *,
@@ -36,7 +32,6 @@
   body {
     @apply bg-background text-foreground;
   }
-
 
   a {
     @apply ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
@@ -80,7 +75,6 @@
     text-orientation: sideways;
   }
 }
-
 
 @layer components {
   .prose {

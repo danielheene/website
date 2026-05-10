@@ -1,12 +1,20 @@
 'use client'
 
-import type { MediaImage } from '@payload-types'
 import { useState } from 'react'
 
 import { ImageMedia } from '@/components/ImageMedia'
-import { cn } from '@/utilities/cn'
+import { cn } from '@/lib/cn'
+import type { MediaImage } from '@/types/payload'
 
-export const HeroClient = ({ title, background, portrait }: { title?: string; background?: MediaImage; portrait?: MediaImage }) => {
+export const HeroClient = ({
+  title,
+  background,
+  portrait,
+}: {
+  title?: string
+  background?: MediaImage
+  portrait?: MediaImage
+}) => {
   const titleRows = title?.split('\n')
   const [isReady, setIsReady] = useState<boolean>(false)
 
@@ -23,7 +31,7 @@ export const HeroClient = ({ title, background, portrait }: { title?: string; ba
           // priority
           className="absolute top-0 right-0 left-0 bottom-0 z-0"
           fill
-          duoTone
+          // duoTone
         />
       )}
       <div
@@ -36,7 +44,12 @@ export const HeroClient = ({ title, background, portrait }: { title?: string; ba
           {title && (
             <h1>
               {titleRows.map((row, index) => (
-                <span key={index} className={cn(['font-pp-supply-mono text-4xl md:text-5xl xl:text-6xl bg-clip-text bg-white'])}>
+                <span
+                  key={index}
+                  className={cn([
+                    'font-pp-supply-mono text-4xl md:text-5xl xl:text-6xl bg-clip-text bg-white',
+                  ])}
+                >
                   {row}
                   <br />
                 </span>

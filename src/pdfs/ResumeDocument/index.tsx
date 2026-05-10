@@ -1,3 +1,19 @@
+import {
+  Document,
+  type DocumentProps,
+  Font,
+  Page,
+  StyleSheet,
+} from '@react-pdf/renderer'
+import createHyphenator, {
+  type HyphenationFunctionSync,
+  type PatternsDefinition,
+} from 'hyphen'
+import dePattern from 'hyphen/patterns/de-1996'
+import enPattern from 'hyphen/patterns/en-us'
+
+import type { DeepReduced } from '@/lib/reduceDataToLocale'
+import { WorkExperience } from '@/pdfs/ResumeDocument/WorkExperience'
 import type {
   ResumeAboutMeGlobalData,
   ResumeContactGlobalData,
@@ -5,23 +21,31 @@ import type {
   ResumeDownloadsGlobalData,
   ResumeExperienceGlobalData,
   ResumeProjectsGlobalData,
-  UserMetaData,
-} from '@payload-types'
-import { Document, type DocumentProps, Font, Page, StyleSheet } from '@react-pdf/renderer'
-import createHyphenator, { type HyphenationFunctionSync, type PatternsDefinition } from 'hyphen'
-import dePattern from 'hyphen/patterns/de-1996'
-import enPattern from 'hyphen/patterns/en-us'
-
-import { WorkExperience } from '@/pdfs/ResumeDocument/WorkExperience'
+  UserConfigurationData,
+} from '@/types/payload'
 
 import { registerFonts } from '../fonts'
 import { Header } from './Header'
 import { Introduction } from './Introduction'
 
-const hyphenateEN = createHyphenator(enPattern as unknown as PatternsDefinition, { async: false }) as HyphenationFunctionSync
-const hyphenateDE = createHyphenator(dePattern as unknown as PatternsDefinition, { async: false }) as HyphenationFunctionSync
+const hyphenateEN = createHyphenator(
+  enPattern as unknown as PatternsDefinition,
+  {
+    async: false,
+  },
+) as HyphenationFunctionSync
+const hyphenateDE = createHyphenator(
+  dePattern as unknown as PatternsDefinition,
+  {
+    async: false,
+  },
+) as HyphenationFunctionSync
 
-const { PPSupplyMono } = registerFonts(['PPSupplyMono', 'PPFramer', 'PPFramerText'])
+const { PPSupplyMono } = registerFonts([
+  'PPSupplyMono',
+  'PPFramer',
+  'PPFramerText',
+])
 
 // Create styles
 const styles = StyleSheet.create({
@@ -46,35 +70,39 @@ const styles = StyleSheet.create({
 interface ResumeDocumentProps {
   isPreview?: boolean
   locale?: string
-  userMetaData: UserMetaData
-  aboutMe: ResumeAboutMeGlobalData
-  contact: ResumeContactGlobalData
-  customers: ResumeCustomersGlobalData
-  downloads: ResumeDownloadsGlobalData
-  experience: ResumeExperienceGlobalData
-  projects: ResumeProjectsGlobalData
+  userConfigurationData: DeepReduced<UserConfigurationData>
+  aboutMe: DeepReduced<ResumeAboutMeGlobalData>
+  contact: DeepReduced<ResumeContactGlobalData>
+  customers: DeepReduced<ResumeCustomersGlobalData>
+  downloads: DeepReduced<ResumeDownloadsGlobalData>
+  experience: DeepReduced<ResumeExperienceGlobalData>
+  projects: DeepReduced<ResumeProjectsGlobalData>
 }
 
 export const ResumeDocument = ({
   isPreview = false,
   locale = 'en',
-  userMetaData,
+  userConfigurationData,
   aboutMe,
   contact,
   customers,
   downloads,
   experience,
 }: ResumeDocumentProps) => {
-  const documentTitle = locale === 'en' ? `Resume of ${userMetaData.name}` : `Lebenslauf von ${userMetaData.name}`
+  const documentTitle =
+    locale === 'en'
+      ? `Resume of ${userConfigurationData.name}`
+      : `Lebenslauf von ${userConfigurationData.name}`
 
   Font.registerHyphenationCallback((word) => {
-    const hyphenatedWords = locale === 'en' ? hyphenateEN(word) : hyphenateDE(word)
+    const hyphenatedWords =
+      locale === 'en' ? hyphenateEN(word) : hyphenateDE(word)
     return hyphenatedWords.split('\u00AD')
   })
 
   return (
     <Document
-      author={userMetaData.name}
+      author={userConfigurationData.name}
       title={documentTitle}
       language={locale}
       creationDate={new Date()}
@@ -82,8 +110,8 @@ export const ResumeDocument = ({
       pageLayout="singlePage"
     >
       <Page size="A4" style={styles.page} dpi={300} orientation="portrait">
-        <Header locale={locale} {...userMetaData} />
-        <Introduction locale={locale} {...userMetaData} />
+        <Header locale={locale} {...userConfigurationData} />
+        <Introduction locale={locale} {...userConfigurationData} />
         <WorkExperience locale={locale} {...experience} />
       </Page>
     </Document>

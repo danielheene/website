@@ -1,9 +1,10 @@
-import { AdminGroup, CollectionSlug } from '@custom-types'
+import { AdminGroup } from '@custom-types'
 import type { CollectionConfig } from 'payload'
 
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
 import { generateContentURL } from '@/lib/generateContentURL'
+import { CollectionSlug } from '@/types/collections'
 
 import { generateDocumentThumbnail } from './hooks/generateDocumentThumbnail'
 
@@ -19,8 +20,12 @@ export const MediaDocuments: CollectionConfig<CollectionSlug.MediaDocuments> = {
   admin: {
     group: AdminGroup.Media,
     useAsTitle: 'filename',
-    defaultColumns: ['filename', 'type', 'extension', 'updatedAt'],
-    disableCopyToLocale: true,
+    defaultColumns: [
+      'filename',
+      'type',
+      'extension',
+      'updatedAt',
+    ],
     components: {
       Description: false,
     },
@@ -36,9 +41,14 @@ export const MediaDocuments: CollectionConfig<CollectionSlug.MediaDocuments> = {
     withMetadata: false,
     hideRemoveFile: true,
     displayPreview: true,
-    mimeTypes: ['application/pdf'],
+    mimeTypes: [
+      'application/pdf',
+    ],
     adminThumbnail: ({ doc }) => {
-      const thumbnailFilename = String(doc.filename).replace(/(\.pdf)$/, '-thumbnail.png')
+      const thumbnailFilename = String(doc.filename).replace(
+        /(\.pdf)$/,
+        '-thumbnail.png',
+      )
       return generateContentURL({
         path: `/api/${CollectionSlug.MediaImages}/file/${thumbnailFilename}`,
       })
@@ -133,9 +143,10 @@ export const MediaDocuments: CollectionConfig<CollectionSlug.MediaDocuments> = {
     // },
   ],
   hooks: {
-    // afterChange: [generateDocumentThumbnail],
+    afterChange: [
+      generateDocumentThumbnail,
+    ],
   },
-  enableQueryPresets: true,
   versions: {
     drafts: false,
     maxPerDoc: 0,

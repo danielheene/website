@@ -1,5 +1,4 @@
-import { AdminGroup, CollectionSlug } from '@custom-types'
-import type { Page } from '@payload-types'
+import { AdminGroup } from '@custom-types'
 import type { AccessArgs, CollectionConfig, FilterOptionsProps } from 'payload'
 
 import { authenticated } from '@/access/authenticated'
@@ -11,6 +10,8 @@ import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
 import { generatePreviewPath } from '@/lib/generatePreviewPath'
+import { CollectionSlug } from '@/types/collections'
+import type { Page } from '@/types/payload'
 
 import { mapResumeValuesToBlocks } from './hooks/mapResumeValuesToBlocks'
 import { removeInvalidBlockData } from './hooks/removeInvalidBlockData'
@@ -22,8 +23,14 @@ export const Pages: CollectionConfig<CollectionSlug.Pages> = {
     singular: 'Page',
     plural: 'Pages',
   },
-  defaultPopulate: { title: true, slug: true },
-  defaultSort: ['title', 'slug'],
+  defaultPopulate: {
+    title: true,
+    slug: true,
+  },
+  defaultSort: [
+    'title',
+    'slug',
+  ],
   disableDuplicate: true,
   access: {
     create: authenticated,
@@ -31,7 +38,13 @@ export const Pages: CollectionConfig<CollectionSlug.Pages> = {
       if (!user) return false
       return {
         slug: {
-          not_in: ['home', 'resume', 'about-me', 'legal-notice', 'privacy-policy'],
+          not_in: [
+            'home',
+            'resume',
+            'about-me',
+            'legal-notice',
+            'privacy-policy',
+          ],
         },
       }
     },
@@ -42,32 +55,28 @@ export const Pages: CollectionConfig<CollectionSlug.Pages> = {
   admin: {
     group: AdminGroup.General,
     useAsTitle: 'title',
-    defaultColumns: ['title', 'slug', 'status', 'updatedAt'],
-    disableCopyToLocale: true,
+    defaultColumns: [
+      'title',
+      'slug',
+      'status',
+      'updatedAt',
+    ],
     livePreview: {
       url: ({ data }) => generatePreviewPath(CollectionSlug.Pages, data.slug),
     },
-    preview: (data: Partial<Page>) => generatePreviewPath(CollectionSlug.Pages, data.slug),
-    components: {
-      views: {
-        edit: {
-          resumePdf: {
-            Component: '@/collections/Pages/components/ResumePdfView',
-            path: '/pdf',
-            tab: {
-              Component: '@/collections/Pages/components/ResumePdfTab',
-            },
-          },
-        },
-      },
-    },
+    preview: (data: Partial<Page>) =>
+      generatePreviewPath(CollectionSlug.Pages, data.slug),
   },
   fields: [
     /* -------------- Main  Content -------------- */
-    TitleField({ listViewThumbnailPath: 'hero.media.0' }),
+    TitleField({
+      listViewThumbnailPath: 'hero.media.0',
+    }),
 
     /* -------------- Sidebar Content -------------- */
-    SlugField({ fieldToUse: 'title' }),
+    SlugField({
+      fieldToUse: 'title',
+    }),
 
     {
       type: 'select',
@@ -75,9 +84,18 @@ export const Pages: CollectionConfig<CollectionSlug.Pages> = {
       defaultValue: 'default',
       interfaceName: 'PageLayout',
       options: [
-        { label: 'Default', value: 'default' },
-        { label: 'Home', value: 'home' },
-        { label: 'Resume', value: 'resume' },
+        {
+          label: 'Default',
+          value: 'default',
+        },
+        {
+          label: 'Home',
+          value: 'home',
+        },
+        {
+          label: 'Resume',
+          value: 'resume',
+        },
       ],
       admin: {
         position: 'sidebar',
@@ -113,8 +131,14 @@ export const Pages: CollectionConfig<CollectionSlug.Pages> = {
               type: 'select',
               defaultValue: 'title',
               options: [
-                { label: 'Use Title as Hero Content', value: 'title' },
-                { label: 'Use Custom Content', value: 'custom' },
+                {
+                  label: 'Use Title as Hero Content',
+                  value: 'title',
+                },
+                {
+                  label: 'Use Custom Content',
+                  value: 'custom',
+                },
               ],
               admin: {
                 disableListColumn: true,
@@ -153,7 +177,8 @@ export const Pages: CollectionConfig<CollectionSlug.Pages> = {
               blocks: [],
               blockReferences: BLOCK_SLUGS,
               minRows: 1,
-              filterOptions: ({ data }: FilterOptionsProps<Page>) => getFilteredBlocks(data),
+              filterOptions: ({ data }: FilterOptionsProps<Page>) =>
+                getFilteredBlocks(data),
               admin: {
                 disableListColumn: true,
                 disableListFilter: true,
@@ -164,15 +189,23 @@ export const Pages: CollectionConfig<CollectionSlug.Pages> = {
         },
         {
           label: 'SEO',
-          fields: [MetaField()],
+          fields: [
+            MetaField(),
+          ],
         },
       ],
     },
   ],
   hooks: {
-    beforeRead: [mapResumeValuesToBlocks('content')],
-    afterChange: [revalidatePage],
-    beforeValidate: [removeInvalidBlockData('content')],
+    beforeRead: [
+      mapResumeValuesToBlocks('content'),
+    ],
+    afterChange: [
+      revalidatePage,
+    ],
+    beforeValidate: [
+      removeInvalidBlockData('content'),
+    ],
   },
   trash: true,
   versions: {

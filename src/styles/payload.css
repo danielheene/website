@@ -1,8 +1,4 @@
-/** biome-ignore-all lint/correctness/noInvalidPositionAtImportRule: <explanation> */
 @layer fonts, theme, base, components, utilities;
-
-@import "./fonts/_pp-frama.css" layer(fonts);
-@import "./fonts/_pp-supply-mono.css" layer(fonts);
 
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities);
@@ -14,6 +10,15 @@
 @import "./theme/_radii.css" layer(theme);
 @import "./theme/_sizes.css" layer(theme);
 @import "./theme/_text-shadows.css" layer(theme);
+
+@import "./payload/_app-header.css" layer(payload-default);
+@import "./payload/_fields.css" layer(payload-default);
+@import "./payload/_buttons.css" layer(payload-default);
+@import "./payload/_richtext-lexical.css" layer(payload-default);
+@import "./payload/_list-header.css" layer(payload-default);
+@import "./payload/_resume.customers.css" layer(payload-default);
+@import "./payload/_resume.experience.css" layer(payload-default);
+@import "./payload/_resume.projects.css" layer(payload-default);
 
 @theme static {
   --color-elevation-0: var(--theme-elevation-0);
@@ -39,288 +44,16 @@
   --color-elevation-1000: var(--theme-elevation-1000);
 }
 
-@import "./payload/_app-header.css" layer(components);
-@import "./payload/_dashboard.css";
-@import "./payload/_resume.hero.css";
-@import "./payload/_resume.contact.css";
-@import "./payload/_resume.customers.css";
-@import "./payload/_resume.experience.css";
-@import "./payload/_resume.projects.css";
-
 @layer payload-default {
   :root {
     --base-body-size: 16;
     --font-body: var(--font-pp-frama);
     --font-mono: var(--font-pp-supply-mono);
   }
-}
 
-.collection-list .table:first-of-type td {
-  vertical-align: middle;
-}
-
-.blocks-drawer__blocks {
-  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
-}
-
-html {
-  font-size: 16px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-.rich-text-lexical {
-  --lexical-spacing-x: 1rem;
-
-  background-color: var(--theme-elevation-0);
-
-  .rich-text-lexical__wrap,
-  .editor-container,
-  .editor-scroller {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-  }
-
-  .editor {
-    min-height: 300px;
-    border: 1px solid var(--theme-elevation-150);
-    padding-bottom: 2rem;
-
-    & > div > *:last-child {
-      padding-bottom: 0;
-      margin-bottom: 0;
-    }
-
-    .editor-placeholder {
-      font-family: var(--font-mono), monospace;
-      left: var(--lexical-spacing-x);
-    }
-
-    .editor {
-      min-height: 100%;
-
-      .editor-placeholder {
-        display: none;
-      }
-    }
-  }
-
-  [data-lexical-editor="true"] {
-    flex-grow: 1;
-    padding-left: var(--lexical-spacing-x);
-    padding-right: var(--lexical-spacing-x);
-
-    &::before {
-      display: none;
-    }
-
-    [data-lexical-decorator="true"] {
-      width: 100%;
-
-      .collapsible__toggle-wrap .btn {
-        @apply min-h-px;
-      }
-
-      .insert-paragraph-at-end {
-        display: none;
-      }
-    }
-  }
-
-  .insert-paragraph-at-end {
-    padding: 0;
-    height: 2rem;
-    margin-top: -2rem;
-
-    & > * {
-      border: 1px solid transparent;
-      font-size: 1.8rem;
-      line-height: calc(2rem - 2px);
-      font-family: var(--font-mono), monospace;
-    }
-
-    &:hover > * {
-      border-color: var(--theme-elevation-150);
-    }
-  }
-
-  .draggable-block-target-line {
-    left: 1.5rem;
-    margin-left: -3px;
-    height: 2px;
-  }
-
-  .add-block-menu {
-    display: none;
-  }
-}
-
-.radio-input {
-  .radio-input__styled-radio::before {
-    box-sizing: content-box;
-  }
-}
-
-.tabs-field__tabs .tabs-field__tab-button {
-  @apply font-pp-supply-mono text-lg tracking-wider;
-}
-
-.list-header,
-.doc-header {
-  @apply mt-0;
-
-  .list-header__title,
-  .doc-header__title {
-    @apply font-pp-supply-mono text-xl leading-10 -mt-0.5;
-  }
-
-  .list-header__content {
-    @apply flex flex-row justify-between flex-wrap pt-2.5;
-  }
-
-  .list-header__title-and-actions,
-  .list-header__title-actions,
-  .list-header__actions,
-  .list-header__actions > * {
-    @apply flex flex-row items-center flex-nowrap text-nowrap whitespace-nowrap m-0 p-0;
-
-    .btn {
-      @apply text-nowrap whitespace-nowrap;
-    }
-  }
-
-  .list-header__after-header-content > * {
-    @apply empty:hidden;
-  }
-}
-
-.btn,
-.list-header__title-actions > [type="button"] {
-  @apply inline-flex justify-center items-center;
-  @apply m-0 min-h-8 no-underline transition-all duration-150;
-
-  &.btn--style-primary,
-  &.list-header__create-new-button,
-  &.list-create-new-doc__create-new-button {
-    @apply bg-primary text-white;
-
-    &:not(.btn--disabled):hover,
-    &:not(:disabled):hover {
-      @apply brightness-150 text-white;
-    }
-
-    &.btn--disabled,
-    &:disabled {
-      @apply bg-primary-300;
-    }
-  }
-
-  &.btn--style-secondary {
-    @apply bg-white text-primary;
-
-    &:not(.btn--disabled):hover {
-      @apply bg-white text-primary-600 shadow-lg shadow-primary/30;
-    }
-
-    &.btn--disabled {
-      @apply bg-white saturate-50 contrast-50;
-    }
-  }
-
-  .login .form-submit &,
-  .forgot-password .form-submit & {
-    @apply my-6;
-  }
-
-  &:not(.toolbar-popup__dropdown-item):not(.toolbar-popup__dropdown-item-paragraph) {
-    .btn__content,
-    .pill {
-      @apply pt-px font-black font-mono uppercase bg-transparent;
-    }
-  }
-
-  &.toolbar-popup__dropdown-item,
-  &.toolbar-popup__dropdown-item-paragraph {
-    @apply justify-start;
-  }
-}
-
-.fixed-toolbar__dropdown-items,
-.tabs-field__tab-button.tabs-field__tab-button--active {
-  &::after {
-    @apply bg-primary-500;
-  }
-}
-
-.list-header,
-.file-field__dropzoneButtons {
-  @apply items-center;
-}
-
-.upload__dropzoneContent__buttons {
-  @apply flex flex-col xl:flex-row justify-center items-center w-full;
-
-  & > button {
-    @apply block w-full xl:w-auto;
-    --btn-padding-inline-start: 1rem;
-    --btn-padding-inline-end: 1rem;
-  }
-}
-
-.login__form__inputWrap > .field-type input {
-  @apply font-mono text-base;
-}
-
-label.field-label:not(.unstyled) {
-  @apply font-mono text-base;
-}
-
-.forgot-password,
-.login {
-  a {
-    @apply font-mono text-sm opacity-60;
-  }
-}
-
-@media (min-width: 768px) {
-  .tabs-field--vertical {
-    display: flex;
-    width: 100%;
-
-    .tabs-field__tabs-wrap {
-      min-width: 270px;
-    }
-
-    .tabs-field__tabs {
-      display: flex;
-      flex-direction: column;
-      padding-left: var(--gutter-h);
-      border-bottom: 0;
-    }
-
-    .tabs-field__content-wrap {
-      flex-grow: 1;
-    }
-
-    .tabs-field__tab-button {
-      padding: 10px 20px;
-      border-bottom-width: 0;
-      margin-right: 0;
-
-      &:hover:after {
-        width: 1px;
-        height: 100%;
-        bottom: 0;
-        left: -1px;
-      }
-    }
-
-    .tabs-field__tab-button--active::after {
-      width: 2px;
-      height: 100%;
-      bottom: 0;
-      left: -1px;
-    }
+  html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }

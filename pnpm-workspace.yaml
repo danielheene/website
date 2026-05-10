@@ -1,0 +1,4 @@
+allowBuilds:
+  bun: false
+  esbuild: true
+  sharp: true

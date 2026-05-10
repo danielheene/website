@@ -12,7 +12,7 @@ import { NavGroup } from './NavGroup'
 import { NavHeader } from './NavHeader'
 import { NavWrapper } from './NavWrapper'
 
-import './Nav.styles.scss'
+import './Nav.styles.css'
 
 export const baseClass = 'nav'
 

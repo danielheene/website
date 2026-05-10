@@ -1,4 +1,4 @@
-import type { Page } from '@payload-types'
+import type { Page } from '@/types/payload'
 import { revalidatePath } from 'next/cache'
 import type { CollectionAfterChangeHook } from 'payload'
 

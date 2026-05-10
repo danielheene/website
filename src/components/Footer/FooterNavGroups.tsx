@@ -1,9 +1,9 @@
-import type { FooterNavigationData } from '@payload-types'
+import type { PageFooterData } from '@/types/payload'
 
 import { CMSLink } from '@/components/Link'
-import { cn } from '@/utilities/cn'
+import { cn } from '@/lib/cn'
 
-interface FooterNavGroupsProps extends Pick<FooterNavigationData, 'navGroups'> {
+interface FooterNavGroupsProps extends Pick<PageFooterData, 'navGroups'> {
   className?: string
 }
 

@@ -1,16 +1,15 @@
-import type { RegisteredGlobalSlug } from '@custom-types'
-
 import { ResumeDownloads } from '@/globals/ResumeDownloads'
-import { SettingsFooterNavigation } from '@/globals/SettingsFooterNavigation'
-import { SettingsHeaderNavigation } from '@/globals/SettingsHeaderNavigation'
-import { SettingsSiteMeta } from '@/globals/SettingsSiteMeta'
-import { SettingsUserMeta } from '@/globals/SettingsUserMeta'
+import { SettingsPageHeader } from '@/globals/SettingsPageHeader'
+import { SettingsSiteConfiguration } from '@/globals/SettingsSiteConfiguration'
+import type { RegisteredGlobalSlug } from '@/types/globals'
 
 import { ResumeAboutMe } from './ResumeAboutMe'
 import { ResumeContact } from './ResumeContact'
 import { ResumeCustomers } from './ResumeCustomers'
 import { ResumeExperience } from './ResumeExperience'
 import { ResumeProjects } from './ResumeProjects'
+import { SettingsPageFooter } from './SettingsPageFooter'
+import { SettingsUserConfiguration } from './SettingsUserConfiguration'
 
 export const GLOBALS = [
   ResumeAboutMe,
@@ -19,10 +18,12 @@ export const GLOBALS = [
   ResumeDownloads,
   ResumeExperience,
   ResumeProjects,
-  SettingsHeaderNavigation,
-  SettingsFooterNavigation,
-  SettingsSiteMeta,
-  SettingsUserMeta,
+  SettingsPageHeader,
+  SettingsPageFooter,
+  SettingsSiteConfiguration,
+  SettingsUserConfiguration,
 ]
 
-export const GLOBAL_SLUGS = GLOBALS.map((global) => global.slug) as RegisteredGlobalSlug[]
+export const GLOBAL_SLUGS = GLOBALS.map(
+  (global) => global.slug,
+) as RegisteredGlobalSlug[]

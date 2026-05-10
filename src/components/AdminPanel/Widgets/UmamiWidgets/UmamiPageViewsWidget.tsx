@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChartContainer } from '@/components/ui/chart'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useUmamiCharts } from '@/contexts/UmamiCharts'
-import { cn } from '@/utilities/cn'
+import { cn } from '@/lib/cn'
 
 interface CustomTooltipProps {
   active?: boolean

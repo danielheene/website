@@ -1,11 +1,14 @@
-import { AdminGroup, CollectionSlug, GlobalSlug } from '@custom-types'
+import { AdminGroup } from '@custom-types'
 import type { GlobalConfig } from 'payload'
 
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { RichTextField } from '@/fields/RichText'
 import { TitleField } from '@/fields/Title'
-import { revalidateResumeSection } from '@/utilities/revalidateResumeSection'
+import { enqueueGenerateResumeDocuments } from '@/lib/hooks/enqueueGenerateResumeDocuments'
+import { revalidateResumeSection } from '@/lib/hooks/revalidateResumeSection'
+import { CollectionSlug } from '@/types/collections'
+import { GlobalSlug } from '@/types/globals'
 
 export const ResumeAboutMe: GlobalConfig<GlobalSlug.ResumeAboutMe> = {
   slug: GlobalSlug.ResumeAboutMe,
@@ -16,12 +19,17 @@ export const ResumeAboutMe: GlobalConfig<GlobalSlug.ResumeAboutMe> = {
     update: authenticated,
   },
   hooks: {
-    afterChange: [revalidateResumeSection(GlobalSlug.ResumeAboutMe)],
+    afterChange: [
+      revalidateResumeSection(GlobalSlug.ResumeAboutMe),
+      enqueueGenerateResumeDocuments,
+    ],
   },
   admin: {
     group: AdminGroup.Resume,
   },
-  typescript: { interface: 'ResumeAboutMeGlobalData' },
+  typescript: {
+    interface: 'ResumeAboutMeGlobalData',
+  },
   fields: [
     {
       type: 'tabs',
@@ -36,20 +44,19 @@ export const ResumeAboutMe: GlobalConfig<GlobalSlug.ResumeAboutMe> = {
               label: 'Portrait',
               relationTo: CollectionSlug.MediaImages,
               filterOptions: {
-                mimeType: { contains: 'image' },
+                mimeType: {
+                  contains: 'image',
+                },
               },
             },
             RichTextField({
               name: 'content',
-              editorVariant: 'inline',
+              editorVariant: 'caption',
             }),
           ],
         },
       ],
     },
   ],
-  versions: {
-    drafts: false,
-    max: 0,
-  },
+  versions: false,
 }

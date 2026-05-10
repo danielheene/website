@@ -1,9 +1,87 @@
-import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
+import {
+  AlignFeature,
+  BlockquoteFeature,
+  BlocksFeature,
+  BoldFeature,
+  ChecklistFeature,
+  EXPERIMENTAL_TableFeature,
+  HeadingFeature,
+  HorizontalRuleFeature,
+  IndentFeature,
+  InlineCodeFeature,
+  ItalicFeature,
+  LinkFeature,
+  lexicalEditor,
+  OrderedListFeature,
+  ParagraphFeature,
+  RelationshipFeature,
+  StrikethroughFeature,
+  UnderlineFeature,
+  UnorderedListFeature,
+  UploadFeature,
+} from '@payloadcms/richtext-lexical'
 import type { RichTextField as PayloadRichTextField } from 'payload'
 import { deepMerge } from 'payload'
 
-type RichTextEditorVariant = 'inline' | 'caption' | 'nested' | 'post'
-type RichTextFieldOverrides = Partial<Omit<PayloadRichTextField, 'name' | 'type' | 'editor'>>
+import { LinkField } from '@/fields/Link'
+import { BlockSlug } from '@/types/blocks'
+
+const inlineFeatures = [
+  /* text feature */
+  BoldFeature(),
+  ItalicFeature(),
+  UnderlineFeature(),
+  StrikethroughFeature(),
+]
+
+const captionFeatures = [
+  ...inlineFeatures,
+  LinkFeature({
+    fields: [
+      LinkField(),
+    ],
+  }),
+]
+
+const markdownFeatures = [
+  ...captionFeatures,
+  ParagraphFeature(),
+  HeadingFeature({
+    enabledHeadingSizes: [
+      'h2',
+      'h3',
+      'h4' /* 'h5', */ /* 'h6' */,
+    ],
+  }),
+  OrderedListFeature(),
+  UnorderedListFeature(),
+  ChecklistFeature(),
+  BlockquoteFeature(),
+  InlineCodeFeature(),
+  UploadFeature(),
+]
+
+const postFeatures = [
+  ...markdownFeatures,
+  RelationshipFeature(),
+  UploadFeature(),
+  HorizontalRuleFeature(),
+  BlocksFeature({
+    blocks: [
+      BlockSlug.LinkGroup,
+      BlockSlug.Code,
+      BlockSlug.TwoColumnContent,
+    ],
+  }),
+  IndentFeature(),
+  AlignFeature(),
+  EXPERIMENTAL_TableFeature(),
+]
+
+type RichTextEditorVariant = 'inline' | 'caption' | 'markdown' | 'post'
+type RichTextFieldOverrides = Partial<
+  Omit<PayloadRichTextField, 'name' | 'type' | 'editor'>
+>
 
 type RichTextFieldProps = {
   name: string
@@ -11,13 +89,23 @@ type RichTextFieldProps = {
   overrides?: RichTextFieldOverrides
 }
 
-export const RichTextField = ({ name, editorVariant = 'inline', overrides = {} }: RichTextFieldProps): PayloadRichTextField => {
+export const RichTextField = ({
+  name,
+  editorVariant = 'inline',
+  overrides = {},
+}: RichTextFieldProps): PayloadRichTextField => {
   const editor = createRichTextEditor(editorVariant)
 
   return deepMerge<PayloadRichTextField, RichTextFieldOverrides>(
     {
       type: 'richText',
       name,
+      admin: {
+        disableGroupBy: true,
+        disableListFilter: true,
+        disableListColumn: true,
+        disableBulkEdit: true,
+      },
       editor,
     },
     overrides,
@@ -29,75 +117,31 @@ function createRichTextEditor(variant: RichTextEditorVariant) {
     return lexicalEditor({
       features: ({ rootFeatures }) => [
         ...rootFeatures,
-        // ParagraphFeature(),
-        // HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
-        // BoldFeature(),
-        // ItalicFeature(),
-        // UnderlineFeature(),
-        // IndentFeature(),
-        //
-        // OrderedListFeature(),
-        // UnorderedListFeature(),
-        // LinkFeature(),
-        // FixedToolbarFeature({
-        //   applyToFocusedEditor: true,
-        //   customGroups: {
-        //     text: {
-        //       // paragraph, headings, lists
-        //       type: 'dropdown',
-        //       order: 10,
-        //     },
-        //     format: {
-        //       // bold, italic, underline
-        //       type: 'buttons',
-        //       order: 20,
-        //     },
-        //     indent: {
-        //       // indentations
-        //       type: 'buttons',
-        //       order: 30,
-        //     },
-        //     alignment: {
-        //       type: 'buttons',
-        //     },
-        //     features: {
-        //       // links, blockquote, hr, code
-        //       type: 'buttons',
-        //       order: 40,
-        //     },
-        //     ad: {
-        //       // blocks
-        //       type: 'dropdown',
-        //       order: 50,
-        //     },
-        //   },
-        //   disableIfParentHasFixedToolbar: true,
-        // }),
-        // InlineToolbarFeature(),
+        ...inlineFeatures,
       ],
-    })
-  }
-  if (variant === 'post') {
-    return lexicalEditor({
-      features: ({ rootFeatures }) => [...rootFeatures, BlocksFeature({ blocks: ['TwoColumnContentBlock'] })],
     })
   }
   if (variant === 'caption') {
     return lexicalEditor({
       features: ({ rootFeatures }) => [
         ...rootFeatures,
-        // BoldFeature(),
-        // ItalicFeature(),
-        // UnderlineFeature(),
-        // OrderedListFeature(),
-        // UnorderedListFeature(),
-        // ParagraphFeature(),
-        // // BlockquoteFeature(),
-        // LinkFeature(),
-        // HorizontalRuleFeature(),
-        // InlineCodeFeature(),
-        // BlocksFeature({ blocks: [BlockSlug.LinkGroup, BlockSlug.TwoColumnContent] }),
-        // FixedToolbarFeature({ disableIfParentHasFixedToolbar: true }),
+        ...captionFeatures,
+      ],
+    })
+  }
+  if (variant === 'markdown') {
+    return lexicalEditor({
+      features: ({ rootFeatures }) => [
+        ...rootFeatures,
+        ...markdownFeatures,
+      ],
+    })
+  }
+  if (variant === 'post') {
+    return lexicalEditor({
+      features: ({ rootFeatures }) => [
+        ...rootFeatures,
+        ...postFeatures,
       ],
     })
   }

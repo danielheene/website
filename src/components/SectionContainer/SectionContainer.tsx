@@ -4,7 +4,7 @@ import slugify from '@sindresorhus/slugify'
 import { type ReactNode, useEffect } from 'react'
 import { useIntersectionObserver } from 'usehooks-ts'
 
-import { cn } from '@/utilities/cn'
+import { cn } from '@/lib/cn'
 
 import { useSectionNavigation } from '../PageContainer/SectionNavigation'
 

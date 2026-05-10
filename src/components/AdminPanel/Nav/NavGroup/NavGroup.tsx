@@ -4,7 +4,7 @@ import type { JSX } from 'react'
 
 import { NavLink } from '../NavLink'
 
-import './NavGroup.styles.scss'
+import './NavGroup.styles.css'
 
 export type NavGroupProps = Omit<NavGroupType, 'label'> & Partial<Pick<NavGroupType, 'label'>>
 

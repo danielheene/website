@@ -1,6 +1,6 @@
 'use client'
 
-import './NavHeader.styles.scss'
+import './NavHeader.styles.css'
 
 export const NavHeader = () => {
   // const { navOpen } = useNav()

@@ -1,4 +1,5 @@
-import { AdminGroup, CollectionSlug } from '@custom-types'
+import { AdminGroup } from '@custom-types'
+import { CollectionSlug } from '@/types/collections'
 import type { CollectionConfig } from 'payload'
 
 import { anyone } from '@/access/anyone'

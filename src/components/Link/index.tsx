@@ -1,11 +1,11 @@
-import type { LinkFieldData } from '@payload-types'
+import type { LinkFieldData } from '@/types/payload'
 import Link from 'next/link'
 import type React from 'react'
 
 import { Button, type ButtonProps } from '@/components/Button'
 import { Icon } from '@/components/Icon'
 import { generateContentPath } from '@/lib/generateContentPath'
-import { cn } from '@/utilities/cn'
+import { cn } from '@/lib/cn'
 
 type CMSLinkType = LinkFieldData & {
   appearance?: 'inline' | ButtonProps['variant']

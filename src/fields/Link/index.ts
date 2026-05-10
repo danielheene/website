@@ -1,8 +1,13 @@
-import { CollectionSlug } from '@custom-types'
-import type { LinkFieldData } from '@payload-types'
-import { deepMerge, type Field, type GroupField, type OptionObject } from 'payload'
+import {
+  deepMerge,
+  type Field,
+  type GroupField,
+  type OptionObject,
+} from 'payload'
 
 import { IconField } from '@/fields/Icon'
+import { CollectionSlug } from '@/types/collections'
+import type { LinkFieldData } from '@/types/payload'
 
 export const appearanceOptions: Record<string, OptionObject> = {
   default: {
@@ -22,7 +27,10 @@ type LinkFieldConfig = {
   overrides?: LinkFieldOverrides
 }
 
-export const LinkField = ({ withAppearanceSelect = false, overrides = {} }: LinkFieldConfig = {}): GroupField =>
+export const LinkField = ({
+  withAppearanceSelect = false,
+  overrides = {},
+}: LinkFieldConfig = {}): GroupField =>
   deepMerge<GroupField, LinkFieldOverrides>(
     {
       name: 'link',
@@ -77,7 +85,13 @@ export const LinkField = ({ withAppearanceSelect = false, overrides = {} }: Link
         {
           type: 'row',
           fields: [
-            IconField({ overrides: { admin: { width: '25%' } } }),
+            IconField({
+              overrides: {
+                admin: {
+                  width: '25%',
+                },
+              },
+            }),
             {
               name: 'label',
               type: 'text',
@@ -105,11 +119,16 @@ export const LinkField = ({ withAppearanceSelect = false, overrides = {} }: Link
               type: 'relationship',
               admin: {
                 width: '75%',
-                condition: (_, siblingData: LinkFieldData) => siblingData?.type === 'reference',
+                condition: (_, siblingData: LinkFieldData) =>
+                  siblingData?.type === 'reference',
               },
               label: 'Document to link to',
               maxDepth: 1,
-              relationTo: [CollectionSlug.Pages, CollectionSlug.BlogPosts, CollectionSlug.BlogCategories, CollectionSlug.BlogTags],
+              relationTo: [
+                CollectionSlug.Pages,
+                CollectionSlug.BlogPosts,
+                CollectionSlug.BlogTags,
+              ],
               required: true,
             },
             {
@@ -117,7 +136,8 @@ export const LinkField = ({ withAppearanceSelect = false, overrides = {} }: Link
               type: 'text',
               admin: {
                 width: '75%',
-                condition: (_, siblingData: LinkFieldData) => siblingData?.type === 'custom',
+                condition: (_, siblingData: LinkFieldData) =>
+                  siblingData?.type === 'custom',
               },
               label: 'Custom URL',
               required: true,
@@ -127,7 +147,8 @@ export const LinkField = ({ withAppearanceSelect = false, overrides = {} }: Link
               type: 'email',
               admin: {
                 width: '75%',
-                condition: (_, siblingData: LinkFieldData) => siblingData?.type === 'mailto',
+                condition: (_, siblingData: LinkFieldData) =>
+                  siblingData?.type === 'mailto',
               },
               label: 'E-Mail Address',
               required: true,

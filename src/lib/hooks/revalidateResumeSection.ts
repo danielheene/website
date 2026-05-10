@@ -1,0 +1,53 @@
+import { revalidatePath, revalidateTag } from 'next/cache'
+import type { GlobalAfterChangeHook } from 'payload'
+
+import { generateContentPath } from '@/lib/generateContentPath'
+import { CollectionSlug } from '@/types/collections'
+import type { GlobalSlug } from '@/types/globals'
+import type { PageLayout } from '@/types/payload'
+
+export const revalidateResumeSection =
+  (slug: GlobalSlug): GlobalAfterChangeHook =>
+  async ({ doc, context, req: { payload } }) => {
+    if (context.skipRevalidate) return doc
+
+    if ('_status' in doc && doc._status !== 'published') return
+
+    payload.logger.info(`Revalidating Resume Section: ${slug}`)
+    revalidateTag(slug)
+
+    /**
+     * Revalidate all Pages including resumne layouts
+     */
+    try {
+      console.info(`Fetching pages that are using the Resume layout: ${slug}`)
+      const { docs } = await payload.find({
+        collection: CollectionSlug.Pages,
+        draft: false,
+        limit: 9999,
+        where: {
+          layout: {
+            equals: 'resume' satisfies PageLayout,
+          },
+        },
+        select: {
+          slug: true,
+        },
+      })
+
+      console.info(`Found ${docs.length} pages using the Resume layout`)
+
+      docs.forEach(({ slug }) => {
+        console.info(`Revalidating Page: ${slug}`)
+        const path = generateContentPath(CollectionSlug.Pages, slug)
+        revalidatePath(path)
+      })
+    } catch (error) {
+      console.error(
+        `Failed to revalidate resume section with slug: ${slug}`,
+        error,
+      )
+    }
+
+    return doc
+  }

@@ -1,15 +1,15 @@
 'use client'
 
-import type { HeaderNavigationData } from '@payload-types'
 import Link from 'next/link'
 import React from 'react'
 
 import { CMSLink } from '@/components/Link'
 import { Logo } from '@/components/Logo'
-import { cn } from '@/utilities/cn'
+import { cn } from '@/lib/cn'
+import type { PageHeaderData } from '@/types/payload'
 
 interface HeaderClientProps {
-  mainNavigation?: HeaderNavigationData['mainNavigation']
+  mainNavigation?: PageHeaderData['mainNavigation']
 }
 
 export const HeaderClient = ({ mainNavigation }: HeaderClientProps) => {
@@ -24,7 +24,10 @@ export const HeaderClient = ({ mainNavigation }: HeaderClientProps) => {
   // })
 
   return (
-    <header ref={headerRef} className={`page-header container sticky top-0 z-50 -mb-(--header-height)`}>
+    <header
+      ref={headerRef}
+      className={`page-header container sticky top-0 z-50 -mb-(--header-height)`}
+    >
       {/*<div className="pointer-events-none relative">*/}
       <div
         className={cn([
@@ -43,7 +46,10 @@ export const HeaderClient = ({ mainNavigation }: HeaderClientProps) => {
         <ul className="flex flex-row md:gap-4 lg:gap-8 items-center">
           {mainNavigation?.map(({ id, link }) => (
             <li key={id}>
-              <CMSLink {...link} className="text-foreground hover:text-current" />
+              <CMSLink
+                {...link}
+                className="text-foreground hover:text-current"
+              />
             </li>
           ))}
         </ul>

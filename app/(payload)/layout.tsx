@@ -7,9 +7,13 @@ import { handleServerFunctions, RootLayout } from '@payloadcms/next/layouts'
 import type { ServerFunctionClient } from 'payload'
 import type React from 'react'
 
+import PPFrama from '@/fonts/pp-frama'
+import PPFramaText from '@/fonts/pp-frama-text'
+import PPSupplyMono from '@/fonts/pp-supply-mono'
+
 import { importMap } from './admin/importMap.js'
 
-import '@styles/payload.css'
+import '@/styles/payload.css'
 
 type Args = {
   children: React.ReactNode
@@ -25,8 +29,15 @@ const serverFunction: ServerFunctionClient = async (args) => {
 }
 
 const Layout = ({ children }: Args) => (
-  <RootLayout config={config} importMap={importMap} serverFunction={serverFunction}
-              htmlProps={{ suppressHydrationWarning: true }}>
+  <RootLayout
+    config={config}
+    importMap={importMap}
+    serverFunction={serverFunction}
+    htmlProps={{
+      className: `${PPSupplyMono.variable} ${PPFrama.variable} ${PPFramaText.variable}`,
+      suppressHydrationWarning: true,
+    }}
+  >
     {children}
   </RootLayout>
 )

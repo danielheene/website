@@ -1,13 +1,15 @@
-import { AdminGroup, CollectionSlug } from '@custom-types'
-import type { BlogPost } from '@payload-types'
+import { AdminGroup } from '@custom-types'
 import type { CollectionConfig } from 'payload'
 
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
+import { MetaField } from '@/fields/Meta'
 import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
 import { generatePreviewPath } from '@/lib/generatePreviewPath'
+import { CollectionSlug } from '@/types/collections'
+import type { BlogPost } from '@/types/payload'
 
 import { revalidateBlogPost } from './hooks/revalidateBlogPost'
 
@@ -17,7 +19,10 @@ export const BlogPosts: CollectionConfig<CollectionSlug.BlogPosts> = {
     singular: 'Post',
     plural: 'Posts',
   },
-  defaultPopulate: { title: true, slug: true },
+  defaultPopulate: {
+    title: true,
+    slug: true,
+  },
   disableDuplicate: true,
   access: {
     create: authenticated,
@@ -28,15 +33,24 @@ export const BlogPosts: CollectionConfig<CollectionSlug.BlogPosts> = {
   admin: {
     group: AdminGroup.Blog,
     useAsTitle: 'title',
-    defaultColumns: ['title', 'slug', 'updatedAt', 'status'],
+    defaultColumns: [
+      'title',
+      'slug',
+      'updatedAt',
+      'status',
+    ],
     disableCopyToLocale: true,
     livePreview: {
-      url: ({ data }) => generatePreviewPath(CollectionSlug.BlogPosts, data.slug),
+      url: ({ data }) =>
+        generatePreviewPath(CollectionSlug.BlogPosts, data.slug),
     },
-    preview: (data: Partial<BlogPost>) => generatePreviewPath(CollectionSlug.BlogPosts, data.slug),
+    preview: (data: Partial<BlogPost>) =>
+      generatePreviewPath(CollectionSlug.BlogPosts, data.slug),
   },
   hooks: {
-    afterChange: [revalidateBlogPost],
+    afterChange: [
+      revalidateBlogPost,
+    ],
   },
   fields: [
     /* -------------- Main  Content -------------- */
@@ -45,32 +59,30 @@ export const BlogPosts: CollectionConfig<CollectionSlug.BlogPosts> = {
     }),
 
     /* -------------- Sidebar Content -------------- */
-    SlugField({ fieldToUse: 'title' }),
     {
       name: 'heroImage',
       type: 'upload',
       relationTo: CollectionSlug.MediaImages,
       filterOptions: {
-        mimeType: { contains: 'image' },
+        mimeType: {
+          contains: 'image',
+        },
       },
       admin: {
         position: 'sidebar',
       },
     },
-    {
-      name: 'categories',
-      type: 'relationship',
-      admin: {
-        position: 'sidebar',
-      },
-      hasMany: false,
-      relationTo: CollectionSlug.BlogCategories,
-    },
+    SlugField({
+      fieldToUse: 'title',
+    }),
     {
       name: 'tags',
       type: 'relationship',
       admin: {
         position: 'sidebar',
+        appearance: 'drawer',
+        allowCreate: true,
+        allowEdit: true,
       },
       hasMany: true,
       relationTo: CollectionSlug.BlogTags,
@@ -84,7 +96,9 @@ export const BlogPosts: CollectionConfig<CollectionSlug.BlogPosts> = {
       filterOptions: ({ id }) => {
         return {
           id: {
-            not_in: [id],
+            not_in: [
+              id,
+            ],
           },
         }
       },
@@ -93,13 +107,29 @@ export const BlogPosts: CollectionConfig<CollectionSlug.BlogPosts> = {
     },
 
     /* -------------- Content -------------- */
-    RichTextField({
-      name: 'content',
-      editorVariant: 'post',
-      overrides: {
-        label: false,
-      },
-    }),
+    {
+      type: 'tabs',
+      tabs: [
+        {
+          label: 'Main',
+          fields: [
+            RichTextField({
+              name: 'content',
+              editorVariant: 'post',
+              overrides: {
+                label: false,
+              },
+            }),
+          ],
+        },
+        {
+          label: 'SEO',
+          fields: [
+            MetaField(),
+          ],
+        },
+      ],
+    },
   ],
   trash: true,
   versions: {

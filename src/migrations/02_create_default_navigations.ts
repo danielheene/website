@@ -1,22 +1,69 @@
-import { CollectionSlug, GlobalSlug } from '@custom-types'
 import type { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-mongodb'
 
-export async function up({ payload, req, session }: MigrateUpArgs): Promise<void> {
+import { CollectionSlug } from '@/types/collections'
+import { GlobalSlug } from '@/types/globals'
+
+export async function up({
+  payload,
+  req,
+  session,
+}: MigrateUpArgs): Promise<void> {
   const pages = {
-    home: await payload.find({ collection: CollectionSlug.Pages, where: { slug: { equals: 'home' } } }).then(({ docs }) => docs[0]),
-    aboutMe: await payload.find({ collection: CollectionSlug.Pages, where: { slug: { equals: 'about-me' } } }).then(({ docs }) => docs[0]),
-    resume: await payload.find({ collection: CollectionSlug.Pages, where: { slug: { equals: 'resume' } } }).then(({ docs }) => docs[0]),
+    home: await payload
+      .find({
+        collection: CollectionSlug.Pages,
+        where: {
+          slug: {
+            equals: 'home',
+          },
+        },
+      })
+      .then(({ docs }) => docs[0]),
+    aboutMe: await payload
+      .find({
+        collection: CollectionSlug.Pages,
+        where: {
+          slug: {
+            equals: 'about-me',
+          },
+        },
+      })
+      .then(({ docs }) => docs[0]),
+    resume: await payload
+      .find({
+        collection: CollectionSlug.Pages,
+        where: {
+          slug: {
+            equals: 'resume',
+          },
+        },
+      })
+      .then(({ docs }) => docs[0]),
     legalNotice: await payload
-      .find({ collection: CollectionSlug.Pages, where: { slug: { equals: 'legal-notice' } } })
+      .find({
+        collection: CollectionSlug.Pages,
+        where: {
+          slug: {
+            equals: 'legal-notice',
+          },
+        },
+      })
       .then(({ docs }) => docs[0]),
     privacyPolicy: await payload
-      .find({ collection: CollectionSlug.Pages, where: { slug: { equals: 'privacy-policy' } } })
+      .find({
+        collection: CollectionSlug.Pages,
+        where: {
+          slug: {
+            equals: 'privacy-policy',
+          },
+        },
+      })
       .then(({ docs }) => docs[0]),
   }
 
   payload.logger.info('Creating main navigation links for header...')
   await payload.updateGlobal({
-    slug: GlobalSlug.SettingsHeaderNavigation,
+    slug: GlobalSlug.SettingsPageHeader,
     context: {
       skipRevalidate: true,
     },
@@ -41,7 +88,7 @@ export async function up({ payload, req, session }: MigrateUpArgs): Promise<void
 
   payload.logger.info('Creating default navigation links for footer...')
   await payload.updateGlobal({
-    slug: GlobalSlug.SettingsFooterNavigation,
+    slug: GlobalSlug.SettingsPageFooter,
     context: {
       skipRevalidate: true,
     },
@@ -117,7 +164,7 @@ export async function up({ payload, req, session }: MigrateUpArgs): Promise<void
 
   payload.logger.info('Creating legal navigation links for footer...')
   await payload.updateGlobal({
-    slug: GlobalSlug.SettingsFooterNavigation,
+    slug: GlobalSlug.SettingsPageFooter,
     context: {
       skipRevalidate: true,
     },

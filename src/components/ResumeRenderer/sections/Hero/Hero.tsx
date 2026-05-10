@@ -1,9 +1,9 @@
-// import { GlobalSlug } from '@custom-types'
+// import { GlobalSlug } from '@/types/globals'
 // import { unstable_cache } from 'next/cache'
 // import { getPayload } from 'payload'
 // import config from '@payload-config'
 // import { snakeCase } from 'lodash-es'
-// import { MediaImage } from '@payload-types'
+// import { MediaImage } from '@/types/payload'
 // import { HeroClient } from '@/components/ResumeRenderer/sections/Hero/Hero.client'
 //
 // const getHeroData = unstable_cache(

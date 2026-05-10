@@ -1,22 +1,33 @@
-import type { AddressData } from '@payload-types'
+import type { AddressData } from '@/types/payload'
 import type { FieldHookArgs } from 'payload'
 
-import { fetchAddressData } from '@/lib/fetchAddressData'
+import { fetchMapboxAddressData } from '@/lib/fetchMapboxAddressData'
 
-export const resolveAddressData = async ({ value, previousValue, req, context }: FieldHookArgs<any, AddressData, any>) => {
+export const resolveAddressData = async ({
+                                           value,
+                                           previousValue,
+                                           req,
+                                           context,
+                                           path,
+                                         }: FieldHookArgs<any, AddressData, any>) => {
   if (context.skipResolveAddressData) return value
 
   const requiredGroups = [['street'], ['postCode', 'place'], ['countryCode', 'countryName']]
-  const fieldsChanged = requiredGroups.some((group) => group.some((key) => previousValue[key] !== value[key]))
+  const fieldsChanged = requiredGroups.some((group) => {
+    return group.some((key) => previousValue[key] !== value[key])
+  })
   const fieldsAvailable = requiredGroups.every((group) => {
     return group.some((key) => Object.hasOwn(value, key) && value[key] !== '')
   })
 
   if (fieldsChanged && fieldsAvailable) {
-    const locale = req.locale === 'de' ? 'de' : 'en'
-    context.otherLocale = req.locale === 'de' ? 'en' : 'de'
-
-    return await fetchAddressData({ locale, ...value })
+    try {
+      const locale = path.at(-1) as 'de' | 'en'
+      return await fetchMapboxAddressData({ locale, ...value })
+    } catch (error) {
+      console.error('Error resolving address data:', error)
+    }
   }
+
   return value
 }

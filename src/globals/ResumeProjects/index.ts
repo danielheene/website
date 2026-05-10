@@ -1,11 +1,13 @@
-import { AdminGroup, CollectionSlug, GlobalSlug } from '@custom-types'
+import { AdminGroup } from '@custom-types'
 import type { GlobalConfig } from 'payload'
 
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { RichTextField } from '@/fields/RichText'
 import { TitleField } from '@/fields/Title'
-import { revalidateResumeSection } from '@/utilities/revalidateResumeSection'
+import { revalidateResumeSection } from '@/lib/hooks/revalidateResumeSection'
+import { CollectionSlug } from '@/types/collections'
+import { GlobalSlug } from '@/types/globals'
 
 export const ResumeProjects: GlobalConfig<GlobalSlug.ResumeProjects> = {
   slug: GlobalSlug.ResumeProjects,
@@ -16,12 +18,16 @@ export const ResumeProjects: GlobalConfig<GlobalSlug.ResumeProjects> = {
     update: authenticated,
   },
   hooks: {
-    afterChange: [revalidateResumeSection(GlobalSlug.ResumeProjects)],
+    afterChange: [
+      revalidateResumeSection(GlobalSlug.ResumeProjects),
+    ],
   },
   admin: {
     group: AdminGroup.Resume,
   },
-  typescript: { interface: 'ResumeProjectsGlobalData' },
+  typescript: {
+    interface: 'ResumeProjectsGlobalData',
+  },
   fields: [
     {
       type: 'tabs',
@@ -67,7 +73,9 @@ export const ResumeProjects: GlobalConfig<GlobalSlug.ResumeProjects> = {
                   type: 'upload',
                   relationTo: CollectionSlug.MediaImages,
                   filterOptions: {
-                    mimeType: { contains: 'image' },
+                    mimeType: {
+                      contains: 'image',
+                    },
                   },
                 },
                 RichTextField({
@@ -81,10 +89,5 @@ export const ResumeProjects: GlobalConfig<GlobalSlug.ResumeProjects> = {
       ],
     },
   ],
-  versions: {
-    drafts: {
-      autosave: false,
-      schedulePublish: false,
-    },
-  },
+  versions: false,
 }

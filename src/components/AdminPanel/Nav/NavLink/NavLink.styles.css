@@ -1,0 +1,35 @@
+@reference "../../../../styles/payload.css";
+
+@layer components {
+  .nav-link {
+    @apply flex flex-row flex-nowrap w-full text-nowrap py-1.5 px-2 mb-0 no-underline text-lg font-mono leading-none;
+  }
+
+  .nav-link:hover,
+  .nav-link--active {
+    @apply bg-sidebar-accent/20 rounded-sm;
+  }
+
+  .nav-link--open {
+    @apply md:m-0 md:w-full md:justify-start md:items-center;
+  }
+
+  .nav-link__label {
+    @apply block bg-transparent ml-2 max-h-20 transition-all delay-150 duration-100 ease-in-out;
+    @apply text-sm font-mono font-medium leading-none tracking-wider;
+    @apply max-w-(--nav-label-width) opacity-0 transition-opacity duration-100 ease-in-out;
+
+    .nav-link--open & {
+      @apply opacity-100 transition-opacity delay-150 duration-100 ease-in-out;
+    }
+  }
+
+  .nav-link__icon {
+    @apply w-[1em] h-[1em] ml-0.5 mr-0;
+
+    .nav-link--open & {
+      @apply md:mr-2;
+    }
+  }
+}
+

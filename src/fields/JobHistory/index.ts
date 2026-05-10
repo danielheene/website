@@ -1,16 +1,17 @@
 import type { ArrayField } from 'payload'
 
-import { TagList } from '@/fields/TagList'
+import { CollectionSlug } from '@/types/collections'
 
 import { sortJobHistoryByStartDate } from './hooks/sortJobHistoryByStartDate'
-import { CollectionSlug } from '@custom-types'
 
 export const JobHistoryField = (): ArrayField => ({
   name: 'jobHistory',
   type: 'array',
   interfaceName: 'JobHistory',
   hooks: {
-    beforeChange: [sortJobHistoryByStartDate],
+    beforeChange: [
+      sortJobHistoryByStartDate,
+    ],
   },
   admin: {
     isSortable: false,
@@ -18,7 +19,9 @@ export const JobHistoryField = (): ArrayField => ({
     className: 'job-history',
     components: {
       Label: false,
-      beforeInput: ['@/fields/JobHistory/CSSInjector'],
+      beforeInput: [
+        '@/fields/JobHistory/CSSInjector',
+      ],
       RowLabel: '@/fields/JobHistory/RowLabel',
     },
   },
@@ -93,7 +96,10 @@ export const JobHistoryField = (): ArrayField => ({
       filterOptions: ({ relationTo, req, siblingData, data }) => {
         return {
           type: {
-            not_in: ['language', 'privateInterest'],
+            not_in: [
+              'language',
+              'privateInterest',
+            ],
           },
         }
       },
@@ -105,9 +111,5 @@ export const JobHistoryField = (): ArrayField => ({
         allowEdit: true,
       },
     },
-
-    TagList({
-      name: 'technologies',
-    }),
   ],
 })

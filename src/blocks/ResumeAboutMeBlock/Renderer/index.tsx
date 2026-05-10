@@ -1,17 +1,18 @@
-import type { GlobalSlug, ResumeLayoutBlockData } from '@custom-types'
-
 import { Headline } from '@/components/Headline'
 import { ImageMedia } from '@/components/ImageMedia'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
-import { cn } from '@/utilities/cn'
+import { cn } from '@/lib/cn'
+import type { ResumeLayoutBlockData } from '@/types/blocks'
+import type { GlobalSlug } from '@/types/globals'
 
 export const ResumeAboutMeBlockRenderer = ({
+  id,
   blockType,
   data: { title, content, portrait },
 }: ResumeLayoutBlockData<GlobalSlug.ResumeAboutMe>) => {
   return (
-    <SectionContainer id={blockType} title={title} variant="default">
+    <SectionContainer id={id || blockType} title={title} variant="default">
       <div className="container grid grid-cols-12 min-h-screen">
         <div className="col-span-10 col-start-2 lg:col-span-5 lg:col-start-1  order-2 lg:order-1">
           {portrait && typeof portrait === 'object' && (
@@ -20,9 +21,8 @@ export const ResumeAboutMeBlockRenderer = ({
               alt={portrait.alt}
               height={portrait.height}
               width={portrait.width}
-              duoTone
               className="w-full h-auto mt-20 md:mt-32 lg:mt-40 -mb-20 md:-mb-32 lg:-mb-40 object-bottom"
-              imgClassName="object-bottom"
+              // imgClassName="object-bottom"
               sizes="50vw"
             />
           )}

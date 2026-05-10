@@ -1,4 +1,4 @@
-import { AdminGroup, GlobalSlug } from '@custom-types'
+import { AdminGroup } from '@custom-types'
 import type { GlobalConfig } from 'payload'
 
 import { authenticated } from '@/access/authenticated'
@@ -6,7 +6,9 @@ import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { JobHistoryField } from '@/fields/JobHistory'
 import { RichTextField } from '@/fields/RichText'
 import { TitleField } from '@/fields/Title'
-import { revalidateResumeSection } from '@/utilities/revalidateResumeSection'
+import { enqueueGenerateResumeDocuments } from '@/lib/hooks/enqueueGenerateResumeDocuments'
+import { revalidateResumeSection } from '@/lib/hooks/revalidateResumeSection'
+import { GlobalSlug } from '@/types/globals'
 
 import { calculateSkillSummary } from './hooks/calculateSkillSummary'
 
@@ -19,18 +21,35 @@ export const ResumeExperience: GlobalConfig<GlobalSlug.ResumeExperience> = {
     update: authenticated,
   },
   hooks: {
-    beforeChange: [calculateSkillSummary],
-    afterChange: [revalidateResumeSection(GlobalSlug.ResumeExperience)],
+    beforeChange: [
+      calculateSkillSummary,
+    ],
+    afterChange: [
+      revalidateResumeSection(GlobalSlug.ResumeExperience),
+      enqueueGenerateResumeDocuments,
+    ],
   },
   admin: {
     group: AdminGroup.Resume,
     components: {
-      elements: {
-        beforeDocumentControls: ['@/components/AdminPanel#LanguageToggle'],
+      views: {
+        edit: {
+          skills: {
+            Component:
+              '@/globals/ResumeExperience/components/ResumeSkillsListTab',
+            path: '/skills',
+            tab: {
+              label: 'Skills',
+              href: '/skills',
+            },
+          },
+        },
       },
     },
   },
-  typescript: { interface: 'ResumeExperienceGlobalData' },
+  typescript: {
+    interface: 'ResumeExperienceGlobalData',
+  },
   fields: [
     {
       type: 'tabs',
@@ -47,7 +66,9 @@ export const ResumeExperience: GlobalConfig<GlobalSlug.ResumeExperience> = {
         },
         {
           label: 'Job History',
-          fields: [JobHistoryField()],
+          fields: [
+            JobHistoryField(),
+          ],
         },
       ],
     },
@@ -57,18 +78,27 @@ export const ResumeExperience: GlobalConfig<GlobalSlug.ResumeExperience> = {
       defaultValue: {},
       jsonSchema: {
         uri: 'a://b/foo.json', // required
-        fileMatch: ['a://b/foo.json'], // required
+        fileMatch: [
+          'a://b/foo.json',
+        ], // required
         schema: {
           type: 'object',
           patternProperties: {
             '^[A-Za-z0-9_-]+$': {
               type: 'object',
               properties: {
-                label: { type: 'string' },
-                time: { type: 'number' },
+                label: {
+                  type: 'string',
+                },
+                time: {
+                  type: 'number',
+                },
               },
               additionalProperties: false,
-              required: ['label', 'time'],
+              required: [
+                'label',
+                'time',
+              ],
             },
           },
         },
@@ -79,8 +109,5 @@ export const ResumeExperience: GlobalConfig<GlobalSlug.ResumeExperience> = {
       },
     },
   ],
-  versions: {
-    drafts: false,
-    max: 0,
-  },
+  versions: false,
 }

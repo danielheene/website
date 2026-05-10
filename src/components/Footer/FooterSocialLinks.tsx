@@ -1,7 +1,7 @@
-import type { LinkFieldData } from '@payload-types'
+import type { LinkFieldData } from '@/types/payload'
 
 import { CMSLink } from '@/components/Link'
-import { cn } from '@/utilities/cn'
+import { cn } from '@/lib/cn'
 
 interface FooterSocialLinksProps {
   className?: string

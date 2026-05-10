@@ -1,11 +1,12 @@
-import { AdminGroup, GlobalSlug } from '@custom-types'
+import { AdminGroup } from '@custom-types'
 import type { GlobalConfig } from 'payload'
 
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { RichTextField } from '@/fields/RichText'
 import { TitleField } from '@/fields/Title'
-import { revalidateResumeSection } from '@/utilities/revalidateResumeSection'
+import { revalidateResumeSection } from '@/lib/hooks/revalidateResumeSection'
+import { GlobalSlug } from '@/types/globals'
 
 export const ResumeContact: GlobalConfig<GlobalSlug.ResumeContact> = {
   slug: GlobalSlug.ResumeContact,
@@ -16,12 +17,16 @@ export const ResumeContact: GlobalConfig<GlobalSlug.ResumeContact> = {
     update: authenticated,
   },
   hooks: {
-    afterChange: [revalidateResumeSection(GlobalSlug.ResumeContact)],
+    afterChange: [
+      revalidateResumeSection(GlobalSlug.ResumeContact),
+    ],
   },
   admin: {
     group: AdminGroup.Resume,
   },
-  typescript: { interface: 'ResumeContactGlobalData' },
+  typescript: {
+    interface: 'ResumeContactGlobalData',
+  },
   fields: [
     {
       type: 'tabs',
@@ -39,8 +44,5 @@ export const ResumeContact: GlobalConfig<GlobalSlug.ResumeContact> = {
       ],
     },
   ],
-  versions: {
-    drafts: false,
-    max: 0,
-  },
+  versions: false,
 }

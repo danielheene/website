@@ -2,7 +2,6 @@
 
 // import { MediaBlock } from '@/blocks/MediaBlock/Component'
 
-import type { BlockData } from '@custom-types'
 import type {
   DefaultNodeTypes,
   DefaultTypedEditorState,
@@ -16,12 +15,13 @@ import {
 } from '@payloadcms/richtext-lexical/react'
 import type { HTMLAttributes } from 'react'
 
+import { generateContentPath } from '@/lib/generateContentPath'
+import type { BlockData } from '@/types/blocks'
 // import { CodeBlock, CodeBlockProps } from '@/blocks/Code/Component'
 // import type { BannerBlock as BannerBlockProps, CallToActionBlock as CTABlockProps, MediaBlock as MediaBlockProps } from '@/payload-types'
 // import { BannerBlock } from '@/blocks/Banner/Component'
 // import { CallToActionBlock } from '@/blocks/CallToAction/Component'
-import { cn } from '@/utilities/cn'
-import { generateContentPath } from '@/lib/generateContentPath'
+import { cn } from '@/lib/cn'
 
 type NodeTypes = DefaultNodeTypes | SerializedBlockNode<BlockData>
 
@@ -35,9 +35,13 @@ const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
   return generateContentPath(relationTo, value.slug as string)
 }
 
-const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({
+const jsxConverters: JSXConvertersFunction<NodeTypes> = ({
+  defaultConverters,
+}) => ({
   ...defaultConverters,
-  ...LinkJSXConverter({ internalDocToHref }),
+  ...LinkJSXConverter({
+    internalDocToHref,
+  }),
   blocks: {
     // [BlockSlug.TwoColumnContent]: ({ node }) => <TwoColumnContentRenderer {...node.fields} />,
     // banner: ({ node }) => <BannerBlock className="col-start-2 mb-4" {...node.fields} />,

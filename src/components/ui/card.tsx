@@ -2,7 +2,7 @@ import type * as React from 'react'
 
 import { Button } from '@/components/Button'
 import { ICON, Icon } from '@/components/Icon'
-import { cn } from '@/utilities/cn'
+import { cn } from '@/lib/cn'
 
 function Card({ className, ...props }: React.ComponentProps<'div'>) {
   return (

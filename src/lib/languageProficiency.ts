@@ -28,8 +28,19 @@ export const PROFICENCY_LABEL = {
   },
 } as const
 
-export type LanguageProficiency = (typeof PROFICIENCY_LEVEL)[keyof typeof PROFICIENCY_LEVEL]
+export type LanguageProficiency =
+  (typeof PROFICIENCY_LEVEL)[keyof typeof PROFICIENCY_LEVEL]
 
-export const getProficiencyLabel = (level: LanguageProficiency | string, locale: 'en' | 'de' | string = 'en') => {
-  return get(PROFICENCY_LABEL, [locale.toUpperCase(), level.toUpperCase()], `${level}`)
+export const getLanguageProficiencyLabel = (
+  level: LanguageProficiency | string,
+  locale: 'en' | 'de' | string = 'en',
+): string => {
+  return get(
+    PROFICENCY_LABEL,
+    [
+      locale.toUpperCase(),
+      level.toUpperCase(),
+    ],
+    `${level}`,
+  )
 }

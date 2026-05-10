@@ -4,14 +4,14 @@ import { generateSlug } from '@/lib/generateSlug'
 
 export const generateSlugHook =
   (fieldToUse: string): FieldHook =>
-    ({ data, operation, value }) => {
-      if (operation === 'create' || typeof value !== 'string' || value === '') {
-        const fieldData = data?.[fieldToUse]
+  ({ data, operation, value }) => {
+    if (operation === 'create' || typeof value !== 'string' || value === '') {
+      const fieldData = data?.[fieldToUse]
 
-        if (typeof fieldData === 'string' && fieldData.length > 0) {
-          return generateSlug(fieldData)
-        }
+      if (typeof fieldData === 'string' && fieldData.length > 0) {
+        return generateSlug(fieldData)
       }
-
-      return value
     }
+
+    return value
+  }

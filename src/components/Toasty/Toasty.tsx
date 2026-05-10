@@ -4,7 +4,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 import { useUmami } from '@/contexts/Umami'
-import { useCreatePortalHost } from '@/utilities/useCreatePortalHost'
+import { useCreatePortalHost } from '@/lib/useCreatePortalHost'
 
 enum ActionType {
   KeyUp = 'Toasty/KeyUp',

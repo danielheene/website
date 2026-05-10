@@ -1,4 +1,4 @@
-import type { JobHistory } from '@payload-types'
+import type { JobHistory } from '@/types/payload'
 import type { FieldHook } from 'payload'
 
 export const sortJobHistoryByStartDate: FieldHook = ({ value = [] }: { value?: JobHistory }) => {

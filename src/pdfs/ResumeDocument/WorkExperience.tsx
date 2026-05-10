@@ -1,8 +1,9 @@
-import type { ResumeExperienceGlobalData } from '@payload-types'
+import type { ResumeExperienceGlobalData } from '@/types/payload'
+import type { DeepReduced } from '@/lib/reduceDataToLocale'
 import { WorkExperienceEntry } from '@/pdfs/ResumeDocument/WorkExperienceEntry'
 import { Section } from '@/pdfs/ResumeDocument/Section'
 
-interface WorkExperienceProps extends ResumeExperienceGlobalData {
+interface WorkExperienceProps extends DeepReduced<ResumeExperienceGlobalData> {
   locale?: string
 }
 

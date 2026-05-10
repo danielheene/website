@@ -1,7 +1,7 @@
-import { CollectionSlug } from '@custom-types'
 import type { ArrayField } from 'payload'
 
 import { RichTextField } from '@/fields/RichText'
+import { CollectionSlug } from '@/types/collections'
 
 export const ProjectListField = (): ArrayField => ({
   name: 'projectList',
@@ -31,7 +31,9 @@ export const ProjectListField = (): ArrayField => ({
       type: 'upload',
       relationTo: CollectionSlug.MediaImages,
       filterOptions: {
-        mimeType: { contains: 'image' },
+        mimeType: {
+          contains: 'image',
+        },
       },
     },
     RichTextField({

@@ -1,18 +1,21 @@
 'use client'
 
-import type { MediaImage } from '@payload-types'
 import { memo, useState } from 'react'
 
 import { Icon } from '@/components/Icon'
 import { ImageMedia } from '@/components/ImageMedia'
-import { cn } from '@/utilities/cn'
+import { cn } from '@/lib/cn'
+import type { MediaImage } from '@/types/payload'
 
 interface ResumeProjectsSectionImageProps {
   image: MediaImage
   odd: boolean
 }
 
-export const Image = memo(function ResumeProjectsSectionImage({ image, odd }: ResumeProjectsSectionImageProps) {
+export const Image = memo(function ResumeProjectsSectionImage({
+  image,
+  odd,
+}: ResumeProjectsSectionImageProps) {
   const [isReady, setIsReady] = useState<boolean>(false)
   const [showImage, setShowImage] = useState<boolean>(false)
 
@@ -24,7 +27,9 @@ export const Image = memo(function ResumeProjectsSectionImage({ image, odd }: Re
       ])}
     >
       <div
-        style={{ aspectRatio: `${image.width} / ${image.height}` }}
+        style={{
+          aspectRatio: `${image.width} / ${image.height}`,
+        }}
         className={cn([
           'relative bg-white border-4 border-primary rounded-sm',
           'transition-all duration-300 ease-in-out',
@@ -41,7 +46,7 @@ export const Image = memo(function ResumeProjectsSectionImage({ image, odd }: Re
           width={image.width}
           loading="lazy"
           className="absolute -top-1 -left-1 -right-1 -bottom-1 w-auto h-auto"
-          imgClassName="object-cover object-top md:object-contain md:object-center"
+          // imgClassName="object-cover object-top md:object-contain md:object-center"
           onLoadAction={() => setIsReady(true)}
         />
       </div>

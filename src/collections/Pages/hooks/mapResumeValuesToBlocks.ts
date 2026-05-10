@@ -1,5 +1,5 @@
-import type { BlockData } from '@custom-types'
-import type { Page } from '@payload-types'
+import type { BlockData } from '@/types/blocks'
+import type { Page } from '@/types/payload'
 import { camelCase, upperFirst } from 'lodash-es'
 import type { CollectionBeforeReadHook } from 'payload'
 

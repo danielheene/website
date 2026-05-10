@@ -1,17 +1,19 @@
 'use client'
 
-import { type InternalStatusResponse, UptimeKumaOverallStatus } from '@custom-types'
 import Link from 'next/link'
 import { type JSX, useEffect, useState } from 'react'
 
-import { cn } from '@/utilities/cn'
+import { OverallStatus, type OverallStatusResponse } from '@/types/uptime-kuma'
+import { cn } from '@/lib/cn'
 
 interface ServiceStatusProps {
   className?: string
 }
 
-export const ServiceStatus = ({ className }: ServiceStatusProps): JSX.Element => {
-  const [status, setStatus] = useState<InternalStatusResponse | null>(null)
+export const ServiceStatus = ({
+  className,
+}: ServiceStatusProps): JSX.Element => {
+  const [status, setStatus] = useState<OverallStatusResponse | null>(null)
 
   useEffect(() => {
     fetch('/api/service-status')
@@ -28,15 +30,15 @@ export const ServiceStatus = ({ className }: ServiceStatusProps): JSX.Element =>
         'inline-flex gap-2 items-center grow-0 shrink-0 font-mono text-sm',
         'border border-current/40 rounded-sm px-2 py-1',
         'transition-colors bg-current/0 hover:bg-current/10',
-        status.code === UptimeKumaOverallStatus.NoServices && 'text-neutral-500',
-        status.code === UptimeKumaOverallStatus.PartialDown && 'text-warning',
-        status.code === UptimeKumaOverallStatus.AllDown && 'text-error',
-        status.code === UptimeKumaOverallStatus.Maintenance && 'text-info',
-        status.code === UptimeKumaOverallStatus.AllUp && 'text-success',
+        status.code === OverallStatus.NoServices && 'text-neutral-500',
+        status.code === OverallStatus.PartialDown && 'text-warning',
+        status.code === OverallStatus.AllDown && 'text-error',
+        status.code === OverallStatus.Maintenance && 'text-info',
+        status.code === OverallStatus.AllUp && 'text-success',
         className,
       ])}
     >
-      {status.code !== UptimeKumaOverallStatus.NoServices && (
+      {status.code !== OverallStatus.NoServices && (
         <span
           className={cn([
             'relative inline-flex w-2 h-2',

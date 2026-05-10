@@ -1,9 +1,9 @@
-import type { FooterNavigationData } from '@payload-types'
+import type { PageFooterData } from '@/types/payload'
 
 import { CMSLink } from '@/components/Link'
-import { cn } from '@/utilities/cn'
+import { cn } from '@/lib/cn'
 
-interface FooterLegalLinksProps extends Pick<FooterNavigationData, 'legalLinks'> {
+interface FooterLegalLinksProps extends Pick<PageFooterData, 'legalLinks'> {
   className?: string
 }
 

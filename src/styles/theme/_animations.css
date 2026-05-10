@@ -1,12 +1,22 @@
 @theme static {
   /* ---------- animations ---------- */
-  --animate-fade-in: fade-in 275ms ease-in;
+  --animate-fade-in: fade-in 275ms ease-in forwards;
   @keyframes fade-in {
     0% {
       opacity: 0;
     }
     100% {
       opacity: 1;
+    }
+  }
+
+  --animate-fade-out: fade-out 275ms ease-out forwards;
+  @keyframes fade-out {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
     }
   }
 

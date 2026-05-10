@@ -1,7 +1,8 @@
-import { CollectionConfig } from 'payload'
-import { CollectionSlug, AdminGroup } from '@custom-types'
-import { SlugField } from '@/fields/Slug'
+import { AdminGroup } from '@custom-types'
+import type { CollectionConfig } from 'payload'
 
+import { SlugField } from '@/fields/Slug'
+import { CollectionSlug } from '@/types/collections'
 
 export const ResumeSkills: CollectionConfig<CollectionSlug.ResumeSkills> = {
   slug: CollectionSlug.ResumeSkills,
@@ -10,17 +11,19 @@ export const ResumeSkills: CollectionConfig<CollectionSlug.ResumeSkills> = {
     plural: 'Skills',
   },
   admin: {
-    useAsTitle: 'name',
+    useAsTitle: 'title',
     group: AdminGroup.Resume,
-    defaultColumns: ['name', 'slug', 'type'],
+    defaultColumns: [
+      'name.en',
+      'slug',
+      'type',
+    ],
     disableCopyToLocale: true,
-    components: {
-      edit: {
-        beforeDocumentControls: ['@/components/AdminPanel#LanguageToggle'],
-      },
-    },
   },
-  defaultSort: ['type', 'name'],
+  defaultSort: [
+    'type',
+    'name.en',
+  ],
   defaultPopulate: {
     name: true,
     slug: true,
@@ -32,46 +35,75 @@ export const ResumeSkills: CollectionConfig<CollectionSlug.ResumeSkills> = {
     slug: true,
     type: true,
   },
-  indexes: [{
-    unique: true,
-    fields: ['slug', 'type'],
-  }],
   fields: [
     {
+      type: 'group',
       name: 'name',
+      label: 'Name',
+      admin: {
+        hideGutter: true,
+      },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            {
+              type: 'text',
+              name: 'en',
+              label: 'English',
+              required: true,
+              admin: {
+                width: '50%',
+              },
+            },
+            {
+              type: 'text',
+              name: 'de',
+              label: 'German',
+              required: true,
+              admin: {
+                width: '50%',
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
       type: 'text',
-      required: true,
-      localized: true,
-      hooks: {
-        // beforeChange: [
-        //   async ({ operation, req, data, path, collection, originalDoc }) => {
-        //     const existingDoc = await req.payload.db.findOne({
-        //       collection: collection.slug,
-        //       where: {
-        //         _id: { equals: originalDoc._id },
-        //       },
-        //       locale: 'all',
-        //     })
-        //     console.log('existingDoc:', existingDoc)
-        //     console.log('operation:', operation)
-        //     console.log('data:', data)
-        //     if (operation === 'create' && req.file) {
-        //       console.log('File uploaded successfully:', req.file.name)
-        //     }
-        //   },
-        // ],
+      name: 'title',
+      virtual: 'name.en',
+      admin: {
+        hidden: true,
       },
     },
-    SlugField({ fieldToUse: 'name' }),
+    SlugField({
+      fieldToUse: 'name.en',
+    }),
     {
       name: 'type',
       type: 'select',
       options: [
-        { label: 'Technology', value: 'technology' },
-        { label: 'Programming Language', value: 'programmingLanguage' },
-        { label: 'Methodology', value: 'methodology' },
-        { label: 'Language', value: 'language' },
-        { label: 'Private Interest', value: 'privateInterest' },
+        {
+          label: 'Programming Language',
+          value: 'programmingLanguage',
+        },
+        {
+          label: 'Framework',
+          value: 'framework',
+        },
+        {
+          label: 'Technology',
+          value: 'technology',
+        },
+        {
+          label: 'Methodology',
+          value: 'methodology',
+        },
+        {
+          label: 'Private Interest',
+          value: 'privateInterest',
+        },
       ],
       defaultValue: 'technology',
       admin: {

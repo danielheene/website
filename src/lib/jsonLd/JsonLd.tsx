@@ -8,8 +8,9 @@ export interface JsonLdProps {
  * Component to render JSON-LD structured data
  * Can accept a single schema or an array of schemas
  *
- * Note: JSON.stringify() is safe here as it escapes HTML characters automatically,
- * and we control the data source (generated from our utility functions)
+ * Note: JSON.stringify() does NOT escape HTML sequences like </script>.
+ * We replace </ with <\/ so the HTML parser cannot prematurely close the
+ * script tag. The result is still valid JSON — parsers treat <\/ identically.
  */
 export function JsonLd({ data }: JsonLdProps) {
   const schemas = Array.isArray(data) ? data : [data]
@@ -20,9 +21,9 @@ export function JsonLd({ data }: JsonLdProps) {
         <script
           key={index}
           type="application/ld+json"
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: <stringified json>
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: </ is escaped as <\/ to prevent </script> injection>
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(schema),
+            __html: JSON.stringify(schema).replace(/<\//g, '<\\/'),
           }}
         />
       ))}

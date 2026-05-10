@@ -1,6 +1,5 @@
 'use client'
 
-import type { GlobalSlug, ResumeLayoutBlockData } from '@custom-types'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { JSX } from 'react'
@@ -9,20 +8,27 @@ import { Button } from '@/components/Button'
 import { Headline } from '@/components/Headline'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
+import { cn } from '@/lib/cn'
 import { isMediaDocument, isMediaImage } from '@/lib/typeGuards'
-import { cn } from '@/utilities/cn'
+import type { ResumeLayoutBlockData } from '@/types/blocks'
+import type { GlobalSlug } from '@/types/globals'
 
 export const ResumeDownloadsBlockRenderer = ({
+  id,
   blockType,
   data: { title, caption, documentPreview, documents },
 }: ResumeLayoutBlockData<GlobalSlug.ResumeDownloads>): JSX.Element => {
   return (
-    <SectionContainer id={blockType} title={title} variant="default">
+    <SectionContainer id={id || blockType} title={title} variant="default">
       <div className="container">
         <div className="relative flex flex-col p-6 md:p-12 lg:p-20 md:flex-row overflow-hidden bg-primary text-primary-foreground rounded-md">
           <div className="flex flex-col justify-center items-center mb-72 md:mb-0 gap-8 md:w-2/3 lg:shrink-0 xl:w-1/2">
             <Headline variant="section">{title}</Headline>
-            <RichText data={caption} enableGutter={false} className="text-primary-foreground px-8" />
+            <RichText
+              data={caption}
+              enableGutter={false}
+              className="text-primary-foreground px-8"
+            />
 
             <div className="flex flex-col md:flex-row justify-center gap-8 text-background-foreground">
               {isMediaDocument(documents.en) && (
@@ -120,7 +126,11 @@ function ResumeDownloadButton({
     <Button type="button" variant="secondary" className="uppercase" asChild>
       <Link href={url} download={fileName}>
         <div className="flex items-center gap-6">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-foreground/80 dark:text-background/80" viewBox="0 0 124 124">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-10 w-10 text-foreground/80 dark:text-background/80"
+            viewBox="0 0 124 124"
+          >
             {locale === 'en' && (
               <path
                 fill="currentColor"
@@ -142,8 +152,12 @@ function ResumeDownloadButton({
             />
           </svg>
           <div className="flex flex-col items-center gap-1">
-            <span className="text-2xl leading-none font-medium tracking-tighter">{label}</span>
-            <span className="text-xs leading-none  text-foreground/80 dark:text-background/80">{subline}</span>
+            <span className="text-2xl leading-none font-medium tracking-tighter">
+              {label}
+            </span>
+            <span className="text-xs leading-none  text-foreground/80 dark:text-background/80">
+              {subline}
+            </span>
           </div>
         </div>
       </Link>

@@ -1,4 +1,4 @@
-import type { Page } from '@payload-types'
+import type { Page } from '@/types/payload'
 
 import { BLOCK_SLUGS } from '@/blocks'
 

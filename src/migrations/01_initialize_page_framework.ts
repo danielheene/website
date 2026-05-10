@@ -1,15 +1,39 @@
-import { CollectionSlug, GlobalSlug } from '@custom-types'
-import type { Page } from '@payload-types'
 import type { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-mongodb'
 
-export async function up({ payload, req, session }: MigrateUpArgs): Promise<void> {
+import { CollectionSlug } from '@/types/collections'
+import { GlobalSlug } from '@/types/globals'
+import type { Page } from '@/types/payload'
+
+export async function up({
+  payload,
+  req,
+  session,
+}: MigrateUpArgs): Promise<void> {
   const resumeGlobals = [
-    { slug: GlobalSlug.ResumeAboutMe, title: 'About Me' },
-    { slug: GlobalSlug.ResumeContact, title: 'Contact' },
-    { slug: GlobalSlug.ResumeCustomers, title: 'Customers' },
-    { slug: GlobalSlug.ResumeDownloads, title: 'Downloads' },
-    { slug: GlobalSlug.ResumeExperience, title: 'Experience' },
-    { slug: GlobalSlug.ResumeProjects, title: 'Projects' },
+    {
+      slug: GlobalSlug.ResumeAboutMe,
+      title: 'About Me',
+    },
+    {
+      slug: GlobalSlug.ResumeContact,
+      title: 'Contact',
+    },
+    {
+      slug: GlobalSlug.ResumeCustomers,
+      title: 'Customers',
+    },
+    {
+      slug: GlobalSlug.ResumeDownloads,
+      title: 'Downloads',
+    },
+    {
+      slug: GlobalSlug.ResumeExperience,
+      title: 'Experience',
+    },
+    {
+      slug: GlobalSlug.ResumeProjects,
+      title: 'Projects',
+    },
   ] as {
     slug:
       | GlobalSlug.ResumeAboutMe
@@ -36,12 +60,36 @@ export async function up({ payload, req, session }: MigrateUpArgs): Promise<void
   }
 
   const defaultPages = [
-    { title: 'Home', slug: 'home', layout: 'home' },
-    { title: 'Resume', slug: 'resume', layout: 'resume' },
-    { title: 'About Me', slug: 'about-me', layout: 'default' },
-    { title: 'Legal Notice', slug: 'legal-notice', layout: 'default' },
-    { title: 'Privacy Policy', slug: 'privacy-policy', layout: 'default' },
-  ] as { title: string; slug: string; layout: Page['layout'] }[]
+    {
+      title: 'Home',
+      slug: 'home',
+      layout: 'home',
+    },
+    {
+      title: 'Resume',
+      slug: 'resume',
+      layout: 'resume',
+    },
+    {
+      title: 'About Me',
+      slug: 'about-me',
+      layout: 'default',
+    },
+    {
+      title: 'Legal Notice',
+      slug: 'legal-notice',
+      layout: 'default',
+    },
+    {
+      title: 'Privacy Policy',
+      slug: 'privacy-policy',
+      layout: 'default',
+    },
+  ] as {
+    title: string
+    slug: string
+    layout: Page['layout']
+  }[]
 
   for (const defaultPage of defaultPages) {
     const { docs } = await payload.find({
@@ -55,7 +103,9 @@ export async function up({ payload, req, session }: MigrateUpArgs): Promise<void
     })
 
     if (docs.length) {
-      payload.logger.info(`Page: ${defaultPage.slug} already exists, updating...`)
+      payload.logger.info(
+        `Page: ${defaultPage.slug} already exists, updating...`,
+      )
       await payload.update({
         collection: CollectionSlug.Pages,
         where: {
@@ -76,7 +126,9 @@ export async function up({ payload, req, session }: MigrateUpArgs): Promise<void
       })
       payload.logger.info(`Page: ${defaultPage.slug} updated successfully`)
     } else {
-      payload.logger.info(`Page: ${defaultPage.slug} does not exist, creating...`)
+      payload.logger.info(
+        `Page: ${defaultPage.slug} does not exist, creating...`,
+      )
       await payload.create({
         collection: CollectionSlug.Pages,
         data: {

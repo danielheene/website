@@ -1,8 +1,10 @@
-import { CollectionSlug, GlobalSlug } from '@custom-types'
-
 import { type IconName, SIDEBAR_ICON } from '@/components/Icon'
+import { CollectionSlug } from '@/types/collections'
+import { GlobalSlug } from '@/types/globals'
 
-export const SLUG_ICON_NAME_MAP: Partial<Record<CollectionSlug | GlobalSlug, IconName>> = {
+export const SLUG_ICON_NAME_MAP: Partial<
+  Record<CollectionSlug | GlobalSlug, IconName>
+> = {
   [GlobalSlug.ResumeAboutMe]: SIDEBAR_ICON.RESUME_ABOUT_ME,
   [GlobalSlug.ResumeExperience]: SIDEBAR_ICON.RESUME_EXPERIENCE,
   [GlobalSlug.ResumeProjects]: SIDEBAR_ICON.RESUME_PROJECTS,
@@ -10,7 +12,6 @@ export const SLUG_ICON_NAME_MAP: Partial<Record<CollectionSlug | GlobalSlug, Ico
   [GlobalSlug.ResumeContact]: SIDEBAR_ICON.RESUME_CONTACT,
   [GlobalSlug.ResumeDownloads]: SIDEBAR_ICON.RESUME_DOWNLOADS,
   [CollectionSlug.BlogPosts]: SIDEBAR_ICON.BLOG_POSTS,
-  [CollectionSlug.BlogCategories]: SIDEBAR_ICON.BLOG_CATEGORIES,
   [CollectionSlug.BlogTags]: SIDEBAR_ICON.BLOG_TAGS,
   [CollectionSlug.MediaImages]: SIDEBAR_ICON.MEDIA_IMAGES,
   [CollectionSlug.MediaVideos]: SIDEBAR_ICON.MEDIA_VIDEOS,
@@ -18,14 +19,16 @@ export const SLUG_ICON_NAME_MAP: Partial<Record<CollectionSlug | GlobalSlug, Ico
   [CollectionSlug.MediaDocuments]: SIDEBAR_ICON.MEDIA_DOCUMENTS,
   [CollectionSlug.Pages]: SIDEBAR_ICON.PAGES,
   [CollectionSlug.Users]: SIDEBAR_ICON.USERS,
-  [GlobalSlug.SettingsHeaderNavigation]: SIDEBAR_ICON.SETTINGS_HEADER,
-  [GlobalSlug.SettingsUserMeta]: SIDEBAR_ICON.SETTINGS_USER_DATA,
-  [GlobalSlug.SettingsFooterNavigation]: SIDEBAR_ICON.SETTINGS_FOOTER,
-  [GlobalSlug.SettingsSiteMeta]: SIDEBAR_ICON.SETTINGS_META,
+  [GlobalSlug.SettingsPageHeader]: SIDEBAR_ICON.SETTINGS_HEADER,
+  [GlobalSlug.SettingsUserConfiguration]: SIDEBAR_ICON.SETTINGS_USER_DATA,
+  [GlobalSlug.SettingsPageFooter]: SIDEBAR_ICON.SETTINGS_FOOTER,
+  [GlobalSlug.SettingsSiteConfiguration]: SIDEBAR_ICON.SETTINGS_META,
 }
 
 /**
  * Resolves an icon name based on a slug.
  */
 export const resolveIconNameBySlug = (slug: string): IconName | undefined =>
-  Object.hasOwn(SLUG_ICON_NAME_MAP, slug) ? SLUG_ICON_NAME_MAP[slug as CollectionSlug | GlobalSlug] : undefined
+  Object.hasOwn(SLUG_ICON_NAME_MAP, slug)
+    ? SLUG_ICON_NAME_MAP[slug as CollectionSlug | GlobalSlug]
+    : undefined

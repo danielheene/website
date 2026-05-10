@@ -5,8 +5,8 @@ import type { UIFieldClientProps } from 'payload'
 import { type ChangeEvent, type DragEvent, Fragment, type JSX, useCallback, useId, useMemo, useState } from 'react'
 import { optimize } from 'svgo/browser'
 
-import { type ClassValue, cn } from '@/utilities/cn'
-import { extractErrorMessage } from '@/utilities/extractErrorMessage'
+import { type ClassValue, cn } from '@/lib/cn'
+import { extractErrorMessage } from '@/lib/extractErrorMessage'
 
 import styles from './LogoField.module.css'
 
@@ -138,7 +138,6 @@ const LogoField = ({ path }: LogoFieldProps): JSX.Element => {
         {!logoContent && !isUploading && (
           <Fragment>
             <div className={cn([styles.DropAreaIcon])}>
-              {/** biome-ignore lint/a11y/noSvgWithoutTitle: <TODO> */}
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <path fill="currentColor" d="M23 18H1l7.25-9.67l2 2.67L14 6zm-11.5-5.33L14 16h5l-5-6.67zM5 16h6.5l-3.25-4.33z" />
               </svg>
@@ -148,7 +147,6 @@ const LogoField = ({ path }: LogoFieldProps): JSX.Element => {
         )}
         {isUploading && (
           <span className={cn([styles.DropAreaIcon, styles.DropAreaSpinner])}>
-            {/** biome-ignore lint/a11y/noSvgWithoutTitle: <TODO> */}
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
               <path
                 fill="currentColor"

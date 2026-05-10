@@ -1,36 +1,44 @@
+import dedent from 'dedent'
 import type { GroupField } from 'payload'
 
-export const MetaField = (): GroupField => ({
+import { MetaDescriptionField } from '@/fields/Meta/MetaDescriptionField'
+import { MetaSerpField } from '@/fields/Meta/MetaSerpField'
+import { MetaTitleField } from '@/fields/Meta/MetaTitleField'
+
+interface MetaFieldOptions {
+  titlePath?: string
+  slugPath?: string
+}
+
+export const MetaField = ({
+  titlePath = 'title',
+  slugPath = 'slug',
+}: MetaFieldOptions = {}): GroupField => ({
   name: 'meta',
   type: 'group',
-  label: false,
+  label: 'Meta Data',
+  admin: {
+    disableListColumn: true,
+    disableBulkEdit: true,
+    disableListFilter: true,
+    disableGroupBy: true,
+    description: dedent`
+      This field group contains meta information for SEO purposes.
+      It includes fields for title, description, and SERP optimization.
+    `,
+    components: {
+      Description: '@/components/AdminPanel#DescriptionWithNewline',
+    },
+  },
   fields: [
-    {
-      name: 'serp',
-      type: 'ui',
-      admin: {
-        components: {
-          Field: '@/fields/Meta/SerpField',
-        },
-      },
-    },
-    {
-      name: 'title',
-      label: 'Title',
-      type: 'text',
-      defaultValue: '',
-      virtual: true,
-    },
-    {
-      name: 'description',
-      label: 'Description',
-      type: 'text',
-      defaultValue: '',
-      admin: {
-        components: {
-          Field: '@/fields/Meta/DescriptionField',
-        },
-      },
-    },
+    MetaSerpField({
+      slugPath,
+    }),
+    MetaTitleField({
+      titlePath,
+    }),
+    MetaDescriptionField({
+      slugPath,
+    }),
   ],
 })

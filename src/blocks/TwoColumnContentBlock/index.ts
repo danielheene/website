@@ -1,7 +1,7 @@
-import { BlockGroup, BlockSlug } from '@custom-types'
 import type { Block } from 'payload'
 
 import { RichTextField } from '@/fields/RichText'
+import { BlockGroup, BlockSlug } from '@/types/blocks'
 
 export const TwoColumnContentBlock: Block = {
   slug: BlockSlug.TwoColumnContent,
@@ -9,10 +9,13 @@ export const TwoColumnContentBlock: Block = {
     singular: 'Two-Column Content',
     plural: 'Two-Column Content',
   },
-  imageURL: '/payload/blocks/general-two-column.svg',
   admin: {
     group: BlockGroup.General,
     disableBlockName: true,
+    images: {
+      thumbnail: '/payload/blocks/general-two-column-thumbnail.svg',
+      icon: '/payload/blocks/general-two-column-icon.svg',
+    },
   },
   fields: [
     {
@@ -23,7 +26,7 @@ export const TwoColumnContentBlock: Block = {
       fields: [
         RichTextField({
           name: 'contentLeft',
-          editorVariant: 'inline',
+          editorVariant: 'markdown',
           overrides: {
             label: false,
             admin: {
@@ -33,7 +36,7 @@ export const TwoColumnContentBlock: Block = {
         }),
         RichTextField({
           name: 'contentRight',
-          editorVariant: 'inline',
+          editorVariant: 'markdown',
           overrides: {
             label: false,
             admin: {

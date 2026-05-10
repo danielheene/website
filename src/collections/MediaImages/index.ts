@@ -1,9 +1,10 @@
-import { AdminGroup, CollectionSlug } from '@custom-types'
-import type { CollectionConfig } from 'payload'
+import { AdminGroup } from '@custom-types'
+import type { AccessArgs, CollectionConfig } from 'payload'
 
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
 import { RichTextField } from '@/fields/RichText'
+import { CollectionSlug } from '@/types/collections'
 
 import { generateAlt } from './hooks/generateAlt'
 import { generateBlurDataURL } from './hooks/generateBlurDataURL'
@@ -20,7 +21,12 @@ export const MediaImages: CollectionConfig<CollectionSlug.MediaImages> = {
   admin: {
     group: AdminGroup.Media,
     useAsTitle: 'filename',
-    defaultColumns: ['filename', 'type', 'extension', 'updatedAt'],
+    defaultColumns: [
+      'filename',
+      'type',
+      'extension',
+      'updatedAt',
+    ],
     disableCopyToLocale: true,
     components: {
       Description: false,
@@ -29,7 +35,28 @@ export const MediaImages: CollectionConfig<CollectionSlug.MediaImages> = {
 
   access: {
     create: authenticated,
-    delete: authenticated,
+    delete: async ({ req: { user, payload }, id }: AccessArgs<MediaImage>) => {
+      if (!user) return false
+      let references = 0
+
+      try {
+        const { totalDocs } = await payload.find({
+          collection: CollectionSlug.MediaDocuments,
+          where: {
+            thumbnail: {
+              contains: id,
+            },
+          },
+          pagination: false,
+        })
+
+        references += totalDocs
+      } catch (_) {
+        /* no references found */
+      }
+
+      return references === 0
+    },
     read: anyone,
     update: authenticated,
   },
@@ -56,13 +83,18 @@ export const MediaImages: CollectionConfig<CollectionSlug.MediaImages> = {
       },
     ],
     adminThumbnail: 'thumbnail',
-    mimeTypes: ['image/*'],
+    mimeTypes: [
+      'image/*',
+    ],
   },
   fields: [
     {
       name: 'alt',
       type: 'text',
       admin: {
+        components: {
+          Field: '@/collections/MediaImages/components#AltField',
+        },
         disableGroupBy: true,
         disableListColumn: true,
         disableListFilter: true,
@@ -86,7 +118,10 @@ export const MediaImages: CollectionConfig<CollectionSlug.MediaImages> = {
     },
   ],
   hooks: {
-    beforeChange: [generateBlurDataURL, generateAlt],
+    beforeChange: [
+      generateBlurDataURL,
+      generateAlt,
+    ],
   },
   versions: {
     drafts: false,
