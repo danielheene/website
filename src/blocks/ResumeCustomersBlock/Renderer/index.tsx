@@ -14,7 +14,6 @@ import type { GlobalSlug } from '@/types/globals'
 import type { CustomerLogos } from '@/types/payload'
 
 export const ResumeCustomersBlockRenderer = ({
-  id,
   blockType,
   data: { title, caption, customerLogos },
 }: ResumeLayoutBlockData<GlobalSlug.ResumeCustomers>): JSX.Element => {
@@ -35,7 +34,7 @@ export const ResumeCustomersBlockRenderer = ({
   )
 
   return (
-    <SectionContainer id={id || blockType} title={title} variant="primary">
+    <SectionContainer id={blockType} title={title} variant="primary">
       <div className="container py-16 lg:py-32">
         <div className="grid grid-cols-12 items-center gap-8">
           <div className="col-span-12 lg:col-span-4 lg:col-start-2 items-center mb-16 lg:mb-0">

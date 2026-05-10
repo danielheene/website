@@ -12,11 +12,10 @@ import type { GlobalSlug } from '@/types/globals'
 import { SkillChart } from './SkillChart'
 
 export const ResumeExperienceBlockRenderer = ({
-  id,
   blockType,
   data: { title, caption, jobHistory, skillSummary },
 }: ResumeLayoutBlockData<GlobalSlug.ResumeExperience>): JSX.Element => (
-  <SectionContainer id={id || blockType} title={title} variant="primary">
+  <SectionContainer id={blockType} title={title} variant="primary">
     <div
       className={cn(
         'container',

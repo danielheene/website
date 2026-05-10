@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import { CMSLink } from '@/components/Link'
 import { cn } from '@/lib/cn'
 import type { LinkGroupBlock } from '@/types/payload'
@@ -9,7 +11,7 @@ type LinkGroupBlockRendererProps = {
 export const LinkGroupBlockRenderer = ({
   className,
   links: { alignment, entries },
-}: LinkGroupBlockRendererProps) => {
+}: LinkGroupBlockRendererProps): JSX.Element => {
   return (
     <ul
       className={cn([

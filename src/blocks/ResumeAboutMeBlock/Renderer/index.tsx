@@ -7,12 +7,11 @@ import type { ResumeLayoutBlockData } from '@/types/blocks'
 import type { GlobalSlug } from '@/types/globals'
 
 export const ResumeAboutMeBlockRenderer = ({
-  id,
   blockType,
   data: { title, content, portrait },
 }: ResumeLayoutBlockData<GlobalSlug.ResumeAboutMe>) => {
   return (
-    <SectionContainer id={id || blockType} title={title} variant="default">
+    <SectionContainer id={blockType} title={title} variant="default">
       <div className="container grid grid-cols-12 min-h-screen">
         <div className="col-span-10 col-start-2 lg:col-span-5 lg:col-start-1  order-2 lg:order-1">
           {portrait && typeof portrait === 'object' && (

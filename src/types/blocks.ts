@@ -25,7 +25,7 @@ export enum BlockSlug {
   TwoColumnContent = 'TwoColumnContentBlock',
   Code = 'CodeBlock',
   LinkGroup = 'LinkGroupBlock',
-  LegalAddress = 'LegalAddressBlock',
+  // LegalAddress = 'LegalAddressBlock',
 
   /* resume related blocks */
   ResumeAboutMe = 'ResumeAboutMeBlock',

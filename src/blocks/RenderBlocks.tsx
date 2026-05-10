@@ -1,3 +1,6 @@
+import type { ElementType } from 'react'
+
+import { TwoColumnContentBlockRenderer } from '@/blocks/TwoColumnContentBlock/Renderer'
 import { type BlockData, BlockSlug } from '@/types/blocks'
 
 import { CodeBlockRenderer } from './CodeBlock/Renderer'
@@ -9,7 +12,6 @@ import { ResumeCustomersBlockRenderer } from './ResumeCustomersBlock/Renderer'
 import { ResumeDownloadsBlockRenderer } from './ResumeDownloadsBlock/Renderer'
 import { ResumeExperienceBlockRenderer } from './ResumeExperienceBlock/Renderer'
 import { ResumeProjectsBlockRenderer } from './ResumeProjectsBlock/Renderer'
-import { TwoColumnContentBlockRenderer } from './TwoColumnContentBlock/Renderer'
 
 const blockComponentMap = {
   [BlockSlug.OneColumnContent]: OneColumnContentBlockRenderer,
@@ -31,21 +33,19 @@ interface BlockRendererProps {
 export const RenderBlocks = ({ blocks }: BlockRendererProps) => {
   const hasBlocks = blocks && Array.isArray(blocks) && blocks.length > 0
 
-  if (!hasBlocks) return null
+  return hasBlocks
+    ? blocks.map((block, index) => {
+        const { blockType } = block
 
-  return blocks.map((block, index) => {
-    const { blockType, id } = block
+        if (blockType && blockType in blockComponentMap) {
+          const Block = blockComponentMap[
+            blockType as keyof typeof blockComponentMap
+          ] as ElementType
 
-    if (blockType && blockType in blockComponentMap) {
-      const Block = blockComponentMap[blockType as keyof typeof blockComponentMap]
+          return Block && <Block key={index} {...block} />
+        }
 
-      return <Block key={id || index} {...block} />
-    }
-
-    if (process.env.NODE_ENV === 'development') {
-      console.warn(`No renderer found for block type: ${blockType}`)
-    }
-
-    return null
-  })
+        return null
+      })
+    : null
 }

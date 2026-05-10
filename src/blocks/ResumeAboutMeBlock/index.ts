@@ -20,7 +20,6 @@ export const ResumeAboutMeBlock: Block = {
     singular: 'AboutMe Section',
     plural: 'AboutMe Sections',
   },
-  imageURL: '/payload/blocks/resume-about-me.svg',
   admin: {
     group: BlockGroup.Resume,
     disableBlockName: true,

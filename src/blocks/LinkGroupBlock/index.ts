@@ -5,6 +5,7 @@ import { BlockGroup, BlockSlug } from '@/types/blocks'
 
 export const LinkGroupBlock: Block = {
   slug: BlockSlug.LinkGroup,
+  interfaceName: BlockSlug.LinkGroup,
   labels: {
     singular: 'Link Group',
     plural: 'Link Group',

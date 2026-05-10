@@ -5,6 +5,7 @@ import { BlockGroup, BlockSlug } from '@/types/blocks'
 
 export const OneColumnContentBlock: Block = {
   slug: BlockSlug.OneColumnContent,
+  interfaceName: BlockSlug.OneColumnContent,
   labels: {
     singular: 'One-Column Content',
     plural: 'One-Column Content',
