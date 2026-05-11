@@ -12,16 +12,16 @@ type RenderedCollection =
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const pages = await getCollectionSitemapEntries(CollectionSlug.Pages)
-  const posts = await getCollectionSitemapEntries(
-    CollectionSlug.BlogPosts,
-    true,
-  )
-  const tags = await getCollectionSitemapEntries(CollectionSlug.BlogTags, true)
+  // const posts = await getCollectionSitemapEntries(
+  //   CollectionSlug.BlogPosts,
+  //   true,
+  // )
+  // const tags = await getCollectionSitemapEntries(CollectionSlug.BlogTags, true)
 
   return [
     ...pages,
-    ...posts,
-    ...tags,
+    // ...posts,
+    // ...tags,
   ]
 }
 
