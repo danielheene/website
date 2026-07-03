@@ -3,7 +3,6 @@
 import type { TextFieldClientProps } from 'payload'
 import type React from 'react'
 import { useCallback, useState } from 'react'
-import { RxLockClosed, RxLockOpen2, RxReload } from 'react-icons/rx'
 
 import './TextFieldWithLockAndGenerate.styles.css'
 
@@ -11,6 +10,7 @@ import { useField } from '@payloadcms/ui'
 import { FieldLabel } from '@payloadcms/ui/fields/FieldLabel'
 import { TextInput } from '@payloadcms/ui/fields/Text'
 
+import { Icon } from '@/components/Icon'
 import { cn } from '@/lib/cn'
 
 export type TextFieldGenerateFunction = () => string | Promise<string>
@@ -96,7 +96,11 @@ export const TextFieldWithLockAndGenerate: React.FC<
             onClick={handleUnlockClick}
             onDoubleClick={handleUnlockDoubleClick}
           >
-            {isLocked ? <RxLockClosed /> : <RxLockOpen2 />}
+            {isLocked ? (
+              <Icon name="radix-icons:lock-closed" />
+            ) : (
+              <Icon name="radix-icons:lock-open-2" />
+            )}
           </button>
         )}
         <TextInput
@@ -119,7 +123,7 @@ export const TextFieldWithLockAndGenerate: React.FC<
             disabled={isLocked}
             onClick={handleGenerateClick}
           >
-            <RxReload />
+            <Icon name="radix-icons:reload" />
           </button>
         )}
       </div>

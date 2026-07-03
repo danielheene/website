@@ -23,7 +23,6 @@ export const CellWithThumbnailClient = ({
 }: CellWithThumbnailClientProps) => {
   const { onSelect, isInDrawer, selectedOption } = useListDrawerContext()
 
-  console.log('cellData', selectedOption, rowData)
 
   const sharedStyles = cn([
     'mx-0 my-[-10px] p-0 w-full',

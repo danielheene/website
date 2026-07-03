@@ -1,4 +1,4 @@
-@reference "../../styles/payload.css";
+@reference "#payload.css";
 
 .RowLabel {
   @apply w-full grow shrink-0;

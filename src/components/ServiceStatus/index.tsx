@@ -3,8 +3,8 @@
 import Link from 'next/link'
 import { type JSX, useEffect, useState } from 'react'
 
-import { OverallStatus, type OverallStatusResponse } from '@/types/uptime-kuma'
 import { cn } from '@/lib/cn'
+import { OverallStatus, type OverallStatusResponse } from '@/types/uptime-kuma'
 
 interface ServiceStatusProps {
   className?: string
@@ -29,7 +29,7 @@ export const ServiceStatus = ({
       className={cn([
         'inline-flex gap-2 items-center grow-0 shrink-0 font-mono text-sm',
         'border border-current/40 rounded-sm px-2 py-1',
-        'transition-colors bg-current/0 hover:bg-current/10',
+        'transition-constants bg-current/0 hover:bg-current/10',
         status.code === OverallStatus.NoServices && 'text-neutral-500',
         status.code === OverallStatus.PartialDown && 'text-warning',
         status.code === OverallStatus.AllDown && 'text-error',

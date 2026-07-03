@@ -1,13 +1,16 @@
 'use client'
 
-import { useState, useMemo, useRef, useEffect } from 'react'
 import { chunk } from 'lodash-es'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
-export const useArrayPagination = <T>(data: T[], size: number = 10): {
-  content: T[],
-  hasPrevPage: boolean,
-  hasNextPage: boolean,
-  setNextPage: () => void,
+export const useArrayPagination = <T>(
+  data: T[],
+  size: number = 10,
+): {
+  content: T[]
+  hasPrevPage: boolean
+  hasNextPage: boolean
+  setNextPage: () => void
   setPrevPage: () => void
 } => {
   const prevData = useRef(data)
@@ -18,25 +21,22 @@ export const useArrayPagination = <T>(data: T[], size: number = 10): {
       setOffset(0)
       prevData.current = data
     }
-  }, [data])
+  }, [
+    data,
+  ])
 
-  useEffect(() => {
-    setOffset(0)
-  }, [size])
-
-  const {
-    hasPrevPage,
-    hasNextPage,
-    content,
-  } = useMemo(() => {
+  const { hasPrevPage, hasNextPage, content } = useMemo(() => {
     const chunks: T[][] = chunk(data, size)
     return {
       hasPrevPage: offset > 0 && chunks.length > 1,
       hasNextPage: offset < chunks.length - 1 && chunks.length > 1,
       content: Array.isArray(chunks[offset]) ? chunks[offset] : [],
     }
-  }, [offset, data, size])
-
+  }, [
+    offset,
+    data,
+    size,
+  ])
 
   const setNextPage = () => setOffset(offset + 1)
   const setPrevPage = () => setOffset(offset - 1)

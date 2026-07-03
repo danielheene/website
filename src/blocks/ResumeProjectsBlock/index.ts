@@ -17,7 +17,7 @@ export const ResumeProjectsBlock: Block = {
   slug: BlockSlug.ResumeProjects,
   interfaceName: BlockSlug.ResumeProjects,
   labels: {
-    singular: 'Project Section',
+    singular: 'Project Container',
     plural: 'Project Sections',
   },
   imageURL: '/payload/blocks/resume-projects.svg',

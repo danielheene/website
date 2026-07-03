@@ -1,15 +1,15 @@
 import type {
+  UmamiEvent,
   UmamiPageViews,
+  UmamiPath,
   UmamiStats,
   UmamiWebsite,
-  UmamiEvent,
-  UmamiPath,
 } from '@/lib/UmamiHandler'
 
 export type UmamiChartsState = {
   selectedTimeSpan: {
-    startAt: Date
-    endAt: Date
+    startAt: Date | null
+    endAt: Date | null
   }
   website: UmamiWebsite | null
   stats: {
@@ -43,15 +43,74 @@ export type UmamiChartsMethods = {
 export type UmamiChartsContextValue = UmamiChartsState & UmamiChartsMethods
 
 export type UmamiChartsAction =
-  | { type: 'SET_SELECTED_TIME_SPAN'; payload: { startAt: Date; endAt: Date } }
-  | { type: 'SET_WEBSITE_DATA'; payload: UmamiWebsite }
-  | { type: 'REGISTER_WIDGET'; payload: { widgetId: 'stats' | 'events' | 'paths' | 'pageViews' } }
-  | { type: 'UNREGISTER_WIDGET'; payload: { widgetId: 'stats' | 'events' | 'paths' | 'pageViews' } }
-  | { type: 'SET_STATS_DATA'; payload: { data: UmamiStats | null } }
-  | { type: 'SET_STATS_LOADING'; payload: { isLoading: boolean } }
-  | { type: 'SET_EVENTS_DATA'; payload: { data: UmamiEvent[] | null } }
-  | { type: 'SET_EVENTS_LOADING'; payload: { isLoading: boolean } }
-  | { type: 'SET_PATHS_DATA'; payload: { data: UmamiPath[] | null } }
-  | { type: 'SET_PATHS_LOADING'; payload: { isLoading: boolean } }
-  | { type: 'SET_PAGE_VIEWS_DATA'; payload: { data: UmamiPageViews | null } }
-  | { type: 'SET_PAGE_VIEWS_LOADING'; payload: { isLoading: boolean } }
+  | {
+      type: 'SET_SELECTED_TIME_SPAN'
+      payload: {
+        startAt: Date
+        endAt: Date
+      }
+    }
+  | {
+      type: 'SET_WEBSITE_DATA'
+      payload: UmamiWebsite
+    }
+  | {
+      type: 'REGISTER_WIDGET'
+      payload: {
+        widgetId: 'stats' | 'events' | 'paths' | 'pageViews'
+      }
+    }
+  | {
+      type: 'UNREGISTER_WIDGET'
+      payload: {
+        widgetId: 'stats' | 'events' | 'paths' | 'pageViews'
+      }
+    }
+  | {
+      type: 'SET_STATS_DATA'
+      payload: {
+        data: UmamiStats | null
+      }
+    }
+  | {
+      type: 'SET_STATS_LOADING'
+      payload: {
+        isLoading: boolean
+      }
+    }
+  | {
+      type: 'SET_EVENTS_DATA'
+      payload: {
+        data: UmamiEvent[] | null
+      }
+    }
+  | {
+      type: 'SET_EVENTS_LOADING'
+      payload: {
+        isLoading: boolean
+      }
+    }
+  | {
+      type: 'SET_PATHS_DATA'
+      payload: {
+        data: UmamiPath[] | null
+      }
+    }
+  | {
+      type: 'SET_PATHS_LOADING'
+      payload: {
+        isLoading: boolean
+      }
+    }
+  | {
+      type: 'SET_PAGE_VIEWS_DATA'
+      payload: {
+        data: UmamiPageViews | null
+      }
+    }
+  | {
+      type: 'SET_PAGE_VIEWS_LOADING'
+      payload: {
+        isLoading: boolean
+      }
+    }

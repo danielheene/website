@@ -1,4 +1,4 @@
-@reference "../../../../styles/payload.css";
+@reference "#payload.css";
 
 @layer components {
   .nav-link {
@@ -15,21 +15,20 @@
   }
 
   .nav-link__label {
-    @apply block bg-transparent ml-2 max-h-20 transition-all delay-150 duration-100 ease-in-out;
+    @apply block bg-transparent ml-2 max-h-20;
     @apply text-sm font-mono font-medium leading-none tracking-wider;
-    @apply max-w-(--nav-label-width) opacity-0 transition-opacity duration-100 ease-in-out;
+    @apply max-w-(--nav-label-width) opacity-0;
+  }
 
-    .nav-link--open & {
-      @apply opacity-100 transition-opacity delay-150 duration-100 ease-in-out;
-    }
+  .nav-link--open .nav-link__label {
+    @apply opacity-100 transition-opacity delay-150 duration-100 ease-in-out;
   }
 
   .nav-link__icon {
     @apply w-[1em] h-[1em] ml-0.5 mr-0;
+  }
 
-    .nav-link--open & {
-      @apply md:mr-2;
-    }
+  .nav-link--open .nav-link__icon {
+    @apply md:mr-2;
   }
 }
-

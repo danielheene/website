@@ -1,5 +1,6 @@
 import { ResumeDownloads } from '@/globals/ResumeDownloads'
 import { SettingsPageHeader } from '@/globals/SettingsPageHeader'
+import { SettingsPDFBuilder } from '@/globals/SettingsPDFBuilder'
 import { SettingsSiteConfiguration } from '@/globals/SettingsSiteConfiguration'
 import type { RegisteredGlobalSlug } from '@/types/globals'
 
@@ -20,6 +21,7 @@ export const GLOBALS = [
   ResumeProjects,
   SettingsPageHeader,
   SettingsPageFooter,
+  SettingsPDFBuilder,
   SettingsSiteConfiguration,
   SettingsUserConfiguration,
 ]

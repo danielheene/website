@@ -9,10 +9,10 @@ import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { Headline } from '@/components/Headline'
 import { ImageMedia } from '@/components/ImageMedia'
 import { PageContainer } from '@/components/PageContainer'
+import { generateMeta } from '@/lib/generateMeta'
 import { isMediaImage } from '@/lib/typeGuards'
 import { CollectionSlug } from '@/types/collections'
 import type { Page as PageType } from '@/types/payload'
-import { generateMeta } from '@/lib/generateMeta'
 
 export async function generateStaticParams() {
   const payload = await getPayload({

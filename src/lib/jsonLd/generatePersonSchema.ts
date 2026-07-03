@@ -1,8 +1,8 @@
 import type { Person, WithContext } from 'schema-dts'
 
-import { getLanguageName } from '@/lib/languageNames'
+import { translate } from '@/lib/i18n'
 import { isMediaImage } from '@/lib/typeGuards'
-import type { UserConfigurationData } from '@/types/payload'
+import { GlobalData, GlobalSlug } from '@/types/globals'
 
 /**
  * Generates Person JSON-LD
@@ -25,7 +25,7 @@ import type { UserConfigurationData } from '@/types/payload'
  * ```
  */
 export function generatePersonSchema(
-  data: UserConfigurationData,
+  data: GlobalData<GlobalSlug.SettingsUserConfiguration>,
 ): WithContext<Person> {
   const person: WithContext<Person> = {
     '@context': 'https://schema.org',
@@ -74,14 +74,10 @@ export function generatePersonSchema(
     }
   }
 
-  if (
-    data.languages &&
-    Array.isArray(data.languages) &&
-    data.languages.length > 0
-  ) {
+  if (data.languages && Array.isArray(data.languages) && data.languages.length > 0) {
     person.knowsLanguage = data.languages.map(({ language }) => ({
       '@type': 'Language',
-      name: getLanguageName(language),
+      name: translate('en', 'language.name.da'),
       alternateName: language,
     }))
   }

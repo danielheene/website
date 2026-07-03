@@ -17,7 +17,7 @@ export const ResumeContactBlock: Block = {
   slug: BlockSlug.ResumeContact,
   interfaceName: BlockSlug.ResumeContact,
   labels: {
-    singular: 'Contact Section',
+    singular: 'Contact Container',
     plural: 'Contact Sections',
   },
   admin: {

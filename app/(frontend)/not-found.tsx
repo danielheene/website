@@ -1,8 +1,6 @@
-import Link from 'next/link'
-
-import { Button } from '@/components/Button'
 import { Icon } from '@/components/Icon'
 import { ImageMedia } from '@/components/ImageMedia'
+import { Button } from '@/components/ui/button'
 
 export default function NotFound() {
   return (
@@ -20,18 +18,16 @@ export default function NotFound() {
           <p className="text-3xl">This page could not be found.</p>
         </div>
         <Button
-          asChild
-          variant="secondary"
+          href="/"
+          color="secondary"
           size="lg"
           className="text-4xl px-8 py-4 font-mono"
         >
-          <Link href="/">
-            <span>GO TO HOMEPAGE</span>
-            <Icon
-              icon="mdi:arrow-forward"
-              className="ml-8 text-[110%] leading-[1em]"
-            />
-          </Link>
+          <span>GO TO HOMEPAGE</span>
+          <Icon
+            name="mdi:arrow-forward"
+            className="ml-8 text-[110%] leading-[1em]"
+          />
         </Button>
       </div>
     </div>

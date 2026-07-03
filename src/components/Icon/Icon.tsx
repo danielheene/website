@@ -1,119 +1,113 @@
-import { addAPIProvider, Icon as IconifyIconComponent } from '@iconify-icon/react'
-import { type ComponentProps, type JSX, memo } from 'react'
+import {
+  addAPIProvider,
+  Icon as IconifyIconComponent,
+  type IconifyIconHTMLElement,
+} from '@iconify-icon/react'
+
+import { type ComponentPropsWithoutRef, forwardRef, type JSX } from 'react'
 
 addAPIProvider('', {
-  resources: ['https://icons.heene.io'],
+  resources: [
+    'https://icons.heene.io',
+  ],
 })
 
 export const BRAND_ICON = {
-  ARCHLINUX: 'simple-icons:archlinux',
-  CLOUDFLARE: 'simple-icons:cloudflare',
-  CLOUDFLARE_PAGES: 'simple-icons:cloudflarepages',
-  CLOUDFLARE_WORKERS: 'simple-icons:cloudflareworkers',
-  DEBIAN: 'simple-icons:debian',
-  DOCKER: 'simple-icons:docker',
-  FIGMA: 'simple-icons:figma',
-  GITHUB: 'simple-icons:github',
-  GITHUB_ACTIONS: 'simple-icons:githubactions',
-  GITHUB_PAGES: 'simple-icons:githubpages',
-  GITLAB: 'simple-icons:gitlab',
-  GOLAND: 'simple-icons:goland',
-  HOME_ASSISTANT: 'simple-icons:homeassistant',
-  INTELLIJ: 'simple-icons:intellijidea',
-  JAVASCRIPT: 'simple-icons:javascript',
-  JETBRAINS: 'simple-icons:jetbrains',
-  KUBERNETES: 'simple-icons:kubernetes',
-  LINKEDIN: 'simple-icons:linkedin',
-  LINUX: 'simple-icons:linux',
-  MAIL: 'simple-icons:maildotru',
-  NAMECHEAP: 'simple-icons:namecheap',
-  NEXTJS: 'simple-icons:nextdotjs',
-  NODEJS: 'simple-icons:nodedotjs',
-  ONE_PASSWORD: 'simple-icons:1password',
-  PAYLOAD: 'simple-icons:payloadcms',
-  PHPSTORM: 'simple-icons:phpstorm',
-  PYCHARM: 'simple-icons:pycharm',
-  RANCHER: 'simple-icons:rancher',
-  REACT: 'simple-icons:react',
-  RUST: 'simple-icons:rust',
-  SANITY: 'simple-icons:sanity',
-  STORYBOOK: 'simple-icons:storybook',
-  SYNOLOGY: 'simple-icons:synology',
-  TAILSCALE: 'simple-icons:tailscale',
-  UBUNTU: 'simple-icons:ubuntu',
-  UNSPLASH: 'simple-icons:unsplash',
-  VERCEL: 'simple-icons:vercel',
-  WEBSTORM: 'simple-icons:webstorm',
-  WHATSAPP: 'simple-icons:whatsapp',
-  WIREGUARD: 'simple-icons:wireguard',
-  XING: 'simple-icons:xing',
-  ZIGBEE: 'simple-icons:zigbee',
-} as const
-
-export const SIDEBAR_ICON = {
-  BLOG_CATEGORIES: 'material-symbols:contextual-token-outline-sharp',
-  BLOG_POSTS: 'material-symbols:post-outline',
-  BLOG_TAGS: 'material-symbols:label-outline-sharp',
-  MEDIA_IMAGES: 'ri:file-image-line',
-  MEDIA_VIDEOS: 'ri:file-video-line',
-  MEDIA_AUDIOS: 'ri:file-music-line',
-  MEDIA_DOCUMENTS: 'ri:file-text-line',
-  PAGES: 'material-symbols:pages-outline-sharp',
-  RESUME_ABOUT_ME: 'material-symbols:fingerprint-sharp',
-  RESUME_CONTACT: 'material-symbols:stacked-email-outline-sharp',
-  RESUME_CUSTOMERS: 'material-symbols:deployed-code-account-outline-sharp',
-  RESUME_DOWNLOADS: 'material-symbols:picture-as-pdf-outline-sharp',
-  RESUME_EXPERIENCE: 'material-symbols:work-outline-sharp',
-  RESUME_PROJECTS: 'material-symbols:experiment-outline-sharp',
-  SETTINGS_FOOTER: 'material-symbols:page-footer-sharp',
-  SETTINGS_HEADER: 'material-symbols:page-header-sharp',
-  SETTINGS_META: 'material-symbols:map-search-outline-sharp',
-  SETTINGS_USER_DATA: 'material-symbols:settings-account-box-sharp',
-  USERS: 'material-symbols:account-box-outline-sharp',
+  archlinux: 'simple-icons:archlinux',
+  cloudflare: 'simple-icons:cloudflare',
+  'cloudflare-pages': 'simple-icons:cloudflarepages',
+  'cloudflare-workers': 'simple-icons:cloudflareworkers',
+  debian: 'simple-icons:debian',
+  docker: 'simple-icons:docker',
+  figma: 'simple-icons:figma',
+  github: 'simple-icons:github',
+  'github-actions': 'simple-icons:githubactions',
+  'github-pages': 'simple-icons:githubpages',
+  gitlab: 'simple-icons:gitlab',
+  goland: 'simple-icons:goland',
+  'home-assistant': 'simple-icons:homeassistant',
+  intellij: 'simple-icons:intellijidea',
+  javascript: 'simple-icons:javascript',
+  jetbrains: 'simple-icons:jetbrains',
+  kubernetes: 'simple-icons:kubernetes',
+  linkedin: 'simple-icons:linkedin',
+  linux: 'simple-icons:linux',
+  mail: 'simple-icons:maildotru',
+  phone: 'material-symbols:call',
+  namecheap: 'simple-icons:namecheap',
+  'next-js': 'simple-icons:nextdotjs',
+  'node-js': 'simple-icons:nodedotjs',
+  'one-password': 'simple-icons:1password',
+  payload: 'simple-icons:payloadcms',
+  phpstorm: 'simple-icons:phpstorm',
+  pycharm: 'simple-icons:pycharm',
+  rancher: 'simple-icons:rancher',
+  react: 'simple-icons:react',
+  rust: 'simple-icons:rust',
+  sanity: 'simple-icons:sanity',
+  storybook: 'simple-icons:storybook',
+  synology: 'simple-icons:synology',
+  tailscale: 'simple-icons:tailscale',
+  ubuntu: 'simple-icons:ubuntu',
+  unsplash: 'simple-icons:unsplash',
+  vercel: 'simple-icons:vercel',
+  webstorm: 'simple-icons:webstorm',
+  whatsapp: 'simple-icons:whatsapp',
+  wireguard: 'simple-icons:wireguard',
+  xing: 'simple-icons:xing',
+  zigbee: 'simple-icons:zigbee',
 } as const
 
 export const UI_ICON = {
-  ERROR: 'material-symbols:error',
-  WARNING: 'material-symbols:warning',
-  INFO: 'material-symbols:info',
-  SUCCESS: 'material-symbols:check-circle',
-  CALL: 'material-symbols:call',
-  PAUSE: 'material-symbols:pause',
-  PLAY: 'material-symbols:play-arrow',
-  STOP: 'material-symbols:stop',
-  REPEAT: 'material-symbols:repeat',
-  REPLAY: 'material-symbols:replay',
-  ATTACH: 'material-symbols:attach-file',
-  SETTINGS: 'material-symbols:settings',
-  CALENDAR: 'material-symbols:calendar-month',
-  ARROW_DOWN: 'material-symbols:keyboard-arrow-down',
-  ARROW_UP: 'material-symbols:keyboard-arrow-up',
-  ARROW_LEFT: 'material-symbols:keyboard-arrow-left',
-  ARROW_RIGHT: 'material-symbols:keyboard-arrow-right',
-  TRENDING_UP: 'material-symbols:trending-up',
-  TRENDING_DOWN: 'material-symbols:trending-down',
-  TRENDING_FLAT: 'material-symbols:trending-flat',
-  TOUCH_APP: 'material-symbols:touch-app',
-  PERSON: 'material-symbols:person',
-  GROUP: 'material-symbols:group',
-  WEB_TRAFFIC: 'material-symbols:web-traffic',
-  MOUSE_CURSOR: 'material-symbols:highlight-mouse-cursor',
-  UNDO: 'material-symbols:undo',
-  CLOCK: 'material-symbols:nest-clock-farsight-analog-outline',
-  HAND_EYE: 'material-symbols:multimodal-hand-eye',
-  CLOSE: 'material-symbols:close',
-  IMAGE: 'material-symbols:image-outline-sharp',
-  LOGOUT: 'material-symbols:logout-sharp',
+  error: 'material-symbols:error',
+  warning: 'material-symbols:warning',
+  info: 'material-symbols:info',
+  success: 'material-symbols:check-circle',
+  call: 'material-symbols:call',
+  pause: 'material-symbols:pause',
+  play: 'material-symbols:play-arrow',
+  stop: 'material-symbols:stop',
+  repeat: 'material-symbols:repeat',
+  replay: 'material-symbols:replay',
+  attach: 'material-symbols:attach-file',
+  settings: 'material-symbols:settings',
+  calendar: 'material-symbols:calendar-month',
+  'arrow-down': 'material-symbols:keyboard-arrow-down',
+  'arrow-up': 'material-symbols:keyboard-arrow-up',
+  'arrow-left': 'material-symbols:keyboard-arrow-left',
+  'arrow-right': 'material-symbols:keyboard-arrow-right',
+  'trending-up': 'material-symbols:trending-up',
+  'trending-down': 'material-symbols:trending-down',
+  'trending-flat': 'material-symbols:trending-flat',
+  'touch-app': 'material-symbols:touch-app',
+  person: 'material-symbols:person',
+  group: 'material-symbols:group',
+  'mouse-cursor': 'material-symbols:highlight-mouse-cursor',
+  undo: 'material-symbols:undo',
+  close: 'material-symbols:close',
+  plus: 'material-symbols:add',
+  minus: 'material-symbols:remove',
+  image: 'material-symbols:image-outline-sharp',
+  logout: 'material-symbols:logout-sharp',
 } as const
 
-export const ICON = { ...BRAND_ICON, ...SIDEBAR_ICON, ...UI_ICON } as const
+export const ICON = {
+  ...BRAND_ICON,
+  ...UI_ICON,
+} as const
 
-export type IconName = (typeof ICON)[keyof typeof ICON]
+export type IconName = keyof typeof ICON
 
-export type IconProps = ComponentProps<typeof IconifyIconComponent> & {
-  icon: IconName | string
+export type IconProps = Omit<
+  ComponentPropsWithoutRef<typeof IconifyIconComponent>,
+  'icon' | 'width' | 'height' | 'size' | 'name'
+> & {
+  name: IconName | string
 }
 
-export const Icon = memo(({ icon, ...iconBaseProps }: IconProps): JSX.Element => {
-  return <IconifyIconComponent icon={icon} {...iconBaseProps} />
-})
+export const Icon = forwardRef<IconifyIconHTMLElement, IconProps>(
+  ({ name, ...iconBaseProps }: IconProps, ref): JSX.Element => {
+    const icon = ICON[name] ?? name
+    return <IconifyIconComponent ref={ref} icon={icon} {...iconBaseProps} />
+  },
+)

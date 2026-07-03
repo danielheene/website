@@ -1,34 +1,32 @@
-import { type IconName, SIDEBAR_ICON } from '@/components/Icon'
 import { CollectionSlug } from '@/types/collections'
 import { GlobalSlug } from '@/types/globals'
 
-export const SLUG_ICON_NAME_MAP: Partial<
-  Record<CollectionSlug | GlobalSlug, IconName>
-> = {
-  [GlobalSlug.ResumeAboutMe]: SIDEBAR_ICON.RESUME_ABOUT_ME,
-  [GlobalSlug.ResumeExperience]: SIDEBAR_ICON.RESUME_EXPERIENCE,
-  [GlobalSlug.ResumeProjects]: SIDEBAR_ICON.RESUME_PROJECTS,
-  [GlobalSlug.ResumeCustomers]: SIDEBAR_ICON.RESUME_CUSTOMERS,
-  [GlobalSlug.ResumeContact]: SIDEBAR_ICON.RESUME_CONTACT,
-  [GlobalSlug.ResumeDownloads]: SIDEBAR_ICON.RESUME_DOWNLOADS,
-  [CollectionSlug.BlogPosts]: SIDEBAR_ICON.BLOG_POSTS,
-  [CollectionSlug.BlogTags]: SIDEBAR_ICON.BLOG_TAGS,
-  [CollectionSlug.MediaImages]: SIDEBAR_ICON.MEDIA_IMAGES,
-  [CollectionSlug.MediaVideos]: SIDEBAR_ICON.MEDIA_VIDEOS,
-  [CollectionSlug.MediaAudios]: SIDEBAR_ICON.MEDIA_AUDIOS,
-  [CollectionSlug.MediaDocuments]: SIDEBAR_ICON.MEDIA_DOCUMENTS,
-  [CollectionSlug.Pages]: SIDEBAR_ICON.PAGES,
-  [CollectionSlug.Users]: SIDEBAR_ICON.USERS,
-  [GlobalSlug.SettingsPageHeader]: SIDEBAR_ICON.SETTINGS_HEADER,
-  [GlobalSlug.SettingsUserConfiguration]: SIDEBAR_ICON.SETTINGS_USER_DATA,
-  [GlobalSlug.SettingsPageFooter]: SIDEBAR_ICON.SETTINGS_FOOTER,
-  [GlobalSlug.SettingsSiteConfiguration]: SIDEBAR_ICON.SETTINGS_META,
+export const SLUG_ICON_NAME_MAP: Partial<Record<CollectionSlug | GlobalSlug, string>> = {
+  [GlobalSlug.ResumeAboutMe]: 'material-symbols:fingerprint-sharp',
+  [GlobalSlug.ResumeExperience]: 'material-symbols:work-outline-sharp',
+  [GlobalSlug.ResumeProjects]: 'material-symbols:experiment-outline-sharp',
+  [GlobalSlug.ResumeCustomers]: 'material-symbols:deployed-code-account-outline-sharp',
+  [GlobalSlug.ResumeContact]: 'material-symbols:stacked-email-outline-sharp',
+  [GlobalSlug.ResumeDownloads]: 'material-symbols:picture-as-pdf-outline-sharp',
+  [CollectionSlug.BlogPosts]: 'material-symbols:post-outline',
+  [CollectionSlug.BlogTags]: 'material-symbols:label-outline-sharp',
+  [CollectionSlug.MediaImages]: 'ri:file-image-line',
+  [CollectionSlug.MediaVideos]: 'ri:file-video-line',
+  [CollectionSlug.MediaAudios]: 'ri:file-music-line',
+  [CollectionSlug.MediaDocuments]: 'ri:file-text-line',
+  [CollectionSlug.Pages]: 'material-symbols:pages-outline-sharp',
+  [CollectionSlug.Users]: 'material-symbols:account-box-outline-sharp',
+  [GlobalSlug.SettingsPageHeader]: 'material-symbols:page-header-sharp',
+  [GlobalSlug.SettingsPDFBuilder]: 'ri:file-pdf-2-line',
+  [GlobalSlug.SettingsUserConfiguration]: 'material-symbols:settings-account-box-sharp',
+  [GlobalSlug.SettingsPageFooter]: 'material-symbols:page-footer-sharp',
+  [GlobalSlug.SettingsSiteConfiguration]: 'material-symbols:map-search-outline-sharp',
 }
 
 /**
  * Resolves an icon name based on a slug.
  */
-export const resolveIconNameBySlug = (slug: string): IconName | undefined =>
+export const resolveIconNameBySlug = (slug: string): string =>
   Object.hasOwn(SLUG_ICON_NAME_MAP, slug)
     ? SLUG_ICON_NAME_MAP[slug as CollectionSlug | GlobalSlug]
     : undefined

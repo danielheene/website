@@ -2,9 +2,15 @@
 
 import { useEffect } from 'react'
 
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardPagination,
+  CardTitle,
+} from '@/components/AdminPanel/Card'
 import { MetricsTable } from '@/components/MetricsTable'
-import { Card, CardContent, CardHeader, CardHeaderPagination, CardTitle } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/components/Skeleton'
 import { useUmamiCharts } from '@/contexts/UmamiCharts'
 import { useArrayPagination } from '@/hooks/use-array-pagination'
 
@@ -17,20 +23,22 @@ export const UmamiPathsWidget = () => {
   useEffect(() => {
     const unregister = registerWidget('paths')
     return () => unregister()
-  }, [registerWidget])
+  }, [
+    registerWidget,
+  ])
 
-  const { hasPrevPage, hasNextPage, content, setPrevPage, setNextPage } = useArrayPagination(data || [], 10)
+  const { content, ...pagination } = useArrayPagination(data || [], 10)
   const maxMetricValue = Math.max(...(data?.map(({ y }) => y) || []), 0)
   const contentClass = 'h-[410px]'
 
   return (
-    <Card className="col-span-full lg:col-span-2 h-full">
-      <CardHeader className="flex flex-row items-center justify-between">
+    <Card>
+      <CardHeader>
         <CardTitle>Paths</CardTitle>
-        <CardHeaderPagination hasPrevPage={hasPrevPage} hasNextPage={hasNextPage} setPrevPage={setPrevPage} setNextPage={setNextPage} />
+        <CardPagination {...pagination} />
       </CardHeader>
-      <CardContent className="flex flex-col">
-        {!data || dataIsLoading ? (
+      <CardContent>
+        {!content || dataIsLoading ? (
           <Skeleton className={contentClass} />
         ) : (
           <MetricsTable data={content} maxValue={maxMetricValue} className={contentClass} />

@@ -1,16 +1,19 @@
+import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintext'
+
 import { cn } from '@/lib/cn'
-import { generateExperienceTimeSpan } from '@/lib/generateExperienceTimeSpan'
-import type { ResumeExperienceGlobalData } from '@/types/payload'
+import type { ReducedToLocale } from '@/lib/i18n'
+import { generateExperienceInterval } from '@/lib/i18n'
+import type { ResumeJobData } from '@/types/payload'
 
 export const JobEntry = ({
   title,
   employer,
   startDate,
   endDate,
-  content,
+  tasks,
   // technologies,
-}: ResumeExperienceGlobalData['jobHistory'][number]) => {
-  const timeString = generateExperienceTimeSpan({
+}: ReducedToLocale<ResumeJobData>) => {
+  const timeString = generateExperienceInterval({
     startDate,
     endDate,
   })
@@ -36,12 +39,16 @@ export const JobEntry = ({
           {timeString}
         </time>
       </header>
-      {Array.isArray(content) && content.length > 0 && (
+      {Array.isArray(tasks) && tasks.length > 0 && (
         <ul>
-          {content
-            .filter(({ item }) => typeof item === 'string' && item !== '')
-            .map(({ item, id }) => (
-              <li key={id}>{item}</li>
+          {tasks
+            .filter(({ task }) => typeof task === 'string' && task !== '')
+            .map(({ task, id }) => (
+              <li key={id}>
+                {convertLexicalToPlaintext({
+                  data: task,
+                })}
+              </li>
             ))}
         </ul>
       )}

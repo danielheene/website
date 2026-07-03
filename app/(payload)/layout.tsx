@@ -7,9 +7,11 @@ import { handleServerFunctions, RootLayout } from '@payloadcms/next/layouts'
 import type { ServerFunctionClient } from 'payload'
 import type React from 'react'
 
+import { cn } from '@/lib/cn'
 import PPFrama from '@/fonts/pp-frama'
 import PPFramaText from '@/fonts/pp-frama-text'
 import PPSupplyMono from '@/fonts/pp-supply-mono'
+import PPSupplySans from '@/fonts/pp-supply-sans'
 
 import { importMap } from './admin/importMap.js'
 
@@ -34,7 +36,12 @@ const Layout = ({ children }: Args) => (
     importMap={importMap}
     serverFunction={serverFunction}
     htmlProps={{
-      className: `${PPSupplyMono.variable} ${PPFrama.variable} ${PPFramaText.variable}`,
+      className: cn([
+        PPSupplySans.variable,
+        PPSupplyMono.variable,
+        PPFrama.variable,
+        PPFramaText.variable,
+      ]),
       suppressHydrationWarning: true,
     }}
   >

@@ -6,7 +6,7 @@ import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { CustomerLogosField } from '@/fields/CustomerLogos'
 import { RichTextField } from '@/fields/RichText'
 import { TitleField } from '@/fields/Title'
-import { revalidateResumeSection } from '@/lib/hooks/revalidateResumeSection'
+import { revalidateResumeSectionGlobalHook } from '@/lib/hooks/revalidateResumeSection'
 import { GlobalSlug } from '@/types/globals'
 
 export const ResumeCustomers: GlobalConfig<GlobalSlug.ResumeCustomers> = {
@@ -19,7 +19,7 @@ export const ResumeCustomers: GlobalConfig<GlobalSlug.ResumeCustomers> = {
   },
   hooks: {
     afterChange: [
-      revalidateResumeSection(GlobalSlug.ResumeCustomers),
+      revalidateResumeSectionGlobalHook(GlobalSlug.ResumeCustomers),
     ],
   },
   admin: {

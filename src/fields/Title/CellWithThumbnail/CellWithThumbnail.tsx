@@ -59,7 +59,6 @@ export const CellWithThumbnail = async (props: CellWithThumbnailProps) => {
     thumbnailURL = media.thumbnailURL || media.url
   }
 
-  console.log('thumbnailURL', thumbnailURL)
 
   let titleValue: string | undefined
   if (cellData && typeof cellData === 'string' && cellData.length > 0) {

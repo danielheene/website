@@ -18,6 +18,9 @@ export const MediaImages: CollectionConfig<CollectionSlug.MediaImages> = {
     singular: 'Image',
     plural: 'Images',
   },
+  folders: {
+    browseByFolder: false,
+  },
   admin: {
     group: AdminGroup.Media,
     useAsTitle: 'filename',

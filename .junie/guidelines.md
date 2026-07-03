@@ -18,7 +18,7 @@ This document captures project-specific knowledge to accelerate local setup, tes
 - Environment variables
   - A minimal local setup requires copying `.env.example` to `.env.local` and filling secrets. In addition to entries shown in `.env.example`, the codebase references the following variables in `src/payload.config.ts` and `next.config.ts`:
     - `NEXT_PUBLIC_SERVER_URL` — Used for Payload CORS/CSRF and image remotePatterns.
-    - `UMAMI_HOST_URL`, `UMAMI_WEBSITE_ID` — Optional analytics rewrite and public ID.
+    - `NEXT_PUBLIC_UMAMI_URL`, `UMAMI_WEBSITE_ID` — Optional analytics rewrite and public ID.
     - Email (UseSend): `USESEND_API_KEY`, `USESEND_URL`, `USESEND_DEFAULT_FROM_ADDRESS`, `USESEND_DEFAULT_FROM_NAME`.
     - Redis KV: `REDIS_URL`.
     - S3-compatible storage (local or cloud): `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `S3_BUCKET`, `S3_REGION`, `S3_ENDPOINT` (default local fallback in code is `http://localhost:9000`).
@@ -111,7 +111,7 @@ This repo does not ship a preconfigured test framework like Jest/Vitest. The fas
   - Localization has `en` and `de` with fallback, and admin time zone defaults to `Europe/Berlin`.
 
 - Next.js configuration
-  - `next.config.ts` wraps with `withPayload`. Images are locked to WebP output, SVGs are allowed inline (CSP is restricted). Rewrites proxy `/stats/*` to `UMAMI_HOST_URL` when set.
+  - `next.config.ts` wraps with `withPayload`. Images are locked to WebP output, SVGs are allowed inline (CSP is restricted). Rewrites proxy `/stats/*` to `NEXT_PUBLIC_UMAMI_URL` when set.
   - `serverExternalPackages` lists libraries that should stay external at server build time.
 
 - Code style and linting

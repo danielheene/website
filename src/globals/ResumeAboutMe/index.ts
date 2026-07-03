@@ -6,7 +6,7 @@ import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { RichTextField } from '@/fields/RichText'
 import { TitleField } from '@/fields/Title'
 import { enqueueGenerateResumeDocuments } from '@/lib/hooks/enqueueGenerateResumeDocuments'
-import { revalidateResumeSection } from '@/lib/hooks/revalidateResumeSection'
+import { revalidateResumeSectionGlobalHook } from '@/lib/hooks/revalidateResumeSection'
 import { CollectionSlug } from '@/types/collections'
 import { GlobalSlug } from '@/types/globals'
 
@@ -20,7 +20,7 @@ export const ResumeAboutMe: GlobalConfig<GlobalSlug.ResumeAboutMe> = {
   },
   hooks: {
     afterChange: [
-      revalidateResumeSection(GlobalSlug.ResumeAboutMe),
+      revalidateResumeSectionGlobalHook(GlobalSlug.ResumeAboutMe),
       enqueueGenerateResumeDocuments,
     ],
   },

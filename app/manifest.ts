@@ -9,18 +9,26 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
     icons: [
       {
         src: '/favicon.ico',
-        sizes: '64x64',
+        sizes: '16x16 32x32 48x48',
         type: 'image/x-icon',
       },
       {
-        src: '/icon-192x192.png',
-        sizes: '192x192',
+        src: '/favicon-96x96.png',
+        sizes: '96x96',
         type: 'image/png',
+        purpose: 'maskable',
       },
       {
-        src: '/icon-512x512.png',
+        src: '/favicon-192x192.png',
+        sizes: '192x192',
+        type: 'image/png',
+        purpose: 'maskable',
+      },
+      {
+        src: '/favicon-512x512.png',
         sizes: '512x512',
         type: 'image/png',
+        purpose: 'maskable',
       },
     ],
   }

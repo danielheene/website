@@ -6,6 +6,8 @@ import {
   type OverallStatusResponse,
 } from '@/types/uptime-kuma'
 
+export const revalidate = 60
+
 /**
  *
  * @constructor

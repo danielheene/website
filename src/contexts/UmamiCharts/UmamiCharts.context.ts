@@ -1,14 +1,17 @@
 'use client'
 
-import { subWeeks } from 'date-fns'
 import React from 'react'
 
-import type { UmamiChartsContextValue, UmamiChartsMethods, UmamiChartsState } from './UmamiCharts.types'
+import type {
+  UmamiChartsContextValue,
+  UmamiChartsMethods,
+  UmamiChartsState,
+} from './UmamiCharts.types'
 
 export const initialUmamiChartsState: UmamiChartsState = {
   selectedTimeSpan: {
-    startAt: subWeeks(new Date(), 2),
-    endAt: new Date(),
+    startAt: null,
+    endAt: null,
   },
   website: null,
   stats: {
@@ -44,4 +47,6 @@ export const initialUmamiChartsContextValue: UmamiChartsContextValue = {
   ...initialUmamiChartsMethods,
 }
 
-export const UmamiChartsContext = React.createContext<UmamiChartsContextValue>(initialUmamiChartsContextValue)
+export const UmamiChartsContext = React.createContext<UmamiChartsContextValue>(
+  initialUmamiChartsContextValue,
+)

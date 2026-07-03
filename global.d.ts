@@ -20,7 +20,7 @@ namespace NodeJS {
 
     UMAMI_USERNAME: string
     UMAMI_PASSWORD: string
-    UMAMI_HOST_URL: string
+    NEXT_PUBLIC_UMAMI_URL: string
     NEXT_PUBLIC_UMAMI_SITE_ID: string
 
     USESEND_URL: string

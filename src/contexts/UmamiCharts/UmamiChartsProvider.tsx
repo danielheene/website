@@ -1,23 +1,13 @@
 'use client'
 
 import { usePreferences } from '@payloadcms/ui'
-import {
-  type JSX,
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useReducer,
-} from 'react'
+import { type JSX, type ReactNode, useCallback, useEffect, useMemo, useReducer } from 'react'
 
 import {
   initialUmamiChartsState,
   UmamiChartsContext,
 } from '@/contexts/UmamiCharts/UmamiCharts.context'
-import type {
-  UmamiChartsAction,
-  UmamiChartsState,
-} from '@/contexts/UmamiCharts/UmamiCharts.types'
+import type { UmamiChartsAction, UmamiChartsState } from '@/contexts/UmamiCharts/UmamiCharts.types'
 import {
   fetchEvents,
   fetchPageViews,
@@ -132,9 +122,7 @@ const reducer = (state: UmamiChartsState, action: UmamiChartsAction) => {
 
 const preferencesKey = 'umami-charts:time-range'
 
-export const UmamiChartsProvider = ({
-  children,
-}: UmamiChartsProviderProps): JSX.Element => {
+export const UmamiChartsProvider = ({ children }: UmamiChartsProviderProps): JSX.Element => {
   const { getPreference, setPreference } = usePreferences()
   const [state, dispatch] = useReducer(reducer, initialUmamiChartsState)
   const {
@@ -145,55 +133,9 @@ export const UmamiChartsProvider = ({
     pageViews: { hasWidget: pageViewsHasWidget },
     paths: { hasWidget: pathsHasWidget },
   } = state
-  const { createdAt, resetAt, deletedAt, domain, name } = website || {}
 
   useEffect(() => {
-    getPreference<Partial<UmamiChartsState['selectedTimeSpan']>>(preferencesKey)
-      .then(({ startAt, endAt }) => {
-        if (startAt && endAt)
-          setSelectedTimeSpan(new Date(startAt), new Date(endAt))
-      })
-      .catch((error) => {
-        console.error('Umami Charts preferences could not be loaded', error)
-      })
-  }, [
-    getPreference,
-  ])
-
-  useEffect(() => {
-    const startAtValue =
-      startAt !== initialUmamiChartsState.selectedTimeSpan.startAt
-        ? startAt.toString()
-        : undefined
-    const endAtValue =
-      endAt !== initialUmamiChartsState.selectedTimeSpan.endAt
-        ? endAt.toString()
-        : undefined
-
-    if (startAtValue || endAtValue) {
-      setPreference(
-        preferencesKey,
-        {
-          startAt: startAtValue,
-          endAt: endAtValue,
-        },
-        true,
-      )
-        .then(() => {
-          console.info('Umami Charts preferences saved')
-        })
-        .catch((error) => {
-          console.error('Umami Charts preferences could not be saved', error)
-        })
-    }
-  }, [
-    startAt,
-    endAt,
-    setPreference,
-  ])
-
-  useEffect(() => {
-    if (statsHasWidget) {
+    if (statsHasWidget && startAt && endAt) {
       dispatch({
         type: 'SET_STATS_LOADING',
         payload: {
@@ -229,7 +171,7 @@ export const UmamiChartsProvider = ({
   ])
 
   useEffect(() => {
-    if (eventsHasWidget) {
+    if (eventsHasWidget && startAt && endAt) {
       dispatch({
         type: 'SET_EVENTS_LOADING',
         payload: {
@@ -264,7 +206,7 @@ export const UmamiChartsProvider = ({
   ])
 
   useEffect(() => {
-    if (pathsHasWidget) {
+    if (pathsHasWidget && startAt && endAt) {
       dispatch({
         type: 'SET_PATHS_LOADING',
         payload: {
@@ -299,7 +241,7 @@ export const UmamiChartsProvider = ({
   ])
 
   useEffect(() => {
-    if (pageViewsHasWidget) {
+    if (pageViewsHasWidget && startAt && endAt) {
       dispatch({
         type: 'SET_PAGE_VIEWS_LOADING',
         payload: {
@@ -344,20 +286,6 @@ export const UmamiChartsProvider = ({
             payload: data,
           })
           console.info('Umami Charts website data loaded')
-
-          if (
-            startAt === initialUmamiChartsState.selectedTimeSpan.startAt &&
-            endAt === initialUmamiChartsState.selectedTimeSpan.endAt
-          ) {
-            dispatch({
-              type: 'SET_SELECTED_TIME_SPAN',
-              payload: {
-                startAt: new Date(data.createdAt || data.resetAt),
-                endAt: new Date(data.deletedAt || new Date().toISOString()),
-              },
-            })
-            console.info('Umami Charts selected time span set to website data')
-          }
         })
         .catch((error) => {
           console.error('Umami Charts website data could not be loaded', error)
@@ -365,38 +293,72 @@ export const UmamiChartsProvider = ({
     }
   }, [
     website,
-    startAt,
-    endAt,
   ])
 
-  const registerWidget = useCallback(
-    (widgetId: 'stats' | 'pageViews' | 'events' | 'paths') => {
+  const registerWidget = useCallback((widgetId: 'stats' | 'pageViews' | 'events' | 'paths') => {
+    dispatch({
+      type: 'REGISTER_WIDGET',
+      payload: {
+        widgetId,
+      },
+    })
+    return () =>
       dispatch({
-        type: 'REGISTER_WIDGET',
+        type: 'UNREGISTER_WIDGET',
         payload: {
           widgetId,
         },
       })
-      return () =>
-        dispatch({
-          type: 'UNREGISTER_WIDGET',
-          payload: {
-            widgetId,
-          },
+  }, [])
+
+  const setSelectedTimeSpan = useCallback(
+    (startAt: Date, endAt: Date) => {
+      setPreference(
+        preferencesKey,
+        {
+          startAt: startAt.toISOString(),
+          endAt: endAt.toISOString(),
+        },
+        true,
+      )
+        .then(() => {
+          dispatch({
+            type: 'SET_SELECTED_TIME_SPAN',
+            payload: {
+              startAt,
+              endAt,
+            },
+          })
+        })
+        .catch((error) => {
+          console.error('Umami Charts preferences could not be saved', error)
         })
     },
-    [],
+    [
+      setPreference,
+    ],
   )
 
-  const setSelectedTimeSpan = useCallback((startAt: Date, endAt: Date) => {
-    dispatch({
-      type: 'SET_SELECTED_TIME_SPAN',
-      payload: {
-        startAt,
-        endAt,
-      },
-    })
-  }, [])
+  useEffect(() => {
+    getPreference<Partial<UmamiChartsState['selectedTimeSpan']>>(preferencesKey)
+      .then((preferences) => {
+        const { startAt, endAt } = preferences ?? {}
+        if (startAt && endAt) {
+          dispatch({
+            type: 'SET_SELECTED_TIME_SPAN',
+            payload: {
+              startAt: new Date(startAt),
+              endAt: new Date(endAt),
+            },
+          })
+        }
+      })
+      .catch((error) => {
+        console.error('Umami Charts preferences could not be loaded', error)
+      })
+  }, [
+    getPreference,
+  ])
 
   const value = useMemo(
     () => ({

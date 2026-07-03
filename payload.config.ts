@@ -3,7 +3,7 @@ import * as process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { redisKVAdapter } from '@payloadcms/kv-redis'
-import { FixedToolbarFeature, InlineToolbarFeature, lexicalEditor, } from '@payloadcms/richtext-lexical'
+import { lexicalEditor, } from '@payloadcms/richtext-lexical'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
@@ -30,7 +30,7 @@ export const config = buildConfig({
       },
       Nav: '@/components/AdminPanel#Nav',
       providers: [
-        '@/contexts/UmamiCharts#UmamiChartsProvider',
+        '@/contexts/UmamiCharts#UmamiChartsContainer',
       ],
     },
     dashboard: {
@@ -125,14 +125,14 @@ export const config = buildConfig({
       icons: [
         {
           rel: 'icon',
-          type: 'image/x-icon',
           url: '/favicon.ico',
-          sizes: '32x32',
+          sizes: '16x16 32x32 48x48',
+          type: 'image/x-icon',
         },
         {
           rel: 'icon',
-          type: 'image/svg+xml',
           url: '/favicon.svg',
+          type: 'image/svg+xml',
         },
       ],
     },
@@ -159,72 +159,7 @@ export const config = buildConfig({
     headers: [],
   },
   defaultDepth: 10,
-  editor: lexicalEditor({
-    admin: {
-      hideGutter: true,
-    },
-    features: [
-      FixedToolbarFeature({
-        applyToFocusedEditor: true,
-        customGroups: {
-          /**
-           * text:
-           * paragraph, headings, ordered list, unordered list, check list, blockquote
-           */
-          text: {
-            type: 'dropdown',
-            order: 10,
-          },
-
-          /**
-           * format:
-           * bold, italic, underline, strikethrough, superscript, subscript, inline code
-           */
-          format: {
-            type: 'buttons',
-            order: 20,
-          },
-
-          /**
-           * alignment:
-           * left, center, right, justify
-           */
-          align: {
-            type: 'buttons',
-            order: 30,
-          },
-
-          /**
-           * indentation:
-           * increase, decrease
-           */
-          indent: {
-            type: 'buttons',
-            order: 40,
-          },
-
-          /**
-           * features:
-           * links, blockquote, hr, code */
-          features: {
-            type: 'buttons',
-            order: 40,
-          },
-
-          /**
-           * custom blocks:
-           */
-          add: {
-            type: 'dropdown',
-            order: 50,
-          },
-        },
-        disableIfParentHasFixedToolbar: true,
-      }),
-
-      InlineToolbarFeature(),
-    ],
-  }),
+  editor: lexicalEditor(),
   db: mongooseAdapter({
     url: process.env.DATABASE_URL,
   }),
@@ -238,7 +173,14 @@ export const config = buildConfig({
     defaultFromName: process.env.USESEND_DEFAULT_FROM_NAME,
   }),
   endpoints: [],
+  folders: {
+    browseByFolder: false,
+  },
   globals: GLOBALS,
+  graphQL:{
+    disable: true,
+    disablePlaygroundInProduction: true,
+  },
   jobs: {
     enableConcurrencyControl: true,
     deleteJobOnComplete: true,
@@ -263,6 +205,10 @@ export const config = buildConfig({
       collections: undefined
       // see below for a list of available options
     }),
+    // nestedDocsPlugin({
+    //   collections: [CollectionSlug.ResumeSkills],
+    //
+    // }),
     s3Storage({
       enabled: true,
       collections: {
@@ -271,12 +217,6 @@ export const config = buildConfig({
         },
         [CollectionSlug.MediaVideos]: {
           prefix: 'videos',
-          signedDownloads: {
-            shouldUseSignedURL: ({ filename }) => {
-              return filename.endsWith('.mp4')
-            },
-            expiresIn: 3600,
-          },
         },
         [CollectionSlug.MediaDocuments]: {
           prefix: 'documents',
@@ -285,7 +225,8 @@ export const config = buildConfig({
           prefix: 'audios',
         },
       },
-      // clientUploads: true,
+      useCompositePrefixes: true,
+      clientUploads: true,
       disableLocalStorage: true,
       bucket: process.env.S3_BUCKET,
       config: {

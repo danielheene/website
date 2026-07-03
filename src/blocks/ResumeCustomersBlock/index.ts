@@ -17,7 +17,7 @@ export const ResumeCustomersBlock: Block = {
   slug: BlockSlug.ResumeCustomers,
   interfaceName: BlockSlug.ResumeCustomers,
   labels: {
-    singular: 'Customers Section',
+    singular: 'Customers Container',
     plural: 'Customers Sections',
   },
   admin: {

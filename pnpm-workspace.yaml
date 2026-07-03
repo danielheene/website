@@ -1,0 +1,8 @@
+allowBuilds:
+  '@sentry/cli': false
+  esbuild: true
+  sharp: true
+
+packages:
+  - website
+  - packages/*

@@ -117,7 +117,11 @@ type AddressFieldProps = {
   description?: string
 }
 
-export const AddressField = ({ name = 'address', label, description }: AddressFieldProps = {}): GroupField => ({
+export const AddressField = ({
+  name = 'address',
+  label,
+  description,
+}: AddressFieldProps = {}): GroupField => ({
   name,
   label: label ?? startCase(name),
   type: 'group',
@@ -131,19 +135,27 @@ export const AddressField = ({ name = 'address', label, description }: AddressFi
       Field: '@/fields/Address/components/FieldComponent',
     },
   },
-  fields: ['en', 'de'].map((locale) => ({
+  fields: [
+    'en',
+    'de',
+  ].map((locale) => ({
     name: locale,
     type: 'group',
     interfaceName: 'AddressData',
     admin: {
       components: {
         Label: false,
+        Description: false,
       },
       hideGutter: true,
     },
     hooks: {
-      beforeValidate: [resolveAddressData],
-      beforeChange: [syncAddressDataBetweenLocale],
+      beforeValidate: [
+        resolveAddressData,
+      ],
+      beforeChange: [
+        syncAddressDataBetweenLocale,
+      ],
     },
     fields,
   })),

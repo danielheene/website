@@ -12,9 +12,7 @@
   }
 
   .editor {
-    min-height: 300px;
     border: 1px solid var(--theme-elevation-150);
-    padding-bottom: 2rem;
 
     & > div > *:last-child {
       padding-bottom: 0;
@@ -37,6 +35,7 @@
 
   [data-lexical-editor="true"] {
     flex-grow: 1;
+    min-height: 300px;
     padding-left: var(--lexical-spacing-x);
     padding-right: var(--lexical-spacing-x);
 

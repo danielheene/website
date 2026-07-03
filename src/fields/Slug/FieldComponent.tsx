@@ -7,11 +7,14 @@ import type React from 'react'
 import { TextFieldWithLockAndGenerate } from '@/components/AdminPanel/TextFieldWithLockAndGenerate'
 import { generateSlug } from '@/lib/generateSlug'
 
-type SlugComponentProps = {
+type FieldComponentProps = {
   fieldToUse: string
 } & TextFieldClientProps
 
-const FieldComponent: React.FC<SlugComponentProps> = ({ fieldToUse, ...fieldProps }) => {
+const FieldComponent: React.FC<FieldComponentProps> = ({
+  fieldToUse,
+  ...fieldProps
+}) => {
   const { getDataByPath } = useForm()
 
   const generateValue = async () => {
@@ -19,7 +22,14 @@ const FieldComponent: React.FC<SlugComponentProps> = ({ fieldToUse, ...fieldProp
     if (data) return generateSlug(data)
   }
 
-  return <TextFieldWithLockAndGenerate hasLock={true} hasGenerate={true} generateFunction={generateValue} {...fieldProps} />
+  return (
+    <TextFieldWithLockAndGenerate
+      hasLock={true}
+      hasGenerate={true}
+      generateFunction={generateValue}
+      {...fieldProps}
+    />
+  )
 }
 
 export default FieldComponent

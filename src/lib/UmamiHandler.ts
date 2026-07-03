@@ -6,8 +6,11 @@ import Redis from 'ioredis'
 let token: string | null = null
 let redis: Redis | null = null
 
+let verifyPromise: Promise<boolean> | null = null
+const tokenPromise: Promise<string | null> | null = null
+
 const login = async () => {
-  const response = await fetch(`${process.env.UMAMI_HOST_URL}/api/auth/login`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_UMAMI_URL}/api/auth/login`, {
     method: 'POST',
     body: JSON.stringify({
       username: process.env.UMAMI_USERNAME,
@@ -20,14 +23,30 @@ const login = async () => {
 }
 
 const verify = async () => {
-  const response = await fetch(`${process.env.UMAMI_HOST_URL}/api/auth/verify`, {
-    headers: {
-      Accept: 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
+  if (verifyPromise) return verifyPromise
+
+  verifyPromise = new Promise((resolve) => {
+    if (!token) {
+      return resolve(false)
+    }
+
+    return fetch(`${process.env.NEXT_PUBLIC_UMAMI_URL}/api/auth/verify`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        resolve(response.ok)
+      })
+      .catch((error) => {
+        console.error('Error verifying token:', error)
+        resolve(false)
+      })
   })
 
-  return response.ok
+  return verifyPromise
 }
 
 const getToken = async () => {
@@ -43,7 +62,11 @@ const getToken = async () => {
 export const getRedis = async () => {
   if (!redis) {
     await new Promise((resolve) => {
-      redis = new Redis(process.env.REDIS_URL, { keyPrefix: 'umami' }).once('ready', () => {
+      redis = new Redis(process.env.REDIS_URL, {
+        connectionName: 'umami-handler',
+        keyPrefix: 'umami',
+        enableReadyCheck: true,
+      }).once('ready', () => {
         resolve(true)
       })
     })
@@ -51,19 +74,19 @@ export const getRedis = async () => {
   return redis
 }
 
-export const setCache = async (key: string, value: JSON) => {
+export const setCache = async <T extends object>(key: string, value: T) => {
   const redis = await getRedis()
   const stringifiedValue = JSON.stringify(value)
   return redis.set(key, stringifiedValue, 'EX', hoursToSeconds(2))
 }
 
-export const getCache = async (key: string): Promise<JSON> => {
+export const getCache = async <T extends object>(key: string): Promise<T | null> => {
   const redis = await getRedis()
   const data = await redis.get(key)
   return data ? JSON.parse(data) : null
 }
 
-const fetcher = async <T>(url: URL | string): Promise<T | null> => {
+const fetcher = async <T extends object>(url: URL | string): Promise<T | null> => {
   const data = await getCache(url.toString())
   if (data) return data as T
 
@@ -77,23 +100,35 @@ const fetcher = async <T>(url: URL | string): Promise<T | null> => {
 
   const json: T = await response.json()
 
-  await setCache(url.toString(), json as JSON)
+  if ('error' in json) return null
+
+  await setCache(url.toString(), json as T)
   return json
 }
 
-const buildApiUrl = (path: string, params?: Pick<AllApiParams, 'startAt' | 'endAt'> & Partial<Omit<AllApiParams, 'startAt' | 'endAt'>>) => {
+const buildApiUrl = (
+  path: string,
+  params?: Pick<AllApiParams, 'startAt' | 'endAt'> &
+    Partial<Omit<AllApiParams, 'startAt' | 'endAt'>>,
+) => {
   const searchParams = params
     ? new URLSearchParams({
         ...params,
-        startAt: params.startAt.getTime().toString(),
-        endAt: params.endAt.getTime().toString(),
+        startAt: params?.startAt?.getTime?.()?.toString(),
+        endAt: params?.endAt?.getTime?.()?.toString(),
       }).toString()
     : ''
 
-  return new URL(`/api/websites/${process.env.NEXT_PUBLIC_UMAMI_SITE_ID}/${path}?${searchParams}`, process.env.UMAMI_HOST_URL)
+  return new URL(
+    `/api/websites/${process.env.NEXT_PUBLIC_UMAMI_SITE_ID}/${path}?${searchParams}`,
+    process.env.NEXT_PUBLIC_UMAMI_URL,
+  )
 }
 
-type Metric = { x: string; y: number }
+type Metric = {
+  x: string
+  y: number
+}
 
 type AllApiParams = {
   startAt: Date
@@ -146,22 +181,54 @@ export const fetchWebsite = async () => {
   return await fetcher<UmamiWebsite>(url)
 }
 
-export const fetchStats = async ({ startAt, endAt, unit }: UmamiStatsParams): Promise<UmamiStats | null> => {
-  const url = buildApiUrl('stats', { startAt, endAt, unit })
+export const fetchStats = async ({
+  startAt,
+  endAt,
+  unit,
+}: UmamiStatsParams): Promise<UmamiStats | null> => {
+  const url = buildApiUrl('stats', {
+    startAt,
+    endAt,
+    unit,
+  })
   return await fetcher<UmamiStats>(url)
 }
 
-export const fetchEvents = async ({ startAt, endAt }: UmamiEventsParams): Promise<UmamiEvent[] | null> => {
-  const url = buildApiUrl('metrics', { startAt, endAt, type: 'event' })
+export const fetchEvents = async ({
+  startAt,
+  endAt,
+}: UmamiEventsParams): Promise<UmamiEvent[] | null> => {
+  const url = buildApiUrl('metrics', {
+    startAt,
+    endAt,
+    type: 'event',
+  })
   return await fetcher<UmamiEvent[]>(url)
 }
 
-export const fetchPaths = async ({ startAt, endAt }: UmamiPathsParams): Promise<UmamiPath[] | null> => {
-  const url = buildApiUrl('metrics', { startAt, endAt, type: 'path' })
+export const fetchPaths = async ({
+  startAt,
+  endAt,
+}: UmamiPathsParams): Promise<UmamiPath[] | null> => {
+  const url = buildApiUrl('metrics', {
+    startAt,
+    endAt,
+    type: 'path',
+  })
   return await fetcher<UmamiPath[]>(url)
 }
 
-export const fetchPageViews = async ({ startAt, endAt, timezone, unit }: UmamiPageViewsParams): Promise<UmamiPageViews | null> => {
-  const url = buildApiUrl('pageviews', { startAt, endAt, timezone, unit })
+export const fetchPageViews = async ({
+  startAt,
+  endAt,
+  timezone,
+  unit,
+}: UmamiPageViewsParams): Promise<UmamiPageViews | null> => {
+  const url = buildApiUrl('pageviews', {
+    startAt,
+    endAt,
+    timezone,
+    unit,
+  })
   return await fetcher<UmamiPageViews>(url)
 }

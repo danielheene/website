@@ -2,9 +2,14 @@
 
 import { useEffect, useMemo } from 'react'
 
-import { ICON, Icon, type IconName } from '@/components/Icon'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/AdminPanel/Card'
+import { Icon, type IconName } from '@/components/Icon'
+import { Skeleton } from '@/components/Skeleton'
 import { useUmamiCharts } from '@/contexts/UmamiCharts'
 import { formatSecondsToDuration } from '@/lib/formatSecondsToDuration'
 import type { UmamiStats } from '@/lib/UmamiHandler'
@@ -13,46 +18,51 @@ const CONFIG = {
   visitors: {
     title: 'Visitors',
     order: 0,
-    transform: (data) => data['visitors'],
+    transform: (data) => data?.visitors,
     format: (v) => `${v}`,
-    icon: ICON.GROUP,
+    icon: 'material-symbols:group',
   },
   visits: {
     title: 'Visits',
     order: 1,
-    transform: (data) => data['visits'],
+    transform: (data) => data?.visits,
     format: (v) => `${v}`,
-    icon: ICON.HAND_EYE,
+    icon: 'material-symbols:multimodal-hand-eye',
   },
   pageviews: {
     title: 'Views',
     order: 2,
-    transform: (data) => data['pageviews'],
+    transform: (data) => data?.pageviews,
     format: (v) => `${v}`,
-    icon: ICON.WEB_TRAFFIC,
+    icon: 'material-symbols:web-traffic',
   },
   bounces: {
     title: 'Bounce Rate',
     order: 3,
-    transform: (data) => Math.round(data['bounces']),
+    transform: (data) => Math.round(data?.bounces || 0),
     format: (v) => `${v}%`,
-    icon: ICON.UNDO,
+    icon: 'material-symbols:undo',
   },
   totaltime: {
     title: 'Visit Duration',
     order: 4,
-    transform: (data) => (data['totaltime'] > 0 && data['visits'] > 0 ? data['totaltime'] / data['visits'] : 0),
+    transform: (data) =>
+      data?.totaltime > 0 && data?.visits > 0
+        ? data?.totaltime / data?.visits
+        : 0,
     format: (v) => `${formatSecondsToDuration(v)}`,
-    icon: ICON.CLOCK,
+    icon: 'material-symbols:nest-clock-farsight-analog-outline',
   },
 } as Record<
   Exclude<keyof UmamiStats, 'comparison'>,
   {
     title: string
     order: number
-    transform: (data: Record<Exclude<keyof UmamiStats, 'comparison'>, number>) => number
+    transform: (
+      data: Record<Exclude<keyof UmamiStats, 'comparison'>, number>,
+    ) => number
     format: (v: number) => string
-    icon: IconName
+    icon: string
   }
 >
 
@@ -65,7 +75,9 @@ export const UmamiStatsWidget = () => {
   useEffect(() => {
     const unregister = registerWidget('stats')
     return () => unregister()
-  }, [registerWidget])
+  }, [
+    registerWidget,
+  ])
 
   const stats = useMemo(() => {
     const dataIsReady = !dataIsLoading && data && typeof data === 'object'
@@ -76,7 +88,9 @@ export const UmamiStatsWidget = () => {
         const { title, transform, format, icon } = CONFIG[k]
 
         const value = dataIsReady ? format(transform(data)) : undefined
-        const prevValue = dataIsReady ? format(transform(data.comparison)) : undefined
+        const prevValue = dataIsReady
+          ? format(transform(data.comparison))
+          : undefined
 
         return {
           title,
@@ -85,7 +99,10 @@ export const UmamiStatsWidget = () => {
           prevValue,
         }
       })
-  }, [data, dataIsLoading])
+  }, [
+    data,
+    dataIsLoading,
+  ])
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
@@ -105,16 +122,20 @@ interface StatCardProps {
 
 function StatCard({ title, value, prevValue, icon }: StatCardProps) {
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="flex flex-row items-center justify-between">
+    <Card className="overflow-hidden col-span-1 md:col-span-1 lg:col-span-1">
+      <CardHeader>
         <CardTitle>{title}</CardTitle>
-        <Icon icon={icon} className="text-2xl text-muted-foreground" />
+        <Icon name={icon} className="text-2xl text-muted-foreground" />
       </CardHeader>
       <CardContent>
         {value && prevValue ? (
           <>
-            <div className="h-10 flex items-center text-4xl font-mono font-bold">{value}</div>
-            <div className="h-5 flex items-center text-md font-mono text-muted-foreground">{prevValue}</div>
+            <div className="h-10 flex items-center text-4xl font-mono font-bold">
+              {value}
+            </div>
+            <div className="h-5 flex items-center text-md font-mono text-muted-foreground">
+              {prevValue}
+            </div>
           </>
         ) : (
           <Skeleton className="h-15" />

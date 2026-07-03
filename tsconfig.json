@@ -22,6 +22,9 @@
       "@imgs/*": [
         "./public/payload/blocks/*"
       ],
+      "@pdf/*": [
+        "./src/pdf/*"
+      ],
       "@custom-types": [
         "./src/custom-types.ts"
       ],

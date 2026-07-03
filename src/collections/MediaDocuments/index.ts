@@ -30,6 +30,10 @@ export const MediaDocuments: CollectionConfig<CollectionSlug.MediaDocuments> = {
       Description: false,
     },
   },
+  folders: {
+    browseByFolder: true,
+  },
+
   access: {
     create: authenticated,
     delete: authenticated,
@@ -45,15 +49,11 @@ export const MediaDocuments: CollectionConfig<CollectionSlug.MediaDocuments> = {
       'application/pdf',
     ],
     adminThumbnail: ({ doc }) => {
-      const thumbnailFilename = String(doc.filename).replace(
-        /(\.pdf)$/,
-        '-thumbnail.png',
-      )
-      return generateContentURL({
-        path: `/api/${CollectionSlug.MediaImages}/file/${thumbnailFilename}`,
-      })
+      const thumbnailFilename = String(doc.filename).replace(/(\.pdf)$/, '-thumbnail.png')
+      return `/api/${CollectionSlug.MediaImages}/file/${thumbnailFilename}`
     },
   },
+
   fields: [
     {
       name: 'filename',
@@ -64,6 +64,11 @@ export const MediaDocuments: CollectionConfig<CollectionSlug.MediaDocuments> = {
         disableListColumn: false,
         disableListFilter: true,
       },
+    },
+    {
+      name: 'generator',
+      type: 'text',
+      hidden: true,
     },
     {
       name: 'prefix',
@@ -111,7 +116,6 @@ export const MediaDocuments: CollectionConfig<CollectionSlug.MediaDocuments> = {
       name: 'thumbnail',
       type: 'upload',
       label: 'Thumbnail',
-      maxDepth: 5,
       relationTo: CollectionSlug.MediaImages,
       admin: {
         disableGroupBy: true,
@@ -123,6 +127,7 @@ export const MediaDocuments: CollectionConfig<CollectionSlug.MediaDocuments> = {
       name: 'thumbnailURL',
       type: 'text',
       label: 'Thumbnail URL',
+      virtual: true,
       admin: {
         hidden: true,
         disableGroupBy: true,

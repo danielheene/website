@@ -3,7 +3,6 @@ import Link from 'next/link'
 
 import { FooterLegalLinks } from '@/components/Footer/FooterLegalLinks'
 import { FooterNavGroups } from '@/components/Footer/FooterNavGroups'
-import { ICON } from '@/components/Icon'
 import { Logo } from '@/components/Logo'
 import { ServiceStatus } from '@/components/ServiceStatus'
 import { cn } from '@/lib/cn'
@@ -30,10 +29,10 @@ export const Footer = async ({ className = '' }: FooterProps) => {
     {
       id: 'email',
       link: {
-        type: 'mailto',
-        address: email,
+        type: 'custom',
+        url: `mailto:${email}`,
         label: 'Email',
-        icon: ICON.MAIL,
+        icon: 'mail',
         iconOnly: true,
         newTab: true,
       },
@@ -44,7 +43,7 @@ export const Footer = async ({ className = '' }: FooterProps) => {
         type: 'custom',
         url: parsePhoneNumber(telephone).getURI(),
         label: 'Telephone',
-        icon: ICON.CALL,
+        icon: 'phone',
         newTab: true,
         iconOnly: true,
       },
@@ -67,7 +66,7 @@ export const Footer = async ({ className = '' }: FooterProps) => {
   return (
     <footer
       className={cn([
-        'transition-colors',
+        'transition-constants',
         'bg-background text-foreground',
         className,
       ])}

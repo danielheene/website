@@ -3,6 +3,8 @@ import type {
   TypedCollection,
 } from 'payload'
 
+import type { ReducedToLocale } from '@/lib/i18n'
+
 /**
  *
  * COLLECTIONS
@@ -17,6 +19,7 @@ export enum CollectionSlug {
   MediaAudios = 'audios',
   Pages = 'pages',
   ResumeSkills = 'resume-skills',
+  ResumeJobs = 'resume-jobs',
   Users = 'users',
 }
 
@@ -29,4 +32,4 @@ export const COLLECTION_PREFIX_MAP: Partial<Record<CollectionSlug, string>> = {
 export type { CollectionSlug as RegisteredCollectionSlug } from 'payload'
 export type CollectionData<
   T extends RegisteredCollectionSlug = RegisteredCollectionSlug,
-> = TypedCollection[T]
+> = ReducedToLocale<TypedCollection[T]>

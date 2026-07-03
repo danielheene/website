@@ -1,11 +1,10 @@
 import type { JSX } from 'react'
 
-import { Badge } from '@/components/Badge'
 import { Headline } from '@/components/Headline'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
 import { cn } from '@/lib/cn'
-import { generateExperienceTimeSpan } from '@/lib/generateExperienceTimeSpan'
+import { generateExperienceInterval } from '@/lib/i18n'
 import type { ResumeLayoutBlockData } from '@/types/blocks'
 import type { GlobalSlug } from '@/types/globals'
 
@@ -13,7 +12,7 @@ import { SkillChart } from './SkillChart'
 
 export const ResumeExperienceBlockRenderer = ({
   blockType,
-  data: { title, caption, jobHistory, skillSummary },
+  data: { title, caption, jobs, skillSummary },
 }: ResumeLayoutBlockData<GlobalSlug.ResumeExperience>): JSX.Element => (
   <SectionContainer id={blockType} title={title} variant="primary">
     <div
@@ -56,69 +55,70 @@ export const ResumeExperienceBlockRenderer = ({
           'flex flex-col gap-12 lg:gap-24',
         )}
       >
-        {jobHistory.map(
-          ({
-            id,
-            title,
-            employer,
-            startDate,
-            endDate,
-            content,
-            // technologies,
-          }) => {
-            const timeString = generateExperienceTimeSpan({
+        {Array.isArray(jobs) &&
+          jobs.map(
+            ({
+              id,
+              title,
+              employer,
               startDate,
               endDate,
-            })
-            return (
-              <article
-                key={id}
-                className={cn(
-                  'flex flex-col gap-4 p-4',
-                  'lg:gap-8 lg:p-8',
-                  'bg-white',
-                  'text-black',
-                  'rounded-sm',
-                )}
-              >
-                <header className="flex row justify-between font-mono">
-                  <h3 className="flex flex-col">
-                    <span className="text-sm lg:text-lg font-medium">
-                      {employer}
-                    </span>
-                    <span className="text-xl lg:text-2xl font-extrabold text-primary">
-                      {title}
-                    </span>
-                  </h3>
-                  <time className="text-sm lg:text-lg font-medium uppercase whitespace-nowrap">
-                    {timeString}
-                  </time>
-                </header>
-                {Array.isArray(content) && content.length > 0 && (
-                  <ul>
-                    {content
-                      .filter(
-                        ({ item }) => typeof item === 'string' && item !== '',
-                      )
-                      .map(({ item, id }) => (
-                        <li key={id}>{item}</li>
-                      ))}
-                  </ul>
-                )}
-                {/*<RichText data={content} enableGutter={false} className="w-full" />*/}
-                {/*{technologies.length > 0 && (*/}
-                {/*  <footer className="flex flex-wrap gap-2">*/}
-                {/*    {technologies.map(({ id, label }) => (*/}
-                {/*      <Badge key={id} color="primary">*/}
-                {/*        {label}*/}
-                {/*      </Badge>*/}
-                {/*    ))}*/}
-                {/*  </footer>*/}
-                {/*)}*/}
-              </article>
-            )
-          },
-        )}
+              content,
+              // technologies,
+            }) => {
+              const timeString = generateExperienceInterval({
+                startDate,
+                endDate,
+              })
+              return (
+                <article
+                  key={id}
+                  className={cn(
+                    'flex flex-col gap-4 p-4',
+                    'lg:gap-8 lg:p-8',
+                    'bg-white',
+                    'text-black',
+                    'rounded-sm',
+                  )}
+                >
+                  <header className="flex row justify-between font-mono">
+                    <h3 className="flex flex-col">
+                      <span className="text-sm lg:text-lg font-medium">
+                        {employer}
+                      </span>
+                      <span className="text-xl lg:text-2xl font-extrabold text-primary">
+                        {title}
+                      </span>
+                    </h3>
+                    <time className="text-sm lg:text-lg font-medium uppercase whitespace-nowrap">
+                      {timeString}
+                    </time>
+                  </header>
+                  {Array.isArray(content) && content.length > 0 && (
+                    <ul>
+                      {content
+                        .filter(
+                          ({ item }) => typeof item === 'string' && item !== '',
+                        )
+                        .map(({ item, id }) => (
+                          <li key={id}>{item}</li>
+                        ))}
+                    </ul>
+                  )}
+                  {/*<RichText data={content} enableGutter={false} className="w-full" />*/}
+                  {/*{technologies.length > 0 && (*/}
+                  {/*  <footer className="flex flex-wrap gap-2">*/}
+                  {/*    {technologies.map(({ id, label }) => (*/}
+                  {/*      <Badge key={id} color="primary">*/}
+                  {/*        {label}*/}
+                  {/*      </Badge>*/}
+                  {/*    ))}*/}
+                  {/*  </footer>*/}
+                  {/*)}*/}
+                </article>
+              )
+            },
+          )}
       </div>
     </div>
   </SectionContainer>

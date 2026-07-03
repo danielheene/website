@@ -17,7 +17,7 @@ export const ResumeAboutMeBlock: Block = {
   slug: BlockSlug.ResumeAboutMe,
   interfaceName: BlockSlug.ResumeAboutMe,
   labels: {
-    singular: 'AboutMe Section',
+    singular: 'AboutMe Container',
     plural: 'AboutMe Sections',
   },
   admin: {

@@ -17,7 +17,7 @@ export const ResumeDownloadsBlock: Block = {
   slug: BlockSlug.ResumeDownloads,
   interfaceName: BlockSlug.ResumeDownloads,
   labels: {
-    singular: 'Downloads Section',
+    singular: 'Downloads Container',
     plural: 'Downloads Sections',
   },
   admin: {

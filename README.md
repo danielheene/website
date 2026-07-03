@@ -74,7 +74,7 @@ The project uses several environment variables for configuration. See `.env.exam
 - `REDIS_URL`: Redis connection URL.
 - `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `S3_BUCKET`, `S3_REGION`, `S3_ENDPOINT`: S3-compatible storage configuration.
 - `USESEND_API_KEY`, `USESEND_URL`, `USESEND_DEFAULT_FROM_ADDRESS`, `USESEND_DEFAULT_FROM_NAME` (optional): Email provider configuration.
-- `UMAMI_HOST_URL`, `UMAMI_WEBSITE_ID` (optional): Analytics rewrite and site ID.
+- `NEXT_PUBLIC_UMAMI_URL`, `UMAMI_WEBSITE_ID` (optional): Analytics rewrite and site ID.
 
 ## Available Scripts
 

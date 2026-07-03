@@ -27,6 +27,8 @@ const NAV_GROUP_SORTING_ORDER = [
       GlobalSlug.ResumeCustomers,
       GlobalSlug.ResumeContact,
       GlobalSlug.ResumeDownloads,
+      CollectionSlug.ResumeSkills,
+      CollectionSlug.ResumeJobs,
     ],
   ],
   [
@@ -43,6 +45,7 @@ const NAV_GROUP_SORTING_ORDER = [
     [
       GlobalSlug.SettingsSiteConfiguration,
       GlobalSlug.SettingsUserConfiguration,
+      GlobalSlug.SettingsPDFBuilder,
       GlobalSlug.SettingsPageHeader,
       GlobalSlug.SettingsPageFooter,
       CollectionSlug.Users,
@@ -56,37 +59,26 @@ const NAV_GROUP_SORTING_ORDER = [
 export const sortNavGroups = (groups: NavGroupType[]) =>
   groups
     .sort((a, b) => {
-      const aPos = NAV_GROUP_SORTING_ORDER.findIndex(
-        ([group]) => group === a.label,
-      )
-      const bPos = NAV_GROUP_SORTING_ORDER.findIndex(
-        ([group]) => group === b.label,
-      )
+      const aPos = NAV_GROUP_SORTING_ORDER.findIndex(([group]) => group === a.label)
+      const bPos = NAV_GROUP_SORTING_ORDER.findIndex(([group]) => group === b.label)
       return (
         (aPos === -1 ? Number.MAX_SAFE_INTEGER : aPos) -
         (bPos === -1 ? Number.MAX_SAFE_INTEGER : bPos)
       )
     })
     .map(({ entities, ...group }) => {
-      const entityOrder: readonly (GlobalSlug | CollectionSlug)[] =
-        NAV_GROUP_SORTING_ORDER.find(([g]) => g === group.label)[1]
+      const entityOrder: readonly (GlobalSlug | CollectionSlug)[] = NAV_GROUP_SORTING_ORDER.find(
+        ([g]) => g === group.label,
+      )[1]
 
       return {
         ...group,
         entities: entityOrder
           ? entities
-              .filter((entity) =>
-                entityOrder.includes(
-                  entity.slug as GlobalSlug | CollectionSlug,
-                ),
-              )
+              .filter((entity) => entityOrder.includes(entity.slug as GlobalSlug | CollectionSlug))
               .sort((a, b) => {
-                const aPos = entityOrder.indexOf(
-                  a.slug as GlobalSlug | CollectionSlug,
-                )
-                const bPos = entityOrder.indexOf(
-                  b.slug as GlobalSlug | CollectionSlug,
-                )
+                const aPos = entityOrder.indexOf(a.slug as GlobalSlug | CollectionSlug)
+                const bPos = entityOrder.indexOf(b.slug as GlobalSlug | CollectionSlug)
                 return aPos - bPos
               })
           : entities,

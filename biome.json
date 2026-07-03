@@ -20,19 +20,19 @@
   },
   "formatter": {
     "enabled": true,
-    "formatWithErrors": false,
+    "formatWithErrors": true,
     "indentStyle": "space",
     "indentWidth": 2,
     "lineEnding": "lf",
-    "lineWidth": 80,
+    "lineWidth": 100,
     "attributePosition": "auto",
     "bracketSameLine": false,
     "bracketSpacing": true,
     "expand": "always",
     "useEditorconfig": true,
+
     "includes": [
       "**",
-      "!**/payload-types.ts",
       "!**/.tmp",
       "!**/.git",
       "!**/.hg",
@@ -40,11 +40,12 @@
       "!**/.svn",
       "!**/.yarn/**",
       "!**/build",
-      "!**/dist/**",
+      "!**/dist",
       "!**/node_modules",
       "!**/temp",
       "!**/docs/**",
       "!**/tsconfig.json",
+      "!./src/types/payload.ts",
       "!./README.md"
     ]
   },
@@ -58,17 +59,36 @@
     },
     "rules": {
       "recommended": true,
+      "style": {
+        "useImportType": {
+          "level": "off"
+        }
+      },
       "suspicious": {
         "noArrayIndexKey": "off"
       },
       "a11y": {
-        "noSvgWithoutTitle": "off"
+        "noSvgWithoutTitle": "off",
+        "useValidAriaRole": {
+          "level": "warn",
+          "options": {
+            "ignoreNonDom": true,
+            "allowInvalidRoles": [
+              "application",
+              "draggable"
+            ]
+          }
+        },
+        "noNoninteractiveTabindex": {
+          "level": "warn"
+        }
       }
     }
   },
   "css": {
     "parser": {
-      "tailwindDirectives": true
+      "tailwindDirectives": true,
+      "cssModules": true
     }
   },
   "javascript": {
@@ -107,8 +127,8 @@
           "options": {
             "groups": [
               [
-                ":URL:",
-                "!@/**"
+                "!@/**",
+                ":URL:"
               ],
               ":BLANK_LINE",
               [
@@ -118,21 +138,38 @@
               ],
               ":BLANK_LINE:",
               [
-                "!@custom-types",
-                "!@/*",
-                "react",
-                "react-dom",
-                "react*",
-                "next",
-                "payload",
-                "@payloadcms/*",
                 ":PACKAGE:",
-                ":PACKAGE_WITH_PROTOCOL:"
+                ":PACKAGE_WITH_PROTOCOL:",
+                "!@/**",
+                "!@pdf/**",
+                "!react*",
+                "!@react*",
+                "!next*",
+                "!@next*",
+                "!payload*",
+                "!@payloadcms/**"
+              ],
+              ":BLANK_LINE:",
+              [
+                "react",
+                "react/**",
+                "react-*",
+                "react-*/**",
+                "@react*",
+                "@react*/**",
+                "next",
+                "next/**",
+                "next-*",
+                "next-*/**",
+                "payload",
+                "@payloadcms/**",
+                "payload-*"
               ],
               ":BLANK_LINE:",
               [
                 ":ALIAS:",
                 "@/*",
+                "@pdf/**",
                 "@components/**",
                 "@/components/**"
               ],

@@ -1,6 +1,7 @@
 import type { BlockSlug as RegisteredBlockSlug, TypedBlock } from 'payload'
 import type { PascalCase } from 'type-fest'
 
+import type { ReducedToLocale } from '@/lib/i18n'
 import type { GlobalData, RegisteredGlobalSlug } from '@/types/globals'
 
 /**
@@ -47,5 +48,5 @@ export type BlockData<T extends RegisteredBlockSlug = RegisteredBlockSlug> =
 export type ResumeLayoutBlockData<S extends RegisteredGlobalSlug> = {
   id?: string
   blockType: `${PascalCase<S>}Block`
-  data: GlobalData<S>
+  data: ReducedToLocale<GlobalData<S>>
 }

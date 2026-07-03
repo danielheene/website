@@ -24,6 +24,7 @@ export const ResumeSkillsListTab = async ({
   const { docs, ...query } = await payload.find({
     collection: CollectionSlug.ResumeSkills,
     pagination: false,
+    limit: 0,
   })
 
   return (
@@ -34,10 +35,10 @@ export const ResumeSkillsListTab = async ({
         enableRowSelections={false}
         i18n={i18n}
         initialData={docs}
-        query={query}
+        // query={query}
         visibleEntities={visibleEntities}
-        params={params}
-        searchParams={searchParams}
+        // params={params}
+        // searchParams={searchParams}
         importMap={payload.importMap}
         collectionConfig={
           payload.collections[CollectionSlug.ResumeSkills].config

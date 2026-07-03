@@ -1,10 +1,10 @@
 import { AdminGroup } from '@custom-types'
-import { CollectionSlug } from '@/types/collections'
 import type { CollectionConfig } from 'payload'
 
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
 import { RichTextField } from '@/fields/RichText'
+import { CollectionSlug } from '@/types/collections'
 
 export const MediaVideos: CollectionConfig<CollectionSlug.MediaVideos> = {
   slug: CollectionSlug.MediaVideos,
@@ -18,7 +18,12 @@ export const MediaVideos: CollectionConfig<CollectionSlug.MediaVideos> = {
   admin: {
     group: AdminGroup.Media,
     useAsTitle: 'filename',
-    defaultColumns: ['filename', 'type', 'extension', 'updatedAt'],
+    defaultColumns: [
+      'filename',
+      'type',
+      'extension',
+      'updatedAt',
+    ],
     disableCopyToLocale: true,
     components: {
       Description: false,
@@ -32,12 +37,18 @@ export const MediaVideos: CollectionConfig<CollectionSlug.MediaVideos> = {
   },
   upload: {
     disableLocalStorage: true,
-    mimeTypes: ['video/*'],
+    mimeTypes: [
+      'video/*',
+    ],
   },
   fields: [
     RichTextField({
       name: 'caption',
       editorVariant: 'caption',
     }),
+    {
+      name: 'prefix',
+      type: 'text',
+    },
   ],
 }

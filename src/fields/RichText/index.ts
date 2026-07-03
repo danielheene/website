@@ -5,10 +5,12 @@ import {
   BoldFeature,
   ChecklistFeature,
   EXPERIMENTAL_TableFeature,
+  FixedToolbarFeature,
   HeadingFeature,
   HorizontalRuleFeature,
   IndentFeature,
   InlineCodeFeature,
+  InlineToolbarFeature,
   ItalicFeature,
   LinkFeature,
   lexicalEditor,
@@ -26,8 +28,70 @@ import { deepMerge } from 'payload'
 import { LinkField } from '@/fields/Link'
 import { BlockSlug } from '@/types/blocks'
 
+const rootFeatures = [
+  FixedToolbarFeature({
+    applyToFocusedEditor: true,
+    customGroups: {
+      /**
+       * text:
+       * paragraph, headings, ordered list, unordered list, check list, blockquote
+       */
+      text: {
+        type: 'dropdown',
+        order: 10,
+      },
+
+      /**
+       * format:
+       * bold, italic, underline, strikethrough, superscript, subscript, inline code
+       */
+      format: {
+        type: 'buttons',
+        order: 20,
+      },
+
+      /**
+       * alignment:
+       * left, center, right, justify
+       */
+      align: {
+        type: 'buttons',
+        order: 30,
+      },
+
+      /**
+       * indentation:
+       * increase, decrease
+       */
+      indent: {
+        type: 'buttons',
+        order: 40,
+      },
+
+      /**
+       * features:
+       * links, blockquote, hr, code */
+      features: {
+        type: 'buttons',
+        order: 40,
+      },
+
+      /**
+       * custom blocks:
+       */
+      add: {
+        type: 'dropdown',
+        order: 50,
+      },
+    },
+    disableIfParentHasFixedToolbar: true,
+  }),
+
+  InlineToolbarFeature(),
+]
+
 const inlineFeatures = [
-  /* text feature */
+  ...rootFeatures,
   BoldFeature(),
   ItalicFeature(),
   UnderlineFeature(),
@@ -50,7 +114,7 @@ const markdownFeatures = [
     enabledHeadingSizes: [
       'h2',
       'h3',
-      'h4' /* 'h5', */ /* 'h6' */,
+      'h4',
     ],
   }),
   OrderedListFeature(),
@@ -115,34 +179,116 @@ export const RichTextField = ({
 function createRichTextEditor(variant: RichTextEditorVariant) {
   if (variant === 'inline') {
     return lexicalEditor({
-      features: ({ rootFeatures }) => [
-        ...rootFeatures,
-        ...inlineFeatures,
-      ],
+      features: inlineFeatures,
+      lexical: {
+        // disableEvents: true,
+        namespace: 'de',
+        theme: {
+          blockCursor: '',
+          characterLimit: '',
+          code: '',
+          codeHighlight: undefined,
+          hashtag: '',
+          specialText: '',
+          heading: {
+            h1: '',
+            h2: '',
+            h3: '',
+            h4: '',
+            h5: '',
+            h6: '',
+          },
+          hr: '',
+          hrSelected: '',
+          image: '',
+          link: '',
+          list: {
+            ul: '',
+            ulDepth: [],
+            ol: '',
+            olDepth: [],
+            checklist: '',
+            listitem: '',
+            listitemChecked: '',
+            listitemUnchecked: '',
+            nested: {
+              list: '',
+              listitem: '',
+            },
+          },
+          ltr: '',
+          mark: '',
+          markOverlap: '',
+          paragraph: '',
+          quote: '',
+          root: '',
+          rtl: '',
+          tab: '',
+          table: '',
+          tableAddColumns: '',
+          tableAddRows: '',
+          tableCellActionButton: '',
+          tableCellActionButtonContainer: '',
+          tableCellSelected: '',
+          tableCell: '',
+          tableCellHeader: '',
+          tableCellResizer: '',
+          tableRow: '',
+          tableScrollableWrapper: '',
+          tableSelected: '',
+          tableSelection: '',
+          text: {
+            base: '',
+            bold: '',
+            code: '',
+            highlight: '',
+            italic: '',
+            lowercase: '',
+            uppercase: '',
+            capitalize: '',
+            strikethrough: '',
+            subscript: '',
+            superscript: '',
+            underline: '',
+            underlineStrikethrough: '',
+          },
+          embedBlock: {
+            base: '',
+            focus: '',
+          },
+          indent: '',
+        },
+      },
+      admin: {
+        hideGutter: true,
+        hideInsertParagraphAtEnd: true,
+        hideDraggableBlockElement: true,
+        hideAddBlockButton: true,
+        placeholder: ' ',
+      },
     })
   }
   if (variant === 'caption') {
     return lexicalEditor({
-      features: ({ rootFeatures }) => [
-        ...rootFeatures,
-        ...captionFeatures,
-      ],
+      features: captionFeatures,
+
+      admin: {
+        hideGutter: true,
+        hideInsertParagraphAtEnd: true,
+        hideDraggableBlockElement: true,
+        hideAddBlockButton: true,
+        placeholder: ' ',
+      },
     })
   }
   if (variant === 'markdown') {
     return lexicalEditor({
-      features: ({ rootFeatures }) => [
-        ...rootFeatures,
-        ...markdownFeatures,
-      ],
+      features: markdownFeatures,
     })
   }
   if (variant === 'post') {
     return lexicalEditor({
-      features: ({ rootFeatures }) => [
-        ...rootFeatures,
-        ...postFeatures,
-      ],
+      features: postFeatures,
     })
   }
 }

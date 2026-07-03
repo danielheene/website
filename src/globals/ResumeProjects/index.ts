@@ -5,7 +5,7 @@ import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { RichTextField } from '@/fields/RichText'
 import { TitleField } from '@/fields/Title'
-import { revalidateResumeSection } from '@/lib/hooks/revalidateResumeSection'
+import { revalidateResumeSectionGlobalHook } from '@/lib/hooks/revalidateResumeSection'
 import { CollectionSlug } from '@/types/collections'
 import { GlobalSlug } from '@/types/globals'
 
@@ -19,7 +19,7 @@ export const ResumeProjects: GlobalConfig<GlobalSlug.ResumeProjects> = {
   },
   hooks: {
     afterChange: [
-      revalidateResumeSection(GlobalSlug.ResumeProjects),
+      revalidateResumeSectionGlobalHook(GlobalSlug.ResumeProjects),
     ],
   },
   admin: {

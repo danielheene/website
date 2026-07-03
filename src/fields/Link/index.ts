@@ -66,10 +66,6 @@ export const LinkField = ({
                   label: 'Custom URL',
                   value: 'custom',
                 },
-                {
-                  label: 'E-Mail',
-                  value: 'mailto',
-                },
               ],
             },
             {
@@ -140,17 +136,6 @@ export const LinkField = ({
                   siblingData?.type === 'custom',
               },
               label: 'Custom URL',
-              required: true,
-            },
-            {
-              name: 'address',
-              type: 'email',
-              admin: {
-                width: '75%',
-                condition: (_, siblingData: LinkFieldData) =>
-                  siblingData?.type === 'mailto',
-              },
-              label: 'E-Mail Address',
               required: true,
             },
           ],

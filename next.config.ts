@@ -1,63 +1,72 @@
 import { withPayload } from '@payloadcms/next/withPayload'
 import { NextConfig } from 'next'
 
-/**
- * Next.js configuration for the Payload CMS integration.
- */
-const nextConfig: NextConfig = {
-  reactStrictMode: true,
-  poweredByHeader: false,
-  productionBrowserSourceMaps: false,
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  sassOptions: {
-    silenceDeprecations: ['import', 'legacy-js-api'],
-    implementation: 'sass',
-  },
-  serverExternalPackages: ['@react-pdf/renderer', 'svgo', 'pdf-parse'],
-  turbopack: {
-    resolveExtensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.wasm', '.json', '.css', '.scss', '.svg'],
-  },
-  images: {
-    formats: ['image/webp', 'image/avif'],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    remotePatterns: [
-      new URL(`${process.env.NEXT_PUBLIC_SERVER_URL}/**`),
-      new URL('https://daniel.heene.dev/**'),
-      new URL('https://daniel.heene.review/**'),
-      new URL('https://daniel.heene.io/**'),
-      new URL('https://cdn.pixabay.com/**'),
-    ],
-    localPatterns: [{ pathname: '**' }],
-    contentDispositionType: 'inline',
-    contentSecurityPolicy: 'default-src \'self\'; script-src \'none\'; sandbox;',
-    dangerouslyAllowSVG: true,
-  },
+console.debug(JSON.stringify(process.env, null, 2 ))
 
-  webpack: (webpackConfig) => {
-    webpackConfig.resolve.extensionAlias = {
-      '.cjs': ['.cts', '.cjs'],
-      '.js': ['.ts', '.tsx', '.js', '.jsx'],
-      '.mjs': ['.mts', '.mjs'],
-    }
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+})
 
-    return webpackConfig
-  },
 
-  async rewrites() {
-    const rewrites = []
+export default async (phase, { defaultConfig }) => {
+  const nextConfig: NextConfig = {
+    reactStrictMode: true,
+    poweredByHeader: false,
+    productionBrowserSourceMaps: false,
+    eslint: {
+      ignoreDuringBuilds: true,
+    },
+    serverExternalPackages: ['@react-pdf/renderer', 'svgo', 'pdf-parse'],
+    turbopack: {
+      resolveExtensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.wasm', '.json', '.css', '.scss', '.svg'],
+    },
+    images: {
+      formats: ['image/webp', 'image/avif'],
+      deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+      imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+      remotePatterns: [
+        new URL(`${process.env.NEXT_PUBLIC_SERVER_URL}/**`),
+        new URL('https://daniel.heene.dev/**'),
+        new URL('https://daniel.heene.review/**'),
+        new URL('https://daniel.heene.io/**'),
+        new URL('https://cdn.pixabay.com/**'),
+      ],
+      localPatterns: [{ pathname: '**' }],
+      contentDispositionType: 'inline',
+      contentSecurityPolicy: 'default-src \'self\'; script-src \'none\'; sandbox;',
+      dangerouslyAllowSVG: true,
+    },
 
-    if (process.env['UMAMI_HOST_URL']) {
-      rewrites.push({
-        source: '/stats/:match*',
-        destination: `${process.env['UMAMI_HOST_URL']}/:match*`,
-      })
-    }
+    // webpack: (config, options) => {
+    //   config.resolve.extensionAlias = {
+    //     '.cjs': ['.cts', '.cjs'],
+    //     '.js': ['.ts', '.tsx', '.js', '.jsx'],
+    //     '.mjs': ['.mts', '.mjs'],
+    //   }
+    //
+    //   config.plugins.push(new MiniCssExtractPlugin())
+    //
+    //   config.module.rules.push({
+    //     test: /\.css$/i,
+    //     use: [MiniCssExtractPlugin.loader, 'css-loader', '@tailwindcss/webpack'],
+    //   },)
+    //
+    //   return config
+    // },
 
-    return rewrites
-  },
+    async rewrites() {
+      const rewrites = []
+
+      if (process.env['NEXT_PUBLIC_UMAMI_URL']) {
+        rewrites.push({
+          source: '/stats/:match*',
+          destination: `${process.env['NEXT_PUBLIC_UMAMI_URL']}/:match*`,
+        })
+      }
+
+      return rewrites
+    },
+  }
+
+  return withBundleAnalyzer( withPayload(nextConfig, { devBundleServerPackages: false }))
 }
-
-export default withPayload(nextConfig, { devBundleServerPackages: false })

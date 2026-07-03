@@ -2,11 +2,15 @@ import type { Metadata } from 'next'
 
 import { getCachedSiteConfigurationData } from '@/lib/getSiteConfigurationData'
 import { getCachedUserConfigurationData } from '@/lib/getUserConfigurationData'
-import type { DeepReduced } from '@/lib/reduceDataToLocale'
+import type { ReducedToLocale } from '@/lib/i18n'
 import type { BlogPost, BlogTag, Page } from '@/types/payload'
 
 interface GenerateMetaArgs {
-  doc: DeepReduced<Page> | DeepReduced<BlogPost> | DeepReduced<BlogTag> | null
+  doc:
+    | ReducedToLocale<Page>
+    | ReducedToLocale<BlogPost>
+    | ReducedToLocale<BlogTag>
+    | null
 }
 
 export const generateMeta = async ({
@@ -28,10 +32,6 @@ export const generateMeta = async ({
         url,
       },
     ],
-    robots: {
-      index: true,
-      follow: true,
-    },
     // openGraph: {
     //   type: 'website',
     //   title: titleGenerator({ title: doc.title || '', siteName }),

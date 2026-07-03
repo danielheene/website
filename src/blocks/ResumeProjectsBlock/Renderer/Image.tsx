@@ -63,7 +63,7 @@ export const Image = memo(function ResumeProjectsSectionImage({
         ])}
         onClick={() => setShowImage(!showImage)}
       >
-        <Icon icon="mdi:arrow-downward" />
+        <Icon name="mdi:arrow-downward" />
       </button>
     </div>
   )

@@ -8,9 +8,74 @@
 
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IconFieldValue".
+ */
+export type IconFieldValue =
+  | (
+      | 'archlinux'
+      | 'cloudflare'
+      | 'cloudflare-pages'
+      | 'cloudflare-workers'
+      | 'debian'
+      | 'docker'
+      | 'figma'
+      | 'github'
+      | 'github-actions'
+      | 'github-pages'
+      | 'gitlab'
+      | 'goland'
+      | 'home-assistant'
+      | 'intellij'
+      | 'javascript'
+      | 'jetbrains'
+      | 'kubernetes'
+      | 'linkedin'
+      | 'linux'
+      | 'mail'
+      | 'phone'
+      | 'namecheap'
+      | 'next-js'
+      | 'node-js'
+      | 'one-password'
+      | 'payload'
+      | 'phpstorm'
+      | 'pycharm'
+      | 'rancher'
+      | 'react'
+      | 'rust'
+      | 'sanity'
+      | 'storybook'
+      | 'synology'
+      | 'tailscale'
+      | 'ubuntu'
+      | 'unsplash'
+      | 'vercel'
+      | 'webstorm'
+      | 'whatsapp'
+      | 'wireguard'
+      | 'xing'
+      | 'zigbee'
+    )
+  | null;
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "PageLayout".
  */
 export type PageLayout = ('default' | 'home' | 'resume') | null;
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SkillType".
+ */
+export type SkillType =
+  | (
+      | 'programmingLanguages'
+      | 'frameworksAndLibraries'
+      | 'toolingAndPlatforms'
+      | 'testingAndQuality'
+      | 'architectureAndPatterns'
+      | 'methodologiesAndWorkingPractices'
+    )
+  | null;
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "CustomerLogos".
@@ -19,26 +84,6 @@ export type CustomerLogos =
   | {
       logo: string;
       name: string;
-      id?: string | null;
-    }[]
-  | null;
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "JobHistory".
- */
-export type JobHistory =
-  | {
-      title: string;
-      employer: string;
-      startDate: string;
-      endDate?: string | null;
-      content?:
-        | {
-            item?: string | null;
-            id?: string | null;
-          }[]
-        | null;
-      skills: (string | ResumeSkill)[];
       id?: string | null;
     }[]
   | null;
@@ -69,6 +114,43 @@ export type ProjectList =
       id?: string | null;
     }[]
   | null;
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LanguageCode".
+ */
+export type LanguageCode =
+  | (
+      | 'cs'
+      | 'da'
+      | 'de'
+      | 'en'
+      | 'es'
+      | 'et'
+      | 'fi'
+      | 'fr'
+      | 'hu'
+      | 'ja'
+      | 'lv'
+      | 'lt'
+      | 'no'
+      | 'it'
+      | 'nl'
+      | 'pl'
+      | 'pt'
+      | 'ro'
+      | 'ru'
+      | 'sk'
+      | 'sl'
+      | 'sv'
+      | 'uk'
+      | 'zh'
+    )
+  | null;
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LanguageProficiency".
+ */
+export type LanguageProficiency = ('a1' | 'a2' | 'b1' | 'b2' | 'c1' | 'c2') | null;
 /**
  * Supported timezones in IANA format.
  *
@@ -102,10 +184,12 @@ export interface Config {
     audios: MediaAudio;
     pages: Page;
     users: User;
-    'resume-skills': ResumeSkill;
+    'resume-skills': ResumeSkillData;
+    'resume-jobs': ResumeJobData;
     exports: Export;
     imports: Import;
     'payload-jobs': PayloadJob;
+    'payload-folders': FolderInterface;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -113,6 +197,12 @@ export interface Config {
   collectionsJoins: {
     'blog-tags': {
       relatedPosts: 'blog-posts';
+    };
+    'resume-skills': {
+      skilledJobs: 'resume-jobs';
+    };
+    'payload-folders': {
+      documentsAndFolders: 'payload-folders' | 'images' | 'documents';
     };
   };
   collectionsSelect: {
@@ -125,9 +215,11 @@ export interface Config {
     pages: PagesSelect<false> | PagesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'resume-skills': ResumeSkillsSelect<false> | ResumeSkillsSelect<true>;
+    'resume-jobs': ResumeJobsSelect<false> | ResumeJobsSelect<true>;
     exports: ExportsSelect<false> | ExportsSelect<true>;
     imports: ImportsSelect<false> | ImportsSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
+    'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -145,6 +237,7 @@ export interface Config {
     'resume-projects': ResumeProjectsGlobalData;
     'page-header': PageHeaderData;
     'page-footer': PageFooterData;
+    'settings-pdf-builder': PDFBuilderSettings;
     'settings-site-meta': SiteConfigurationData;
     'settings-user-meta': UserConfigurationData;
   };
@@ -157,6 +250,7 @@ export interface Config {
     'resume-projects': ResumeProjectsSelect<false> | ResumeProjectsSelect<true>;
     'page-header': PageHeaderSelect<false> | PageHeaderSelect<true>;
     'page-footer': PageFooterSelect<false> | PageFooterSelect<true>;
+    'settings-pdf-builder': SettingsPdfBuilderSelect<false> | SettingsPdfBuilderSelect<true>;
     'settings-site-meta': SettingsSiteMetaSelect<false> | SettingsSiteMetaSelect<true>;
     'settings-user-meta': SettingsUserMetaSelect<false> | SettingsUserMetaSelect<true>;
   };
@@ -240,104 +334,9 @@ export interface LinkGroupBlock {
  * via the `definition` "LinkFieldData".
  */
 export interface LinkFieldData {
-  type?: ('reference' | 'custom' | 'mailto') | null;
+  type?: ('reference' | 'custom') | null;
   newTab?: boolean | null;
-  icon?:
-    | (
-        | 'simple-icons:archlinux'
-        | 'simple-icons:cloudflare'
-        | 'simple-icons:cloudflarepages'
-        | 'simple-icons:cloudflareworkers'
-        | 'simple-icons:debian'
-        | 'simple-icons:docker'
-        | 'simple-icons:figma'
-        | 'simple-icons:github'
-        | 'simple-icons:githubactions'
-        | 'simple-icons:githubpages'
-        | 'simple-icons:gitlab'
-        | 'simple-icons:goland'
-        | 'simple-icons:homeassistant'
-        | 'simple-icons:intellijidea'
-        | 'simple-icons:javascript'
-        | 'simple-icons:jetbrains'
-        | 'simple-icons:kubernetes'
-        | 'simple-icons:linkedin'
-        | 'simple-icons:linux'
-        | 'simple-icons:maildotru'
-        | 'simple-icons:namecheap'
-        | 'simple-icons:nextdotjs'
-        | 'simple-icons:nodedotjs'
-        | 'simple-icons:1password'
-        | 'simple-icons:payloadcms'
-        | 'simple-icons:phpstorm'
-        | 'simple-icons:pycharm'
-        | 'simple-icons:rancher'
-        | 'simple-icons:react'
-        | 'simple-icons:rust'
-        | 'simple-icons:sanity'
-        | 'simple-icons:storybook'
-        | 'simple-icons:synology'
-        | 'simple-icons:tailscale'
-        | 'simple-icons:ubuntu'
-        | 'simple-icons:unsplash'
-        | 'simple-icons:vercel'
-        | 'simple-icons:webstorm'
-        | 'simple-icons:whatsapp'
-        | 'simple-icons:wireguard'
-        | 'simple-icons:xing'
-        | 'simple-icons:zigbee'
-        | 'material-symbols:contextual-token-outline-sharp'
-        | 'material-symbols:post-outline'
-        | 'material-symbols:label-outline-sharp'
-        | 'ri:file-image-line'
-        | 'ri:file-video-line'
-        | 'ri:file-music-line'
-        | 'ri:file-text-line'
-        | 'material-symbols:pages-outline-sharp'
-        | 'material-symbols:fingerprint-sharp'
-        | 'material-symbols:stacked-email-outline-sharp'
-        | 'material-symbols:deployed-code-account-outline-sharp'
-        | 'material-symbols:picture-as-pdf-outline-sharp'
-        | 'material-symbols:work-outline-sharp'
-        | 'material-symbols:experiment-outline-sharp'
-        | 'material-symbols:page-footer-sharp'
-        | 'material-symbols:page-header-sharp'
-        | 'material-symbols:map-search-outline-sharp'
-        | 'material-symbols:settings-account-box-sharp'
-        | 'material-symbols:account-box-outline-sharp'
-        | 'material-symbols:error'
-        | 'material-symbols:warning'
-        | 'material-symbols:info'
-        | 'material-symbols:check-circle'
-        | 'material-symbols:call'
-        | 'material-symbols:pause'
-        | 'material-symbols:play-arrow'
-        | 'material-symbols:stop'
-        | 'material-symbols:repeat'
-        | 'material-symbols:replay'
-        | 'material-symbols:attach-file'
-        | 'material-symbols:settings'
-        | 'material-symbols:calendar-month'
-        | 'material-symbols:keyboard-arrow-down'
-        | 'material-symbols:keyboard-arrow-up'
-        | 'material-symbols:keyboard-arrow-left'
-        | 'material-symbols:keyboard-arrow-right'
-        | 'material-symbols:trending-up'
-        | 'material-symbols:trending-down'
-        | 'material-symbols:trending-flat'
-        | 'material-symbols:touch-app'
-        | 'material-symbols:person'
-        | 'material-symbols:group'
-        | 'material-symbols:web-traffic'
-        | 'material-symbols:highlight-mouse-cursor'
-        | 'material-symbols:undo'
-        | 'material-symbols:nest-clock-farsight-analog-outline'
-        | 'material-symbols:multimodal-hand-eye'
-        | 'material-symbols:close'
-        | 'material-symbols:image-outline-sharp'
-        | 'material-symbols:logout-sharp'
-      )
-    | null;
+  icon?: IconFieldValue;
   label: string;
   iconOnly?: boolean | null;
   reference?:
@@ -354,7 +353,6 @@ export interface LinkFieldData {
         value: string | BlogTag;
       } | null);
   url?: string | null;
-  address?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -435,6 +433,7 @@ export interface MediaImage {
   } | null;
   blurDataURL?: string | null;
   prefix?: string | null;
+  folder?: (string | null) | FolderInterface;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -456,6 +455,58 @@ export interface MediaImage {
       filename?: string | null;
     };
   };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-folders".
+ */
+export interface FolderInterface {
+  id: string;
+  name: string;
+  folder?: (string | null) | FolderInterface;
+  documentsAndFolders?: {
+    docs?: (
+      | {
+          relationTo?: 'payload-folders';
+          value: string | FolderInterface;
+        }
+      | {
+          relationTo?: 'images';
+          value: string | MediaImage;
+        }
+      | {
+          relationTo?: 'documents';
+          value: string | MediaDocument;
+        }
+    )[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  folderType?: ('images' | 'documents')[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "documents".
+ */
+export interface MediaDocument {
+  id: string;
+  generator?: string | null;
+  thumbnail?: (string | null) | MediaImage;
+  prefix?: string | null;
+  folder?: (string | null) | FolderInterface;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -746,26 +797,6 @@ export interface MediaVideo {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "documents".
- */
-export interface MediaDocument {
-  id: string;
-  thumbnail?: (string | null) | MediaImage;
-  prefix?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "audios".
  */
 export interface MediaAudio {
@@ -829,15 +860,84 @@ export interface User {
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "resume-skills".
  */
-export interface ResumeSkill {
+export interface ResumeSkillData {
   id: string;
+  _order?: string | null;
   name: {
     en: string;
     de: string;
   };
+  caption?: {
+    en?: string | null;
+    de?: string | null;
+  };
   title?: string | null;
+  skilledJobs?: {
+    docs?: (string | ResumeJobData)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   slug: string;
-  type?: ('programmingLanguage' | 'framework' | 'technology' | 'methodology' | 'privateInterest') | null;
+  type?: SkillType;
+  experienceInterval?: number | null;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resume-jobs".
+ */
+export interface ResumeJobData {
+  id: string;
+  employer: string;
+  title: string;
+  tasks?:
+    | {
+        task: {
+          en: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+          de: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+        };
+        id?: string | null;
+      }[]
+    | null;
+  skills: (string | ResumeSkillData)[];
+  startDate: string;
+  endDate?: string | null;
+  employmentInterval?: number | null;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1065,7 +1165,15 @@ export interface PayloadLockedDocument {
       } | null)
     | ({
         relationTo: 'resume-skills';
-        value: string | ResumeSkill;
+        value: string | ResumeSkillData;
+      } | null)
+    | ({
+        relationTo: 'resume-jobs';
+        value: string | ResumeJobData;
+      } | null)
+    | ({
+        relationTo: 'payload-folders';
+        value: string | FolderInterface;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1162,6 +1270,7 @@ export interface ImagesSelect<T extends boolean = true> {
   credits?: T;
   blurDataURL?: T;
   prefix?: T;
+  folder?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1212,8 +1321,10 @@ export interface VideosSelect<T extends boolean = true> {
  * via the `definition` "documents_select".
  */
 export interface DocumentsSelect<T extends boolean = true> {
+  generator?: T;
   thumbnail?: T;
   prefix?: T;
+  folder?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1301,15 +1412,55 @@ export interface UsersSelect<T extends boolean = true> {
  * via the `definition` "resume-skills_select".
  */
 export interface ResumeSkillsSelect<T extends boolean = true> {
+  _order?: T;
   name?:
     | T
     | {
         en?: T;
         de?: T;
       };
+  caption?:
+    | T
+    | {
+        en?: T;
+        de?: T;
+      };
   title?: T;
+  skilledJobs?: T;
   slug?: T;
   type?: T;
+  experienceInterval?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  deletedAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resume-jobs_select".
+ */
+export interface ResumeJobsSelect<T extends boolean = true> {
+  employer?: T;
+  title?: T;
+  tasks?:
+    | T
+    | {
+        task?:
+          | T
+          | {
+              en?: T;
+              de?: T;
+            };
+        id?: T;
+      };
+  skills?: T;
+  startDate?: T;
+  endDate?: T;
+  employmentInterval?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  deletedAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1398,6 +1549,18 @@ export interface PayloadJobsSelect<T extends boolean = true> {
   waitUntil?: T;
   processing?: T;
   concurrencyKey?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-folders_select".
+ */
+export interface PayloadFoldersSelect<T extends boolean = true> {
+  name?: T;
+  folder?: T;
+  documentsAndFolders?: T;
+  folderType?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1517,11 +1680,8 @@ export interface ResumeCustomersGlobalData {
 export interface ResumeDownloadsGlobalData {
   id: string;
   title: string;
-  documents?: {
-    en?: (string | null) | MediaDocument;
-    de?: (string | null) | MediaDocument;
-  };
-  documentPreview?: (string | null) | MediaImage;
+  document_en?: (string | null) | MediaDocument;
+  document_de?: (string | null) | MediaDocument;
   caption?: {
     root: {
       type: string;
@@ -1562,7 +1722,7 @@ export interface ResumeExperienceGlobalData {
     };
     [k: string]: unknown;
   } | null;
-  jobHistory?: JobHistory;
+  jobs?: (string | null) | ResumeJobData;
   skillSummary?: {
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
@@ -1650,6 +1810,24 @@ export interface PageFooterData {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings-pdf-builder".
+ */
+export interface PDFBuilderSettings {
+  id: string;
+  fileName?: string | null;
+  skillTypeOrder?: (
+    | 'programmingLanguages'
+    | 'frameworksAndLibraries'
+    | 'toolingAndPlatforms'
+    | 'testingAndQuality'
+    | 'architectureAndPatterns'
+    | 'methodologiesAndWorkingPractices'
+  )[];
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "settings-site-meta".
  */
 export interface SiteConfigurationData {
@@ -1701,8 +1879,8 @@ export interface UserConfigurationData {
   birthDate?: string | null;
   languages?:
     | {
-        language?: ('DE' | 'EN' | 'FR' | 'IT' | 'ES' | 'PT' | 'PL' | 'RU' | 'ZH') | null;
-        proficiency?: ('A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2') | null;
+        language?: LanguageCode;
+        proficiency?: LanguageProficiency;
         id?: string | null;
       }[]
     | null;
@@ -1725,102 +1903,7 @@ export interface UserConfigurationData {
    */
   sameAs?:
     | {
-        icon?:
-          | (
-              | 'simple-icons:archlinux'
-              | 'simple-icons:cloudflare'
-              | 'simple-icons:cloudflarepages'
-              | 'simple-icons:cloudflareworkers'
-              | 'simple-icons:debian'
-              | 'simple-icons:docker'
-              | 'simple-icons:figma'
-              | 'simple-icons:github'
-              | 'simple-icons:githubactions'
-              | 'simple-icons:githubpages'
-              | 'simple-icons:gitlab'
-              | 'simple-icons:goland'
-              | 'simple-icons:homeassistant'
-              | 'simple-icons:intellijidea'
-              | 'simple-icons:javascript'
-              | 'simple-icons:jetbrains'
-              | 'simple-icons:kubernetes'
-              | 'simple-icons:linkedin'
-              | 'simple-icons:linux'
-              | 'simple-icons:maildotru'
-              | 'simple-icons:namecheap'
-              | 'simple-icons:nextdotjs'
-              | 'simple-icons:nodedotjs'
-              | 'simple-icons:1password'
-              | 'simple-icons:payloadcms'
-              | 'simple-icons:phpstorm'
-              | 'simple-icons:pycharm'
-              | 'simple-icons:rancher'
-              | 'simple-icons:react'
-              | 'simple-icons:rust'
-              | 'simple-icons:sanity'
-              | 'simple-icons:storybook'
-              | 'simple-icons:synology'
-              | 'simple-icons:tailscale'
-              | 'simple-icons:ubuntu'
-              | 'simple-icons:unsplash'
-              | 'simple-icons:vercel'
-              | 'simple-icons:webstorm'
-              | 'simple-icons:whatsapp'
-              | 'simple-icons:wireguard'
-              | 'simple-icons:xing'
-              | 'simple-icons:zigbee'
-              | 'material-symbols:contextual-token-outline-sharp'
-              | 'material-symbols:post-outline'
-              | 'material-symbols:label-outline-sharp'
-              | 'ri:file-image-line'
-              | 'ri:file-video-line'
-              | 'ri:file-music-line'
-              | 'ri:file-text-line'
-              | 'material-symbols:pages-outline-sharp'
-              | 'material-symbols:fingerprint-sharp'
-              | 'material-symbols:stacked-email-outline-sharp'
-              | 'material-symbols:deployed-code-account-outline-sharp'
-              | 'material-symbols:picture-as-pdf-outline-sharp'
-              | 'material-symbols:work-outline-sharp'
-              | 'material-symbols:experiment-outline-sharp'
-              | 'material-symbols:page-footer-sharp'
-              | 'material-symbols:page-header-sharp'
-              | 'material-symbols:map-search-outline-sharp'
-              | 'material-symbols:settings-account-box-sharp'
-              | 'material-symbols:account-box-outline-sharp'
-              | 'material-symbols:error'
-              | 'material-symbols:warning'
-              | 'material-symbols:info'
-              | 'material-symbols:check-circle'
-              | 'material-symbols:call'
-              | 'material-symbols:pause'
-              | 'material-symbols:play-arrow'
-              | 'material-symbols:stop'
-              | 'material-symbols:repeat'
-              | 'material-symbols:replay'
-              | 'material-symbols:attach-file'
-              | 'material-symbols:settings'
-              | 'material-symbols:calendar-month'
-              | 'material-symbols:keyboard-arrow-down'
-              | 'material-symbols:keyboard-arrow-up'
-              | 'material-symbols:keyboard-arrow-left'
-              | 'material-symbols:keyboard-arrow-right'
-              | 'material-symbols:trending-up'
-              | 'material-symbols:trending-down'
-              | 'material-symbols:trending-flat'
-              | 'material-symbols:touch-app'
-              | 'material-symbols:person'
-              | 'material-symbols:group'
-              | 'material-symbols:web-traffic'
-              | 'material-symbols:highlight-mouse-cursor'
-              | 'material-symbols:undo'
-              | 'material-symbols:nest-clock-farsight-analog-outline'
-              | 'material-symbols:multimodal-hand-eye'
-              | 'material-symbols:close'
-              | 'material-symbols:image-outline-sharp'
-              | 'material-symbols:logout-sharp'
-            )
-          | null;
+        icon?: IconFieldValue;
         name?: string | null;
         url?: string | null;
         id?: string | null;
@@ -1910,13 +1993,8 @@ export interface CustomerLogosSelect<T extends boolean = true> {
  */
 export interface ResumeDownloadsSelect<T extends boolean = true> {
   title?: T;
-  documents?:
-    | T
-    | {
-        en?: T;
-        de?: T;
-      };
-  documentPreview?: T;
+  document_en?: T;
+  document_de?: T;
   caption?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1929,29 +2007,11 @@ export interface ResumeDownloadsSelect<T extends boolean = true> {
 export interface ResumeExperienceSelect<T extends boolean = true> {
   title?: T;
   caption?: T;
-  jobHistory?: T | JobHistorySelect<T>;
+  jobs?: T;
   skillSummary?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "JobHistory_select".
- */
-export interface JobHistorySelect<T extends boolean = true> {
-  title?: T;
-  employer?: T;
-  startDate?: T;
-  endDate?: T;
-  content?:
-    | T
-    | {
-        item?: T;
-        id?: T;
-      };
-  skills?: T;
-  id?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2003,7 +2063,6 @@ export interface LinkFieldDataSelect<T extends boolean = true> {
   iconOnly?: T;
   reference?: T;
   url?: T;
-  address?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2034,6 +2093,17 @@ export interface PageFooterSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings-pdf-builder_select".
+ */
+export interface SettingsPdfBuilderSelect<T extends boolean = true> {
+  fileName?: T;
+  skillTypeOrder?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -2228,6 +2298,7 @@ export interface TaskCreateCollectionExport {
       | 'pages'
       | 'users'
       | 'resume-skills'
+      | 'resume-jobs'
       | 'exports'
       | 'imports';
     drafts?: ('yes' | 'no') | null;

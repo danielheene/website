@@ -1,7 +1,5 @@
 import Link from 'next/link'
-import React from 'react'
 
-import { HeaderClient } from '@/components/Header/Header.client'
 import { CMSLink } from '@/components/Link'
 import { Logo } from '@/components/Logo'
 import { cn } from '@/lib/cn'

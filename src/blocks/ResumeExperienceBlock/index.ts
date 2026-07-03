@@ -16,7 +16,7 @@ export const ResumeExperienceBlock: Block = {
   slug: BlockSlug.ResumeExperience,
   interfaceName: BlockSlug.ResumeExperience,
   labels: {
-    singular: 'Experience Section',
+    singular: 'Experience Container',
     plural: 'Experience Sections',
   },
   admin: {
