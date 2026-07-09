@@ -11,7 +11,7 @@ import { ImageMedia } from '@/components/ImageMedia'
 import { PageContainer } from '@/components/PageContainer'
 import { generateMeta } from '@/lib/generateMeta'
 import { isMediaImage } from '@/lib/typeGuards'
-import { CollectionSlug } from '@/types/collections'
+import { CollectionSlug, CollectionData } from '@/types/collections'
 import type { Page as PageType } from '@/types/payload'
 
 export async function generateStaticParams() {
@@ -19,7 +19,7 @@ export async function generateStaticParams() {
     config,
   })
   const { docs = [] } = await payload.find({
-    collection: CollectionSlug.Pages,
+    collection: CollectionSlug['Pages'],
     draft: false,
     limit: 1000,
     overrideAccess: false,
@@ -48,7 +48,7 @@ type PageProps = {
 export default async function Page({ params: paramsPromise }: PageProps) {
   const { slug = 'home' } = await paramsPromise
 
-  const page: PageType = await queryPageBySlug({
+  const page: CollectionData<CollectionSlug['Pages']> = await queryPageBySlug({
     slug,
   })
   if (!page) notFound()
@@ -108,7 +108,7 @@ const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
   })
 
   const { docs = [] } = await payload.find({
-    collection: CollectionSlug.Pages,
+    collection: CollectionSlug['Pages'],
     draft,
     limit: 1,
     pagination: false,
@@ -120,5 +120,5 @@ const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
     },
   })
 
-  return docs[0] || null
+  return (docs[0] as CollectionData<CollectionSlug['Pages']>) || null
 })

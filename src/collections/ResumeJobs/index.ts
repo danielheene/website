@@ -1,6 +1,7 @@
+import type { CollectionConfig } from 'payload'
+
 import { AdminGroup } from '@custom-types'
 import { differenceInMonths } from 'date-fns'
-import type { CollectionConfig } from 'payload'
 
 import { authenticated } from '@/access/authenticated'
 import { RichTextField } from '@/fields/RichText'
@@ -9,8 +10,8 @@ import { revalidateResumeSectionCollectionHook } from '@/lib/hooks/revalidateRes
 import { CollectionSlug } from '@/types/collections'
 import { GlobalSlug } from '@/types/globals'
 
-export const ResumeJobs: CollectionConfig<CollectionSlug.ResumeJobs> = {
-  slug: CollectionSlug.ResumeJobs,
+export const ResumeJobs: CollectionConfig<CollectionSlug['ResumeJobs']> = {
+  slug: CollectionSlug['ResumeJobs'],
   labels: {
     singular: 'Job',
     plural: 'Jobs',
@@ -29,7 +30,7 @@ export const ResumeJobs: CollectionConfig<CollectionSlug.ResumeJobs> = {
   },
   hooks: {
     afterChange: [
-      revalidateResumeSectionCollectionHook(GlobalSlug.ResumeExperience),
+      revalidateResumeSectionCollectionHook(GlobalSlug['ResumeExperience']),
       enqueueGenerateResumeDocuments,
     ],
   },
@@ -161,7 +162,9 @@ export const ResumeJobs: CollectionConfig<CollectionSlug.ResumeJobs> = {
         {
           type: 'relationship',
           name: 'skills',
-          relationTo: CollectionSlug.ResumeSkills,
+          relationTo: [
+            CollectionSlug['ResumeSkills'],
+          ],
           filterOptions: () => {
             return {
               _status: {

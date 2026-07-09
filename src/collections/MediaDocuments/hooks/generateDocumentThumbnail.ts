@@ -1,29 +1,25 @@
 import type { CollectionAfterChangeHook } from 'payload'
 
-import type { MediaDocument } from '@/types/payload'
+import { CollectionData, CollectionSlug } from '@/types/collections'
 
 export const generateDocumentThumbnail: CollectionAfterChangeHook<
-  MediaDocument
-> = async ({
-  context,
-  data,
-  doc,
-  req: { payload },
-  previousDoc,
-  operation,
-}) => {
+  CollectionData<CollectionSlug['MediaDocuments']>
+> = async ({ context, data, doc, req: { payload }, previousDoc, operation }) => {
   if (context.skipGenerateDocumentThumbnail) return doc
 
-  const createdOrUpdated =
-    operation === 'create' ||
-    (operation === 'update' && doc.filename !== previousDoc.filename)
-  const hasNoThumbnail =
-    !doc.thumbnail || doc.thumbnail === '' || doc.thumbnail === null
+  console.log(data, doc)
 
-  if (createdOrUpdated && hasNoThumbnail) {
-    payload.logger.info(
-      `document uploaded or updated without current thumbnail: ${doc.filename}`,
-    )
+  /**
+   * Evaluates whether a document was created or updated.
+   * In case of an update, we are testing further fields to determine that the uploaded file has changed.
+   *
+   * @type {boolean}
+   */
+  const createdOrUpdated =
+    operation === 'create' || (operation === 'update' && (doc.filename !== previousDoc.filename) || (doc.filesize !== previousDoc.filesize) || (doc.mimeType !== previousDoc.mimeType))
+
+  if (createdOrUpdated && !doc.thumbnail) {
+    payload.logger.info(`document uploaded or updated without current thumbnail: ${doc.filename}`)
     const job = await payload.jobs.queue({
       task: 'generateDocumentThumbnailTask',
       queue: 'default',

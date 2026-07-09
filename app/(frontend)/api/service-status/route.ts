@@ -13,8 +13,8 @@ export const revalidate = 60
  * @constructor
  */
 export const GET = async () => {
-  if (!process.env.STATUS_PAGE_HEARTBEAT_API_URL) {
-    console.error('STATUS_PAGE_HEARTBEAT_API_URL is not set')
+  if (!process.env.STATUS_PAGE_HEARTBEAT_URL) {
+    console.error('STATUS_PAGE_HEARTBEAT_URL is not set')
     return new Response('Not configured', {
       status: 500,
     })
@@ -23,7 +23,7 @@ export const GET = async () => {
   try {
     console.info('Fetching status...')
     const { heartbeatList }: HeartbeatResponse = await fetch(
-      process.env.STATUS_PAGE_HEARTBEAT_API_URL,
+      process.env.STATUS_PAGE_HEARTBEAT_URL,
     ).then((res) => res.json())
     const latestHeartbeats = Object.values(heartbeatList).map(
       (heartbeats) => heartbeats[heartbeats.length - 1],

@@ -1,5 +1,6 @@
-import { AdminGroup } from '@custom-types'
 import type { GlobalConfig } from 'payload'
+
+import { AdminGroup } from '@custom-types'
 
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
@@ -9,8 +10,8 @@ import { revalidateResumeSectionGlobalHook } from '@/lib/hooks/revalidateResumeS
 import { CollectionSlug } from '@/types/collections'
 import { GlobalSlug } from '@/types/globals'
 
-export const ResumeProjects: GlobalConfig<GlobalSlug.ResumeProjects> = {
-  slug: GlobalSlug.ResumeProjects,
+export const ResumeProjects: GlobalConfig<GlobalSlug['ResumeProjects']> = {
+  slug: GlobalSlug['ResumeProjects'],
   label: 'Projects',
   access: {
     read: authenticatedOrPublished,
@@ -19,7 +20,7 @@ export const ResumeProjects: GlobalConfig<GlobalSlug.ResumeProjects> = {
   },
   hooks: {
     afterChange: [
-      revalidateResumeSectionGlobalHook(GlobalSlug.ResumeProjects),
+      revalidateResumeSectionGlobalHook(GlobalSlug['ResumeProjects']),
     ],
   },
   admin: {
@@ -71,7 +72,9 @@ export const ResumeProjects: GlobalConfig<GlobalSlug.ResumeProjects> = {
                 {
                   name: 'image',
                   type: 'upload',
-                  relationTo: CollectionSlug.MediaImages,
+                  relationTo: [
+                    CollectionSlug['MediaImages'],
+                  ],
                   filterOptions: {
                     mimeType: {
                       contains: 'image',

@@ -1,126 +1,163 @@
 'use client'
 
-import {
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-  MenuSection,
-  MenuSeparator,
-} from '@headlessui/react'
-import { useNav, useTheme } from '@payloadcms/ui'
-import { Fragment } from 'react'
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
+import Image from 'next/image'
+import Link from 'next/link'
+
+import { useClickOutside, useNav, useTheme } from '@payloadcms/ui'
+import { useMemo, useState } from 'react'
 
 import { Icon } from '@/components/Icon'
-import { ThemeToggleDropdownItem } from '@/components/ThemeToggle'
-import { Avatar } from '@/components/ui/avatar'
-import { isMediaImage } from '@/lib/typeGuards'
-import type { User } from '@/types/payload'
+import { Switch } from '@/components/Switch'
+import { cn } from '@/lib/cn'
 
 interface NavFooterProps {
-  user: User
+  avatarSrc?: string
+  email: string
+  name: string
 }
 
-export function NavFooter({ user }: NavFooterProps) {
+export function NavFooter({ avatarSrc, email, name }: NavFooterProps) {
   const { theme, setTheme } = useTheme()
-  const initials = user.name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
 
   const { navOpen } = useNav()
 
-  const avatar = (
-    <Avatar
-      className="size-10 bg-primary text-primary-foreground"
-      src={isMediaImage(user.avatar) ? user.avatar.url : undefined}
-      initials={initials}
-      alt={user.name}
-      square
-    />
+  const initials = useMemo(() => {
+    if (name === '') return ''
+    if (!name.includes(' ')) return name[0].toUpperCase()
+
+    const [first, last] = name.split(' ')
+    return `${first[0]}${last[0]}`.toUpperCase()
+  }, [
+    name,
+  ])
+
+  const avatarComponent = useMemo(
+    () =>
+      avatarSrc && avatarSrc !== '' ? (
+        <Image
+          width={40}
+          height={40}
+          className="size-10 rounded-md object-cover"
+          src={avatarSrc}
+          alt={name || 'User Avatar'}
+        />
+      ) : (
+        <div className="size-10 rounded-md bg-linear-to-r/oklch from-primary-500 to-cyan-500 text-primary-foreground font-medium">
+          {initials}
+        </div>
+      ),
+    [
+      avatarSrc,
+      name,
+      initials,
+    ],
   )
 
-  const name = (
-    <div className="min-w-0 flex flex-col flex-1 flex-grow text-left text-sm leading-tight">
-      <span className="block truncate font-semibold">{user.name}</span>
-      <span className="block truncate text-xs text-muted-foreground">
-        {user.email}
-      </span>
-    </div>
+  const nameComponent = useMemo(
+    () => (
+      <div className="min-w-0 flex flex-col flex-1 grow text-left text-sm leading-tight">
+        <span className="block truncate font-pp-supply-sans font-semibold">{name}</span>
+        <span className="block truncate text-xs font-mono text-muted-foreground">{email}</span>
+      </div>
+    ),
+    [
+      name,
+      email,
+    ],
   )
+
+  const menuItemClasses = cn([
+    'relative w-full h-8 p-1.5 pl-10',
+    'flex flex-row justify-between items-center',
+    'no-underline cursor-pointer leading-0 font-mono rounded-md border-none',
+    'bg-neutral/0 hover:bg-neutral-800/10 dark:hover:bg-neutral-200/10',
+    'text-neutral-950 dark:text-neutral-50',
+    '[&>iconify-icon]:absolute [&>iconify-icon]:left-5 [&>iconify-icon]:top-4',
+    '[&>iconify-icon]:-translate-x-1/2 [&>iconify-icon]:-translate-y-1/2',
+    '[&>iconify-icon]:transition-opacity',
+  ])
 
   return (
-    <footer className="nav__footer">
-      <Menu>
-        <MenuButton
-          as={Fragment}
-          // className={cn([
-          //   'data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground',
-          //   'w-full border-0 flex flex-row cursor-pointer m-0 h-14',
-          //   !navOpen && 'p-0 w-10',
-          // ])}
+    <footer
+      className={cn([
+        'nav__footer',
+        'p-1',
+      ])}
+    >
+      <div
+        className={cn([
+          'block relative w-full ',
+        ])}
+      >
+        <button
+          type="button"
+          onClick={() => setDropdownOpen((state) => !state)}
+          className={cn([
+            'w-full m-0 p-1.5 flex flex-row items-center gap-3',
+            'cursor-pointer rounded-md overflow-hidden border-none',
+            'bg-neutral-100/10 hover:bg-neutral-100/20 text-neutral-50',
+            dropdownOpen && 'bg-neutral-100/20',
+            !navOpen && 'p-0 w-10',
+          ])}
         >
-          {({ active, open }) => (
-            <span className="flex min-w-0 w-full items-center gap-3">
-              {avatar}
-              {name}
-              <Icon
-                name="lucide:chevrons-up-down"
-                className="ml-auto size-4 text-muted-foreground"
-              />
-            </span>
-          )}
-        </MenuButton>
-        <MenuItems
-          // side="top" top
-          // align="start"
-          // sideOffset={8}
-          className="min-w-64 bg-card text-sidebar-accent-foreground border-sidebar-border"
-          anchor="top start"
-        >
-          <div className="p-0 font-normal">
-            <div className="flex items-center gap-3 px-2 py-2 text-left">
-              {avatar}
-              {name}
+          {avatarComponent}
+          {nameComponent}
+          <Icon name="lucide:chevrons-up-down" className="ml-auto size-4 text-muted-foreground" />
+        </button>
+        {dropdownOpen && (
+          <div className="absolute top-[-10px] left-0 min-w-full h-0">
+            <div
+              className={cn([
+                'min-w-full m-0 p-1.5 -translate-y-full',
+                'flex flex-col gap-1 overflow-hidden rounded-md',
+                'bg-neutral-50/90 dark:bg-neutral-950/90 backdrop-blur-xs',
+              ])}
+            >
+              <div
+                className={cn([
+                  'flex flex-row items-center gap-4',
+                  'p-2 mb-2 border-bottom border-neutral-100/20 border-b',
+                ])}
+              >
+                {avatarComponent}
+                {nameComponent}
+              </div>
+              <Link href="/admin/account" className={menuItemClasses}>
+                <Icon name="lucide:settings" />
+                <span>Account Settings</span>
+              </Link>
+
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.preventDefault()
+                  setTheme(theme === 'dark' ? 'light' : 'dark')
+                }}
+                className={menuItemClasses}
+              >
+                <Icon
+                  name="lucide:moon"
+                  className={theme === 'dark' ? 'opacity-100' : 'opacity-0'}
+                />
+
+                <Icon
+                  name="lucide:sun"
+                  className={theme === 'dark' ? 'opacity-0' : 'opacity-100'}
+                />
+                <span>Dark Mode</span>
+                <Switch checked={theme === 'dark'} />
+              </button>
+
+              <Link href="/admin/logout" className={menuItemClasses}>
+                <Icon name="lucide:log-out" />
+                <span>Log out</span>
+              </Link>
             </div>
           </div>
-          <MenuSeparator />
-          <MenuSection>
-            <MenuItem
-              as="a"
-              href="/admin/account"
-              className="no-underline cursor-pointer text-inherit w-full"
-            >
-              <Icon
-                name="lucide:settings"
-                className="text-xl mr-2"
-                slot="icon"
-              />
-              <span>Account Settings</span>
-            </MenuItem>
-          </MenuSection>
-          <MenuSeparator />
-          <MenuSection>
-            <ThemeToggleDropdownItem theme={theme} setTheme={setTheme} />
-          </MenuSection>
-          <MenuSeparator />
-          <MenuSection>
-            <MenuItem
-              as="a"
-              href="/admin/logout"
-              className="no-underline cursor-pointer text-inherit w-full"
-            >
-              <Icon
-                name="lucide:log-out"
-                className="size-4 mr-2 text-inherit"
-              />
-              <span>Log out</span>
-            </MenuItem>
-          </MenuSection>
-        </MenuItems>
-      </Menu>
+        )}
+      </div>
     </footer>
   )
   //

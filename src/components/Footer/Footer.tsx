@@ -1,32 +1,29 @@
-import parsePhoneNumber from 'libphonenumber-js'
 import Link from 'next/link'
+
+import parsePhoneNumber from 'libphonenumber-js'
 
 import { FooterLegalLinks } from '@/components/Footer/FooterLegalLinks'
 import { FooterNavGroups } from '@/components/Footer/FooterNavGroups'
 import { Logo } from '@/components/Logo'
 import { ServiceStatus } from '@/components/ServiceStatus'
 import { cn } from '@/lib/cn'
-import { getCachedPageFooterData } from '@/lib/getPageFooterData'
-import { getCachedUserConfigurationData } from '@/lib/getUserConfigurationData'
-import type { LinkFieldData, PageFooterData } from '@/types/payload'
+import { getGlobalUserSettings } from '@/lib/getGlobalUserSettings'
+import { getSiteSettings } from '@/lib/getSiteSettings'
+import type { LinkFieldData } from '@/types/payload'
 
 import { FooterSocialLinks } from './FooterSocialLinks'
 import { FooterThemeSwitcher } from './FooterThemeSwitcher'
 
-interface FooterProps {
-  className?: string
-}
+export const Footer = async () => {
+  const {
+    footer: { column1, column2, column3, legalPages },
+  } = await getSiteSettings()
+  const { telephone, email, sameAs } = await getGlobalUserSettings()
 
-export const Footer = async ({ className = '' }: FooterProps) => {
-  const { navGroups, legalLinks }: PageFooterData =
-    await getCachedPageFooterData()
-  const { telephone, email, sameAs } = await getCachedUserConfigurationData()
+  const socialLinks = []
 
-  const socialLinks: {
-    id: string
-    link: LinkFieldData
-  }[] = [
-    {
+  if (email) {
+    socialLinks.push({
       id: 'email',
       link: {
         type: 'custom',
@@ -36,8 +33,11 @@ export const Footer = async ({ className = '' }: FooterProps) => {
         iconOnly: true,
         newTab: true,
       },
-    },
-    {
+    })
+  }
+
+  if (telephone) {
+    socialLinks.push({
       id: 'telephone',
       link: {
         type: 'custom',
@@ -47,28 +47,34 @@ export const Footer = async ({ className = '' }: FooterProps) => {
         newTab: true,
         iconOnly: true,
       },
-    },
-    ...sameAs.map(({ id, name, url, icon }) => {
-      return {
-        id,
-        link: {
-          type: 'custom',
-          url,
-          label: name,
-          icon,
-          iconOnly: true,
-          newTab: true,
-        } as LinkFieldData,
-      }
-    }),
-  ]
+    })
+  }
+
+  sameAs.forEach(({ id, name, url, icon }) => {
+    socialLinks.push({
+      id,
+      link: {
+        type: 'custom',
+        url,
+        label: name,
+        icon,
+        iconOnly: true,
+        newTab: true,
+      } as LinkFieldData,
+    })
+  })
+
+  const navGroups = [
+    column1,
+    column2,
+    column3,
+  ].filter(({ isActive }) => isActive === true)
 
   return (
     <footer
       className={cn([
         'transition-constants',
         'bg-background text-foreground',
-        className,
       ])}
     >
       <section className="container">
@@ -80,16 +86,12 @@ export const Footer = async ({ className = '' }: FooterProps) => {
             <FooterThemeSwitcher />
           </div>
           <div className="flex w-full flex-col justify-between gap-10 lg:flex-row lg:items-start lg:text-left">
-            {socialLinks && (
-              <FooterSocialLinks socialLinks={socialLinks} className="w-full" />
-            )}
-            {navGroups && (
-              <FooterNavGroups navGroups={navGroups} className="w-full" />
-            )}
+            <FooterSocialLinks socialLinks={socialLinks} className="w-full" />
+            <FooterNavGroups navGroups={navGroups} className="w-full" />
           </div>
           <div className="mt-8 flex flex-col justify-between gap-4 border-t py-8 text-xs font-medium text-muted-foreground md:flex-row md:items-center md:text-left">
             <ServiceStatus className="mr-auto" />
-            {legalLinks && <FooterLegalLinks legalLinks={legalLinks} />}
+            <FooterLegalLinks legalPages={legalPages} />
           </div>
         </div>
       </section>

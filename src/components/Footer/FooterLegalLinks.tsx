@@ -1,19 +1,22 @@
-import type { PageFooterData } from '@/types/payload'
-
 import { CMSLink } from '@/components/Link'
 import { cn } from '@/lib/cn'
+import type { FooterSettings } from '@/types/payload'
 
-interface FooterLegalLinksProps extends Pick<PageFooterData, 'legalLinks'> {
+interface FooterLegalLinksProps extends Pick<FooterSettings, 'legalPages'> {
   className?: string
 }
 
-export const FooterLegalLinks = ({ legalLinks, className }: FooterLegalLinksProps) => {
-  const { title, entries } = legalLinks
+export const FooterLegalLinks = ({ legalPages: { entries }, className }: FooterLegalLinksProps) => {
   return (
-    <nav className={cn('order-1 flex flex-col gap-2 md:order-2 md:flex-row', className)} aria-label={title}>
+    <nav className={cn('order-1 flex flex-col gap-2 md:order-2 md:flex-row', className)}>
       {entries.map(({ link, id }) => (
         <div className={cn('not-first:before:content-["•"] before:mr-2 before:font-bold')} key={id}>
-          <CMSLink {...link} className="text-current/75 hover:text-current" />
+          <CMSLink
+            size="clear"
+            variant="link"
+            {...link}
+            className="text-current/75 hover:text-current"
+          />
         </div>
       ))}
     </nav>

@@ -13,9 +13,9 @@ import { CollectionSlug } from '@/types/collections'
 import { GlobalSlug } from '@/types/globals'
 import { LANGUAGE_CODE, LANGUAGE_PROFICIENCY } from '@/types/select-options'
 
-export const GlobalUserSettings: GlobalConfig = {
-  slug: GlobalSlug.GlobalUserSettings,
-  label: 'User Meta',
+export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> = {
+  slug: GlobalSlug['GlobalUserSettings'],
+  label: 'Global User Settings',
   access: {
     read: authenticatedOrPublished,
     update: authenticated,
@@ -24,7 +24,7 @@ export const GlobalUserSettings: GlobalConfig = {
     afterChange: [
       async ({ doc, context }) => {
         if (!context.skipRevalidate) {
-          revalidateTag(GlobalSlug.GlobalUserSettings)
+          revalidateTag(GlobalSlug['GlobalUserSettings'])
         }
         return doc
       },
@@ -34,7 +34,7 @@ export const GlobalUserSettings: GlobalConfig = {
     group: AdminGroup.Settings,
   },
   typescript: {
-    interface: 'UserConfigurationData',
+    interface: 'GlobalUserSettings',
   },
   fields: [
     {
@@ -63,7 +63,7 @@ export const GlobalUserSettings: GlobalConfig = {
                       name: 'regular',
                       type: 'upload',
                       relationTo: [
-                        CollectionSlug.MediaImages,
+                        CollectionSlug['MediaImages'],
                       ],
                       defaultValue: null,
                       admin: {
@@ -74,7 +74,7 @@ export const GlobalUserSettings: GlobalConfig = {
                       name: 'duotone',
                       type: 'upload',
                       relationTo: [
-                        CollectionSlug.MediaImages,
+                        CollectionSlug['MediaImages'],
                       ],
                       defaultValue: null,
                       admin: {
@@ -209,7 +209,7 @@ export const GlobalUserSettings: GlobalConfig = {
                   type: 'array',
                   admin: {
                     components: {
-                      RowLabel: '@/globals/GlobalUserSettings/components/LanguagesRowLabel',
+                      RowLabel: '@/globals/SettingsGlobalUser/components/LanguagesRowLabel',
                     },
                   },
                   fields: [
@@ -354,7 +354,7 @@ export const GlobalUserSettings: GlobalConfig = {
                     `,
                     components: {
                       Description: '@/components/AdminPanel#MarkdownDescription',
-                      RowLabel: '@/globals/GlobalUserSettings/components/SameAsRowLabel',
+                      RowLabel: '@/globals/SettingsGlobalUser/components/SameAsRowLabel',
                     },
                   },
                   fields: [

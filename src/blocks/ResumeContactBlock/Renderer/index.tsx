@@ -8,7 +8,7 @@ import type { GlobalSlug } from '@/types/globals'
 export const ResumeContactBlockRenderer = ({
   blockType,
   data: { title, caption },
-}: ResumeLayoutBlockData<GlobalSlug.ResumeContact>) => {
+}: ResumeLayoutBlockData<GlobalSlug['ResumeContact']>) => {
   return (
     <SectionContainer id={blockType} title={title} variant="default">
       <div className={cn('container grid grid-cols-12 py-32', 'text-center')}>

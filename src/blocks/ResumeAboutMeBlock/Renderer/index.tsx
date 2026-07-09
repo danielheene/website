@@ -3,23 +3,23 @@ import { ImageMedia } from '@/components/ImageMedia'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
 import { cn } from '@/lib/cn'
-import type { ResumeLayoutBlockData } from '@/types/blocks'
-import type { GlobalSlug } from '@/types/globals'
+import type { BlockData, BlockSlug } from '@/types/blocks'
 
 export const ResumeAboutMeBlockRenderer = ({
-  blockType,
-  data: { title, content, portrait },
-}: ResumeLayoutBlockData<GlobalSlug.ResumeAboutMe>) => {
+  blockType, caption, portrait
+}: BlockData<BlockSlug['ResumeAboutMe']>) => {
+  const title = 'About Me'
+
   return (
     <SectionContainer id={blockType} title={title} variant="default">
       <div className="container grid grid-cols-12 min-h-screen">
         <div className="col-span-10 col-start-2 lg:col-span-5 lg:col-start-1  order-2 lg:order-1">
-          {portrait && typeof portrait === 'object' && (
+          {portrait && (
             <ImageMedia
-              url={portrait.url}
-              alt={portrait.alt}
-              height={portrait.height}
-              width={portrait.width}
+              url={portrait.value.url}
+              alt={portrait.value.alt}
+              height={portrait.value.height}
+              width={portrait.value.width}
               className="w-full h-auto mt-20 md:mt-32 lg:mt-40 -mb-20 md:-mb-32 lg:-mb-40 object-bottom"
               // imgClassName="object-bottom"
               sizes="50vw"
@@ -34,7 +34,7 @@ export const ResumeAboutMeBlockRenderer = ({
           )}
         >
           {title && <Headline variant="section">{title}</Headline>}
-          {content && <RichText data={content} enableGutter={false} />}
+          {caption && <RichText data={caption} enableGutter={false} />}
         </div>
       </div>
     </SectionContainer>

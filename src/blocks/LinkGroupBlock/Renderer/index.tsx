@@ -2,11 +2,11 @@ import type { JSX } from 'react'
 
 import { CMSLink } from '@/components/Link'
 import { cn } from '@/lib/cn'
-import type { LinkGroupBlock } from '@/types/payload'
+import { BlockData, BlockSlug } from '@/types/blocks'
 
 type LinkGroupBlockRendererProps = {
   className?: string
-} & LinkGroupBlock
+} & BlockData<BlockSlug['LinkGroup']>
 
 export const LinkGroupBlockRenderer = ({
   className,

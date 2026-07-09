@@ -1,7 +1,8 @@
-import { textStyles } from '@pdf/constants'
-import type { DocumentFooterData } from '@pdf/lib/buildDocumentFooter'
-import { StyleSheet, type Styles, Text, View } from '@react-pdf/renderer'
 import type { JSX } from 'react'
+import { Link, StyleSheet, type Styles, Text, View } from '@react-pdf/renderer'
+
+import { textStyles } from '@pdf/constants'
+import { DocumentFooter } from '@pdf/types'
 
 const style = StyleSheet.create({
   container: {
@@ -14,11 +15,12 @@ const style = StyleSheet.create({
 type DocumentFooterProps = {
   fixed?: boolean
   style?: Styles[string]
-} & DocumentFooterData
+} & DocumentFooter
 
-export const DocumentFooter = ({
+export const Footer = ({
   renderPagination,
   generatedNotice,
+  generatedNoticeUrl,
   fixed,
   style: styleFromProp = {},
 }: DocumentFooterProps): JSX.Element => (
@@ -29,7 +31,14 @@ export const DocumentFooter = ({
     ]}
     fixed={fixed}
   >
-    <Text style={textStyles.footerNote}>{generatedNotice}</Text>
-    <Text style={textStyles.footerPagination} render={renderPagination} />
+    <Link style={textStyles.footerNote} src={generatedNoticeUrl}>
+      {generatedNotice}
+    </Link>
+    <Text
+      style={textStyles.footerPagination}
+      render={({ pageNumber, totalPages }) =>
+        renderPagination(String(pageNumber), String(totalPages))
+      }
+    />
   </View>
 )

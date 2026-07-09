@@ -12,7 +12,7 @@ import { Entry } from './Entry'
 export const ResumeProjectsBlockRenderer = ({
   blockType,
   data: { title, caption, projectList },
-}: ResumeLayoutBlockData<GlobalSlug.ResumeProjects>): JSX.Element => (
+}: ResumeLayoutBlockData<GlobalSlug['ResumeProjects']>): JSX.Element => (
   <SectionContainer id={blockType} title={title} variant="default">
     <div className={cn('container', 'py-32', 'flex', 'flex-col', 'gap-32')}>
       <header className={cn('text-center', 'mb-14', 'flex flex-col gap-24')}>

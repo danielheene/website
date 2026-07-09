@@ -13,7 +13,7 @@ import { SkillChart } from './SkillChart'
 export const ResumeExperienceBlockRenderer = ({
   blockType,
   data: { title, caption, jobs, skillSummary },
-}: ResumeLayoutBlockData<GlobalSlug.ResumeExperience>): JSX.Element => (
+}: ResumeLayoutBlockData<GlobalSlug['ResumeExperience']>): JSX.Element => (
   <SectionContainer id={blockType} title={title} variant="primary">
     <div
       className={cn(

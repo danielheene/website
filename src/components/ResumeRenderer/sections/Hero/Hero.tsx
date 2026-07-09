@@ -11,13 +11,13 @@
 //     const payload = await getPayload({ config })
 //
 //     return await payload.findGlobal({
-//       slug: GlobalSlug.Hero,
+//       slug: GlobalSlug['Hero'],
 //       draft: false,
 //       depth: 2,
 //     })
 //   },
-//   [GlobalSlug.Hero],
-//   { tags: [snakeCase(GlobalSlug.Hero)] },
+//   [GlobalSlug['Hero']],
+//   { tags: [snakeCase(GlobalSlug['Hero'])] },
 // )
 //
 // export const Hero = async () => {

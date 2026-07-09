@@ -1,6 +1,7 @@
+import { format } from 'date-fns'
 import { get } from 'lodash-es'
+import pupa from 'pupa'
 
-import { renderTemplate } from '@/lib/renderTemplate'
 import type { LanguageCode, LanguageProficiency, SkillType } from '@/types/payload'
 
 import type { Locale } from './shared'
@@ -19,7 +20,7 @@ const translations = {
     },
     interval: {
       finished: '{startDate | MM}/{startDate | yyyy} - {endDate | MM}/{endDate | yyyy}',
-      ongoing: 'seit {startDate | MM}/{startDate | yyyy}',
+      ongoing: 'since {startDate | MM}/{startDate | yyyy}',
     },
     language: {
       label: {
@@ -53,12 +54,12 @@ const translations = {
         zh: 'Chinese',
       } as Record<LanguageCode, string>,
       proficiency: {
-        a1: 'Beginner',
-        a2: 'Elementary',
-        b1: 'Intermediate',
-        b2: 'Upper-Intermediate',
-        c1: 'Advanced',
-        c2: 'Proficient',
+        a1: 'A1: Beginner',
+        a2: 'A2: Elementary',
+        b1: 'B1: Intermediate',
+        b2: 'B2: Upper-Intermediate',
+        c1: 'C1: Advanced',
+        c2: 'C2: Proficient',
       } as Record<LanguageProficiency, string>,
     },
     skill: {
@@ -123,12 +124,12 @@ const translations = {
         zh: 'Chinesisch',
       } as Record<LanguageCode, string>,
       proficiency: {
-        a1: 'Anfänger',
-        a2: 'Grundkenntnisse',
-        b1: 'Gute Kenntnisse',
-        b2: 'Fließend',
-        c1: 'Verhandlungssicher',
-        c2: 'Muttersprache',
+        a1: 'A1: Anfänger',
+        a2: 'A2: Grundkenntnisse',
+        b1: 'B1: Gute Kenntnisse',
+        b2: 'B2: Fließend',
+        c1: 'C1: Verhandlungssicher',
+        c2: 'C2: Muttersprache',
       } as Record<LanguageProficiency, string>,
     },
     skill: {
@@ -172,5 +173,11 @@ export const translate = (
     return key
   }
 
-  return renderTemplate(template, values)
+  return pupa(template, values || {}, {
+    filters: {
+      MM: (value: string) => format(value, 'MM'),
+      dd: (value: string) => format(value, 'dd'),
+      yyyy: (value: string) => format(value, 'yyyy'),
+    },
+  })
 }

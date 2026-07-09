@@ -5,15 +5,31 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
     rules: [
       {
         userAgent: '*',
-        disallow: ['/'],
+        disallow: [
+          '/',
+        ],
       },
       {
-        userAgent: ['Googlebot', 'Bingbot', 'YandexBot', 'DuckDuckBot', 'Applebot'],
-        allow: ['/'],
-        disallow: ['/admin', '/api', '/_next', '/static', '/.well-known'],
+        userAgent: [
+          'Googlebot',
+          'Bingbot',
+          'YandexBot',
+          'DuckDuckBot',
+          'Applebot',
+        ],
+        allow: [
+          '/',
+        ],
+        disallow: [
+          '/admin',
+          '/api',
+          '/_next',
+          '/static',
+          '/.well-known',
+        ],
       },
     ],
-    host: process.env.NEXT_PUBLIC_SERVER_URL,
-    sitemap: `${process.env.NEXT_PUBLIC_SERVER_URL}/sitemap.xml`,
+    host: process.env.SERVER_URL,
+    sitemap: `${process.env.SERVER_URL}/sitemap.xml`,
   }
 }

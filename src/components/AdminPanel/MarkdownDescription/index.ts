@@ -1,1 +1,1 @@
-export { DescriptionWithNewline } from './DescriptionWithNewline'
+export { MarkdownDescription } from './MarkdownDescription'

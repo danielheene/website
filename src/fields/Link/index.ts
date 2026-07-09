@@ -1,9 +1,4 @@
-import {
-  deepMerge,
-  type Field,
-  type GroupField,
-  type OptionObject,
-} from 'payload'
+import { deepMerge, type Field, type GroupField, type OptionObject } from 'payload'
 
 import { IconField } from '@/fields/Icon'
 import { CollectionSlug } from '@/types/collections'
@@ -115,15 +110,14 @@ export const LinkField = ({
               type: 'relationship',
               admin: {
                 width: '75%',
-                condition: (_, siblingData: LinkFieldData) =>
-                  siblingData?.type === 'reference',
+                condition: (_, siblingData: LinkFieldData) => siblingData?.type === 'reference',
               },
               label: 'Document to link to',
               maxDepth: 1,
               relationTo: [
-                CollectionSlug.Pages,
-                CollectionSlug.BlogPosts,
-                CollectionSlug.BlogTags,
+                CollectionSlug['Pages'],
+                CollectionSlug['BlogPosts'],
+                CollectionSlug['BlogTags'],
               ],
               required: true,
             },
@@ -132,8 +126,7 @@ export const LinkField = ({
               type: 'text',
               admin: {
                 width: '75%',
-                condition: (_, siblingData: LinkFieldData) =>
-                  siblingData?.type === 'custom',
+                condition: (_, siblingData: LinkFieldData) => siblingData?.type === 'custom',
               },
               label: 'Custom URL',
               required: true,

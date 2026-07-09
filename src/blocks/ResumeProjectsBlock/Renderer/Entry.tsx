@@ -6,8 +6,10 @@ import RichText from '@/components/RichText'
 import { cn } from '@/lib/cn'
 
 import { Image } from './Image'
+import { ReducedToLocale } from '@/lib/i18n'
+import { ResolvedRelations } from '@/lib/resolveRelation'
 
-type ResumeProjectsSectionEntryProps = ProjectList[number] & {
+interface ResumeProjectsSectionEntryProps extends ReducedToLocale<ResolvedRelations<ProjectList[number]>>     {
   index: number
 }
 
@@ -15,10 +17,9 @@ export const Entry = memo(function ResumeProjectsSectionEntry({
   preHeading,
   heading,
   content,
-  image: imageMedia,
+  image,
   index,
 }: ResumeProjectsSectionEntryProps) {
-  const image = imageMedia as MediaImage
 
   return (
     <article className={cn(['grid grid-cols-12 gap-4'])}>
@@ -40,7 +41,7 @@ export const Entry = memo(function ResumeProjectsSectionEntry({
         )}
         {content && <RichText data={content} enableGutter={false} className="mt-16 order-3" />}
       </div>
-      {image && <Image image={image} odd={!!(index % 2)} />}
+      {image && <Image image={image.value} odd={!!(index % 2)} />}
     </article>
   )
 })

@@ -1,8 +1,8 @@
-import config from '@payload-config'
+import { cache } from 'react'
 import type { Metadata } from 'next'
 import { draftMode } from 'next/headers'
+import config from '@payload-config'
 import { getPayload } from 'payload'
-import { cache } from 'react'
 
 import { generateMeta } from '@/lib/generateMeta'
 import { CollectionSlug } from '@/types/collections'
@@ -12,7 +12,7 @@ export async function generateStaticParams() {
     config,
   })
   const { docs = [] } = await payload.find({
-    collection: CollectionSlug.BlogTags,
+    collection: CollectionSlug['BlogTags'],
     pagination: false,
     select: {
       slug: true,
@@ -42,7 +42,7 @@ export default async function Page({ params: paramsPromise }: PageProps) {
   //
   // const { title, content } = tag
   //
-  // const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://danielheene.de'
+  // const baseUrl = process.env.SERVER_URL || 'https://danielheene.de'
   // const tagUrl = `${baseUrl}/tags/${slug}`
   //
   // // Generate CollectionPage schema
@@ -355,9 +355,7 @@ export default async function Page({ params: paramsPromise }: PageProps) {
   )
 }
 
-export async function generateMetadata({
-  params: paramsPromise,
-}: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params: paramsPromise }: PageProps): Promise<Metadata> {
   const { slug } = await paramsPromise
   const tag = await queryTagBySlug({
     slug,
@@ -375,7 +373,7 @@ const queryTagBySlug = cache(async ({ slug }: { slug: string }) => {
   })
 
   const { docs = [] } = await payload.find({
-    collection: CollectionSlug.BlogTags,
+    collection: CollectionSlug['BlogTags'],
     draft,
     limit: 1,
     pagination: false,

@@ -6,10 +6,9 @@ import { useCallback, useRef, useState } from 'react'
 
 import { Button } from '@/components/Button'
 import { ClassValue, cn } from '@/lib/cn'
+import { SkillEntrySortable, SkillSorting, SkillTypeSortable } from '@/types/payload'
 
-import { SkillEntrySortable, SkillSorting, SkillTypeSortable } from '../shared'
-
-export const SkillTypeSortingField: JSONFieldClientComponent = ({ path }: JSONFieldClientProps) => {
+export const SkillSortingField: JSONFieldClientComponent = ({ path }: JSONFieldClientProps) => {
   const { value, setValue } = useField<SkillSorting>({
     path,
   })
@@ -26,25 +25,24 @@ export const SkillTypeSortingField: JSONFieldClientComponent = ({ path }: JSONFi
   }
 
   return (
-    <div className={cn('grid grid-cols-2 gap-2')}>
+    <div className={cn('grid grid-cols-2 gap-2 -mx-2')}>
       <Sortable<SkillTypeSortable>
-        entries={value?.SkillTypeSortable || []}
-        handleEntryMove={handleEntryMove('SkillTypeSortable')}
+        entries={value?.skillTypeSortable || []}
+        handleEntryMove={handleEntryMove('skillTypeSortable')}
         selectedEntry={isSelected}
         setSelectedEntry={setIsSelected}
-        className={cn('w-full')}
+        className="p-2 w-full"
       />
-
       <Sortable<SkillEntrySortable>
         entries={value?.[isSelected?.id] || []}
         handleEntryMove={handleEntryMove(isSelected?.id)}
-        className={cn('w-full')}
+        className="p-2 w-full"
       />
     </div>
   )
 }
 
-export default SkillTypeSortingField
+export default SkillSortingField
 
 type SortableProps<EntryType extends SkillTypeSortable | SkillEntrySortable> = {
   entries: EntryType[]
@@ -62,6 +60,8 @@ function Sortable<EntryType extends SkillTypeSortable | SkillEntrySortable>({
   className,
 }: SortableProps<EntryType>) {
   const droppableRef = useRef<HTMLDivElement | null>(null)
+  const [pointerDown, setPointerDown] = useState<boolean>(false)
+  const [isDraggingItem, setIsDraggingItem] = useState<string | null>(null)
 
   const moveArrayItem = useCallback(
     (fromIndex: number, toIndex: number) => {
@@ -81,14 +81,14 @@ function Sortable<EntryType extends SkillTypeSortable | SkillEntrySortable>({
     ],
   )
 
-  const handleDragStart = useCallback(({ event, id }) => {
-    console.log(`Started dragging item at index ${id}`, event)
+  const handleDragStart = useCallback(({ event: _event, id }) => {
+    setIsDraggingItem(id)
   }, [])
 
   const handleDragEnd = useCallback(
-    ({ event, moveFromIndex, moveToIndex }) => {
-      console.log(`Moved item from index ${moveFromIndex} to index ${moveToIndex}`, event)
+    ({ event: _event, moveFromIndex, moveToIndex }) => {
       moveArrayItem(moveFromIndex, moveToIndex)
+      setIsDraggingItem(null)
     },
     [
       moveArrayItem,
@@ -96,51 +96,60 @@ function Sortable<EntryType extends SkillTypeSortable | SkillEntrySortable>({
   )
 
   return (
-    <DraggableSortable
-      ids={entries.map(({ id }) => id)}
-      onDragEnd={handleDragEnd}
-      onDragStart={handleDragStart}
-      droppableRef={droppableRef}
+    <div
       className={cn([
-        fieldBaseClass,
-        'skill-sort',
-        'flex flex-col gap-2 w-full',
+        'border-2 border-transparent rounded',
+        (pointerDown || isDraggingItem) && 'border-border',
         className,
       ])}
+      onPointerDown={() => setPointerDown(true)}
+      onPointerUp={() => setPointerDown(false)}
     >
-      {entries.map((entry, index) => {
-        const { id, label } = entry
-        return !label && !id ? null : (
-          <DraggableSortableItem key={index} id={id}>
-            {({ isDragging, attributes, listeners, setNodeRef, transform }) => (
-              <Button
-                id={id}
-                ref={setNodeRef}
-                {...attributes}
-                {...listeners}
-                role="draggable"
-                size="lg"
-                variant="outline"
-                type="button"
-                className={cn([
-                  'w-full',
-                  'grow-0 shrink-0',
-                  'user-select-none',
-                  'cursor-grab',
-                  isDragging && 'z-50 cursor-grabbing',
-                  selectedEntry?.id === id && 'bg-accent',
-                ])}
-                style={{
-                  transform,
-                }}
-                onClick={() => setSelectedEntry(entry)}
-              >
-                <span className="max-w-full text-ellipsis overflow-hidden">{label}</span>
-              </Button>
-            )}
-          </DraggableSortableItem>
-        )
-      })}
-    </DraggableSortable>
+      <DraggableSortable
+        ids={entries.map(({ id }) => id)}
+        onDragEnd={handleDragEnd}
+        onDragStart={handleDragStart}
+        droppableRef={droppableRef}
+        className={cn([
+          fieldBaseClass,
+          'skill-sort',
+          'flex flex-col gap-2',
+        ])}
+      >
+        {entries.map((entry, index) => {
+          const { id, label } = entry
+          return !label && !id ? null : (
+            <DraggableSortableItem key={index} id={id}>
+              {({ isDragging, attributes, listeners, setNodeRef, transform }) => (
+                <Button
+                  id={id}
+                  ref={setNodeRef}
+                  {...attributes}
+                  {...listeners}
+                  role="draggable"
+                  size="lg"
+                  variant="outline"
+                  type="button"
+                  className={cn([
+                    'w-full',
+                    'grow-0 shrink-0',
+                    'select-none',
+                    'cursor-grab',
+                    (pointerDown || isDragging) && 'z-50 cursor-grabbing',
+                    selectedEntry?.id === id && 'bg-accent',
+                  ])}
+                  style={{
+                    transform,
+                  }}
+                  onPointerDown={() => setSelectedEntry(entry)}
+                >
+                  <span className="max-w-full text-ellipsis overflow-hidden">{label}</span>
+                </Button>
+              )}
+            </DraggableSortableItem>
+          )
+        })}
+      </DraggableSortable>
+    </div>
   )
 }

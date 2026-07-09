@@ -5,14 +5,15 @@ import { CollectionConfig } from 'payload'
 import { authenticated } from '@/access/authenticated'
 import { CollectionSlug } from '@/types/collections'
 
-export const ResumeDocuments: CollectionConfig<CollectionSlug.ResumeDocuments> = {
-  slug: CollectionSlug.ResumeDocuments,
+export const ResumeFiles: CollectionConfig<CollectionSlug['ResumeFiles']> = {
+  slug: CollectionSlug['ResumeFiles'],
+
   labels: {
-    singular: 'Document',
-    plural: 'Documents',
+    singular: 'Resume File',
+    plural: 'Resume Files',
   },
   typescript: {
-    interface: 'ResumeDocumentData',
+    interface: 'ResumeFileData',
   },
   access: {
     read: authenticated,
@@ -41,7 +42,17 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug.ResumeDocuments> =
   defaultSort: [
     // 'startDate',
   ],
-  fields: [
-
-  ],
+  upload: {
+    disableLocalStorage: true,
+    withMetadata: false,
+    crop: false,
+    focalPoint: false,
+    hideFileInputOnCreate: true,
+    hideRemoveFile: true,
+    mimeTypes: [
+      'application/pdf',
+      'image/*',
+    ],
+  },
+  fields: [],
 }

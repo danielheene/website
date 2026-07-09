@@ -17,7 +17,4 @@ storybook-static/
 .env.*
 !.env.example
 
-# Sentry Config File
-.env.sentry-build-plugin
-
 certificates

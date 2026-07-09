@@ -1,47 +1,30 @@
-import { z } from 'zod'
+'use server'
 
-import { DocumentSectionType } from '@pdf/types'
+import { DocumentSectionType, SkillSection } from '@pdf/types'
+import { getPDFBuilderSettings } from '@/lib/getPDFBuilderSettings'
+import { getSkillsCollectionData } from '@/lib/getSkillsCollectionData'
 import { type Locale, translate } from '@/lib/i18n'
-import type { CollectionData, CollectionSlug } from '@/types/collections'
-import type { SkillType } from '@/types/payload'
+import { SkillTypeSortable } from '@/types/payload'
 
-const skillSectionDataSchema = z.object({
-  headline: z.string(),
-  entries: z.array(
-    z.object({
-      name: z.string(),
-      caption: z.string().optional(),
-    }),
-  ),
-})
+export const buildSkillSections = async (locale: Locale): Promise<SkillSection[]> => {
+  const skills = await getSkillsCollectionData(locale)
+  const { skillSorting } = await getPDFBuilderSettings(locale)
 
-export type SkillSectionData = z.infer<typeof skillSectionDataSchema>
-
-export type SkillSection = {
-  type: DocumentSectionType.Skill
-  data: SkillSectionData
-}
-
-interface BuildSkillSectionsArgs {
-  locale: Locale
-  skills: CollectionData<CollectionSlug.ResumeSkills>[]
-  skillTypeOrder: SkillType[]
-}
-
-export const buildSkillSections = ({
-  locale,
-  skills,
-  skillTypeOrder,
-}: BuildSkillSectionsArgs): SkillSection[] =>
-  skillTypeOrder.map((skillType) => ({
+  return skillSorting.skillTypeSortable.map((skillType: SkillTypeSortable) => ({
     type: DocumentSectionType.Skill,
-    data: skillSectionDataSchema.parse({
-      headline: translate(locale, `skill.type.${skillType}`),
+    data: {
+      headline: translate(locale, `skill.type.${skillType.id}`),
       entries: skills
-        .filter(({ type }) => type === skillType)
+        .filter(({ type }) => type === skillType.id)
+        .sort(
+          (a, b) =>
+            skillSorting[skillType.id].findIndex((order) => order.id === a.id) -
+            skillSorting[skillType.id].findIndex((order) => order.id === b.id),
+        )
         .map(({ name, caption }) => ({
           name,
           caption,
         })),
-    }),
+    },
   }))
+}

@@ -3,10 +3,7 @@ import { deepMerge, type TextField } from 'payload'
 import { generateSlugHook } from './hooks/generateSlug'
 
 type SlugFieldOverrides = Partial<
-  Omit<
-    TextField,
-    'name' | 'type' | 'index' | 'unique' | 'label' | 'required' | 'hooks'
-  >
+  Omit<TextField, 'name' | 'type' | 'index' | 'unique' | 'label' | 'required' | 'hooks'>
 >
 
 type SlugFieldProps = {
@@ -14,10 +11,7 @@ type SlugFieldProps = {
   overrides?: SlugFieldOverrides
 }
 
-export const SlugField = ({
-  fieldToUse,
-  overrides = {},
-}: SlugFieldProps): TextField =>
+export const SlugField = ({ fieldToUse, overrides = {} }: SlugFieldProps): TextField =>
   deepMerge<TextField, SlugFieldOverrides>(
     {
       name: 'slug',

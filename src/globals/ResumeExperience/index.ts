@@ -1,5 +1,6 @@
-import { AdminGroup } from '@custom-types'
 import type { GlobalConfig } from 'payload'
+
+import { AdminGroup } from '@custom-types'
 
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
@@ -10,8 +11,8 @@ import { revalidateResumeSectionGlobalHook } from '@/lib/hooks/revalidateResumeS
 import { CollectionSlug } from '@/types/collections'
 import { GlobalSlug } from '@/types/globals'
 
-export const ResumeExperience: GlobalConfig<GlobalSlug.ResumeExperience> = {
-  slug: GlobalSlug.ResumeExperience,
+export const ResumeExperience: GlobalConfig<GlobalSlug['ResumeExperience']> = {
+  slug: GlobalSlug['ResumeExperience'],
   label: 'Experience',
   access: {
     read: authenticatedOrPublished,
@@ -20,7 +21,7 @@ export const ResumeExperience: GlobalConfig<GlobalSlug.ResumeExperience> = {
   },
   hooks: {
     afterChange: [
-      revalidateResumeSectionGlobalHook(GlobalSlug.ResumeExperience),
+      revalidateResumeSectionGlobalHook(GlobalSlug['ResumeExperience']),
       enqueueGenerateResumeDocuments,
     ],
   },
@@ -30,8 +31,7 @@ export const ResumeExperience: GlobalConfig<GlobalSlug.ResumeExperience> = {
       views: {
         edit: {
           jobs: {
-            Component:
-              '@/globals/ResumeExperience/components/ResumeJobsListTab',
+            Component: '@/globals/ResumeExperience/components/ResumeJobsListTab',
             path: '/jobs',
             tab: {
               label: 'Jobs',
@@ -39,8 +39,7 @@ export const ResumeExperience: GlobalConfig<GlobalSlug.ResumeExperience> = {
             },
           },
           skills: {
-            Component:
-              '@/globals/ResumeExperience/components/ResumeSkillsListTab',
+            Component: '@/globals/ResumeExperience/components/ResumeSkillsListTab',
             path: '/skills',
             tab: {
               label: 'Skills',
@@ -74,7 +73,9 @@ export const ResumeExperience: GlobalConfig<GlobalSlug.ResumeExperience> = {
             {
               name: 'jobs',
               type: 'relationship',
-              relationTo: CollectionSlug.ResumeJobs,
+              relationTo: [
+                CollectionSlug['ResumeJobs'],
+              ],
               admin: {
                 components: {
                   Field: '@/globals/ResumeExperience/components/JobsList',
@@ -84,7 +85,7 @@ export const ResumeExperience: GlobalConfig<GlobalSlug.ResumeExperience> = {
                 afterRead: [
                   async ({ data, context, value, req }) => {
                     const { docs: jobs = [] } = await req.payload.find({
-                      collection: CollectionSlug.ResumeJobs,
+                      collection: CollectionSlug['ResumeJobs'],
                       sort: '-startDate',
                       pagination: false,
                       select: {

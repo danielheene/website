@@ -1,23 +1,19 @@
 import type { Metadata } from 'next'
 
-import { getCachedSiteConfigurationData } from '@/lib/getSiteConfigurationData'
-import { getCachedUserConfigurationData } from '@/lib/getUserConfigurationData'
+import { getGlobalUserSettings } from '@/lib/getGlobalUserSettings'
+import { getSiteSettings } from '@/lib/getSiteSettings'
 import type { ReducedToLocale } from '@/lib/i18n'
 import type { BlogPost, BlogTag, Page } from '@/types/payload'
 
 interface GenerateMetaArgs {
-  doc:
-    | ReducedToLocale<Page>
-    | ReducedToLocale<BlogPost>
-    | ReducedToLocale<BlogTag>
-    | null
+  doc: ReducedToLocale<Page> | ReducedToLocale<BlogPost> | ReducedToLocale<BlogTag> | null
 }
 
-export const generateMeta = async ({
-  doc,
-}: GenerateMetaArgs): Promise<Metadata> => {
-  const { description, category } = await getCachedSiteConfigurationData()
-  const { name, url } = await getCachedUserConfigurationData()
+export const generateMeta = async ({ doc }: GenerateMetaArgs): Promise<Metadata> => {
+  const {
+    general: { description, category },
+  } = await getSiteSettings()
+  const { name, url } = await getGlobalUserSettings()
 
   // const ogImage = getImageURL(doc?.meta?.image)
 

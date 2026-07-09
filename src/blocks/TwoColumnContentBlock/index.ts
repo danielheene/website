@@ -4,14 +4,14 @@ import { RichTextField } from '@/fields/RichText'
 import { BlockGroup, BlockSlug } from '@/types/blocks'
 
 export const TwoColumnContentBlock: Block = {
-  slug: BlockSlug.TwoColumnContent,
-  interfaceName: BlockSlug.TwoColumnContent,
+  slug: BlockSlug['TwoColumnContent'],
+  interfaceName: BlockSlug['TwoColumnContent'],
   labels: {
     singular: 'Two-Column Content',
     plural: 'Two-Column Content',
   },
   admin: {
-    group: BlockGroup.General,
+    group: BlockGroup['General'],
     disableBlockName: true,
     images: {
       thumbnail: '/payload/blocks/general-two-column-thumbnail.svg',

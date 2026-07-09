@@ -1,14 +1,14 @@
 import '@/styles/frontend.css'
 
-import { draftMode } from 'next/headers'
-
+import type { JSX, ReactNode } from 'react'
 import type { Metadata, Viewport } from 'next'
 import { ThemeProvider } from 'next-themes'
-import type { JSX, ReactNode } from 'react'
+import { draftMode } from 'next/headers'
 
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
+import { SkipToMainContent } from '@/components/SkipToMainContent'
 import { Toasty } from '@/components/Toasty'
 import { UmamiProvider } from '@/contexts/Umami'
 import PPFrama from '@/fonts/pp-frama'
@@ -16,8 +16,8 @@ import PPFramaText from '@/fonts/pp-frama-text'
 import PPSupplyMono from '@/fonts/pp-supply-mono'
 import PPSupplySans from '@/fonts/pp-supply-sans'
 import { cn } from '@/lib/cn'
-import { getCachedSiteConfigurationData } from '@/lib/getSiteConfigurationData'
-import { getCachedUserConfigurationData } from '@/lib/getUserConfigurationData'
+import { getGlobalUserSettings } from '@/lib/getGlobalUserSettings'
+import { getSiteSettings } from '@/lib/getSiteSettings'
 import { generatePersonSchema, generateWebSiteSchema, JsonLd } from '@/lib/jsonLd'
 
 export default async function RootLayout({
@@ -26,10 +26,10 @@ export default async function RootLayout({
   children: ReactNode | ReactNode[]
 }): Promise<JSX.Element> {
   const { isEnabled: draft } = await draftMode()
-  const userConfigurationData = await getCachedUserConfigurationData()
-  const siteConfigurationData = await getCachedSiteConfigurationData()
-  const personSchema = generatePersonSchema(userConfigurationData)
-  const webSiteSchema = generateWebSiteSchema(siteConfigurationData)
+  const globalUserSettings = await getGlobalUserSettings()
+  const SiteSettings = await getSiteSettings()
+  const personSchema = generatePersonSchema(globalUserSettings)
+  const webSiteSchema = generateWebSiteSchema(SiteSettings)
 
   return (
     <html
@@ -53,6 +53,7 @@ export default async function RootLayout({
         />
       </head>
       <body>
+        <SkipToMainContent targetId="main-content" />
         {draft && <LivePreviewListener />}
         <ThemeProvider disableTransitionOnChange enableColorScheme enableSystem>
           <UmamiProvider websiteId={process.env.NEXT_PUBLIC_UMAMI_SITE_ID}>
@@ -68,8 +69,8 @@ export default async function RootLayout({
 }
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SERVER_URL),
-  title: process.env.NEXT_PUBLIC_SERVER_URL,
+  metadataBase: new URL(process.env.SERVER_URL),
+  title: process.env.SERVER_URL,
 
   icons: [
     {

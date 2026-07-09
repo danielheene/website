@@ -1,3 +1,5 @@
+import type { RichTextField as PayloadRichTextField } from 'payload'
+import { deepMerge } from 'payload'
 import {
   AlignFeature,
   BlockquoteFeature,
@@ -22,11 +24,10 @@ import {
   UnorderedListFeature,
   UploadFeature,
 } from '@payloadcms/richtext-lexical'
-import type { RichTextField as PayloadRichTextField } from 'payload'
-import { deepMerge } from 'payload'
 
 import { LinkField } from '@/fields/Link'
 import { BlockSlug } from '@/types/blocks'
+import { cn } from '@/lib/cn'
 
 const rootFeatures = [
   FixedToolbarFeature({
@@ -96,6 +97,7 @@ const inlineFeatures = [
   ItalicFeature(),
   UnderlineFeature(),
   StrikethroughFeature(),
+  AlignFeature(),
 ]
 
 const captionFeatures = [
@@ -132,20 +134,17 @@ const postFeatures = [
   HorizontalRuleFeature(),
   BlocksFeature({
     blocks: [
-      BlockSlug.LinkGroup,
-      BlockSlug.Code,
-      BlockSlug.TwoColumnContent,
+      BlockSlug['LinkGroup'],
+      BlockSlug['Code'],
+      BlockSlug['TwoColumnContent'],
     ],
   }),
   IndentFeature(),
-  AlignFeature(),
   EXPERIMENTAL_TableFeature(),
 ]
 
 type RichTextEditorVariant = 'inline' | 'caption' | 'markdown' | 'post'
-type RichTextFieldOverrides = Partial<
-  Omit<PayloadRichTextField, 'name' | 'type' | 'editor'>
->
+type RichTextFieldOverrides = Partial<Omit<PayloadRichTextField, 'name' | 'type' | 'editor'>>
 
 type RichTextFieldProps = {
   name: string
@@ -154,10 +153,10 @@ type RichTextFieldProps = {
 }
 
 export const RichTextField = ({
-  name,
-  editorVariant = 'inline',
-  overrides = {},
-}: RichTextFieldProps): PayloadRichTextField => {
+                                name,
+                                editorVariant = 'inline',
+                                overrides = {},
+                              }: RichTextFieldProps): PayloadRichTextField => {
   const editor = createRichTextEditor(editorVariant)
 
   return deepMerge<PayloadRichTextField, RichTextFieldOverrides>(
@@ -165,6 +164,17 @@ export const RichTextField = ({
       type: 'richText',
       name,
       admin: {
+        className: cn([
+          String.raw`[&_.rich-text-lexical\_\_label-row]:hidden`,
+          String.raw`[&_.rich-text-lexical\_\_label-row]:border-none`,
+          String.raw`[&_.rich-text-lexical\_\_wrap_.fixed-toolbar]:top-0`,
+          String.raw`[&_.rich-text-lexical\_\_wrap_.fixed-toolbar]:border-[0_0_1px_0]`,
+          String.raw`[&_.rich-text-lexical\_\_wrap_.fixed-toolbar]:min-h-auto`,
+          String.raw`[&_.rich-text-lexical\_\_wrap_.fixed-toolbar]:p-0.5`,
+          String.raw`[&_.rich-text-lexical\_\_wrap_.toolbar-popup\_\_button-alignJustify]:hidden`,
+          String.raw`[&_.rich-text-lexical\_\_wrap_.editor]:border-none`,
+          String.raw`[&_.rich-text-lexical\_\_wrap_.ContentEditable\_\_root]:p-2.5`,
+        ]),
         disableGroupBy: true,
         disableListFilter: true,
         disableListColumn: true,

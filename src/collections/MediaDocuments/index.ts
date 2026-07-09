@@ -1,5 +1,6 @@
-import { AdminGroup } from '@custom-types'
 import type { CollectionConfig } from 'payload'
+
+import { AdminGroup } from '@custom-types'
 
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
@@ -8,14 +9,19 @@ import { CollectionSlug } from '@/types/collections'
 
 import { generateDocumentThumbnail } from './hooks/generateDocumentThumbnail'
 
-export const MediaDocuments: CollectionConfig<CollectionSlug.MediaDocuments> = {
-  slug: CollectionSlug.MediaDocuments,
+export const MediaDocuments: CollectionConfig<CollectionSlug['MediaDocuments']> = {
+  slug: CollectionSlug['MediaDocuments'],
   typescript: {
     interface: 'MediaDocument',
   },
   labels: {
     singular: 'Document',
     plural: 'Documents',
+  },
+  hooks: {
+    beforeChange: [
+      generateDocumentThumbnail,
+    ],
   },
   admin: {
     group: AdminGroup.Media,
@@ -30,10 +36,6 @@ export const MediaDocuments: CollectionConfig<CollectionSlug.MediaDocuments> = {
       Description: false,
     },
   },
-  folders: {
-    browseByFolder: true,
-  },
-
   access: {
     create: authenticated,
     delete: authenticated,
@@ -50,7 +52,7 @@ export const MediaDocuments: CollectionConfig<CollectionSlug.MediaDocuments> = {
     ],
     adminThumbnail: ({ doc }) => {
       const thumbnailFilename = String(doc.filename).replace(/(\.pdf)$/, '-thumbnail.png')
-      return `/api/${CollectionSlug.MediaImages}/file/${thumbnailFilename}`
+      return `/api/${CollectionSlug['MediaImages']}/file/${thumbnailFilename}`
     },
   },
 
@@ -116,7 +118,9 @@ export const MediaDocuments: CollectionConfig<CollectionSlug.MediaDocuments> = {
       name: 'thumbnail',
       type: 'upload',
       label: 'Thumbnail',
-      relationTo: CollectionSlug.MediaImages,
+      relationTo: [
+        CollectionSlug['MediaImages'],
+      ],
       admin: {
         disableGroupBy: true,
         disableListColumn: true,
@@ -147,13 +151,8 @@ export const MediaDocuments: CollectionConfig<CollectionSlug.MediaDocuments> = {
     //   },
     // },
   ],
-  hooks: {
-    afterChange: [
-      generateDocumentThumbnail,
-    ],
-  },
   versions: {
     drafts: false,
-    maxPerDoc: 0,
+    maxPerDoc: 10,
   },
 }

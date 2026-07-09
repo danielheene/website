@@ -1,13 +1,14 @@
 import { AdminGroup } from '@custom-types'
-import { CollectionSlug } from '@/types/collections'
+
 import type { CollectionConfig } from 'payload'
 
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
 import { RichTextField } from '@/fields/RichText'
+import { CollectionSlug } from '@/types/collections'
 
-export const MediaAudios: CollectionConfig<CollectionSlug.MediaAudios> = {
-  slug: CollectionSlug.MediaAudios,
+export const MediaAudios: CollectionConfig<CollectionSlug['MediaAudios']> = {
+  slug: CollectionSlug['MediaAudios'],
   typescript: {
     interface: 'MediaAudio',
   },
@@ -18,7 +19,12 @@ export const MediaAudios: CollectionConfig<CollectionSlug.MediaAudios> = {
   admin: {
     group: AdminGroup.Media,
     useAsTitle: 'filename',
-    defaultColumns: ['filename', 'type', 'extension', 'updatedAt'],
+    defaultColumns: [
+      'filename',
+      'type',
+      'extension',
+      'updatedAt',
+    ],
     disableCopyToLocale: true,
     components: {
       Description: false,
@@ -32,7 +38,9 @@ export const MediaAudios: CollectionConfig<CollectionSlug.MediaAudios> = {
   },
   upload: {
     disableLocalStorage: true,
-    mimeTypes: ['audio/*'],
+    mimeTypes: [
+      'audio/*',
+    ],
   },
   fields: [
     RichTextField({
@@ -40,4 +48,8 @@ export const MediaAudios: CollectionConfig<CollectionSlug.MediaAudios> = {
       editorVariant: 'caption',
     }),
   ],
+  versions: {
+    drafts: false,
+    maxPerDoc: 10,
+  },
 }

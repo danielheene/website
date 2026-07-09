@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const env = z.object({
+export const env = z.object({
   NODE_ENV: z
     .enum([
       'development',
@@ -9,11 +9,13 @@ const env = z.object({
     ])
     .default('development'),
 
-  NEXT_PUBLIC_SERVER_HOST: z.string(),
-  NEXT_PUBLIC_SERVER_URL: z.string(),
+  SERVER_HOST: z.string().trim().min(1),
+  SERVER_URL: z.url(),
+  STATUS_PAGE_URL: z.url(),
+  STATUS_PAGE_HEARTBEAT_URL: z.url(),
 
   PAYLOAD_SECRET: z.string(),
-  PREVIEWS_SECRET: z.string(),
+  PREVIEW_SECRET: z.string(),
   CRON_SECRET: z.string(),
 
   DATABASE_URL: z.string(),
@@ -30,15 +32,21 @@ const env = z.object({
   NEXT_PUBLIC_UMAMI_URL: z.string(),
   NEXT_PUBLIC_UMAMI_SITE_ID: z.uuid(),
 
-  USESEND_URL: z.string(),
+  USESEND_URL: z.url(),
   USESEND_API_KEY: z.string(),
-  USESEND_DEFAULT_FROM_ADDRESS: z.string(),
-  USESEND_DEFAULT_FROM_NAME: z.string(),
+  USESEND_DEFAULT_FROM_ADDRESS: z.email(),
+  USESEND_DEFAULT_FROM_NAME: z.string().trim().min(1),
+  //
+  // SENTRY_DSN: z.string(),
+  // SENTRY_AUTH_TOKEN: z.string(),
+  // SENTRY_ORG: z.string(),
+  // SENTRY_PROJECT: z.string(),
 
   OPENAI_API_KEY: z.string(),
-  ANTRHROPIC_API_KEY: z.string(),
+  ANTHROPIC_API_KEY: z.string(),
   MAPBOX_API_KEY: z.string(),
 
-  NEXT_PUBLIC_STATUS_PAGE_URL: z.url(),
-  STATUS_PAGE_HEARTBEAT_API_URL: z.url(),
+  CLOUDFLARE_TUNNEL_HOST: z.string().optional(),
+  CLOUDFLARE_TUNNEL_URL: z.url().optional(),
+  CLOUDFLARE_TUNNEL_TOKEN: z.string().optional(),
 })

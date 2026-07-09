@@ -65,7 +65,8 @@
         }
       },
       "suspicious": {
-        "noArrayIndexKey": "off"
+        "noArrayIndexKey": "off",
+        "noUselessEscapeInString": "off"
       },
       "a11y": {
         "noSvgWithoutTitle": "off",
@@ -137,6 +138,23 @@
                 ":NODE:"
               ],
               ":BLANK_LINE:",
+
+              "react",
+              "react/**",
+              "react-*",
+              "react-*/**",
+              "@react*",
+              "@react*/**",
+              "next*",
+              "next/**",
+              "next-*",
+              "next-*/**",
+              "@payload-config",
+              "payload",
+              "@payloadcms/**",
+              "payload-*",
+
+              ":BLANK_LINE:",
               [
                 ":PACKAGE:",
                 ":PACKAGE_WITH_PROTOCOL:",
@@ -147,28 +165,13 @@
                 "!next*",
                 "!@next*",
                 "!payload*",
-                "!@payloadcms/**"
-              ],
-              ":BLANK_LINE:",
-              [
-                "react",
-                "react/**",
-                "react-*",
-                "react-*/**",
-                "@react*",
-                "@react*/**",
-                "next",
-                "next/**",
-                "next-*",
-                "next-*/**",
-                "payload",
-                "@payloadcms/**",
-                "payload-*"
+                "!@payloadcms/**",
+                "!@payload*"
               ],
               ":BLANK_LINE:",
               [
                 ":ALIAS:",
-                "@/*",
+                "@/**",
                 "@pdf/**",
                 "@components/**",
                 "@/components/**"

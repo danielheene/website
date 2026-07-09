@@ -1,19 +1,18 @@
-import { AdminGroup } from '@custom-types'
 import type { CollectionConfig } from 'payload'
 
+import { AdminGroup } from '@custom-types'
+
 import { authenticated } from '@/access/authenticated'
-import { SlugField } from '@/fields/Slug'
 import { createFallbackToSiblingLocale } from '@/lib/hooks/createFallbackToSiblingLocale'
 import { enqueueGenerateResumeDocuments } from '@/lib/hooks/enqueueGenerateResumeDocuments'
 import { revalidateResumeSectionCollectionHook } from '@/lib/hooks/revalidateResumeSection'
 import { translate } from '@/lib/i18n'
 import { CollectionSlug } from '@/types/collections'
 import { GlobalSlug } from '@/types/globals'
-import type { ResumeJobData } from '@/types/payload'
 import { SKILL_TYPE } from '@/types/select-options'
 
-export const ResumeSkills: CollectionConfig<CollectionSlug.ResumeSkills> = {
-  slug: CollectionSlug.ResumeSkills,
+export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
+  slug: CollectionSlug['ResumeSkills'],
   labels: {
     singular: 'Skill',
     plural: 'Skills',
@@ -32,23 +31,21 @@ export const ResumeSkills: CollectionConfig<CollectionSlug.ResumeSkills> = {
   },
   hooks: {
     afterChange: [
-      revalidateResumeSectionCollectionHook(GlobalSlug.ResumeExperience),
+      revalidateResumeSectionCollectionHook(GlobalSlug['ResumeExperience']),
       enqueueGenerateResumeDocuments,
     ],
   },
   admin: {
-    useAsTitle: 'title',
+    useAsTitle: 'name_label',
     group: AdminGroup.Resume,
     groupBy: true,
     defaultColumns: [
-      'name.en',
-      'slug',
+      'name_label',
+      'caption_label',
       'type',
     ],
     disableCopyToLocale: true,
   },
-
-  orderable: true,
   // defaultPopulate: {
   //   name: {
   //     en: true,
@@ -58,13 +55,12 @@ export const ResumeSkills: CollectionConfig<CollectionSlug.ResumeSkills> = {
   //   type: true,
   //   experienceInterval: true,
   // },
+  disableBulkEdit: true,
   disableDuplicate: true,
+  lockDocuments: false,
   forceSelect: {
-    name: {
-      en: true,
-      de: true,
-    },
-    slug: true,
+    name: true,
+    caption: true,
     type: true,
   },
   fields: [
@@ -74,7 +70,12 @@ export const ResumeSkills: CollectionConfig<CollectionSlug.ResumeSkills> = {
       label: 'Name',
       admin: {
         hideGutter: true,
+        disableListFilter: true,
+        disableListColumn: true,
+        disableGroupBy: true,
+        disableBulkEdit: true,
       },
+
       fields: [
         {
           type: 'row',
@@ -86,6 +87,10 @@ export const ResumeSkills: CollectionConfig<CollectionSlug.ResumeSkills> = {
               required: true,
               admin: {
                 width: '50%',
+                disableListFilter: true,
+                disableListColumn: true,
+                disableGroupBy: true,
+                disableBulkEdit: true,
               },
               hooks: {
                 beforeValidate: [
@@ -100,6 +105,10 @@ export const ResumeSkills: CollectionConfig<CollectionSlug.ResumeSkills> = {
               required: true,
               admin: {
                 width: '50%',
+                disableListFilter: true,
+                disableListColumn: true,
+                disableGroupBy: true,
+                disableBulkEdit: true,
               },
               hooks: {
                 beforeValidate: [
@@ -117,6 +126,10 @@ export const ResumeSkills: CollectionConfig<CollectionSlug.ResumeSkills> = {
       label: 'Caption',
       admin: {
         hideGutter: true,
+        disableListFilter: false,
+        disableListColumn: false,
+        disableGroupBy: true,
+        disableBulkEdit: true,
       },
       fields: [
         {
@@ -128,6 +141,10 @@ export const ResumeSkills: CollectionConfig<CollectionSlug.ResumeSkills> = {
               label: 'English',
               admin: {
                 width: '50%',
+                disableListFilter: false,
+                disableListColumn: false,
+                disableGroupBy: true,
+                disableBulkEdit: true,
               },
               defaultValue: '',
             },
@@ -137,6 +154,10 @@ export const ResumeSkills: CollectionConfig<CollectionSlug.ResumeSkills> = {
               label: 'German',
               admin: {
                 width: '50%',
+                disableListFilter: true,
+                disableListColumn: true,
+                disableGroupBy: true,
+                disableBulkEdit: true,
               },
               defaultValue: '',
             },
@@ -144,31 +165,49 @@ export const ResumeSkills: CollectionConfig<CollectionSlug.ResumeSkills> = {
         },
       ],
     },
+
     {
       type: 'text',
-      name: 'title',
+      name: 'name_label',
+      label: 'Name',
       virtual: 'name.en',
       admin: {
         hidden: true,
+        readOnly: true,
+        disableListFilter: false,
+        disableListColumn: false,
+        disableGroupBy: true,
+        disableBulkEdit: true,
       },
     },
     {
-      name: 'skilledJobs',
-      type: 'join',
-      collection: CollectionSlug.ResumeJobs,
-      on: 'skills',
-      hasMany: true,
-      virtual: true,
+      type: 'text',
+      name: 'caption_label',
+      label: 'Caption',
+      virtual: 'caption.en',
       admin: {
-        allowCreate: false,
+        hidden: true,
+        readOnly: true,
+        disableListFilter: false,
+        disableListColumn: false,
         disableGroupBy: true,
-        disableListColumn: true,
-        disableListFilter: true,
+        disableBulkEdit: true,
       },
     },
-    SlugField({
-      fieldToUse: 'name.en',
-    }),
+    // {
+    //   name: 'skilledJobs',
+    //   type: 'join',
+    //   collection: CollectionSlug['ResumeJobs'],
+    //   on: 'skills',
+    //   hasMany: true,
+    //   virtual: true,
+    //   admin: {
+    //     allowCreate: false,
+    //     disableGroupBy: true,
+    //     disableListColumn: true,
+    //     disableListFilter: true,
+    //   },
+    // },
     {
       name: 'type',
       type: 'select',
@@ -181,53 +220,70 @@ export const ResumeSkills: CollectionConfig<CollectionSlug.ResumeSkills> = {
         position: 'sidebar',
       },
     },
+
     {
-      name: 'experienceInterval',
-      label: 'Experience (months)',
-      type: 'number',
-      virtual: true,
-      defaultValue: 0,
+      name: 'availableInFrontend',
+      type: 'checkbox',
+      label: 'Available in frontend',
       admin: {
-        readOnly: true,
         position: 'sidebar',
       },
-      hooks: {
-        afterRead: [
-          async ({ req, originalDoc }) => {
-            const { docs: skilledJobs = [] } = await req.payload.find({
-              collection: CollectionSlug.ResumeJobs,
-              depth: 1,
-              where: {
-                and: [
-                  {
-                    skills: {
-                      contains: originalDoc.id,
-                    },
-                  },
-                  {
-                    _status: {
-                      equals: 'published',
-                    },
-                  },
-                ],
-              },
-              select: {
-                employmentInterval: true,
-              },
-              pagination: false,
-              req,
-            })
-
-            const interval: number = skilledJobs.reduce(
-              (acc: number, job: ResumeJobData) => acc + job.employmentInterval,
-              0,
-            )
-
-            return interval
-          },
-        ],
+    },
+    {
+      name: 'availableInDocument',
+      type: 'checkbox',
+      label: 'Available in document',
+      admin: {
+        position: 'sidebar',
       },
     },
+    // {
+    //   name: 'experienceInterval',
+    //   label: 'Experience (months)',
+    //   type: 'number',
+    //   virtual: true,
+    //   defaultValue: 0,
+    //   admin: {
+    //     readOnly: true,
+    //     position: 'sidebar',
+    //   },
+    //   hooks: {
+    //     afterRead: [
+    //       async ({ req, originalDoc }) => {
+    //         const { docs: skilledJobs = [] } = await req.payload.find({
+    //           collection: CollectionSlug['ResumeJobs'],
+    //           depth: 1,
+    //           where: {
+    //             and: [
+    //               {
+    //                 skills: {
+    //                   contains: originalDoc.id,
+    //                 },
+    //               },
+    //               {
+    //                 _status: {
+    //                   equals: 'published',
+    //                 },
+    //               },
+    //             ],
+    //           },
+    //           select: {
+    //             employmentInterval: true,
+    //           },
+    //           pagination: false,
+    //           req,
+    //         })
+    //
+    //         const interval: number = skilledJobs.reduce(
+    //           (acc: number, job: ResumeJobData) => acc + job.employmentInterval,
+    //           0,
+    //         )
+    //
+    //         return interval
+    //       },
+    //     ],
+    //   },
+    // },
   ],
   trash: true,
   versions: {

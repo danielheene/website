@@ -1,5 +1,4 @@
 @layer fonts, theme, base, components, utilities, payload-default;
-
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities);
 
@@ -9,6 +8,7 @@
 @import "./theme/_fonts.css" layer(theme);
 @import "./theme/_radii.css" layer(theme);
 @import "./theme/_sizes.css" layer(theme);
+@import "./theme/_shadows.css" layer(theme);
 @import "./theme/_text-shadows.css" layer(theme);
 
 @import "./payload/_app-header.css" layer(payload-default);
@@ -19,6 +19,9 @@
 @import "./payload/_resume.customers.css" layer(payload-default);
 @import "./payload/_resume.experience.css" layer(payload-default);
 @import "./payload/_resume.projects.css" layer(payload-default);
+
+@plugin "@tailwindcss/typography";
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 @source not inline("table");
 @source not inline("table-cell");
@@ -65,5 +68,43 @@
   body {
     background-color: var(--theme-bg);
     color: var(--theme-text);
+  }
+
+  @media (min-width: 768px) {
+    .tabs-field--vertical {
+      display: flex;
+      width: 100%;
+
+      .tabs-field__tabs-wrap {
+        min-width: 270px;
+      }
+
+      .tabs-field__tabs {
+        display: flex;
+        flex-direction: column;
+        padding-left: var(--gutter-h);
+        border-bottom: 0;
+      }
+      .tabs-field__content-wrap {
+        flex-grow: 1;
+      }
+      .tabs-field__tab-button {
+        padding: 10px 20px;
+        border-bottom-width: 0;
+        margin-right: 0;
+        &:hover:after {
+          width: 1px;
+          height: 100%;
+          bottom: 0;
+          left: -1px;
+        }
+      }
+      .tabs-field__tab-button--active::after {
+        width: 2px;
+        height: 100%;
+        bottom: 0;
+        left: -1px;
+      }
+    }
   }
 }

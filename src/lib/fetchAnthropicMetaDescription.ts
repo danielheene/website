@@ -14,7 +14,7 @@ export const fetchAnthropicMetaDescription = async (url: string): Promise<string
   })
 
   const { text } = await generateText({
-    model: anthropic('claude-sonnet-4-6'),
+    model: anthropic('claude-haiku-4-5'),
     system: dedent`
       Create a meta-description text for the following URL, focusing on optimization for Google and other major search engines. A meta-description is a short text that appears in search engine results below the page title.
       If you are looking for an in-depth context, such as the website operator's full name, information about their job, a categorization of the website and its intended purpose, as well as many other details, check out the JSON-LD objects embedded in the source code.

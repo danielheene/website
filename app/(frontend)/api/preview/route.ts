@@ -2,7 +2,8 @@ import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
 import { redirect } from 'next/navigation'
 import type { NextRequest } from 'next/server'
-import { type CollectionSlug, getPayload, type PayloadRequest } from 'payload'
+import { getPayload, type PayloadRequest } from 'payload'
+import { CollectionSlugValue } from '@/types/collections'
 
 export async function GET(req: NextRequest): Promise<Response> {
   const payload = await getPayload({ config: configPromise })
@@ -11,7 +12,7 @@ export async function GET(req: NextRequest): Promise<Response> {
   const { searchParams } = new URL(url)
 
   const path = searchParams.get('path')
-  const collection = searchParams.get('collection') as CollectionSlug
+  const collection = searchParams.get('collection') as CollectionSlugValue
   const slug = searchParams.get('slug')
   const previewSecret = searchParams.get('previewSecret')
 

@@ -4,14 +4,14 @@ import { LinkGroupField } from '@/fields/LinkGroup'
 import { BlockGroup, BlockSlug } from '@/types/blocks'
 
 export const LinkGroupBlock: Block = {
-  slug: BlockSlug.LinkGroup,
-  interfaceName: BlockSlug.LinkGroup,
+  slug: BlockSlug['LinkGroup'],
+  interfaceName: BlockSlug['LinkGroup'],
   labels: {
     singular: 'Link Group',
     plural: 'Link Group',
   },
   admin: {
-    group: BlockGroup.General,
+    group: BlockGroup['General'],
     disableBlockName: true,
     images: {
       thumbnail: '/payload/blocks/general-link-group-thumbnail.svg',

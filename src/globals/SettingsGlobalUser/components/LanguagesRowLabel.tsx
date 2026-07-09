@@ -1,14 +1,14 @@
 'use client'
 
-import { useRowLabel } from '@payloadcms/ui'
 import type { RowFieldLabelClientComponent } from 'payload'
+import { useRowLabel } from '@payloadcms/ui'
 
 import { translate } from '@/lib/i18n'
-import type { UserConfigurationData } from '@/types/payload'
+import type { GlobalUserSettings } from '@/types/payload'
 
 import styles from './SharedRowLabel.module.css'
 
-type RowLabelData = UserConfigurationData['languages'][number]
+type RowLabelData = GlobalUserSettings['languages'][number]
 
 export const LanguagesRowLabel: RowFieldLabelClientComponent = () => {
   const { data: { language, proficiency } = {} } = useRowLabel<RowLabelData>()

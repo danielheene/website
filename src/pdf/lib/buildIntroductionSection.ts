@@ -1,33 +1,18 @@
-import { z } from 'zod'
+'use server'
 
-import { DocumentSectionType } from '@pdf/types'
+import { DocumentSectionType, IntroductionSection } from '@pdf/types'
+import { getGlobalUserSettings } from '@/lib/getGlobalUserSettings'
+import { Locale } from '@/lib/i18n'
 
-const introductionSectionDataSchema = z.object({
-  headline: z.string(),
-  content: z.string(),
-})
+export const buildIntroductionSection = async (locale: Locale): Promise<IntroductionSection> => {
+  const { name, jobTitle } = await getGlobalUserSettings(locale)
+  const description = ''
 
-export type IntroductionSectionData = z.infer<typeof introductionSectionDataSchema>
-
-export type IntroductionSection = {
-  type: DocumentSectionType.Introduction
-  data: IntroductionSectionData
+  return {
+    type: DocumentSectionType.Introduction,
+    data: {
+      headline: `${name}, ${jobTitle}`,
+      content: description,
+    },
+  }
 }
-
-interface BuildIntroductionSectionArgs {
-  name: string
-  jobTitle: string
-  description: string
-}
-
-export const buildIntroductionSection = ({
-  name,
-  jobTitle,
-  description,
-}: BuildIntroductionSectionArgs): IntroductionSection => ({
-  type: DocumentSectionType.Introduction,
-  data: introductionSectionDataSchema.parse({
-    headline: `${name}, ${jobTitle}`,
-    content: description,
-  }),
-})

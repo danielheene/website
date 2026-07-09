@@ -2,8 +2,8 @@ namespace NodeJS {
   interface ProcessEnv {
     NODE_ENV: string
 
-    NEXT_PUBLIC_SERVER_HOST: string
-    NEXT_PUBLIC_SERVER_URL: string
+    SERVER_HOST: string
+    SERVER_URL: string
 
     PAYLOAD_SECRET: string
     PREVIEW_SECRET: string
@@ -32,8 +32,12 @@ namespace NodeJS {
     ANTHROPIC_API_KEY: string
     MAPBOX_API_KEY: string
 
-    NEXT_PUBLIC_STATUS_PAGE_URL: string
-    STATUS_PAGE_HEARTBEAT_API_URL: string
+    STATUS_PAGE_URL: string
+    STATUS_PAGE_HEARTBEAT_URL: string
+
+    CLOUDFLARE_TUNNEL_HOST?: string
+    CLOUDFLARE_TUNNEL_URL?: string
+    CLOUDFLARE_TUNNEL_TOKEN?: string
   }
 
   type ReadableStream = import('typescript').ReadableStream

@@ -1,45 +1,53 @@
-import type { BlockSlug as RegisteredBlockSlug, TypedBlock } from 'payload'
+import type { BlockSlug as RegisteredBlockSlug, TypedBlock, TypedGlobal } from 'payload'
+
 import type { PascalCase } from 'type-fest'
 
-import type { ReducedToLocale } from '@/lib/i18n'
+import type { ReducedToLocale, Locale } from '@/lib/i18n'
 import type { GlobalData, RegisteredGlobalSlug } from '@/types/globals'
+import { ResolvedRelations } from '@/lib/resolveRelation'
 
 /**
  *
  * BLOCK GROUPS
  *
  */
-export enum BlockGroup {
-  General = 'General',
-  Blog = 'Blog',
-  Resume = 'Resume',
-}
+export const BlockGroup = {
+  General : 'General',
+  Blog : 'Blog',
+  Resume : 'Resume',
+} as const
+
+export type BlockGroup = typeof BlockGroup
+export type BlockGroupKey = keyof BlockGroup & string
+export type BlockGroupValue = BlockGroup[BlockGroupKey] & string
+
 
 /**
- *
- * BLOCKS
- *
+ * Block Slugs
  */
-export enum BlockSlug {
+export const BlockSlug =       {
   /* general blocks */
-  OneColumnContent = 'OneColumnContentBlock',
-  TwoColumnContent = 'TwoColumnContentBlock',
-  Code = 'CodeBlock',
-  LinkGroup = 'LinkGroupBlock',
-  // LegalAddress = 'LegalAddressBlock',
+  OneColumnContent : 'OneColumnContentBlock',
+  TwoColumnContent : 'TwoColumnContentBlock',
+  Code : 'CodeBlock',
+  LinkGroup : 'LinkGroupBlock',
+  // LegalAddress = 'LegalAddressBlock',2§
 
   /* resume related blocks */
-  ResumeAboutMe = 'ResumeAboutMeBlock',
-  ResumeCustomers = 'ResumeCustomersBlock',
-  ResumeDownloads = 'ResumeDownloadsBlock',
-  ResumeExperience = 'ResumeExperienceBlock',
-  ResumeProjects = 'ResumeProjectsBlock',
-  ResumeContact = 'ResumeContactBlock',
-}
+  ResumeAboutMe : 'ResumeAboutMeBlock',
+  ResumeCustomers : 'ResumeCustomersBlock',
+  ResumeDownloads : 'ResumeDownloadsBlock',
+  ResumeExperience : 'ResumeExperienceBlock',
+  ResumeProjects : 'ResumeProjectsBlock',
+  ResumeContact : 'ResumeContactBlock',
+} as const
+
+export type BlockSlug = typeof BlockSlug
+export type BlockSlugKey = keyof BlockSlug & string
+export type BlockSlugValue = BlockSlug[BlockSlugKey] & string
 
 export type { BlockSlug as RegisteredBlockSlug } from 'payload'
-export type BlockData<T extends RegisteredBlockSlug = RegisteredBlockSlug> =
-  TypedBlock[T]
+export type BlockData<T extends RegisteredBlockSlug = RegisteredBlockSlug & string, L extends Locale = 'en'> = ReducedToLocale<ResolvedRelations<TypedBlock[T]>, L>
 
 /**
  * generic for resume blocks that only wraps data of its respective global

@@ -1,4 +1,5 @@
 import dedent from 'dedent'
+
 import type { GroupField } from 'payload'
 
 import { MetaDescriptionField } from '@/fields/Meta/MetaDescriptionField'
@@ -27,7 +28,7 @@ export const MetaField = ({
       It includes fields for title, description, and SERP optimization.
     `,
     components: {
-      Description: '@/components/AdminPanel#DescriptionWithNewline',
+      Description: '@/components/AdminPanel#MarkdownDescription',
     },
   },
   fields: [

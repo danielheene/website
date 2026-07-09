@@ -16,7 +16,7 @@ import type { CustomerLogos } from '@/types/payload'
 export const ResumeCustomersBlockRenderer = ({
   blockType,
   data: { title, caption, customerLogos },
-}: ResumeLayoutBlockData<GlobalSlug.ResumeCustomers>): JSX.Element => {
+}: ResumeLayoutBlockData<GlobalSlug['ResumeCustomers']>): JSX.Element => {
   const filteredEntries: LogoCarouselProps['entries'] = useMemo(
     () =>
       customerLogos.filter(

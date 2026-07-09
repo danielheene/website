@@ -1,9 +1,8 @@
+import type { JSX } from 'react'
 import { Image, Link, StyleSheet, type Styles, Text, View } from '@react-pdf/renderer'
 
-import type { JSX } from 'react'
-
 import { mmToPt, textStyles } from '@pdf/constants'
-import { DocumentHeaderData } from '@pdf/lib/buildDocumentHeader'
+import { DocumentHeader } from '@pdf/types'
 
 const style = StyleSheet.create({
   container: {
@@ -28,9 +27,9 @@ const style = StyleSheet.create({
 type DocumentHeaderProps = {
   fixed?: boolean
   style?: Styles[string]
-} & DocumentHeaderData
+} & DocumentHeader
 
-export const DocumentHeader = ({
+export const Header = ({
   portraitUrl,
   address,
   telephone,

@@ -12,13 +12,16 @@ import { BLOCKS } from '@/blocks'
 import { COLLECTIONS } from '@/collections'
 import { GLOBALS } from '@/globals'
 import generateDocumentThumbnailTask from '@/tasks/generateDocumentThumbnailTask'
-import generateResumeDocumentTask from '@/tasks/generateResumeDocumentTask'
 import { useSendAdapter } from '@/lib/useSendAdapter'
 import { CollectionSlug } from '@/types/collections'
 import { importExportPlugin } from '@payloadcms/plugin-import-export'
+import { SKILL_TYPE } from '@/types/select-options'
+import { QueueSlug } from '@/types/queue'
+import { generateResumeLocalizedData } from '@/tasks/generateResumeLocalizedData'
+
 
 const filename = fileURLToPath(import.meta.url)
-const dirname = path.dirname(filename)
+const dirname = path.dirname(filename) 
 
 export const config = buildConfig({
   admin: {
@@ -146,15 +149,15 @@ export const config = buildConfig({
       ],
       defaultTimezone: 'Europe/Berlin',
     },
-    user: CollectionSlug.Users,
+    user: CollectionSlug['Users'],
   },
   blocks: BLOCKS,
   csrf: [
-    process.env.NEXT_PUBLIC_SERVER_URL,
+    process.env.SERVER_URL,
   ],
   cors: {
     origins: [
-      process.env.NEXT_PUBLIC_SERVER_URL,
+      process.env.SERVER_URL,
     ],
     headers: [],
   },
@@ -183,47 +186,78 @@ export const config = buildConfig({
   },
   jobs: {
     enableConcurrencyControl: true,
-    deleteJobOnComplete: true,
     tasks: [
       generateDocumentThumbnailTask,
-      generateResumeDocumentTask,
+      generateResumeLocalizedData,
     ],
+    shouldAutoRun: async () => {
+      return process.env.ENABLE_JOB_WORKERS === 'true'
+    },
     autoRun: [
       {
         cron: '* * * * *',
-        queue: 'default',
-        limit: 50,
+        queue: QueueSlug.Default,
+        limit: 1,
       },
+      {
+        cron: '* * * * *',
+        queue: QueueSlug.ResumeGenerator,
+        limit: 1,
+      }
     ],
+    jobsCollectionOverrides: ({ defaultJobsCollection}) => {
+      if (!defaultJobsCollection.admin) {
+        defaultJobsCollection.admin = {}
+      }
+
+      defaultJobsCollection.admin.hidden = false
+      return defaultJobsCollection
+    }
   },
   kv: redisKVAdapter({
     redisURL: process.env.REDIS_URL,
   }),
+
   localization:false,
   plugins: [
     importExportPlugin({
-      collections: undefined
-      // see below for a list of available options
+      collections: undefined,
+      defaultVersionStatus: 'published',
+      overrideImportCollection: ({collection}) => ({
+        ...collection,
+        slug: CollectionSlug['PayloadImports']
+      }),
+      overrideExportCollection: ({collection, }) => ({
+        ...collection,
+        slug: CollectionSlug['PayloadExports']
+      }),
     }),
     // nestedDocsPlugin({
-    //   collections: [CollectionSlug.ResumeSkills],
+    //   collections: [CollectionSlug['ResumeSkills']],
     //
+    // }),
+    // sentryPlugin({
+    //   enabled: process.env.SENTRY_ENABLED === 'true',
+    //   options: {
+    //   },
+    //   Sentry: SentryInstance,
     // }),
     s3Storage({
       enabled: true,
       collections: {
-        [CollectionSlug.MediaImages]: {
+        [CollectionSlug['MediaImages']]: {
           prefix: 'images',
         },
-        [CollectionSlug.MediaVideos]: {
+        [CollectionSlug['MediaVideos']]: {
           prefix: 'videos',
         },
-        [CollectionSlug.MediaDocuments]: {
+        [CollectionSlug['MediaDocuments']]: {
           prefix: 'documents',
         },
-        [CollectionSlug.MediaAudios]: {
+        [CollectionSlug['MediaAudios']]: {
           prefix: 'audios',
         },
+        [CollectionSlug['ResumeFiles']]:true
       },
       useCompositePrefixes: true,
       clientUploads: true,
@@ -240,12 +274,61 @@ export const config = buildConfig({
       },
     }),
   ],
-  serverURL: process.env.NEXT_PUBLIC_SERVER_URL,
+  serverURL: process.env.SERVER_URL,
   secret: process.env.PAYLOAD_SECRET,
   sharp,
   telemetry: false,
   typescript: {
-    outputFile: path.resolve(dirname, 'src/types/payload.ts'),
+    outputFile: path.resolve(dirname, 'src/types/payload.ts'), schema: [
+      ({ jsonSchema}) => ({
+        ...jsonSchema,
+        definitions: {
+          ...jsonSchema.definitions,
+          SkillType: {
+            title: 'SkillType',
+            type: 'string',
+            enum: Object.values(SKILL_TYPE),
+          },
+          SkillTypeSortable: {
+            title: 'SkillTypeSortable',
+            type: 'object',
+            properties: {
+              id: {
+                $ref: '#/definitions/SkillType',
+              },
+              label: {
+                type: 'string',
+              },
+            },
+            additionalProperties: false,
+            required: [
+              'id',
+              'label',
+            ],
+          },
+          SkillEntrySortable: {
+            title: 'SkillEntrySortable',
+            type: 'object',
+            properties: {
+              id: {
+                type: 'string',
+              },
+              label: {
+                type: 'string',
+              },
+              caption: {
+                type: 'string',
+              },
+            },
+            additionalProperties: false,
+            required: [
+              'id',
+              'label',
+            ],
+          },
+        }
+      })
+    ],
   },
 })
 

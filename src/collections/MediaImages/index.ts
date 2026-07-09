@@ -1,4 +1,5 @@
 import { AdminGroup } from '@custom-types'
+
 import type { AccessArgs, CollectionConfig } from 'payload'
 
 import { anyone } from '@/access/anyone'
@@ -8,9 +9,10 @@ import { CollectionSlug } from '@/types/collections'
 
 import { generateAlt } from './hooks/generateAlt'
 import { generateBlurDataURL } from './hooks/generateBlurDataURL'
+import { generateChecksum } from '@/collections/MediaImages/hooks/generateChecksum'
 
-export const MediaImages: CollectionConfig<CollectionSlug.MediaImages> = {
-  slug: CollectionSlug.MediaImages,
+export const MediaImages: CollectionConfig<CollectionSlug['MediaImages']> = {
+  slug: CollectionSlug['MediaImages'],
   typescript: {
     interface: 'MediaImage',
   },
@@ -20,6 +22,13 @@ export const MediaImages: CollectionConfig<CollectionSlug.MediaImages> = {
   },
   folders: {
     browseByFolder: false,
+  },
+  hooks: {
+    beforeChange: [
+      generateChecksum,
+      generateBlurDataURL,
+      generateAlt,
+    ],
   },
   admin: {
     group: AdminGroup.Media,
@@ -44,7 +53,7 @@ export const MediaImages: CollectionConfig<CollectionSlug.MediaImages> = {
 
       try {
         const { totalDocs } = await payload.find({
-          collection: CollectionSlug.MediaDocuments,
+          collection: CollectionSlug['MediaDocuments'],
           where: {
             thumbnail: {
               contains: id,
@@ -120,14 +129,6 @@ export const MediaImages: CollectionConfig<CollectionSlug.MediaImages> = {
       },
     },
   ],
-  hooks: {
-    beforeChange: [
-      generateBlurDataURL,
-      generateAlt,
-    ],
-  },
-  versions: {
-    drafts: false,
-    maxPerDoc: 0,
-  },
+
+  versions: false,
 }

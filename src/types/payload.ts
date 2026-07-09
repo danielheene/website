@@ -67,15 +67,12 @@ export type PageLayout = ('default' | 'home' | 'resume') | null;
  * via the `definition` "SkillType".
  */
 export type SkillType =
-  | (
-      | 'programmingLanguages'
-      | 'frameworksAndLibraries'
-      | 'toolingAndPlatforms'
-      | 'testingAndQuality'
-      | 'architectureAndPatterns'
-      | 'methodologiesAndWorkingPractices'
-    )
-  | null;
+  | 'programmingLanguages'
+  | 'frameworksAndLibraries'
+  | 'toolingAndPlatforms'
+  | 'testingAndQuality'
+  | 'architectureAndPatterns'
+  | 'methodologiesAndWorkingPractices';
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "CustomerLogos".
@@ -95,7 +92,10 @@ export type ProjectList =
   | {
       preHeading: string;
       heading: string;
-      image?: (string | null) | MediaImage;
+      image?: {
+        relationTo: 'images';
+        value: string | MediaImage;
+      } | null;
       content?: {
         root: {
           type: string;
@@ -186,8 +186,10 @@ export interface Config {
     users: User;
     'resume-skills': ResumeSkillData;
     'resume-jobs': ResumeJobData;
-    exports: Export;
-    imports: Import;
+    'resume-files': ResumeFileData;
+    'resume-documents': ResumeDocumentData;
+    'payload-exports': PayloadExport;
+    'payload-imports': PayloadImport;
     'payload-jobs': PayloadJob;
     'payload-folders': FolderInterface;
     'payload-locked-documents': PayloadLockedDocument;
@@ -198,11 +200,8 @@ export interface Config {
     'blog-tags': {
       relatedPosts: 'blog-posts';
     };
-    'resume-skills': {
-      skilledJobs: 'resume-jobs';
-    };
     'payload-folders': {
-      documentsAndFolders: 'payload-folders' | 'images' | 'documents';
+      documentsAndFolders: 'payload-folders' | 'images';
     };
   };
   collectionsSelect: {
@@ -216,8 +215,10 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     'resume-skills': ResumeSkillsSelect<false> | ResumeSkillsSelect<true>;
     'resume-jobs': ResumeJobsSelect<false> | ResumeJobsSelect<true>;
-    exports: ExportsSelect<false> | ExportsSelect<true>;
-    imports: ImportsSelect<false> | ImportsSelect<true>;
+    'resume-files': ResumeFilesSelect<false> | ResumeFilesSelect<true>;
+    'resume-documents': ResumeDocumentsSelect<false> | ResumeDocumentsSelect<true>;
+    'payload-exports': PayloadExportsSelect<false> | PayloadExportsSelect<true>;
+    'payload-imports': PayloadImportsSelect<false> | PayloadImportsSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -235,11 +236,9 @@ export interface Config {
     'resume-downloads': ResumeDownloadsGlobalData;
     'resume-experience': ResumeExperienceGlobalData;
     'resume-projects': ResumeProjectsGlobalData;
-    'page-header': PageHeaderData;
-    'page-footer': PageFooterData;
+    'settings-site': SiteSettings;
     'settings-pdf-builder': PDFBuilderSettings;
-    'settings-site-meta': SiteConfigurationData;
-    'settings-user-meta': UserConfigurationData;
+    'settings-global-user': GlobalUserSettings;
   };
   globalsSelect: {
     'resume-about-me': ResumeAboutMeSelect<false> | ResumeAboutMeSelect<true>;
@@ -248,11 +247,9 @@ export interface Config {
     'resume-downloads': ResumeDownloadsSelect<false> | ResumeDownloadsSelect<true>;
     'resume-experience': ResumeExperienceSelect<false> | ResumeExperienceSelect<true>;
     'resume-projects': ResumeProjectsSelect<false> | ResumeProjectsSelect<true>;
-    'page-header': PageHeaderSelect<false> | PageHeaderSelect<true>;
-    'page-footer': PageFooterSelect<false> | PageFooterSelect<true>;
+    'settings-site': SettingsSiteSelect<false> | SettingsSiteSelect<true>;
     'settings-pdf-builder': SettingsPdfBuilderSelect<false> | SettingsPdfBuilderSelect<true>;
-    'settings-site-meta': SettingsSiteMetaSelect<false> | SettingsSiteMetaSelect<true>;
-    'settings-user-meta': SettingsUserMetaSelect<false> | SettingsUserMetaSelect<true>;
+    'settings-global-user': SettingsGlobalUserSelect<false> | SettingsGlobalUserSelect<true>;
   };
   locale: null;
   widgets: {
@@ -267,7 +264,7 @@ export interface Config {
   jobs: {
     tasks: {
       generateDocumentThumbnailTask: TaskGenerateDocumentThumbnailTask;
-      generateResumeDocumentTask: TaskGenerateResumeDocumentTask;
+      GenerateResumeDocumentLocalizedData: TaskGenerateResumeDocumentLocalizedData;
       createCollectionExport: TaskCreateCollectionExport;
       createCollectionImport: TaskCreateCollectionImport;
       schedulePublish: TaskSchedulePublish;
@@ -362,9 +359,15 @@ export interface Page {
   id: string;
   title: string;
   slug: string;
+  protected?: boolean | null;
   layout?: PageLayout;
   hero?: {
-    media?: (string | MediaImage)[] | null;
+    media?:
+      | {
+          relationTo: 'images';
+          value: string | MediaImage;
+        }[]
+      | null;
     contentType?: ('title' | 'custom') | null;
     content?: {
       root: {
@@ -474,39 +477,13 @@ export interface FolderInterface {
           relationTo?: 'images';
           value: string | MediaImage;
         }
-      | {
-          relationTo?: 'documents';
-          value: string | MediaDocument;
-        }
     )[];
     hasNextPage?: boolean;
     totalDocs?: number;
   };
-  folderType?: ('images' | 'documents')[] | null;
+  folderType?: 'images'[] | null;
   updatedAt: string;
   createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "documents".
- */
-export interface MediaDocument {
-  id: string;
-  generator?: string | null;
-  thumbnail?: (string | null) | MediaImage;
-  prefix?: string | null;
-  folder?: (string | null) | FolderInterface;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -576,15 +553,25 @@ export interface TwoColumnContentBlock {
  * via the `definition` "ResumeAboutMeBlock".
  */
 export interface ResumeAboutMeBlock {
-  data?:
-    | {
+  caption?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
         [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  portrait?: {
+    relationTo: 'images';
+    value: string | MediaImage;
+  } | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'ResumeAboutMeBlock';
@@ -594,15 +581,21 @@ export interface ResumeAboutMeBlock {
  * via the `definition` "ResumeContactBlock".
  */
 export interface ResumeContactBlock {
-  data?:
-    | {
+  caption?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
         [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'ResumeContactBlock';
@@ -612,15 +605,21 @@ export interface ResumeContactBlock {
  * via the `definition` "ResumeCustomersBlock".
  */
 export interface ResumeCustomersBlock {
-  data?:
-    | {
+  caption?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
         [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'ResumeCustomersBlock';
@@ -630,15 +629,21 @@ export interface ResumeCustomersBlock {
  * via the `definition` "ResumeDownloadsBlock".
  */
 export interface ResumeDownloadsBlock {
-  data?:
-    | {
+  caption?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
         [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'ResumeDownloadsBlock';
@@ -648,15 +653,21 @@ export interface ResumeDownloadsBlock {
  * via the `definition` "ResumeExperienceBlock".
  */
 export interface ResumeExperienceBlock {
-  data?:
-    | {
+  caption?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
         [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'ResumeExperienceBlock';
@@ -666,15 +677,21 @@ export interface ResumeExperienceBlock {
  * via the `definition` "ResumeProjectsBlock".
  */
 export interface ResumeProjectsBlock {
-  data?:
-    | {
+  caption?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
         [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'ResumeProjectsBlock';
@@ -686,10 +703,23 @@ export interface ResumeProjectsBlock {
 export interface BlogPost {
   id: string;
   title: string;
-  heroImage?: (string | null) | MediaImage;
+  heroImage?: {
+    relationTo: 'images';
+    value: string | MediaImage;
+  } | null;
   slug: string;
-  tags?: (string | BlogTag)[] | null;
-  relatedPosts?: (string | BlogPost)[] | null;
+  tags?:
+    | {
+        relationTo: 'blog-tags';
+        value: string | BlogTag;
+      }[]
+    | null;
+  relatedPosts?:
+    | {
+        relationTo: 'blog-posts';
+        value: string | BlogPost;
+      }[]
+    | null;
   content?: {
     root: {
       type: string;
@@ -726,7 +756,10 @@ export interface BlogTag {
   id: string;
   _order?: string | null;
   title: string;
-  heroImage?: (string | null) | MediaImage;
+  heroImage?: {
+    relationTo: 'images';
+    value: string | MediaImage;
+  } | null;
   slug: string;
   highlighted?: boolean | null;
   content?: {
@@ -797,6 +830,30 @@ export interface MediaVideo {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "documents".
+ */
+export interface MediaDocument {
+  id: string;
+  generator?: string | null;
+  thumbnail?: {
+    relationTo: 'images';
+    value: string | MediaImage;
+  } | null;
+  prefix?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "audios".
  */
 export interface MediaAudio {
@@ -836,7 +893,10 @@ export interface MediaAudio {
 export interface User {
   id: string;
   name?: string | null;
-  avatar?: (string | null) | MediaImage;
+  avatar?: {
+    relationTo: 'images';
+    value: string | MediaImage;
+  } | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -862,7 +922,6 @@ export interface User {
  */
 export interface ResumeSkillData {
   id: string;
-  _order?: string | null;
   name: {
     en: string;
     de: string;
@@ -871,15 +930,11 @@ export interface ResumeSkillData {
     en?: string | null;
     de?: string | null;
   };
-  title?: string | null;
-  skilledJobs?: {
-    docs?: (string | ResumeJobData)[];
-    hasNextPage?: boolean;
-    totalDocs?: number;
-  };
-  slug: string;
+  name_label?: string | null;
+  caption_label?: string | null;
   type?: SkillType;
-  experienceInterval?: number | null;
+  availableInFrontend?: boolean | null;
+  availableInDocument?: boolean | null;
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -930,7 +985,10 @@ export interface ResumeJobData {
         id?: string | null;
       }[]
     | null;
-  skills: (string | ResumeSkillData)[];
+  skills: {
+    relationTo: 'resume-skills';
+    value: string | ResumeSkillData;
+  }[];
   startDate: string;
   endDate?: string | null;
   employmentInterval?: number | null;
@@ -941,9 +999,60 @@ export interface ResumeJobData {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "exports".
+ * via the `definition` "resume-files".
  */
-export interface Export {
+export interface ResumeFileData {
+  id: string;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resume-documents".
+ */
+export interface ResumeDocumentData {
+  id: string;
+  title: string;
+  slug: string;
+  checksum_en?: string | null;
+  checksum_de?: string | null;
+  document_en?: {
+    relationTo: 'resume-files';
+    value: string | ResumeFileData;
+  } | null;
+  document_de?: {
+    relationTo: 'resume-files';
+    value: string | ResumeFileData;
+  } | null;
+  thumbnails_en?:
+    | {
+        relationTo: 'resume-files';
+        value: string | ResumeFileData;
+      }[]
+    | null;
+  thumbnails_de?:
+    | {
+        relationTo: 'resume-files';
+        value: string | ResumeFileData;
+      }[]
+    | null;
+  data_en?: string | null;
+  data_de?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-exports".
+ */
+export interface PayloadExport {
   id: string;
   name?: string | null;
   format: 'csv' | 'json';
@@ -978,9 +1087,9 @@ export interface Export {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "imports".
+ * via the `definition` "payload-imports".
  */
-export interface Import {
+export interface PayloadImport {
   id: string;
   collectionSlug: string;
   importMode?: ('create' | 'update' | 'upsert') | null;
@@ -1068,7 +1177,7 @@ export interface PayloadJob {
         taskSlug:
           | 'inline'
           | 'generateDocumentThumbnailTask'
-          | 'generateResumeDocumentTask'
+          | 'GenerateResumeDocumentLocalizedData'
           | 'createCollectionExport'
           | 'createCollectionImport'
           | 'schedulePublish';
@@ -1108,7 +1217,7 @@ export interface PayloadJob {
     | (
         | 'inline'
         | 'generateDocumentThumbnailTask'
-        | 'generateResumeDocumentTask'
+        | 'GenerateResumeDocumentLocalizedData'
         | 'createCollectionExport'
         | 'createCollectionImport'
         | 'schedulePublish'
@@ -1164,12 +1273,16 @@ export interface PayloadLockedDocument {
         value: string | User;
       } | null)
     | ({
-        relationTo: 'resume-skills';
-        value: string | ResumeSkillData;
-      } | null)
-    | ({
         relationTo: 'resume-jobs';
         value: string | ResumeJobData;
+      } | null)
+    | ({
+        relationTo: 'resume-files';
+        value: string | ResumeFileData;
+      } | null)
+    | ({
+        relationTo: 'resume-documents';
+        value: string | ResumeDocumentData;
       } | null)
     | ({
         relationTo: 'payload-folders';
@@ -1324,7 +1437,6 @@ export interface DocumentsSelect<T extends boolean = true> {
   generator?: T;
   thumbnail?: T;
   prefix?: T;
-  folder?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1363,6 +1475,7 @@ export interface AudiosSelect<T extends boolean = true> {
 export interface PagesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
+  protected?: T;
   layout?: T;
   hero?:
     | T
@@ -1412,7 +1525,6 @@ export interface UsersSelect<T extends boolean = true> {
  * via the `definition` "resume-skills_select".
  */
 export interface ResumeSkillsSelect<T extends boolean = true> {
-  _order?: T;
   name?:
     | T
     | {
@@ -1425,11 +1537,11 @@ export interface ResumeSkillsSelect<T extends boolean = true> {
         en?: T;
         de?: T;
       };
-  title?: T;
-  skilledJobs?: T;
-  slug?: T;
+  name_label?: T;
+  caption_label?: T;
   type?: T;
-  experienceInterval?: T;
+  availableInFrontend?: T;
+  availableInDocument?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -1464,9 +1576,42 @@ export interface ResumeJobsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "exports_select".
+ * via the `definition` "resume-files_select".
  */
-export interface ExportsSelect<T extends boolean = true> {
+export interface ResumeFilesSelect<T extends boolean = true> {
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resume-documents_select".
+ */
+export interface ResumeDocumentsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  checksum_en?: T;
+  checksum_de?: T;
+  document_en?: T;
+  document_de?: T;
+  thumbnails_en?: T;
+  thumbnails_de?: T;
+  data_en?: T;
+  data_de?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-exports_select".
+ */
+export interface PayloadExportsSelect<T extends boolean = true> {
   name?: T;
   format?: T;
   limit?: T;
@@ -1492,9 +1637,9 @@ export interface ExportsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "imports_select".
+ * via the `definition` "payload-imports_select".
  */
-export interface ImportsSelect<T extends boolean = true> {
+export interface PayloadImportsSelect<T extends boolean = true> {
   collectionSlug?: T;
   importMode?: T;
   matchField?: T;
@@ -1603,7 +1748,10 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 export interface ResumeAboutMeGlobalData {
   id: string;
   title: string;
-  portrait?: (string | null) | MediaImage;
+  portrait?: {
+    relationTo: 'images';
+    value: string | MediaImage;
+  } | null;
   content?: {
     root: {
       type: string;
@@ -1679,24 +1827,6 @@ export interface ResumeCustomersGlobalData {
  */
 export interface ResumeDownloadsGlobalData {
   id: string;
-  title: string;
-  document_en?: (string | null) | MediaDocument;
-  document_de?: (string | null) | MediaDocument;
-  caption?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1722,7 +1852,10 @@ export interface ResumeExperienceGlobalData {
     };
     [k: string]: unknown;
   } | null;
-  jobs?: (string | null) | ResumeJobData;
+  jobs?: {
+    relationTo: 'resume-jobs';
+    value: string | ResumeJobData;
+  } | null;
   skillSummary?: {
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
@@ -1764,74 +1897,21 @@ export interface ResumeProjectsGlobalData {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "page-header".
+ * via the `definition` "settings-site".
  */
-export interface PageHeaderData {
+export interface SiteSettings {
   id: string;
-  mainNavigation?:
-    | {
-        link: LinkFieldData;
-        id?: string | null;
-      }[]
-    | null;
+  general: GeneralSettings;
+  header?: HeaderSettings;
+  footer?: FooterSettings;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "page-footer".
+ * via the `definition` "GeneralSettings".
  */
-export interface PageFooterData {
-  id: string;
-  navGroups?:
-    | {
-        title?: string | null;
-        entries?:
-          | {
-              link: LinkFieldData;
-              id?: string | null;
-            }[]
-          | null;
-        id?: string | null;
-      }[]
-    | null;
-  legalLinks?: {
-    title?: string | null;
-    entries?:
-      | {
-          link: LinkFieldData;
-          id?: string | null;
-        }[]
-      | null;
-    id?: string | null;
-  };
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "settings-pdf-builder".
- */
-export interface PDFBuilderSettings {
-  id: string;
-  fileName?: string | null;
-  skillTypeOrder?: (
-    | 'programmingLanguages'
-    | 'frameworksAndLibraries'
-    | 'toolingAndPlatforms'
-    | 'testingAndQuality'
-    | 'architectureAndPatterns'
-    | 'methodologiesAndWorkingPractices'
-  )[];
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "settings-site-meta".
- */
-export interface SiteConfigurationData {
-  id: string;
+export interface GeneralSettings {
   siteName?: string | null;
   /**
    * This template is used for generating the title tag value on each page. Title refers to the actual document title which is suffixed with siteName.
@@ -1849,31 +1929,157 @@ export interface SiteConfigurationData {
    * This description is used for generating website metadata.This description is also used as fallback if no document description is available.
    */
   description?: string | null;
-  image?: (string | null) | MediaImage;
+  image?: {
+    relationTo: 'images';
+    value: string | MediaImage;
+  } | null;
+  errorHero?:
+    | ({
+        relationTo: 'videos';
+        value: string | MediaVideo;
+      } | null)
+    | ({
+        relationTo: 'images';
+        value: string | MediaImage;
+      } | null);
   /**
    * This URL is used for generating website metadata.
    */
   searchUrl?: string | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "settings-user-meta".
+ * via the `definition` "HeaderSettings".
  */
-export interface UserConfigurationData {
+export interface HeaderSettings {
+  mainNavigation?: {
+    entries?:
+      | {
+          link: LinkFieldData;
+          id?: string | null;
+        }[]
+      | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FooterSettings".
+ */
+export interface FooterSettings {
+  column1?: {
+    isActive?: boolean | null;
+    title?: string | null;
+    entries?:
+      | {
+          link: LinkFieldData;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  column2?: {
+    isActive?: boolean | null;
+    title?: string | null;
+    entries?:
+      | {
+          link: LinkFieldData;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  column3?: {
+    isActive?: boolean | null;
+    title?: string | null;
+    entries?:
+      | {
+          link: LinkFieldData;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  legalPages?: {
+    entries?:
+      | {
+          link: LinkFieldData;
+          id?: string | null;
+        }[]
+      | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings-pdf-builder".
+ */
+export interface PDFBuilderSettings {
+  id: string;
+  /**
+   * The document name template for the documents collection.
+   * The document contains all meta data, file references and the data which was used to generate the PDFs.
+   */
+  documentNameTemplate?: string | null;
+  /**
+   * The filename template for the generated PDF which must satisfy both locales and result in two different filenames.
+   * To get an full overview of all available variables or filter functions use the info icon.
+   */
+  fileNameTemplate?: string | null;
+  generateThrottle?: number | null;
+  timeoutBetweenJobs?: number | null;
+  maximumRetries?: number | null;
+  skillSorting?: SkillSorting;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+export interface SkillSorting {
+  skillTypeSortable: SkillTypeSortable[];
+  programmingLanguages: SkillEntrySortable[];
+  frameworksAndLibraries: SkillEntrySortable[];
+  toolingAndPlatforms: SkillEntrySortable[];
+  testingAndQuality: SkillEntrySortable[];
+  architectureAndPatterns: SkillEntrySortable[];
+  methodologiesAndWorkingPractices: SkillEntrySortable[];
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SkillTypeSortable".
+ */
+export interface SkillTypeSortable {
+  id: SkillType;
+  label: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SkillEntrySortable".
+ */
+export interface SkillEntrySortable {
+  id: string;
+  label: string;
+  caption?: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings-global-user".
+ */
+export interface GlobalUserSettings {
   id: string;
   /**
    * Upload your profile picture here. You can choose between a regular and a duotone version.
    */
   portrait?: {
-    regular?: (string | null) | MediaImage;
-    duotone?: (string | null) | MediaImage;
+    regular?: {
+      relationTo: 'images';
+      value: string | MediaImage;
+    } | null;
+    duotone?: {
+      relationTo: 'images';
+      value: string | MediaImage;
+    } | null;
   };
   url?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
   name?: string | null;
-  jobTitle?: string | null;
   gender?: string | null;
+  pronouns?: string | null;
+  jobTitle?: string | null;
   homeLocation?: string | null;
   birthPlace?: string | null;
   birthDate?: string | null;
@@ -1992,10 +2198,6 @@ export interface CustomerLogosSelect<T extends boolean = true> {
  * via the `definition` "resume-downloads_select".
  */
 export interface ResumeDownloadsSelect<T extends boolean = true> {
-  title?: T;
-  document_en?: T;
-  document_de?: T;
-  caption?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -2038,18 +2240,45 @@ export interface ProjectListSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "page-header_select".
+ * via the `definition` "settings-site_select".
  */
-export interface PageHeaderSelect<T extends boolean = true> {
-  mainNavigation?:
-    | T
-    | {
-        link?: T | LinkFieldDataSelect<T>;
-        id?: T;
-      };
+export interface SettingsSiteSelect<T extends boolean = true> {
+  general?: T | GeneralSettingsSelect<T>;
+  header?: T | HeaderSettingsSelect<T>;
+  footer?: T | FooterSettingsSelect<T>;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GeneralSettings_select".
+ */
+export interface GeneralSettingsSelect<T extends boolean = true> {
+  siteName?: T;
+  titleTemplate?: T;
+  siteUrl?: T;
+  category?: T;
+  description?: T;
+  image?: T;
+  errorHero?: T;
+  searchUrl?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeaderSettings_select".
+ */
+export interface HeaderSettingsSelect<T extends boolean = true> {
+  mainNavigation?:
+    | T
+    | {
+        entries?:
+          | T
+          | {
+              link?: T | LinkFieldDataSelect<T>;
+              id?: T;
+            };
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2066,12 +2295,13 @@ export interface LinkFieldDataSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "page-footer_select".
+ * via the `definition` "FooterSettings_select".
  */
-export interface PageFooterSelect<T extends boolean = true> {
-  navGroups?:
+export interface FooterSettingsSelect<T extends boolean = true> {
+  column1?:
     | T
     | {
+        isActive?: T;
         title?: T;
         entries?:
           | T
@@ -2079,11 +2309,11 @@ export interface PageFooterSelect<T extends boolean = true> {
               link?: T | LinkFieldDataSelect<T>;
               id?: T;
             };
-        id?: T;
       };
-  legalLinks?:
+  column2?:
     | T
     | {
+        isActive?: T;
         title?: T;
         entries?:
           | T
@@ -2091,44 +2321,50 @@ export interface PageFooterSelect<T extends boolean = true> {
               link?: T | LinkFieldDataSelect<T>;
               id?: T;
             };
-        id?: T;
       };
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
+  column3?:
+    | T
+    | {
+        isActive?: T;
+        title?: T;
+        entries?:
+          | T
+          | {
+              link?: T | LinkFieldDataSelect<T>;
+              id?: T;
+            };
+      };
+  legalPages?:
+    | T
+    | {
+        entries?:
+          | T
+          | {
+              link?: T | LinkFieldDataSelect<T>;
+              id?: T;
+            };
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "settings-pdf-builder_select".
  */
 export interface SettingsPdfBuilderSelect<T extends boolean = true> {
-  fileName?: T;
-  skillTypeOrder?: T;
+  documentNameTemplate?: T;
+  fileNameTemplate?: T;
+  generateThrottle?: T;
+  timeoutBetweenJobs?: T;
+  maximumRetries?: T;
+  skillSorting?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "settings-site-meta_select".
+ * via the `definition` "settings-global-user_select".
  */
-export interface SettingsSiteMetaSelect<T extends boolean = true> {
-  siteName?: T;
-  titleTemplate?: T;
-  siteUrl?: T;
-  category?: T;
-  description?: T;
-  image?: T;
-  searchUrl?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "settings-user-meta_select".
- */
-export interface SettingsUserMetaSelect<T extends boolean = true> {
+export interface SettingsGlobalUserSelect<T extends boolean = true> {
   portrait?:
     | T
     | {
@@ -2136,9 +2372,12 @@ export interface SettingsUserMetaSelect<T extends boolean = true> {
         duotone?: T;
       };
   url?: T;
+  firstName?: T;
+  lastName?: T;
   name?: T;
-  jobTitle?: T;
   gender?: T;
+  pronouns?: T;
+  jobTitle?: T;
   homeLocation?: T;
   birthPlace?: T;
   birthDate?: T;
@@ -2271,13 +2510,35 @@ export interface TaskGenerateDocumentThumbnailTask {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TaskGenerateResumeDocumentTask".
+ * via the `definition` "TaskGenerateResumeDocumentLocalizedData".
  */
-export interface TaskGenerateResumeDocumentTask {
+export interface TaskGenerateResumeDocumentLocalizedData {
   input: {
     locale: string;
+    fileName: string;
+    fileUrl: string;
+    creationDate: string;
   };
-  output?: unknown;
+  output: {
+    data?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    error?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2299,8 +2560,10 @@ export interface TaskCreateCollectionExport {
       | 'users'
       | 'resume-skills'
       | 'resume-jobs'
-      | 'exports'
-      | 'imports';
+      | 'resume-files'
+      | 'resume-documents'
+      | 'payload-exports'
+      | 'payload-imports';
     drafts?: ('yes' | 'no') | null;
     exportCollection: string;
     fields?: string[] | null;

@@ -1,10 +1,10 @@
+import { type ComponentPropsWithoutRef, forwardRef, type JSX } from 'react'
+
 import {
   addAPIProvider,
   Icon as IconifyIconComponent,
   type IconifyIconHTMLElement,
 } from '@iconify-icon/react'
-
-import { type ComponentPropsWithoutRef, forwardRef, type JSX } from 'react'
 
 addAPIProvider('', {
   resources: [

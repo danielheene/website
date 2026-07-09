@@ -8,8 +8,8 @@ import { TitleField } from '@/fields/Title'
 import { revalidateResumeSectionGlobalHook } from '@/lib/hooks/revalidateResumeSection'
 import { GlobalSlug } from '@/types/globals'
 
-export const ResumeContact: GlobalConfig<GlobalSlug.ResumeContact> = {
-  slug: GlobalSlug.ResumeContact,
+export const ResumeContact: GlobalConfig<GlobalSlug['ResumeContact']> = {
+  slug: GlobalSlug['ResumeContact'],
   label: 'Contact',
   access: {
     read: authenticatedOrPublished,
@@ -18,7 +18,7 @@ export const ResumeContact: GlobalConfig<GlobalSlug.ResumeContact> = {
   },
   hooks: {
     afterChange: [
-      revalidateResumeSectionGlobalHook(GlobalSlug.ResumeContact),
+      revalidateResumeSectionGlobalHook(GlobalSlug['ResumeContact']),
     ],
   },
   admin: {

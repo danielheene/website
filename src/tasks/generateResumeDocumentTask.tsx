@@ -25,11 +25,11 @@ export const generateResumeDocumentTask: TaskConfig<'generateResumeDocumentTask'
     const locale = input?.locale === 'de' ? 'de' : 'en'
     //
     // const documentData = await getResumeDocumentData(locale)
-    // const userData = documentData?.userConfigurationData
+    // const userData = documentData?.globalUserSettings
     //
     // console.info(`fetched document data for locale: ${locale}`)
     // const fileName = generateUniqueResumeDocumentName({
-    //   authorName: documentData?.userConfigurationData?.name,
+    //   authorName: documentData?.globalUserSettings?.name,
     //   locale,
     // })
     // console.info(`generated unique document name: ${fileName}`)
@@ -45,7 +45,7 @@ export const generateResumeDocumentTask: TaskConfig<'generateResumeDocumentTask'
     //       fileName: fileName,
     //       fileId: '',
     //       creationDate: new Date(),
-    //       serverUrl: process.env.NEXT_PUBLIC_SERVER_URL,
+    //       serverUrl: process.env.SERVER_URL,
     //     }}
     //     {...documentData}
     //   />,
@@ -70,7 +70,7 @@ export const generateResumeDocumentTask: TaskConfig<'generateResumeDocumentTask'
     const transactionID = await req.payload.db.beginTransaction()
     try {
       const document = await req.payload.create({
-        collection: CollectionSlug.MediaDocuments,
+        collection: CollectionSlug['MediaDocuments'],
         data,
         file,
         req: {
@@ -79,7 +79,7 @@ export const generateResumeDocumentTask: TaskConfig<'generateResumeDocumentTask'
       })
 
       await req.payload.updateGlobal({
-        slug: GlobalSlug.ResumeDownloads,
+        slug: GlobalSlug['ResumeDownloads'],
         data: {
           [`download_${locale}`]: document.id,
         },
@@ -92,7 +92,7 @@ export const generateResumeDocumentTask: TaskConfig<'generateResumeDocumentTask'
       })
 
       // await req.payload.update({
-      //   collection: CollectionSlug.MediaDocuments,
+      //   collection: CollectionSlug['MediaDocuments'],
       //   where: {
       //     and: [
       //       {

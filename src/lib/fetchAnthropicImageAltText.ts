@@ -21,7 +21,7 @@ export const fetchAnthropicImageAltText = async (input: SharpInput): Promise<str
   })
 
   const { text } = await generateText({
-    model: anthropic('claude-sonnet-4-6'),
+    model: anthropic('claude-haiku-4-5'),
     system: dedent`
       Write a short but meaningful sentence that explains the attached image and helps improve its accessibility by describing the content of the image, adapted for visually impaired people or users of screen readers.
 

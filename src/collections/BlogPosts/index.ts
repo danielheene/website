@@ -1,5 +1,6 @@
+import { CollectionConfig } from 'payload'
+
 import { AdminGroup } from '@custom-types'
-import type { CollectionConfig } from 'payload'
 
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
@@ -13,8 +14,8 @@ import type { BlogPost } from '@/types/payload'
 
 import { revalidateBlogPost } from './hooks/revalidateBlogPost'
 
-export const BlogPosts: CollectionConfig<CollectionSlug.BlogPosts> = {
-  slug: CollectionSlug.BlogPosts,
+export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
+  slug: CollectionSlug['BlogPosts'],
   labels: {
     singular: 'Post',
     plural: 'Posts',
@@ -41,11 +42,9 @@ export const BlogPosts: CollectionConfig<CollectionSlug.BlogPosts> = {
     ],
     disableCopyToLocale: true,
     livePreview: {
-      url: ({ data }) =>
-        generatePreviewPath(CollectionSlug.BlogPosts, data.slug),
+      url: ({ data }) => generatePreviewPath(CollectionSlug['BlogPosts'], data.slug),
     },
-    preview: (data: Partial<BlogPost>) =>
-      generatePreviewPath(CollectionSlug.BlogPosts, data.slug),
+    preview: (data: Partial<BlogPost>) => generatePreviewPath(CollectionSlug['BlogPosts'], data.slug),
   },
   hooks: {
     afterChange: [
@@ -62,7 +61,9 @@ export const BlogPosts: CollectionConfig<CollectionSlug.BlogPosts> = {
     {
       name: 'heroImage',
       type: 'upload',
-      relationTo: CollectionSlug.MediaImages,
+      relationTo: [
+        CollectionSlug['MediaImages'],
+      ],
       filterOptions: {
         mimeType: {
           contains: 'image',
@@ -85,7 +86,9 @@ export const BlogPosts: CollectionConfig<CollectionSlug.BlogPosts> = {
         allowEdit: true,
       },
       hasMany: true,
-      relationTo: CollectionSlug.BlogTags,
+      relationTo: [
+        CollectionSlug['BlogTags'],
+      ],
     },
     {
       name: 'relatedPosts',
@@ -103,7 +106,9 @@ export const BlogPosts: CollectionConfig<CollectionSlug.BlogPosts> = {
         }
       },
       hasMany: true,
-      relationTo: CollectionSlug.BlogPosts,
+      relationTo: [
+        CollectionSlug['BlogPosts'],
+      ],
     },
 
     /* -------------- Content -------------- */

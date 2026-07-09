@@ -1,13 +1,14 @@
+import type { CollectionConfig } from 'payload'
+
 import { AdminGroup } from '@custom-types'
 import { hoursToSeconds, minutesToMilliseconds } from 'date-fns'
-import type { CollectionConfig } from 'payload'
 
 import { CollectionSlug } from '@/types/collections'
 
 import { loginAfterCreate } from './hooks/loginAfterCreate'
 
 export const Users: CollectionConfig = {
-  slug: CollectionSlug.Users,
+  slug: CollectionSlug['Users'],
 
   admin: {
     custom: {
@@ -24,7 +25,9 @@ export const Users: CollectionConfig = {
     {
       type: 'upload',
       name: 'avatar',
-      relationTo: CollectionSlug.MediaImages,
+      relationTo: [
+        CollectionSlug['MediaImages'],
+      ],
     },
   ],
   hooks: {

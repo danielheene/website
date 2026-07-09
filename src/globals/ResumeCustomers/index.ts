@@ -9,8 +9,8 @@ import { TitleField } from '@/fields/Title'
 import { revalidateResumeSectionGlobalHook } from '@/lib/hooks/revalidateResumeSection'
 import { GlobalSlug } from '@/types/globals'
 
-export const ResumeCustomers: GlobalConfig<GlobalSlug.ResumeCustomers> = {
-  slug: GlobalSlug.ResumeCustomers,
+export const ResumeCustomers: GlobalConfig<GlobalSlug['ResumeCustomers']> = {
+  slug: GlobalSlug['ResumeCustomers'],
   label: 'Customers',
   access: {
     read: authenticatedOrPublished,
@@ -19,7 +19,7 @@ export const ResumeCustomers: GlobalConfig<GlobalSlug.ResumeCustomers> = {
   },
   hooks: {
     afterChange: [
-      revalidateResumeSectionGlobalHook(GlobalSlug.ResumeCustomers),
+      revalidateResumeSectionGlobalHook(GlobalSlug['ResumeCustomers']),
     ],
   },
   admin: {

@@ -1,22 +1,22 @@
-import config from '@payload-config'
 import type { MetadataRoute } from 'next'
+import config from '@payload-config'
 import { getPayload } from 'payload'
 
 import { generateContentURL } from '@/lib/generateContentURL'
 import { CollectionSlug } from '@/types/collections'
 
 type RenderedCollection =
-  | CollectionSlug.Pages
-  | CollectionSlug.BlogPosts
-  | CollectionSlug.BlogTags
+  | CollectionSlug['Pages']
+  | CollectionSlug['BlogPosts']
+  | CollectionSlug['BlogTags']
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const pages = await getCollectionSitemapEntries(CollectionSlug.Pages)
+  const pages = await getCollectionSitemapEntries(CollectionSlug['Pages'])
   // const posts = await getCollectionSitemapEntries(
-  //   CollectionSlug.BlogPosts,
+  //   CollectionSlug['BlogPosts'],
   //   true,
   // )
-  // const tags = await getCollectionSitemapEntries(CollectionSlug.BlogTags, true)
+  // const tags = await getCollectionSitemapEntries(CollectionSlug['BlogTags'], true)
 
   return [
     ...pages,

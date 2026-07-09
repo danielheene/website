@@ -25,7 +25,7 @@ import { GlobalData, GlobalSlug } from '@/types/globals'
  * ```
  */
 export function generatePersonSchema(
-  data: GlobalData<GlobalSlug.SettingsUserConfiguration>,
+  data: GlobalData<GlobalSlug['GlobalUserSettings']>,
 ): WithContext<Person> {
   const person: WithContext<Person> = {
     '@context': 'https://schema.org',

@@ -1,11 +1,7 @@
 'use server'
 
-import { renderToBuffer } from '@react-pdf/renderer'
+import { ZodSafeParseResult } from 'zod'
 
-import { ZodSafeParseError, ZodSafeParseResult, z } from 'zod'
-import { ZodParsedType } from 'zod/v3'
-
-import { ResumeDocument } from '@pdf/index'
 import { buildDocumentFooter } from '@pdf/lib/buildDocumentFooter'
 import { buildDocumentHeader } from '@pdf/lib/buildDocumentHeader'
 import { buildIntroductionSection } from '@pdf/lib/buildIntroductionSection'
@@ -14,7 +10,7 @@ import { buildSkillSections } from '@pdf/lib/buildSkillSections'
 import { buildWorkExperienceSection } from '@pdf/lib/buildWorkExperienceSection'
 import { documentSchema } from '@pdf/schemas'
 import { DocumentData } from '@pdf/types'
-import { getUserConfigurationData } from '@/lib/getUserConfigurationData'
+import { getGlobalUserSettings } from '@/lib/getGlobalUserSettings'
 import { type Locale, translate } from '@/lib/i18n'
 
 interface GenerateResumeDocumentArgs {
@@ -31,7 +27,7 @@ export const buildResumeDocumentData = async (
   const locale: Locale = args?.locale === 'de' ? 'de' : 'en'
   const language = locale === 'en' ? 'en_EN' : 'de_DE'
 
-  const { name } = await getUserConfigurationData(locale)
+  const { name } = await getGlobalUserSettings(locale)
 
   return documentSchema.safeParse({
     isPreview: false,

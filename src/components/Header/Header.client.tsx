@@ -1,15 +1,15 @@
 'use client'
 
-import Link from 'next/link'
 import React from 'react'
+import Link from 'next/link'
 
 import { CMSLink } from '@/components/Link'
 import { Logo } from '@/components/Logo'
 import { cn } from '@/lib/cn'
-import type { PageHeaderData } from '@/types/payload'
+import type { HeaderSettings } from '@/types/payload'
 
 interface HeaderClientProps {
-  mainNavigation?: PageHeaderData['mainNavigation']
+  mainNavigation?: HeaderSettings['mainNavigation']
 }
 
 export const HeaderClient = ({ mainNavigation }: HeaderClientProps) => {
@@ -44,12 +44,9 @@ export const HeaderClient = ({ mainNavigation }: HeaderClientProps) => {
         </Link>
 
         <ul className="flex flex-row md:gap-4 lg:gap-8 items-center">
-          {mainNavigation?.map(({ id, link }) => (
+          {mainNavigation?.entries?.map(({ id, link }) => (
             <li key={id}>
-              <CMSLink
-                {...link}
-                className="text-foreground hover:text-current"
-              />
+              <CMSLink {...link} className="text-foreground hover:text-current" />
             </li>
           ))}
         </ul>

@@ -2,11 +2,11 @@ import { ImageResponse } from 'next/og'
 
 import { cn } from '@/lib/cn'
 //
-// const interMedium = fetch(new URL('/fonts/pp-frama/pp-frama-500-normal.ttf', process.env.NEXT_PUBLIC_SERVER_URL)).then((res) =>
+// const interMedium = fetch(new URL('/fonts/pp-frama/pp-frama-500-normal.ttf', process.env.SERVER_URL)).then((res) =>
 //   res.arrayBuffer(),
 // )
 //
-// const interRegular = fetch(new URL('/fonts/pp-frama-text/pp-frama-text-400-normal.ttf', process.env.NEXT_PUBLIC_SERVER_URL)).then((res) =>
+// const interRegular = fetch(new URL('/fonts/pp-frama-text/pp-frama-text-400-normal.ttf', process.env.SERVER_URL)).then((res) =>
 //   res.arrayBuffer(),
 // )
 
@@ -24,7 +24,10 @@ export default async function Image() {
 
   return new ImageResponse(
     <div
-      tw={cn('relative flex h-full w-full items-end px-10 pt-20', mode === 'dark' ? 'bg-neutral-900 text-white' : 'bg-white text-black')}
+      tw={cn(
+        'relative flex h-full w-full items-end px-10 pt-20',
+        mode === 'dark' ? 'bg-neutral-900 text-white' : 'bg-white text-black',
+      )}
     >
       <div tw="flex flex-col pb-20">
         <div tw="flex items-center">
@@ -58,9 +61,17 @@ export default async function Image() {
           <span tw="ml-4 text-xl font-medium">Shadcn UI Blocks</span>
         </div>
 
-        <h1 tw="mt-8 text-6xl leading-[1.2] tracking-tighter max-w-xl">Beautifully Designed Shadcn UI Blocks</h1>
-        <p tw={cn('my-0 max-w-xl text-2xl leading-relaxed', mode === 'dark' ? 'text-neutral-400' : 'text-neutral-500')}>
-          Shadcn UI Blocks is a collection of beautifully designed block and components for your next project.
+        <h1 tw="mt-8 text-6xl leading-[1.2] tracking-tighter max-w-xl">
+          Beautifully Designed Shadcn UI Blocks
+        </h1>
+        <p
+          tw={cn(
+            'my-0 max-w-xl text-2xl leading-relaxed',
+            mode === 'dark' ? 'text-neutral-400' : 'text-neutral-500',
+          )}
+        >
+          Shadcn UI Blocks is a collection of beautifully designed block and components for your
+          next project.
         </p>
       </div>
 
@@ -74,8 +85,14 @@ export default async function Image() {
         <img
           alt="Akash Moradiya"
           src="https://cdn.pixabay.com/photo/2020/12/14/15/48/stair-5831253_1280.jpg"
-          style={{ objectFit: 'cover', objectPosition: 'top left' }}
-          tw={cn('rounded-tl-lg border border-r-0 border-b-0', mode === 'dark' ? 'border-neutral-700/70' : 'border-neutral-200')}
+          style={{
+            objectFit: 'cover',
+            objectPosition: 'top left',
+          }}
+          tw={cn(
+            'rounded-tl-lg border border-r-0 border-b-0',
+            mode === 'dark' ? 'border-neutral-700/70' : 'border-neutral-200',
+          )}
         />
       </div>
     </div>,

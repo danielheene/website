@@ -17,7 +17,7 @@ This document captures project-specific knowledge to accelerate local setup, tes
 
 - Environment variables
   - A minimal local setup requires copying `.env.example` to `.env.local` and filling secrets. In addition to entries shown in `.env.example`, the codebase references the following variables in `src/payload.config.ts` and `next.config.ts`:
-    - `NEXT_PUBLIC_SERVER_URL` — Used for Payload CORS/CSRF and image remotePatterns.
+    - `SERVER_URL` — Used for Payload CORS/CSRF and image remotePatterns.
     - `NEXT_PUBLIC_UMAMI_URL`, `UMAMI_WEBSITE_ID` — Optional analytics rewrite and public ID.
     - Email (UseSend): `USESEND_API_KEY`, `USESEND_URL`, `USESEND_DEFAULT_FROM_ADDRESS`, `USESEND_DEFAULT_FROM_NAME`.
     - Redis KV: `REDIS_URL`.

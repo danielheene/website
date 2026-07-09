@@ -2,6 +2,7 @@
 
 // import { MediaBlock } from '@/blocks/MediaBlock/Component'
 
+import type { HTMLAttributes } from 'react'
 import type {
   DefaultNodeTypes,
   DefaultTypedEditorState,
@@ -13,15 +14,15 @@ import {
   type JSXConvertersFunction,
   LinkJSXConverter,
 } from '@payloadcms/richtext-lexical/react'
-import type { HTMLAttributes } from 'react'
 
-import { generateContentPath } from '@/lib/generateContentPath'
-import type { BlockData } from '@/types/blocks'
 // import { CodeBlock, CodeBlockProps } from '@/blocks/Code/Component'
 // import type { BannerBlock as BannerBlockProps, CallToActionBlock as CTABlockProps, MediaBlock as MediaBlockProps } from '@/payload-types'
 // import { BannerBlock } from '@/blocks/Banner/Component'
 // import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { cn } from '@/lib/cn'
+import { generateContentPath } from '@/lib/generateContentPath'
+import { generateContentURL } from '@/lib/generateContentURL'
+import type { BlockData } from '@/types/blocks'
 
 type NodeTypes = DefaultNodeTypes | SerializedBlockNode<BlockData>
 
@@ -32,18 +33,19 @@ const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
     throw new Error('Expected value to be an object')
   }
 
-  return generateContentPath(relationTo, value.slug as string)
+  return generateContentURL({
+    collection: relationTo,
+    slug: value.slug as string,
+  })
 }
 
-const jsxConverters: JSXConvertersFunction<NodeTypes> = ({
-  defaultConverters,
-}) => ({
+const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({
   ...defaultConverters,
   ...LinkJSXConverter({
     internalDocToHref,
   }),
   blocks: {
-    // [BlockSlug.TwoColumnContent]: ({ node }) => <TwoColumnContentRenderer {...node.fields} />,
+    // [BlockSlug['TwoColumnContent']]: ({ node }) => <TwoColumnContentRenderer {...node.fields} />,
     // banner: ({ node }) => <BannerBlock className="col-start-2 mb-4" {...node.fields} />,
     // mediaBlock: ({ node }) => (
     //   <MediaBlock
@@ -55,7 +57,7 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({
     //     disableInnerContainer={true}
     //   />
     // ),
-    // // [BlockSlug.Code]: ({ node }) => <CodeBlockRenderer className="col-start-2" {...node.fields} />,
+    // // [BlockSlug['Code']]: ({ node }) => <CodeBlockRenderer className="col-start-2" {...node.fields} />,
     // cta: ({ node }) => <CallToActionBlock {...node.fields} />,
   },
 })
@@ -71,15 +73,13 @@ export function RichText(props: Props) {
   return (
     <ConvertRichText
       converters={jsxConverters}
-      className={cn(
+      className={cn([
         'payload-richtext',
-        {
-          container: enableGutter,
-          'max-w-none': !enableGutter,
-          'mx-auto prose': enableProse,
-        },
+        enableGutter && 'container',
+        !enableGutter && 'max-w-none',
+        enableProse && 'mx-auto prose',
         className,
-      )}
+      ])}
       {...rest}
     />
   )

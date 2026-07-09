@@ -1,4 +1,5 @@
 import { AdminGroup } from '@custom-types'
+
 import type { CollectionConfig } from 'payload'
 
 import { anyone } from '@/access/anyone'
@@ -6,8 +7,8 @@ import { authenticated } from '@/access/authenticated'
 import { RichTextField } from '@/fields/RichText'
 import { CollectionSlug } from '@/types/collections'
 
-export const MediaVideos: CollectionConfig<CollectionSlug.MediaVideos> = {
-  slug: CollectionSlug.MediaVideos,
+export const MediaVideos: CollectionConfig<CollectionSlug['MediaVideos']> = {
+  slug: CollectionSlug['MediaVideos'],
   typescript: {
     interface: 'MediaVideo',
   },
@@ -46,9 +47,6 @@ export const MediaVideos: CollectionConfig<CollectionSlug.MediaVideos> = {
       name: 'caption',
       editorVariant: 'caption',
     }),
-    {
-      name: 'prefix',
-      type: 'text',
-    },
   ],
+  versions: false,
 }

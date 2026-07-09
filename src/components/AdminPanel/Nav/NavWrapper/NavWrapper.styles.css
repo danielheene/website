@@ -2,7 +2,7 @@
 
 @layer components {
   .nav {
-    @apply relative border-0 opacity-100 overflow-hidden;
+    @apply relative border-0 opacity-100;
     max-width: 100vw;
     background-color: var(--theme-bg);
     width: calc(var(--nav-width-closed) + var(--nav-rail-width) + var(--nav-spacing));

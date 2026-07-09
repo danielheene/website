@@ -3,29 +3,23 @@
 
 import type { ImageProps } from 'next/image'
 import NextImage from 'next/image'
+
 import { type SyntheticEvent, useCallback, useMemo, useState } from 'react'
 
-import type { MediaImage } from '@/types/payload'
 import { type ClassValue, cn } from '@/lib/cn'
+import type { MediaImage } from '@/types/payload'
 
 export interface ImageMediaProps
   extends Omit<
       ImageProps,
-      | 'className'
-      | 'alt'
-      | 'src'
-      | 'blurDataURL'
-      | 'placeholder'
-      | 'width'
-      | 'height'
-      | 'onLoad'
+      'className' | 'alt' | 'src' | 'blurDataURL' | 'placeholder' | 'width' | 'height' | 'onLoad'
     >,
     Pick<MediaImage, 'blurDataURL' | 'url'> {
   // duoTone?: boolean
-  className: ClassValue
-  // loadedClassName?: string
-  // imgClassName?: string
-  // imgLoadedClassName?: string
+  className?: ClassValue
+  loadedClassName?: ClassValue
+  imgClassName?: ClassValue
+  imgLoadedClassName?: ClassValue
   alt?: string
   width?: number
   height?: number
@@ -39,6 +33,10 @@ export interface ImageMediaProps
 
 export const ImageMedia = ({
   className,
+  loadedClassName,
+  imgClassName,
+  imgLoadedClassName,
+
   alt = '',
   url: src,
   sizes: sizesFromProps,
@@ -89,6 +87,7 @@ export const ImageMedia = ({
         'contents',
         !fill && 'relative',
         className,
+        loaded && loadedClassName,
       ])}
     >
       <NextImage
@@ -96,10 +95,12 @@ export const ImageMedia = ({
         className={cn([
           !fill && 'flex grow shrink basis-full',
           fill && 'block absolute inset-0 h-full w-full object-cover',
+          imgClassName,
+          loaded && imgLoadedClassName,
         ])}
         fill={fill}
-        height={!fill && height}
-        width={!fill && width}
+        height={!fill ? height : undefined}
+        width={!fill ? width : undefined}
         onLoad={handleOnLoad}
         placeholder="empty"
         // priority={priority}
@@ -121,10 +122,7 @@ export const ImageMedia = ({
         >
           <filter id="blur" colorInterpolationFilters="sRGB">
             <feGaussianBlur stdDeviation="20" />
-            <feColorMatrix
-              values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 100 -1"
-              result="s"
-            />
+            <feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 100 -1" result="s" />
             <feFlood x="0" y="0" width="100%" height="100%" />
             <feComposite operator="out" in="s" />
             <feComposite in2="SourceGraphic" />

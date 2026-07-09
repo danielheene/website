@@ -1,9 +1,19 @@
 'use client'
 
+import { optimize } from 'svgo/browser'
+
 import { toast, useField } from '@payloadcms/ui'
 import type { UIFieldClientProps } from 'payload'
-import { type ChangeEvent, type DragEvent, Fragment, type JSX, useCallback, useId, useMemo, useState } from 'react'
-import { optimize } from 'svgo/browser'
+import {
+  type ChangeEvent,
+  type DragEvent,
+  Fragment,
+  type JSX,
+  useCallback,
+  useId,
+  useMemo,
+  useState,
+} from 'react'
 
 import { type ClassValue, cn } from '@/lib/cn'
 import { extractErrorMessage } from '@/lib/extractErrorMessage'
@@ -18,27 +28,35 @@ const LogoField = ({ path }: LogoFieldProps): JSX.Element => {
   const id = useId()
 
   const logoPath = `${path.slice(0, path?.lastIndexOf('.'))}.logo`
-  const { value, setValue } = useField<string>({ path: logoPath })
+  const { value, setValue } = useField<string>({
+    path: logoPath,
+  })
   const [isDragging, setIsDragging] = useState<boolean>(false)
   const [isUploading, setIsUploading] = useState<boolean>(false)
 
   /**
    * Handles the start of the drag event.
    */
-  const handleStart = useCallback((event: DragEvent<HTMLLabelElement> | ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault()
-    event.stopPropagation()
-    setIsDragging(true)
-  }, [])
+  const handleStart = useCallback(
+    (event: DragEvent<HTMLLabelElement> | ChangeEvent<HTMLInputElement>) => {
+      event.preventDefault()
+      event.stopPropagation()
+      setIsDragging(true)
+    },
+    [],
+  )
 
   /**
    * Handles the end of the drag event.
    */
-  const handleEnd = useCallback((event: DragEvent<HTMLLabelElement> | ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault()
-    event.stopPropagation()
-    setIsDragging(false)
-  }, [])
+  const handleEnd = useCallback(
+    (event: DragEvent<HTMLLabelElement> | ChangeEvent<HTMLInputElement>) => {
+      event.preventDefault()
+      event.stopPropagation()
+      setIsDragging(false)
+    },
+    [],
+  )
 
   /**
    * Handles the file upload process with sanitization and error handling.
@@ -73,7 +91,14 @@ const LogoField = ({ path }: LogoFieldProps): JSX.Element => {
               {
                 name: 'removeAttrs',
                 params: {
-                  attrs: ['class', 'style', 'fill', 'id', 'width', 'height'],
+                  attrs: [
+                    'class',
+                    'style',
+                    'fill',
+                    'id',
+                    'width',
+                    'height',
+                  ],
                   elemSeparator: ':',
                   preserveCurrentColor: true,
                 },
@@ -100,7 +125,9 @@ const LogoField = ({ path }: LogoFieldProps): JSX.Element => {
 
       reader.readAsText(file, 'UTF-8')
     },
-    [setValue],
+    [
+      setValue,
+    ],
   )
 
   /**
@@ -110,26 +137,50 @@ const LogoField = ({ path }: LogoFieldProps): JSX.Element => {
     async (event: DragEvent<HTMLLabelElement> | ChangeEvent<HTMLInputElement>) => {
       handleEnd(event)
 
-      const file = 'dataTransfer' in event ? event.dataTransfer.files[0] : 'target' in event ? event.target.files[0] : null
+      const file =
+        'dataTransfer' in event
+          ? event.dataTransfer.files[0]
+          : 'target' in event
+            ? event.target.files[0]
+            : null
 
-      if (!file || !file.type.includes('svg')) {
+      if (!file?.type?.includes('svg')) {
         toast.error('The uploaded file must be an SVG.')
       } else {
         await handleFileUpload(file)
       }
     },
-    [handleEnd, handleFileUpload],
+    [
+      handleEnd,
+      handleFileUpload,
+    ],
   )
 
   const logoContent = useMemo(() => {
-    return value ? optimize(value, { js2svg: { indent: 2, pretty: true } }).data : null
-  }, [value])
+    return value
+      ? optimize(value, {
+          js2svg: {
+            indent: 2,
+            pretty: true,
+          },
+        }).data
+      : null
+  }, [
+    value,
+  ])
 
   return (
-    <div className={cn([styles.LogoFieldContainer])}>
+    <div
+      className={cn([
+        styles.LogoFieldContainer,
+      ])}
+    >
       <label
         htmlFor={id}
-        className={cn([styles.DropArea, isDragging && styles.DropAreaActive])}
+        className={cn([
+          styles.DropArea,
+          isDragging && styles.DropAreaActive,
+        ])}
         onDragEnter={handleStart}
         onDragOver={handleStart}
         onDragLeave={handleEnd}
@@ -137,16 +188,34 @@ const LogoField = ({ path }: LogoFieldProps): JSX.Element => {
       >
         {!logoContent && !isUploading && (
           <Fragment>
-            <div className={cn([styles.DropAreaIcon])}>
+            <div
+              className={cn([
+                styles.DropAreaIcon,
+              ])}
+            >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path fill="currentColor" d="M23 18H1l7.25-9.67l2 2.67L14 6zm-11.5-5.33L14 16h5l-5-6.67zM5 16h6.5l-3.25-4.33z" />
+                <path
+                  fill="currentColor"
+                  d="M23 18H1l7.25-9.67l2 2.67L14 6zm-11.5-5.33L14 16h5l-5-6.67zM5 16h6.5l-3.25-4.33z"
+                />
               </svg>
             </div>
-            <span className={cn([styles.DropAreaLabel])}>Click or drag the logo here.</span>
+            <span
+              className={cn([
+                styles.DropAreaLabel,
+              ])}
+            >
+              Click or drag the logo here.
+            </span>
           </Fragment>
         )}
         {isUploading && (
-          <span className={cn([styles.DropAreaIcon, styles.DropAreaSpinner])}>
+          <span
+            className={cn([
+              styles.DropAreaIcon,
+              styles.DropAreaSpinner,
+            ])}
+          >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
               <path
                 fill="currentColor"
@@ -155,8 +224,15 @@ const LogoField = ({ path }: LogoFieldProps): JSX.Element => {
             </svg>
           </span>
         )}
-        {/** biome-ignore lint/security/noDangerouslySetInnerHtml: <sanitized contents> */}
-        {logoContent && !isUploading && <div className={styles.LogoFieldImage} dangerouslySetInnerHTML={{ __html: logoContent }} />}
+        {logoContent && !isUploading && (
+          <div
+            className={styles.LogoFieldImage}
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+            dangerouslySetInnerHTML={{
+              __html: logoContent,
+            }}
+          />
+        )}
       </label>
       <input id={id} type="file" accept="image/svg+xml" onChange={handleFileChange} hidden />
     </div>

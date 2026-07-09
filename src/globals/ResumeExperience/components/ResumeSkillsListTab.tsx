@@ -22,7 +22,7 @@ export const ResumeSkillsListTab = async ({
   })
 
   const { docs, ...query } = await payload.find({
-    collection: CollectionSlug.ResumeSkills,
+    collection: CollectionSlug['ResumeSkills'],
     pagination: false,
     limit: 0,
   })
@@ -41,15 +41,15 @@ export const ResumeSkillsListTab = async ({
         // searchParams={searchParams}
         importMap={payload.importMap}
         collectionConfig={
-          payload.collections[CollectionSlug.ResumeSkills].config
+          payload.collections[CollectionSlug['ResumeSkills']].config
         }
-        collectionSlug={CollectionSlug.ResumeSkills}
+        collectionSlug={CollectionSlug['ResumeSkills']}
         clientConfig={clientConfig}
         initPageResult={{
           ...initPageResult,
           globalConfig: undefined,
           collectionConfig:
-            payload.collections[CollectionSlug.ResumeSkills].config,
+            payload.collections[CollectionSlug['ResumeSkills']].config,
         }}
         viewType={'list'}
         locale={locale}

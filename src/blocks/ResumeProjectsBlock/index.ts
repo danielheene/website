@@ -1,44 +1,8 @@
 import type { Block } from 'payload'
+import { BlockSlug } from '@/types/blocks'
+import { ResumeBlockField } from '@/fields/ResumeBlock'
 
-import type { ResumeLayoutBlockProps } from '@/components/AdminPanel'
-import { BlockGroup, BlockSlug } from '@/types/blocks'
-import { GlobalSlug } from '@/types/globals'
-
-const BlockComponent = {
-  path: '@/components/AdminPanel#ResumeLayoutBlock',
-  clientProps: {
-    backgroundColor: 'white',
-    imageSrc: '/payload/blocks/resume-projects.svg',
-    editHref: `/admin/globals/${GlobalSlug.ResumeProjects}`,
-  } satisfies ResumeLayoutBlockProps,
-}
-
-export const ResumeProjectsBlock: Block = {
-  slug: BlockSlug.ResumeProjects,
-  interfaceName: BlockSlug.ResumeProjects,
-  labels: {
-    singular: 'Project Container',
-    plural: 'Project Sections',
-  },
-  imageURL: '/payload/blocks/resume-projects.svg',
-  admin: {
-    group: BlockGroup.Resume,
-    disableBlockName: true,
-    components: {
-      Block: BlockComponent,
-    },
-  },
-  fields: [
-    {
-      type: 'json',
-      name: 'data',
-      virtual: true,
-      defaultValue: {},
-      admin: {
-        components: {
-          Field: BlockComponent,
-        },
-      },
-    },
-  ],
-}
+export const ResumeProjectsBlock: Block = ResumeBlockField({
+  name: BlockSlug['ResumeProjects'],
+  variant: 'default'
+})

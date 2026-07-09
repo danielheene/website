@@ -1,12 +1,12 @@
 'use server'
 
-import { getSiteConfigurationData } from '@/lib/getSiteConfigurationData'
+import { getSiteSettings } from '@/lib/getSiteSettings'
 import pupa from 'pupa'
 import { camelCase, upperFirst, snakeCase, kebabCase, startCase } from 'lodash-es'
 
 export const generateMetaTitle = async (title: string) => {
-  const { titleTemplate, siteName, siteUrl } =
-    await getSiteConfigurationData()
+  const {general: { titleTemplate, siteName, siteUrl }} =
+    await getSiteSettings()
 
   const filters = {
     trim: (value: string) => value.trim(),

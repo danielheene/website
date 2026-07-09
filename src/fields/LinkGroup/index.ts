@@ -45,7 +45,9 @@ export const LinkGroupField = ({ overrides = {} }: LinkGroupFieldProps = {}): Gr
             singular: 'Link',
             plural: 'Links',
           },
-          fields: [LinkField()],
+          fields: [
+            LinkField(),
+          ],
         },
         {
           name: 'alignment',

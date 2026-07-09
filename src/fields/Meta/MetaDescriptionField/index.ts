@@ -4,9 +4,7 @@ interface MetaDescriptionFieldProps {
   slugPath: string
 }
 
-export const MetaDescriptionField = ({
-  slugPath,
-}: MetaDescriptionFieldProps): TextField => ({
+export const MetaDescriptionField = ({ slugPath }: MetaDescriptionFieldProps): TextField => ({
   name: 'description',
   label: 'Description',
   type: 'text',

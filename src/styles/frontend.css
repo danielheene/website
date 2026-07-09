@@ -10,8 +10,10 @@
 @import "./theme/_fonts.css" layer(theme);
 @import "./theme/_radii.css" layer(theme);
 @import "./theme/_sizes.css" layer(theme);
+@import "./theme/_shadows.css" layer(theme);
 @import "./theme/_text-shadows.css" layer(theme);
 
+@plugin "@tailwindcss/typography";
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 @layer base {

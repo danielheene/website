@@ -1,54 +1,55 @@
-import { AdminGroup } from '@custom-types'
 import type { NavGroupType } from '@payloadcms/ui/utilities/groupNavItems'
 
-import { CollectionSlug } from '@/types/collections'
-import { GlobalSlug } from '@/types/globals'
+import { AdminGroup } from '@custom-types'
+
+import { CollectionSlug, CollectionSlugValue } from '@/types/collections'
+import { GlobalSlug, GlobalSlugValue } from '@/types/globals'
 
 const NAV_GROUP_SORTING_ORDER = [
   [
     AdminGroup.General,
     [
-      CollectionSlug.Pages,
+      CollectionSlug['Pages'],
     ],
   ],
   [
     AdminGroup.Blog,
     [
-      CollectionSlug.BlogPosts,
-      CollectionSlug.BlogTags,
+      CollectionSlug['BlogPosts'],
+      CollectionSlug['BlogTags'],
     ],
   ],
   [
     AdminGroup.Resume,
     [
-      GlobalSlug.ResumeAboutMe,
-      GlobalSlug.ResumeExperience,
-      GlobalSlug.ResumeProjects,
-      GlobalSlug.ResumeCustomers,
-      GlobalSlug.ResumeContact,
-      GlobalSlug.ResumeDownloads,
-      CollectionSlug.ResumeSkills,
-      CollectionSlug.ResumeJobs,
+      GlobalSlug['ResumeAboutMe'],
+      GlobalSlug['ResumeExperience'],
+      GlobalSlug['ResumeProjects'],
+      GlobalSlug['ResumeCustomers'],
+      GlobalSlug['ResumeContact'],
+      GlobalSlug['ResumeDownloads'],
+      CollectionSlug['ResumeSkills'],
+      CollectionSlug['ResumeJobs'],
+      CollectionSlug['ResumeDocuments'],
+      CollectionSlug['ResumeFiles'],
     ],
   ],
   [
     AdminGroup.Media,
     [
-      CollectionSlug.MediaImages,
-      CollectionSlug.MediaVideos,
-      CollectionSlug.MediaAudios,
-      CollectionSlug.MediaDocuments,
+      CollectionSlug['MediaImages'],
+      CollectionSlug['MediaVideos'],
+      CollectionSlug['MediaAudios'],
+      CollectionSlug['MediaDocuments'],
     ],
   ],
   [
     AdminGroup.Settings,
     [
-      GlobalSlug.SettingsSiteConfiguration,
-      GlobalSlug.SettingsUserConfiguration,
-      GlobalSlug.SettingsPDFBuilder,
-      GlobalSlug.SettingsPageHeader,
-      GlobalSlug.SettingsPageFooter,
-      CollectionSlug.Users,
+      GlobalSlug['SiteSettings'],
+      GlobalSlug['GlobalUserSettings'],
+      GlobalSlug['SettingsPDFBuilder'],
+      CollectionSlug['Users'],
     ],
   ],
 ] as const
@@ -67,20 +68,20 @@ export const sortNavGroups = (groups: NavGroupType[]) =>
       )
     })
     .map(({ entities, ...group }) => {
-      const entityOrder: readonly (GlobalSlug | CollectionSlug)[] = NAV_GROUP_SORTING_ORDER.find(
+      const entityOrder: readonly (GlobalSlugValue | CollectionSlugValue)[] = NAV_GROUP_SORTING_ORDER.find(
         ([g]) => g === group.label,
-      )[1]
+      )?.[1]
 
       return {
         ...group,
         entities: entityOrder
           ? entities
-              .filter((entity) => entityOrder.includes(entity.slug as GlobalSlug | CollectionSlug))
-              .sort((a, b) => {
-                const aPos = entityOrder.indexOf(a.slug as GlobalSlug | CollectionSlug)
-                const bPos = entityOrder.indexOf(b.slug as GlobalSlug | CollectionSlug)
-                return aPos - bPos
-              })
+            .filter((entity) => entityOrder.includes(entity.slug as GlobalSlugValue | CollectionSlugValue))
+            .sort((a, b) => {
+              const aPos = entityOrder.indexOf(a.slug as GlobalSlugValue | CollectionSlugValue)
+              const bPos = entityOrder.indexOf(b.slug as GlobalSlugValue | CollectionSlugValue)
+              return aPos - bPos
+            })
           : entities,
       }
     })

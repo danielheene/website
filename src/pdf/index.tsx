@@ -1,18 +1,18 @@
 import { Document, Font, Page, StyleSheet, View } from '@react-pdf/renderer'
+
 import createHyphenator, { type HyphenationFunctionSync, type PatternsDefinition } from 'hyphen'
 import dePattern from 'hyphen/patterns/de-1996'
 import enPattern from 'hyphen/patterns/en-us'
 
-import { DocumentFooter } from '@pdf/components/DocumentFooter'
-import { DocumentHeader } from '@pdf/components/DocumentHeader'
+import { BulletPoint } from '@pdf/components/BulletPoint'
+import { Footer } from '@pdf/components/Footer'
+import { Header } from '@pdf/components/Header'
 import { Introduction } from '@pdf/components/Introduction'
 import { Section } from '@pdf/components/Section'
 import { SkillEntry } from '@pdf/components/SkillEntry'
 import { WorkExperience } from '@pdf/components/WorkExperience'
 import { sizes } from '@pdf/constants'
-import type { DocumentFooterData } from '@pdf/lib/buildDocumentFooterData'
-import type { DocumentHeaderData } from '@pdf/lib/buildDocumentHeaderData'
-import { DocumentSection, DocumentSectionType } from '@pdf/types'
+import { DocumentFooter, DocumentHeader, DocumentSection, DocumentSectionType } from '@pdf/types'
 import type { Locale } from '@/lib/i18n'
 
 const hyphenateEN = createHyphenator(enPattern as unknown as PatternsDefinition, {
@@ -52,31 +52,33 @@ const styles = StyleSheet.create({
 })
 
 interface ResumeDocumentProps {
-  isPreview?: boolean
-  locale?: Locale
+  isPreview: boolean
+  locale: Locale
   document: {
-    author: string
     title: string
+    author: string
     language: string
     creationDate: Date
   }
-  headerData: DocumentHeaderData
-  footerData: DocumentFooterData
+  header: DocumentHeader
+  footer: DocumentFooter
   sections: DocumentSection[]
 }
 
 export const ResumeDocument = ({
-  isPreview = false,
-  locale = 'en',
+  isPreview,
+  locale,
   document,
-  headerData,
-  footerData,
+  header,
+  footer,
   sections,
 }: ResumeDocumentProps) => {
   Font.registerHyphenationCallback((word) => {
     const hyphenatedWords = locale === 'en' ? hyphenateEN(word) : hyphenateDE(word)
     return hyphenatedWords.split('\u00AD')
   })
+
+  console.log('sections', sections)
 
   return (
     <Document {...document} pageMode="useOutlines" pageLayout="twoPageLeft" pdfVersion="1.7">
@@ -87,10 +89,12 @@ export const ResumeDocument = ({
         orientation="portrait"
         bookmark={document.title}
       >
-        <DocumentHeader {...headerData} style={styles.header} fixed />
+        <Header {...header} style={styles.header} fixed />
         <View style={styles.body}>
           {sections.map(({ type, data }, sectionIndex) => {
-            console.log(type, data)
+            /**
+             * Introduction Section
+             */
             if (type === DocumentSectionType.Introduction) {
               const { headline, content } = data
               return (
@@ -102,6 +106,10 @@ export const ResumeDocument = ({
                 </Section.Container>
               )
             }
+
+            /**
+             * Work Experience Section
+             */
             if (type === DocumentSectionType.WorkExperience) {
               const { headline, entries } = data
               return (
@@ -123,22 +131,41 @@ export const ResumeDocument = ({
                 </Section.Container>
               )
             }
+
+            /**
+             * Skill Section
+             */
             if (type === DocumentSectionType.Skill) {
               const { headline, entries } = data
               return (
                 <Section.Container key={sectionIndex} wrap={false}>
                   <Section.Headline bookmark={headline}>{headline}</Section.Headline>
                   {entries.map((skill, entryIndex) => (
-                    <SkillEntry {...skill} />
+                    <SkillEntry key={entryIndex} {...skill} />
                   ))}
                 </Section.Container>
               )
             }
 
+            if (type === DocumentSectionType.Language) {
+              const { headline, entries } = data
+              return (
+                <Section.Container key={sectionIndex} wrap={false}>
+                  <Section.Headline bookmark={headline}>{headline}</Section.Headline>
+                  {entries.map((language, entryIndex) => (
+                    <BulletPoint key={entryIndex}>{language}</BulletPoint>
+                  ))}
+                </Section.Container>
+              )
+            }
+
+            /**
+             * Unknown Section
+             */
             return null
           })}
         </View>
-        <DocumentFooter {...footerData} style={styles.footer} fixed />
+        <Footer {...footer} style={styles.footer} fixed />
       </Page>
     </Document>
   )

@@ -29,7 +29,9 @@ export const ProjectListField = (): ArrayField => ({
     {
       name: 'image',
       type: 'upload',
-      relationTo: CollectionSlug.MediaImages,
+      relationTo: [
+        CollectionSlug['MediaImages'],
+      ],
       filterOptions: {
         mimeType: {
           contains: 'image',

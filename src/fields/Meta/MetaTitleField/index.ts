@@ -6,9 +6,7 @@ interface MetaTitleFieldProps {
   titlePath: string
 }
 
-export const MetaTitleField = ({
-  titlePath,
-}: MetaTitleFieldProps): TextField => ({
+export const MetaTitleField = ({ titlePath }: MetaTitleFieldProps): TextField => ({
   name: 'title',
   label: 'Title',
   type: 'text',

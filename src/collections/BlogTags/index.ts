@@ -1,5 +1,6 @@
-import { AdminGroup } from '@custom-types'
 import type { AccessArgs, CollectionConfig } from 'payload'
+
+import { AdminGroup } from '@custom-types'
 
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
@@ -14,7 +15,7 @@ import type { BlogTag } from '@/types/payload'
 import { revalidateBlogTag } from './hooks/revalidateBlogTag'
 
 export const BlogTags: CollectionConfig = {
-  slug: CollectionSlug.BlogTags,
+  slug: CollectionSlug['BlogTags'],
   labels: {
     singular: 'Tag',
     plural: 'Tags',
@@ -33,11 +34,9 @@ export const BlogTags: CollectionConfig = {
     group: AdminGroup.Blog,
     groupBy: true,
     livePreview: {
-      url: ({ data }) =>
-        generatePreviewPath(CollectionSlug.BlogTags, data.slug),
+      url: ({ data }) => generatePreviewPath(CollectionSlug['BlogTags'], data.slug),
     },
-    preview: (data: Partial<BlogTag>) =>
-      generatePreviewPath(CollectionSlug.BlogTags, data.slug),
+    preview: (data: Partial<BlogTag>) => generatePreviewPath(CollectionSlug['BlogTags'], data.slug),
     listSearchableFields: [
       'title',
       'slug',
@@ -56,7 +55,7 @@ export const BlogTags: CollectionConfig = {
 
       try {
         const { totalDocs } = await payload.find({
-          collection: CollectionSlug.BlogPosts,
+          collection: CollectionSlug['BlogPosts'],
           where: {
             tags: {
               contains: id,
@@ -90,7 +89,9 @@ export const BlogTags: CollectionConfig = {
     {
       name: 'heroImage',
       type: 'upload',
-      relationTo: CollectionSlug.MediaImages,
+      relationTo: [
+        CollectionSlug['MediaImages'],
+      ],
       filterOptions: {
         mimeType: {
           contains: 'image',
@@ -138,7 +139,7 @@ export const BlogTags: CollectionConfig = {
             {
               name: 'relatedPosts',
               type: 'join',
-              collection: CollectionSlug.BlogPosts,
+              collection: CollectionSlug['BlogPosts'],
               on: 'tags',
               hasMany: true,
               label: false,

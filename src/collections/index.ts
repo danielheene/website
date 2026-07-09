@@ -7,6 +7,8 @@ import { MediaDocuments } from '@/collections/MediaDocuments'
 import { MediaImages } from '@/collections/MediaImages'
 import { MediaVideos } from '@/collections/MediaVideos'
 import { Pages } from '@/collections/Pages'
+import { ResumeDocuments } from '@/collections/ResumeDocuments'
+import { ResumeFiles } from '@/collections/ResumeFiles'
 import { ResumeJobs } from '@/collections/ResumeJobs'
 import { ResumeSkills } from '@/collections/ResumeSkills'
 import { Users } from '@/collections/Users'
@@ -22,5 +24,7 @@ export const COLLECTIONS = [
   Users,
   ResumeSkills,
   ResumeJobs,
+  ResumeFiles,
+  ResumeDocuments,
 ]
 export const COLLECTION_SLUGS = COLLECTIONS.map((c) => c.slug as CollectionSlug)

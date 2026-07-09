@@ -1,7 +1,7 @@
 import type { ElementType } from 'react'
 
-import { TwoColumnContentBlockRenderer } from '@/blocks/TwoColumnContentBlock/Renderer'
-import { type BlockData, BlockSlug } from '@/types/blocks'
+import { TwoColumnContentBlockRenderer } from './TwoColumnContentBlock/Renderer'
+import { type BlockData, BlockSlug, RegisteredBlockSlug } from '@/types/blocks'
 
 import { CodeBlockRenderer } from './CodeBlock/Renderer'
 import { LinkGroupBlockRenderer } from './LinkGroupBlock/Renderer'
@@ -14,20 +14,20 @@ import { ResumeExperienceBlockRenderer } from './ResumeExperienceBlock/Renderer'
 import { ResumeProjectsBlockRenderer } from './ResumeProjectsBlock/Renderer'
 
 const blockComponentMap = {
-  [BlockSlug.OneColumnContent]: OneColumnContentBlockRenderer,
-  [BlockSlug.TwoColumnContent]: TwoColumnContentBlockRenderer,
-  [BlockSlug.LinkGroup]: LinkGroupBlockRenderer,
-  [BlockSlug.Code]: CodeBlockRenderer,
-  [BlockSlug.ResumeAboutMe]: ResumeAboutMeBlockRenderer,
-  [BlockSlug.ResumeCustomers]: ResumeCustomersBlockRenderer,
-  [BlockSlug.ResumeContact]: ResumeContactBlockRenderer,
-  [BlockSlug.ResumeDownloads]: ResumeDownloadsBlockRenderer,
-  [BlockSlug.ResumeExperience]: ResumeExperienceBlockRenderer,
-  [BlockSlug.ResumeProjects]: ResumeProjectsBlockRenderer,
+  [BlockSlug['OneColumnContent']]: OneColumnContentBlockRenderer,
+  [BlockSlug['TwoColumnContent']]: TwoColumnContentBlockRenderer,
+  [BlockSlug['LinkGroup']]: LinkGroupBlockRenderer,
+  [BlockSlug['Code']]: CodeBlockRenderer,
+  [BlockSlug['ResumeAboutMe']]: ResumeAboutMeBlockRenderer,
+  [BlockSlug['ResumeCustomers']]: ResumeCustomersBlockRenderer,
+  [BlockSlug['ResumeContact']]: ResumeContactBlockRenderer,
+  [BlockSlug['ResumeDownloads']]: ResumeDownloadsBlockRenderer,
+  [BlockSlug['ResumeExperience']]: ResumeExperienceBlockRenderer,
+  [BlockSlug['ResumeProjects']]: ResumeProjectsBlockRenderer,
 }
 
 interface BlockRendererProps {
-  blocks: BlockData[]
+  blocks: BlockData<RegisteredBlockSlug>[]
 }
 
 export const RenderBlocks = ({ blocks }: BlockRendererProps) => {

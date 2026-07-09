@@ -1,20 +1,24 @@
-import type { LinkFieldData } from '@/types/payload'
-
 import { CMSLink } from '@/components/Link'
 import { cn } from '@/lib/cn'
+import type { LinkFieldData } from '@/types/payload'
 
 interface FooterSocialLinksProps {
   className?: string
-  socialLinks: { id: string; link: LinkFieldData }[]
+  socialLinks: {
+    id: string
+    link: LinkFieldData
+  }[]
 }
 
 export const FooterSocialLinks = ({ socialLinks, className }: FooterSocialLinksProps) => {
   return (
-    <div className={cn('flex flex-col justify-between gap-3 lg:items-start', className)}>
-      <p className="max-w-9/12 text-sm text-muted-foreground">You can also reach out to me via:</p>
-      <nav className="flex items-center gap-x-4">
+    <div className={cn('flex flex-col justify-between gap-1 lg:items-start', className)}>
+      <p className="max-w-9/12 text-sm font-mono text-muted-foreground">
+        You can also reach out to me via:
+      </p>
+      <nav className="flex items-center gap-x-1">
         {socialLinks.map(({ link, id }) => (
-          <CMSLink key={id} {...link} className="block text-3xl leading-px text-current/75 hover:text-current" />
+          <CMSLink key={id} {...link} size="icon-lg" variant="ghost" />
         ))}
       </nav>
     </div>

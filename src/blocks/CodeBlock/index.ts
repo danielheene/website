@@ -3,14 +3,14 @@ import type { Block } from 'payload'
 import { BlockGroup, BlockSlug } from '@/types/blocks'
 
 export const CodeBlock: Block = {
-  slug: BlockSlug.Code,
-  interfaceName: BlockSlug.Code,
+  slug: BlockSlug['Code'],
+  interfaceName: BlockSlug['Code'],
   labels: {
     singular: 'Code Block',
     plural: 'Code Block',
   },
   admin: {
-    group: BlockGroup.General,
+    group: BlockGroup['General'],
     disableBlockName: true,
     images: {
       thumbnail: '/payload/blocks/general-code-thumbnail.svg',

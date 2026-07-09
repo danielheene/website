@@ -3,10 +3,14 @@ import Link from 'next/link'
 import { CMSLink } from '@/components/Link'
 import { Logo } from '@/components/Logo'
 import { cn } from '@/lib/cn'
-import { getCachedPageHeaderData } from '@/lib/getPageHeaderData'
+import { getSiteSettings } from '@/lib/getSiteSettings'
 
 export const Header = async () => {
-  const { mainNavigation } = await getCachedPageHeaderData()
+  const {
+    header: { mainNavigation },
+  } = await getSiteSettings()
+
+  const hasNavEntries = Array.isArray(mainNavigation.entries) && mainNavigation.entries.length > 0
 
   return (
     <header id="header" className="h-20 absolute top-0 z-50 w-full">
@@ -17,19 +21,13 @@ export const Header = async () => {
         ])}
       >
         <Link href="/" className="h-10 flex items-center" aria-label="Home">
-          <Logo
-            variant="inline"
-            className="text-2xl text-white hidden md:block"
-          />
-          <Logo
-            variant="square"
-            className="text-2xl text-white block md:hidden"
-          />
+          <Logo variant="inline" className="text-2xl text-white hidden md:block" />
+          <Logo variant="square" className="text-2xl text-white block md:hidden" />
         </Link>
 
-        {mainNavigation && (
+        {hasNavEntries && (
           <ul className="flex flex-row items-center gap-8 list-disc">
-            {mainNavigation.map(({ id, link }) => (
+            {mainNavigation.entries.map(({ id, link }) => (
               <li key={id} className="h-10 flex items-center font-mono">
                 <CMSLink
                   {...link}

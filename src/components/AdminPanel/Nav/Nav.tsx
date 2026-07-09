@@ -1,5 +1,5 @@
-import type { ServerProps } from 'payload'
 import type { FC } from 'react'
+import type { ServerProps } from 'payload'
 
 import { buildNavGroups } from './lib/buildNavGroups'
 import { fetchNavPreferences } from './lib/fetchNavPreferences'
@@ -9,6 +9,8 @@ import './Nav.styles.css'
 
 import { NavFooter } from '@/components/AdminPanel/Nav/NavFooter'
 import { NavHeader } from '@/components/AdminPanel/Nav/NavHeader'
+import { resolveRelations } from '@/lib/resolveRelation'
+import { isMediaImage } from '@/lib/typeGuards'
 
 import { NavGroup } from './NavGroup'
 import { NavWrapper } from './NavWrapper'
@@ -24,12 +26,14 @@ export const Nav: FC<ServerProps> = async (props) => {
     payload,
     permissions,
     searchParams,
-    user,
+    user: userFromProps,
     viewType,
     visibleEntities,
   } = props
 
   if (!payload?.config || !permissions) return null
+
+  const user = await resolveRelations(userFromProps)
 
   const {
     admin: {
@@ -105,7 +109,14 @@ export const Nav: FC<ServerProps> = async (props) => {
   return (
     <NavWrapper
       header={<NavHeader key="nav-header" />}
-      footer={<NavFooter key="nav-footer" user={user} />}
+      footer={
+        <NavFooter
+          key="nav-footer"
+          avatarSrc={user.avatar.value?.url}
+          email={user.email}
+          name={user.name || ''}
+        />
+      }
     >
       {navGroups.map(({ entities, label }, key) => {
         return <NavGroup key={key} label={label} entities={entities} />

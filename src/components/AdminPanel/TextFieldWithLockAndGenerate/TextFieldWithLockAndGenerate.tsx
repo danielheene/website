@@ -29,9 +29,7 @@ export type TextFieldWithLockAndGenerateProps = (
 ) &
   TextFieldClientProps
 
-export const TextFieldWithLockAndGenerate: React.FC<
-  TextFieldWithLockAndGenerateProps
-> = ({
+export const TextFieldWithLockAndGenerate: React.FC<TextFieldWithLockAndGenerateProps> = ({
   field,
   hasGenerate,
   hasLock,
@@ -49,24 +47,16 @@ export const TextFieldWithLockAndGenerate: React.FC<
   const { value, setValue } = useField<string>({
     path,
   })
-  const [isLocked, setIsLocked] = useState<boolean>(
-    hasLock && readOnlyFromProps !== true,
-  )
+  const [isLocked, setIsLocked] = useState<boolean>(hasLock && readOnlyFromProps !== true)
 
-  const handleUnlockClick = useCallback(
-    (event: React.MouseEvent<HTMLButtonElement>) => {
-      event.preventDefault()
-    },
-    [],
-  )
+  const handleUnlockClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+  }, [])
 
-  const handleUnlockDoubleClick = useCallback(
-    (event: React.MouseEvent<HTMLButtonElement>) => {
-      event.preventDefault()
-      setIsLocked((lockedState) => !lockedState)
-    },
-    [],
-  )
+  const handleUnlockDoubleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    setIsLocked((lockedState) => !lockedState)
+  }, [])
 
   const handleGenerateClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -89,7 +79,7 @@ export const TextFieldWithLockAndGenerate: React.FC<
         <FieldLabel label={label} path={path} htmlFor={inputRef?.current?.id} />
       </div>
       <div className="input-wrapper">
-        {hasLock && (
+        {hasLock && !readOnlyFromProps && (
           <button
             type="button"
             className="input-button input-button--lock"
@@ -116,7 +106,7 @@ export const TextFieldWithLockAndGenerate: React.FC<
           readOnly={Boolean(readOnlyFromProps || isLocked)}
           inputRef={inputRef}
         />
-        {hasGenerate && (
+        {hasGenerate && !readOnlyFromProps && (
           <button
             type="button"
             className="input-button input-button--generate"

@@ -1,7 +1,7 @@
 'use client'
 
-import Link from 'next/link'
 import { type JSX, useEffect, useState } from 'react'
+import Link from 'next/link'
 
 import { cn } from '@/lib/cn'
 import { OverallStatus, type OverallStatusResponse } from '@/types/uptime-kuma'
@@ -10,9 +10,7 @@ interface ServiceStatusProps {
   className?: string
 }
 
-export const ServiceStatus = ({
-  className,
-}: ServiceStatusProps): JSX.Element => {
+export const ServiceStatus = ({ className }: ServiceStatusProps): JSX.Element => {
   const [status, setStatus] = useState<OverallStatusResponse | null>(null)
 
   useEffect(() => {
@@ -23,18 +21,34 @@ export const ServiceStatus = ({
 
   return status ? (
     <Link
-      href={process.env.NEXT_PUBLIC_STATUS_PAGE_URL}
+      href={process.env.STATUS_PAGE_URL}
       target="_blank"
       rel="noopener noreferrer"
       className={cn([
         'inline-flex gap-2 items-center grow-0 shrink-0 font-mono text-sm',
-        'border border-current/40 rounded-sm px-2 py-1',
-        'transition-constants bg-current/0 hover:bg-current/10',
-        status.code === OverallStatus.NoServices && 'text-neutral-500',
-        status.code === OverallStatus.PartialDown && 'text-warning',
-        status.code === OverallStatus.AllDown && 'text-error',
-        status.code === OverallStatus.Maintenance && 'text-info',
-        status.code === OverallStatus.AllUp && 'text-success',
+        'border rounded-sm px-2 py-1 transition-colors',
+
+        status.code === OverallStatus.NoServices && [
+          'text-neutral-600 border-neutral bg-neutral-300/10 hover:bg-neutral-300/20',
+          'dark:text-neutral dark:border-neutral dark:bg-neutral/5 dark:hover:bg-neutral/10',
+        ],
+        status.code === OverallStatus.PartialDown && [
+          'text-warning-600 border-warning bg-warning-300/10 hover:bg-warning-300/20',
+          'dark:text-warning dark:border-warning dark:bg-warning/5 dark:hover:bg-warning/10',
+        ],
+        status.code === OverallStatus.AllDown && [
+          'text-error-600 border-error bg-error-300/10 hover:bg-error-300/20',
+          'dark:text-error dark:border-error dark:bg-error/5 dark:hover:bg-error/10',
+        ],
+        status.code === OverallStatus.Maintenance && [
+          'text-info-600 border-info bg-info-300/10 hover:bg-info-300/20',
+          'dark:text-info dark:border-info dark:bg-info/5 dark:hover:bg-info/10',
+        ],
+        status.code === OverallStatus.AllUp && [
+          'text-success-600 border-success bg-success-300/10 hover:bg-success-300/20',
+          'dark:text-success dark:border-success dark:bg-success/5 dark:hover:bg-success/10',
+        ],
+
         className,
       ])}
     >

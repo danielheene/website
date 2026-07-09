@@ -11,7 +11,7 @@ export const generateDocumentThumbnailTask: TaskConfig<'generateDocumentThumbnai
     label: 'Generate Document Thumbnail',
     retries: 3,
     concurrency: {
-      key: ({ input }) => `generate:document:thumbnail:${input.documentId}`,
+      key: ({ input, queue, }) => `generate:document:thumbnail:${input.documentId}`,
       exclusive: true,
       supersedes: true,
     },
@@ -34,7 +34,7 @@ export const generateDocumentThumbnailTask: TaskConfig<'generateDocumentThumbnai
 
       try {
         document = await req.payload.findByID({
-          collection: CollectionSlug.MediaDocuments,
+          collection: CollectionSlug['MediaDocuments'],
           id: documentId,
           showHiddenFields: true,
         })
@@ -68,7 +68,7 @@ export const generateDocumentThumbnailTask: TaskConfig<'generateDocumentThumbnai
           document.thumbnail !== ''
         ) {
           previousThumbnail = await req.payload.findByID({
-            collection: CollectionSlug.MediaImages,
+            collection: CollectionSlug['MediaImages'],
             id: document.thumbnail,
           })
         }
@@ -100,7 +100,7 @@ export const generateDocumentThumbnailTask: TaskConfig<'generateDocumentThumbnai
             `thumbnail for document "${document.filename}" already exists, updating it`,
           )
           documentThumbnail = await req.payload.update({
-            collection: CollectionSlug.MediaImages,
+            collection: CollectionSlug['MediaImages'],
             id: previousThumbnail.id,
             data,
             file,
@@ -115,7 +115,7 @@ export const generateDocumentThumbnailTask: TaskConfig<'generateDocumentThumbnai
             `thumbnail for document "${document.filename}" does not exist, creating it`,
           )
           documentThumbnail = await req.payload.create({
-            collection: CollectionSlug.MediaImages,
+            collection: CollectionSlug['MediaImages'],
             data,
             file,
           })
@@ -126,13 +126,14 @@ export const generateDocumentThumbnailTask: TaskConfig<'generateDocumentThumbnai
           `updating document "${document.filename}" with thumbnail id "${documentThumbnail.id}"`,
         )
         await req.payload.update({
-          collection: CollectionSlug.MediaDocuments,
+          collection: CollectionSlug['MediaDocuments'],
           id: documentId,
           data: {
-            thumbnail: documentThumbnail,
-            // thumbnailURL: documentThumbnail.thumbnailURL,
-            // blurDataURL: documentThumbnail.blurDataURL,
-          },
+            thumbnail: {
+              relationTo: 'images',
+              value: documentThumbnail.id
+            }
+          } as MediaDocument,
           context: {
             skipGenerateDocumentThumbnail: true,
           },

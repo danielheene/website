@@ -20,6 +20,30 @@
     }
   }
 
+  --animate-slide-up: slide-up 275ms ease-out forwards;
+  @keyframes slide-up {
+    from {
+      max-height: var(--slide-height, 1000px);
+      overflow: hidden;
+    }
+    to {
+      max-height: 0;
+      overflow: hidden;
+    }
+  }
+
+  --animate-slide-down: slide-down 275ms ease-out forwards;
+  @keyframes slide-down {
+    from {
+      max-height: 0;
+      overflow: hidden;
+    }
+    to {
+      max-height: var(--slide-height, 1000px);
+      overflow: hidden;
+    }
+  }
+
   --animate-blink: blink 1s step-end infinite;
   @keyframes blink {
     0% {

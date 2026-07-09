@@ -19,6 +19,7 @@ export const registerFonts = <T extends FontName[], K extends T[number]>(fonts: 
 
   for (const font of fonts) {
     Font.register(fontMap[font] as Parameters<typeof Font.register>[number])
+    Font.getRegisteredFonts()
     registeredFonts[font] = fontMap[font].family
   }
 

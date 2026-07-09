@@ -1,17 +1,19 @@
 import type React from 'react'
+import Link from 'next/link'
 
+import { Button, ButtonProps } from '@/components/Button'
 import { Icon } from '@/components/Icon'
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/cn'
-import { generateContentPath } from '@/lib/generateContentPath'
+import { generateContentURL } from '@/lib/generateContentURL'
 import type { LinkFieldData } from '@/types/payload'
 
 type CMSLinkType = LinkFieldData & {
-  appearance?: 'inline' | string
+  appearance?: 'inline'
   children?: React.ReactNode
   className?: string
   newTab?: boolean
-  size?: string
+  size?: ButtonProps['size']
+  variant?: ButtonProps['variant']
 }
 
 export const CMSLink: React.FC<CMSLinkType> = (props) => {
@@ -20,28 +22,28 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     appearance = 'inline',
     icon,
     iconOnly,
-    address,
     children,
     className,
     label,
     newTab,
     reference,
     size: sizeFromProps,
+    variant,
     url,
   } = props
 
   const href =
-    type === 'reference' &&
-    typeof reference?.value === 'object' &&
-    reference.value.slug
-      ? generateContentPath(reference?.relationTo, reference.value.slug)
-      : type === 'mailto'
-        ? `mailto:${address}`
-        : url
+    type === 'reference' && typeof reference?.value === 'object' && reference.value.slug
+      ? generateContentURL({
+          collection: reference?.relationTo,
+          slug: reference.value.slug,
+        })
+      : url
 
   if (!href) return null
 
-  const size = appearance === 'link' ? 'clear' : sizeFromProps
+  const size = appearance === 'inline' ? 'clear' : sizeFromProps
+
   const newTabProps = newTab
     ? {
         rel: 'noopener noreferrer',
@@ -52,17 +54,20 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   return (
     <Button
       className={cn(className)}
-      href={href || url}
-      {...newTabProps}
+      size={sizeFromProps}
+      variant={variant}
       {...(icon && iconOnly
         ? {
             'aria-label': label,
           }
         : {})}
+      asChild
     >
-      {icon && <Icon name={icon} />}
-      {((icon && !iconOnly) || !icon) && label && <span>{label}</span>}
-      {((icon && !iconOnly) || !icon) && children && children}
+      <Link href={href || url} {...newTabProps}>
+        {icon && <Icon name={icon} />}
+        {((icon && !iconOnly) || !icon) && label && <span>{label}</span>}
+        {((icon && !iconOnly) || !icon) && children && children}
+      </Link>
     </Button>
   )
 }

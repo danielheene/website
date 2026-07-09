@@ -1,6 +1,7 @@
-import { registerFonts } from '@pdf/fonts'
 import type { Styles } from '@react-pdf/renderer'
 import { round } from 'lodash-es'
+
+import { registerFonts } from '@pdf/fonts'
 
 const { PPSupplySans, PPSupplyMono, PPFrama, PPFramaText } = registerFonts([
   'PPSupplySans',
@@ -77,6 +78,7 @@ export const textStyles = {
       color: colors.textHeadline,
       fontFamily: PPSupplySans,
       fontSize: 18,
+      fontWeight: 500,
     } as Styles[string]
   },
   get introduction() {

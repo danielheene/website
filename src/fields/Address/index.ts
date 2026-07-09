@@ -1,4 +1,5 @@
 import { startCase } from 'lodash-es'
+
 import type { Field, GroupField } from 'payload'
 
 import { resolveAddressData } from '@/fields/Address/hooks/resolveAddressData'
@@ -131,7 +132,7 @@ export const AddressField = ({
     className: '[&_header]:w-full',
     components: {
       Label: '@/fields/Address/components/LabelComponent',
-      Description: '@/components/AdminPanel#DescriptionWithNewline',
+      Description: '@/components/AdminPanel#MarkdownDescription',
       Field: '@/fields/Address/components/FieldComponent',
     },
   },

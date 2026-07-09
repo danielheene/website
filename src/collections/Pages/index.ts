@@ -1,5 +1,7 @@
-import { AdminGroup } from '@custom-types'
 import type { AccessArgs, CollectionConfig, FilterOptionsProps } from 'payload'
+
+import { AdminGroup } from '@custom-types'
+import { isBoolean } from 'lodash-es'
 
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
@@ -17,8 +19,8 @@ import { mapResumeValuesToBlocks } from './hooks/mapResumeValuesToBlocks'
 import { removeInvalidBlockData } from './hooks/removeInvalidBlockData'
 import { getFilteredBlocks } from './utils/getFilteredBlocks'
 
-export const Pages: CollectionConfig<CollectionSlug.Pages> = {
-  slug: CollectionSlug.Pages,
+export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
+  slug: CollectionSlug['Pages'],
   labels: {
     singular: 'Page',
     plural: 'Pages',
@@ -62,10 +64,9 @@ export const Pages: CollectionConfig<CollectionSlug.Pages> = {
       'updatedAt',
     ],
     livePreview: {
-      url: ({ data }) => generatePreviewPath(CollectionSlug.Pages, data.slug),
+      url: ({ data }) => generatePreviewPath(CollectionSlug['Pages'], data.slug),
     },
-    preview: (data: Partial<Page>) =>
-      generatePreviewPath(CollectionSlug.Pages, data.slug),
+    preview: (data: Partial<Page>) => generatePreviewPath(CollectionSlug['Pages'], data.slug),
   },
   fields: [
     /* -------------- Main  Content -------------- */
@@ -78,6 +79,28 @@ export const Pages: CollectionConfig<CollectionSlug.Pages> = {
       fieldToUse: 'title',
     }),
 
+    {
+      type: 'checkbox',
+      name: 'protected',
+      defaultValue: false,
+      hooks: {
+        beforeValidate: [
+          ({ value }) => {
+            return isBoolean(value) ? value : false
+          },
+        ],
+      },
+      access: {
+        update: () => false,
+        create: () => false,
+      },
+      admin: {
+        position: 'sidebar',
+        disableListColumn: true,
+        disableListFilter: true,
+        disableGroupBy: true,
+      },
+    },
     {
       type: 'select',
       name: 'layout',
@@ -116,7 +139,9 @@ export const Pages: CollectionConfig<CollectionSlug.Pages> = {
             {
               name: 'media',
               type: 'upload',
-              relationTo: CollectionSlug.MediaImages,
+              relationTo: [
+                CollectionSlug['MediaImages'],
+              ],
               hasMany: true,
               displayPreview: true,
               label: false,
@@ -177,8 +202,7 @@ export const Pages: CollectionConfig<CollectionSlug.Pages> = {
               blocks: [],
               blockReferences: BLOCK_SLUGS,
               minRows: 1,
-              filterOptions: ({ data }: FilterOptionsProps<Page>) =>
-                getFilteredBlocks(data),
+              filterOptions: ({ data }: FilterOptionsProps<Page>) => getFilteredBlocks(data),
               admin: {
                 disableListColumn: true,
                 disableListFilter: true,

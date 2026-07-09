@@ -1,12 +1,11 @@
-import { CollectionSlug } from '@/types/collections'
 import type {
+  GlobalUserSettings,
   ResumeAboutMeGlobalData,
   ResumeContactGlobalData,
   ResumeCustomersGlobalData,
   ResumeDownloadsGlobalData,
   ResumeExperienceGlobalData,
   ResumeProjectsGlobalData,
-  UserConfigurationData,
 } from '@/types/payload'
 
 /**
@@ -24,14 +23,11 @@ export enum AdminGroup {
 
 export type Skill =
   ResumeExperienceGlobalData['skillSummary'][keyof ResumeExperienceGlobalData['skillSummary']]
-export type SkillSummary = Record<
-  keyof ResumeExperienceGlobalData['skillSummary'],
-  Skill
->
+export type SkillSummary = Record<keyof ResumeExperienceGlobalData['skillSummary'], Skill>
 
 export type ResumeDocumentData = {
   locale: string
-  userConfigurationData: UserConfigurationData | null
+  globalUserSettings: GlobalUserSettings | null
   aboutMe: ResumeAboutMeGlobalData | null
   customers: ResumeCustomersGlobalData | null
   downloads: ResumeDownloadsGlobalData | null

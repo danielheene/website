@@ -1,12 +1,13 @@
-import { get } from 'lodash-es'
 import type { WidgetServerProps } from 'payload'
+
+import { get } from 'lodash-es'
 
 import { UmamiControlBarClient } from './UmamiControlBar.client'
 
 export const UmamiControlBar = async ({ req }: WidgetServerProps) => {
   const preferencesUrl = new URL(
     '/api/payload-preferences/umami-charts:time-range',
-    process.env.NEXT_PUBLIC_SERVER_URL,
+    process.env.SERVER_URL,
   )
   const data = await fetch(preferencesUrl, {
     method: 'GET',

@@ -4,7 +4,6 @@ import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { TableFeatureClient as TableFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
-import { AlignFeatureClient as AlignFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { IndentFeatureClient as IndentFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { FixedToolbarFeatureClient as FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
@@ -13,6 +12,7 @@ import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { AlignFeatureClient as AlignFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { LinkFeatureClient as LinkFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ParagraphFeatureClient as ParagraphFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { HeadingFeatureClient as HeadingFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
@@ -27,7 +27,7 @@ import { RelationshipFeatureClient as RelationshipFeatureClient_e70f5e05f09f93e0
 import { default as default_7ec004ac4b8008ecdc0f3947d3557629 } from '@/fields/Meta/MetaSerpField/FieldComponent'
 import { default as default_72b1e1394ea6e44d1092fa18980ba9fd } from '@/fields/Meta/MetaTitleField/FieldComponent'
 import { default as default_a57516f3ad5847138e2e9cad77905a21 } from '@/fields/Meta/MetaDescriptionField/FieldComponent'
-import { DescriptionWithNewline as DescriptionWithNewline_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
+import { MarkdownDescription as MarkdownDescription_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { ExportListMenuItem as ExportListMenuItem_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
 import { ImportListMenuItem as ImportListMenuItem_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
 import { AltField as AltField_24f51e17ebe211ea3e1b6c287f79c7cc } from '@/collections/MediaImages/components'
@@ -52,12 +52,15 @@ import { default as default_0b08340e72e32d7fee0e442ccb45fffe } from '@/globals/R
 import { default as default_056181642b32ef838eb41bd4b079363b } from '@/globals/ResumeExperience/components/ResumeJobsListTab'
 import { default as default_6b6af0860e8f0e21f65e7b5d9fa1097b } from '@/globals/ResumeExperience/components/ResumeSkillsListTab'
 import { default as default_106b14459d3dd8ad7b6fc5ab43801e7b } from '@/fields/ProjectList/RowLabel'
-import { default as default_c0073fb675a879a26b02b6a1ee5ff176 } from '@/fields/Orderable/FieldComponent'
-import { default as default_f0533f6fbf982ac29de12191d61add05 } from '@/globals/SettingsUserConfiguration/components/LanguagesRowLabel'
+import { default as default_eab0cf681484e45124c7c61673362c49 } from '@/fields/Template/Components/FieldComponent'
+import { default as default_184096423d48b3396fdb451647a008e7 } from '@/fields/Duration/components/FieldComponent'
+import { default as default_72c516b3c3255e14103eac89cc60b387 } from '@/globals/SettingsPDFBuilder/components/SkillSortingField'
+import { default as default_d06f44a74a801da55773e30cd863ce79 } from '@/globals/SettingsPDFBuilder/components/GenerateButton'
+import { default as default_25737e4ba5d8de2c3d84ba8d21bbf4ab } from '@/globals/SettingsGlobalUser/components/LanguagesRowLabel'
 import { default as default_e59c21704d4dab5076151afaebd7876b } from '@/fields/Address/components/LabelComponent'
 import { default as default_741a914cdfef7b5df9221de4f2e22dd9 } from '@/fields/Address/components/FieldComponent'
-import { default as default_798a22614a9310381a102a9659825de7 } from '@/globals/SettingsUserConfiguration/components/SameAsRowLabel'
-import { ResumeLayoutBlock as ResumeLayoutBlock_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
+import { default as default_8a51036bc2d88e014190cca6baa944f2 } from '@/globals/SettingsGlobalUser/components/SameAsRowLabel'
+import { default as default_dbb6fe4ada93d1133d8de1ea56eb20d6 } from '@/fields/ResumeBlock/components/FieldComponent'
 import { Nav as Nav_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { Icon as Icon_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { Logo as Logo_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
@@ -79,7 +82,6 @@ export const importMap = {
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/client#TableFeatureClient": TableFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
-  "@payloadcms/richtext-lexical/client#AlignFeatureClient": AlignFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#IndentFeatureClient": IndentFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BlocksFeatureClient": BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#FixedToolbarFeatureClient": FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
@@ -88,6 +90,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#UnderlineFeatureClient": UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#StrikethroughFeatureClient": StrikethroughFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@payloadcms/richtext-lexical/client#AlignFeatureClient": AlignFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#LinkFeatureClient": LinkFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ParagraphFeatureClient": ParagraphFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#HeadingFeatureClient": HeadingFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
@@ -102,7 +105,7 @@ export const importMap = {
   "@/fields/Meta/MetaSerpField/FieldComponent#default": default_7ec004ac4b8008ecdc0f3947d3557629,
   "@/fields/Meta/MetaTitleField/FieldComponent#default": default_72b1e1394ea6e44d1092fa18980ba9fd,
   "@/fields/Meta/MetaDescriptionField/FieldComponent#default": default_a57516f3ad5847138e2e9cad77905a21,
-  "@/components/AdminPanel#DescriptionWithNewline": DescriptionWithNewline_a316a6ec12a12cd0fe58ccec01a444ca,
+  "@/components/AdminPanel#MarkdownDescription": MarkdownDescription_a316a6ec12a12cd0fe58ccec01a444ca,
   "@payloadcms/plugin-import-export/rsc#ExportListMenuItem": ExportListMenuItem_cdf7e044479f899a31f804427d568b36,
   "@payloadcms/plugin-import-export/rsc#ImportListMenuItem": ImportListMenuItem_cdf7e044479f899a31f804427d568b36,
   "@/collections/MediaImages/components#AltField": AltField_24f51e17ebe211ea3e1b6c287f79c7cc,
@@ -127,12 +130,15 @@ export const importMap = {
   "@/globals/ResumeExperience/components/ResumeJobsListTab#default": default_056181642b32ef838eb41bd4b079363b,
   "@/globals/ResumeExperience/components/ResumeSkillsListTab#default": default_6b6af0860e8f0e21f65e7b5d9fa1097b,
   "@/fields/ProjectList/RowLabel#default": default_106b14459d3dd8ad7b6fc5ab43801e7b,
-  "@/fields/Orderable/FieldComponent#default": default_c0073fb675a879a26b02b6a1ee5ff176,
-  "@/globals/SettingsUserConfiguration/components/LanguagesRowLabel#default": default_f0533f6fbf982ac29de12191d61add05,
+  "@/fields/Template/Components/FieldComponent#default": default_eab0cf681484e45124c7c61673362c49,
+  "@/fields/Duration/components/FieldComponent#default": default_184096423d48b3396fdb451647a008e7,
+  "@/globals/SettingsPDFBuilder/components/SkillSortingField#default": default_72c516b3c3255e14103eac89cc60b387,
+  "@/globals/SettingsPDFBuilder/components/GenerateButton#default": default_d06f44a74a801da55773e30cd863ce79,
+  "@/globals/SettingsGlobalUser/components/LanguagesRowLabel#default": default_25737e4ba5d8de2c3d84ba8d21bbf4ab,
   "@/fields/Address/components/LabelComponent#default": default_e59c21704d4dab5076151afaebd7876b,
   "@/fields/Address/components/FieldComponent#default": default_741a914cdfef7b5df9221de4f2e22dd9,
-  "@/globals/SettingsUserConfiguration/components/SameAsRowLabel#default": default_798a22614a9310381a102a9659825de7,
-  "@/components/AdminPanel#ResumeLayoutBlock": ResumeLayoutBlock_a316a6ec12a12cd0fe58ccec01a444ca,
+  "@/globals/SettingsGlobalUser/components/SameAsRowLabel#default": default_8a51036bc2d88e014190cca6baa944f2,
+  "@/fields/ResumeBlock/components/FieldComponent#default": default_dbb6fe4ada93d1133d8de1ea56eb20d6,
   "@/components/AdminPanel#Nav": Nav_a316a6ec12a12cd0fe58ccec01a444ca,
   "@/components/AdminPanel#Icon": Icon_a316a6ec12a12cd0fe58ccec01a444ca,
   "@/components/AdminPanel#Logo": Logo_a316a6ec12a12cd0fe58ccec01a444ca,

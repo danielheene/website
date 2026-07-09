@@ -1,7 +1,7 @@
 import type React from 'react'
 
+import { Button } from '@/components/Button'
 import { Icon } from '@/components/Icon'
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/cn'
 
 export const Card = ({ className, ...props }: React.ComponentProps<'div'>) => {
@@ -17,10 +17,7 @@ export const Card = ({ className, ...props }: React.ComponentProps<'div'>) => {
   )
 }
 
-export const CardHeader = ({
-  className,
-  ...props
-}: React.ComponentProps<'div'>) => {
+export const CardHeader = ({ className, ...props }: React.ComponentProps<'div'>) => {
   return (
     <div
       className={cn(
@@ -48,7 +45,7 @@ export const CardPagination = ({
     <div className="inline-flex">
       <Button
         size="icon"
-        outline
+        // outline
         className="text-3xl pr-0.5"
         onClick={setPrevPage}
         disabled={!hasPrevPage}
@@ -57,7 +54,7 @@ export const CardPagination = ({
       </Button>
       <Button
         size="icon"
-        outline
+        // outline
         className="text-3xl pl-0.5"
         onClick={setNextPage}
         disabled={!hasNextPage}
@@ -68,62 +65,27 @@ export const CardPagination = ({
   ) : null
 }
 
-export const CardTitle = ({
-  className,
-  ...props
-}: React.ComponentProps<'div'>) => {
-  return (
-    <div className={cn('leading-none font-semibold', className)} {...props} />
-  )
+export const CardTitle = ({ className, ...props }: React.ComponentProps<'div'>) => {
+  return <div className={cn('leading-none font-semibold', className)} {...props} />
 }
 
-export const CardDescription = ({
-  className,
-  ...props
-}: React.ComponentProps<'div'>) => {
+export const CardDescription = ({ className, ...props }: React.ComponentProps<'div'>) => {
+  return <div className={cn('text-muted-foreground text-sm', className)} {...props} />
+}
+
+export const CardAction = ({ className, ...props }: React.ComponentProps<'div'>) => {
   return (
     <div
-      className={cn('text-muted-foreground text-sm', className)}
+      className={cn('col-start-2 row-span-2 row-start-1 self-start justify-self-end', className)}
       {...props}
     />
   )
 }
 
-export const CardAction = ({
-  className,
-  ...props
-}: React.ComponentProps<'div'>) => {
-  return (
-    <div
-      className={cn(
-        'col-start-2 row-span-2 row-start-1 self-start justify-self-end',
-        className,
-      )}
-      {...props}
-    />
-  )
+export const CardContent = ({ className, ...props }: React.ComponentProps<'div'>) => {
+  return <div className={cn('px-6 flex flex-col justify-start', className)} {...props} />
 }
 
-export const CardContent = ({
-  className,
-  ...props
-}: React.ComponentProps<'div'>) => {
-  return (
-    <div
-      className={cn('px-6 flex flex-col justify-start', className)}
-      {...props}
-    />
-  )
-}
-
-export const CardFooter = ({
-  className,
-  ...props
-}: React.ComponentProps<'div'>) => {
-  return (
-    <div
-      className={cn('flex items-center px-6 [.border-t]:pt-6', className)}
-      {...props}
-    />
-  )
+export const CardFooter = ({ className, ...props }: React.ComponentProps<'div'>) => {
+  return <div className={cn('flex items-center px-6 [.border-t]:pt-6', className)} {...props} />
 }
