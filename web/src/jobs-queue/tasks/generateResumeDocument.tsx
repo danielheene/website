@@ -3,7 +3,7 @@ import type { Data, File, TaskConfig } from 'payload'
 import { CollectionSlug } from '@/types/collections'
 import { GlobalSlug } from '@/types/globals'
 
-export const generateResumeDocumentTask: TaskConfig<'generateResumeDocumentTask'> = {
+export const generateResumeDocument: TaskConfig<'generateResumeDocumentTask'> = {
   slug: 'generateResumeDocumentTask',
   label: 'Generate Resume Document',
   retries: 3,
@@ -129,5 +129,3 @@ export const generateResumeDocumentTask: TaskConfig<'generateResumeDocumentTask'
     }
   },
 }
-
-export default generateResumeDocumentTask

@@ -5,13 +5,13 @@ import { isMediaImage } from '@/lib/typeGuards'
 import { CollectionSlug } from '@/types/collections'
 import type { MediaDocument, MediaImage } from '@/types/payload'
 
-export const generateDocumentThumbnailTask: TaskConfig<'generateDocumentThumbnailTask'> =
+export const generateDocumentThumbnail: TaskConfig<'generateDocumentThumbnailTask'> =
   {
     slug: 'generateDocumentThumbnailTask',
     label: 'Generate Document Thumbnail',
     retries: 3,
     concurrency: {
-      key: ({ input, queue, }) => `generate:document:thumbnail:${input.documentId}`,
+      key: ({ input, queue }) => `generate:document:thumbnail:${input.documentId}`,
       exclusive: true,
       supersedes: true,
     },
@@ -79,12 +79,12 @@ export const generateDocumentThumbnailTask: TaskConfig<'generateDocumentThumbnai
           height: thumbnailScreenshot.height,
           ...(previousThumbnail
             ? {
-                alt: previousThumbnail.alt,
-                credits: previousThumbnail.credits,
-                createdAt: previousThumbnail.createdAt,
-                focalX: previousThumbnail.focalX,
-                focalY: previousThumbnail.focalY,
-              }
+              alt: previousThumbnail.alt,
+              credits: previousThumbnail.credits,
+              createdAt: previousThumbnail.createdAt,
+              focalX: previousThumbnail.focalX,
+              focalY: previousThumbnail.focalY,
+            }
             : {}),
         }
 
@@ -131,8 +131,8 @@ export const generateDocumentThumbnailTask: TaskConfig<'generateDocumentThumbnai
           data: {
             thumbnail: {
               relationTo: 'images',
-              value: documentThumbnail.id
-            }
+              value: documentThumbnail.id,
+            },
           } as MediaDocument,
           context: {
             skipGenerateDocumentThumbnail: true,
@@ -153,4 +153,3 @@ export const generateDocumentThumbnailTask: TaskConfig<'generateDocumentThumbnai
     },
   }
 
-export default generateDocumentThumbnailTask

@@ -27,7 +27,7 @@ export const SettingsPDFBuilder: GlobalConfig<GlobalSlug['SettingsPDFBuilder']> 
     afterChange: [
       async ({ doc, context }) => {
         if (!context.skipRevalidate) {
-          revalidateTag(GlobalSlug['SettingsPDFBuilder'])
+          revalidateTag(GlobalSlug['SettingsPDFBuilder'], { expire: 0 })
         }
         return doc
       },

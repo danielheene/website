@@ -2,7 +2,7 @@ import type { TaskConfig } from 'payload'
 
 import { buildResumeDocumentData } from '@pdf/lib/buildResumeDocumentData'
 import { Locale } from '@/lib/i18n'
-import { TaskSlug } from '@/types/queue'
+import { TaskSlug } from '@/types/jobs-queue'
 import { z } from 'zod'
 
 export const generateResumeLocalizedData: TaskConfig<TaskSlug['GenerateResumeLocalizedData']> = {

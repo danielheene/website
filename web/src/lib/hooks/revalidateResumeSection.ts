@@ -25,7 +25,7 @@ const revalidateResumeSection = async ({
   if ('_status' in doc && doc._status !== 'published') return
 
   payload.logger.info(`Revalidating Resume Section: ${slug}`)
-  revalidateTag(slug)
+  revalidateTag(slug, { expire: 0 })
 
   /**
    * Revalidate all Pages including resumne layouts

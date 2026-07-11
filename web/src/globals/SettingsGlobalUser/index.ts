@@ -24,7 +24,7 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
     afterChange: [
       async ({ doc, context }) => {
         if (!context.skipRevalidate) {
-          revalidateTag(GlobalSlug['GlobalUserSettings'])
+          revalidateTag(GlobalSlug['GlobalUserSettings'], { expire: 0 })
         }
         return doc
       },

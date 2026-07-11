@@ -1,4 +1,3 @@
-
 import { Block, Field } from 'payload'
 import { ResumeLayoutBlockProps } from '@/components/AdminPanel'
 import { BlockGroup, BlockSlugValue } from '@/types/blocks'
@@ -20,7 +19,7 @@ export const ResumeBlockField = <K extends string = Extract<BlockSlugValue, `Res
   additionalFields?: Field[]
   hiddenFields?: Field[]
 }): Block => {
-  const {name: nameFromProps,label: labelFromProps, variant, additionalFields = [], hiddenFields = [] } = props
+  const { name: nameFromProps, label: labelFromProps, variant, additionalFields = [], hiddenFields = [] } = props
 
 
   /**
@@ -46,9 +45,9 @@ export const ResumeBlockField = <K extends string = Extract<BlockSlugValue, `Res
    * @property {string} icon - The URL path to the icon SVG image for the block, constructed using the dashed name
    */
   const images = {
-  thumbnail:  `/payload/blocks/${dashedName}-thumbnail.svg`,
-  icon: `/payload/blocks/${dashedName}-icon.svg`
-    }
+    thumbnail: `/payload/blocks/${dashedName}-thumbnail.svg`,
+    icon: `/payload/blocks/${dashedName}-icon.svg`,
+  }
 
   /**
    * Configuration object for dynamically loading and rendering a field component.
@@ -61,11 +60,12 @@ export const ResumeBlockField = <K extends string = Extract<BlockSlugValue, `Res
    * @property {string} clientProps.imageSrc - The source URL or path for the thumbnail image to be displayed
    */
   const ComponentConf = {
-        path: '@/fields/ResumeBlock/components/FieldComponent',
-        clientProps: {
-          variant,
-          imageSrc: images.thumbnail
-        }}
+    path: '@/fields/ResumeBlock/components/FieldComponent',
+    clientProps: {
+      variant,
+      imageSrc: images.thumbnail,
+    },
+  }
 
 
   return {
@@ -76,16 +76,16 @@ export const ResumeBlockField = <K extends string = Extract<BlockSlugValue, `Res
       group: BlockGroup['Resume'],
       disableBlockName: true,
       components: {
-        Block: ComponentConf
+        Block: ComponentConf,
       },
-      images
+      images,
     },
     fields: [
       {
         type: 'group',
         admin: {
           components: {
-            Field: ComponentConf
+            Field: ComponentConf,
           },
         },
         fields: [
@@ -111,21 +111,23 @@ export const ResumeBlockField = <K extends string = Extract<BlockSlugValue, `Res
 }
 
 
-
 const createNameVariations = (name: string): [string, string] => {
   const dashedName = [kebabCase(name.replaceAll(/(Block|-block)*$/g, '')), 'block'].join('-')
   const pascalCaseName = upperFirst(camelCase(dashedName)) as string
-  return [ pascalCaseName, dashedName ]
+  return [pascalCaseName, dashedName]
 }
 
 
-const createLabelObject = (label: string | { singular: string, plural: string } | undefined, fallBack?: string): {singular: string, plural: string} => {
+const createLabelObject = (label: string | { singular: string, plural: string } | undefined, fallBack?: string): {
+  singular: string,
+  plural: string
+} => {
   const isComplexLabel = typeof label === 'object' && 'singular' in label && typeof label.singular === 'string' && label.singular !== '' && 'plural' in label && typeof label.plural === 'string' && label.plural !== ''
   const isSimpleLabel = !isComplexLabel && typeof label === 'string' && label !== ''
   const isMissingLabel = !isComplexLabel && !isSimpleLabel && typeof label === 'undefined'
   const hasFallBack = typeof fallBack === 'string' && fallBack !== ''
 
-  return isComplexLabel ? { ...label} : isSimpleLabel ? {
+  return isComplexLabel ? { ...label } : isSimpleLabel ? {
     singular: label,
     plural: label,
   } : isMissingLabel && hasFallBack ? {
