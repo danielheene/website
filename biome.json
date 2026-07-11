@@ -12,9 +12,14 @@
       "/*.ts",
       "/*.tsx",
       "/*.json",
-      "src/**/*",
-      "app/**",
-      "public/**"
+      "web/*.js",
+      "web/*.jsx",
+      "web/*.ts",
+      "web/*.tsx",
+      "web/*.json",
+      "web/src/**/*",
+      "web/app/**",
+      "web/public/**"
     ],
     "ignoreUnknown": false
   },
@@ -45,7 +50,7 @@
       "!**/temp",
       "!**/docs/**",
       "!**/tsconfig.json",
-      "!./src/types/payload.ts",
+      "!./web/src/types/payload.ts",
       "!./README.md"
     ]
   },
