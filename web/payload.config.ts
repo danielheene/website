@@ -11,17 +11,22 @@ import sharp from 'sharp'
 import { BLOCKS } from '@/blocks'
 import { COLLECTIONS } from '@/collections'
 import { GLOBALS } from '@/globals'
-import generateDocumentThumbnailTask from '@/tasks/generateDocumentThumbnailTask'
+import generateDocumentThumbnail from '@/jobs-queue/tasks/generateDocumentThumbnail'
 import { useSendAdapter } from '@/lib/useSendAdapter'
 import { CollectionSlug } from '@/types/collections'
 import { importExportPlugin } from '@payloadcms/plugin-import-export'
 import { SKILL_TYPE } from '@/types/select-options'
-import { QueueSlug } from '@/types/queue'
-import { generateResumeLocalizedData } from '@/tasks/generateResumeLocalizedData'
+import { QueueSlug } from '@/types/jobs-queue'
+import { generateResumeLocalizedData } from '@/jobs-queue/tasks/generateResumeLocalizedData'
+import { TASKS } from '@/jobs-queue/tasks'
+
+import { loadRootEnv } from './env'
 
 
 const filename = fileURLToPath(import.meta.url)
-const dirname = path.dirname(filename) 
+const dirname = path.dirname(filename)
+
+loadRootEnv(dirname)
 
 export const config = buildConfig({
   admin: {
@@ -186,10 +191,7 @@ export const config = buildConfig({
   },
   jobs: {
     enableConcurrencyControl: true,
-    tasks: [
-      generateDocumentThumbnailTask,
-      generateResumeLocalizedData,
-    ],
+    tasks: TASKS,
     shouldAutoRun: async () => {
       return process.env.ENABLE_JOB_WORKERS === 'true'
     },

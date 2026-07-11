@@ -2,68 +2,33 @@ import { env } from '@/types/environment'
 import { withPayload } from '@payloadcms/next/withPayload'
 import { NextConfig } from 'next'
 import { z } from 'zod'
-import { ChildProcess, spawn } from 'node:child_process'
-import { PHASE_DEVELOPMENT_SERVER } from 'next/constants'
 
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+import { loadRootEnv } from './env'
+
+const filename = fileURLToPath(import.meta.url)
+const dirname = path.dirname(filename)
 
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
 
-
-let server: ChildProcess
-const createTunnel = (token: string) => new Promise<ChildProcess | null>((resolve) => {
-  const childProcess = spawn(
-    'npx wrangler tunnel run',
-    [
-      `--token ${token}`,
-    ],
-    {
-      shell: true,
-      stdio: 'ignore',
-    },
-  )
-  childProcess.once('spawn', () => {
-    resolve(childProcess)
-  })
-  childProcess.once('error', () => {
-    resolve(null)
-  })
-})
-
-
 export default async (phase, { defaultConfig }) => {
+  loadRootEnv(dirname)
 
-  console.debug(process.env)
   const parsedEnv = env.safeParse(process.env)
   if (!parsedEnv.success) {
     console.error('\n' + z.prettifyError(parsedEnv.error) + '\n')
     process.exit(1)
   }
-  console.debug(parsedEnv.data)
-
-  if (phase === PHASE_DEVELOPMENT_SERVER) {
-    if (!server && process.env.CLOUDFLARE_TUNNEL_URL && process.env.CLOUDFLARE_TUNNEL_HOST && process.env.CLOUDFLARE_TUNNEL_TOKEN) {
-      server = await createTunnel(parsedEnv.data.CLOUDFLARE_TUNNEL_TOKEN)
-    }
-    if (server) {
-      process.env.SERVER_HOST = process.env.CLOUDFLARE_TUNNEL_HOST
-      process.env.SERVER_URL = process.env.CLOUDFLARE_TUNNEL_URL
-    }
-  }
-
 
   const nextConfig: NextConfig = {
     reactStrictMode: true,
     poweredByHeader: false,
     productionBrowserSourceMaps: false,
-    eslint: {
-      ignoreDuringBuilds: true,
-    },
-    experimental: {
-      // cacheComponents: true,
-      // viewTransition: true,
-    },
+
     serverExternalPackages: ['@react-pdf/renderer', 'svgo', 'pdf-parse'],
     turbopack: {
       resolveExtensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.wasm', '.json', '.css', '.scss', '.svg'],
@@ -102,23 +67,36 @@ export default async (phase, { defaultConfig }) => {
       SENTRY_DSN: process.env.SENTRY_DSN,
     },
 
+    webpack: (config, context) => {
+      const nextConfig = { ...config }
+      nextConfig.resolve = {
+        ...config.resolve,
+        extensionAlias: {
+          '.cjs': ['.cts', '.cjs'],
+          '.js': ['.ts', '.tsx', '.js', '.jsx'],
+          '.mjs': ['.mts', '.mjs'],
+        },
+        alias: {
+          ...config.resolve.alias,
+          '@': path.resolve(__dirname, 'src'),
 
-    // webpack: (config, options) => {
-    //   config.resolve.extensionAlias = {
-    //     '.cjs': ['.cts', '.cjs'],
-    //     '.js': ['.ts', '.tsx', '.js', '.jsx'],
-    //     '.mjs': ['.mts', '.mjs'],
-    //   }
-    //
-    //   config.plugins.push(new MiniCssExtractPlugin())
-    //
-    //   config.module.rules.push({
-    //     test: /\.css$/i,
-    //     use: [MiniCssExtractPlugin.loader, 'css-loader', '@tailwindcss/webpack'],
-    //   },)
-    //
-    //   return config
-    // },
+          '@access': path.resolve(dirname, './src/access/'),
+          '@blocks': path.resolve(dirname, './src/blocks'),
+          '@collections': path.resolve(dirname, './src/collections'),
+          '@components': path.resolve(dirname, './src/components'),
+          '@fields': path.resolve(dirname, './src/fields'),
+          '@fonts': path.resolve(dirname, './src/fonts'),
+          '@globals': path.resolve(dirname, './src/globals'),
+          '@lib': path.resolve(dirname, './src/lib'),
+          '@pdf': path.resolve(dirname, './src/pdf'),
+          '@styles': path.resolve(dirname, './src/styles'),
+          '@jobs-queue': path.resolve(dirname, './src/jobs-queue'),
+          '@types': path.resolve(dirname, './src/types'),
+        },
+      }
+
+      return config
+    },
 
     async rewrites() {
       const rewrites = []
@@ -134,27 +112,8 @@ export default async (phase, { defaultConfig }) => {
     },
   }
 
-
-
   return [
     [withBundleAnalyzer, undefined],
     [withPayload, { devBundleServerPackages: false }],
-    // [withSentryConfig, {
-    //   org: process.env.SENTRY_ORG,
-    //   project: process.env.SENTRY_PROJECT,
-    //
-    //   // Only print logs for uploading source maps in CI
-    //   authToken: process.env.SENTRY_AUTH_TOKEN,
-    //   silent: !process.env.CI,
-    //   // Upload a larger set of source maps for prettier stack traces
-    //   widenClientFileUpload: true,
-    //   tunnelRoute: "/monitoring",
-    //   webpack: {
-    //     treeshake: {
-    //       // Automatically tree-shake Sentry logger statements to reduce bundle size
-    //       removeDebugLogging: true,
-    //     },
-    //   }
-    // }],
   ].reduce((acc, [plugin, options]) => plugin(acc, options), nextConfig)
 }
