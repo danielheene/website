@@ -1,7 +1,7 @@
 packages:
-  - app
+  - web
   - storybook
-  - docs - 'packages/*'
+  - packages/*
 #  - 'test'
 
 allowBuilds:
