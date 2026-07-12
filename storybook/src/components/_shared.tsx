@@ -1,9 +1,2 @@
-import { Theme } from 'storybook/theming'
-
-export const getBlockBackgroundStyle: (theme: Theme) => object = (theme: Theme) => ({
-  borderRadius: theme.appBorderRadius,
-  background: theme.background.content,
-  boxShadow:
-    theme.base === 'light' ? 'rgba(0, 0, 0, 0.10) 0 1px 3px 0' : 'rgba(0, 0, 0, 0.20) 0 2px 5px 0',
-  border: `1px solid ${theme.appBorderColor}`,
-})
+export const blockBackgroundClassName =
+  'rounded-md border border-border bg-card shadow-[0_1px_3px_rgba(0,0,0,0.10)] dark:shadow-[0_2px_5px_rgba(0,0,0,0.20)]'
