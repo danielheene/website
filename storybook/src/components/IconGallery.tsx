@@ -1,52 +1,10 @@
 import type { FunctionComponent } from 'react'
 import React from 'react'
 
-import { styled } from 'storybook/theming'
+import { ResetWrapper } from 'storybook/internal/components'
 
-import { getBlockBackgroundStyle } from './_shared'
-import { ResetWrapper,  } from 'storybook/internal/components'
-
-const ItemLabel = styled.div(({ theme }) => ({
-  fontFamily: theme.typography.fonts.mono,
-  fontSize: theme.typography.size.s2,
-  fontWeight: theme.typography.weight.bold,
-  color: theme.color.defaultText,
-  marginTop: '1em',
-  lineHeight: 1.2,
-  textAlign: 'center',
-}))
-
-const ItemSpecimen = styled.div(({ theme }) => ({
-  ...getBlockBackgroundStyle(theme),
-  overflow: 'hidden',
-  fontSize: '3rem',
-  height: '2em',
-  width: '2em',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  flex: 'none',
-
-  '> img, > svg': {
-    width: '1em',
-    height: '1em',
-  },
-}))
-
-const Item = styled.div({
-  display: 'inline-flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  flex: '0 1 calc(20% - 50px)',
-  minWidth: 120,
-
-  margin: '15px',
-})
-
-const List = styled.div({
-  display: 'flex',
-  flexFlow: 'row wrap',
-})
+import { cn } from '../lib/cn'
+import { blockBackgroundClassName } from './_shared'
 
 interface IconItemProps {
   name: string
@@ -55,16 +13,22 @@ interface IconItemProps {
 
 /** An individual icon with a caption and an example (passed as `children`). */
 export const IconItem: FunctionComponent<IconItemProps> = ({ name, children }) => (
-  <Item>
-    <ItemSpecimen
+  <div className="inline-flex flex-col items-center flex-[0_1_calc(20%-50px)] min-w-[120px] m-[15px]">
+    <div
+      className={cn(
+        blockBackgroundClassName,
+        'overflow-hidden text-[3rem] h-[2em] w-[2em] flex items-center justify-center flex-none [&>img]:w-[1em] [&>img]:h-[1em] [&>svg]:w-[1em] [&>svg]:h-[1em]',
+      )}
       onClick={async () => {
         if (navigator) await navigator.clipboard.writeText(name)
       }}
     >
       {children}
-    </ItemSpecimen>
-    <ItemLabel>{name}</ItemLabel>
-  </Item>
+    </div>
+    <div className="font-mono text-sm font-bold text-foreground mt-[1em] leading-[1.2] text-center">
+      {name}
+    </div>
+  </div>
 )
 
 interface IconGalleryProps {
@@ -74,8 +38,8 @@ interface IconGalleryProps {
 /** Show a grid of icons, as specified by `IconItem`. */
 export const IconGallery: FunctionComponent<IconGalleryProps> = ({ children, ...props }) => (
   <ResetWrapper>
-    <List {...props} className="docblock-icongallery sb-unstyled">
+    <div {...props} className="docblock-icongallery sb-unstyled flex flex-row flex-wrap">
       {children}
-    </List>
+    </div>
   </ResetWrapper>
 )
