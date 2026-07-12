@@ -1,158 +1,11 @@
 import React, { Fragment, FunctionComponent } from 'react'
 
-import { styled } from 'storybook/theming'
+import { ResetWrapper } from 'storybook/internal/components'
+
 import { readableColor, transparentize } from 'polished'
 
-import { getBlockBackgroundStyle } from './_shared'
-
-const ItemTitle = styled.div(({ theme }) => ({
-  fontWeight: theme.typography.weight.bold,
-  color: theme.color.defaultText,
-}))
-
-const ItemSubtitle = styled.div(({ theme }) => ({
-  color:
-    theme.base === 'light'
-      ? transparentize(0.2, theme.color.defaultText)
-      : transparentize(0.6, theme.color.defaultText),
-}))
-
-const ItemDescription = styled.div({
-  flex: '0 0 30%',
-  lineHeight: '20px',
-  marginTop: 5,
-})
-
-const SwatchLabel = styled.div(({ theme }) => ({
-  flex: 1,
-  textAlign: 'center',
-  fontFamily: theme.typography.fonts.mono,
-  fontSize: theme.typography.size.s1,
-  lineHeight: 1,
-  overflow: 'hidden',
-  color:
-    theme.base === 'light'
-      ? transparentize(0.4, theme.color.defaultText)
-      : transparentize(0.6, theme.color.defaultText),
-
-  '> div': {
-    display: 'inline-block',
-    overflow: 'hidden',
-    maxWidth: '100%',
-    textOverflow: 'ellipsis',
-  },
-
-  span: {
-    display: 'block',
-    marginTop: 2,
-  },
-}))
-
-
-
-const SwatchLabels = styled.div({
-  display: 'flex',
-  flexDirection: 'row',
-})
-
-interface SwatchProps {
-  background: string
-}
-
-const Swatch = styled.div<SwatchProps>(({ background }) => ({
-  position: 'relative',
-  flex: 1,
-
-  '&::before': {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    background,
-    content: '""',
-  },
-}))
-
-const SwatchColors = styled.div(({ theme }) => ({
-  ...getBlockBackgroundStyle(theme),
-  display: 'flex',
-  flexDirection: 'row',
-  height: 50,
-  marginBottom: 10,
-  overflow: 'hidden',
-  backgroundColor: 'white',
-  backgroundImage: `repeating-linear-gradient(-45deg, #ccc, #ccc 1px, #fff 1px, #fff 16px)`,
-  backgroundClip: 'padding-box',
-}))
-
-const SwatchSpecimen = styled.div({
-  display: 'flex',
-  flexDirection: 'column',
-  flex: 1,
-  position: 'relative',
-  marginBottom: 30,
-})
-
-const Swatches = styled.div({
-  flex: 1,
-  display: 'flex',
-  flexDirection: 'row',
-})
-
-const PrimarySwatchColor = styled(SwatchColors)(() => ({
-  marginBottom: -2,
-  borderBottomRightRadius: 0,
-  borderBottomLeftRadius: 0,
-  [`& + .swatch-colors`]: {
-    borderTopRightRadius: 0,
-    borderTopLeftRadius: 0,
-  },
-}))
-
-const PrimaryLabel = styled.span(({ theme, color }) => ({
-  position: 'absolute',
-  inset: 0,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  color: color,
-  fontWeight: theme.typography.weight.bold,
-  fontFamily: theme.typography.fonts.mono,
-}))
-
-const Item = styled.div({
-  display: 'flex',
-  alignItems: 'flex-start',
-})
-
-const ListName = styled.div({
-  flex: '0 0 30%',
-})
-
-const ListSwatches = styled.div({
-  flex: 1,
-})
-
-const ListHeading = styled.div(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  paddingBottom: 20,
-  fontWeight: theme.typography.weight.bold,
-  color:
-    theme.base === 'light'
-      ? transparentize(0.4, theme.color.defaultText)
-      : transparentize(0.6, theme.color.defaultText),
-}))
-
-const List = styled.div(({ theme }) => ({
-  fontSize: theme.typography.size.s2,
-  lineHeight: `20px`,
-
-  display: 'flex',
-  flexDirection: 'column',
-}))
+import { cn } from '../lib/cn'
+import { blockBackgroundClassName } from './_shared'
 
 type Colors = string[] | { [key: string]: string }
 
@@ -163,27 +16,44 @@ interface ColorItemProps {
 }
 
 function renderSwatch(color: string, index: number) {
-  return <Swatch key={`${color}-${index}`} title={color} background={color} />
+  return (
+    <div
+      key={`${color}-${index}`}
+      title={color}
+      className="relative flex-1"
+      style={{ backgroundColor: color }}
+    />
+  )
 }
 
 function renderSwatchLabel(color: string, index: number, colorDescription?: string) {
   return (
-    <SwatchLabel key={`${color}-${index}`} title={color}>
+    <div
+      key={`${color}-${index}`}
+      title={color}
+      className={cn(
+        'flex-1 text-center font-mono text-xs leading-none overflow-hidden text-foreground/40 dark:text-foreground/60',
+        '[&>div]:inline-block [&>div]:overflow-hidden [&>div]:max-w-full [&>div]:text-ellipsis',
+        '[&_span]:block [&_span]:mt-[2px]',
+      )}
+    >
       <div>
         {color}
         {colorDescription && colorDescription !== color && <span>{colorDescription}</span>}
       </div>
-    </SwatchLabel>
+    </div>
   )
 }
 
 function renderSwatchSpecimen(colors: Colors) {
   if (Array.isArray(colors)) {
     return (
-      <SwatchSpecimen>
-        <SwatchColors>{colors.map((color, index) => renderSwatch(color, index))}</SwatchColors>
-        <SwatchLabels>{colors.map((color, index) => renderSwatchLabel(color, index))}</SwatchLabels>
-      </SwatchSpecimen>
+      <div className="flex flex-col flex-1 relative mb-[30px]">
+        <div className={cn(blockBackgroundClassName, 'flex flex-row h-[50px] mb-[10px] overflow-hidden bg-white bg-[repeating-linear-gradient(-45deg,#ccc,#ccc_1px,#fff_1px,#fff_16px)] bg-clip-padding')}>
+          {colors.map((color, index) => renderSwatch(color, index))}
+        </div>
+        <div className="flex flex-row">{colors.map((color, index) => renderSwatchLabel(color, index))}</div>
+      </div>
     )
   }
 
@@ -204,20 +74,27 @@ function renderSwatchSpecimen(colors: Colors) {
     const primaryLabelColor = transparentize(0.1, readableColor(primaryColor))
 
     primarySwatch = (
-      <PrimarySwatchColor>
-        <Swatch background={primaryColor}>
-          <PrimaryLabel color={primaryLabelColor}>{primaryColor}</PrimaryLabel>
-        </Swatch>
-      </PrimarySwatchColor>
+      <div className="flex flex-row h-[50px] mb-[-2px] overflow-hidden bg-white bg-[repeating-linear-gradient(-45deg,#ccc,#ccc_1px,#fff_1px,#fff_16px)] bg-clip-padding rounded-b-none [&+.swatch-colors]:rounded-t-none">
+        <div className="relative flex-1" style={{ backgroundColor: primaryColor }}>
+          <div
+            className="absolute inset-0 flex justify-center items-center font-bold font-mono"
+            style={{ color: primaryLabelColor }}
+          >
+            {primaryColor}
+          </div>
+        </div>
+      </div>
     )
   }
 
   return (
-    <SwatchSpecimen>
+    <div className="flex flex-col flex-1 relative mb-[30px]">
       {primarySwatch}
-      <SwatchColors className="swatch-colors">{swatchElements}</SwatchColors>
-      <SwatchLabels>{labelElements}</SwatchLabels>
-    </SwatchSpecimen>
+      <div className={cn(blockBackgroundClassName, 'swatch-colors flex flex-row h-[50px] mb-[10px] overflow-hidden bg-white bg-[repeating-linear-gradient(-45deg,#ccc,#ccc_1px,#fff_1px,#fff_16px)] bg-clip-padding')}>
+        {swatchElements}
+      </div>
+      <div className="flex flex-row">{labelElements}</div>
+    </div>
   )
 }
 
@@ -227,13 +104,13 @@ function renderSwatchSpecimen(colors: Colors) {
  */
 export const ColorItem: FunctionComponent<ColorItemProps> = ({ title, subtitle, colors }) => {
   return (
-    <Item>
-      <ItemDescription>
-        <ItemTitle>{title}</ItemTitle>
-        <ItemSubtitle>{subtitle}</ItemSubtitle>
-      </ItemDescription>
-      <Swatches>{renderSwatchSpecimen(colors)}</Swatches>
-    </Item>
+    <div className="flex items-start">
+      <div className="flex-[0_0_30%] leading-[20px] mt-[5px]">
+        <div className="font-bold text-foreground">{title}</div>
+        <div className="text-foreground/20 dark:text-foreground/60">{subtitle}</div>
+      </div>
+      <div className="flex-1 flex flex-row">{renderSwatchSpecimen(colors)}</div>
+    </div>
   )
 }
 
@@ -247,12 +124,15 @@ interface ColorPaletteProps {
  */
 export const ColorPalette: FunctionComponent<ColorPaletteProps> = ({ children, ...props }) => (
   <ResetWrapper>
-    <List {...props} className="docblock-colorpalette sb-unstyled">
-      <ListHeading>
-        <ListName>Name</ListName>
-        <ListSwatches>Swatches</ListSwatches>
-      </ListHeading>
+    <div
+      {...props}
+      className="docblock-colorpalette sb-unstyled text-sm leading-[20px] flex flex-col"
+    >
+      <div className="flex flex-row items-center pb-[20px] font-bold text-foreground/40 dark:text-foreground/60">
+        <div className="flex-[0_0_30%]">Name</div>
+        <div className="flex-1">Swatches</div>
+      </div>
       {children}
-    </List>
+    </div>
   </ResetWrapper>
 )
