@@ -19,7 +19,11 @@
       "web/*.json",
       "web/src/**/*",
       "web/app/**",
-      "web/public/**"
+      "web/public/**",
+
+      "!!**/dist",
+      "!!**/build",
+      "!!**/.cache"
     ],
     "ignoreUnknown": false
   },
@@ -57,7 +61,7 @@
   "linter": {
     "enabled": true,
     "domains": {
-      "react": "recommended",
+      "react": "all",
       "next": "recommended",
       "project": "recommended",
       "types": "recommended"

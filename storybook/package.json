@@ -6,9 +6,11 @@
   "type": "module",
   "scripts": {
     "build": "storybook build -o dist -c .storybook",
-    "dev": "storybook dev -p 6006 -c .storybook",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "dev": "storybook dev -p 6006 -c .storybook"
+  },
+  "imports": {
+    "#styles/*": "../web/src/styles/*",
+    "#fonts/*": "../web/src/fonts/*"
   },
   "dependencies": {
     "@storybook/addon-a11y": "^10.5.0",
@@ -32,10 +34,10 @@
     "@types/react-dom": "^17.0.16",
     "autoprefixer": "^10.5.0",
     "cssnano": "^8.0.1",
-    "polished": "^4.2.1",
     "postcss": "^8.5.13",
     "storybook": "^10.5.0",
     "tailwindcss": "^4.3.0",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "tsconfig-paths-webpack-plugin": "^4.2.0"
   }
 }

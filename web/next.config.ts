@@ -1,12 +1,10 @@
-import { env } from '@/types/environment'
-import { withPayload } from '@payloadcms/next/withPayload'
-import { NextConfig } from 'next'
-import { z } from 'zod'
-
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { loadRootEnv } from './env'
+import { NextConfig } from 'next'
+import { withPayload } from '@payloadcms/next/withPayload'
+
+import { loadEnv } from './env'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -16,27 +14,58 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 })
 
 export default async (phase, { defaultConfig }) => {
-  loadRootEnv(dirname)
-
-  const parsedEnv = env.safeParse(process.env)
-  if (!parsedEnv.success) {
-    console.error('\n' + z.prettifyError(parsedEnv.error) + '\n')
-    process.exit(1)
-  }
+  await loadEnv()
 
   const nextConfig: NextConfig = {
     reactStrictMode: true,
     poweredByHeader: false,
     productionBrowserSourceMaps: false,
 
-    serverExternalPackages: ['@react-pdf/renderer', 'svgo', 'pdf-parse'],
+    serverExternalPackages: [
+      '@react-pdf/renderer',
+      'svgo',
+      'pdf-parse',
+    ],
     turbopack: {
-      resolveExtensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.wasm', '.json', '.css', '.scss', '.svg'],
+      resolveExtensions: [
+        '.ts',
+        '.tsx',
+        '.js',
+        '.jsx',
+        '.mjs',
+        '.cjs',
+        '.wasm',
+        '.json',
+        '.css',
+        '.scss',
+        '.svg',
+      ],
     },
     images: {
-      formats: ['image/webp', 'image/avif'],
-      deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-      imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+      formats: [
+        'image/webp',
+        'image/avif',
+      ],
+      deviceSizes: [
+        640,
+        750,
+        828,
+        1080,
+        1200,
+        1920,
+        2048,
+        3840,
+      ],
+      imageSizes: [
+        16,
+        32,
+        48,
+        64,
+        96,
+        128,
+        256,
+        384,
+      ],
       remotePatterns: [
         new URL(`${process.env.SERVER_URL}/**`),
         new URL('https://daniel.heene.io/**'),
@@ -47,9 +76,13 @@ export default async (phase, { defaultConfig }) => {
         new URL('https://cdn.pixabay.com/**'),
         new URL('https://images.unsplash.com/**'),
       ],
-      localPatterns: [{ pathname: '**' }],
+      localPatterns: [
+        {
+          pathname: '**',
+        },
+      ],
       contentDispositionType: 'inline',
-      contentSecurityPolicy: 'default-src \'self\'; script-src \'none\'; sandbox;',
+      contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
       dangerouslyAllowSVG: true,
     },
     allowedDevOrigins: [
@@ -68,13 +101,26 @@ export default async (phase, { defaultConfig }) => {
     },
 
     webpack: (config, context) => {
-      const nextConfig = { ...config }
+      const nextConfig = {
+        ...config,
+      }
       nextConfig.resolve = {
         ...config.resolve,
         extensionAlias: {
-          '.cjs': ['.cts', '.cjs'],
-          '.js': ['.ts', '.tsx', '.js', '.jsx'],
-          '.mjs': ['.mts', '.mjs'],
+          '.cjs': [
+            '.cts',
+            '.cjs',
+          ],
+          '.js': [
+            '.ts',
+            '.tsx',
+            '.js',
+            '.jsx',
+          ],
+          '.mjs': [
+            '.mts',
+            '.mjs',
+          ],
         },
         alias: {
           ...config.resolve.alias,
@@ -113,7 +159,15 @@ export default async (phase, { defaultConfig }) => {
   }
 
   return [
-    [withBundleAnalyzer, undefined],
-    [withPayload, { devBundleServerPackages: false }],
+    [
+      withBundleAnalyzer,
+      undefined,
+    ],
+    [
+      withPayload,
+      {
+        devBundleServerPackages: false,
+      },
+    ],
   ].reduce((acc, [plugin, options]) => plugin(acc, options), nextConfig)
 }

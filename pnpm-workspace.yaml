@@ -7,12 +7,14 @@ packages:
 allowBuilds:
   '@sentry/cli': true
   '@swc/core': true
+  core-js-pure: true
   esbuild: true
   mongodb-memory-server: true
   sharp: true
   unrs-resolver: true
   workerd: true
 
+ignoreWorkspaceRootCheck: true
 updateNotifier: false
 symlink: true
 nodeLinker: isolated

@@ -1,22 +1,20 @@
-import type { FunctionComponent } from 'react'
-import React from 'react'
+import type { FunctionComponent, ReactNode } from 'react'
 
-import { ResetWrapper } from 'storybook/internal/components'
+import { ResetWrapper,  } from 'storybook/internal/components'
 
-import { cn } from '../lib/cn'
-import { blockBackgroundClassName } from './_shared'
+import { cn } from '@sb/lib/cn'
 
 interface IconItemProps {
   name: string
-  children?: React.ReactNode
+  children?: ReactNode
 }
 
 /** An individual icon with a caption and an example (passed as `children`). */
 export const IconItem: FunctionComponent<IconItemProps> = ({ name, children }) => (
-  <div className="inline-flex flex-col items-center flex-[0_1_calc(20%-50px)] min-w-[120px] m-[15px]">
+  <div className="inline-flex flex-col items-center flex-[0_1_calc(20%-50px)] min-w-30 m-3.75">
     <div
       className={cn(
-        blockBackgroundClassName,
+        'rounded-md border border-border bg-card shadow-[0_1px_3px_rgba(0,0,0,0.10)] dark:shadow-[0_2px_5px_rgba(0,0,0,0.20)]',
         'overflow-hidden text-[3rem] h-[2em] w-[2em] flex items-center justify-center flex-none [&>img]:w-[1em] [&>img]:h-[1em] [&>svg]:w-[1em] [&>svg]:h-[1em]',
       )}
       onClick={async () => {
@@ -32,7 +30,7 @@ export const IconItem: FunctionComponent<IconItemProps> = ({ name, children }) =
 )
 
 interface IconGalleryProps {
-  children?: React.ReactNode
+  children?: ReactNode
 }
 
 /** Show a grid of icons, as specified by `IconItem`. */

@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const env = z.object({
+export const envSchema = z.object({
   NODE_ENV: z
     .enum([
       'development',
@@ -50,3 +50,5 @@ export const env = z.object({
   CLOUDFLARE_TUNNEL_URL: z.url().optional(),
   CLOUDFLARE_TUNNEL_TOKEN: z.string().optional(),
 })
+
+export type Env = z.infer<typeof envSchema>

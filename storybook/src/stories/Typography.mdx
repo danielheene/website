@@ -1,82 +1,42 @@
 import { Meta } from '@storybook/addon-docs/blocks'
 
-[//]: # (import { fontFamily, fontSize } from '../../tailwind.config')
-import { Typeset } from '../components/Typeset.tsx'
+import { Typeset } from '@sb/components/Typeset.tsx'
 
 <Meta title="Typography" />
 
-export const SampleText = 'Heavy boxes perform quick waltzes and jigs.'
+export const fontFamily = {
+  sans: 'var(--font-sans)',
+  mono: 'var(--font-mono)',
+  inter: 'var(--font-inter)',
+  'pp-frama': 'var(--pp-frama)',
+  'pp-frama-text': 'var(--pp-frama-text)',
+  'pp-supply-mono': 'var(--pp-supply-mono)',
+  'pp-supply-sans': 'var(--pp-supply-sans)',
+}
+
 
 # Typography
 
 <div style={{ padding: '3rem 0' }}>
-  ## sans
+  ## pp-frama
 
-  **Font:** Inter
+  **Font:** PP Frama
 
-  **Weights:** 100(thin), 200(extralight), 300(light), 400(regular), 500(medium), 600(semibold), 700(bold),
-  800(extrabold), 900(black)
+  **Weights:** 100(thin), 200(extralight), 300(light), 400(regular), 500(medium), 700(bold), 900(black)
 
-  <Typeset
-    fontSizes={Object.entries(fontSize).map(([label, [value]]) => [label, value])}
-    fontWeight={400}
-    sampleText={SampleText}
-    fontFamily={fontFamily['sans']}
-  />
+  <Typeset fontFamily={fontFamily['pp-frama']} />
 </div>
 
 ---
 
 <div style={{ padding: '3rem 0' }}>
-  ## mono
+  ## pp-frama-text
 
-  **Font:** Jetbrains Mono
+  **Font:** PP Frama Text
 
-  **Weights:** 100(thin), 200(extralight), 300(light), 400(regular), 500(medium), 600(semibold), 700(bold),
-  800(extrabold), 900(black)
+  **Weights:** 300(light), 400(regular), 700(bold)
 
-  <Typeset
-    fontSizes={Object.entries(fontSize).map(([label, [value]]) => [label, value])}
-    fontWeight={400}
-    sampleText={SampleText}
-    fontFamily={fontFamily['mono']}
-  />
-</div>
-
----
-
-<div style={{ padding: '3rem 0' }}>
-  ## inter
-
-  **Font:** Inter
-
-  **Weights:** 100(thin), 200(extralight), 300(light), 400(regular), 500(medium), 600(semibold), 700(bold),
-  800(extrabold), 900(black)
-
-  <Typeset
-    fontSizes={Object.entries(fontSize).map(([label, [value]]) => [label, value])}
-    fontWeight={400}
-    sampleText={SampleText}
-    fontFamily={fontFamily['inter']}
-  />
-</div>
-
----
-
-<div style={{ padding: '3rem 0' }}>
-  ## jetbrains-mono
-
-  **Font:** Jetbrains Mono
-
-  **Weights:** 100(thin), 200(extralight), 300(light), 400(regular), 500(medium), 600(semibold), 700(bold),
-  800(extrabold), 900(black)
-
-  <Typeset
-    fontSizes={Object.entries(fontSize).map(([label, [value]]) => [label, value])}
-    fontWeight={400}
-    sampleText={SampleText}
-    fontFamily={fontFamily['jetbrains-mono']}
-  />
+  <Typeset fontFamily={fontFamily['pp-frama-text']} />
 </div>
 
 ---
@@ -86,12 +46,19 @@ export const SampleText = 'Heavy boxes perform quick waltzes and jigs.'
 
   **Font:** PP Supply Mono
 
-  **Weights:** 100(thin), 400(regular)
+  **Weights:** 200(extralight), 400(regular), 500(medium), 700(bold)
 
-  <Typeset
-    fontSizes={Object.entries(fontSize).map(([label, [value]]) => [label, value])}
-    fontWeight={400}
-    sampleText={SampleText}
-    fontFamily={fontFamily['pp-supply-mono']}
-  />
+  <Typeset fontFamily={fontFamily['pp-supply-mono']} />
+</div>
+
+---
+
+<div style={{ padding: '3rem 0' }}>
+  ## pp-supply-sans
+
+  **Font:** PP Supply Sans
+
+  **Weights:** 200(extralight), 400(regular), 500(medium), 700(bold)
+
+  <Typeset fontFamily={fontFamily['pp-supply-sans']} />
 </div>

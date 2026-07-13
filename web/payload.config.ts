@@ -1,32 +1,31 @@
 import path from 'node:path'
 import * as process from 'node:process'
 import { fileURLToPath } from 'node:url'
+
+import { buildConfig } from 'payload'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { redisKVAdapter } from '@payloadcms/kv-redis'
-import { lexicalEditor, } from '@payloadcms/richtext-lexical'
+import { importExportPlugin } from '@payloadcms/plugin-import-export'
+import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { s3Storage } from '@payloadcms/storage-s3'
-import { buildConfig } from 'payload'
+
 import sharp from 'sharp'
 
 import { BLOCKS } from '@/blocks'
 import { COLLECTIONS } from '@/collections'
 import { GLOBALS } from '@/globals'
-import generateDocumentThumbnail from '@/jobs-queue/tasks/generateDocumentThumbnail'
+import { TASKS } from '@/jobs-queue/tasks'
 import { useSendAdapter } from '@/lib/useSendAdapter'
 import { CollectionSlug } from '@/types/collections'
-import { importExportPlugin } from '@payloadcms/plugin-import-export'
-import { SKILL_TYPE } from '@/types/select-options'
 import { QueueSlug } from '@/types/jobs-queue'
-import { generateResumeLocalizedData } from '@/jobs-queue/tasks/generateResumeLocalizedData'
-import { TASKS } from '@/jobs-queue/tasks'
+import { SKILL_TYPE } from '@/types/select-options'
 
-import { loadRootEnv } from './env'
-
+import { loadEnv } from './env'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-loadRootEnv(dirname)
+await loadEnv(dirname)
 
 export const config = buildConfig({
   admin: {
@@ -185,7 +184,7 @@ export const config = buildConfig({
     browseByFolder: false,
   },
   globals: GLOBALS,
-  graphQL:{
+  graphQL: {
     disable: true,
     disablePlaygroundInProduction: true,
   },
@@ -205,33 +204,33 @@ export const config = buildConfig({
         cron: '* * * * *',
         queue: QueueSlug.ResumeGenerator,
         limit: 1,
-      }
+      },
     ],
-    jobsCollectionOverrides: ({ defaultJobsCollection}) => {
+    jobsCollectionOverrides: ({ defaultJobsCollection }) => {
       if (!defaultJobsCollection.admin) {
         defaultJobsCollection.admin = {}
       }
 
       defaultJobsCollection.admin.hidden = false
       return defaultJobsCollection
-    }
+    },
   },
   kv: redisKVAdapter({
     redisURL: process.env.REDIS_URL,
   }),
 
-  localization:false,
+  localization: false,
   plugins: [
     importExportPlugin({
       collections: undefined,
       defaultVersionStatus: 'published',
-      overrideImportCollection: ({collection}) => ({
+      overrideImportCollection: ({ collection }) => ({
         ...collection,
-        slug: CollectionSlug['PayloadImports']
+        slug: CollectionSlug['PayloadImports'],
       }),
-      overrideExportCollection: ({collection, }) => ({
+      overrideExportCollection: ({ collection }) => ({
         ...collection,
-        slug: CollectionSlug['PayloadExports']
+        slug: CollectionSlug['PayloadExports'],
       }),
     }),
     // nestedDocsPlugin({
@@ -259,7 +258,7 @@ export const config = buildConfig({
         [CollectionSlug['MediaAudios']]: {
           prefix: 'audios',
         },
-        [CollectionSlug['ResumeFiles']]:true
+        [CollectionSlug['ResumeFiles']]: true,
       },
       useCompositePrefixes: true,
       clientUploads: true,
@@ -281,8 +280,9 @@ export const config = buildConfig({
   sharp,
   telemetry: false,
   typescript: {
-    outputFile: path.resolve(dirname, 'src/types/payload.ts'), schema: [
-      ({ jsonSchema}) => ({
+    outputFile: path.resolve(dirname, 'src/types/payload.ts'),
+    schema: [
+      ({ jsonSchema }) => ({
         ...jsonSchema,
         definitions: {
           ...jsonSchema.definitions,
@@ -328,8 +328,8 @@ export const config = buildConfig({
               'label',
             ],
           },
-        }
-      })
+        },
+      }),
     ],
   },
 })

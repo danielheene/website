@@ -94,6 +94,7 @@
     "@types/node": "^26.1.0",
     "@types/react": "^19.2.16",
     "@types/react-dom": "^19.2.3",
+    "resolve-workspace-root": "latest",
     "@types/timestring": "^7.0.0",
     "autoprefixer": "^10.5.0",
     "cssnano": "^8.0.1",

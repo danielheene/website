@@ -170,8 +170,7 @@ export const Toasty = function Toasty(): React.JSX.Element {
     if (success && !audioBuffer) {
       audioContextRef.current = new AudioContext()
 
-      import('./Toasty.audio')
-        .then(({ audioData }) => fetch(audioData))
+      fetch(audioData)
         .then((response) => response.arrayBuffer())
         .then((arrayBuffer) => audioContextRef.current.decodeAudioData(arrayBuffer))
         .then((audioBuffer) => {
@@ -194,8 +193,7 @@ export const Toasty = function Toasty(): React.JSX.Element {
    */
   React.useEffect((): void => {
     if (success && !imageBlob) {
-      import('./Toasty.image')
-        .then(({ imageData }) => fetch(imageData))
+      fetch(imageData)
         .then((response) => response.blob())
         .then((imageBlob) => {
           dispatch({

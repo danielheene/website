@@ -2,10 +2,8 @@ import React, { Fragment, FunctionComponent } from 'react'
 
 import { ResetWrapper } from 'storybook/internal/components'
 
-import { readableColor, transparentize } from 'polished'
 
-import { cn } from '../lib/cn'
-import { blockBackgroundClassName } from './_shared'
+import { cn } from '@sb/lib/cn'
 
 type Colors = string[] | { [key: string]: string }
 
@@ -31,10 +29,10 @@ function renderSwatchLabel(color: string, index: number, colorDescription?: stri
     <div
       key={`${color}-${index}`}
       title={color}
-      className={cn(
+      className={cn([
         'flex-1 text-center font-mono text-xs leading-none overflow-hidden text-foreground/40 dark:text-foreground/60',
         '[&>div]:inline-block [&>div]:overflow-hidden [&>div]:max-w-full [&>div]:text-ellipsis',
-        '[&_span]:block [&_span]:mt-[2px]',
+        '[&_span]:block [&_span]:mt-0.5'],
       )}
     >
       <div>
@@ -48,8 +46,9 @@ function renderSwatchLabel(color: string, index: number, colorDescription?: stri
 function renderSwatchSpecimen(colors: Colors) {
   if (Array.isArray(colors)) {
     return (
-      <div className="flex flex-col flex-1 relative mb-[30px]">
-        <div className={cn(blockBackgroundClassName, 'flex flex-row h-[50px] mb-[10px] overflow-hidden bg-white bg-[repeating-linear-gradient(-45deg,#ccc,#ccc_1px,#fff_1px,#fff_16px)] bg-clip-padding')}>
+      <div className="flex flex-col flex-1 relative mb-7.5">
+        <div
+          className={cn('rounded-md border border-border bg-card shadow-[0_1px_3px_rgba(0,0,0,0.10)] dark:shadow-[0_2px_5px_rgba(0,0,0,0.20)]', 'flex flex-row h-12.5 mb-2.5 overflow-hidden bg-white bg-[repeating-linear-gradient(-45deg,#ccc,#ccc_1px,#fff_1px,#fff_16px)] bg-clip-padding')}>
           {colors.map((color, index) => renderSwatch(color, index))}
         </div>
         <div className="flex flex-row">{colors.map((color, index) => renderSwatchLabel(color, index))}</div>
@@ -71,10 +70,11 @@ function renderSwatchSpecimen(colors: Colors) {
   let primarySwatch = <Fragment />
   if ('DEFAULT' in colors) {
     const primaryColor = colors['DEFAULT']
-    const primaryLabelColor = transparentize(0.1, readableColor(primaryColor))
+    const primaryLabelColor = `rgb(from ${primaryColor} r g b / 0.1)`
 
     primarySwatch = (
-      <div className="flex flex-row h-[50px] mb-[-2px] overflow-hidden bg-white bg-[repeating-linear-gradient(-45deg,#ccc,#ccc_1px,#fff_1px,#fff_16px)] bg-clip-padding rounded-b-none [&+.swatch-colors]:rounded-t-none">
+      <div
+        className="flex flex-row h-12.5 -mb-0.5 overflow-hidden bg-white bg-[repeating-linear-gradient(-45deg,#ccc,#ccc_1px,#fff_1px,#fff_16px)] bg-clip-padding rounded-b-none [&+.swatch-colors]:rounded-t-none">
         <div className="relative flex-1" style={{ backgroundColor: primaryColor }}>
           <div
             className="absolute inset-0 flex justify-center items-center font-bold font-mono"
@@ -88,9 +88,10 @@ function renderSwatchSpecimen(colors: Colors) {
   }
 
   return (
-    <div className="flex flex-col flex-1 relative mb-[30px]">
+    <div className="flex flex-col flex-1 relative mb-7.5">
       {primarySwatch}
-      <div className={cn(blockBackgroundClassName, 'swatch-colors flex flex-row h-[50px] mb-[10px] overflow-hidden bg-white bg-[repeating-linear-gradient(-45deg,#ccc,#ccc_1px,#fff_1px,#fff_16px)] bg-clip-padding')}>
+      <div
+        className={cn('rounded-md border border-border bg-card shadow-[0_1px_3px_rgba(0,0,0,0.10)] dark:shadow-[0_2px_5px_rgba(0,0,0,0.20)]', 'swatch-colors flex flex-row h-12.5 mb-2.5 overflow-hidden bg-white bg-[repeating-linear-gradient(-45deg,#ccc,#ccc_1px,#fff_1px,#fff_16px)] bg-clip-padding')}>
         {swatchElements}
       </div>
       <div className="flex flex-row">{labelElements}</div>

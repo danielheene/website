@@ -265,6 +265,7 @@ export interface Config {
     tasks: {
       generateDocumentThumbnailTask: TaskGenerateDocumentThumbnailTask;
       GenerateResumeDocumentLocalizedData: TaskGenerateResumeDocumentLocalizedData;
+      generateResumeDocumentTask: TaskGenerateResumeDocumentTask;
       createCollectionExport: TaskCreateCollectionExport;
       createCollectionImport: TaskCreateCollectionImport;
       schedulePublish: TaskSchedulePublish;
@@ -1178,6 +1179,7 @@ export interface PayloadJob {
           | 'inline'
           | 'generateDocumentThumbnailTask'
           | 'GenerateResumeDocumentLocalizedData'
+          | 'generateResumeDocumentTask'
           | 'createCollectionExport'
           | 'createCollectionImport'
           | 'schedulePublish';
@@ -1218,6 +1220,7 @@ export interface PayloadJob {
         | 'inline'
         | 'generateDocumentThumbnailTask'
         | 'GenerateResumeDocumentLocalizedData'
+        | 'generateResumeDocumentTask'
         | 'createCollectionExport'
         | 'createCollectionImport'
         | 'schedulePublish'
@@ -2539,6 +2542,16 @@ export interface TaskGenerateResumeDocumentLocalizedData {
       | boolean
       | null;
   };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskGenerateResumeDocumentTask".
+ */
+export interface TaskGenerateResumeDocumentTask {
+  input: {
+    locale: string;
+  };
+  output?: unknown;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
