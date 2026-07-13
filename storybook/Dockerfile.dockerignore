@@ -1,0 +1,13 @@
+node_modules
+.next
+.turbo
+dist
+.git
+**/*.log
+.env*
+!.env.example
+
+# Other workspace packages' build output not needed for storybook's image
+storybook/storybook-static
+packages/*/node_modules
+packages/*/dist

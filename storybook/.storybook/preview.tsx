@@ -1,4 +1,4 @@
-import '#styles/frontend.css'
+import '@/styles/frontend.css'
 import { PPFrama } from '@fonts/pp-frama.ts'
 
 import { definePreview } from '@storybook/nextjs'
