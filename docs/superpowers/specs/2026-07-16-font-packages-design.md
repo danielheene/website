@@ -32,8 +32,7 @@ but is incomplete (its `next.ts`-equivalent still points back at
 - Each font family becomes one self-contained, portable workspace package that
   bundles its own font files.
 - Each package exposes both a ready-to-use Next.js font object and a
-  ready-to-use react-pdf font config, derived from one shared per-package
-  manifest of font metadata.
+  ready-to-use react-pdf font config.
 - The react-pdf side stops depending on `SERVER_URL`/HTTP fetch and reads its
   `.ttf` files locally instead.
 - Old per-family files and duplicated font assets in `web/` are deleted once
@@ -92,17 +91,14 @@ packages/font-pp-frama/
       pp-frama-100-normal.ttf
       ... (one woff2 + one ttf per weight/style combination, matching
            today's web/public/fonts/pp-frama contents exactly)
-    manifest.ts   # source of truth: family name + per-file weight/style/paths
     next.ts       # localFont() call (literal src array), exports the font object
-    pdf.ts        # react-pdf Font.register config, derived from manifest.ts
-    index.ts      # re-exports the manifest for metadata-only consumers
+    pdf.ts        # react-pdf Font.register config (literal fonts array)
 ```
 
 `package.json` `exports`:
 
 ```json
 {
-  ".": "./src/index.ts",
   "./next": "./src/next.ts",
   "./pdf": "./src/pdf.ts"
 }
@@ -111,32 +107,15 @@ packages/font-pp-frama/
 Subpath exports keep `next/font/local` (a Next.js-only API) out of the bundle
 for consumers who only want the react-pdf config, and vice versa.
 
-### manifest.ts
-
-One array of per-file metadata, e.g.:
-
-```ts
-export const manifest = {
-  family: 'PP Frama',
-  files: [
-    {
-      weight: '100',
-      style: 'normal',
-      woff2: './files/pp-frama-100-normal.woff2',
-      ttf: './files/pp-frama-100-normal.ttf',
-    },
-    // ...one entry per weight/style combination
-  ],
-} as const
-```
-
-This is the single source of truth for which weights/styles exist. `pdf.ts`
-consumes it programmatically via `.map()`. `next.ts` cannot (`next/font/local`
-requires a literal array at the call site — confirmed by Next.js's SWC
-transform, which only understands literal strings/numbers/objects/arrays, not
-calls or variable references) so `next.ts` keeps its own literal `src` array,
-hand-kept in sync with `manifest.ts`. This is an accepted, low-risk duplication
-— each family has ~6–14 short entries and fonts change rarely.
+No shared manifest: `next/font/local`'s SWC transform requires the `src` array
+at the `localFont()` call site to be a literal (confirmed — the transform only
+understands literal strings/numbers/objects/arrays, not calls or variable
+references), so `next.ts` can't consume a shared data structure anyway. Since
+`next.ts` must hardcode its file list as a literal regardless, having `pdf.ts`
+read from a separate manifest would only serve one consumer — that's
+indirection without payoff. Both `next.ts` and `pdf.ts` hardcode their own
+literal file list directly. Each family has ~6–14 short entries and fonts
+change rarely, so the duplication is low-risk.
 
 ### next.ts
 
@@ -148,7 +127,7 @@ export const PPFrama = localFont({
   preload: true,
   src: [
     { path: './files/pp-frama-100-normal.woff2', weight: '100', style: 'normal' },
-    // ... one literal entry per file, matching manifest.ts
+    // ... one literal entry per file, matching pdf.ts's file list
   ],
   adjustFontFallback: false, // or the family-specific fallback value used today
   display: 'swap',
@@ -166,17 +145,19 @@ carries over unchanged from the current `web/src/fonts/<name>.ts` files.
 ```ts
 import * as path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { manifest } from './manifest'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default {
-  family: manifest.family,
-  fonts: manifest.files.map((f) => ({
-    src: path.join(dirname, f.ttf),
-    fontWeight: f.weight,
-    fontStyle: f.style,
-  })),
+  family: 'PP Frama',
+  fonts: [
+    {
+      src: path.join(dirname, './files/pp-frama-100-normal.ttf'),
+      fontWeight: '100',
+      fontStyle: 'normal',
+    },
+    // ... one literal entry per file, matching next.ts's file list
+  ],
 }
 ```
 
@@ -193,7 +174,7 @@ variation based on current usage).
 ### Build
 
 Same `tsup` pattern as the existing scaffold: `compile`/`build`/`dev` scripts
-building `cjs` + `esm` + `.d.ts` for `next.ts`/`pdf.ts`/`index.ts`. Static font
+building `cjs` + `esm` + `.d.ts` for `next.ts`/`pdf.ts`. Static font
 files under `src/files/` are not processed by tsup — they're referenced by
 relative path from the built output, same directory layout as source.
 
