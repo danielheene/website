@@ -1,9 +1,9 @@
 import { Font } from '@react-pdf/renderer'
 
-import PPFrama from './pp-frama'
-import PPFramaText from './pp-frama-text'
-import PPSupplyMono from './pp-supply-mono'
-import PPSupplySans from './pp-supply-sans'
+import PPFrama from '@danielheene/font-pp-frama/pdf'
+import PPFramaText from '@danielheene/font-pp-frama-text/pdf'
+import PPSupplyMono from '@danielheene/font-pp-supply-mono/pdf'
+import PPSupplySans from '@danielheene/font-pp-supply-sans/pdf'
 
 const fontMap = {
   PPFrama: PPFrama,
