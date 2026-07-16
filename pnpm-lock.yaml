@@ -171,6 +171,15 @@ importers:
       '@danielheene/font-pp-frama':
         specifier: workspace:*
         version: link:../packages/font-pp-frama
+      '@danielheene/font-pp-frama-text':
+        specifier: workspace:*
+        version: link:../packages/font-pp-frama-text
+      '@danielheene/font-pp-supply-mono':
+        specifier: workspace:*
+        version: link:../packages/font-pp-supply-mono
+      '@danielheene/font-pp-supply-sans':
+        specifier: workspace:*
+        version: link:../packages/font-pp-supply-sans
       '@headlessui/react':
         specifier: ^2.2.10
         version: 2.2.10(react-dom@19.2.7(react@19.2.7))(react@19.2.7)

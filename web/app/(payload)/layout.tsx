@@ -8,10 +8,10 @@ import type { ServerFunctionClient } from 'payload'
 import type React from 'react'
 
 import { cn } from '@/lib/cn'
-import PPFrama from '@/fonts/pp-frama'
-import PPFramaText from '@/fonts/pp-frama-text'
-import PPSupplyMono from '@/fonts/pp-supply-mono'
-import PPSupplySans from '@/fonts/pp-supply-sans'
+import PPFrama from '@danielheene/font-pp-frama/next'
+import PPFramaText from '@danielheene/font-pp-frama-text/next'
+import PPSupplyMono from '@danielheene/font-pp-supply-mono/next'
+import PPSupplySans from '@danielheene/font-pp-supply-sans/next'
 
 import { importMap } from './admin/importMap.js'
 

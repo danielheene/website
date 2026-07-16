@@ -22,6 +22,10 @@
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.11",
+    "@danielheene/font-pp-frama": "workspace:*",
+    "@danielheene/font-pp-frama-text": "workspace:*",
+    "@danielheene/font-pp-supply-mono": "workspace:*",
+    "@danielheene/font-pp-supply-sans": "workspace:*",
     "@headlessui/react": "^2.2.10",
     "@iconify-icon/react": "^3.0.3",
     "@next/bundle-analyzer": "^16.2.10",
