@@ -1,5 +1,5 @@
 import '@/styles/frontend.css'
-import { PPFrama } from '@fonts/pp-frama.ts'
+import { PPFrama } from '@danielheene/font-pp-frama/next'
 
 import { definePreview } from '@storybook/nextjs'
 import * as addonA11yPreview from '@storybook/addon-a11y/preview'

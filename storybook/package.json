@@ -1,5 +1,5 @@
 {
-  "name": "storybook",
+  "name": "@danielheene/storybook",
   "version": "1.0.0",
   "private": true,
   "description": "",
@@ -9,6 +9,7 @@
     "dev": "storybook dev -p 6006 -c .storybook"
   },
   "dependencies": {
+    "@danielheene/font-pp-frama": "workspace:*",
     "@storybook/addon-a11y": "^10.5.0",
     "@storybook/addon-docs": "^10.5.0",
     "@storybook/addon-links": "^10.5.0",

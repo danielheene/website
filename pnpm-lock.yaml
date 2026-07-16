@@ -89,6 +89,9 @@ importers:
 
   storybook:
     dependencies:
+      '@danielheene/font-pp-frama':
+        specifier: workspace:*
+        version: link:../packages/font-pp-frama
       '@storybook/addon-a11y':
         specifier: ^10.5.0
         version: 10.5.0(storybook@10.5.0(@types/react@17.0.93)(prettier@3.9.4)(react@19.2.7))
