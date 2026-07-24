@@ -12,14 +12,14 @@
       "/*.ts",
       "/*.tsx",
       "/*.json",
-      "web/*.js",
-      "web/*.jsx",
-      "web/*.ts",
-      "web/*.tsx",
-      "web/*.json",
-      "web/src/**/*",
-      "web/app/**",
-      "web/public/**",
+      "**/*.js",
+      "**/*.jsx",
+      "**/*.ts",
+      "**/*.tsx",
+      "**/*.json",
+      "/src/**/*",
+      "/app/**",
+      "/public/**",
 
       "!!**/dist",
       "!!**/build",
@@ -61,13 +61,13 @@
   "linter": {
     "enabled": true,
     "domains": {
-      "react": "all",
+      "react": "recommended",
       "next": "recommended",
       "project": "recommended",
       "types": "recommended"
     },
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "style": {
         "useImportType": {
           "level": "off"
@@ -137,23 +137,21 @@
           "options": {
             "groups": [
               [
-                "!@/**",
                 ":URL:"
               ],
               ":BLANK_LINE",
               [
-                "!@/**",
                 ":BUN:",
                 ":NODE:"
               ],
               ":BLANK_LINE:",
 
-              "react",
+              "react*",
               "react/**",
-              "react-*",
-              "react-*/**",
               "@react*",
               "@react*/**",
+              "react-*",
+              "react-*/**",
               "next*",
               "next/**",
               "next-*",
@@ -168,7 +166,6 @@
                 ":PACKAGE:",
                 ":PACKAGE_WITH_PROTOCOL:",
                 "!@/**",
-                "!@pdf/**",
                 "!react*",
                 "!@react*",
                 "!next*",
@@ -180,13 +177,12 @@
               ":BLANK_LINE:",
               [
                 ":ALIAS:",
-                "@/**",
-                "@pdf/**",
-                "@components/**",
-                "@/components/**"
+                "@/**"
               ],
               ":BLANK_LINE:",
-              ":PATH:"
+              ":PATH:",
+              ":BLANK_LINE:",
+              ":STYLE:"
             ]
           }
         }

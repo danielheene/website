@@ -1,0 +1,19 @@
+@reference "#frontend.css";
+
+
+.Container {
+  @apply contents relative bg-background;
+
+  @apply before:absolute before:top-0 before:right-0 before:bottom-0 before:left-0 before:z-10;
+  @apply before:backdrop-grayscale-100 before:backdrop-contrast-100 before:mix-blend-darken dark:before:mix-blend-lighten;
+  @apply before:pointer-events-none;
+
+  @apply after:absolute after:top-0 after:right-0 after:bottom-0 after:left-0 after:z-10;
+  @apply after:bg-primary after:mix-blend-lighten dark:after:mix-blend-darken;
+  @apply after:pointer-events-none;
+}
+
+.Vignette {
+  @apply absolute top-0 right-0 bottom-0 left-0 z-10;
+  @apply pointer-events-none inset-shadow-vignette text-black;
+}

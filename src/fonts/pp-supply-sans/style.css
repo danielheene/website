@@ -1,0 +1,31 @@
+@font-face {
+  font-family: 'PP Supply Sans';
+  src: url('./files/pp-supply-sans-200.woff2') format('woff2');
+  font-weight: 200;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PP Supply Sans';
+  src: url('./files/pp-supply-sans-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PP Supply Sans';
+  src: url('./files/pp-supply-sans-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PP Supply Sans';
+  src: url('./files/pp-supply-sans-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
+:root {
+  --font-pp-supply-sans: 'PP Supply Sans';
+}

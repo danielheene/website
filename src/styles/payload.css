@@ -1,0 +1,158 @@
+@layer fonts, theme, base, components, utilities, payload-default;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@import "./theme/_animations.css" layer(theme);
+@import "./theme/_aspects.css" layer(theme);
+@import "./theme/_colors.css" layer(theme);
+@import "./theme/_fonts.css" layer(theme);
+@import "./theme/_radii.css" layer(theme);
+@import "./theme/_sizes.css" layer(theme);
+@import "./theme/_shadows.css" layer(theme);
+@import "./theme/_text-shadows.css" layer(theme);
+
+@import "./payload/_app-header.css" layer(payload-default);
+@import "./payload/_fields.css" layer(payload-default);
+@import "./payload/_buttons.css" layer(payload-default);
+@import "./payload/_richtext-lexical.css" layer(payload-default);
+@import "./payload/_list-header.css" layer(payload-default);
+@import "./payload/_resume.customers.css" layer(payload-default);
+@import "./payload/_resume.experience.css" layer(payload-default);
+@import "./payload/_resume.projects.css" layer(payload-default);
+
+@plugin "@tailwindcss/typography";
+
+
+@custom-variant dark {
+  /* Explicit: .dark class or data-theme="dark" on element or ancestor */
+  &:is(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+
+    &::before,
+    &::after {
+      @slot;
+    }
+  }
+
+  /* Fallback: system prefers dark color scheme */
+  @media (prefers-color-scheme: dark) {
+    &:not(:is(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *)) & {
+      @slot;
+
+      &::before,
+      &::after {
+        @slot;
+      }
+    }
+  }
+}
+
+@custom-variant light {
+  /* Explicit: .dark class or data-theme="dark" on element or ancestor */
+  &:is(.light, .light *, [data-theme="light"], [data-theme="light"] *) {
+    @slot;
+
+    &::before,
+    &::after {
+      @slot;
+    }
+  }
+
+  /* Fallback: system prefers dark color scheme */
+  @media (prefers-color-scheme: light) {
+    &:not(:is(.light, .light *, [data-theme="light"], [data-theme="light"] *)) & {
+      @slot;
+
+      &::before,
+      &::after {
+        @slot;
+      }
+    }
+  }
+}
+
+@source not inline("table");
+@source not inline("table-cell");
+@source not inline("table-row");
+
+@theme static {
+  --color-elevation-0: var(--theme-elevation-0);
+  --color-elevation-50: var(--theme-elevation-50);
+  --color-elevation-100: var(--theme-elevation-100);
+  --color-elevation-150: var(--theme-elevation-150);
+  --color-elevation-200: var(--theme-elevation-200);
+  --color-elevation-250: var(--theme-elevation-250);
+  --color-elevation-300: var(--theme-elevation-300);
+  --color-elevation-350: var(--theme-elevation-350);
+  --color-elevation-400: var(--theme-elevation-400);
+  --color-elevation-450: var(--theme-elevation-450);
+  --color-elevation-500: var(--theme-elevation-500);
+  --color-elevation-550: var(--theme-elevation-550);
+  --color-elevation-600: var(--theme-elevation-600);
+  --color-elevation-650: var(--theme-elevation-650);
+  --color-elevation-700: var(--theme-elevation-700);
+  --color-elevation-750: var(--theme-elevation-750);
+  --color-elevation-800: var(--theme-elevation-800);
+  --color-elevation-850: var(--theme-elevation-850);
+  --color-elevation-900: var(--theme-elevation-900);
+  --color-elevation-950: var(--theme-elevation-950);
+  --color-elevation-1000: var(--theme-elevation-1000);
+}
+
+@layer payload-default {
+  :root {
+    --base-body-size: 16;
+    --font-body: var(--font-pp-frama);
+    --font-mono: var(--font-pp-supply-mono);
+  }
+
+  html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html,
+  body {
+    background-color: var(--theme-bg);
+    color: var(--theme-text);
+  }
+
+  @media (min-width: 768px) {
+    .tabs-field--vertical {
+      display: flex;
+      width: 100%;
+
+      .tabs-field__tabs-wrap {
+        min-width: 270px;
+      }
+
+      .tabs-field__tabs {
+        display: flex;
+        flex-direction: column;
+        padding-left: var(--gutter-h);
+        border-bottom: 0;
+      }
+      .tabs-field__content-wrap {
+        flex-grow: 1;
+      }
+      .tabs-field__tab-button {
+        padding: 10px 20px;
+        border-bottom-width: 0;
+        margin-right: 0;
+        &:hover:after {
+          width: 1px;
+          height: 100%;
+          bottom: 0;
+          left: -1px;
+        }
+      }
+      .tabs-field__tab-button--active::after {
+        width: 2px;
+        height: 100%;
+        bottom: 0;
+        left: -1px;
+      }
+    }
+  }
+}

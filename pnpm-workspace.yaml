@@ -1,9 +1,3 @@
-packages:
-  - web
-  - storybook
-  - packages/*
-#  - 'test'
-
 allowBuilds:
   '@sentry/cli': true
   '@swc/core': true
@@ -19,7 +13,6 @@ updateNotifier: false
 symlink: true
 nodeLinker: isolated
 hoistWorkspacePackages: false # the default in pnpm v9 is true, but that can break our runtime dependency checks
-savePrefix: ''
 minimumReleaseAgeExclude:
   - '@radix-ui/react-arrow@1.1.10'
   - '@radix-ui/react-dismissable-layer@1.1.13'

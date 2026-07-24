@@ -1,0 +1,226 @@
+import type { CollectionConfig } from 'payload'
+import { convertLexicalToHTML } from '@payloadcms/richtext-lexical/html'
+
+import { authenticated } from '@/access/authenticated'
+import { RichTextField } from '@/fields/RichText'
+import { AdminGroup } from '@/types/admin-panel'
+import { CollectionSlug } from '@/types/collections'
+
+import { calculateJobInterval } from './hooks/calculateJobInterval'
+import { enqueueCalculateSkillTagInterval } from './hooks/enqueueCalculateSkillTagInterval'
+
+export const ResumeJobs: CollectionConfig<CollectionSlug['ResumeJobs']> = {
+  slug: CollectionSlug.ResumeJobs,
+  labels: {
+    singular: 'Job',
+    plural: 'Jobs',
+  },
+  typescript: {
+    interface: 'ResumeJobData',
+  },
+  access: {
+    read: authenticated,
+    admin: authenticated,
+    update: authenticated,
+    create: authenticated,
+    delete: authenticated,
+    unlock: authenticated,
+    readVersions: authenticated,
+  },
+  hooks: {
+    afterChange: [
+      enqueueCalculateSkillTagInterval,
+    ],
+  },
+  admin: {
+    useAsTitle: 'employer',
+    group: AdminGroup.Resume,
+    defaultColumns: [
+      'employer',
+      'title',
+      'startDate',
+      'endDate',
+      'interval',
+    ],
+    disableCopyToLocale: true,
+  },
+  defaultSort: [
+    'startDate',
+  ],
+  // defaultPopulate: {
+  //   employer: true,
+  //   title: true,
+  //   startDate: true,
+  //   endDate: true,
+  //   tasks: true,
+  //   // skills: true,
+  // },
+  // disableDuplicate: true,
+  // forceSelect: {
+  //   employer: true,
+  //   title: true,
+  //   startDate: true,
+  //   endDate: true,
+  //   employmentInterval: true,
+  // },
+  fields: [
+    {
+      type: 'group',
+      label: 'Job Details',
+      admin: {
+        hideGutter: true,
+      },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'employer',
+              type: 'text',
+              required: true,
+              admin: {
+                width: '50%',
+              },
+            },
+            {
+              name: 'title',
+              type: 'text',
+              required: true,
+              admin: {
+                width: '50%',
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
+      type: 'group',
+      admin: {
+        hideGutter: true,
+      },
+      fields: [
+        {
+          type: 'array',
+          name: 'tasks',
+          label: 'Tasks',
+          labels: {
+            singular: 'Task',
+            plural: 'Tasks',
+          },
+          defaultValue: [],
+          fields: [
+            {
+              type: 'group',
+              name: 'task',
+              label: false,
+              admin: {
+                hideGutter: true,
+              },
+              fields: [
+                RichTextField({
+                  name: 'en',
+                  editorVariant: 'inline',
+                  overrides: {
+                    label: 'English',
+                    required: true,
+                    hooks: {
+                      beforeChange: [
+                        async ({ value, siblingData, data, previousValue }) => {
+                          // if (value === previousValue) {
+                          const html = convertLexicalToHTML({
+                            disableContainer: true,
+                            data: value,
+                          })
+                          console.log(html)
+                          // }
+                          // if (!value) {
+                          //   throw new Error('English task is required')
+                          // }
+                        },
+                      ],
+                    },
+                  },
+                }),
+                RichTextField({
+                  name: 'de',
+                  editorVariant: 'inline',
+                  overrides: {
+                    label: 'German',
+                    required: true,
+                  },
+                }),
+              ],
+            },
+          ],
+        },
+      ],
+    },
+
+    {
+      name: 'startDate',
+      label: 'Employment Start',
+      type: 'date',
+      required: true,
+      admin: {
+        position: 'sidebar',
+        date: {
+          pickerAppearance: 'monthOnly',
+          displayFormat: 'MM/yyyy',
+        },
+      },
+    },
+    {
+      name: 'endDate',
+      label: 'Employment End',
+      type: 'date',
+      admin: {
+        position: 'sidebar',
+        date: {
+          pickerAppearance: 'monthOnly',
+          displayFormat: 'MM/yyyy',
+        },
+      },
+    },
+    {
+      name: 'interval',
+      label: 'Employment (months)',
+      type: 'number',
+      defaultValue: 0,
+      admin: {
+        readOnly: true,
+        position: 'sidebar',
+      },
+      hooks: {
+        beforeChange: [
+          calculateJobInterval,
+        ],
+      },
+    },
+
+    {
+      type: 'relationship',
+      name: 'skillTags',
+      relationTo: [
+        CollectionSlug.ResumeSkillTags,
+      ],
+      // filterOptions: () => {
+      //   return {
+      //     _status: {
+      //       equals: 'published',
+      //     },
+      //   }
+      // },
+      hasMany: true,
+      admin: {
+        appearance: 'select',
+        position: 'sidebar',
+        allowCreate: true,
+        allowEdit: true,
+        isSortable: true,
+      },
+    },
+  ],
+  trash: true,
+  versions: false,
+}
