@@ -21,19 +21,19 @@ export const TitleField = ({
         typeof value === 'string' && value.length > 3 ? true : 'Document needs a Title',
       admin: {
         placeholder: 'Title',
-        // components: {
-        //   // Label: false, // remove label component to avoid displaying label in edit view
-        //   ...(listViewThumbnailPath
-        //     ? {
-        //         Cell: {
-        //           path: '@/fields/Title/CellWithThumbnail',
-        //           serverProps: {
-        //             thumbnailPath: listViewThumbnailPath,
-        //           },
-        //         },
-        //       }
-        //     : {}),
-        // },
+        components: {
+          // Label: false, // remove label component to avoid displaying label in edit view
+          ...(listViewThumbnailPath
+            ? {
+                Cell: {
+                  path: '@/fields/Title/CellWithThumbnail',
+                  serverProps: {
+                    thumbnailPath: listViewThumbnailPath,
+                  },
+                },
+              }
+            : {}),
+        },
       },
     },
     overrides,

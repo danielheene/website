@@ -39,9 +39,6 @@ services:
     environment:
       RUSTFS_ACCESS_KEY: ${S3_ACCESS_KEY}
       RUSTFS_SECRET_KEY: ${S3_SECRET_KEY}
-    env_file:
-      - path: .env.local
-        required: true
     volumes:
       - "storage-data:/data"
     healthcheck:
@@ -54,9 +51,13 @@ services:
     depends_on:
       storage:
         condition: service_healthy
-    env_file:
-      - path: .env.local
-        required: true
+    environment:
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
+      S3_BUCKET: ${S3_BUCKET}
+    configs:
+      - source: cors.json
+        target: /tmp/cors.json
     entrypoint:
       - /bin/sh
       - -c
@@ -73,6 +74,26 @@ services:
 
         echo 'set policy PUBLIC (download only) for bucket'
         mc anonymous set download storage/$${S3_BUCKET}
+
+        echo 'set cors rules'
+        mc cors set storage/$${S3_BUCKET} /tmp/cors.json
+
+configs:
+  cors.json:
+    content: |
+      <CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2020-10-22/">
+        <CORSRule>
+          <AllowedOrigin>http://localhost:3000</AllowedOrigin>
+          <AllowedOrigin>https://daniel.heene.io</AllowedOrigin>
+          <AllowedOrigin>https://daniel.heene.dev</AllowedOrigin>
+          <AllowedOrigin>https://daniel.heene.nexus</AllowedOrigin>
+          <AllowedMethod>GET</AllowedMethod>
+          <AllowedMethod>PUT</AllowedMethod>
+          <AllowedMethod>POST</AllowedMethod>
+          <AllowedMethod>HEAD</AllowedMethod>
+          <AllowedHeader>*</AllowedHeader>
+        </CORSRule>
+      </CORSConfiguration>
 
 volumes:
   mongo-data:

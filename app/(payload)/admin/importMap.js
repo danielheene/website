@@ -1,4 +1,5 @@
-import { default as default_3bfa1d3fdf698dc3d221da7d4bb4cc2d } from '@/fields/Slug/FieldComponent'
+import { default as default_60b9f65365606d3c11eae014a9a986c5 } from '@/fields/Title/CellWithThumbnail'
+import { default as default_f4e2381ac6c67e8deed93345830aa6f3 } from '@/fields/Slug/components/FieldComponent'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -29,6 +30,8 @@ import { default as default_a57516f3ad5847138e2e9cad77905a21 } from '@/fields/Me
 import { MarkdownDescription as MarkdownDescription_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { ExportListMenuItem as ExportListMenuItem_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
 import { ImportListMenuItem as ImportListMenuItem_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
+import { default as default_739727f92d93200cec032c1e61a6cb15 } from '@/fields/Toggle/components/FieldComponent'
+import { default as default_22b4891c4f5fa760ee9f626882377967 } from '@/fields/Protected/components/FieldComponent'
 import { AltField as AltField_24f51e17ebe211ea3e1b6c287f79c7cc } from '@/collections/MediaImages/components'
 import { default as default_390597f1ad60ab95e5b4fbebc846ccb5 } from '@/fields/SVGUpload/components/FieldComponent'
 import { FormatField as FormatField_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
@@ -54,6 +57,7 @@ import { default as default_eab0cf681484e45124c7c61673362c49 } from '@/fields/Te
 import { default as default_184096423d48b3396fdb451647a008e7 } from '@/fields/Duration/components/FieldComponent'
 import { default as default_d04b05675537c5553065b881d10ad13c } from '@/globals/PDFGeneratorSettings/components/SkillSortingField'
 import { default as default_4aa97ec439b446e1ea9d86b3c25e31f2 } from '@/globals/PDFGeneratorSettings/components/GenerateButton'
+import { default as default_12d303178d17fe8b227602206bf99ee0 } from '@/fields/SectionGroup/components/DescriptionComponent'
 import { default as default_25737e4ba5d8de2c3d84ba8d21bbf4ab } from '@/globals/SettingsGlobalUser/components/LanguagesRowLabel'
 import { default as default_e59c21704d4dab5076151afaebd7876b } from '@/fields/Address/components/LabelComponent'
 import { default as default_741a914cdfef7b5df9221de4f2e22dd9 } from '@/fields/Address/components/FieldComponent'
@@ -74,7 +78,8 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 
 /** @type import('payload').ImportMap */
 export const importMap = {
-  "@/fields/Slug/FieldComponent#default": default_3bfa1d3fdf698dc3d221da7d4bb4cc2d,
+  "@/fields/Title/CellWithThumbnail#default": default_60b9f65365606d3c11eae014a9a986c5,
+  "@/fields/Slug/components/FieldComponent#default": default_f4e2381ac6c67e8deed93345830aa6f3,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -105,6 +110,8 @@ export const importMap = {
   "@/components/AdminPanel#MarkdownDescription": MarkdownDescription_a316a6ec12a12cd0fe58ccec01a444ca,
   "@payloadcms/plugin-import-export/rsc#ExportListMenuItem": ExportListMenuItem_cdf7e044479f899a31f804427d568b36,
   "@payloadcms/plugin-import-export/rsc#ImportListMenuItem": ImportListMenuItem_cdf7e044479f899a31f804427d568b36,
+  "@/fields/Toggle/components/FieldComponent#default": default_739727f92d93200cec032c1e61a6cb15,
+  "@/fields/Protected/components/FieldComponent#default": default_22b4891c4f5fa760ee9f626882377967,
   "@/collections/MediaImages/components#AltField": AltField_24f51e17ebe211ea3e1b6c287f79c7cc,
   "@/fields/SVGUpload/components/FieldComponent#default": default_390597f1ad60ab95e5b4fbebc846ccb5,
   "@payloadcms/plugin-import-export/rsc#FormatField": FormatField_cdf7e044479f899a31f804427d568b36,
@@ -130,6 +137,7 @@ export const importMap = {
   "@/fields/Duration/components/FieldComponent#default": default_184096423d48b3396fdb451647a008e7,
   "@/globals/PDFGeneratorSettings/components/SkillSortingField#default": default_d04b05675537c5553065b881d10ad13c,
   "@/globals/PDFGeneratorSettings/components/GenerateButton#default": default_4aa97ec439b446e1ea9d86b3c25e31f2,
+  "@/fields/SectionGroup/components/DescriptionComponent#default": default_12d303178d17fe8b227602206bf99ee0,
   "@/globals/SettingsGlobalUser/components/LanguagesRowLabel#default": default_25737e4ba5d8de2c3d84ba8d21bbf4ab,
   "@/fields/Address/components/LabelComponent#default": default_e59c21704d4dab5076151afaebd7876b,
   "@/fields/Address/components/FieldComponent#default": default_741a914cdfef7b5df9221de4f2e22dd9,

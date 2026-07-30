@@ -42,7 +42,7 @@ export const ResumeAboutMeBlockClientRenderer = ({
         )}
       >
         {title && <Headline variant="section">{title}</Headline>}
-        {caption && <RichText data={caption} enableGutter={false} />}
+        {caption && <RichText className="text-inherit" data={caption} enableGutter={false} />}
       </div>
     </div>
   </SectionContainer>

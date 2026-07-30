@@ -1,7 +1,9 @@
 import { CollectionConfig } from 'payload'
 
+import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
+import { MediaField } from '@/fields/Media'
 import { MetaField } from '@/fields/Meta'
 import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
@@ -9,12 +11,15 @@ import { TitleField } from '@/fields/Title'
 import { generatePreviewPath } from '@/lib/generatePreviewPath'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
-import type { BlogPost } from '@/types/payload'
+import { BlogPostData } from '@/types/payload'
 
 import { revalidateBlogPost } from './hooks/revalidateBlogPost'
 
 export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
   slug: CollectionSlug.BlogPosts,
+  typescript: {
+    interface: `BlogPostData`,
+  },
   labels: {
     singular: 'Post',
     plural: 'Posts',
@@ -27,7 +32,7 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
   access: {
     create: authenticated,
     delete: authenticated,
-    read: authenticatedOrPublished,
+    read: anyone,
     update: authenticated,
   },
   admin: {
@@ -41,9 +46,10 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
     ],
     disableCopyToLocale: true,
     livePreview: {
-      url: ({ data }) => generatePreviewPath(CollectionSlug['BlogPosts'], data.slug),
+      url: ({ data }) => generatePreviewPath(CollectionSlug.BlogPosts, data.slug),
     },
-    preview: (data: Partial<BlogPost>) => generatePreviewPath(CollectionSlug.BlogPosts, data.slug),
+    preview: (data: Partial<BlogPostData>) =>
+      generatePreviewPath(CollectionSlug.BlogPosts, data.slug),
   },
   hooks: {
     afterChange: [
@@ -57,26 +63,19 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
     }),
 
     /* -------------- Sidebar Content -------------- */
-    {
-      name: 'heroImage',
-      type: 'upload',
-      relationTo: [
-        CollectionSlug['MediaImages'],
-      ],
-      filterOptions: {
-        mimeType: {
-          contains: 'image',
-        },
-      },
-      admin: {
-        position: 'sidebar',
-      },
-    },
+
     SlugField({
       fieldToUse: 'title',
     }),
+    MediaField({
+      name: 'heroImage',
+      relationTo: [
+        CollectionSlug.MediaImages,
+      ],
+      position: 'sidebar',
+    }),
     {
-      name: 'tags',
+      name: 'topics',
       type: 'relationship',
       admin: {
         position: 'sidebar',
@@ -86,7 +85,7 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
       },
       hasMany: true,
       relationTo: [
-        CollectionSlug['BlogTopics'],
+        CollectionSlug.BlogTopics,
       ],
     },
     {
@@ -106,7 +105,7 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
       },
       hasMany: true,
       relationTo: [
-        CollectionSlug['BlogPosts'],
+        CollectionSlug.BlogPosts,
       ],
     },
 

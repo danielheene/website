@@ -1,10 +1,10 @@
 'use server'
 
 import { hoursToSeconds } from 'date-fns'
-import Redis from 'ioredis'
+import { createClient, RedisClientType } from 'redis'
 
 let token: string | null = null
-let redis: Redis | null = null
+let redis: RedisClientType | null = null
 
 let verifyPromise: Promise<boolean> | null = null
 let tokenPromise: Promise<string | null> | null = null
@@ -76,15 +76,9 @@ const getToken = async () => {
 
 export const getRedis = async () => {
   if (!redis) {
-    await new Promise((resolve) => {
-      redis = new Redis(process.env.REDIS_URL, {
-        connectionName: 'umami-handler',
-        keyPrefix: 'umami',
-        enableReadyCheck: true,
-      }).once('ready', () => {
-        resolve(true)
-      })
-    })
+    redis = await createClient()
+      .on('error', (err) => console.log('Redis Client Error', err))
+      .connect()
   }
   return redis
 }
@@ -92,7 +86,9 @@ export const getRedis = async () => {
 export const setCache = async <T extends object | string>(key: string, value: T) => {
   const redis = await getRedis()
   const stringifiedValue = JSON.stringify(value)
-  return redis.set(key, stringifiedValue, 'EX', hoursToSeconds(2))
+  return redis.set(key, stringifiedValue, {
+    EX: hoursToSeconds(2),
+  })
 }
 
 export const getCache = async <T extends object | string>(key: string): Promise<T | null> => {

@@ -2,7 +2,7 @@
 
 import { ZodSafeParseResult } from 'zod'
 
-import { getGlobalUserSettings } from '@/lib/getGlobalUserSettings'
+import { fetchGlobalUserSettings } from '@/lib/fetchers'
 import { type Locale, translate } from '@/lib/i18n'
 import { buildDocumentFooter } from '@/pdf/lib/buildDocumentFooter'
 import { buildDocumentHeader } from '@/pdf/lib/buildDocumentHeader'
@@ -27,7 +27,7 @@ export const buildResumeDocumentData = async (
   const locale: Locale = args?.locale === 'de' ? 'de' : 'en'
   const language = locale === 'en' ? 'en_EN' : 'de_DE'
 
-  const { name } = await getGlobalUserSettings(locale)
+  const { name } = await fetchGlobalUserSettings(locale)
 
   return documentSchema.safeParse({
     isPreview: false,

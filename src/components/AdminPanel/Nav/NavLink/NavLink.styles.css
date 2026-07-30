@@ -29,7 +29,7 @@
   }
 
   .nav-link__icon {
-    @apply w-[1em] h-[1em] ml-0.5 mr-0;
+    @apply shrink-0 grow-0 w-[20px] h-[20px] ml-0.5 mr-0;
   }
 
   .nav-link--open .nav-link__icon {

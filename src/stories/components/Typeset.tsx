@@ -4,8 +4,21 @@ import { cn } from '@/lib/cn'
 
 export const defaultFontWeight: number = 400
 export const defaultSampleText: string = 'Heavy boxes perform quick waltzes and jigs.'
-export const defaultFontSizes: string[] = ['xs', 'sm', 'base', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl', '6xl', '7xl', '8xl', '9xl']
-
+export const defaultFontSizes: string[] = [
+  'text-xs',
+  'text-sm',
+  'text-base',
+  'text-lg',
+  'text-xl',
+  'text-2xl',
+  'text-3xl',
+  'text-4xl',
+  'text-5xl',
+  'text-6xl',
+  'text-7xl',
+  'text-8xl',
+  'text-9xl',
+]
 
 export interface TypesetProps {
   fontFamily: string
@@ -33,26 +46,35 @@ export const Typeset: FC<TypesetProps> = (props) => {
         'docblock-typeset sb-unstyled grid grid-cols-[min-content_auto] items-baseline my-[25px] mb-10 p-[30px_20px]',
       )}
     >
-      {fontSizes.map((size) => defaultFontSizes.includes(size) && (
-        <Fragment key={size}>
-          <header className={cn(['mr-7.5 text-[1em] pr-[1em]', 'text-foreground/40 dark:text-foreground/60'])}>
-            {size}
-          </header>
-          <div
-            className={cn([
-              'text-ellipsis overflow-hidden whitespace-nowrap',
-              `text-${size} font-[${fontWeight}]`,
-            ])}
-            style={{
-              fontFamily,
-              fontWeight,
-              lineHeight: 1.2,
-            }}
-          >
-            {sampleText || 'Was he a beast if music could move him so?'}
-          </div>
-        </Fragment>
-      ))}
+      {fontSizes.map(
+        (size) =>
+          defaultFontSizes.includes(size) && (
+            <Fragment key={size}>
+              <header
+                className={cn([
+                  'mr-7.5 text-[1em] pr-[1em]',
+                  'text-foreground/40 dark:text-foreground/60',
+                ])}
+              >
+                {size.replace('text-', '')}
+              </header>
+              <div
+                className={cn([
+                  'text-ellipsis overflow-hidden whitespace-nowrap',
+                  `text-${size} font-[${fontWeight}]`,
+                  size,
+                ])}
+                style={{
+                  fontFamily,
+                  fontWeight,
+                  lineHeight: 1.2,
+                }}
+              >
+                {sampleText || 'Was he a beast if music could move him so?'}
+              </div>
+            </Fragment>
+          ),
+      )}
     </div>
   )
 }

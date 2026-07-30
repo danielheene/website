@@ -1,23 +1,21 @@
-import '@/styles/frontend.css'
+import '#frontend.css'
 
 import { JSX, ReactNode } from 'react'
 import type { Metadata, Viewport } from 'next'
-import { ThemeProvider } from 'next-themes'
 import { draftMode } from 'next/headers'
 
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
+import { AllProviders } from '@/components/Providers'
 import { SkipToMainContent } from '@/components/SkipToMainContent'
 import { Toasty } from '@/components/Toasty'
-import { UmamiProvider } from '@/contexts/Umami'
 import PPFrama from '@/fonts/pp-frama/next'
 import PPFramaText from '@/fonts/pp-frama-text/next'
 import PPSupplyMono from '@/fonts/pp-supply-mono/next'
 import PPSupplySans from '@/fonts/pp-supply-sans/next'
 import { cn } from '@/lib/cn'
-import { getGlobalUserSettings } from '@/lib/getGlobalUserSettings'
-import { getSiteSettings } from '@/lib/getSiteSettings'
+import { fetchGlobalUserSettings, fetchSiteSettings } from '@/lib/fetchers'
 import { generatePersonSchema, generateWebSiteSchema, JsonLd } from '@/lib/jsonLd'
 
 export default async function RootLayout({
@@ -26,8 +24,8 @@ export default async function RootLayout({
   children: ReactNode | ReactNode[]
 }): Promise<JSX.Element> {
   const { isEnabled: draft } = await draftMode()
-  const globalUserSettings = await getGlobalUserSettings()
-  const SiteSettings = await getSiteSettings()
+  const globalUserSettings = await fetchGlobalUserSettings()
+  const SiteSettings = await fetchSiteSettings()
   const personSchema = generatePersonSchema(globalUserSettings)
   const webSiteSchema = generateWebSiteSchema(SiteSettings)
 
@@ -53,15 +51,13 @@ export default async function RootLayout({
         />
       </head>
       <body>
-        <SkipToMainContent targetId="main-content" />
-        {draft && <LivePreviewListener />}
-        <ThemeProvider disableTransitionOnChange enableColorScheme enableSystem>
-          <UmamiProvider websiteId={process.env.NEXT_PUBLIC_UMAMI_SITE_ID}>
-            <Header />
-            {children}
-            <Footer />
-          </UmamiProvider>
-        </ThemeProvider>
+        {/*{draft && <LivePreviewListener />}*/}
+        <AllProviders>
+          <SkipToMainContent targetId="main-content" />
+          <Header />
+          {children}
+          <Footer />
+        </AllProviders>
         <Toasty />
       </body>
     </html>

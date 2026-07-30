@@ -3,6 +3,7 @@ import { convertLexicalToHTML } from '@payloadcms/richtext-lexical/html'
 
 import { authenticated } from '@/access/authenticated'
 import { RichTextField } from '@/fields/RichText'
+import { generateResumeDocumentHook } from '@/lib/hooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 
@@ -20,16 +21,16 @@ export const ResumeJobs: CollectionConfig<CollectionSlug['ResumeJobs']> = {
   },
   access: {
     read: authenticated,
-    admin: authenticated,
     update: authenticated,
     create: authenticated,
     delete: authenticated,
-    unlock: authenticated,
-    readVersions: authenticated,
   },
   hooks: {
     afterChange: [
       enqueueCalculateSkillTagInterval,
+    ],
+    afterOperation: [
+      generateResumeDocumentHook,
     ],
   },
   admin: {

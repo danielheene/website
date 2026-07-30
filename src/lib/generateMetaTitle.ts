@@ -1,12 +1,14 @@
 'use server'
 
-import { getSiteSettings } from '@/lib/getSiteSettings'
+import { camelCase, kebabCase, snakeCase, startCase, upperFirst } from 'lodash-es'
 import pupa from 'pupa'
-import { camelCase, upperFirst, snakeCase, kebabCase, startCase } from 'lodash-es'
+
+import { fetchSiteSettingsCached } from '@/lib/fetchers'
 
 export const generateMetaTitle = async (title: string) => {
-  const {general: { titleTemplate, siteName, siteUrl }} =
-    await getSiteSettings()
+  const {
+    general: { titleTemplate, siteName, siteURL },
+  } = await fetchSiteSettingsCached()
 
   const filters = {
     trim: (value: string) => value.trim(),
@@ -20,11 +22,15 @@ export const generateMetaTitle = async (title: string) => {
     startCase: (value: string) => startCase(value),
   }
 
-  return pupa(titleTemplate, {
-    siteName,
-    siteUrl,
-    title,
-  }, {
-    filters,
-  })
+  return pupa(
+    titleTemplate,
+    {
+      siteName,
+      siteURL,
+      title,
+    },
+    {
+      filters,
+    },
+  )
 }

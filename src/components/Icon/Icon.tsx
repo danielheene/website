@@ -103,8 +103,8 @@ export type IconProps = Omit<
   name: IconName | string
 }
 
-export const Icon = forwardRef<IconifyIcon, IconProps>(
-  ({ name, ...iconBaseProps }: IconProps, ref): JSX.Element => {
+export const Icon = forwardRef<SVGSVGElement, IconProps>(
+  ({ name, ...iconBaseProps }, ref): JSX.Element => {
     const icon = ICON[name] ?? name
     return <IconifyIconComponent ref={ref} icon={icon} {...iconBaseProps} />
   },

@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { authenticated } from '@/access/authenticated'
+import { generateResumeDocumentHook } from '@/lib/hooks/collection'
 import { createFallbackToSiblingLocale } from '@/lib/hooks/createFallbackToSiblingLocale'
 import { translate } from '@/lib/i18n'
 import { AdminGroup } from '@/types/admin-panel'
@@ -18,15 +19,15 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
   },
   access: {
     read: authenticated,
-    admin: authenticated,
     update: authenticated,
     create: authenticated,
     delete: authenticated,
-    unlock: authenticated,
-    readVersions: authenticated,
   },
   hooks: {
     afterChange: [],
+    afterOperation: [
+      generateResumeDocumentHook,
+    ],
   },
   admin: {
     useAsTitle: 'name_label',

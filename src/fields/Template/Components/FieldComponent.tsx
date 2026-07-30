@@ -1,18 +1,21 @@
 import { TextFieldServerComponent, TextFieldServerProps } from 'payload'
 
+import { z } from 'zod'
+
 import { Locale } from '@/lib/i18n'
 
-import FieldComponentClient from './FieldComponent.client'
-import { z } from 'zod'
-import { TemplateFieldData, TemplateFieldDataFunction, TemplateFieldAnnotation,
-  TemplateFieldAnnotationFunction
+import {
+  TemplateFieldAnnotation,
+  TemplateFieldAnnotationFunction,
+  TemplateFieldData,
+  TemplateFieldDataFunction,
 } from '../types'
-
+import FieldComponentClient from './FieldComponent.client'
 
 interface FieldComponentProps extends TextFieldServerProps {
   renderLocale?: Locale[]
   customData?: TemplateFieldData | TemplateFieldDataFunction
-  customAnnotation?:  TemplateFieldAnnotation | TemplateFieldAnnotationFunction
+  customAnnotation?: TemplateFieldAnnotation | TemplateFieldAnnotationFunction
 }
 
 export const FieldComponent: TextFieldServerComponent = async (props: FieldComponentProps) => {
@@ -26,22 +29,41 @@ export const FieldComponent: TextFieldServerComponent = async (props: FieldCompo
     siblingData,
     user,
     payload,
-     customAnnotation: customAnnotationFromProps,
-     customData: customDataFromProps,
+    customAnnotation: customAnnotationFromProps,
+    customData: customDataFromProps,
   } = props
 
-  const customAnnotation = ((anntotation?: TemplateFieldAnnotation | TemplateFieldAnnotationFunction) => {
+  const customAnnotation = ((
+    anntotation?: TemplateFieldAnnotation | TemplateFieldAnnotationFunction,
+  ) => {
     if (typeof anntotation === 'function') {
-      return [anntotation({ siblingData, data, user, payload })]
+      return [
+        anntotation({
+          siblingData,
+          data,
+          user,
+          payload,
+        }),
+      ]
     }
     if (typeof anntotation === 'object') {
-      return [anntotation]
+      return [
+        anntotation,
+      ]
     }
     return []
   })(customAnnotationFromProps)
 
   const customData = ((data?: TemplateFieldData | TemplateFieldDataFunction) => {
-    const nextData = typeof data === 'function' ? data({ siblingData, data, user, payload }) : data
+    const nextData =
+      typeof data === 'function'
+        ? data({
+            siblingData,
+            data,
+            user,
+            payload,
+          })
+        : data
     const parsed = z.record(z.string(), z.string()).safeParse(nextData)
     if (!parsed.success) {
       console.error(z.prettifyError(parsed.error))
@@ -56,16 +78,17 @@ export const FieldComponent: TextFieldServerComponent = async (props: FieldCompo
       path={path}
       renderLocale={renderLocale}
       data={{
-        ...data,
         ...customData,
       }}
       annotations={[
         {
           label: 'Global Data',
           entries: {
-            '{serverURL}': 'Server URL of the global user configuration',
-            '{adminURL}': 'Admin URL of the global user configuration',
-            '{apiURL}': 'API URL of the global user configuration',
+            '{siteName}': 'Name of the Website',
+            '{siteHost}': 'Host of the Website',
+            '{siteURL}': 'URL of the Website',
+            '{adminURL}': 'URL of the Admin Dashboard',
+            '{apiURL}': 'API URL of the website',
           },
         },
         {

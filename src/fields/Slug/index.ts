@@ -11,8 +11,8 @@ type SlugFieldProps = {
   overrides?: SlugFieldOverrides
 }
 
-export const SlugField = ({ fieldToUse, overrides = {} }: SlugFieldProps): TextField =>
-  deepMerge<TextField, SlugFieldOverrides>(
+export const SlugField = ({ fieldToUse, overrides = {} }: SlugFieldProps): TextField => {
+  return deepMerge<TextField, SlugFieldOverrides>(
     {
       name: 'slug',
       type: 'text',
@@ -30,7 +30,7 @@ export const SlugField = ({ fieldToUse, overrides = {} }: SlugFieldProps): TextF
         position: 'sidebar',
         components: {
           Field: {
-            path: '@/fields/Slug/FieldComponent',
+            path: '@/fields/Slug/components/FieldComponent',
             clientProps: {
               fieldToUse,
             },
@@ -40,3 +40,4 @@ export const SlugField = ({ fieldToUse, overrides = {} }: SlugFieldProps): TextF
     },
     overrides,
   )
+}

@@ -6,6 +6,7 @@ import { CollectionSlug } from '@/types/collections'
 
 export default async function ResumeDocumentPage({ params }: PageProps<'/resume/[slug]'>) {
   const { slug } = await params
+
   if (slug === 'latest') {
   }
   return (
@@ -29,6 +30,7 @@ export default async function ResumeDocumentPage({ params }: PageProps<'/resume/
           ></div>
         </div>
       </section>
+      <h1>{slug}</h1>
     </div>
   )
 }

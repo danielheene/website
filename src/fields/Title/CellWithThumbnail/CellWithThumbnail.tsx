@@ -1,32 +1,25 @@
-'use server'
-
 import { type DefaultServerCellComponentProps, type TextFieldClient } from 'payload'
 
 import { get, upperFirst } from 'lodash-es'
 
-import { isMediaImage } from '@/lib/typeGuards'
+import { resolveRelations } from '@/lib/resolveRelation'
 
 import CelllWithThumbnailClient from './CelllWithThumbnail.client'
 
 type CellWithThumbnailProps = {
   thumbnailPath: string
-} & DefaultServerCellComponentProps<TextFieldClient>
+} & DefaultServerCellComponentProps<TextFieldClient, string>
 
 export const CellWithThumbnail = async (props: CellWithThumbnailProps) => {
-  const { rowData, cellData, field, payload, collectionSlug, thumbnailPath } = props
+  const { rowData, cellData, field, payload, collectionSlug, thumbnailPath, i18n } = props
 
   const thumbnailPathBase = thumbnailPath.replace(/(\.url)$/, '').replace(/(\.thumbnailURL)$/, '')
-
-  const document = await payload.findByID({
-    collection: collectionSlug,
-    id: rowData.id,
-  })
-
-  let thumbnailURL: string | undefined
-  const media = get(document, thumbnailPathBase)
-  if (media && isMediaImage(media)) {
-    thumbnailURL = media.thumbnailURL || media.url
-  }
+  const document = await resolveRelations(rowData)
+  const thumbnailURL = get(
+    document,
+    `${thumbnailPathBase}.thumbnailURL`,
+    get(document, `${thumbnailPathBase}.url`),
+  )
 
   let titleValue: string | undefined
   if (cellData && typeof cellData === 'string' && cellData.length > 0) {
@@ -41,8 +34,9 @@ export const CellWithThumbnail = async (props: CellWithThumbnailProps) => {
     <CelllWithThumbnailClient
       thumbnailURL={thumbnailURL}
       titleValue={titleValue}
+      doc={JSON.parse(JSON.stringify(rowData))}
+      docID={rowData.id}
       collectionSlug={collectionSlug}
-      rowData={JSON.parse(JSON.stringify(rowData))}
     />
   )
 }

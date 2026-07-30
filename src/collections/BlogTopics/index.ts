@@ -1,24 +1,23 @@
 import type { AccessArgs, CollectionConfig } from 'payload'
 
-import { AdminGroup } from '@/types/admin-panel'
-
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { MetaField } from '@/fields/Meta'
 import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
+import { ToggleField } from '@/fields/Toggle'
 import { generatePreviewPath } from '@/lib/generatePreviewPath'
-import { CollectionSlug } from '@/types/collections'
-import type { BlogTopic } from '@/types/payload'
+import { AdminGroup } from '@/types/admin-panel'
+import { CollectionData, CollectionSlug } from '@/types/collections'
 
 import { revalidateBlogTopic } from './hooks/revalidateBlogTopic'
 
 export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
-  slug: CollectionSlug['BlogTopics'],
+  slug: CollectionSlug.BlogTopics,
   labels: {
-    singular: 'Tag',
-    plural: 'Tags',
+    singular: 'Topic',
+    plural: 'Topics',
   },
   defaultPopulate: {
     title: true,
@@ -34,10 +33,10 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
     group: AdminGroup.Blog,
     groupBy: true,
     livePreview: {
-      url: ({ data }) => generatePreviewPath(CollectionSlug['BlogTopics'], data.slug),
+      url: ({ data }) => generatePreviewPath(CollectionSlug.BlogTopics, data.slug),
     },
-    preview: (data: Partial<BlogTopic>) =>
-      generatePreviewPath(CollectionSlug['BlogTopics'], data.slug),
+    preview: (data: Partial<CollectionData<CollectionSlug['BlogTopics']>>) =>
+      generatePreviewPath(CollectionSlug.BlogTopics, data.slug),
     listSearchableFields: [
       'title',
       'slug',
@@ -50,7 +49,10 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
   },
   access: {
     create: authenticated,
-    delete: async ({ req: { user, payload }, id }: AccessArgs<BlogTopic>) => {
+    delete: async ({
+      req: { user, payload },
+      id,
+    }: AccessArgs<CollectionData<CollectionSlug['BlogTopics']>>) => {
       if (!user) return false
       let references = 0
 
@@ -82,11 +84,25 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
   },
   fields: [
     /* -------------- Main  Content -------------- */
-    TitleField({
-      listViewThumbnailPath: 'heroImage',
-    }),
+    {
+      type: 'row',
+      fields: [
+        TitleField({
+          listViewThumbnailPath: 'heroImage',
+        }),
+        ToggleField({
+          name: 'featured',
+          iconActive: 'material-symbols:star',
+          iconInactive: 'material-symbols:star-outline',
+        }),
+      ],
+    },
 
     /* -------------- Sidebar Content -------------- */
+    SlugField({
+      fieldToUse: 'title',
+    }),
+
     {
       name: 'heroImage',
       type: 'upload',
@@ -103,18 +119,6 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
         disableGroupBy: true,
         disableListColumn: true,
         disableListFilter: true,
-      },
-    },
-    SlugField({
-      fieldToUse: 'title',
-    }),
-    {
-      name: 'highlighted',
-      type: 'checkbox',
-      defaultValue: false,
-      label: 'Highlighted',
-      admin: {
-        position: 'sidebar',
       },
     },
 
@@ -140,8 +144,8 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
             {
               name: 'relatedPosts',
               type: 'join',
-              collection: CollectionSlug['BlogPosts'],
-              on: 'tags',
+              collection: CollectionSlug.BlogPosts,
+              on: 'topics',
               hasMany: true,
               label: false,
               admin: {

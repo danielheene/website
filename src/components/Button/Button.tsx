@@ -19,7 +19,7 @@ const styles = tv({
     'disabled:pointer-events-none disabled:opacity-50',
     'aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20',
     'dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
-    "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+    "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4.5",
   ],
   variants: {
     variant: {
@@ -69,7 +69,7 @@ const styles = tv({
         'size-10',
       ],
       'icon-xs': [
-        "size-7 [&_svg:not([class*='size-'])]:size-3",
+        "size-7 [&_svg:not([class*='size-'])]:size-3.5",
       ],
       'icon-sm': [
         'size-9',
@@ -100,7 +100,7 @@ type ConditionalProps =
       type: 'button' | 'submit' | 'reset'
     } & ComponentProps<'button'>)
 
-type ButtonProps = CommonProps & ConditionalProps
+export type ButtonProps = CommonProps & ConditionalProps
 
 export const Button = forwardRef<HTMLElement, ButtonProps>(
   (

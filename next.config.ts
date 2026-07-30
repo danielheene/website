@@ -13,10 +13,6 @@ import { envSchema } from '@/types/environment'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-})
-
 let server: ChildProcess
 const createTunnel = (token: string) =>
   new Promise<ChildProcess | null>((resolve) => {
@@ -61,29 +57,50 @@ export default async (phase, { defaultConfig }) => {
   }
 
   const nextConfig: NextConfig = {
-    reactStrictMode: true,
     poweredByHeader: false,
     productionBrowserSourceMaps: false,
-
-    // cacheComponents: true,
-
+    reactStrictMode: true,
+    // cacheHandler: require.resolve('./next.cache-handler.ts'),
     experimental: {
       viewTransition: true,
-      // workerThreads: true,
-      // turbopackServerFastRefresh: true,
+      appNewScrollHandler: true,
       serverActions: {
         bodySizeLimit: '10mb',
       },
     },
 
+    /**
+     *    Allowed Dev Origins
+     */
+    allowedDevOrigins: [
+      'daniel.heene.nexus',
+      '*.daniel.heene.nexus',
+      'daniel.heene.local',
+      '*.daniel.heene.local',
+    ],
+
+    /**
+     *    Environment Variables
+     */
+    env: {
+      SERVER_HOST: process.env.SERVER_HOST,
+      SERVER_URL: process.env.SERVER_URL,
+      STATUS_PAGE_URL: process.env.STATUS_PAGE_URL,
+      STATUS_PAGE_HEARTBEAT_URL: process.env.STATUS_PAGE_HEARTBEAT_URL,
+      SENTRY_DSN: process.env.SENTRY_DSN,
+    },
+
+    /**
+     *    Logging
+     */
     logging: {
-      browserToTerminal: true,
       fetches: {
         fullUrl: true,
         hmrRefreshes: true,
       },
       serverFunctions: true,
       incomingRequests: true,
+      browserToTerminal: 'error',
     },
 
     serverExternalPackages: [
@@ -159,50 +176,49 @@ export default async (phase, { defaultConfig }) => {
       dangerouslyAllowSVG: true,
     },
 
-    allowedDevOrigins: [
-      'daniel.heene.nexus',
-      '*.daniel.heene.nexus',
-      'daniel.heene.local',
-      '*.daniel.heene.local',
-    ],
+    // webpack: (config, context) => {
+    //   const nextConfig = {
+    //     ...config,
+    //   }
+    //   nextConfig.resolve = {
+    //     ...config.resolve,
+    //     extensionAlias: {
+    //       '.cjs': [
+    //         '.cts',
+    //         '.cjs',
+    //       ],
+    //       '.js': [
+    //         '.ts',
+    //         '.tsx',
+    //         '.js',
+    //         '.jsx',
+    //       ],
+    //       '.mjs': [
+    //         '.mts',
+    //         '.mjs',
+    //       ],
+    //     },
+    //     alias: {
+    //       ...config.resolve.alias,
+    //       '@': path.resolve(__dirname, 'src'),
+    //     },
+    //   }
+    //
+    //   return config
+    // },
 
-    env: {
-      SERVER_HOST: process.env.SERVER_HOST,
-      SERVER_URL: process.env.SERVER_URL,
-      STATUS_PAGE_URL: process.env.STATUS_PAGE_URL,
-      STATUS_PAGE_HEARTBEAT_URL: process.env.STATUS_PAGE_HEARTBEAT_URL,
-      SENTRY_DSN: process.env.SENTRY_DSN,
-    },
-
-    webpack: (config, context) => {
-      const nextConfig = {
-        ...config,
-      }
-      nextConfig.resolve = {
-        ...config.resolve,
-        extensionAlias: {
-          '.cjs': [
-            '.cts',
-            '.cjs',
-          ],
-          '.js': [
-            '.ts',
-            '.tsx',
-            '.js',
-            '.jsx',
-          ],
-          '.mjs': [
-            '.mts',
-            '.mjs',
+    async headers() {
+      return [
+        {
+          source: '/:path*{/}?',
+          headers: [
+            {
+              key: 'X-Accel-Buffering',
+              value: 'no',
+            },
           ],
         },
-        alias: {
-          ...config.resolve.alias,
-          '@': path.resolve(__dirname, 'src'),
-        },
-      }
-
-      return config
+      ]
     },
 
     async rewrites() {
@@ -219,16 +235,7 @@ export default async (phase, { defaultConfig }) => {
     },
   }
 
-  return [
-    [
-      withBundleAnalyzer,
-      undefined,
-    ],
-    [
-      withPayload,
-      {
-        devBundleServerPackages: false,
-      },
-    ],
-  ].reduce((acc, [plugin, options]) => plugin(acc, options), nextConfig)
+  return withPayload(nextConfig, {
+    devBundleServerPackages: false,
+  })
 }

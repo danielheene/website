@@ -4,7 +4,7 @@ import { FieldHook } from 'payload'
 
 import { get } from 'lodash-es'
 
-import { getSkillsCollectionData } from '@/lib/getSkillsCollectionData'
+import { fetchResumeSkills } from '@/lib/fetchers'
 import {
   PDFGeneratorSettings,
   SkillEntrySortable,
@@ -23,7 +23,7 @@ export const sanitizeSkillSorting: FieldHook<
   SkillSorting,
   PDFGeneratorSettings
 > = async ({ value }): Promise<SkillSorting> => {
-  const skills = await getSkillsCollectionData()
+  const skills = await fetchResumeSkills()
 
   return skillSortingKeys.reduce((skillSorting, configKey: keyof SkillSorting) => {
     if (configKey === 'skillTypeSortable') {

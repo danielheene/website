@@ -15,6 +15,7 @@ export const generateLocalizedResumeDocument: TaskConfig<
   TaskSlug['GenerateLocalizedResumeDocument']
 > = {
   slug: TaskSlug.GenerateLocalizedResumeDocument,
+  label: 'Generate ResumeDocument for Locale',
   retries: 3,
   concurrency: {
     key: ({ input }) =>
@@ -144,7 +145,7 @@ export const generateLocalizedResumeDocument: TaskConfig<
           const arrayBufferLike = await renderToBuffer(<ResumeDocument {...resumeDocumentData} />)
 
           const { id, url, checksum } = await payload.create({
-            collection: CollectionSlug.ResumeFiles,
+            collection: CollectionSlug.MediaDocuments,
             data: {
               createdAt,
             },
@@ -153,6 +154,9 @@ export const generateLocalizedResumeDocument: TaskConfig<
               name: `${filename}.pdf`,
               mimetype: 'application/pdf',
               size: Buffer.byteLength(arrayBufferLike),
+            },
+            context: {
+              skipGenerateDocumentThumbnails: true,
             },
           })
 
@@ -169,42 +173,52 @@ export const generateLocalizedResumeDocument: TaskConfig<
 
     payload.logger.info('Uploading resume thumbnails')
 
-    const { resumeThumbnailIds } = await inlineTask(`BuildResumeThumbnails:${locale}`, {
-      task: async () => {
-        const ids = []
-
-        const parser = new PDFParse({
-          url: resumeFileUrl,
-        })
-
-        const { pages: resumeThumbnails } = await parser.getScreenshot({})
-
-        let index = 0
-        for (const thumbnail of resumeThumbnails) {
-          const { id } = await payload.create({
-            collection: CollectionSlug.ResumeFiles,
-            data: {
-              width: thumbnail.width,
-              height: thumbnail.height,
-              createdAt,
-            },
-            file: {
-              data: Buffer.from(thumbnail.data),
-              name: `${filename}-${++index}.png`,
-              mimetype: 'image/png',
-              size: Buffer.byteLength(thumbnail.data),
-            },
-          })
-          ids.push(id)
-        }
-
-        return {
-          output: {
-            resumeThumbnailIds: ids,
-          },
-        }
+    const { thumbnailIDs: resumeThumbnailIds } = await tasks.GenerateDocumentThumbnails(
+      `BuildResumeThumbnails:${locale}`,
+      {
+        input: {
+          documentId: resumeFileId,
+          maxThumbnails: Number.MAX_SAFE_INTEGER,
+        },
       },
-    })
+    )
+
+    // const { resumeThumbnailIds } = await inlineTask(`BuildResumeThumbnails:${locale}`, {
+    //   task: async () => {
+    //     const ids = []
+    //
+    //     const parser = new PDFParse({
+    //       url: resumeFileUrl,
+    //     })
+    //
+    //     const { pages: resumeThumbnails } = await parser.getScreenshot({})
+    //
+    //     let index = 0
+    //     for (const thumbnail of resumeThumbnails) {
+    //       const { id } = await payload.create({
+    //         collection: CollectionSlug.ResumeFiles,
+    //         data: {
+    //           width: thumbnail.width,
+    //           height: thumbnail.height,
+    //           createdAt,
+    //         },
+    //         file: {
+    //           data: Buffer.from(thumbnail.data),
+    //           name: `${filename}-${++index}.png`,
+    //           mimetype: 'image/png',
+    //           size: Buffer.byteLength(thumbnail.data),
+    //         },
+    //       })
+    //       ids.push(id)
+    //     }
+    //
+    //     return {
+    //       output: {
+    //         resumeThumbnailIds: ids,
+    //       },
+    //     }
+    //   },
+    // })
 
     payload.logger.info('Finished uploading resume thumbnails')
     return {

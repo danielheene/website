@@ -1,12 +1,13 @@
 import type { AccessArgs, CollectionConfig, FilterOptionsProps } from 'payload'
 
-import { isBoolean } from 'lodash-es'
+import { startCase } from 'lodash-es'
 
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { BLOCK_SLUGS } from '@/blocks'
 import { revalidatePage } from '@/collections/Pages/hooks/revalidatePage'
 import { MetaField } from '@/fields/Meta'
+import { ProtectedField } from '@/fields/Protected'
 import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
@@ -14,6 +15,7 @@ import { generatePreviewPath } from '@/lib/generatePreviewPath'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 import type { Page } from '@/types/payload'
+import { PAGE_LAYOUT } from '@/types/select-options'
 
 import { getFilteredBlocks } from './utils/getFilteredBlocks'
 
@@ -67,51 +69,33 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
     }),
 
     /* -------------- Sidebar Content -------------- */
+    ProtectedField(),
+
     SlugField({
       fieldToUse: 'title',
+      overrides: {
+        access: {
+          update: ({ doc }) => {
+            return !doc?.protected
+          },
+        },
+      },
     }),
 
     {
-      type: 'checkbox',
-      name: 'protected',
-      defaultValue: false,
-      hooks: {
-        beforeValidate: [
-          ({ value }) => {
-            return isBoolean(value) ? value : false
-          },
-        ],
-      },
-      access: {
-        update: () => true,
-        create: () => false,
-      },
-      admin: {
-        position: 'sidebar',
-        disableListColumn: true,
-        disableListFilter: true,
-        disableGroupBy: true,
-      },
-    },
-    {
       type: 'select',
       name: 'layout',
+      access: {
+        update: ({ doc }) => {
+          return !doc?.protected
+        },
+      },
       defaultValue: 'default',
       interfaceName: 'PageLayout',
-      options: [
-        {
-          label: 'Default',
-          value: 'default',
-        },
-        {
-          label: 'Home',
-          value: 'home',
-        },
-        {
-          label: 'Resume',
-          value: 'resume',
-        },
-      ],
+      options: Object.values(PAGE_LAYOUT).map((layout) => ({
+        label: startCase(layout),
+        value: layout,
+      })),
       admin: {
         position: 'sidebar',
         disableListColumn: true,

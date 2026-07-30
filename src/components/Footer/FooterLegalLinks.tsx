@@ -11,12 +11,7 @@ export const FooterLegalLinks = ({ legalPages: { entries }, className }: FooterL
     <nav className={cn('order-1 flex flex-col gap-2 md:order-2 md:flex-row', className)}>
       {entries.map(({ link, id }) => (
         <div className={cn('not-first:before:content-["•"] before:mr-2 before:font-bold')} key={id}>
-          <CMSLink
-            size="clear"
-            variant="link"
-            {...link}
-            className="text-current/75 hover:text-current"
-          />
+          <CMSLink variant="link" {...link} className="text-current/75 hover:text-current" />
         </div>
       ))}
     </nav>

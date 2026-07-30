@@ -45,6 +45,7 @@ export const CardPagination = ({
     <div className="inline-flex">
       <Button
         size="icon"
+        type="button"
         // outline
         className="text-3xl pr-0.5"
         onClick={setPrevPage}
@@ -55,6 +56,7 @@ export const CardPagination = ({
       <Button
         size="icon"
         // outline
+        type="button"
         className="text-3xl pl-0.5"
         onClick={setNextPage}
         disabled={!hasNextPage}

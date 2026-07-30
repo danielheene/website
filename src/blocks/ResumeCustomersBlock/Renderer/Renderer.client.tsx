@@ -21,11 +21,9 @@ export const ResumeCustomersBlockClientRenderer = ({
     <SectionContainer id={blockType} title={title} variant="primary">
       <div className="container py-16 lg:py-32">
         <div className="grid grid-cols-12 items-center gap-8">
-          <div className="col-span-12 lg:col-span-4 lg:col-start-2 items-center mb-16 lg:mb-0">
+          <div className="col-span-12 lg:col-span-4 lg:col-start-2 flex flex-col justify-center gap-12 mb-16 lg:mb-0">
             {title && <Headline variant="section">{title}</Headline>}
-            {caption && (
-              <RichText className="mt-12 text-lg leading-8" data={caption} enableGutter={false} />
-            )}
+            {caption && <RichText className="text-inherit" data={caption} enableGutter={false} />}
           </div>
           <LogoCarousel className="col-span-12 lg:col-span-6" entries={logos} />
         </div>

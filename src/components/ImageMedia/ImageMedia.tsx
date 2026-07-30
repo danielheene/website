@@ -1,10 +1,9 @@
 /** biome-ignore-all lint/performance/noImgElement: <explanation> */
 'use client'
 
+import { type SyntheticEvent, useCallback, useMemo, useState } from 'react'
 import type { ImageProps } from 'next/image'
 import NextImage from 'next/image'
-
-import { type SyntheticEvent, useCallback, useMemo, useState } from 'react'
 
 import { type ClassValue, cn } from '@/lib/cn'
 import type { MediaImage } from '@/types/payload'
@@ -19,6 +18,7 @@ export interface ImageMediaProps
   className?: ClassValue
   loadedClassName?: ClassValue
   imgClassName?: ClassValue
+
   imgLoadedClassName?: ClassValue
   alt?: string
   width?: number
@@ -49,6 +49,8 @@ export const ImageMedia = ({
 }: ImageMediaProps) => {
   const [loaded, setLoaded] = useState<boolean>(false)
   const [revealed, setRevealed] = useState<boolean>(false)
+
+  const fixedSrc = src ? new URL(src).pathname : undefined
 
   const handleOnLoad = useCallback(
     (_event: SyntheticEvent<HTMLImageElement>) => {
@@ -105,7 +107,7 @@ export const ImageMedia = ({
         placeholder="empty"
         // priority={priority}
         sizes={sizes}
-        src={src}
+        src={fixedSrc}
         {...otherProps}
       />
 

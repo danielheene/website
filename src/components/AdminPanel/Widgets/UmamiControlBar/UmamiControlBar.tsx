@@ -2,7 +2,7 @@ import type { WidgetServerProps } from 'payload'
 
 import { isValid, parseISO } from 'date-fns'
 
-import { Interval } from '@/lib/dateTime'
+import { Interval } from '@/lib/date'
 import { fetchWebsite } from '@/lib/UmamiHandler'
 
 import { UmamiControlBarClient } from './UmamiControlBar.client'

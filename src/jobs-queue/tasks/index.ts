@@ -2,11 +2,10 @@ import { generateLocalizedResumeDocument } from '@/jobs-queue/tasks/generateLoca
 import { TaskSlugValue } from '@/types/jobs-queue'
 
 import { calculateSkillTagInterval } from './calculateSkillTagInterval'
-import { generateDocumentThumbnail } from './generateDocumentThumbnail'
+import { generateDocumentThumbnails } from './generateDocumentThumbnails'
 
 export const TASKS = [
-  generateDocumentThumbnail,
-
+  generateDocumentThumbnails,
   calculateSkillTagInterval,
   generateLocalizedResumeDocument,
 ]

@@ -6,6 +6,7 @@ import { RichTextField } from '@/fields/RichText'
 import { generateChecksum } from '@/lib/hooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
+import { MediaImage } from '@/types/payload'
 
 import { generateAlt } from './hooks/generateAlt'
 import { generateBlurDataURL } from './hooks/generateBlurDataURL'
@@ -40,6 +41,15 @@ export const MediaImages: CollectionConfig<CollectionSlug['MediaImages']> = {
     components: {
       Description: false,
     },
+  },
+
+  defaultPopulate: {
+    filename: true,
+    url: true,
+    blurDataURL: true,
+    alt: true,
+    width: true,
+    height: true,
   },
   access: {
     create: authenticated,

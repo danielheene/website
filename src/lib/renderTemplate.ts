@@ -23,7 +23,7 @@ import {
 import pupa from 'pupa'
 
 import { extractErrorMessage } from '@/lib/extractErrorMessage'
-import { getGlobalUserSettings } from '@/lib/getGlobalUserSettings'
+import { fetchGlobalUserSettings, fetchSiteSettings } from '@/lib/fetchers'
 import { Locale } from '@/lib/i18n'
 import { nanoid } from '@/lib/nanoid'
 
@@ -58,8 +58,12 @@ export const renderTemplate = async ({
     config: { serverURL },
   } = payload
 
+  const {
+    general: { siteName, siteURL, siteHost },
+  } = await fetchSiteSettings(locale)
+
   const { firstName, lastName, name, jobTitle, birthDate, email, gender, pronouns } =
-    await getGlobalUserSettings(locale)
+    await fetchGlobalUserSettings(locale)
 
   try {
     const result = pupa(
@@ -70,6 +74,9 @@ export const renderTemplate = async ({
           date: format(new Date(), 'yyyy-MM-dd'),
           locale,
           serverURL,
+          siteName,
+          siteURL,
+          siteHost,
           aminURL: getAdminURL(),
           apiURL: getAPIURL(),
 
@@ -120,8 +127,6 @@ export const renderTemplate = async ({
           },
           {
             get(target, prop, receiver) {
-              console.dir(`Accessing filter: ${String(prop)}`)
-
               if (typeof prop === 'string' && prop.startsWith('Mar')) return () => 'Markus'
               /**
                * Custom filter to slice a string to a specified length

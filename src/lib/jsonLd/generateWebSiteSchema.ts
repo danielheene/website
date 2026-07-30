@@ -1,20 +1,20 @@
 import type { WebSite, WithContext } from 'schema-dts'
 
 import { isMediaImage } from '@/lib/typeGuards'
-import { GlobalSlug, GlobalData } from '@/types/globals'
+import { GlobalData, GlobalSlug } from '@/types/globals'
 
 /**
  * Generates WebSite JSON-LD
  * @param data
  */
-export function generateWebSiteSchema(
-  { general: data }: GlobalData<GlobalSlug['SiteSettings']>,
-): WithContext<WebSite> {
+export function generateWebSiteSchema({
+  general: data,
+}: GlobalData<GlobalSlug['SiteSettings']>): WithContext<WebSite> {
   const webSite: WithContext<WebSite> = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: data.siteName,
-    url: data.siteUrl,
+    url: data.siteURL,
   }
 
   if (data.description) {
@@ -28,17 +28,17 @@ export function generateWebSiteSchema(
     }
   }
 
-  if (data.searchUrl) {
-    webSite.potentialAction = {
-      '@type': 'SearchAction',
-      target: {
-        '@type': 'EntryPoint',
-        urlTemplate: `${data.searchUrl}?q={search_term_string}`,
-      },
-      // @ts-expect-error - query-input is valid per Schema.org but not in schema-dts types
-      'query-input': 'required name=search_term_string',
-    }
-  }
+  // if (data.searchUrl) {
+  //   webSite.potentialAction = {
+  //     '@type': 'SearchAction',
+  //     target: {
+  //       '@type': 'EntryPoint',
+  //       urlTemplate: `${data.searchUrl}?q={search_term_string}`,
+  //     },
+  //     // @ts-expect-error - query-input is valid per Schema.org but not in schema-dts types
+  //     'query-input': 'required name=search_term_string',
+  //   }
+  // }
 
   return webSite
 }

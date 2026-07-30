@@ -169,7 +169,7 @@ export const config = buildConfig({
       ],
       defaultTimezone: 'Europe/Berlin',
     },
-    user: CollectionSlug['Users'],
+    user: CollectionSlug.Users,
   },
   blocks: BLOCKS,
   csrf: [
@@ -225,14 +225,13 @@ export const config = buildConfig({
         limit: 1,
       },
     ],
-    jobsCollectionOverrides: ({ defaultJobsCollection }) => {
-      if (!defaultJobsCollection.admin) {
-        defaultJobsCollection.admin = {}
-      }
-
-      defaultJobsCollection.admin.hidden = false
-      return defaultJobsCollection
-    },
+    jobsCollectionOverrides: ({ defaultJobsCollection }) => ({
+      ...defaultJobsCollection,
+      admin: {
+        ...defaultJobsCollection.admin,
+        hidden: false,
+      },
+    }),
   },
   kv: redisKVAdapter({
     redisURL: process.env.REDIS_URL,
@@ -245,11 +244,19 @@ export const config = buildConfig({
       defaultVersionStatus: 'published',
       overrideImportCollection: ({ collection }) => ({
         ...collection,
-        slug: CollectionSlug['PayloadImports'],
+        slug: CollectionSlug.PayloadImports,
+        admin: {
+          ...collection.admin,
+          hidden: false,
+        },
       }),
       overrideExportCollection: ({ collection }) => ({
         ...collection,
-        slug: CollectionSlug['PayloadExports'],
+        slug: CollectionSlug.PayloadExports,
+        admin: {
+          ...collection.admin,
+          hidden: false,
+        },
       }),
     }),
     // nestedDocsPlugin({
@@ -265,11 +272,21 @@ export const config = buildConfig({
     s3Storage({
       enabled: true,
       collections: {
-        [CollectionSlug.MediaImages]: true,
-        [CollectionSlug.MediaVideos]: true,
-        [CollectionSlug.MediaDocuments]: true,
-        [CollectionSlug.MediaAudios]: true,
-        [CollectionSlug.ResumeFiles]: true,
+        [CollectionSlug.MediaImages]: {
+          prefix: CollectionSlug.MediaImages,
+        },
+        [CollectionSlug.MediaVideos]: {
+          prefix: CollectionSlug.MediaVideos,
+        },
+        [CollectionSlug.MediaDocuments]: {
+          prefix: CollectionSlug.MediaDocuments,
+        },
+        [CollectionSlug.MediaAudios]: {
+          prefix: CollectionSlug.MediaAudios,
+        },
+        [CollectionSlug.ResumeFiles]: {
+          prefix: CollectionSlug.ResumeFiles,
+        },
       },
       useCompositePrefixes: true,
       clientUploads: true,

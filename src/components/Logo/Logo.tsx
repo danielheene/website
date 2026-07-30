@@ -13,9 +13,11 @@ export enum LogoVariant {
   Inline = 'inline',
   Wrapped = 'wrapped',
   Square = 'square',
+  Initials = 'initials',
 }
 
-interface LogoProps extends Omit<SVGAttributes<SVGElement>, 'width' | 'height' | 'viewBox' | 'xlmns'> {
+interface LogoProps
+  extends Omit<SVGAttributes<SVGElement>, 'width' | 'height' | 'viewBox' | 'xlmns'> {
   color?: `${LogoColor}`
   variant?: `${LogoVariant}`
   className?: string
@@ -42,14 +44,31 @@ export const Logo = ({
         blink && '[&>.bar]:animate-blink',
         classNameProp,
       ]),
-    [classNameProp, blink, color],
+    [
+      classNameProp,
+      blink,
+      color,
+    ],
   )
 
   const { width, height } = useMemo(() => {
-    if (variant === LogoVariant.Wrapped) return { width: 1060, height: 549 }
-    if (variant === LogoVariant.Square) return { width: 1000, height: 1000 }
-    return { width: 2296, height: 257 }
-  }, [variant])
+    if (variant === LogoVariant.Wrapped)
+      return {
+        width: 1060,
+        height: 549,
+      }
+    if (variant === LogoVariant.Square || variant === LogoVariant.Initials)
+      return {
+        width: 1000,
+        height: 1000,
+      }
+    return {
+      width: 2296,
+      height: 257,
+    }
+  }, [
+    variant,
+  ])
 
   return (
     // biome-ignore lint/a11y/noSvgWithoutTitle: <TODO>
@@ -81,6 +100,9 @@ export const Logo = ({
             d="M594.5 245H521.1v510h73.38V521.86h176.13V755H844V245h-73.38v204H594.5Zm-259.7 0H144v510h190.8c72.65 0 132.09-59.74 132.09-131.87V376.14c0-72.85-59.44-131.14-132.1-131.14ZM217.38 681.41V317.86H334.8c33.02 0 58.7 26.23 58.7 58.28v246.99c0 32.06-26.41 58.28-58.7 58.28Z"
           />
         </>
+      )}
+      {variant === LogoVariant.Initials && (
+        <path d="M594.5 245H521.1v510h73.38V521.86h176.13V755H844V245h-73.38v204H594.5Zm-259.7 0H144v510h190.8c72.65 0 132.09-59.74 132.09-131.87V376.14c0-72.85-59.44-131.14-132.1-131.14ZM217.38 681.41V317.86H334.8c33.02 0 58.7 26.23 58.7 58.28v246.99c0 32.06-26.41 58.28-58.7 58.28Z" />
       )}
     </svg>
   )

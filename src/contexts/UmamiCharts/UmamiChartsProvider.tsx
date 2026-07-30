@@ -8,7 +8,7 @@ import {
   UmamiChartsContext,
 } from '@/contexts/UmamiCharts/UmamiCharts.context'
 import type { UmamiChartsAction, UmamiChartsState } from '@/contexts/UmamiCharts/UmamiCharts.types'
-import { Interval } from '@/lib/dateTime'
+import { Interval } from '@/lib/date'
 import {
   fetchEvents,
   fetchPageViews,

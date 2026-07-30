@@ -61,7 +61,7 @@ export type IconFieldValue =
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "PageLayout".
  */
-export type PageLayout = ('default' | 'home' | 'resume') | null;
+export type PageLayout = ('default' | 'home' | 'resume' | 'legal') | null;
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "SkillType".
@@ -135,8 +135,8 @@ export interface Config {
     ResumeProjectsBlock: ResumeProjectsBlock;
   };
   collections: {
-    'blog-posts': BlogPost;
-    'blog-tags': BlogTag;
+    posts: BlogPostData;
+    topics: Topic;
     pages: Page;
     users: User;
     images: MediaImage;
@@ -159,13 +159,13 @@ export interface Config {
     'payload-query-presets': PayloadQueryPreset;
   };
   collectionsJoins: {
-    'blog-tags': {
-      relatedPosts: 'blog-posts';
+    topics: {
+      relatedPosts: 'posts';
     };
   };
   collectionsSelect: {
-    'blog-posts': BlogPostsSelect<false> | BlogPostsSelect<true>;
-    'blog-tags': BlogTagsSelect<false> | BlogTagsSelect<true>;
+    posts: PostsSelect<false> | PostsSelect<true>;
+    topics: TopicsSelect<false> | TopicsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     images: ImagesSelect<false> | ImagesSelect<true>;
@@ -213,7 +213,7 @@ export interface Config {
   user: User;
   jobs: {
     tasks: {
-      GenerateDocumentThumbnail: TaskGenerateDocumentThumbnail;
+      GenerateDocumentThumbnails: TaskGenerateDocumentThumbnails;
       CalculateSkillTagInterval: TaskCalculateSkillTagInterval;
       GenerateLocalizedResumeDocument: TaskGenerateLocalizedResumeDocument;
       createCollectionExport: TaskCreateCollectionExport;
@@ -295,12 +295,12 @@ export interface LinkFieldData {
         value: string | Page;
       } | null)
     | ({
-        relationTo: 'blog-posts';
-        value: string | BlogPost;
+        relationTo: 'posts';
+        value: string | BlogPostData;
       } | null)
     | ({
-        relationTo: 'blog-tags';
-        value: string | BlogTag;
+        relationTo: 'topics';
+        value: string | Topic;
       } | null);
   url?: string | null;
 }
@@ -311,8 +311,8 @@ export interface LinkFieldData {
 export interface Page {
   id: string;
   title: string;
+  protected: boolean;
   slug: string;
-  protected?: boolean | null;
   layout?: PageLayout;
   hero?: {
     media?:
@@ -389,6 +389,7 @@ export interface MediaImage {
     [k: string]: unknown;
   } | null;
   blurDataURL?: string | null;
+  prefix?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -624,26 +625,26 @@ export interface ResumeProjectsBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blog-posts".
+ * via the `definition` "posts".
  */
-export interface BlogPost {
+export interface BlogPostData {
   id: string;
   title: string;
+  slug: string;
   heroImage?: {
     relationTo: 'images';
     value: string | MediaImage;
   } | null;
-  slug: string;
-  tags?:
+  topics?:
     | {
-        relationTo: 'blog-tags';
-        value: string | BlogTag;
+        relationTo: 'topics';
+        value: string | Topic;
       }[]
     | null;
   relatedPosts?:
     | {
-        relationTo: 'blog-posts';
-        value: string | BlogPost;
+        relationTo: 'posts';
+        value: string | BlogPostData;
       }[]
     | null;
   content?: {
@@ -676,18 +677,18 @@ export interface BlogPost {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blog-tags".
+ * via the `definition` "topics".
  */
-export interface BlogTag {
+export interface Topic {
   id: string;
   _order?: string | null;
   title: string;
+  featured?: boolean | null;
+  slug: string;
   heroImage?: {
     relationTo: 'images';
     value: string | MediaImage;
   } | null;
-  slug: string;
-  highlighted?: boolean | null;
   content?: {
     root: {
       type: string;
@@ -704,7 +705,7 @@ export interface BlogTag {
     [k: string]: unknown;
   } | null;
   relatedPosts?: {
-    docs?: (string | BlogPost)[];
+    docs?: (string | BlogPostData)[];
     hasNextPage?: boolean;
     totalDocs?: number;
   };
@@ -772,6 +773,7 @@ export interface MediaVideo {
     };
     [k: string]: unknown;
   } | null;
+  prefix?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -791,11 +793,13 @@ export interface MediaVideo {
 export interface MediaDocument {
   id: string;
   checksum?: string | null;
+  thumbnails?:
+    | {
+        relationTo: 'images';
+        value: string | MediaImage;
+      }[]
+    | null;
   prefix?: string | null;
-  thumbnail?: {
-    relationTo: 'images';
-    value: string | MediaImage;
-  } | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -830,6 +834,7 @@ export interface MediaAudio {
     };
     [k: string]: unknown;
   } | null;
+  prefix?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -863,33 +868,48 @@ export interface ResumeDocumentData {
   id: string;
   title: string;
   slug: string;
-  createdAt: string;
+  createdAt?: string | null;
   jobId?: (string | null) | PayloadJob;
   checksum_en?: string | null;
   checksum_de?: string | null;
   document_en?: {
-    relationTo: 'resume-files';
-    value: string | ResumeFileData;
+    relationTo: 'documents';
+    value: string | MediaDocument;
   } | null;
   document_de?: {
-    relationTo: 'resume-files';
-    value: string | ResumeFileData;
+    relationTo: 'documents';
+    value: string | MediaDocument;
   } | null;
   thumbnails_en?:
     | {
-        relationTo: 'resume-files';
-        value: string | ResumeFileData;
+        relationTo: 'images';
+        value: string | MediaImage;
       }[]
     | null;
   thumbnails_de?:
     | {
-        relationTo: 'resume-files';
-        value: string | ResumeFileData;
+        relationTo: 'images';
+        value: string | MediaImage;
       }[]
     | null;
-  data_en?: string | null;
-  data_de?: string | null;
-  updatedAt: string;
+  data_en?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  data_de?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -945,7 +965,7 @@ export interface PayloadJob {
         completedAt: string;
         taskSlug:
           | 'inline'
-          | 'GenerateDocumentThumbnail'
+          | 'GenerateDocumentThumbnails'
           | 'CalculateSkillTagInterval'
           | 'GenerateLocalizedResumeDocument'
           | 'createCollectionExport'
@@ -987,7 +1007,7 @@ export interface PayloadJob {
   taskSlug?:
     | (
         | 'inline'
-        | 'GenerateDocumentThumbnail'
+        | 'GenerateDocumentThumbnails'
         | 'CalculateSkillTagInterval'
         | 'GenerateLocalizedResumeDocument'
         | 'createCollectionExport'
@@ -1012,6 +1032,7 @@ export interface PayloadJob {
 export interface ResumeFileData {
   id: string;
   checksum?: string | null;
+  prefix?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -1124,8 +1145,8 @@ export interface ResumeProjectData {
   } | null;
   published?: boolean | null;
   relatedPost?: {
-    relationTo: 'blog-posts';
-    value: string | BlogPost;
+    relationTo: 'posts';
+    value: string | BlogPostData;
   } | null;
   updatedAt: string;
   createdAt: string;
@@ -1241,12 +1262,12 @@ export interface PayloadLockedDocument {
   id: string;
   document?:
     | ({
-        relationTo: 'blog-posts';
-        value: string | BlogPost;
+        relationTo: 'posts';
+        value: string | BlogPostData;
       } | null)
     | ({
-        relationTo: 'blog-tags';
-        value: string | BlogTag;
+        relationTo: 'topics';
+        value: string | Topic;
       } | null)
     | ({
         relationTo: 'pages';
@@ -1385,13 +1406,13 @@ export interface PayloadQueryPreset {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blog-posts_select".
+ * via the `definition` "posts_select".
  */
-export interface BlogPostsSelect<T extends boolean = true> {
+export interface PostsSelect<T extends boolean = true> {
   title?: T;
-  heroImage?: T;
   slug?: T;
-  tags?: T;
+  heroImage?: T;
+  topics?: T;
   relatedPosts?: T;
   content?: T;
   meta?:
@@ -1407,14 +1428,14 @@ export interface BlogPostsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "blog-tags_select".
+ * via the `definition` "topics_select".
  */
-export interface BlogTagsSelect<T extends boolean = true> {
+export interface TopicsSelect<T extends boolean = true> {
   _order?: T;
   title?: T;
-  heroImage?: T;
+  featured?: T;
   slug?: T;
-  highlighted?: T;
+  heroImage?: T;
   content?: T;
   relatedPosts?: T;
   meta?:
@@ -1433,8 +1454,8 @@ export interface BlogTagsSelect<T extends boolean = true> {
  */
 export interface PagesSelect<T extends boolean = true> {
   title?: T;
-  slug?: T;
   protected?: T;
+  slug?: T;
   layout?: T;
   hero?:
     | T
@@ -1488,6 +1509,7 @@ export interface ImagesSelect<T extends boolean = true> {
   alt?: T;
   credits?: T;
   blurDataURL?: T;
+  prefix?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1521,6 +1543,7 @@ export interface ImagesSelect<T extends boolean = true> {
 export interface VideosSelect<T extends boolean = true> {
   checksum?: T;
   caption?: T;
+  prefix?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1539,8 +1562,8 @@ export interface VideosSelect<T extends boolean = true> {
  */
 export interface DocumentsSelect<T extends boolean = true> {
   checksum?: T;
+  thumbnails?: T;
   prefix?: T;
-  thumbnail?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1560,6 +1583,7 @@ export interface DocumentsSelect<T extends boolean = true> {
 export interface AudiosSelect<T extends boolean = true> {
   checksum?: T;
   caption?: T;
+  prefix?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1601,7 +1625,6 @@ export interface ResumeDocumentsSelect<T extends boolean = true> {
   thumbnails_de?: T;
   data_en?: T;
   data_de?: T;
-  updatedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1609,6 +1632,7 @@ export interface ResumeDocumentsSelect<T extends boolean = true> {
  */
 export interface ResumeFilesSelect<T extends boolean = true> {
   checksum?: T;
+  prefix?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1875,21 +1899,28 @@ export interface SiteSettings {
  * via the `definition` "GeneralSettings".
  */
 export interface GeneralSettings {
+  /**
+   * The name of the site.
+   */
   siteName?: string | null;
-  /**
-   * This template is used for generating the title tag value on each page. Title refers to the actual document title which is suffixed with siteName.
-   */
-  titleTemplate?: string | null;
-  /**
-   * This URL is used for generating website metadata.
-   */
-  siteUrl?: string | null;
   /**
    * This category is used for generating website metadata.
    */
   category?: string | null;
   /**
-   * This description is used for generating website metadata.This description is also used as fallback if no document description is available.
+   * The host of the site.
+   */
+  siteHost?: string | null;
+  /**
+   * The URL of the site.
+   */
+  siteURL?: string | null;
+  /**
+   * This template is used for generating the title tag value on each page. Title refers to the actual document title which is suffixed with siteName.
+   */
+  titleTemplate?: string | null;
+  /**
+   * This description is used for generating website metadata.  This description is also used as fallback if no document description is available.
    */
   description?: string | null;
   image?: {
@@ -1974,12 +2005,12 @@ export interface FooterSettings {
 export interface PDFGeneratorSettings {
   id: string;
   /**
-   * The document name template for the documents collection.
+   * The document name template for the documents collection.  
    * The document contains all meta data, file references and the data which was used to generate the PDFs.
    */
   documentTitleTemplate?: string | null;
   /**
-   * The filename template for the generated PDF which must satisfy both locales and result in two different filenames.
+   * The filename template for the generated PDF which must satisfy both locales and result in two different filenames.  
    * To get an full overview of all available variables or filter functions use the info icon.
    */
   filenameTemplate?: string | null;
@@ -2017,13 +2048,16 @@ export interface SkillEntrySortable {
   caption?: string;
 }
 /**
+ * These user details are stored centrally and used throughout the website wherever the user's profile information is needed.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "settings-global-user".
  */
 export interface GlobalUserSettings {
   id: string;
   /**
-   * Upload your profile picture here. You can choose between a regular and a duotone version.
+   * Upload your profile picture here.<br />
+   * You can choose between a regular and a duotone version.
    */
   portrait?: {
     regular?: {
@@ -2129,9 +2163,10 @@ export interface SettingsSiteSelect<T extends boolean = true> {
  */
 export interface GeneralSettingsSelect<T extends boolean = true> {
   siteName?: T;
-  titleTemplate?: T;
-  siteUrl?: T;
   category?: T;
+  siteHost?: T;
+  siteURL?: T;
+  titleTemplate?: T;
   description?: T;
   image?: T;
   errorHero?: T;
@@ -2372,13 +2407,16 @@ export interface CollectionsWidget {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TaskGenerateDocumentThumbnail".
+ * via the `definition` "TaskGenerateDocumentThumbnails".
  */
-export interface TaskGenerateDocumentThumbnail {
+export interface TaskGenerateDocumentThumbnails {
   input: {
     documentId: string;
+    maxThumbnails?: number | null;
   };
-  output?: unknown;
+  output: {
+    thumbnailIDs?: string[] | null;
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2429,8 +2467,8 @@ export interface TaskCreateCollectionExport {
     name: string;
     batchSize?: number | null;
     collectionSlug:
-      | 'blog-posts'
-      | 'blog-tags'
+      | 'posts'
+      | 'topics'
       | 'pages'
       | 'users'
       | 'images'
@@ -2496,8 +2534,8 @@ export interface TaskSchedulePublish {
     locale?: string | null;
     doc?:
       | ({
-          relationTo: 'blog-posts';
-          value: string | BlogPost;
+          relationTo: 'posts';
+          value: string | BlogPostData;
         } | null)
       | ({
           relationTo: 'pages';
@@ -2517,6 +2555,7 @@ export interface WorkflowGenerateResumeDocument {
     documentTitleTemplate: string;
     filenameTemplate: string;
     sharedId: string;
+    maximumRetries: number;
   };
 }
 /**

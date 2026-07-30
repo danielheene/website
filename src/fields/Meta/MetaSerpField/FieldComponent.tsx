@@ -1,12 +1,11 @@
-import { get } from 'lodash-es'
-
 import type { UIFieldServerComponent, UIFieldServerProps } from 'payload'
 
+import { get } from 'lodash-es'
+
+import { fetchSiteSettings } from '@/lib/fetchers'
 import { generateContentURL } from '@/lib/generateContentURL'
-import { GlobalSlug } from '@/types/globals'
 
 import { FieldComponentClient } from './FieldComponent.client'
-import { getSiteSettings } from '@/lib/getSiteSettings'
 
 type FieldComponentProps = {
   slugPath: string
@@ -15,12 +14,13 @@ type FieldComponentProps = {
 export const FieldComponent: UIFieldServerComponent = async ({
   data,
   collectionSlug,
-  payload,
   clientField,
   path,
   slugPath,
 }: FieldComponentProps) => {
-  const { general: {siteName} } = await getSiteSettings()
+  const {
+    general: { siteName },
+  } = await fetchSiteSettings()
   const pageUrl = generateContentURL({
     collection: collectionSlug,
     slug: get(data, slugPath),

@@ -2,6 +2,7 @@ import { CollectionConfig } from 'payload'
 
 import { authenticated } from '@/access/authenticated'
 import { RichTextField } from '@/fields/RichText'
+import { generateResumeDocumentHook } from '@/lib/hooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 
@@ -16,14 +17,16 @@ export const ResumeProjects: CollectionConfig<CollectionSlug['ResumeProjects']> 
   },
   access: {
     read: authenticated,
-    admin: authenticated,
     update: authenticated,
     create: authenticated,
     delete: authenticated,
     unlock: authenticated,
-    readVersions: authenticated,
   },
-  hooks: {},
+  hooks: {
+    afterOperation: [
+      generateResumeDocumentHook,
+    ],
+  },
   admin: {
     useAsTitle: 'title',
     group: AdminGroup.Resume,

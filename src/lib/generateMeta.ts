@@ -1,19 +1,18 @@
 import type { Metadata } from 'next'
 
-import { getGlobalUserSettings } from '@/lib/getGlobalUserSettings'
-import { getSiteSettings } from '@/lib/getSiteSettings'
+import { fetchGlobalUserSettings, fetchSiteSettings } from '@/lib/fetchers'
 import type { ReducedToLocale } from '@/lib/i18n'
-import type { BlogPost, BlogTag, Page } from '@/types/payload'
+import type { BlogPostData, Page, Topic } from '@/types/payload'
 
 interface GenerateMetaArgs {
-  doc: ReducedToLocale<Page> | ReducedToLocale<BlogPost> | ReducedToLocale<BlogTag> | null
+  doc: ReducedToLocale<Page> | ReducedToLocale<BlogPostData> | ReducedToLocale<Topic> | null
 }
 
 export const generateMeta = async ({ doc }: GenerateMetaArgs): Promise<Metadata> => {
   const {
     general: { description, category },
-  } = await getSiteSettings()
-  const { name, url } = await getGlobalUserSettings()
+  } = await fetchSiteSettings()
+  const { name, url } = await fetchGlobalUserSettings()
 
   // const ogImage = getImageURL(doc?.meta?.image)
 

@@ -1,12 +1,14 @@
 'use server'
 
-import { unstable_cache } from 'next/cache'
+import { revalidateTag, unstable_cache } from 'next/cache'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
+import { Locale, reduceDataToLocale } from '@/lib/i18n'
+import { resolveRelations } from '@/lib/resolveRelation'
 import { CollectionSlug } from '@/types/collections'
 
-export const fetchResumeProjects = async () => {
+export const fetchResumeProjects = async (locale: Locale = 'en') => {
   const payload = await getPayload({
     config,
   })
@@ -18,7 +20,7 @@ export const fetchResumeProjects = async () => {
     limit: 0,
   })
 
-  return docs
+  return await resolveRelations(reduceDataToLocale(docs, locale))
 }
 
 export const fetchResumeProjectsCached = unstable_cache(fetchResumeProjects, [], {
@@ -26,3 +28,7 @@ export const fetchResumeProjectsCached = unstable_cache(fetchResumeProjects, [],
     CollectionSlug.ResumeProjects,
   ],
 })
+
+export const revalidateResumeProjects = async (): Promise<void> => {
+  revalidateTag(CollectionSlug.ResumeProjects, 'max')
+}

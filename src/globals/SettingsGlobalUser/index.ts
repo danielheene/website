@@ -1,4 +1,3 @@
-import { revalidateTag } from 'next/cache'
 import type { GlobalConfig } from 'payload'
 
 import dedent from 'dedent'
@@ -7,11 +6,15 @@ import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { AddressField } from '@/fields/Address'
 import { IconField } from '@/fields/Icon'
+import { SectionGroupField } from '@/fields/SectionGroup'
+import { generateResumeDocumentHook } from '@/lib/hooks/global'
 import { translate } from '@/lib/i18n'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 import { GlobalSlug } from '@/types/globals'
 import { LANGUAGE_CODE, LANGUAGE_PROFICIENCY } from '@/types/select-options'
+
+import { revalidateDocument } from './hooks/revalidateDocument'
 
 export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> = {
   slug: GlobalSlug.GlobalUserSettings,
@@ -22,18 +25,14 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
   },
   hooks: {
     afterChange: [
-      async ({ doc, context }) => {
-        if (!context.skipRevalidate) {
-          revalidateTag(GlobalSlug.GlobalUserSettings, {
-            expire: 0,
-          })
-        }
-        return doc
-      },
+      revalidateDocument,
+      generateResumeDocumentHook,
     ],
   },
   admin: {
     group: AdminGroup.Settings,
+    description:
+      "These user details are stored centrally and used throughout the website wherever the user's profile information is needed.",
   },
   typescript: {
     interface: 'GlobalUserSettings',
@@ -45,18 +44,13 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
         {
           label: 'Personal',
           fields: [
-            {
-              type: 'group',
+            SectionGroupField({
               name: 'portrait',
               label: 'Profile Picture',
-              admin: {
-                description: dedent`
-                  Upload your profile picture here. You can choose between a regular and a duotone version.
-                `,
-                components: {
-                  Description: '@/components/AdminPanel#MarkdownDescription',
-                },
-              },
+              description: `
+                Upload your profile picture here.<br />
+                You can choose between a regular and a duotone version.
+               `,
               fields: [
                 {
                   type: 'row',
@@ -86,7 +80,7 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                   ],
                 },
               ],
-            },
+            }),
             {
               type: 'group',
               label: 'Personal Information',

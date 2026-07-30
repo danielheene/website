@@ -37,7 +37,6 @@ export const ResumeFiles: CollectionConfig<CollectionSlug['ResumeFiles']> = {
   },
   access: {
     read: anyone,
-    admin: authenticated,
     update: authenticated,
     create: authenticated,
     delete: authenticated,

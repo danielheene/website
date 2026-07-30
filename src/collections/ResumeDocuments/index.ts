@@ -1,12 +1,16 @@
-import { CollectionConfig } from 'payload'
+import { CollectionConfig, JSONField } from 'payload'
 
 import dedent from 'dedent'
+import { cn } from 'tailwind-variants'
 
 import { authenticated } from '@/access/authenticated'
+import { forbidden } from '@/access/forbidden'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
+
+import { storeLatestResumeDocumentSlug } from './hooks/storeLatestResumeDocumentSlug'
 
 const adminDefaults = {
   allowCreate: false,
@@ -19,6 +23,23 @@ const adminDefaults = {
   disableListColumn: true,
 }
 
+const codeDefaults = {
+  editorOptions: {
+    readOnly: true,
+    fontFamily: 'var(--font-mono)',
+    contextmenu: false,
+  } as JSONField['admin']['editorOptions'],
+} as JSONField['admin']
+
+const uploadDefaults = {
+  className: cn([
+    '[&_.pill]:hidden',
+    '[&.read-only_.dropzone]:hidden',
+    String.raw`[&.read-only_.upload.upload--has-many\_\_drag]:hidden`,
+    String.raw`[&.read-only_.upload-relationship-details\_\_details]:mr-0`,
+  ]),
+}
+
 export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']> = {
   slug: CollectionSlug.ResumeDocuments,
   labels: {
@@ -28,17 +49,21 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
   typescript: {
     interface: 'ResumeDocumentData',
   },
+  disableDuplicate: true,
+  disableBulkDelete: true,
+  disableBulkEdit: true,
+  versions: false,
+  timestamps: false,
   access: {
     read: authenticated,
-    admin: authenticated,
-    update: authenticated,
-    create: authenticated,
-    delete: authenticated,
-    unlock: authenticated,
-    readVersions: authenticated,
+    update: forbidden,
+    create: forbidden,
+    delete: forbidden,
   },
   hooks: {
-    afterChange: [],
+    afterChange: [
+      storeLatestResumeDocumentSlug,
+    ],
   },
   admin: {
     useAsTitle: 'title',
@@ -49,22 +74,32 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
       'createdAt',
     ],
     disableCopyToLocale: true,
+    pagination: {
+      defaultLimit: 100,
+      limits: [
+        100,
+      ],
+    },
   },
   defaultSort: [
-    'createdAt',
+    '-createdAt',
   ],
   fields: [
     TitleField({
-      listViewThumbnailPath: 'thumbnails_en.0',
+      listViewThumbnailPath: 'thumbnails_en.0.value',
     }),
     SlugField({
       fieldToUse: 'title',
     }),
     {
-      type: 'text',
+      type: 'date',
       name: 'createdAt',
       label: 'Creation Date',
+
       admin: {
+        date: {
+          displayFormat: 'yyyy-MM-dd - HH:mm:ss',
+        },
         hidden: false,
         position: 'sidebar',
       },
@@ -82,6 +117,7 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
       type: 'text',
       name: 'checksum_en',
       label: 'Document Checksum [EN]',
+      index: true,
       admin: {
         ...adminDefaults,
         position: 'sidebar',
@@ -91,6 +127,7 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
       type: 'text',
       name: 'checksum_de',
       label: 'Document Checksum [DE]',
+      index: true,
       admin: {
         ...adminDefaults,
         position: 'sidebar',
@@ -111,44 +148,28 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
       },
       fields: [
         {
-          type: 'tabs',
-          admin: {
-            className: 'tabs-field--vertical',
-          },
-          tabs: [
-            {
-              label: 'English',
-              fields: [
-                {
-                  type: 'upload',
-                  name: 'document_en',
-                  label: false,
-                  relationTo: [
-                    CollectionSlug.ResumeFiles,
-                  ],
-                  admin: {
-                    ...adminDefaults,
-                  },
-                },
-              ],
-            },
-            {
-              label: 'German',
-              fields: [
-                {
-                  type: 'upload',
-                  name: 'document_de',
-                  label: false,
-                  relationTo: [
-                    CollectionSlug.ResumeFiles,
-                  ],
-                  admin: {
-                    ...adminDefaults,
-                  },
-                },
-              ],
-            },
+          type: 'upload',
+          name: 'document_en',
+          label: 'EN',
+          relationTo: [
+            CollectionSlug.MediaDocuments,
           ],
+          admin: {
+            ...adminDefaults,
+            ...uploadDefaults,
+          },
+        },
+        {
+          type: 'upload',
+          name: 'document_de',
+          label: 'DE',
+          relationTo: [
+            CollectionSlug.MediaDocuments,
+          ],
+          admin: {
+            ...adminDefaults,
+            ...uploadDefaults,
+          },
         },
       ],
     },
@@ -167,44 +188,35 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
       },
       fields: [
         {
-          type: 'tabs',
-          admin: {
-            className: 'tabs-field--vertical',
-          },
-          tabs: [
+          type: 'row',
+          fields: [
             {
-              label: 'English',
-              fields: [
-                {
-                  type: 'upload',
-                  name: 'thumbnails_en',
-                  label: false,
-                  relationTo: [
-                    CollectionSlug.ResumeFiles,
-                  ],
-                  hasMany: true,
-                  admin: {
-                    ...adminDefaults,
-                  },
-                },
+              type: 'upload',
+              name: 'thumbnails_en',
+              label: 'EN',
+              relationTo: [
+                CollectionSlug.MediaImages,
               ],
+              hasMany: true,
+              admin: {
+                ...adminDefaults,
+                ...uploadDefaults,
+                width: '50%',
+              },
             },
             {
-              label: 'German',
-              fields: [
-                {
-                  type: 'upload',
-                  name: 'thumbnails_de',
-                  label: false,
-                  relationTo: [
-                    CollectionSlug.ResumeFiles,
-                  ],
-                  hasMany: true,
-                  admin: {
-                    ...adminDefaults,
-                  },
-                },
+              type: 'upload',
+              name: 'thumbnails_de',
+              label: 'DE',
+              relationTo: [
+                CollectionSlug.MediaImages,
               ],
+              hasMany: true,
+              admin: {
+                ...adminDefaults,
+                ...uploadDefaults,
+                width: '50%',
+              },
             },
           ],
         },
@@ -226,19 +238,17 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
       fields: [
         {
           type: 'tabs',
-          admin: {
-            className: 'tabs-field--vertical',
-          },
           tabs: [
             {
               label: 'English',
               fields: [
                 {
-                  type: 'code',
+                  type: 'json',
                   name: 'data_en',
                   label: false,
                   admin: {
                     ...adminDefaults,
+                    ...codeDefaults,
                   },
                 },
               ],
@@ -247,11 +257,12 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
               label: 'German',
               fields: [
                 {
-                  type: 'code',
+                  type: 'json',
                   name: 'data_de',
                   label: false,
                   admin: {
                     ...adminDefaults,
+                    ...codeDefaults,
                   },
                 },
               ],

@@ -25,6 +25,7 @@ export type AdminNavigationTypeValue = AdminNavigationType[AdminNavigationTypeKe
 export type AdminNavigationGroup = {
   group: AdminGroupValue
   label: false | string
+  className?: string
   entries: AdminNavigationEntry[]
 }
 
@@ -148,6 +149,7 @@ export const AdminPanelNavigation: AdminNavigationGroup[] = [
   {
     group: AdminGroup.Settings,
     label: 'Settings',
+    className: 'mt-auto',
     entries: [
       {
         type: AdminNavigationType.Global,
@@ -159,13 +161,19 @@ export const AdminPanelNavigation: AdminNavigationGroup[] = [
         type: AdminNavigationType.Global,
         slug: GlobalSlug.GlobalUserSettings,
         label: 'Global User',
-        icon: 'material-symbols:settings-account-box-sharp',
+        icon: 'material-symbols:manage-accounts',
       },
       {
         type: AdminNavigationType.Global,
         slug: GlobalSlug.PDFGeneratorSettings,
         label: 'PDF Generator',
-        icon: 'ri:file-pdf-2-line',
+        icon: 'ri:file-pdf-line',
+      },
+      {
+        type: AdminNavigationType.Collection,
+        slug: CollectionSlug.PayloadJobs,
+        label: 'Payload Jobs',
+        icon: 'ri:file-pdf-line',
       },
       {
         type: AdminNavigationType.Collection,

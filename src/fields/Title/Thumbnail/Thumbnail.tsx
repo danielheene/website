@@ -28,7 +28,6 @@ export const Thumbnail = ({ thumbnailURL }: ThumbnailProps): JSX.Element => {
         'h-[40px]',
         'w-[40px]',
         'rounded-xs',
-        'bg-background',
         'overflow-hidden',
       ])}
     >

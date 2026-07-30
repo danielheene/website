@@ -1,6 +1,7 @@
 'use client'
 
 import { useTheme } from 'next-themes'
+
 import { Highlight, themes } from 'prism-react-renderer'
 
 import { CopyButton } from './CopyButton'
@@ -21,11 +22,22 @@ export const CodeBlockRendererClient = ({ code, language = '' }: CodeBlockRender
       {({ getLineProps, getTokenProps, tokens }) => (
         <pre className="bg-white dark:bg-black p-4 border text-sm border-border rounded overflow-x-auto">
           {tokens.map((line, i) => (
-            <div key={i} {...getLineProps({ className: 'table-row', line })}>
+            <div
+              key={i}
+              {...getLineProps({
+                className: 'table-row',
+                line,
+              })}
+            >
               <span className="table-cell select-none text-right text-foreground/50">{i + 1}</span>
               <span className="table-cell pl-4">
                 {line.map((token, key) => (
-                  <span key={key} {...getTokenProps({ token })} />
+                  <span
+                    key={key}
+                    {...getTokenProps({
+                      token,
+                    })}
+                  />
                 ))}
               </span>
             </div>

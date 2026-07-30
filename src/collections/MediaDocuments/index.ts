@@ -2,11 +2,12 @@ import type { CollectionConfig } from 'payload'
 
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
+import { MediaField } from '@/fields/Media'
 import { generateChecksum } from '@/lib/hooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 
-import { generateThumbnail } from './hooks/generateThumbnail'
+import { generateThumbnails } from './hooks/generateThumbnails'
 
 export const MediaDocuments: CollectionConfig<CollectionSlug['MediaDocuments']> = {
   slug: CollectionSlug.MediaDocuments,
@@ -22,7 +23,7 @@ export const MediaDocuments: CollectionConfig<CollectionSlug['MediaDocuments']> 
       generateChecksum,
     ],
     afterChange: [
-      generateThumbnail,
+      generateThumbnails,
     ],
   },
   admin: {
@@ -53,8 +54,11 @@ export const MediaDocuments: CollectionConfig<CollectionSlug['MediaDocuments']> 
       'application/pdf',
     ],
     adminThumbnail: ({ doc }) => {
-      const thumbnailFilename = String(doc.filename).replace(/(\.pdf)$/, '-thumbnail.png')
-      return `/api/${CollectionSlug['MediaImages']}/file/${thumbnailFilename}`
+      if (Array.isArray(doc.thumbnails) && doc.thumbnails.length > 0) {
+        const thumbnailFilename = String(doc.filename).replace(/\.pdf$/, '-1-thumbnail.png')
+        return `/api/${CollectionSlug.MediaImages}/file/${thumbnailFilename}`
+      }
+      // return `/api/${CollectionSlug['MediaImages']}/file/${thumbnailFilename}`
     },
   },
 
@@ -123,19 +127,31 @@ export const MediaDocuments: CollectionConfig<CollectionSlug['MediaDocuments']> 
         disableListFilter: true,
       },
     },
-    {
-      name: 'thumbnail',
-      type: 'upload',
-      label: 'Thumbnail',
+    MediaField({
+      name: 'thumbnails',
       relationTo: [
-        CollectionSlug['MediaImages'],
+        CollectionSlug.MediaImages,
       ],
-      admin: {
-        disableGroupBy: true,
-        disableListColumn: true,
-        disableListFilter: true,
-      },
-    },
+      hasMany: true,
+      readOnly: true,
+      allowCreate: false,
+    }),
+    // {
+    //   name: 'thumbnails',
+    //   type: 'upload',
+    //   label: 'Thumbnails',
+    //   relationTo: [
+    //     CollectionSlug.MediaImages,
+    //   ],
+    //   hasMany: true,
+    //   admin: {
+    //     readOnly: true,
+    //     allowCreate: false,
+    //     disableGroupBy: true,
+    //     disableListColumn: true,
+    //     disableListFilter: true,
+    //   },
+    // },
     {
       name: 'thumbnailURL',
       type: 'text',

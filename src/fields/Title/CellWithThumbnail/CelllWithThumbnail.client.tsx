@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import type { DefaultCellComponentProps, TextFieldClient } from 'payload'
+import type { CollectionSlug, DefaultCellComponentProps, TextFieldClient } from 'payload'
 import { useListDrawerContext } from '@payloadcms/ui'
 
 import { cn } from '@/lib/cn'
@@ -11,16 +11,17 @@ import { Thumbnail } from '../Thumbnail'
 type CellWithThumbnailClientProps = {
   thumbnailURL: string
   titleValue: string
-} & Omit<
-  DefaultCellComponentProps<TextFieldClient>,
-  'cellData' | 'columnIndex' | 'onClick' | 'field'
->
+  collectionSlug: CollectionSlug
+  doc: Record<string, unknown>
+  docID: string
+}
 
 export const CellWithThumbnailClient = ({
   thumbnailURL,
   titleValue,
   collectionSlug,
-  rowData,
+  docID,
+  doc,
 }: CellWithThumbnailClientProps) => {
   const { onSelect, isInDrawer, selectedOption } = useListDrawerContext()
 
@@ -29,7 +30,7 @@ export const CellWithThumbnailClient = ({
     'flex items-center gap-4',
     'border-0 bg-transparent',
     'cursor-pointer',
-    rowData.highlighted && 'font-medium',
+    doc.highlighted && 'font-medium',
   ])
 
   const innerContent = (
@@ -47,8 +48,8 @@ export const CellWithThumbnailClient = ({
           onClick={() =>
             onSelect({
               collectionSlug,
-              doc: rowData,
-              docID: rowData.id,
+              doc,
+              docID,
             })
           }
           className={cn([
@@ -59,7 +60,7 @@ export const CellWithThumbnailClient = ({
         </button>
       ) : (
         <Link
-          href={`/admin/collections/${collectionSlug}/${rowData.id}`}
+          href={`/admin/collections/${collectionSlug}/${docID}`}
           className={cn([
             sharedStyles,
           ])}

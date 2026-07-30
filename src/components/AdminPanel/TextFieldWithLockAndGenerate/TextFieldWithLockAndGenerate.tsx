@@ -1,8 +1,8 @@
 'use client'
 
-import type { TextFieldClientProps } from 'payload'
 import type React from 'react'
 import { useCallback, useState } from 'react'
+import type { TextFieldClientProps } from 'payload'
 
 import './TextFieldWithLockAndGenerate.styles.css'
 

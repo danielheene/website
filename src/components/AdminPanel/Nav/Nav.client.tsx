@@ -33,8 +33,8 @@ export const NavClient = ({ navigationConfig, user }: NavClientProps) => {
         <NavHeader />
 
         <nav className="nav__scroller" ref={navRef}>
-          {navigationConfig.map(({ label, entries }, index) => (
-            <NavGroup key={index} label={label} entries={entries} />
+          {navigationConfig.map((navGroup, index) => (
+            <NavGroup key={index} {...navGroup} />
           ))}
         </nav>
 

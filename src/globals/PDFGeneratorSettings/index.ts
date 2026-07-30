@@ -5,6 +5,7 @@ import dedent from 'dedent'
 import { authenticated } from '@/access/authenticated'
 import { DurationField } from '@/fields/Duration'
 import { TemplateField } from '@/fields/Template'
+import { generateResumeDocumentHook } from '@/lib/hooks/global'
 import { translate } from '@/lib/i18n'
 import { nanoid } from '@/lib/nanoid'
 import { AdminGroup } from '@/types/admin-panel'
@@ -12,8 +13,8 @@ import { GlobalSlug } from '@/types/globals'
 import { SkillSorting, SkillType, SkillTypeSortable } from '@/types/payload'
 import { SKILL_TYPE } from '@/types/select-options'
 
+import { revalidateDocument } from './hooks/revalidateDocument'
 import { sanitizeSkillSorting } from './hooks/sanitizeSkillSorting'
-import { updateCachedData } from './hooks/updateCachedData'
 
 const sharedId = nanoid(32)
 
@@ -37,7 +38,8 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
   },
   hooks: {
     afterChange: [
-      updateCachedData,
+      revalidateDocument,
+      generateResumeDocumentHook,
     ],
   },
   admin: {
@@ -64,7 +66,7 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
           name: 'documentTitleTemplate',
           label: 'Document Title Template',
           description: dedent`
-            The document name template for the documents collection.
+            The document name template for the documents collection.${'  '}
             The document contains all meta data, file references and the data which was used to generate the PDFs.
           `,
           data: {
@@ -86,7 +88,7 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
           name: 'filenameTemplate',
           label: 'Filename Template',
           description: dedent`
-            The filename template for the generated PDF which must satisfy both locales and result in two different filenames.
+            The filename template for the generated PDF which must satisfy both locales and result in two different filenames.${'  '}
             To get an full overview of all available variables or filter functions use the info icon.
           `,
           data: {

@@ -9,7 +9,7 @@ import { ClassValue, cn } from '@/lib/cn'
 import { SkillEntrySortable, SkillSorting, SkillTypeSortable } from '@/types/payload'
 
 export const SkillSortingField: JSONFieldClientComponent = ({ path }: JSONFieldClientProps) => {
-  const { value, setValue } = useField<SkillSorting>({
+  const { value, setValue, formProcessing, formInitializing } = useField<SkillSorting>({
     path,
   })
 
@@ -28,14 +28,22 @@ export const SkillSortingField: JSONFieldClientComponent = ({ path }: JSONFieldC
     <div className={cn('grid grid-cols-2 gap-2 -mx-2')}>
       <Sortable<SkillTypeSortable>
         entries={value?.skillTypeSortable || []}
-        handleEntryMove={handleEntryMove('skillTypeSortable')}
+        handleEntryMove={() => {
+          if (!formProcessing && !formInitializing) {
+            handleEntryMove('skillTypeSortable')
+          }
+        }}
         selectedEntry={isSelected}
         setSelectedEntry={setIsSelected}
         className="p-2 w-full"
       />
       <Sortable<SkillEntrySortable>
         entries={value?.[isSelected?.id] || []}
-        handleEntryMove={handleEntryMove(isSelected?.id)}
+        handleEntryMove={() => {
+          if (!formProcessing && !formInitializing) {
+            handleEntryMove(isSelected?.id)
+          }
+        }}
         className="p-2 w-full"
       />
     </div>

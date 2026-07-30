@@ -2,12 +2,12 @@
 
 import parsePhoneNumber from 'libphonenumber-js'
 
-import { getGlobalUserSettings } from '@/lib/getGlobalUserSettings'
+import { fetchGlobalUserSettings } from '@/lib/fetchers'
 import type { Locale } from '@/lib/i18n'
 import { DocumentHeader } from '@/pdf/types'
 
 export const buildDocumentHeader = async (locale: Locale): Promise<DocumentHeader> => {
-  const { portrait, address, telephone, email, url, sameAs } = await getGlobalUserSettings(locale)
+  const { portrait, address, telephone, email, url, sameAs } = await fetchGlobalUserSettings(locale)
 
   const phone = parsePhoneNumber(telephone)
   const github = sameAs?.find(({ url }) => url.includes('github'))

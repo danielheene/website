@@ -16,6 +16,7 @@ interface FieldComponentClientProps extends UIFieldClientProps {
 export const FieldComponentClient = ({
   initialValue,
   path,
+  field,
 }: FieldComponentClientProps): JSX.Element => {
   const id = useId()
 
@@ -199,7 +200,8 @@ export const FieldComponentClient = ({
     <div
       className={cn([
         'flex flex-col justify-center items-center',
-        'overflow-hidden aspect-3-2',
+        'overflow-hidden aspect-3-2 relative w-full',
+        'bg-card border border-border',
       ])}
     >
       <label

@@ -3,13 +3,13 @@ import Image from 'next/image'
 import { Button } from '@/components/Button'
 import { DuoTone } from '@/components/DuoTone'
 import { Icon } from '@/components/Icon'
-import { getSiteSettings } from '@/lib/getSiteSettings'
+import { fetchSiteSettingsCached } from '@/lib/fetchers'
 import { isMediaImageReference, isMediaVideoReference } from '@/lib/typeGuards'
 
 export default async function NotFound() {
   const {
     general: { errorHero },
-  } = await getSiteSettings()
+  } = await fetchSiteSettingsCached()
 
   return (
     <div className="relative min-h-full py-32 flex flex-col items-center justify-center">

@@ -34,7 +34,7 @@ export const ResumeExperienceBlockClientRenderer = ({
       >
         <div className={cn('text-center lg:text-left lg:sticky lg:top-12 flex flex-col gap-12')}>
           {title && <Headline variant="section">{title}</Headline>}
-          {caption && <RichText data={caption} enableGutter={false} />}
+          {caption && <RichText className="text-inherit" data={caption} enableGutter={false} />}
           {skillTags && <SkillChart skillTags={skillTags} className="mt-24 md:mt-48" />}
         </div>
       </div>

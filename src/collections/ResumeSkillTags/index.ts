@@ -2,6 +2,7 @@ import { CollectionConfig } from 'payload'
 
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
+import { generateResumeDocumentHook } from '@/lib/hooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 
@@ -13,6 +14,11 @@ export const ResumeSkillTags: CollectionConfig<CollectionSlug['ResumeSkillTags']
   },
   typescript: {
     interface: 'ResumeSkillTagData',
+  },
+  hooks: {
+    afterOperation: [
+      generateResumeDocumentHook,
+    ],
   },
   orderable: true,
   admin: {

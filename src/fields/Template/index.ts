@@ -1,7 +1,13 @@
 import { TextField } from 'payload'
 
 import { Locale } from '@/lib/i18n'
-import { TemplateFieldAnnotation, TemplateFieldData, TemplateFieldDataFunction, TemplateFieldAnnotationFunction } from './types'
+
+import {
+  TemplateFieldAnnotation,
+  TemplateFieldAnnotationFunction,
+  TemplateFieldData,
+  TemplateFieldDataFunction,
+} from './types'
 
 type TemplateFieldProps = {
   name: string

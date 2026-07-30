@@ -1,9 +1,7 @@
 'use client'
 
-import isNumber from 'lodash-es/isNumber'
-import prettyMs from 'pretty-ms'
-import timestring from 'timestring'
-
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { NumberFieldClientComponent, NumberFieldClientProps } from 'payload'
 import { getTranslation } from '@payloadcms/translations'
 import {
   fieldBaseClass,
@@ -17,8 +15,10 @@ import { FieldError } from '@payloadcms/ui/fields/FieldError'
 import { FieldLabel } from '@payloadcms/ui/fields/FieldLabel'
 import { useThrottledValue } from '@payloadcms/ui/hooks/useThrottledValue'
 import { mergeFieldStyles } from '@payloadcms/ui/shared'
-import { NumberFieldClientComponent, NumberFieldClientProps } from 'payload'
-import { useEffect, useMemo, useRef, useState } from 'react'
+
+import isNumber from 'lodash-es/isNumber'
+import prettyMs from 'pretty-ms'
+import timestring from 'timestring'
 
 import { cn } from '@/lib/cn'
 import { extractErrorMessage } from '@/lib/extractErrorMessage'
@@ -114,7 +114,9 @@ export const FieldComponent: NumberFieldClientComponent = ({
           disabled={readOnly || formProcessing || formInitializing}
           id={`field-${path?.replace(/\./g, '__')}`}
           name={path}
-          onChange={(event) => setLocalValue(event.target.value)}
+          onChange={(event) => {
+            if (!formProcessing && !formInitializing && !readOnly) setLocalValue(event.target.value)
+          }}
           placeholder={placeholder}
           ref={inputRef}
           type="text"

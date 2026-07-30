@@ -1,13 +1,12 @@
 'use server'
 
-import { fetchPDFGeneratorSettings } from '@/lib/fetchPDFGeneratorSettings'
-import { getSkillsCollectionData } from '@/lib/getSkillsCollectionData'
+import { fetchPDFGeneratorSettings, fetchResumeSkills } from '@/lib/fetchers'
 import { type Locale, translate } from '@/lib/i18n'
 import { DocumentSectionType, SkillSection } from '@/pdf/types'
 import { SkillTypeSortable } from '@/types/payload'
 
 export const buildSkillSections = async (locale: Locale): Promise<SkillSection[]> => {
-  const skills = await getSkillsCollectionData(locale)
+  const skills = await fetchResumeSkills(locale)
   const { skillSorting } = await fetchPDFGeneratorSettings(locale)
 
   return skillSorting.skillTypeSortable.map((skillType: SkillTypeSortable) => ({

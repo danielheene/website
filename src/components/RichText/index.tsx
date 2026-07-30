@@ -20,7 +20,6 @@ import {
 // import { BannerBlock } from '@/blocks/Banner/Component'
 // import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { cn } from '@/lib/cn'
-import { generateContentPath } from '@/lib/generateContentPath'
 import { generateContentURL } from '@/lib/generateContentURL'
 import type { BlockData } from '@/types/blocks'
 

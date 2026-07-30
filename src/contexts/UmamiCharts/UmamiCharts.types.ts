@@ -1,4 +1,4 @@
-import { Interval } from '@/lib/dateTime'
+import { Interval } from '@/lib/date'
 import type {
   UmamiEvent,
   UmamiPageViews,

@@ -1,5 +1,4 @@
 import type React from 'react'
-import Link from 'next/link'
 
 import { Button, ButtonProps } from '@/components/Button'
 import { Icon } from '@/components/Icon'
@@ -56,17 +55,18 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
       className={cn(className)}
       size={sizeFromProps}
       variant={variant}
-      type='link'
+      type="link"
       {...(icon && iconOnly
         ? {
             'aria-label': label,
           }
         : {})}
-      href={href || url} {...newTabProps}
+      href={href || url}
+      {...newTabProps}
     >
-        {icon && <Icon name={icon} />}
-        {((icon && !iconOnly) || !icon) && label && <span>{label}</span>}
-        {((icon && !iconOnly) || !icon) && children && children}
+      {icon && <Icon name={icon} />}
+      {((icon && !iconOnly) || !icon) && label && <span>{label}</span>}
+      {((icon && !iconOnly) || !icon) && children && children}
     </Button>
   )
 }

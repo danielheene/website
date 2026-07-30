@@ -11,6 +11,7 @@
 @import "./theme/_radii.css" layer(theme);
 @import "./theme/_sizes.css" layer(theme);
 @import "./theme/_shadows.css" layer(theme);
+@import "./theme/_text.css" layer(theme);
 @import "./theme/_text-shadows.css" layer(theme);
 
 @plugin "@tailwindcss/typography";
@@ -19,11 +20,7 @@
 
 
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
+  * {
     @apply border-border outline-ring/50;
   }
 
@@ -36,16 +33,14 @@
     @apply bg-background text-foreground;
   }
 
-  a {
-    @apply ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
-  }
-}
-
-@layer base {
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
+}
+
+@layer base {
+
 }
 
 @utility container {

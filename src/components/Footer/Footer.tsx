@@ -7,8 +7,7 @@ import { FooterNavGroups } from '@/components/Footer/FooterNavGroups'
 import { Logo } from '@/components/Logo'
 import { ServiceStatus } from '@/components/ServiceStatus'
 import { cn } from '@/lib/cn'
-import { getGlobalUserSettings } from '@/lib/getGlobalUserSettings'
-import { getSiteSettings } from '@/lib/getSiteSettings'
+import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fetchers'
 import type { LinkFieldData } from '@/types/payload'
 
 import { FooterSocialLinks } from './FooterSocialLinks'
@@ -17,8 +16,8 @@ import { FooterThemeSwitcher } from './FooterThemeSwitcher'
 export const Footer = async () => {
   const {
     footer: { column1, column2, column3, legalPages },
-  } = await getSiteSettings()
-  const { telephone, email, sameAs } = await getGlobalUserSettings()
+  } = await fetchSiteSettingsCached()
+  const { telephone, email, sameAs } = await fetchGlobalUserSettingsCached()
 
   const socialLinks = []
 

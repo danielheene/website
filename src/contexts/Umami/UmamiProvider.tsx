@@ -46,21 +46,26 @@ export const UmamiProvider = ({
   return (
     <UmamiContext.Provider value={context}>
       {children}
-      {/*{renderScript && (*/}
-      {/*  <Script*/}
-      {/*    src={src}*/}
-      {/*    strategy="afterInteractive"*/}
-      {/*    data-website-id={websiteId}*/}
-      {/*    data-auto-track={autoTrack}*/}
-      {/*    data-do-not-track={doNotTrack}*/}
-      {/*    data-tag={tag}*/}
-      {/*    data-domains={domains}*/}
-      {/*    data-exclude-hash={excludeHash}*/}
-      {/*    data-exclude-search={excludeSearch}*/}
-      {/*    data-host-url={hostUrl}*/}
-      {/*    onLoad={() => setContext({ track: window.umami.track, identify: window.umami.identify })}*/}
-      {/*  />*/}
-      {/*)}*/}
+      {renderScript && (
+        <Script
+          src={src}
+          strategy="afterInteractive"
+          data-website-id={websiteId}
+          data-auto-track={autoTrack}
+          data-do-not-track={doNotTrack}
+          data-tag={tag}
+          data-domains={domains}
+          data-exclude-hash={excludeHash}
+          data-exclude-search={excludeSearch}
+          data-host-url={hostUrl}
+          onLoad={() =>
+            setContext({
+              track: window.umami.track,
+              identify: window.umami.identify,
+            })
+          }
+        />
+      )}
     </UmamiContext.Provider>
   )
 }

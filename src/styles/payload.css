@@ -1,4 +1,4 @@
-@layer fonts, theme, base, components, utilities, payload-default;
+@layer fonts, theme, base, components, utilities, payload-default, overrides;
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities);
 
@@ -11,14 +11,11 @@
 @import "./theme/_shadows.css" layer(theme);
 @import "./theme/_text-shadows.css" layer(theme);
 
-@import "./payload/_app-header.css" layer(payload-default);
+@import "./payload/_app-header.css" layer(overrides);
 @import "./payload/_fields.css" layer(payload-default);
 @import "./payload/_buttons.css" layer(payload-default);
 @import "./payload/_richtext-lexical.css" layer(payload-default);
 @import "./payload/_list-header.css" layer(payload-default);
-@import "./payload/_resume.customers.css" layer(payload-default);
-@import "./payload/_resume.experience.css" layer(payload-default);
-@import "./payload/_resume.projects.css" layer(payload-default);
 
 @plugin "@tailwindcss/typography";
 
@@ -99,11 +96,14 @@
   --color-elevation-1000: var(--theme-elevation-1000);
 }
 
-@layer payload-default {
+@layer overrides {
   :root {
     --base-body-size: 16;
     --font-body: var(--font-pp-frama);
     --font-mono: var(--font-pp-supply-mono);
+    --style-radius-s: var(--radius-sm);
+    --style-radius-m: var(--radius-md);
+    --style-radius-l: var(--radius-lg);
   }
 
   html {
@@ -116,6 +116,11 @@
   body {
     background-color: var(--theme-bg);
     color: var(--theme-text);
+  }
+
+  .cell-createdAt span,
+  .cell-slug span {
+    @apply font-mono;
   }
 
   @media (min-width: 768px) {

@@ -66,10 +66,13 @@ export const FieldComponentClient = ({
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement, HTMLInputElement>) => {
       event.preventDefault()
-      setTemplate(event.target.value)
+      if (template !== event.target.value) {
+        setTemplate(event.target.value)
+      }
     },
     [
       setTemplate,
+      template,
     ],
   )
 
@@ -242,9 +245,11 @@ export const FieldComponentClient = ({
         <input
           className="form-input font-mono"
           disabled={readOnly || formProcessing || formInitializing}
-          id={`field-$path?.replace(/./g, '__')`}
+          id={`field-${path?.replace(/\./g, '__')}`}
           name={path}
-          onChange={handleChange}
+          onChange={(event) => {
+            if (!formInitializing && !formProcessing && !readOnly) handleChange(event)
+          }}
           placeholder={placeholder}
           ref={inputRef}
           type="text"

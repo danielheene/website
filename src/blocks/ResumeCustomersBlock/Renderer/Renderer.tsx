@@ -16,13 +16,11 @@ export const ResumeCustomersBlockRenderer = async ({
   const logos = await fetchResumeCustomersCached()
 
   return (
-    <Suspense>
-      <ResumeCustomersBlockClientRenderer
-        title={title}
-        caption={caption}
-        logos={logos}
-        blockType={blockType}
-      />
-    </Suspense>
+    <ResumeCustomersBlockClientRenderer
+      title={title}
+      caption={caption}
+      logos={logos}
+      blockType={blockType}
+    />
   )
 }

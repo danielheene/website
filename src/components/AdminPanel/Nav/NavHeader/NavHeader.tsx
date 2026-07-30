@@ -14,8 +14,9 @@ export const NavHeader = () => {
   return (
     <header className="nav-header">
       <Logo
+        color="white"
         className="nav-header__logo"
-        variant={!isMobile && !navOpen ? 'square' : 'inline'}
+        variant={!isMobile && !navOpen ? 'initials' : 'inline'}
       />
     </header>
   )

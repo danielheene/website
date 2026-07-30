@@ -2,10 +2,12 @@
 
 @layer components {
   .nav-header {
-    @apply relative h-(--app-header-height) flex items-start justify-center;
+    @apply relative h-(--app-header-height);
+    @apply flex items-center justify-center;
+    @apply shrink-0 grow-0;
   }
 
   .nav-header__logo {
-    @apply h-10 w-auto;
+    @apply h-auto w-9/12;
   }
 }

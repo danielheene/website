@@ -3,12 +3,12 @@ import Link from 'next/link'
 import { CMSLink } from '@/components/Link'
 import { Logo } from '@/components/Logo'
 import { cn } from '@/lib/cn'
-import { getSiteSettings } from '@/lib/getSiteSettings'
+import { fetchSiteSettingsCached } from '@/lib/fetchers'
 
 export const Header = async () => {
   const {
     header: { mainNavigation },
-  } = await getSiteSettings()
+  } = await fetchSiteSettingsCached()
 
   const hasNavEntries = Array.isArray(mainNavigation.entries) && mainNavigation.entries.length > 0
 

@@ -4,7 +4,6 @@ import { draftMode, headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import config from '@payload-config'
 import { getPayload } from 'payload'
-import { RefreshRouteOnSave } from '@payloadcms/live-preview-react'
 
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { Headline } from '@/components/Headline'

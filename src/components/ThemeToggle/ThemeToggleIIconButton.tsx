@@ -10,6 +10,7 @@ interface ThemeToggleIconButtonProps {
 export function ThemeToggleIconButton({ theme, setTheme }: ThemeToggleIconButtonProps) {
   return (
     <Button
+      type="button"
       variant="outline"
       size="icon"
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}

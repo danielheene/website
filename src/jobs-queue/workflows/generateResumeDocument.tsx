@@ -1,7 +1,10 @@
 import { WorkflowConfig } from 'payload'
 
+import { secondsToMilliseconds } from 'date-fns'
+import { millisecondsInMinute } from 'date-fns/constants'
 import { formatAdminURL } from 'payload/shared'
 
+import { getLocalISOString } from '@/lib/date'
 import { extractErrorMessage } from '@/lib/extractErrorMessage'
 import { generateSlug } from '@/lib/generateSlug'
 import { renderTemplate } from '@/lib/renderTemplate'
@@ -37,6 +40,7 @@ export const generateResumeDocument: WorkflowConfig<WorkflowSlug['GenerateResume
   concurrency: {
     key: () => WorkflowSlug.GenerateResumeDocument,
     supersedes: true,
+    exclusive: true,
   },
   queue: QueueSlug.ResumeGeneration,
   inputSchema: [
@@ -55,12 +59,17 @@ export const generateResumeDocument: WorkflowConfig<WorkflowSlug['GenerateResume
       name: 'sharedId',
       required: true,
     },
+    {
+      type: 'number',
+      name: 'maximumRetries',
+      required: true,
+    },
   ],
   handler: async ({ inlineTask, job: { id, input }, req: { payload }, tasks }) => {
     'use server'
 
-    const { documentTitleTemplate, filenameTemplate, sharedId } = input
-    const createdAt = new Date().toISOString()
+    const { documentTitleTemplate, filenameTemplate, sharedId, maximumRetries } = input
+    const createdAt = getLocalISOString('Europe/Berlin', new Date())
 
     payload.logger.info(`Workflow: ${WorkflowSlug.GenerateResumeDocument}:${sharedId} started`)
 
@@ -113,7 +122,13 @@ export const generateResumeDocument: WorkflowConfig<WorkflowSlug['GenerateResume
     const en = await tasks.GenerateLocalizedResumeDocument(
       `${TaskSlug.GenerateLocalizedResumeDocument}:${sharedId}:EN`,
       {
-        retries: 3,
+        retries: {
+          attempts: maximumRetries,
+          backoff: {
+            delay: secondsToMilliseconds(15),
+            type: 'exponential',
+          },
+        },
         input: {
           locale: 'en',
           documentSlug,
@@ -132,6 +147,13 @@ export const generateResumeDocument: WorkflowConfig<WorkflowSlug['GenerateResume
     const de = await tasks.GenerateLocalizedResumeDocument(
       `${TaskSlug.GenerateLocalizedResumeDocument}:${sharedId}:DE`,
       {
+        retries: {
+          attempts: maximumRetries,
+          backoff: {
+            delay: secondsToMilliseconds(15),
+            type: 'exponential',
+          },
+        },
         input: {
           locale: 'de',
           documentSlug,
@@ -147,7 +169,15 @@ export const generateResumeDocument: WorkflowConfig<WorkflowSlug['GenerateResume
      * Create ResumeDocument
      */
     await inlineTask(`CreateResumeDocument:${sharedId}`, {
+      retries: {
+        attempts: maximumRetries,
+        backoff: {
+          delay: secondsToMilliseconds(15),
+          type: 'exponential',
+        },
+      },
       task: async () => {
+        let success = true
         try {
           payload.logger.info(`Creating ResumeDocument: ${documentTitle}`)
           const doc = await payload.create({
@@ -158,25 +188,25 @@ export const generateResumeDocument: WorkflowConfig<WorkflowSlug['GenerateResume
               createdAt,
               jobId: id,
               document_en: {
-                relationTo: CollectionSlug.ResumeFiles,
+                relationTo: CollectionSlug.MediaDocuments,
                 value: en.resumeFileId,
               },
               checksum_en: en.resumeFileChecksum,
               thumbnails_en: en.resumeThumbnailIds.map((id) => ({
-                relationTo: CollectionSlug.ResumeFiles,
+                relationTo: CollectionSlug.MediaImages,
                 value: id,
               })),
               document_de: {
-                relationTo: CollectionSlug.ResumeFiles,
+                relationTo: CollectionSlug.MediaDocuments,
                 value: de.resumeFileId,
               },
               checksum_de: de.resumeFileChecksum,
               thumbnails_de: de.resumeThumbnailIds.map((id) => ({
-                relationTo: CollectionSlug.ResumeFiles,
+                relationTo: CollectionSlug.MediaImages,
                 value: id,
               })),
-              data_en: JSON.stringify(en.resumeDocumentData),
-              data_de: JSON.stringify(de.resumeDocumentData),
+              data_en: en.resumeDocumentData,
+              data_de: de.resumeDocumentData,
             },
           })
 
@@ -188,14 +218,21 @@ export const generateResumeDocument: WorkflowConfig<WorkflowSlug['GenerateResume
             })}`,
           )
         } catch (error) {
+          success = false
           payload.logger.error(`Error creating resume document: ${extractErrorMessage(error)}`)
         }
 
-        return void 0
+        return {
+          output: {
+            success,
+          },
+        }
       },
     })
 
     payload.logger.info('Finished generating localized resume documents')
     payload.logger.info('Creating final resume document')
+
+    return void 0
   },
 }

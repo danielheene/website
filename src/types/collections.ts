@@ -8,8 +8,8 @@ import { ResolvedRelations } from '@/lib/resolveRelation'
 
 export const CollectionSlug = {
   Pages: 'pages',
-  BlogPosts: 'blog-posts',
-  BlogTopics: 'blog-tags',
+  BlogPosts: 'posts',
+  BlogTopics: 'topics',
   Users: 'users',
 
   /* Media Upload Collections */
@@ -45,8 +45,9 @@ export type CollectionSlugValue = CollectionSlug[CollectionSlugKey] & string
 
 export const COLLECTION_PREFIX_MAP: Partial<Record<CollectionSlugValue, string>> = {
   [CollectionSlug.Pages]: '',
+  [CollectionSlug.BlogTopics]: 'blog',
   [CollectionSlug.BlogPosts]: 'posts',
-  [CollectionSlug.BlogTopics]: 'tags',
+  [CollectionSlug.ResumeDocuments]: 'resume',
 } as const
 
 export type {

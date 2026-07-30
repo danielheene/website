@@ -8,10 +8,10 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 
 import { generateMeta } from '@/lib/generateMeta'
-import { generateBlogPosting, generateBreadcrumbList } from '@/lib/jsonLd'
-import { CollectionSlug, CollectionData } from '@/types/collections'
-import { resolveRelations } from '@/lib/resolveRelation'
 import { reduceDataToLocale } from '@/lib/i18n'
+import { generateBlogPosting, generateBreadcrumbList } from '@/lib/jsonLd'
+import { resolveRelations } from '@/lib/resolveRelation'
+import { CollectionData, CollectionSlug } from '@/types/collections'
 
 export async function generateStaticParams() {
   const payload = await getPayload({
@@ -48,18 +48,18 @@ export default async function Page({ params: paramsPromise }: PageProps) {
   })
   if (!post) return notFound()
 
-  const { title, content, heroImage, createdAt, updatedAt, tags } = post
+  const { title, content, heroImage, createdAt, updatedAt, topics } = post
   const baseUrl = process.env.SERVER_URL || 'https://danielheene.de'
   const postUrl = `${baseUrl}/posts/${slug}`
 
-  const heroData = heroImage?.value;
+  const heroData = heroImage?.value
   const heroImageData = heroData?.url
     ? {
-      url:    new URL(new URL(heroData.url).pathname, baseUrl).toString(),
-      width: heroData.width || undefined,
-      height: heroData.height || undefined,
-      alt: heroData.alt || title,
-    }
+        url: new URL(new URL(heroData.url).pathname, baseUrl).toString(),
+        width: heroData.width || undefined,
+        height: heroData.height || undefined,
+        alt: heroData.alt || title,
+      }
     : undefined
   //
   // // Extract keywords from tags
@@ -110,10 +110,8 @@ export default async function Page({ params: paramsPromise }: PageProps) {
     >
       <div className="flex flex-1 items-center justify-center">
         <section className="pb-32 w-full">
-          <div
-            className="bg-muted bg-[url('https://deifkwefumgah.cloudfront.net/shadcnblocks/block/patterns/dot-pattern-2.svg')] bg-[length:3.125rem_3.125rem] bg-repeat py-20">
-            <div
-              className="container flex flex-col items-start justify-start gap-16 py-20 lg:flex-row lg:items-end lg:justify-between">
+          <div className="bg-muted bg-[url('https://deifkwefumgah.cloudfront.net/shadcnblocks/block/patterns/dot-pattern-2.svg')] bg-[length:3.125rem_3.125rem] bg-repeat py-20">
+            <div className="container flex flex-col items-start justify-start gap-16 py-20 lg:flex-row lg:items-end lg:justify-between">
               <div className="flex w-full flex-col items-center justify-center gap-12">
                 <div className="flex w-full max-w-[36rem] flex-col items-center justify-center gap-8">
                   <nav aria-label="breadcrumb" data-slot="breadcrumb" className="">
@@ -185,8 +183,7 @@ export default async function Page({ params: paramsPromise }: PageProps) {
                           className="lucide lucide-twitter"
                           aria-hidden="true"
                         >
-                          <path
-                            d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
+                          <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
                         </svg>
                       </a>
                       {/** biome-ignore lint/a11y/useAnchorContent: <explanation> */}
@@ -453,8 +450,7 @@ export default async function Page({ params: paramsPromise }: PageProps) {
                         className="lucide lucide-twitter"
                         aria-hidden="true"
                       >
-                        <path
-                          d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
+                        <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
                       </svg>
                     </a>
                     <a
@@ -503,29 +499,28 @@ export async function generateMetadata({ params: paramsPromise }: PageProps): Pr
   })
 }
 
-const queryPostBySlug = cache(async ({ slug }: {
-  slug: string
-}): Promise<CollectionData<CollectionSlug['BlogPosts']>> => {
-  const { isEnabled: draft } = await draftMode()
-  const payload = await getPayload({
-    config,
-  })
+const queryPostBySlug = cache(
+  async ({ slug }: { slug: string }): Promise<CollectionData<CollectionSlug['BlogPosts']>> => {
+    const { isEnabled: draft } = await draftMode()
+    const payload = await getPayload({
+      config,
+    })
 
-  const { docs = [] } = await payload.find({
-    collection: CollectionSlug['BlogPosts'],
-    draft,
-    limit: 1,
-    pagination: false,
-    overrideAccess: draft,
-    where: {
-      slug: {
-        equals: slug,
+    const { docs = [] } = await payload.find({
+      collection: CollectionSlug['BlogPosts'],
+      draft,
+      limit: 1,
+      pagination: false,
+      overrideAccess: draft,
+      where: {
+        slug: {
+          equals: slug,
+        },
       },
-    },
-  })
+    })
 
-  if (!docs[0]) return null
+    if (!docs[0]) return null
 
-
-  return reduceDataToLocale(await resolveRelations(docs[0]))
-})
+    return reduceDataToLocale(await resolveRelations(docs[0]))
+  },
+)
