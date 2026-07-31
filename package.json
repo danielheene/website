@@ -28,14 +28,20 @@
     "next": "NODE_OPTIONS=\"--trace-deprecation --disable-warning=DeprecationWarning\" next",
     "payload": "NODE_OPTIONS=\"--trace-deprecation --disable-warning=DeprecationWarning\" payload",
     "start": "pnpm run next start",
-    "storybook": "NODE_OPTIONS=\"--trace-deprecation --disable-warning=DeprecationWarning\" storybook"
+    "storybook": "NODE_OPTIONS=\"--trace-deprecation --disable-warning=DeprecationWarning\" storybook",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "node --env-file=.env.test node_modules/@playwright/test/cli.js test",
+    "test:e2e:docker": "./scripts/e2e-docker.sh",
+    "test:e2e:ui": "node --env-file=.env.test node_modules/@playwright/test/cli.js test --ui",
+    "test:watch": "vitest"
   },
   "resolutions": {
+    "@emnapi/runtime": "^2.0.0-alpha",
     "pdfjs-dist": "5.4.296",
-    "redis": "4.7.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "@emnapi/runtime": "^2.0.0-alpha"
+    "redis": "4.7.0"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.24",
@@ -109,6 +115,7 @@
     "@biomejs/biome": "^2.5.6",
     "@changesets/changelog-github": "^0.7.0",
     "@changesets/cli": "^2.31.1",
+    "@playwright/test": "~1.62.0",
     "@storybook/addon-a11y": "^10.5.5",
     "@storybook/addon-docs": "^10.5.5",
     "@storybook/addon-links": "^10.5.5",
@@ -125,6 +132,7 @@
     "@types/react": "^19.2.16",
     "@types/react-dom": "^19.2.3",
     "@types/timestring": "^7.0.0",
+    "@vitest/coverage-v8": "^4.1.10",
     "autoprefixer": "^10.5.3",
     "cssnano": "^8.0.1",
     "jsdom": "^30.0.1",
@@ -135,6 +143,7 @@
     "storybook": "^10.5.5",
     "tsconfig-paths-webpack-plugin": "^4.2.0",
     "typescript": "^6.0.3",
+    "vitest": "^4.1.10",
     "wrangler": "^4.115.0"
   },
   "packageManager": "pnpm@11.18.0",

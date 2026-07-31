@@ -32,7 +32,8 @@ pnpm generate         # regenerate Payload types + import map (run after changin
 pnpm build            # production build
 pnpm lint             # biome check (lint + format check, does NOT auto-fix)
 pnpm format           # biome format --write (auto-fixes formatting only)
-node --test           # run tests (Node's built-in test runner, not Jest/Vitest)
+pnpm test             # unit tests (Vitest)
+pnpm test:e2e         # Playwright E2E (needs docker compose up -d)
 ```
 
 Always run `pnpm generate` after adding/renaming a collection, global, field, or block — many
@@ -131,8 +132,15 @@ introduce new lint errors, and prefer fixing lint issues in files you already to
 
 ## Testing
 
-- Tests run via the built-in Node.js test runner (`node --test`), not Jest/Vitest — see
-  `README.md` for details. Co-locate new tests as `*.test.js`/`*.test.ts` near the code under test
-  or under `tests/`, matching existing patterns.
+- Unit tests run via **Vitest** (`pnpm test`), E2E tests via **Playwright** (`pnpm test:e2e`) —
+  see `README.md` for prerequisites. Co-locate unit tests as `*.test.ts` next to the code under
+  test; E2E specs live in `e2e/*.spec.ts` (never `*.spec.ts` under `src/`).
+- Shared mocks live in `vitest.setup.ts`: `payload` (`getPayload` stubbed via `importOriginal`
+  spread — never replace the whole module, value imports from it are used at runtime),
+  `next/cache` and `redis`. `tailwind-merge`, `date-fns`, `slugify`, `pupa` and `neotraverse` are
+  intentionally NOT mocked — their real behavior is the contract under test.
+- `TZ=UTC` is forced in `vitest.setup.ts` and date tests depend on it. Anything touching
+  `Interval.setToX()` or `getLocalISOString` needs `vi.useFakeTimers()` + `vi.setSystemTime()`.
+  Use `vi.stubEnv()` for env-dependent code (`SERVER_URL`, `PREVIEW_SECRET`).
 - There is no CI-enforced coverage threshold; when fixing a bug, add a regression test near
   existing tests for that module if a suitable test file already exists.

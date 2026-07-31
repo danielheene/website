@@ -129,12 +129,29 @@ The project uses several environment variables for configuration. See `.env.exam
 
 ## Testing
 
-The project is set up to use Node's built-in test runner (`node --test`), but **no test files
-currently exist in the repository**. When adding tests, co-locate them as `*.test.ts`/`*.test.js`
-next to the code under test, or under a `tests/` directory:
+Unit tests run with **Vitest**, end-to-end tests with **Playwright** (Chromium).
 
-- **Run all tests**: `node --test`
-- **Target specific test**: `node --test path/to/file.test.js`
+- **Unit tests**: `pnpm test` (watch mode: `pnpm test:watch`, coverage: `pnpm test:coverage`)
+- **E2E tests**: `pnpm test:e2e` (interactive UI: `pnpm test:e2e:ui`)
+- **E2E in Docker Chromium**: `pnpm test:e2e:docker`
+
+Conventions:
+
+- Unit tests are co-located as `*.test.ts` next to the code under test (config: `vitest.config.ts`,
+  shared mocks and `TZ=UTC` in `vitest.setup.ts`).
+- E2E specs live in `e2e/*.spec.ts` (config: `playwright.config.ts`). They are smoke tests only —
+  the site is CMS-driven, so they assert structural health, not content.
+
+E2E prerequisites:
+
+- `docker compose up -d` (MongoDB, Redis and S3 storage must be reachable).
+- `.env.test` is committed with dummy, format-valid values so the app can boot. Flows backed by
+  real external services do **not** work with it: AI generation (OpenAI/Anthropic), Mapbox
+  geocoding, email (UseSend), Umami analytics and the status-page heartbeat.
+- `pnpm test:e2e` starts (or reuses) the dev server automatically. The Docker flow
+  (`scripts/e2e-docker.sh`) expects the dev server already running on the host and uses the
+  `mcr.microsoft.com/playwright` image — its tag must always match the `@playwright/test` version
+  in `package.json`; bump them together.
 
 ## Features
 
