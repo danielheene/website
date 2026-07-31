@@ -1,7 +1,5 @@
 import { type RedisListener, subscribe } from '@/lib/RedisHandler'
 
-export const runtime = 'nodejs'
-
 const HEARTBEAT_INTERVAL_MS = 30_000
 
 /**

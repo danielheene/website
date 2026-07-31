@@ -1,6 +1,4 @@
-'use server'
-
-import { revalidateTag, unstable_cache } from 'next/cache'
+import { cacheLife, cacheTag, revalidateTag } from 'next/cache'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
@@ -21,11 +19,12 @@ export const fetchGlobalUserSettings = async (locale: Locale = 'en') => {
   return await resolveRelations(reduceDataToLocale(data, locale))
 }
 
-export const fetchGlobalUserSettingsCached = unstable_cache(fetchGlobalUserSettings, [], {
-  tags: [
-    GlobalSlug.GlobalUserSettings,
-  ],
-})
+export const fetchGlobalUserSettingsCached = async (locale: Locale = 'en') => {
+  'use cache'
+  cacheLife('max')
+  cacheTag(GlobalSlug.GlobalUserSettings)
+  return fetchGlobalUserSettings(locale)
+}
 
 export const revalidateGlobalUserSettings = async (): Promise<void> => {
   revalidateTag(GlobalSlug.GlobalUserSettings, 'max')

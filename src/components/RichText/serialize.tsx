@@ -4,7 +4,15 @@ import type { DefaultNodeTypes, SerializedBlockNode } from '@payloadcms/richtext
 import React, { Fragment, type JSX } from 'react'
 
 import { CMSLink } from '../Link'
-import { IS_BOLD, IS_CODE, IS_ITALIC, IS_STRIKETHROUGH, IS_SUBSCRIPT, IS_SUPERSCRIPT, IS_UNDERLINE } from './nodeFormat'
+import {
+  IS_BOLD,
+  IS_CODE,
+  IS_ITALIC,
+  IS_STRIKETHROUGH,
+  IS_SUBSCRIPT,
+  IS_SUPERSCRIPT,
+  IS_UNDERLINE,
+} from './nodeFormat'
 
 export type NodeTypes = DefaultNodeTypes | SerializedBlockNode<ResumeAboutMeBlock>
 
@@ -30,14 +38,24 @@ export function serializeLexical({ nodes }: Props): JSX.Element {
           }
           if (node.format & IS_STRIKETHROUGH) {
             text = (
-              <span key={index} style={{ textDecoration: 'line-through' }}>
+              <span
+                key={index}
+                style={{
+                  textDecoration: 'line-through',
+                }}
+              >
                 {text}
               </span>
             )
           }
           if (node.format & IS_UNDERLINE) {
             text = (
-              <span key={index} style={{ textDecoration: 'underline' }}>
+              <span
+                key={index}
+                style={{
+                  textDecoration: 'underline',
+                }}
+              >
                 {text}
               </span>
             )
@@ -72,8 +90,10 @@ export function serializeLexical({ nodes }: Props): JSX.Element {
                 }
               }
             }
-            // @ts-expect-error
-            return serializeLexical({ nodes: node.children as NodeTypes[] })
+            return serializeLexical({
+              // @ts-expect-error
+              nodes: node.children as NodeTypes[],
+            })
           }
         }
 

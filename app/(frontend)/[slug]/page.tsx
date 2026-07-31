@@ -1,6 +1,7 @@
 import { cache } from 'react'
 import type { Metadata } from 'next'
-import { draftMode, headers } from 'next/headers'
+import { cacheLife, cacheTag } from 'next/cache'
+import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
 import config from '@payload-config'
 import { getPayload } from 'payload'
@@ -33,6 +34,16 @@ export async function generateStaticParams() {
       slug: true,
     },
   })
+
+  if (docs.length === 0) {
+    // Cache Components requires at least one param for build-time validation;
+    // '__placeholder__' resolves to notFound() against an empty database.
+    return [
+      {
+        slug: '__placeholder__',
+      },
+    ]
+  }
 
   return docs.map(({ slug }) => ({
     slug,
@@ -94,19 +105,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   })
 }
 
-const queryPageBySlug = cache(async (slug: string) => {
-  await headers()
-  const { isEnabled: draft } = await draftMode()
+const queryPublishedPageBySlug = async (slug: string) => {
+  'use cache'
+  cacheLife('max')
+  cacheTag(CollectionSlug.Pages)
+
   const payload = await getPayload({
     config,
   })
 
   const { docs = [] } = await payload.find({
     collection: CollectionSlug.Pages,
-    draft,
+    draft: false,
     limit: 1,
     pagination: false,
-    overrideAccess: draft,
+    overrideAccess: false,
     where: {
       slug: {
         equals: slug,
@@ -115,4 +128,30 @@ const queryPageBySlug = cache(async (slug: string) => {
   })
 
   return (docs[0] as CollectionData<CollectionSlug['Pages']>) || null
+}
+
+const queryDraftPageBySlug = async (slug: string) => {
+  const payload = await getPayload({
+    config,
+  })
+
+  const { docs = [] } = await payload.find({
+    collection: CollectionSlug.Pages,
+    draft: true,
+    limit: 1,
+    pagination: false,
+    overrideAccess: true,
+    where: {
+      slug: {
+        equals: slug,
+      },
+    },
+  })
+
+  return (docs[0] as CollectionData<CollectionSlug['Pages']>) || null
+}
+
+const queryPageBySlug = cache(async (slug: string) => {
+  const { isEnabled: draft } = await draftMode()
+  return draft ? queryDraftPageBySlug(slug) : queryPublishedPageBySlug(slug)
 })

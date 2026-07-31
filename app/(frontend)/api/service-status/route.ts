@@ -1,3 +1,5 @@
+import { connection } from 'next/server'
+
 import {
   type Heartbeat,
   type HeartbeatResponse,
@@ -11,6 +13,10 @@ import {
  * @constructor
  */
 export const GET = async () => {
+  // defer to request time — this proxies a live status endpoint and must
+  // never run during prerendering (Cache Components)
+  await connection()
+
   if (!process.env.STATUS_PAGE_HEARTBEAT_URL) {
     console.error('STATUS_PAGE_HEARTBEAT_URL is not set')
     return new Response('Not configured', {

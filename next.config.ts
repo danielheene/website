@@ -60,6 +60,7 @@ export default async (phase, { defaultConfig }) => {
     poweredByHeader: false,
     productionBrowserSourceMaps: false,
     reactStrictMode: true,
+    cacheComponents: true,
     // cacheHandler: require.resolve('./next.cache-handler.ts'),
     experimental: {
       viewTransition: true,
@@ -74,6 +75,8 @@ export default async (phase, { defaultConfig }) => {
      */
     allowedDevOrigins: [
       'localhost:3000',
+      // Docker-based Playwright E2E reaches the host dev server via this name
+      'host.docker.internal:3000',
       '*.localhost:3000',
       'daniel.heene.nexus',
       '*.daniel.heene.nexus',
@@ -106,6 +109,10 @@ export default async (phase, { defaultConfig }) => {
     },
 
     serverExternalPackages: [
+      // WASM decoder must not be inlined by Turbopack (invalid octal escapes
+      // in the generated template string break the server chunk)
+      'mediabunny',
+      '@mediabunny/server',
       '@react-pdf/renderer',
       'svgo',
       'pdf-parse',

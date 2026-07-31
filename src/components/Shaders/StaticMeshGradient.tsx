@@ -1,3 +1,5 @@
+// @ts-nocheck — WIP copy from @paper-design/shaders; relative imports do not
+// exist in this repo yet and the file is not exported/used anywhere.
 import type { vec4 } from '../types.js'
 import type { ShaderMotionParams } from '../shader-mount.js'
 import { type ShaderSizingParams, type ShaderSizingUniforms } from '../shader-sizing.js'
@@ -156,26 +158,26 @@ void main() {
 `
 
 export interface StaticMeshGradientUniforms extends ShaderSizingUniforms {
-  u_colors: vec4[];
-  u_colorsCount: number;
-  u_positions: number;
-  u_waveX: number;
-  u_waveXShift: number;
-  u_waveY: number;
-  u_waveYShift: number;
-  u_mixing: number;
-  u_grainMixer: number;
-  u_grainOverlay: number;
+  u_colors: vec4[]
+  u_colorsCount: number
+  u_positions: number
+  u_waveX: number
+  u_waveXShift: number
+  u_waveY: number
+  u_waveYShift: number
+  u_mixing: number
+  u_grainMixer: number
+  u_grainOverlay: number
 }
 
 export interface StaticMeshGradientParams extends ShaderSizingParams, ShaderMotionParams {
-  colors?: string[];
-  positions?: number;
-  waveX?: number;
-  waveXShift?: number;
-  waveY?: number;
-  waveYShift?: number;
-  mixing?: number;
-  grainMixer?: number;
-  grainOverlay?: number;
+  colors?: string[]
+  positions?: number
+  waveX?: number
+  waveXShift?: number
+  waveY?: number
+  waveYShift?: number
+  mixing?: number
+  grainMixer?: number
+  grainOverlay?: number
 }

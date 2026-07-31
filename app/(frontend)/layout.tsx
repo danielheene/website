@@ -15,7 +15,7 @@ import PPFramaText from '@/fonts/pp-frama-text/next'
 import PPSupplyMono from '@/fonts/pp-supply-mono/next'
 import PPSupplySans from '@/fonts/pp-supply-sans/next'
 import { cn } from '@/lib/cn'
-import { fetchGlobalUserSettings, fetchSiteSettings } from '@/lib/fetchers'
+import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fetchers'
 import { generatePersonSchema, generateWebSiteSchema, JsonLd } from '@/lib/jsonLd'
 
 export default async function RootLayout({
@@ -24,8 +24,8 @@ export default async function RootLayout({
   children: ReactNode | ReactNode[]
 }): Promise<JSX.Element> {
   const { isEnabled: draft } = await draftMode()
-  const globalUserSettings = await fetchGlobalUserSettings()
-  const SiteSettings = await fetchSiteSettings()
+  const globalUserSettings = await fetchGlobalUserSettingsCached()
+  const SiteSettings = await fetchSiteSettingsCached()
   const personSchema = generatePersonSchema(globalUserSettings)
   const webSiteSchema = generateWebSiteSchema(SiteSettings)
 

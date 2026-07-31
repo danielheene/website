@@ -1,3 +1,4 @@
+import { cacheLife, cacheTag } from 'next/cache'
 import Link from 'next/link'
 import config from '@payload-config'
 import { getPayload } from 'payload'
@@ -11,7 +12,11 @@ interface FeaturedTopicsProps {
   currentSlug?: string
 }
 
-export const FeaturedTopics = async ({ currentSlug = '/' }: FeaturedTopicsProps) => {
+const fetchFeaturedTopics = async () => {
+  'use cache'
+  cacheLife('max')
+  cacheTag(CollectionSlug.BlogTopics)
+
   const payload = await getPayload({
     config,
   })
@@ -31,6 +36,12 @@ export const FeaturedTopics = async ({ currentSlug = '/' }: FeaturedTopicsProps)
     sort: '_order',
     depth: 0,
   })
+
+  return topics
+}
+
+export const FeaturedTopics = async ({ currentSlug = '/' }: FeaturedTopicsProps) => {
+  const topics = await fetchFeaturedTopics()
 
   const allTopics = [
     {

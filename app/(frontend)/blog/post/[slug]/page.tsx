@@ -2,6 +2,7 @@
 
 import { cache } from 'react'
 import type { Metadata } from 'next'
+import { cacheLife, cacheTag } from 'next/cache'
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
 import config from '@payload-config'
@@ -28,6 +29,16 @@ export async function generateStaticParams() {
       slug: true,
     },
   })
+
+  if (docs.length === 0) {
+    // Cache Components requires at least one param for build-time validation;
+    // '__placeholder__' resolves to notFound() against an empty database.
+    return [
+      {
+        slug: '__placeholder__',
+      },
+    ]
+  }
 
   return docs.map(({ slug }) => ({
     slug,
@@ -499,28 +510,63 @@ export async function generateMetadata({ params: paramsPromise }: PageProps): Pr
   })
 }
 
+const queryPublishedPostBySlug = async (
+  slug: string,
+): Promise<CollectionData<CollectionSlug['BlogPosts']>> => {
+  'use cache'
+  cacheLife('max')
+  cacheTag(CollectionSlug.BlogPosts)
+
+  const payload = await getPayload({
+    config,
+  })
+
+  const { docs = [] } = await payload.find({
+    collection: CollectionSlug['BlogPosts'],
+    draft: false,
+    limit: 1,
+    pagination: false,
+    overrideAccess: false,
+    where: {
+      slug: {
+        equals: slug,
+      },
+    },
+  })
+
+  if (!docs[0]) return null
+
+  return reduceDataToLocale(await resolveRelations(docs[0]))
+}
+
+const queryDraftPostBySlug = async (
+  slug: string,
+): Promise<CollectionData<CollectionSlug['BlogPosts']>> => {
+  const payload = await getPayload({
+    config,
+  })
+
+  const { docs = [] } = await payload.find({
+    collection: CollectionSlug['BlogPosts'],
+    draft: true,
+    limit: 1,
+    pagination: false,
+    overrideAccess: true,
+    where: {
+      slug: {
+        equals: slug,
+      },
+    },
+  })
+
+  if (!docs[0]) return null
+
+  return reduceDataToLocale(await resolveRelations(docs[0]))
+}
+
 const queryPostBySlug = cache(
   async ({ slug }: { slug: string }): Promise<CollectionData<CollectionSlug['BlogPosts']>> => {
     const { isEnabled: draft } = await draftMode()
-    const payload = await getPayload({
-      config,
-    })
-
-    const { docs = [] } = await payload.find({
-      collection: CollectionSlug['BlogPosts'],
-      draft,
-      limit: 1,
-      pagination: false,
-      overrideAccess: draft,
-      where: {
-        slug: {
-          equals: slug,
-        },
-      },
-    })
-
-    if (!docs[0]) return null
-
-    return reduceDataToLocale(await resolveRelations(docs[0]))
+    return draft ? queryDraftPostBySlug(slug) : queryPublishedPostBySlug(slug)
   },
 )

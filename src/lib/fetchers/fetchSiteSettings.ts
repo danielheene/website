@@ -1,6 +1,4 @@
-'use server'
-
-import { revalidateTag, unstable_cache } from 'next/cache'
+import { cacheLife, cacheTag, revalidateTag } from 'next/cache'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
@@ -21,11 +19,12 @@ export const fetchSiteSettings = async (locale: Locale = 'en') => {
   return await resolveRelations(reduceDataToLocale(data, locale))
 }
 
-export const fetchSiteSettingsCached = unstable_cache(fetchSiteSettings, [], {
-  tags: [
-    GlobalSlug.SiteSettings,
-  ],
-})
+export const fetchSiteSettingsCached = async (locale: Locale = 'en') => {
+  'use cache'
+  cacheLife('max')
+  cacheTag(GlobalSlug.SiteSettings)
+  return fetchSiteSettings(locale)
+}
 
 export const revalidateSiteSettings = async (): Promise<void> => {
   revalidateTag(GlobalSlug.SiteSettings, 'max')

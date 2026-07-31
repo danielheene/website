@@ -25,6 +25,16 @@ export async function generateStaticParams() {
     },
   })
 
+  if (docs.length === 0) {
+    // Cache Components requires at least one param for build-time validation;
+    // '__placeholder__' resolves to notFound() against an empty database.
+    return [
+      {
+        slug: '__placeholder__',
+      },
+    ]
+  }
+
   return docs.map(({ slug }) => ({
     slug,
   }))

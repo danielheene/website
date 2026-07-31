@@ -1,6 +1,4 @@
-'use server'
-
-import { revalidateTag, unstable_cache } from 'next/cache'
+import { cacheLife, cacheTag, revalidateTag } from 'next/cache'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
@@ -22,11 +20,12 @@ export const fetchPDFGeneratorSettings = async (
   return reduceDataToLocale(data, locale)
 }
 
-export const fetchPDFGeneratorSettingsCached = unstable_cache(fetchPDFGeneratorSettings, [], {
-  tags: [
-    GlobalSlug.PDFGeneratorSettings,
-  ],
-})
+export const fetchPDFGeneratorSettingsCached = async (locale: Locale = 'en') => {
+  'use cache'
+  cacheLife('max')
+  cacheTag(GlobalSlug.PDFGeneratorSettings)
+  return fetchPDFGeneratorSettings(locale)
+}
 
 export const revalidatePDFGeneratorSettings = async (): Promise<void> => {
   revalidateTag(GlobalSlug.PDFGeneratorSettings, 'max')

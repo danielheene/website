@@ -1,6 +1,4 @@
-'use server'
-
-import { revalidateTag, unstable_cache } from 'next/cache'
+import { cacheLife, cacheTag, revalidateTag } from 'next/cache'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
@@ -23,11 +21,12 @@ export const fetchResumeCustomers = async (locale: Locale = 'en') => {
   return await resolveRelations(reduceDataToLocale(docs, locale))
 }
 
-export const fetchResumeCustomersCached = unstable_cache(fetchResumeCustomers, [], {
-  tags: [
-    CollectionSlug.ResumeCustomers,
-  ],
-})
+export const fetchResumeCustomersCached = async (locale: Locale = 'en') => {
+  'use cache'
+  cacheLife('max')
+  cacheTag(CollectionSlug.ResumeCustomers)
+  return fetchResumeCustomers(locale)
+}
 
 export const revalidateResumeCustomers = async (): Promise<void> => {
   revalidateTag(CollectionSlug.ResumeCustomers, 'max')
