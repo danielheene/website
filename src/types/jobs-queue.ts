@@ -1,5 +1,6 @@
 export const TaskSlug = {
   GenerateDocumentThumbnails: 'GenerateDocumentThumbnails',
+  GenerateVideoThumbnails: 'GenerateVideoThumbnails',
   CalculateSkillTagInterval: 'CalculateSkillTagInterval',
   GenerateLocalizedResumeDocument: 'GenerateLocalizedResumeDocument',
 } as const

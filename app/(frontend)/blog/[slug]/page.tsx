@@ -1,14 +1,23 @@
-/** biome-ignore-all lint/a11y/useValidAnchor: <explanation> */
-import { cache, Suspense } from 'react'
-import { draftMode } from 'next/headers'
+import { Suspense } from 'react'
+import type { Metadata } from 'next'
+import { cacheLife, cacheTag } from 'next/cache'
+import Link from 'next/link'
+import { notFound } from 'next/navigation'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
+import { format } from 'date-fns'
+
+import { ImageMedia } from '@/components/ImageMedia'
 import { PageContainer } from '@/components/PageContainer'
 import { cn } from '@/lib/cn'
+import { generateMeta } from '@/lib/generateMeta'
 import { CollectionSlug } from '@/types/collections'
+import type { BlogPostData, Topic } from '@/types/payload'
 
 import { FeaturedTopics } from './components/FeaturedTopics'
+
+const POSTS_PER_PAGE = 12
 
 export async function generateStaticParams() {
   const payload = await getPayload({
@@ -40,39 +49,229 @@ export async function generateStaticParams() {
   }))
 }
 
-export default async function Page({ params }: PageProps<'/blog/[slug]'>) {
+const queryPublishedTopicBySlug = async (slug: string): Promise<Topic | null> => {
+  'use cache'
+  cacheLife('max')
+  cacheTag(CollectionSlug.BlogTopics)
+
+  const payload = await getPayload({
+    config,
+  })
+
+  const { docs = [] } = await payload.find({
+    collection: CollectionSlug.BlogTopics,
+    draft: false,
+    limit: 1,
+    pagination: false,
+    overrideAccess: false,
+    where: {
+      slug: {
+        equals: slug,
+      },
+    },
+  })
+
+  return (docs[0] as Topic) ?? null
+}
+
+const queryPublishedPosts = async ({ topicId, page }: { topicId?: string; page: number }) => {
+  'use cache'
+  cacheLife('max')
+  cacheTag(CollectionSlug.BlogPosts)
+
+  const payload = await getPayload({
+    config,
+  })
+
+  return payload.find({
+    collection: CollectionSlug.BlogPosts,
+    draft: false,
+    overrideAccess: false,
+    limit: POSTS_PER_PAGE,
+    page,
+    sort: '-createdAt',
+    depth: 2,
+    ...(topicId
+      ? {
+          where: {
+            'topics.value': {
+              equals: topicId,
+            },
+          },
+        }
+      : {}),
+  })
+}
+
+const PostCard = ({ post }: { post: BlogPostData }) => {
+  // populated upload values omit mimeType, so isMediaImage() can't be used —
+  // the relation's target collection is the reliable discriminator
+  const heroImage =
+    post.heroImage?.relationTo === CollectionSlug.MediaImages ? post.heroImage.value : undefined
+
+  return (
+    <Link
+      href={`/blog/post/${post.slug}`}
+      className={cn([
+        'group relative isolate h-80 overflow-hidden rounded-lg bg-background',
+      ])}
+    >
+      <div
+        className={cn([
+          'z-10 flex h-full flex-col justify-between p-6',
+        ])}
+      >
+        <p
+          className={cn([
+            'text-muted-foreground transition-colors duration-500 group-hover:text-background',
+          ])}
+        >
+          {format(post.createdAt, 'MMMM d, yyyy')}
+        </p>
+        <h2
+          className={cn([
+            'line-clamp-2 text-xl font-medium transition-colors duration-500 group-hover:text-background',
+          ])}
+        >
+          {post.title}
+        </h2>
+      </div>
+      {heroImage && typeof heroImage === 'object' && heroImage.url && (
+        <ImageMedia
+          url={heroImage.url}
+          alt={heroImage.alt || post.title}
+          blurDataURL={heroImage.blurDataURL}
+          fill
+          sizes="(min-width: 768px) 50vw, 100vw"
+          className={cn([
+            'absolute inset-0 -z-10 size-full rounded-lg object-cover brightness-50 transition-all duration-500 ease-[cubic-bezier(0.77,0,0.175,1)] [clip-path:inset(0_0_100%_0)] group-hover:[clip-path:inset(0_0_0%_0)]',
+          ])}
+        />
+      )}
+    </Link>
+  )
+}
+
+const Pagination = ({
+  basePath,
+  page,
+  totalPages,
+}: {
+  basePath: string
+  page: number
+  totalPages: number
+}) => {
+  if (totalPages <= 1) return null
+
+  const pageHref = (target: number) => (target <= 1 ? basePath : `${basePath}?page=${target}`)
+
+  return (
+    <nav
+      aria-label="Pagination"
+      className={cn([
+        'col-span-full mt-8 flex items-center justify-center gap-2 font-mono',
+      ])}
+    >
+      {page > 1 && (
+        <Link
+          href={pageHref(page - 1)}
+          rel="prev"
+          className={cn([
+            'rounded-md border border-border px-3 py-1.5 text-sm transition-colors hover:bg-muted',
+          ])}
+        >
+          Previous
+        </Link>
+      )}
+      {Array.from(
+        {
+          length: totalPages,
+        },
+        (_, index) => index + 1,
+      ).map((target) => (
+        <Link
+          key={target}
+          href={pageHref(target)}
+          aria-current={target === page ? 'page' : undefined}
+          className={cn([
+            'rounded-md border px-3 py-1.5 text-sm transition-colors',
+            target === page
+              ? 'border-primary bg-primary text-primary-foreground'
+              : 'border-border hover:bg-muted',
+          ])}
+        >
+          {target}
+        </Link>
+      ))}
+      {page < totalPages && (
+        <Link
+          href={pageHref(page + 1)}
+          rel="next"
+          className={cn([
+            'rounded-md border border-border px-3 py-1.5 text-sm transition-colors hover:bg-muted',
+          ])}
+        >
+          Next
+        </Link>
+      )}
+    </nav>
+  )
+}
+
+const PostsGrid = async ({
+  topicId,
+  basePath,
+  searchParams,
+}: {
+  topicId?: string
+  basePath: string
+  searchParams: Promise<{
+    page?: string | string[]
+  }>
+}) => {
+  const { page: rawPage } = await searchParams
+  const parsedPage = Number.parseInt(Array.isArray(rawPage) ? rawPage[0] : (rawPage ?? '1'), 10)
+  const page = Number.isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage
+
+  const {
+    docs: posts,
+    totalPages,
+    page: currentPage = 1,
+  } = await queryPublishedPosts({
+    topicId,
+    page,
+  })
+
+  if (posts.length === 0) {
+    return (
+      <p
+        className={cn([
+          'text-muted-foreground',
+        ])}
+      >
+        No posts published yet.
+      </p>
+    )
+  }
+
+  return (
+    <>
+      {posts.map((post) => (
+        <PostCard key={post.id} post={post as BlogPostData} />
+      ))}
+      <Pagination basePath={basePath} page={currentPage} totalPages={totalPages} />
+    </>
+  )
+}
+
+export default async function Page({ params, searchParams }: PageProps<'/blog/[slug]'>) {
   const { slug } = await params
 
-  // const topic = await queryTopicBySlug({
-  //   slug,
-  // })
+  // /blog re-exports this page without a slug — no topic means all posts
+  const topic = slug ? await queryPublishedTopicBySlug(slug) : null
+  if (slug && !topic) notFound()
 
-  //
-  // const { title, content } = tag
-  //
-  // const baseUrl = process.env.SERVER_URL || 'https://danielheene.de'
-  // const tagUrl = `${baseUrl}/tags/${slug}`
-  //
-  // // Generate CollectionPage schema
-  // const collectionPageSchema = generateCollectionPage({
-  //   name: title,
-  //   url: tagUrl,
-  // })
-  //
-  // // Generate BreadcrumbList schema
-  // const breadcrumbSchema = generateBreadcrumbList([
-  //   {
-  //     name: 'Home',
-  //     url: baseUrl,
-  //   },
-  //   {
-  //     name: 'Tags',
-  //     url: `${baseUrl}/tags`,
-  //   },
-  //   {
-  //     name: title,
-  //   },
-  // ])
+  const basePath = topic ? `/blog/${topic.slug}` : '/blog'
 
   return (
     <PageContainer>
@@ -122,7 +321,7 @@ export default async function Page({ params }: PageProps<'/blog/[slug]'>) {
                   'text-4xl font-extrabold lg:text-5xl',
                 ])}
               >
-                Blog Posts: {slug}
+                {topic ? topic.title : 'All Posts'}
               </h1>
               <p
                 className={cn([
@@ -141,253 +340,36 @@ export default async function Page({ params }: PageProps<'/blog/[slug]'>) {
               />
               <nav>
                 <Suspense>
-                  <FeaturedTopics currentSlug={slug} />
+                  <FeaturedTopics currentSlug={topic ? topic.slug : '/'} />
                 </Suspense>
               </nav>
             </header>
             <div
               className={cn([
-                'grid gap-4 md:grid-cols-2',
+                'grid flex-1 gap-4 md:grid-cols-2',
               ])}
             >
-              <a
-                href="#"
-                className={cn([
-                  'group relative isolate h-80 rounded-lg bg-background',
-                ])}
+              <Suspense
+                fallback={
+                  <>
+                    {Array.from(
+                      {
+                        length: 4,
+                      },
+                      (_, index) => (
+                        <div
+                          key={index}
+                          className={cn([
+                            'h-80 animate-pulse rounded-lg bg-muted',
+                          ])}
+                        />
+                      ),
+                    )}
+                  </>
+                }
               >
-                <div
-                  className={cn([
-                    'z-10 flex h-full flex-col justify-between p-6',
-                  ])}
-                >
-                  <p
-                    className={cn([
-                      'text-muted-foreground transition-colors duration-500 group-hover:text-background',
-                    ])}
-                  >
-                    May 20, 2024
-                  </p>
-                  <h2
-                    className={cn([
-                      'line-clamp-2 text-xl font-medium transition-colors duration-500 group-hover:text-background',
-                    ])}
-                  >
-                    How to design a website from scratch
-                  </h2>
-                </div>
-                <img
-                  alt="How to design a website from scratch"
-                  className={cn([
-                    'absolute inset-0 -z-10 size-full rounded-lg object-cover brightness-50 transition-all duration-500 ease-[cubic-bezier(0.77,0,0.175,1)] [clip-path:inset(0_0_100%_0)] group-hover:[clip-path:inset(0_0_0%_0)]',
-                  ])}
-                  src="https://images.unsplash.com/photo-1536735561749-fc87494598cb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w2NDI3NzN8MHwxfGFsbHwxNzd8fHx8fHwyfHwxNzIzNjM0NDc0fA&ixlib=rb-4.0.3&q=80&w=1080"
-                />
-              </a>
-              <a
-                href="#"
-                className={cn([
-                  'group relative isolate h-80 rounded-lg bg-background',
-                ])}
-              >
-                <div
-                  className={cn([
-                    'z-10 flex h-full flex-col justify-between p-6',
-                  ])}
-                >
-                  <p
-                    className={cn([
-                      'text-muted-foreground transition-colors duration-500 group-hover:text-background',
-                    ])}
-                  >
-                    June 12, 2024
-                  </p>
-                  <h2
-                    className={cn([
-                      'line-clamp-2 text-xl font-medium transition-colors duration-500 group-hover:text-background',
-                    ])}
-                  >
-                    The best tools for web development and design
-                  </h2>
-                </div>
-                <img
-                  alt="The best tools for web development and design"
-                  className={cn([
-                    'absolute inset-0 -z-10 size-full rounded-lg object-cover brightness-50 transition-all duration-500 ease-[cubic-bezier(0.77,0,0.175,1)] [clip-path:inset(0_0_100%_0)] group-hover:[clip-path:inset(0_0_0%_0)]',
-                  ])}
-                  src="https://images.unsplash.com/photo-1653288973812-81d1951b8127?q=80&w=2022&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                />
-              </a>
-              <a
-                href="#"
-                className={cn([
-                  'group relative isolate h-80 rounded-lg bg-background',
-                ])}
-              >
-                <div
-                  className={cn([
-                    'z-10 flex h-full flex-col justify-between p-6',
-                  ])}
-                >
-                  <p
-                    className={cn([
-                      'text-muted-foreground transition-colors duration-500 group-hover:text-background',
-                    ])}
-                  >
-                    July 5, 2024
-                  </p>
-                  <h2
-                    className={cn([
-                      'line-clamp-2 text-xl font-medium transition-colors duration-500 group-hover:text-background',
-                    ])}
-                  >
-                    How to market your website and get more traffic
-                  </h2>
-                </div>
-                <img
-                  alt="How to market your website and get more traffic"
-                  className={cn([
-                    'absolute inset-0 -z-10 size-full rounded-lg object-cover brightness-50 transition-all duration-500 ease-[cubic-bezier(0.77,0,0.175,1)] [clip-path:inset(0_0_100%_0)] group-hover:[clip-path:inset(0_0_0%_0)]',
-                  ])}
-                  src="https://images.unsplash.com/photo-1572733438515-8f143a854f72?q=80&w=1920&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                />
-              </a>
-              <a
-                href="#"
-                className={cn([
-                  'group relative isolate h-80 rounded-lg bg-background',
-                ])}
-              >
-                <div
-                  className={cn([
-                    'z-10 flex h-full flex-col justify-between p-6',
-                  ])}
-                >
-                  <p
-                    className={cn([
-                      'text-muted-foreground transition-colors duration-500 group-hover:text-background',
-                    ])}
-                  >
-                    August 18, 2024
-                  </p>
-                  <h2
-                    className={cn([
-                      'line-clamp-2 text-xl font-medium transition-colors duration-500 group-hover:text-background',
-                    ])}
-                  >
-                    The future of web development and design
-                  </h2>
-                </div>
-                <img
-                  alt="The future of web development and design"
-                  className={cn([
-                    'absolute inset-0 -z-10 size-full rounded-lg object-cover brightness-50 transition-all duration-500 ease-[cubic-bezier(0.77,0,0.175,1)] [clip-path:inset(0_0_100%_0)] group-hover:[clip-path:inset(0_0_0%_0)]',
-                  ])}
-                  src="https://images.unsplash.com/photo-1546414701-81cc6963c67f?q=80&w=2144&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                />
-              </a>
-              <a
-                href="#"
-                className={cn([
-                  'group relative isolate h-80 rounded-lg bg-background',
-                ])}
-              >
-                <div
-                  className={cn([
-                    'z-10 flex h-full flex-col justify-between p-6',
-                  ])}
-                >
-                  <p
-                    className={cn([
-                      'text-muted-foreground transition-colors duration-500 group-hover:text-background',
-                    ])}
-                  >
-                    September 7, 2024
-                  </p>
-                  <h2
-                    className={cn([
-                      'line-clamp-2 text-xl font-medium transition-colors duration-500 group-hover:text-background',
-                    ])}
-                  >
-                    The difference between UI and UX and how to design for both
-                  </h2>
-                </div>
-                <img
-                  alt="The difference between UI and UX and how to design for both"
-                  className={cn([
-                    'absolute inset-0 -z-10 size-full rounded-lg object-cover brightness-50 transition-all duration-500 ease-[cubic-bezier(0.77,0,0.175,1)] [clip-path:inset(0_0_100%_0)] group-hover:[clip-path:inset(0_0_0%_0)]',
-                  ])}
-                  src="https://images.unsplash.com/photo-1647715360138-33fb6fe68539?q=80&w=2022&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                />
-              </a>
-              <a
-                href="#"
-                className={cn([
-                  'group relative isolate h-80 rounded-lg bg-background',
-                ])}
-              >
-                <div
-                  className={cn([
-                    'z-10 flex h-full flex-col justify-between p-6',
-                  ])}
-                >
-                  <p
-                    className={cn([
-                      'text-muted-foreground transition-colors duration-500 group-hover:text-background',
-                    ])}
-                  >
-                    September 23, 2024
-                  </p>
-                  <h2
-                    className={cn([
-                      'line-clamp-2 text-xl font-medium transition-colors duration-500 group-hover:text-background',
-                    ])}
-                  >
-                    Optimizing your website for SEO and getting more traffic from search engines
-                  </h2>
-                </div>
-                <img
-                  alt="Optimizing your website for SEO and getting more traffic from search engines"
-                  className={cn([
-                    'absolute inset-0 -z-10 size-full rounded-lg object-cover brightness-50 transition-all duration-500 ease-[cubic-bezier(0.77,0,0.175,1)] [clip-path:inset(0_0_100%_0)] group-hover:[clip-path:inset(0_0_0%_0)]',
-                  ])}
-                  src="https://images.unsplash.com/photo-1623496258831-091279081ac5?q=80&w=2021&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                />
-              </a>
-              <a
-                href="#"
-                className={cn([
-                  'group relative isolate h-80 rounded-lg bg-background',
-                ])}
-              >
-                <div
-                  className={cn([
-                    'z-10 flex h-full flex-col justify-between p-6',
-                  ])}
-                >
-                  <p
-                    className={cn([
-                      'text-muted-foreground transition-colors duration-500 group-hover:text-background',
-                    ])}
-                  >
-                    October 12, 2024
-                  </p>
-                  <h2
-                    className={cn([
-                      'line-clamp-2 text-xl font-medium transition-colors duration-500 group-hover:text-background',
-                    ])}
-                  >
-                    The best tools for web development and design
-                  </h2>
-                </div>
-                <img
-                  alt="The best tools for web development and design"
-                  className={cn([
-                    'absolute inset-0 -z-10 size-full rounded-lg object-cover brightness-50 transition-all duration-500 ease-[cubic-bezier(0.77,0,0.175,1)] [clip-path:inset(0_0_100%_0)] group-hover:[clip-path:inset(0_0_0%_0)]',
-                  ])}
-                  src="https://images.unsplash.com/photo-1563952532949-3d1a874ad614?q=80&w=1951&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                />
-              </a>
+                <PostsGrid topicId={topic?.id} basePath={basePath} searchParams={searchParams} />
+              </Suspense>
             </div>
           </div>
         </div>
@@ -395,37 +377,17 @@ export default async function Page({ params }: PageProps<'/blog/[slug]'>) {
     </PageContainer>
   )
 }
-//
-// export async function generateMetadata({ params }: PageProps<'/blog/[slug]'>): Promise<Metadata> {
-//   // const { slug } = await params
-//   //
-//   // const topic = await queryTopicBySlug({
-//   //   slug,
-//   // })
-//   //
-//   // return generateMeta({
-//   //   doc: topic,
-//   // })
-// }
 
-const queryTopicBySlug = cache(async ({ slug }: { slug: string }) => {
-  const { isEnabled: draft } = await draftMode()
-  const payload = await getPayload({
-    config,
+export async function generateMetadata({ params }: PageProps<'/blog/[slug]'>): Promise<Metadata> {
+  const { slug } = await params
+  if (!slug) {
+    return {
+      title: 'Blog',
+    }
+  }
+
+  const topic = await queryPublishedTopicBySlug(slug)
+  return generateMeta({
+    doc: topic,
   })
-
-  const { docs = [] } = await payload.find({
-    collection: CollectionSlug.BlogTopics,
-    draft,
-    limit: 1,
-    pagination: false,
-    overrideAccess: draft,
-    where: {
-      slug: {
-        equals: slug,
-      },
-    },
-  })
-
-  return docs[0] ?? null
-})
+}

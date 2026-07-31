@@ -1,7 +1,7 @@
 import type { AccessArgs, CollectionConfig } from 'payload'
 
+import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
-import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { MetaField } from '@/fields/Meta'
 import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
@@ -74,7 +74,10 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
 
       return references === 0
     },
-    read: authenticatedOrPublished,
+    // topics have no drafts/versions — authenticatedOrPublished would filter
+    // on a nonexistent _status field and crash every access-enforced read
+    // (including populating post.topics and the public REST API)
+    read: anyone,
     update: authenticated,
   },
   hooks: {

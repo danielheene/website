@@ -210,6 +210,7 @@ export interface Config {
   jobs: {
     tasks: {
       GenerateDocumentThumbnails: TaskGenerateDocumentThumbnails;
+      GenerateVideoThumbnails: TaskGenerateVideoThumbnails;
       CalculateSkillTagInterval: TaskCalculateSkillTagInterval;
       GenerateLocalizedResumeDocument: TaskGenerateLocalizedResumeDocument;
       createCollectionExport: TaskCreateCollectionExport;
@@ -1032,6 +1033,7 @@ export interface PayloadJob {
         taskSlug:
           | 'inline'
           | 'GenerateDocumentThumbnails'
+          | 'GenerateVideoThumbnails'
           | 'CalculateSkillTagInterval'
           | 'GenerateLocalizedResumeDocument'
           | 'createCollectionExport'
@@ -1074,6 +1076,7 @@ export interface PayloadJob {
     | (
         | 'inline'
         | 'GenerateDocumentThumbnails'
+        | 'GenerateVideoThumbnails'
         | 'CalculateSkillTagInterval'
         | 'GenerateLocalizedResumeDocument'
         | 'createCollectionExport'
@@ -2444,6 +2447,19 @@ export interface TaskGenerateDocumentThumbnails {
   input: {
     documentId: string;
     maxThumbnails?: number | null;
+  };
+  output: {
+    thumbnailIDs?: string[] | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskGenerateVideoThumbnails".
+ */
+export interface TaskGenerateVideoThumbnails {
+  input: {
+    videoId: string;
+    timestampInSeconds?: number | null;
   };
   output: {
     thumbnailIDs?: string[] | null;

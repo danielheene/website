@@ -3,9 +3,11 @@ import { TaskSlugValue } from '@/types/jobs-queue'
 
 import { calculateSkillTagInterval } from './calculateSkillTagInterval'
 import { generateDocumentThumbnails } from './generateDocumentThumbnails'
+import { generateVideoThumbnails } from './generateVideoThumbnails'
 
 export const TASKS = [
   generateDocumentThumbnails,
+  generateVideoThumbnails,
   calculateSkillTagInterval,
   generateLocalizedResumeDocument,
 ]

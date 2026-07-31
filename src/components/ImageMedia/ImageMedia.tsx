@@ -64,7 +64,7 @@ export const ImageMedia = ({
 
   const aspectRatio = useMemo(() => {
     if (fill) return 'auto'
-    return `${Math.round(width)} / ${Math.round(height)}`
+    return `${Math.round(width / height)}`
   }, [
     width,
     height,

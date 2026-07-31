@@ -161,9 +161,22 @@ E2E prerequisites:
 - **Modern Styling**: Powered by Tailwind CSS v4.
 - **Live Preview & Server-Sent Events**: Draft/live preview via `app/(frontend)/api/preview`, and a Redis pub/sub-backed SSE endpoint (`app/(frontend)/api/sse`) for real-time status updates.
 
-### Data Seeding (TODO)
+### Data Seeding
 
-- Previous docs referenced a `/api/seed` route, but it is not present in the current codebase.
+Seed blog topics and posts for local testing (idempotent, matched by slug):
+
+```bash
+pnpm seed:blog          # create 6 topics + 30 posts (with downloaded images)
+pnpm seed:blog:clean    # remove them again
+```
+
+Article structure and prose are randomized per post title with a seeded PRNG, so
+reruns produce identical output while each post differs. Images are downloaded
+from `picsum.photos` (keyless) and uploaded into the images collection; the AI
+alt-text hook is skipped during seeding.
+
+Note: `payload run` only forwards CLI arguments after a `--` separator — see the
+`seed:blog:clean` script.
 - TODO: If seeding is needed, add a dedicated script or route and document usage here.
 
 ## CI / Deployment

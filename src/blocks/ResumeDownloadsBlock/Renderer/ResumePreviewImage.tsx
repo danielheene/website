@@ -19,7 +19,7 @@ export const ResumePreviewImage = ({
 }: ResumePreviewImageProps): JSX.Element => (
   <ImageMedia
     style={{
-      aspectRatio: `${width / height}`,
+      aspectRatio: `${Math.round(width / height)}`,
     }}
     className={cn([
       'absolute top-0 right-0 z-40 flex w-3/5',

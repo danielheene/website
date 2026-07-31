@@ -42,7 +42,7 @@ export const buttonStyles = tv({
         'dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40',
       ],
       link: [
-        'text-primary underline underline-offset-4 hover:underline',
+        'text-foreground normal-case underline underline-offset-4 hover:underline px-0!',
       ],
     },
     size: {

@@ -3,7 +3,6 @@ import Link from 'next/link'
 
 import { Button, ButtonProps } from '@/components/Button'
 import { Icon } from '@/components/Icon'
-import { cn } from '@/lib/cn'
 import { generateContentURL } from '@/lib/generateContentURL'
 import type { LinkFieldData } from '@/types/payload'
 
@@ -25,7 +24,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     label,
     newTab,
     reference,
-    size: sizeFromProps,
+    size,
     variant = 'link',
     url,
   } = props
@@ -50,7 +49,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   return (
     <Button
       className={className}
-      size={sizeFromProps}
+      size={size}
       variant={variant}
       {...(icon && iconOnly
         ? {

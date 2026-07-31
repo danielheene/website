@@ -3,12 +3,15 @@
 import { camelCase, kebabCase, snakeCase, startCase, upperFirst } from 'lodash-es'
 import pupa from 'pupa'
 
-import { fetchSiteSettingsCached } from '@/lib/fetchers'
+import { fetchSiteSettings } from '@/lib/fetchers'
 
 export const generateMetaTitle = async (title: string) => {
+  // uncached on purpose: this runs in Payload field hooks (document save),
+  // which may execute outside a Next request context (scripts, jobs queue)
+  // where 'use cache' functions like fetchSiteSettingsCached throw
   const {
     general: { titleTemplate, siteName, siteURL },
-  } = await fetchSiteSettingsCached()
+  } = await fetchSiteSettings()
 
   const filters = {
     trim: (value: string) => value.trim(),

@@ -1,6 +1,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
-import { CollectionSlug, CollectionSlugValue, RegisteredCollectionSlug, } from '@/types/collections'
+
+import { CollectionSlug, CollectionSlugValue, RegisteredCollectionSlug } from '@/types/collections'
 
 // biome-ignore lint/suspicious/noExplicitAny: matching any callable signature
 type AnyFunction = (...args: any[]) => any
@@ -75,11 +76,18 @@ export const resolveRelations = async <T>(data: T): Promise<ResolvedRelations<T>
 
     if (isRelation(node)) {
       /**
+       * Sibling keys are spread back in: Lexical upload nodes also match the
+       * `{relationTo, value}` shape, and dropping their `type`/`version`/
+       * `format` fields would leave the JSX converters unable to dispatch them.
+       */
+
+      /**
        * Already-populated relation: keep the wrapper, resolve deeper relations
        * inside the referenced document.
        */
       if (typeof node.value === 'object') {
         return {
+          ...node,
           relationTo: node.relationTo,
           value: await walk(node.value, seen),
         }
@@ -92,6 +100,7 @@ export const resolveRelations = async <T>(data: T): Promise<ResolvedRelations<T>
       const reference = `${node.relationTo}:${node.value}`
       if (seen.has(reference))
         return {
+          ...node,
           relationTo: node.relationTo,
           value: null,
         }
@@ -104,6 +113,7 @@ export const resolveRelations = async <T>(data: T): Promise<ResolvedRelations<T>
         .catch(() => null)
 
       return {
+        ...node,
         relationTo: node.relationTo,
         value: value ? await walk(value, new Set(seen).add(reference)) : null,
       }
