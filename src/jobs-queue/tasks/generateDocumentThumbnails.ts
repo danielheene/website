@@ -5,6 +5,7 @@ import { PDFParse } from 'pdf-parse'
 
 import { CollectionSlug } from '@/types/collections'
 import { TaskSlug } from '@/types/jobs-queue'
+import { MediaDocument } from '@/types/payload'
 
 export const generateDocumentThumbnails: TaskConfig<TaskSlug['GenerateDocumentThumbnails']> = {
   slug: TaskSlug.GenerateDocumentThumbnails,
@@ -69,7 +70,13 @@ export const generateDocumentThumbnails: TaskConfig<TaskSlug['GenerateDocumentTh
       }
     }
 
-    const filenameBase = document?.filename?.replace(/(\.pdf)$/, '')
+    const generatorFlags = [
+      '+auto-generated',
+      '+document-thumbnail',
+      '+thumbnail',
+    ] as MediaDocument['generatorFlags']
+    const filenameBase = document?.filename?.replace(/\.[^/.]+$/, '')
+    if (filenameBase.toLowerCase().includes('resume')) generatorFlags.push('+resume-asset')
 
     /* create image documents from new thumbnails */
     const ids: string[] = []
@@ -80,6 +87,7 @@ export const generateDocumentThumbnails: TaskConfig<TaskSlug['GenerateDocumentTh
         data: {
           width: thumbnail.width,
           height: thumbnail.height,
+          generatorFlags,
         },
         file: {
           data: Buffer.from(thumbnail.data),

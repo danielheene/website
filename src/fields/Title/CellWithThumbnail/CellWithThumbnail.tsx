@@ -13,7 +13,7 @@ type CellWithThumbnailProps = {
 export const CellWithThumbnail = async (props: CellWithThumbnailProps) => {
   const { rowData, cellData, field, payload, collectionSlug, thumbnailPath, i18n } = props
 
-  const thumbnailPathBase = thumbnailPath.replace(/(\.url)$/, '').replace(/(\.thumbnailURL)$/, '')
+  const thumbnailPathBase = thumbnailPath.replace(/\.(url|thumbnailURL)$/, '')
   const document = await resolveRelations(rowData)
   const thumbnailURL = get(
     document,

@@ -1,18 +1,15 @@
 'use client'
 
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/AdminPanel/Card'
+import { cn } from 'tailwind-variants'
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/AdminPanel/Card'
 import { Icon, type IconName } from '@/components/Icon'
 import { Skeleton } from '@/components/Skeleton'
-import { useUmamiCharts } from '@/contexts/UmamiCharts'
 import { formatSecondsToDuration } from '@/lib/formatSecondsToDuration'
-import type { UmamiStats } from '@/lib/UmamiHandler'
+
+import type { UmamiStats } from './UmamiWidget.data'
 
 const CONFIG = {
   visitors: {
@@ -47,9 +44,7 @@ const CONFIG = {
     title: 'Visit Duration',
     order: 4,
     transform: (data) =>
-      data?.totaltime > 0 && data?.visits > 0
-        ? data?.totaltime / data?.visits
-        : 0,
+      data?.totaltime > 0 && data?.visits > 0 ? data?.totaltime / data?.visits : 0,
     format: (v) => `${formatSecondsToDuration(v)}`,
     icon: 'material-symbols:nest-clock-farsight-analog-outline',
   },
@@ -58,27 +53,19 @@ const CONFIG = {
   {
     title: string
     order: number
-    transform: (
-      data: Record<Exclude<keyof UmamiStats, 'comparison'>, number>,
-    ) => number
+    transform: (data: Record<Exclude<keyof UmamiStats, 'comparison'>, number>) => number
     format: (v: number) => string
     icon: string
   }
 >
 
-export const UmamiStatsWidget = () => {
-  const {
-    stats: { data, dataIsLoading },
-    registerWidget,
-  } = useUmamiCharts()
+interface StatsSectionProps {
+  data: UmamiStats | null
+  dataIsLoading: boolean
+  className?: string
+}
 
-  useEffect(() => {
-    const unregister = registerWidget('stats')
-    return () => unregister()
-  }, [
-    registerWidget,
-  ])
-
+export const StatsSection = ({ data, dataIsLoading, className }: StatsSectionProps) => {
   const stats = useMemo(() => {
     const dataIsReady = !dataIsLoading && data && typeof data === 'object'
 
@@ -88,9 +75,7 @@ export const UmamiStatsWidget = () => {
         const { title, transform, format, icon } = CONFIG[k]
 
         const value = dataIsReady ? format(transform(data)) : undefined
-        const prevValue = dataIsReady
-          ? format(transform(data.comparison))
-          : undefined
+        const prevValue = dataIsReady ? format(transform(data.comparison)) : undefined
 
         return {
           title,
@@ -105,7 +90,12 @@ export const UmamiStatsWidget = () => {
   ])
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
+    <div
+      className={cn([
+        'grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5 h-40',
+        className,
+      ])}
+    >
       {stats.map((stat, index) => (
         <StatCard key={index} {...stat} />
       ))}
@@ -122,7 +112,7 @@ interface StatCardProps {
 
 function StatCard({ title, value, prevValue, icon }: StatCardProps) {
   return (
-    <Card className="overflow-hidden col-span-1 md:col-span-1 lg:col-span-1">
+    <Card className="overflow-hidden col-span-1 md:col-span-1 lg:col-span-1 h-40">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <Icon name={icon} className="text-2xl text-muted-foreground" />
@@ -130,9 +120,7 @@ function StatCard({ title, value, prevValue, icon }: StatCardProps) {
       <CardContent>
         {value && prevValue ? (
           <>
-            <div className="h-10 flex items-center text-4xl font-mono font-bold">
-              {value}
-            </div>
+            <div className="h-10 flex items-center text-4xl font-mono font-bold">{value}</div>
             <div className="h-5 flex items-center text-md font-mono text-muted-foreground">
               {prevValue}
             </div>

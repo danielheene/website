@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
+import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { MediaField } from '@/fields/Media'
 import { generateChecksum } from '@/lib/hooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
@@ -18,6 +19,7 @@ export const MediaDocuments: CollectionConfig<CollectionSlug['MediaDocuments']> 
     singular: 'Document',
     plural: 'Documents',
   },
+  enableQueryPresets: true,
   hooks: {
     beforeChange: [
       generateChecksum,
@@ -55,7 +57,7 @@ export const MediaDocuments: CollectionConfig<CollectionSlug['MediaDocuments']> 
     ],
     adminThumbnail: ({ doc }) => {
       if (Array.isArray(doc.thumbnails) && doc.thumbnails.length > 0) {
-        const thumbnailFilename = String(doc.filename).replace(/\.pdf$/, '-1-thumbnail.png')
+        const thumbnailFilename = String(doc.filename).replace(/\.[^/.]+$/, '-1-thumbnail.png')
         return `/api/${CollectionSlug.MediaImages}/file/${thumbnailFilename}`
       }
       // return `/api/${CollectionSlug['MediaImages']}/file/${thumbnailFilename}`
@@ -175,6 +177,8 @@ export const MediaDocuments: CollectionConfig<CollectionSlug['MediaDocuments']> 
     //     disableListFilter: true,
     //   },
     // },
+
+    GeneratorFlagsField(),
   ],
   versions: false,
 }

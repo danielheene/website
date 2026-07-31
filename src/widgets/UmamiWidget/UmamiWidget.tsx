@@ -3,11 +3,11 @@ import type { WidgetServerProps } from 'payload'
 import { isValid, parseISO } from 'date-fns'
 
 import { Interval } from '@/lib/date'
-import { fetchWebsite } from '@/lib/UmamiHandler'
 
-import { UmamiControlBarClient } from './UmamiControlBar.client'
+import { UmamiWidgetClient } from './UmamiWidget.client'
+import { fetchWebsite } from './UmamiWidget.data'
 
-export const UmamiControlBar = async ({ req }: WidgetServerProps) => {
+export const UmamiWidget = async (_props: WidgetServerProps) => {
   const website = await fetchWebsite()
   const { createdAt, deletedAt, resetAt, domain, id, teamId, name } = website || {}
 
@@ -23,7 +23,7 @@ export const UmamiControlBar = async ({ req }: WidgetServerProps) => {
   const [startDate, endDate] = new Interval().setToLastSevenDays().value
 
   return (
-    <UmamiControlBarClient
+    <UmamiWidgetClient
       startDate={startDate.toISOString()}
       endDate={endDate.toISOString()}
       minDate={minDate.toISOString()}

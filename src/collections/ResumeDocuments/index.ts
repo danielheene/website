@@ -7,6 +7,7 @@ import { authenticated } from '@/access/authenticated'
 import { forbidden } from '@/access/forbidden'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
+import { generateContentURL } from '@/lib/generateContentURL'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 
@@ -68,6 +69,13 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
   admin: {
     useAsTitle: 'title',
     group: AdminGroup.Resume,
+    livePreview: {
+      url: ({ data }) =>
+        generateContentURL({
+          collection: CollectionSlug.ResumeDocuments,
+          slug: data?.slug,
+        }),
+    },
     defaultColumns: [
       'title',
       'slug',

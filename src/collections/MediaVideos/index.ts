@@ -1,7 +1,12 @@
 import type { CollectionConfig } from 'payload'
 
+import { isArray, isString } from 'lodash-es'
+import { flat } from 'tailwind-variants/utils'
+
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
+import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
+import { MediaField } from '@/fields/Media'
 import { RichTextField } from '@/fields/RichText'
 import { generateChecksum } from '@/lib/hooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
@@ -18,6 +23,7 @@ export const MediaVideos: CollectionConfig<CollectionSlug['MediaVideos']> = {
     singular: 'Video',
     plural: 'Videos',
   },
+  enableQueryPresets: true,
   hooks: {
     beforeChange: [
       generateChecksum,
@@ -52,6 +58,13 @@ export const MediaVideos: CollectionConfig<CollectionSlug['MediaVideos']> = {
     mimeTypes: [
       'video/*',
     ],
+    adminThumbnail: ({ doc }) => {
+      if (Array.isArray(doc.thumbnails) && doc.thumbnails.length > 0) {
+        const thumbnailFilename = String(doc.filename).replace(/\.[^/.]+$/, '-thumbnail.png')
+        return `/api/${CollectionSlug.MediaImages}/file/${thumbnailFilename}`
+      }
+      // return `/api/${CollectionSlug['MediaImages']}/file/${thumbnailFilename}`
+    },
   },
   fields: [
     {
@@ -81,6 +94,18 @@ export const MediaVideos: CollectionConfig<CollectionSlug['MediaVideos']> = {
       name: 'caption',
       editorVariant: 'caption',
     }),
+
+    MediaField({
+      name: 'thumbnails',
+      relationTo: [
+        CollectionSlug.MediaImages,
+      ],
+      hasMany: true,
+      readOnly: true,
+      allowCreate: false,
+    }),
+
+    GeneratorFlagsField(),
   ],
   versions: false,
 }

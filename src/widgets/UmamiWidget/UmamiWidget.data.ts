@@ -1,105 +1,77 @@
 'use server'
 
 import { hoursToSeconds } from 'date-fns'
-import { createClient, RedisClientType } from 'redis'
+
+import { get, set } from '@/lib/RedisHandler'
 
 let token: string | null = null
-let redis: RedisClientType | null = null
-
-let verifyPromise: Promise<boolean> | null = null
 let tokenPromise: Promise<string | null> | null = null
 
-const login = async () => {
-  if (tokenPromise) return tokenPromise
-
-  tokenPromise = new Promise((resolve) => {
-    fetch(`${process.env.NEXT_PUBLIC_UMAMI_URL}/api/auth/login`, {
-      method: 'POST',
-      body: JSON.stringify({
-        username: process.env.UMAMI_USERNAME,
-        password: process.env.UMAMI_PASSWORD,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('data', data)
-        token = data.token as string
-        resolve(token)
-      })
+const login = async (): Promise<string | null> => {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_UMAMI_URL}/api/auth/login`, {
+    method: 'POST',
+    body: JSON.stringify({
+      username: process.env.UMAMI_USERNAME,
+      password: process.env.UMAMI_PASSWORD,
+    }),
   })
 
-  return tokenPromise
+  const data = await response.json()
+  token = data.token as string
+  return token
 }
 
-const verify = async () => {
-  if (verifyPromise) return verifyPromise
+const verify = async (): Promise<boolean> => {
+  if (!token) return false
 
-  verifyPromise = new Promise((resolve) => {
-    if (!token) {
-      return resolve(false)
-    }
-
-    fetch(`${process.env.NEXT_PUBLIC_UMAMI_URL}/api/auth/verify`, {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_UMAMI_URL}/api/auth/verify`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((response) => {
-        if (response.ok) {
-          resolve(true)
-        } else {
-          resolve(false)
-        }
-      })
-      .catch((error) => {
-        console.error('Error verifying token:', error)
-        resolve(false)
-      })
-  })
 
-  return verifyPromise
-}
-
-const getToken = async () => {
-  const verified = await verify()
-
-  console.log('verified', verified)
-
-  if (!verified) {
-    await login()
+    return response.ok
+  } catch (error) {
+    console.error('Error verifying token:', error)
+    return false
   }
-
-  return token
 }
 
-export const getRedis = async () => {
-  if (!redis) {
-    redis = await createClient()
-      .on('error', (err) => console.log('Redis Client Error', err))
-      .connect()
+/**
+ * Returns a valid bearer token, verifying the current one first and logging
+ * in again if it's missing/invalid. The in-flight promise is shared while
+ * pending, so concurrent callers dedupe into a single verify/login flow, but
+ * it's cleared once settled so the next call re-checks instead of being
+ * stuck on the first result forever.
+ */
+export const getToken = async (): Promise<string | null> => {
+  if (tokenPromise) return tokenPromise
+
+  tokenPromise = (async () => {
+    const verified = await verify()
+
+    if (!verified) {
+      await login()
+    }
+
+    return token
+  })()
+
+  try {
+    return await tokenPromise
+  } finally {
+    tokenPromise = null
   }
-  return redis
 }
 
-export const setCache = async <T extends object | string>(key: string, value: T) => {
-  const redis = await getRedis()
-  const stringifiedValue = JSON.stringify(value)
-  return redis.set(key, stringifiedValue, {
-    EX: hoursToSeconds(2),
-  })
-}
-
-export const getCache = async <T extends object | string>(key: string): Promise<T | null> => {
-  const redis = await getRedis()
-  const data = await redis.get(key)
-  return data ? JSON.parse(data) : null
-}
+const CACHE_TTL_SECONDS = hoursToSeconds(2)
 
 const fetcher = async <T extends object>(url: URL | string): Promise<T | null> => {
-  // const data = await getCache(url.toString())
-  // if (data) return data as T
+  const cached = await get<T>(url.toString())
+  if (cached) return cached
 
   const token = await getToken()
 
@@ -111,10 +83,9 @@ const fetcher = async <T extends object>(url: URL | string): Promise<T | null> =
   })
 
   const json: T = await response.json()
-  console.log(json)
   if ('error' in json) return null
 
-  await setCache(url.toString(), json as T)
+  await set(url.toString(), json as T, CACHE_TTL_SECONDS)
   return json
 }
 
@@ -190,7 +161,6 @@ export type UmamiPageViews = {
 
 export const fetchWebsite = async () => {
   const url = buildApiUrl('')
-  console.log('fetchWebsite', url)
   return await fetcher<UmamiWebsite>(url)
 }
 

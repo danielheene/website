@@ -1,4 +1,5 @@
 import type React from 'react'
+import Link from 'next/link'
 
 import { Button, ButtonProps } from '@/components/Button'
 import { Icon } from '@/components/Icon'
@@ -7,7 +8,6 @@ import { generateContentURL } from '@/lib/generateContentURL'
 import type { LinkFieldData } from '@/types/payload'
 
 type CMSLinkType = LinkFieldData & {
-  appearance?: 'inline'
   children?: React.ReactNode
   className?: string
   newTab?: boolean
@@ -18,7 +18,6 @@ type CMSLinkType = LinkFieldData & {
 export const CMSLink: React.FC<CMSLinkType> = (props) => {
   const {
     type,
-    appearance = 'inline',
     icon,
     iconOnly,
     children,
@@ -27,7 +26,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     newTab,
     reference,
     size: sizeFromProps,
-    variant,
+    variant = 'link',
     url,
   } = props
 
@@ -41,8 +40,6 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
 
   if (!href) return null
 
-  const size = appearance === 'inline' ? 'clear' : sizeFromProps
-
   const newTabProps = newTab
     ? {
         rel: 'noopener noreferrer',
@@ -52,21 +49,21 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
 
   return (
     <Button
-      className={cn(className)}
+      className={className}
       size={sizeFromProps}
       variant={variant}
-      type="link"
       {...(icon && iconOnly
         ? {
             'aria-label': label,
           }
         : {})}
-      href={href || url}
-      {...newTabProps}
+      asChild
     >
-      {icon && <Icon name={icon} />}
-      {((icon && !iconOnly) || !icon) && label && <span>{label}</span>}
-      {((icon && !iconOnly) || !icon) && children && children}
+      <Link href={href || url} {...newTabProps}>
+        {icon && <Icon name={icon} />}
+        {((icon && !iconOnly) || !icon) && label && <span>{label}</span>}
+        {((icon && !iconOnly) || !icon) && children && children}
+      </Link>
     </Button>
   )
 }

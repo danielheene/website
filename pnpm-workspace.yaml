@@ -1,9 +1,11 @@
 allowBuilds:
   '@sentry/cli': true
   '@swc/core': true
+  canvas: set this to true or false
   core-js-pure: true
   esbuild: true
   mongodb-memory-server: true
+  node-av: true
   sharp: true
   unrs-resolver: true
   workerd: true

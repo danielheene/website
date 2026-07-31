@@ -2,9 +2,12 @@
 
 This repository contains the source code for my personal website: [daniel.heene.io](https://daniel.heene.io).
 
+> **For AI coding agents**: see [`AGENTS.md`](./AGENTS.md) for coding conventions, architecture
+> notes, and known security/style guardrails before making changes.
+
 ## Tech Stack
 
-- **Framework**: [Next.js 15](https://nextjs.org/) (App Router, React 19)
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router, React 19)
 - **CMS**: [Payload CMS 3.x](https://payloadcms.com/)
 - **Database**: [MongoDB](https://www.mongodb.com/) (via Mongoose)
 - **Cache/KV**: [Redis](https://redis.io/)
@@ -15,8 +18,8 @@ This repository contains the source code for my personal website: [daniel.heene.
 
 ## Requirements
 
-- **Node.js**: `^22.0.0`
-- **pnpm**: `^10.0.0`
+- **Node.js**: `^26.0.0`
+- **pnpm**: `^11.0.0`
 - **Docker**: For running local database, cache, and storage services.
 
 ## Setup & Local Development
@@ -69,7 +72,7 @@ The project uses several environment variables for configuration. See `.env.exam
 - `DATABASE_URL`: MongoDB connection string.
 - `PAYLOAD_SECRET`: Secret used to encrypt Payload JWT tokens.
 - `PREVIEW_SECRET`: Secret used for Next.js/Payload draft previews.
-- `CRON_SECRET`: Secret for triggering cron tasks.
+- `CRON_SECRET`: Reserved for triggering cron tasks. Declared in the schema but not yet enforced by any route (see `AGENTS.md`).
 - `SERVER_URL`: The public URL of the server.
 - `REDIS_URL`: Redis connection URL.
 - `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `S3_BUCKET`, `S3_REGION`, `S3_ENDPOINT`: S3-compatible storage configuration.
@@ -78,32 +81,42 @@ The project uses several environment variables for configuration. See `.env.exam
 
 ## Available Scripts
 
-- `pnpm dev`: Starts the Next.js development server.
+- `pnpm dev`: Starts the Next.js development server (and Storybook, in parallel).
 - `pnpm build`: Builds the application for production.
 - `pnpm start`: Starts the production server.
 - `pnpm generate`: Runs `generate:types` and `generate:importmap` in parallel.
 - `pnpm payload`: Wrapper for Payload CLI.
 - `pnpm payload migrate`: Runs database migrations.
 - `pnpm ci`: Sequence for CI/CD (migration + build).
-- `pnpm lint`: Runs ESLint for code quality.
+- `pnpm lint`: Runs `biome check` (lint + format check) for code quality.
+- `pnpm format`: Runs `biome format --write` to auto-fix formatting.
+- `pnpm storybook` / `pnpm dev:storybook`: Runs Storybook for isolated component development.
 
 ## Project Structure
 
 ```text
 .
-├── app/                  # Next.js App Router (Frontend and Payload routes)
+├── app/                  # Next.js App Router
+│   ├── (frontend)/       # Public site routes, incl. api/ (preview, sse, heartbeat, service-status)
+│   └── (payload)/        # Payload admin panel routes
 ├── src/                  # Application Source
-│   ├── access/           # Payload Access Control
-│   ├── blocks/           # Reusable Payload Blocks
-│   ├── collections/      # Payload Collections (Media, Pages, Posts, etc.)
+│   ├── access/           # Payload Access Control functions
+│   ├── blocks/           # Reusable Payload Blocks (resume sections, content blocks)
+│   ├── collections/      # Payload Collections (Media, Pages, BlogPosts, Resume*, Users, etc.)
 │   ├── components/       # React Components
-│   ├── fields/           # Custom Payload Fields
-│   ├── globals/          # Payload Globals (Settings, Navigation, etc.)
-│   ├── migrations/       # Database Migrations
-│   ├── styles/           # CSS and Tailwind Styles
-│   └── utilities/        # Shared Utilities
+│   ├── contexts/         # React Context providers
+│   ├── fields/           # Custom/reusable Payload Field factories
+│   ├── globals/          # Payload Globals (SiteSettings, PDFGeneratorSettings, etc.)
+│   ├── hooks/            # React hooks
+│   ├── jobs-queue/       # Payload Jobs Queue tasks/workflows
+│   ├── lib/              # Framework-agnostic utilities (Redis handler, caching, etc.)
+│   ├── pdf/              # PDF generation (resume export)
+│   ├── styles/           # CSS and Tailwind styles
+│   ├── types/            # Shared/generated TypeScript types (incl. generated payload.ts)
+│   └── widgets/          # Payload admin dashboard widgets
 ├── public/               # Static Assets
-├── tests/                # Unit and Integration Tests
+├── scripts/              # Standalone Node scripts (e.g. dev tunnel)
+├── payload.config.ts     # Payload CMS configuration (root-level, not under src/)
 ├── docker-compose.yml    # Local Infrastructure
 └── next.config.ts        # Next.js Configuration
 ```
@@ -111,24 +124,25 @@ The project uses several environment variables for configuration. See `.env.exam
 ## Entrypoints
 
 - Next.js App Router under `app/` (served via `pnpm dev` / `pnpm start`).
-- Payload CMS is configured in `src/payload.config.ts` and integrated via `withPayload` in `next.config.ts`.
-- File uploads are handled by Payload collections with the S3 storage plugin configured in `src/payload.config.ts`.
+- Payload CMS is configured in `payload.config.ts` (repo root) and integrated via `withPayload` in `next.config.ts`.
+- File uploads are handled by Payload collections with the S3 storage plugin configured in `payload.config.ts`.
 
 ## Testing
 
-The project uses the built-in Node.js test runner.
+The project is set up to use Node's built-in test runner (`node --test`), but **no test files
+currently exist in the repository**. When adding tests, co-locate them as `*.test.ts`/`*.test.js`
+next to the code under test, or under a `tests/` directory:
 
 - **Run all tests**: `node --test`
 - **Target specific test**: `node --test path/to/file.test.js`
 
-Tests are typically located in the `tests/` directory or co-located with source files using the `.test.js` extension.
-
 ## Features
 
 - **Media Optimization**: Images are stored in S3 and automatically generate `alt` text and `blurDataURL` on upload using `sharp`.
-- **SVG Optimization**: Optimize SVGs for logos using `svgo` in the admin UI. TODO: Confirm if any server-side sanitization endpoint is used.
+- **SVG Optimization**: Optimize SVGs for logos using `svgo` in the admin UI. Note: this is a client-side editor convenience only, not a server-side sanitization boundary — see `AGENTS.md` for the related security note.
 - **Localization**: Full support for English (`en`) and German (`de`) with localized admin panel and content.
 - **Modern Styling**: Powered by Tailwind CSS v4.
+- **Live Preview & Server-Sent Events**: Draft/live preview via `app/(frontend)/api/preview`, and a Redis pub/sub-backed SSE endpoint (`app/(frontend)/api/sse`) for real-time status updates.
 
 ### Data Seeding (TODO)
 
@@ -139,6 +153,12 @@ Tests are typically located in the `tests/` directory or co-located with source 
 
 - CI entrypoint: `pnpm ci` runs `payload migrate` then `next build`.
 - TODO: Document hosting provider and production environment configuration (e.g., Docker, Vercel, Fly.io).
+
+## Code Quality & Security Notes
+
+- Linting/formatting is enforced by [Biome](https://biomejs.dev/) (`biome.json`), not ESLint/Prettier — see `AGENTS.md` for the full style conventions.
+- `pnpm lint` does not currently pass cleanly on `main` (pre-existing formatting and lint diagnostics); avoid introducing new issues when touching a file.
+- See [`AGENTS.md`](./AGENTS.md) for a summary of known security guardrails (open `queryPresets` access, unauthenticated SSE channel subscription, unsanitized raw SVG rendering, unused `CRON_SECRET`) to keep in mind when working in related areas.
 
 ---
 

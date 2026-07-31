@@ -21,7 +21,7 @@ export const CardHeader = ({ className, ...props }: React.ComponentProps<'div'>)
   return (
     <div
       className={cn(
-        '@container/card-header gap-2 px-6',
+        '@container/card-header min-h-10 gap-2 px-6',
         'flex flex-row items-center justify-between',
         className,
       )}
@@ -46,6 +46,7 @@ export const CardPagination = ({
       <Button
         size="icon"
         type="button"
+        variant="secondary"
         // outline
         className="text-3xl pr-0.5"
         onClick={setPrevPage}
@@ -55,8 +56,9 @@ export const CardPagination = ({
       </Button>
       <Button
         size="icon"
-        // outline
         type="button"
+        variant="secondary"
+        // outline
         className="text-3xl pl-0.5"
         onClick={setNextPage}
         disabled={!hasNextPage}

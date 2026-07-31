@@ -51,68 +51,21 @@ export const config = buildConfig({
         Logo: '@/components/AdminPanel#Logo',
       },
       Nav: '@/components/AdminPanel#Nav',
-      providers: [
-        '@/contexts/UmamiCharts#UmamiChartsContainer',
-      ],
     },
     dashboard: {
       defaultLayout: [
         {
-          widgetSlug: 'umami-control-bar',
+          widgetSlug: 'umami-widget',
           width: 'full',
-        },
-        {
-          widgetSlug: 'umami-stats-widget',
-          width: 'full',
-        },
-        {
-          widgetSlug: 'umami-pageviews-widget',
-          width: 'medium',
-        },
-        {
-          widgetSlug: 'umami-paths-widget',
-          width: 'x-small',
-        },
-        {
-          widgetSlug: 'umami-events-widget',
-          width: 'x-small',
         },
       ],
       widgets: [
         {
-          slug: 'umami-control-bar',
-          label: 'Umami: Control Bar',
-          Component: '@/components/AdminPanel#UmamiControlBar',
+          slug: 'umami-widget',
+          label: 'Umami',
+          Component: '@/widgets/UmamiWidget#UmamiWidget',
           minWidth: 'full',
           maxWidth: 'full',
-        },
-        {
-          slug: 'umami-stats-widget',
-          label: 'Umami: Stats',
-          Component: '@/components/AdminPanel#UmamiStatsWidget',
-          minWidth: 'full',
-          maxWidth: 'full',
-        },
-        {
-          slug: 'umami-pageviews-widget',
-          label: 'Umami: PageViews',
-          Component: '@/components/AdminPanel#UmamiPageViewsWidget',
-          minWidth: 'medium',
-          maxWidth: 'full',
-        },
-        {
-          slug: 'umami-paths-widget',
-          label: 'Umami: Paths',
-          Component: '@/components/AdminPanel#UmamiPathsWidget',
-          minWidth: 'x-small',
-          maxWidth: 'medium',
-        },
-        {
-          slug: 'umami-events-widget',
-          label: 'Umami: Events',
-          Component: '@/components/AdminPanel#UmamiEventsWidget',
-          minWidth: 'x-small',
-          maxWidth: 'medium',
         },
       ],
     },

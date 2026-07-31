@@ -203,11 +203,7 @@ export interface Config {
   };
   locale: null;
   widgets: {
-    'umami-control-bar': UmamiControlBarWidget;
-    'umami-stats-widget': UmamiStatsWidgetWidget;
-    'umami-pageviews-widget': UmamiPageviewsWidgetWidget;
-    'umami-paths-widget': UmamiPathsWidgetWidget;
-    'umami-events-widget': UmamiEventsWidgetWidget;
+    'umami-widget': UmamiWidgetWidget;
     collections: CollectionsWidget;
   };
   user: User;
@@ -389,6 +385,22 @@ export interface MediaImage {
     [k: string]: unknown;
   } | null;
   blurDataURL?: string | null;
+  generatorFlags?: (
+    | '+auto-generated'
+    | '-auto-generated'
+    | '+resume-asset'
+    | '-resume-asset'
+    | '+thumbnail'
+    | '-thumbnail'
+    | '+document'
+    | '-document'
+    | '+audio-thumbnail'
+    | '-audio-thumbnail'
+    | '+video-thumbnail'
+    | '-video-thumbnail'
+    | '+document-thumbnail'
+    | '-document-thumbnail'
+  )[];
   prefix?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -773,6 +785,28 @@ export interface MediaVideo {
     };
     [k: string]: unknown;
   } | null;
+  thumbnails?:
+    | {
+        relationTo: 'images';
+        value: string | MediaImage;
+      }[]
+    | null;
+  generatorFlags?: (
+    | '+auto-generated'
+    | '-auto-generated'
+    | '+resume-asset'
+    | '-resume-asset'
+    | '+thumbnail'
+    | '-thumbnail'
+    | '+document'
+    | '-document'
+    | '+audio-thumbnail'
+    | '-audio-thumbnail'
+    | '+video-thumbnail'
+    | '-video-thumbnail'
+    | '+document-thumbnail'
+    | '-document-thumbnail'
+  )[];
   prefix?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -799,6 +833,22 @@ export interface MediaDocument {
         value: string | MediaImage;
       }[]
     | null;
+  generatorFlags?: (
+    | '+auto-generated'
+    | '-auto-generated'
+    | '+resume-asset'
+    | '-resume-asset'
+    | '+thumbnail'
+    | '-thumbnail'
+    | '+document'
+    | '-document'
+    | '+audio-thumbnail'
+    | '-audio-thumbnail'
+    | '+video-thumbnail'
+    | '-video-thumbnail'
+    | '+document-thumbnail'
+    | '-document-thumbnail'
+  )[];
   prefix?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -819,6 +869,22 @@ export interface MediaDocument {
 export interface MediaAudio {
   id: string;
   checksum?: string | null;
+  generatorFlags?: (
+    | '+auto-generated'
+    | '-auto-generated'
+    | '+resume-asset'
+    | '-resume-asset'
+    | '+thumbnail'
+    | '-thumbnail'
+    | '+document'
+    | '-document'
+    | '+audio-thumbnail'
+    | '-audio-thumbnail'
+    | '+video-thumbnail'
+    | '-video-thumbnail'
+    | '+document-thumbnail'
+    | '-document-thumbnail'
+  )[];
   caption?: {
     root: {
       type: string;
@@ -1396,7 +1462,7 @@ export interface PayloadQueryPreset {
     | boolean
     | null;
   groupBy?: string | null;
-  relatedCollection: 'images';
+  relatedCollection: 'images' | 'videos' | 'documents' | 'audios';
   /**
    * This is a temporary field used to determine if updating the preset would remove the user's access to it. When `true`, this record will be deleted after running the preset's `validate` function.
    */
@@ -1509,6 +1575,7 @@ export interface ImagesSelect<T extends boolean = true> {
   alt?: T;
   credits?: T;
   blurDataURL?: T;
+  generatorFlags?: T;
   prefix?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1543,6 +1610,8 @@ export interface ImagesSelect<T extends boolean = true> {
 export interface VideosSelect<T extends boolean = true> {
   checksum?: T;
   caption?: T;
+  thumbnails?: T;
+  generatorFlags?: T;
   prefix?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1563,6 +1632,7 @@ export interface VideosSelect<T extends boolean = true> {
 export interface DocumentsSelect<T extends boolean = true> {
   checksum?: T;
   thumbnails?: T;
+  generatorFlags?: T;
   prefix?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1582,6 +1652,7 @@ export interface DocumentsSelect<T extends boolean = true> {
  */
 export interface AudiosSelect<T extends boolean = true> {
   checksum?: T;
+  generatorFlags?: T;
   caption?: T;
   prefix?: T;
   updatedAt?: T;
@@ -2347,53 +2418,13 @@ export interface AddressDataSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "umami-control-bar_widget".
+ * via the `definition` "umami-widget_widget".
  */
-export interface UmamiControlBarWidget {
+export interface UmamiWidgetWidget {
   data?: {
     [k: string]: unknown;
   };
   width: 'full';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "umami-stats-widget_widget".
- */
-export interface UmamiStatsWidgetWidget {
-  data?: {
-    [k: string]: unknown;
-  };
-  width: 'full';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "umami-pageviews-widget_widget".
- */
-export interface UmamiPageviewsWidgetWidget {
-  data?: {
-    [k: string]: unknown;
-  };
-  width: 'medium' | 'large' | 'x-large' | 'full';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "umami-paths-widget_widget".
- */
-export interface UmamiPathsWidgetWidget {
-  data?: {
-    [k: string]: unknown;
-  };
-  width: 'x-small' | 'small' | 'medium';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "umami-events-widget_widget".
- */
-export interface UmamiEventsWidgetWidget {
-  data?: {
-    [k: string]: unknown;
-  };
-  width: 'x-small' | 'small' | 'medium';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

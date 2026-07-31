@@ -66,14 +66,9 @@ import { default as default_dbb6fe4ada93d1133d8de1ea56eb20d6 } from '@/fields/Re
 import { Nav as Nav_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { Icon as Icon_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { Logo as Logo_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
-import { UmamiChartsContainer as UmamiChartsContainer_777b157ac49ee337c57a996fa5aceaac } from '@/contexts/UmamiCharts'
 import { ImportExportProvider as ImportExportProvider_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
-import { UmamiControlBar as UmamiControlBar_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
-import { UmamiStatsWidget as UmamiStatsWidget_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
-import { UmamiPageViewsWidget as UmamiPageViewsWidget_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
-import { UmamiPathsWidget as UmamiPathsWidget_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
-import { UmamiEventsWidget as UmamiEventsWidget_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
+import { UmamiWidget as UmamiWidget_e8503f7e90ff08c694ccb2bb86491894 } from '@/widgets/UmamiWidget'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -146,13 +141,8 @@ export const importMap = {
   "@/components/AdminPanel#Nav": Nav_a316a6ec12a12cd0fe58ccec01a444ca,
   "@/components/AdminPanel#Icon": Icon_a316a6ec12a12cd0fe58ccec01a444ca,
   "@/components/AdminPanel#Logo": Logo_a316a6ec12a12cd0fe58ccec01a444ca,
-  "@/contexts/UmamiCharts#UmamiChartsContainer": UmamiChartsContainer_777b157ac49ee337c57a996fa5aceaac,
   "@payloadcms/plugin-import-export/rsc#ImportExportProvider": ImportExportProvider_cdf7e044479f899a31f804427d568b36,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
-  "@/components/AdminPanel#UmamiControlBar": UmamiControlBar_a316a6ec12a12cd0fe58ccec01a444ca,
-  "@/components/AdminPanel#UmamiStatsWidget": UmamiStatsWidget_a316a6ec12a12cd0fe58ccec01a444ca,
-  "@/components/AdminPanel#UmamiPageViewsWidget": UmamiPageViewsWidget_a316a6ec12a12cd0fe58ccec01a444ca,
-  "@/components/AdminPanel#UmamiPathsWidget": UmamiPathsWidget_a316a6ec12a12cd0fe58ccec01a444ca,
-  "@/components/AdminPanel#UmamiEventsWidget": UmamiEventsWidget_a316a6ec12a12cd0fe58ccec01a444ca,
+  "@/widgets/UmamiWidget#UmamiWidget": UmamiWidget_e8503f7e90ff08c694ccb2bb86491894,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

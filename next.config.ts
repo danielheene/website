@@ -73,6 +73,8 @@ export default async (phase, { defaultConfig }) => {
      *    Allowed Dev Origins
      */
     allowedDevOrigins: [
+      'localhost:3000',
+      '*.localhost:3000',
       'daniel.heene.nexus',
       '*.daniel.heene.nexus',
       'daniel.heene.local',
@@ -107,6 +109,9 @@ export default async (phase, { defaultConfig }) => {
       '@react-pdf/renderer',
       'svgo',
       'pdf-parse',
+      'node-av',
+      '@takumi-rs/core',
+      '@napi-rs/canvas',
     ],
 
     turbopack: {

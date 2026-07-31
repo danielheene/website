@@ -71,6 +71,20 @@
 @font-face {
   font-family: "PP Frama";
   font-style: normal;
+  font-weight: 600;
+  src: url('./files/pp-frama-500-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'PP Frama';
+  font-style: italic;
+  font-weight: 600;
+  src: url('./files/pp-frama-500-italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-style: normal;
   font-weight: 700;
   src: url('./files/pp-frama-700-normal.woff2') format('woff2');
 }
@@ -79,6 +93,20 @@
   font-family: 'PP Frama';
   font-style: italic;
   font-weight: 700;
+  src: url('./files/pp-frama-700-italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-style: normal;
+  font-weight: 800;
+  src: url('./files/pp-frama-700-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'PP Frama';
+  font-style: italic;
+  font-weight: 800;
   src: url('./files/pp-frama-700-italic.woff2') format('woff2');
 }
 

@@ -148,6 +148,12 @@ export const generateLocalizedResumeDocument: TaskConfig<
             collection: CollectionSlug.MediaDocuments,
             data: {
               createdAt,
+              generatorFlags: [
+                '+auto-generated',
+                '+resume-asset',
+                '+thumbnail',
+                '+document',
+              ],
             },
             file: {
               data: Buffer.from(arrayBufferLike),

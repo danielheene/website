@@ -32,13 +32,8 @@ export const UmamiProvider = ({
   const [context, setContext] = useState<UmamiContextValue>(initialUmamiContextValue)
 
   const renderScript = useMemo(
-    () =>
-      typeof src === 'string' &&
-      src.length > 0 &&
-      typeof websiteId === 'string' &&
-      websiteId.length > 0,
+    () => typeof websiteId === 'string' && websiteId.length > 0,
     [
-      src,
       websiteId,
     ],
   )
@@ -49,7 +44,7 @@ export const UmamiProvider = ({
       {renderScript && (
         <Script
           src={src}
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           data-website-id={websiteId}
           data-auto-track={autoTrack}
           data-do-not-track={doNotTrack}

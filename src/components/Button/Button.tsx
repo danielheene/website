@@ -1,18 +1,15 @@
 'use client'
 
-import { ComponentProps, forwardRef } from 'react'
-import Link from 'next/link'
+import { ComponentProps, forwardRef, ReactNode } from 'react'
 
-import { Button as HeadlessButton, ButtonProps as HeadlessButtonProps } from '@headlessui/react'
+import * as Slot from '@radix-ui/react-slot'
 import { tv, VariantProps } from 'tailwind-variants'
 
-import { IconName } from '@/components/Icon'
-
-const styles = tv({
+export const buttonStyles = tv({
   base: [
     'group/button inline-flex shrink-0 items-center justify-center rounded-none',
-    'border border-transparent bg-clip-padding',
-    'text-xs font-semibold tracking-widest whitespace-nowrap uppercase',
+    'border border-transparent bg-clip-padding cursor-pointer',
+    'text-md font-mono font-medium whitespace-nowrap uppercase',
     'transition-all outline-none select-none',
     'focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30',
     'active:not-aria-[haspopup]:translate-y-px',
@@ -50,20 +47,20 @@ const styles = tv({
     },
     size: {
       default: [
-        'h-10 gap-1.5 px-6',
-        'has-data-[icon=inline-end]:pr-4 has-data-[icon=inline-start]:pl-4',
+        'h-10 gap-1.5 px-4',
+        'has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5',
       ],
       xs: [
-        "h-7 gap-1 px-3 [&_svg:not([class*='size-'])]:size-3",
-        'has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2',
+        "h-7 gap-1 px-4 [&_svg:not([class*='size-'])]:size-3 text-sm",
+        'has-data-[icon=inline-end]:pr-1 has-data-[icon=inline-start]:pl-1',
       ],
       sm: [
-        'h-9 gap-1 px-4',
-        'has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3',
+        'h-9 gap-1 px-2.5',
+        'has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5',
       ],
       lg: [
-        'h-11 gap-1.5 px-8',
-        'has-data-[icon=inline-end]:pr-5 has-data-[icon=inline-start]:pl-5',
+        'h-11 gap-1.5 px-4',
+        'has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2',
       ],
       icon: [
         'size-10',
@@ -85,44 +82,21 @@ const styles = tv({
   },
 })
 
-export interface CommonProps
-  extends Omit<HeadlessButtonProps, 'type'>,
-    VariantProps<typeof styles> {
-  leftIcon?: IconName
-  rightIcon?: IconName
+export interface ButtonProps extends VariantProps<typeof buttonStyles>, ComponentProps<'button'> {
+  children?: ReactNode
+  asChild?: boolean
 }
 
-type ConditionalProps =
-  | ({
-      type: 'link'
-    } & ComponentProps<typeof Link>)
-  | ({
-      type: 'button' | 'submit' | 'reset'
-    } & ComponentProps<'button'>)
+const ButtonSlot = Slot.createSlot<HTMLButtonElement, ButtonProps>('Button.Slot')
 
-export type ButtonProps = CommonProps & ConditionalProps
-
-export const Button = forwardRef<HTMLElement, ButtonProps>(
-  (
-    {
-      leftIcon,
-      rightIcon,
-      type = 'button',
-      className,
-
-      variant,
-      size,
-      ...props
-    },
-    ref,
-  ) => {
-    const Component = type === 'link' ? Link : 'button'
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ variant, size, className, asChild, ...props }, ref) => {
+    const Component = asChild ? ButtonSlot : 'button'
 
     return (
-      <HeadlessButton
+      <Component
         ref={ref}
-        as={Component}
-        className={styles({
+        className={buttonStyles({
           variant,
           size,
           class: className,

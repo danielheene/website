@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
+import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { RichTextField } from '@/fields/RichText'
 import { generateChecksum } from '@/lib/hooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
@@ -18,6 +19,7 @@ export const MediaAudios: CollectionConfig<CollectionSlug['MediaAudios']> = {
     singular: 'Audio',
     plural: 'Audios',
   },
+  enableQueryPresets: true,
   hooks: {
     beforeChange: [
       generateChecksum,
@@ -76,6 +78,8 @@ export const MediaAudios: CollectionConfig<CollectionSlug['MediaAudios']> = {
         disableListFilter: true,
       },
     },
+
+    GeneratorFlagsField(),
 
     RichTextField({
       name: 'caption',

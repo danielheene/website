@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { cn } from 'tailwind-variants'
 
 import {
   Card,
@@ -11,30 +11,29 @@ import {
 } from '@/components/AdminPanel/Card'
 import { MetricsTable } from '@/components/MetricsTable'
 import { Skeleton } from '@/components/Skeleton'
-import { useUmamiCharts } from '@/contexts/UmamiCharts'
 import { useArrayPagination } from '@/hooks/use-array-pagination'
 
-export const UmamiPathsWidget = () => {
-  const {
-    paths: { data, dataIsLoading },
-    registerWidget,
-  } = useUmamiCharts()
+import type { UmamiEvent } from './UmamiWidget.data'
 
-  useEffect(() => {
-    const unregister = registerWidget('paths')
-    return () => unregister()
-  }, [
-    registerWidget,
-  ])
+interface EventsSectionProps {
+  data: UmamiEvent[] | null
+  dataIsLoading: boolean
+  className?: string
+}
 
+export const EventsSection = ({ data, dataIsLoading, className }: EventsSectionProps) => {
   const { content, ...pagination } = useArrayPagination(data || [], 10)
-  const maxMetricValue = Math.max(...(data?.map(({ y }) => y) || []), 0)
+  const maxMetricValue = Math.max(...((data || []).map(({ y }) => y) || []), 0)
   const contentClass = 'h-[410px]'
 
   return (
-    <Card>
+    <Card
+      className={cn([
+        className,
+      ])}
+    >
       <CardHeader>
-        <CardTitle>Paths</CardTitle>
+        <CardTitle>Events</CardTitle>
         <CardPagination {...pagination} />
       </CardHeader>
       <CardContent>

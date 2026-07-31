@@ -1,7 +1,10 @@
 import type { AccessArgs, CollectionConfig } from 'payload'
 
+import { isArray, isString } from 'lodash-es'
+
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
+import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { RichTextField } from '@/fields/RichText'
 import { generateChecksum } from '@/lib/hooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
@@ -156,6 +159,8 @@ export const MediaImages: CollectionConfig<CollectionSlug['MediaImages']> = {
         hidden: true,
       },
     },
+
+    GeneratorFlagsField(),
   ],
 
   versions: false,
