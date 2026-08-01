@@ -145,11 +145,12 @@ export interface Config {
     audios: MediaAudio;
     'resume-customers': ResumeCustomerData;
     'resume-documents': ResumeDocumentData;
-    'resume-files': ResumeFileData;
     'resume-jobs': ResumeJobData;
     'resume-projects': ResumeProjectData;
     'resume-skills': ResumeSkillData;
     'resume-skill-tags': ResumeSkillTagData;
+    'document-references': DocumentReference;
+    redirects: Redirect;
     'payload-exports': PayloadExport;
     'payload-imports': PayloadImport;
     'payload-jobs': PayloadJob;
@@ -174,11 +175,12 @@ export interface Config {
     audios: AudiosSelect<false> | AudiosSelect<true>;
     'resume-customers': ResumeCustomersSelect<false> | ResumeCustomersSelect<true>;
     'resume-documents': ResumeDocumentsSelect<false> | ResumeDocumentsSelect<true>;
-    'resume-files': ResumeFilesSelect<false> | ResumeFilesSelect<true>;
     'resume-jobs': ResumeJobsSelect<false> | ResumeJobsSelect<true>;
     'resume-projects': ResumeProjectsSelect<false> | ResumeProjectsSelect<true>;
     'resume-skills': ResumeSkillsSelect<false> | ResumeSkillsSelect<true>;
     'resume-skill-tags': ResumeSkillTagsSelect<false> | ResumeSkillTagsSelect<true>;
+    'document-references': DocumentReferencesSelect<false> | DocumentReferencesSelect<true>;
+    redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     'payload-exports': PayloadExportsSelect<false> | PayloadExportsSelect<true>;
     'payload-imports': PayloadImportsSelect<false> | PayloadImportsSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
@@ -1096,24 +1098,6 @@ export interface PayloadJob {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "resume-files".
- */
-export interface ResumeFileData {
-  id: string;
-  checksum?: string | null;
-  prefix?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "resume-jobs".
  */
 export interface ResumeJobData {
@@ -1251,6 +1235,83 @@ export interface ResumeSkillData {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "document-references".
+ */
+export interface DocumentReference {
+  id: string;
+  /**
+   * Slug of the referenced media collection.
+   */
+  assetCollection: string;
+  /**
+   * ID of the referenced media document.
+   */
+  assetId: string;
+  /**
+   * Slug of the collection or global holding the reference.
+   */
+  sourceCollection: string;
+  /**
+   * ID of the referencing document (the global slug for globals).
+   */
+  sourceId: string;
+  sourceType: 'collection' | 'global';
+  /**
+   * Dotted path to the reference within the source document.
+   */
+  path?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "redirects".
+ */
+export interface Redirect {
+  id: string;
+  /**
+   * Path to redirect away from, e.g. /old-article. Leading slash is added automatically; query strings are ignored.
+   */
+  from: string;
+  /**
+   * Referencing a document keeps the target correct if its slug changes later.
+   */
+  type: 'reference' | 'custom';
+  toDocument?:
+    | ({
+        relationTo: 'pages';
+        value: string | Page;
+      } | null)
+    | ({
+        relationTo: 'posts';
+        value: string | BlogPostData;
+      } | null)
+    | ({
+        relationTo: 'topics';
+        value: string | Topic;
+      } | null)
+    | ({
+        relationTo: 'resume-documents';
+        value: string | ResumeDocumentData;
+      } | null);
+  /**
+   * An internal path such as /blog, or an absolute URL.
+   */
+  toPath?: string | null;
+  statusCode: '301' | '302' | '307' | '308';
+  /**
+   * Disable to keep the row without applying it.
+   */
+  enabled?: boolean | null;
+  /**
+   * How this redirect was created.
+   */
+  origin?: ('manual' | 'slug-change') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-exports".
  */
 export interface PayloadExport {
@@ -1371,16 +1432,20 @@ export interface PayloadLockedDocument {
         value: string | ResumeDocumentData;
       } | null)
     | ({
-        relationTo: 'resume-files';
-        value: string | ResumeFileData;
-      } | null)
-    | ({
         relationTo: 'resume-jobs';
         value: string | ResumeJobData;
       } | null)
     | ({
         relationTo: 'resume-skill-tags';
         value: string | ResumeSkillTagData;
+      } | null)
+    | ({
+        relationTo: 'document-references';
+        value: string | DocumentReference;
+      } | null)
+    | ({
+        relationTo: 'redirects';
+        value: string | Redirect;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1702,23 +1767,6 @@ export interface ResumeDocumentsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "resume-files_select".
- */
-export interface ResumeFilesSelect<T extends boolean = true> {
-  checksum?: T;
-  prefix?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "resume-jobs_select".
  */
 export interface ResumeJobsSelect<T extends boolean = true> {
@@ -1793,6 +1841,35 @@ export interface ResumeSkillTagsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   interval?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "document-references_select".
+ */
+export interface DocumentReferencesSelect<T extends boolean = true> {
+  assetCollection?: T;
+  assetId?: T;
+  sourceCollection?: T;
+  sourceId?: T;
+  sourceType?: T;
+  path?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "redirects_select".
+ */
+export interface RedirectsSelect<T extends boolean = true> {
+  from?: T;
+  type?: T;
+  toDocument?: T;
+  toPath?: T;
+  statusCode?: T;
+  enabled?: T;
+  origin?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2524,11 +2601,12 @@ export interface TaskCreateCollectionExport {
       | 'audios'
       | 'resume-customers'
       | 'resume-documents'
-      | 'resume-files'
       | 'resume-jobs'
       | 'resume-projects'
       | 'resume-skills'
       | 'resume-skill-tags'
+      | 'document-references'
+      | 'redirects'
       | 'payload-exports'
       | 'payload-imports';
     drafts?: ('yes' | 'no') | null;

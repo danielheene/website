@@ -27,6 +27,7 @@
     "migrate": "pnpm run payload migrate",
     "next": "NODE_OPTIONS=\"--trace-deprecation --disable-warning=DeprecationWarning\" next",
     "payload": "NODE_OPTIONS=\"--trace-deprecation --disable-warning=DeprecationWarning\" payload",
+    "refs:backfill": "pnpm run payload run scripts/backfill-references.ts",
     "seed": "pnpm run seed:blog",
     "seed:blog": "pnpm run payload run scripts/seed-blog.ts",
     "seed:blog:clean": "pnpm run payload run scripts/seed-blog.ts -- --clean",

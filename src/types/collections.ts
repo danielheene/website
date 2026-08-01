@@ -21,11 +21,14 @@ export const CollectionSlug = {
   /* Resume Collections */
   ResumeCustomers: 'resume-customers',
   ResumeDocuments: 'resume-documents',
-  ResumeFiles: 'resume-files',
   ResumeJobs: 'resume-jobs',
   ResumeProjects: 'resume-projects',
   ResumeSkills: 'resume-skills',
   ResumeSkillTags: 'resume-skill-tags',
+
+  /* Bookkeeping */
+  DocumentReferences: 'document-references',
+  Redirects: 'redirects',
 
   /* Payload Internal Collections */
   PayloadExports: 'payload-exports',

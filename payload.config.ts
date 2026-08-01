@@ -17,6 +17,8 @@ import { GLOBALS } from '@/globals'
 import { TASKS } from '@/jobs-queue/tasks'
 import { WORKFLOWS } from '@/jobs-queue/workflows'
 import { useSendAdapter } from '@/lib/useSendAdapter'
+import { redirectsPlugin } from '@/plugins/redirects'
+import { referencesPlugin } from '@/plugins/references'
 import { CollectionSlug } from '@/types/collections'
 import { QueueSlug } from '@/types/jobs-queue'
 import { SKILL_TYPE } from '@/types/select-options'
@@ -192,6 +194,8 @@ export const config = buildConfig({
 
   localization: false,
   plugins: [
+    referencesPlugin(),
+    redirectsPlugin(),
     importExportPlugin({
       collections: undefined,
       defaultVersionStatus: 'published',
@@ -236,9 +240,6 @@ export const config = buildConfig({
         },
         [CollectionSlug.MediaAudios]: {
           prefix: CollectionSlug.MediaAudios,
-        },
-        [CollectionSlug.ResumeFiles]: {
-          prefix: CollectionSlug.ResumeFiles,
         },
       },
       useCompositePrefixes: true,
