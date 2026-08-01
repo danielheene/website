@@ -20,6 +20,7 @@ import {
 // import { BannerBlock } from '@/blocks/Banner/Component'
 // import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { CodeBlockRenderer } from '@/blocks/CodeBlock/Renderer'
+import { Icon } from '@/components/Icon'
 import { ImageMedia } from '@/components/ImageMedia'
 import { VideoMedia } from '@/components/VideoMedia'
 import { cn } from '@/lib/cn'
@@ -186,6 +187,19 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
 
       return (
         <Tag id={title ? (count === 0 ? base : `${base}-${count}`) : undefined}>{children}</Tag>
+      )
+    },
+    /** Inline icon node inserted by the IconPicker Lexical feature. */
+    icon: ({ node }) => {
+      const iconName = (
+        node as {
+          iconName?: string
+        }
+      ).iconName
+      if (!iconName) return null
+
+      return (
+        <Icon name={iconName} className="inline-block size-[1.1em] align-[-0.15em] text-[1.1em]" />
       )
     },
     blocks: {
