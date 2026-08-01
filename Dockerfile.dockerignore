@@ -7,9 +7,8 @@ dist
 .env*
 !.env.example
 
-# Other workspace packages' build output not needed for web's image
-storybook/node_modules
-storybook/dist
-storybook/storybook-static
-packages/*/node_modules
-packages/*/dist
+# build + test artifacts that must never enter the image
+coverage
+playwright-report
+test-results
+storybook-static

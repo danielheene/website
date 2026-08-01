@@ -1,7 +1,9 @@
 allowBuilds:
   '@sentry/cli': true
   '@swc/core': true
-  canvas: set this to true or false
+  # the repo uses @napi-rs/canvas (prebuilt); plain `canvas` is only a
+  # transitive dep and does not need to compile
+  canvas: false
   core-js-pure: true
   esbuild: true
   mongodb-memory-server: true
