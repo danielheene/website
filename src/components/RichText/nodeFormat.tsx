@@ -1,8 +1,18 @@
-// @ts-nocheck
 //This copy-and-pasted from lexical here: https://github.com/facebook/lexical/blob/c2ceee223f46543d12c574e62155e619f9a18a5d/packages/lexical/src/LexicalConstants.ts
 
-import type { ElementFormatType, TextFormatType } from 'lexical'
-import type { TextDetailType, TextModeType } from 'lexical/nodes/LexicalTextNode'
+import type {
+  ElementFormatType,
+  TextFormatType,
+  TextModeType,
+} from '@payloadcms/richtext-lexical/lexical'
+
+// `lexical` is not a direct dependency — it is reached through Payload, which
+// keeps the two versions in step. These types resolved only because this file
+// is @ts-nocheck'd, so they silently degraded to `any`.
+//
+// TextDetailType is not re-exported by that subpath, so it is inlined rather
+// than importing from lexical's internal node path.
+type TextDetailType = 'directionless' | 'unmergable'
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
