@@ -9,7 +9,6 @@ import { MediaVideos } from '@/collections/MediaVideos'
 import { Pages } from '@/collections/Pages'
 import { ResumeCustomers } from '@/collections/ResumeCustomers'
 import { ResumeDocuments } from '@/collections/ResumeDocuments'
-import { ResumeFiles } from '@/collections/ResumeFiles'
 import { ResumeJobs } from '@/collections/ResumeJobs'
 import { ResumeProjects } from '@/collections/ResumeProjects'
 import { ResumeSkills } from '@/collections/ResumeSkills'
@@ -31,7 +30,6 @@ export const COLLECTIONS = [
   /* Resume Collections */
   ResumeCustomers,
   ResumeDocuments,
-  ResumeFiles,
   ResumeJobs,
   ResumeProjects,
   ResumeSkills,

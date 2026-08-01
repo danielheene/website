@@ -189,43 +189,6 @@ export const generateLocalizedResumeDocument: TaskConfig<
       },
     )
 
-    // const { resumeThumbnailIds } = await inlineTask(`BuildResumeThumbnails:${locale}`, {
-    //   task: async () => {
-    //     const ids = []
-    //
-    //     const parser = new PDFParse({
-    //       url: resumeFileUrl,
-    //     })
-    //
-    //     const { pages: resumeThumbnails } = await parser.getScreenshot({})
-    //
-    //     let index = 0
-    //     for (const thumbnail of resumeThumbnails) {
-    //       const { id } = await payload.create({
-    //         collection: CollectionSlug.ResumeFiles,
-    //         data: {
-    //           width: thumbnail.width,
-    //           height: thumbnail.height,
-    //           createdAt,
-    //         },
-    //         file: {
-    //           data: Buffer.from(thumbnail.data),
-    //           name: `${filename}-${++index}.png`,
-    //           mimetype: 'image/png',
-    //           size: Buffer.byteLength(thumbnail.data),
-    //         },
-    //       })
-    //       ids.push(id)
-    //     }
-    //
-    //     return {
-    //       output: {
-    //         resumeThumbnailIds: ids,
-    //       },
-    //     }
-    //   },
-    // })
-
     payload.logger.info('Finished uploading resume thumbnails')
     return {
       output: {
