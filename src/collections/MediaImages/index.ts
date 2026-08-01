@@ -1,6 +1,4 @@
-import type { AccessArgs, CollectionConfig } from 'payload'
-
-import { isArray, isString } from 'lodash-es'
+import type { CollectionConfig } from 'payload'
 
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
@@ -9,7 +7,6 @@ import { RichTextField } from '@/fields/RichText'
 import { generateChecksum } from '@/lib/hooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
-import { MediaImage } from '@/types/payload'
 
 import { generateAlt } from './hooks/generateAlt'
 import { generateBlurDataURL } from './hooks/generateBlurDataURL'
@@ -56,28 +53,12 @@ export const MediaImages: CollectionConfig<CollectionSlug['MediaImages']> = {
   },
   access: {
     create: authenticated,
-    delete: async ({ req: { user, payload }, id }: AccessArgs<MediaImage>) => {
-      if (!user) return false
-      let references = 0
-
-      try {
-        const { totalDocs } = await payload.find({
-          collection: CollectionSlug.MediaDocuments,
-          where: {
-            thumbnail: {
-              contains: id,
-            },
-          },
-          pagination: false,
-        })
-
-        references += totalDocs
-      } catch (_) {
-        /* no references found */
-      }
-
-      return references === 0
-    },
+    /**
+     * Reference checking is handled by the `references` plugin, which
+     * blocks deletes in `beforeDelete` and reports which documents still use
+     * the asset — across every collection, not just one hardcoded field path.
+     */
+    delete: authenticated,
     read: anyone,
     update: authenticated,
   },
