@@ -9,6 +9,7 @@ import { TitleField } from '@/fields/Title'
 import { ToggleField } from '@/fields/Toggle'
 import { generatePreviewPath } from '@/lib/generatePreviewPath'
 import { AdminGroup } from '@/types/admin-panel'
+import { RESERVED_TOPIC_SLUGS } from '@/types/blog'
 import { CollectionData, CollectionSlug } from '@/types/collections'
 
 import { revalidateBlogTopic } from './hooks/revalidateBlogTopic'
@@ -104,6 +105,16 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
     /* -------------- Sidebar Content -------------- */
     SlugField({
       fieldToUse: 'title',
+      overrides: {
+        validate: (value: string | null | undefined) => {
+          // these segments belong to /blog/page/<n> and /blog/post/<slug>;
+          // a topic using them would be permanently unreachable
+          if (typeof value === 'string' && RESERVED_TOPIC_SLUGS.includes(value)) {
+            return `"${value}" is reserved by the blog routes — choose another slug.`
+          }
+          return true
+        },
+      },
     }),
 
     {

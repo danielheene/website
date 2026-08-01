@@ -18,7 +18,7 @@ export const FooterSocialLinks = ({ socialLinks, className }: FooterSocialLinksP
       </p>
       <nav className="flex items-center gap-x-1">
         {socialLinks.map(({ link, id }) => (
-          <CMSLink key={id} {...link} size="icon-lg" variant="ghost" />
+          <CMSLink key={id} {...link} size="lg" variant="link" />
         ))}
       </nav>
     </div>
