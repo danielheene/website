@@ -25,6 +25,7 @@ import {
   UploadFeature,
 } from '@payloadcms/richtext-lexical'
 
+import { IconPickerFeature } from '@/fields/IconPicker/lexical/feature.server'
 import { LinkField } from '@/fields/Link'
 import { cn } from '@/lib/cn'
 import { BlockSlug } from '@/types/blocks'
@@ -141,6 +142,7 @@ const postFeatures = [
   }),
   IndentFeature(),
   EXPERIMENTAL_TableFeature(),
+  IconPickerFeature(),
 ]
 
 type RichTextEditorVariant = 'inline' | 'caption' | 'markdown' | 'post'
