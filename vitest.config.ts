@@ -1,8 +1,22 @@
+import { createRequire } from 'node:module'
+import path from 'node:path'
+
 import { defineConfig } from 'vitest/config'
+
+const require = createRequire(import.meta.url)
+
+/** Real package directory, bypassing the tsconfig `react` -> @types alias. */
+const packageDir = (name: string) => path.dirname(require.resolve(`${name}/package.json`))
 
 export default defineConfig({
   resolve: {
     tsconfigPaths: true,
+    alias: {
+      // tsconfig maps `react` to @types/react for editor tooling; that path
+      // has no runtime entry, so component tests must resolve the real package
+      react: packageDir('react'),
+      'react-dom': packageDir('react-dom'),
+    },
   },
   test: {
     environment: 'node',
