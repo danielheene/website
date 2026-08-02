@@ -153,6 +153,27 @@ E2E prerequisites:
   `mcr.microsoft.com/playwright` image — its tag must always match the `@playwright/test` version
   in `package.json`; bump them together.
 
+## Error Tracking (Sentry)
+
+Sentry is wired for errors, Web Vitals, logs and traces, but stays **completely
+inert until `SENTRY_DSN` is set** — no DSN means `Sentry.init` is never called,
+so local development is unaffected.
+
+| Variable | Purpose |
+| --- | --- |
+| `SENTRY_DSN` | Enables the SDK. Everything below is ignored without it. |
+| `SENTRY_TRACES_SAMPLE_RATE` | Trace sampling, `0`–`1`. Defaults to `1` in dev, `0.1` in production. |
+| `SENTRY_ENVIRONMENT` / `SENTRY_RELEASE` | Override the reported environment and release. |
+| `SENTRY_AUTH_TOKEN` + `SENTRY_ORG` + `SENTRY_PROJECT` | Source-map upload during build. All three required; skipped otherwise. |
+| `NEXT_PUBLIC_SENTRY_REPLAY_RATE` / `..._ERROR_RATE` | Session replay, off by default. |
+
+Notes:
+
+- `/api/sse` and `/api/heartbeat` are excluded from tracing — they are polled or
+  long-lived and would dominate the quota.
+- Sentry requests are proxied through `/monitoring` so ad blockers cannot drop them.
+- Source maps are deleted after upload, so they are never served publicly.
+
 ## Features
 
 - **Media Optimization**: Images are stored in S3 and automatically generate `alt` text and `blurDataURL` on upload using `sharp`.

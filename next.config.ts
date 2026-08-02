@@ -6,6 +6,7 @@ import { NextConfig } from 'next'
 import { PHASE_DEVELOPMENT_SERVER } from 'next/constants'
 import { withPayload } from '@payloadcms/next/withPayload'
 
+import { withSentryConfig } from '@sentry/nextjs'
 import z from 'zod'
 
 import { envSchema } from '@/types/environment'
@@ -247,7 +248,36 @@ export default async (phase, { defaultConfig }) => {
     },
   }
 
-  return withPayload(nextConfig, {
+  const configWithPayload = withPayload(nextConfig, {
     devBundleServerPackages: false,
+  })
+
+  /**
+   * Source maps are only uploaded when an auth token is present, so local and
+   * CI builds without Sentry credentials behave exactly as before. Without the
+   * upload, production stack traces stay minified but error capture still works.
+   */
+  const uploadSourceMaps = Boolean(
+    process.env.SENTRY_AUTH_TOKEN && process.env.SENTRY_ORG && process.env.SENTRY_PROJECT,
+  )
+
+  return withSentryConfig(configWithPayload, {
+    org: process.env.SENTRY_ORG,
+    project: process.env.SENTRY_PROJECT,
+    authToken: process.env.SENTRY_AUTH_TOKEN,
+
+    silent: !process.env.CI,
+    sourcemaps: {
+      disable: !uploadSourceMaps,
+      // uploaded maps are deleted afterwards so they are never served publicly
+      deleteSourcemapsAfterUpload: true,
+    },
+
+    // proxies Sentry requests through the app so ad blockers cannot drop them
+    tunnelRoute: '/monitoring',
+
+    // `disableLogger` and `automaticVercelMonitors` are deliberately omitted:
+    // both are deprecated and webpack-only, and this project builds with
+    // Turbopack, so setting them only emits warnings.
   })
 }

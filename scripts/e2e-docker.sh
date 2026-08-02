@@ -11,7 +11,7 @@ set -euo pipefail
 #    The image tag MUST match the @playwright/test version in package.json —
 #    bump them together, otherwise browser revisions mismatch.
 
-IMAGE="mcr.microsoft.com/playwright:v1.62.0-noble"
+IMAGE="mcr.microsoft.com/playwright:v1.62.1-noble"
 
 #    Host networking lets the container reach the dev server as
 #    http://localhost:3000 — required because the Payload admin UI talks to

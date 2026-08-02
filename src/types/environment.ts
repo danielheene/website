@@ -37,10 +37,20 @@ export const envSchema = z.object({
   USESEND_DEFAULT_FROM_ADDRESS: z.email(),
   USESEND_DEFAULT_FROM_NAME: z.string().trim().min(1),
   //
-  // SENTRY_DSN: z.string(),
-  // SENTRY_AUTH_TOKEN: z.string(),
-  // SENTRY_ORG: z.string(),
-  // SENTRY_PROJECT: z.string(),
+  /**
+   * Sentry is entirely optional: with no DSN the SDK is never initialised, so
+   * the app runs unchanged. The auth token trio is only needed to upload
+   * source maps during a build.
+   */
+  SENTRY_DSN: z.url().optional(),
+  SENTRY_ENVIRONMENT: z.string().optional(),
+  SENTRY_RELEASE: z.string().optional(),
+  SENTRY_TRACES_SAMPLE_RATE: z.string().optional(),
+  SENTRY_AUTH_TOKEN: z.string().optional(),
+  SENTRY_ORG: z.string().optional(),
+  SENTRY_PROJECT: z.string().optional(),
+  NEXT_PUBLIC_SENTRY_REPLAY_RATE: z.string().optional(),
+  NEXT_PUBLIC_SENTRY_REPLAY_ERROR_RATE: z.string().optional(),
 
   OPENAI_API_KEY: z.string(),
   ANTHROPIC_API_KEY: z.string(),

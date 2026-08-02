@@ -6,9 +6,11 @@ import { buildConfig } from 'payload'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { redisKVAdapter } from '@payloadcms/kv-redis'
 import { importExportPlugin } from '@payloadcms/plugin-import-export'
+import { sentryPlugin } from '@payloadcms/plugin-sentry'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { s3Storage } from '@payloadcms/storage-s3'
 
+import * as Sentry from '@sentry/nextjs'
 import sharp from 'sharp'
 
 import { BLOCKS } from '@/blocks'
@@ -16,6 +18,7 @@ import { COLLECTIONS } from '@/collections'
 import { GLOBALS } from '@/globals'
 import { TASKS } from '@/jobs-queue/tasks'
 import { WORKFLOWS } from '@/jobs-queue/workflows'
+import { SENTRY_ENABLED } from '@/lib/sentry/options'
 import { useSendAdapter } from '@/lib/useSendAdapter'
 import { redirectsPlugin } from '@/plugins/redirects'
 import { referencesPlugin } from '@/plugins/references'
@@ -220,12 +223,40 @@ export const config = buildConfig({
     //   collections: [CollectionSlug['ResumeSkills']],
     //
     // }),
-    // sentryPlugin({
-    //   enabled: process.env.SENTRY_ENABLED === 'true',
-    //   options: {
-    //   },
-    //   Sentry: SentryInstance,
-    // }),
+    /**
+     * Reports errors raised inside Payload — collection hooks, access control,
+     * the jobs queue and admin requests — which sit outside the Next.js request
+     * lifecycle that `onRequestError` covers.
+     *
+     * Gated on the same DSN check as the rest of the SDK, so it is inert
+     * without credentials.
+     */
+    sentryPlugin({
+      enabled: SENTRY_ENABLED,
+      Sentry,
+      options: {
+        // 500s are captured by default; 401/403/404 are normal traffic and
+        // would drown the real failures
+        captureErrors: [
+          400,
+          409,
+          500,
+        ],
+        context: ({ defaultContext, req }) => ({
+          ...defaultContext,
+          tags: {
+            ...defaultContext.tags,
+            source: 'payload',
+          },
+          user: req?.user
+            ? {
+                id: String(req.user.id),
+                email: req.user.email,
+              }
+            : defaultContext.user,
+        }),
+      },
+    }),
     s3Storage({
       enabled: true,
       collections: {
