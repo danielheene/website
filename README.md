@@ -153,6 +153,34 @@ E2E prerequisites:
   `mcr.microsoft.com/playwright` image — its tag must always match the `@playwright/test` version
   in `package.json`; bump them together.
 
+## Commits & Git Hooks
+
+Hooks are installed by Husky via the `prepare` script, so `pnpm install` sets
+them up automatically.
+
+| Hook | Runs |
+| --- | --- |
+| `pre-commit` | `lint-staged` → `biome check --write` on staged files only |
+| `commit-msg` | `commitlint` against Conventional Commits |
+
+Formatting fixes are re-staged automatically, so a commit that only needed
+formatting still goes through. Only staged files are touched — pre-existing
+issues elsewhere never block an unrelated commit.
+
+Commit messages follow [Conventional Commits](https://www.conventionalcommits.org):
+
+```text
+feat(admin): add Iconify icon picker field
+fix: repair the Docker build for the flat repo layout
+chore!: drop Node 20 support        # `!` marks a breaking change
+```
+
+Scopes are deliberately unrestricted — see `commitlint.config.mjs`.
+
+Both hooks can be skipped with `git commit --no-verify` for genuine
+emergencies; the same commitlint check runs on pull requests in CI, so a
+bypassed message still has to be fixed before merge.
+
 ## Error Tracking (Sentry)
 
 Sentry is wired for errors, Web Vitals, logs and traces, but stays **completely

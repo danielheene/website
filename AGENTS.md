@@ -33,6 +33,7 @@ pnpm build            # production build
 pnpm lint             # biome check (lint + format check, does NOT auto-fix)
 pnpm format           # biome format --write (auto-fixes formatting only)
 pnpm test             # unit tests (Vitest)
+pnpm deps:lint        # syncpack: dependency version groups
 pnpm test:e2e         # Playwright E2E (needs docker compose up -d)
 ```
 
@@ -42,6 +43,11 @@ files import generated types from `src/types/payload.ts` and `@/types/collection
 `pnpm lint` currently does **not** pass cleanly on `main` (baseline has pre-existing errors/
 warnings — see "Known Issues" below). Don't let pre-existing failures block your task, but do not
 introduce new lint errors, and prefer fixing lint issues in files you already touch.
+
+Commits go through Husky hooks: `pre-commit` runs `biome check --write` on
+staged files (auto-fixing and re-staging), `commit-msg` enforces Conventional
+Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
+`test`, `build`, `ci`, `perf`, `style`, `revert`); scopes are unrestricted.
 
 ## Code Style (enforced by `biome.json` / `.editorconfig`)
 
