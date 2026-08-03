@@ -1,7 +1,8 @@
 # Turborepo Monorepo Conversion Plan
 
-Status: **in progress — Phases 0–4 complete. This is the plan's recommended cut
-point; Phase 5 is optional.**
+Status: **in progress — Phases 0–5 complete. Phase 6 is largely done (the
+Storybook glob was widened in Phase 5); Phase 7 (turbo tuning) is the remaining
+work.**
 Target: `website` (single package, flat layout) → Turborepo monorepo
 
 ## Target structure
@@ -224,7 +225,7 @@ by the test split. Tests 28 files / 207 passing (17/120 web, 11/87 utils) agains
 27/207 baseline. Lint holds at 13 files. Build, Storybook and a real Docker image
 all pass, and the container serves `/admin` with 200.
 
-### Phase 5 — `packages/ui` (incremental, component by component)
+### Phase 5 — `packages/ui` ✅ done (`d19e026`)
 Not a bulk move. Order chosen so each step stays green:
 1. `Separator`, `Shaders` — pure, and *not* in the importMap. Safest first.
 2. `Button`, `Icon` — pure, but **referenced by the Payload admin importMap**. Moving them
@@ -243,7 +244,66 @@ Not a bulk move. Order chosen so each step stays green:
   Recommend fonts move with `ui`, with `staticDirs` repointed.
 - **Risk:** medium-high, concentrated in step 2 (admin importMap).
 
-### Phase 6 — Storybook placement
+**Corrections found during execution — this phase's risk model was wrong in both
+directions:**
+
+- *`Button` and `Icon` are **not** in the admin importMap.* The generated map
+  references only `@/components/AdminPanel`, plus `fields/`, `globals/`,
+  `collections/` and `widgets/` — none of which move. Every other component
+  reference in the source is an ordinary ES import, not an admin path string.
+  **The step this plan singled out as the highest-risk part of the phase carried
+  no importMap risk at all**, and `generate:importmap` never needed re-running.
+- *"Only 4 components import Payload" — the transitive closure finds 10.* On top
+  of `AdminPanel`, `LivePreviewListener`, `ResumeRenderer` and `RichText`, the
+  coupled set also includes `Footer`, `Header`, `ImageMedia`, `Link`,
+  `LogoCarousel` and `PageContainer`. Same direct-import-scan error as Phase 4.
+- *Net: 23 of 33 components moved* — more than the "~15–20" projected in "What
+  this does not deliver", but the permanently-app-side set is 10, not 4.
+- *`PageContainer` is not inherently Payload-coupled* — it imports
+  `@/types/payload`, which is Payload codegen, so it stays. Its `SectionNavigation`
+  subtree is pure and was needed by the moved `SectionContainer`, so the subtree
+  moved to the package and `PageContainer` imports it back from `@repo/ui`.
+- *Fonts must **not** move.* The plan recommended moving `src/fonts` with `ui`,
+  but no moved component references them — only the app layouts, the Storybook
+  preview and `src/pdf/fonts`. They stay in the app and `staticDirs` is unchanged.
+- ***Tailwind source detection stops at the app boundary.*** This is the real
+  hazard of this phase, and the plan does not mention it. Utilities used only by a
+  UI component get tree-shaken out of the stylesheet unless an explicit
+  `@source "../../../../packages/ui/src"` is added to `frontend.css` **and**
+  `payload.css`. Confirmed by diffing built CSS with and without it
+  (`animate-ping` 6 → 3 occurrences, `backdrop-grayscale` 19 → 17). This fails
+  silently — the build stays green and the styling is simply wrong.
+- *An array in `exports` is not an extension fallback.* Node reads it as
+  *condition* alternatives, so `["./src/*/index.ts", "./src/*/index.tsx"]` fails
+  to resolve `.tsx` entry points. `Button` and `ThemeToggle` were pure re-export
+  files and were renamed to `.ts`; `ServiceStatus` and `Toasty` contain JSX and
+  get explicit `exports` entries.
+- *`@reference "#frontend.css"` breaks in the package* — that subpath alias is
+  declared in the *app's* `package.json` `imports`. Mirroring the alias in the
+  package would point a package back at the app, so `DuoTone.module.css` uses a
+  relative `@reference` to the app stylesheet that owns those theme tokens.
+- *The package needs its own `global.d.ts`* for `*.css` / `*.module.css`
+  declarations plus `/// <reference types="styled-jsx" />` — the app's copy does
+  not apply across packages, and Next enables styled-jsx implicitly only inside
+  its own compilation.
+- *The Storybook stories glob had to be widened early* (nominally Phase 6 work).
+  Also: one `.mdx` story imported `@/components/Icon`, and `.mdx` sits outside the
+  `.ts`/`.tsx` glob used for the import rewrite — an easy file type to miss.
+
+**Verification performed:** typecheck 5 errors total (3 web + 2 utils + 0 ui) —
+the same pre-existing `jsonLd` failures as the baseline. Tests 28 files / 207
+passing (16/105 web, 11/87 utils, 1/15 ui). Lint holds at 13 files. Build,
+Storybook (5 moved stories confirmed present in the built index) and a real Docker
+image all pass; the container serves `/admin` with 200. `/api/service-status`
+returns 500 in the test setup, but the pre-Phase-5 image returns it identically —
+that route fetches an external status page pointed at itself here.
+
+### Phase 6 — Storybook placement ✅ effectively done (in `d19e026`)
+Both items below were required by Phase 5 and landed with it: Storybook stayed in
+`apps/web` (it loads `next.config.ts`), the stories glob now covers
+`packages/ui/src`, and `TsconfigPathsPlugin` still points at the app tsconfig.
+Fonts stay in the app — no moved component references them.
+
 - Storybook loads `next.config.ts`, so it stays in `apps/web` pointing at both the app's
   stories and `packages/ui`'s. A standalone Storybook in `packages/ui` would lose the
   Next.js framework integration the current setup depends on.
@@ -270,6 +330,8 @@ Being explicit so the tradeoff is visible:
 
 - **`packages/ui` will not contain all 33 components.** Realistically ~15–20 after Phase 4;
   the Payload-aware four never move.
+  **Actual outcome: 23 moved, 10 stayed.** More components than projected, but the
+  permanently-app-side set is 10 rather than 4 — see the Phase 5 corrections.
 - **Cache wins are modest.** One real consumer means turbo mostly caches the app build. The
   gain is CI `--affected` skipping and shared-config dedup, not parallel package builds.
 - **`src/blocks` stays in the app.** Blocks are Payload block definitions.
