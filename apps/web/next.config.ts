@@ -13,6 +13,7 @@ import { envSchema } from '@/types/environment'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+const workspaceRoot = path.resolve(dirname, '../..')
 
 let server: ChildProcess
 const createTunnel = (token: string) =>
@@ -65,6 +66,17 @@ export default async (phase, { defaultConfig }) => {
     reactStrictMode: true,
     cacheComponents: true,
     // cacheHandler: require.resolve('./next.cache-handler.ts'),
+
+    /**
+     *    Monorepo root
+     *
+     *    pnpm's isolated linker keeps the real packages in the workspace root's
+     *    .pnpm store, outside apps/web. Both roots have to start at the repo
+     *    root or Next treats those files as "outside the project directory" and
+     *    refuses to compile them. Next also requires the two values to agree, so
+     *    `turbopack.root` below reuses this same constant.
+     */
+    outputFileTracingRoot: workspaceRoot,
     experimental: {
       viewTransition: true,
       appNewScrollHandler: true,
@@ -139,7 +151,7 @@ export default async (phase, { defaultConfig }) => {
         '.scss',
         '.svg',
       ],
-      root: path.resolve(dirname),
+      root: workspaceRoot,
     },
 
     /**

@@ -2,6 +2,11 @@ packages:
   - apps/*
   - packages/*
 
+# patches are keyed from the workspace root, where the lockfile lives, so the
+# `patches/` dir stays at the root rather than following the app into apps/web.
+patchedDependencies:
+  pdfjs-dist@5.4.296: patches/pdfjs-dist@5.4.296.patch
+
 # next and wrangler pull older sharp majors transitively. Two libvips builds
 # loading into one process collide on Objective-C class names ("Class
 # GNotificationCenterDelegate is implemented in both ..."), so every consumer is
@@ -28,7 +33,6 @@ allowBuilds:
   unrs-resolver: true
   workerd: true
 
-ignoreWorkspaceRootCheck: true
 updateNotifier: false
 symlink: true
 nodeLinker: isolated

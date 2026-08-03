@@ -6,7 +6,14 @@ node_modules
 .vercel
 
 # Payload default media upload directory
-public/media/
+**/public/media/
+
+# turborepo local cache
+.turbo
+
+# incremental typecheck cache (tsconfig has `incremental: true`, so
+# `tsc --noEmit` still writes this)
+*.tsbuildinfo
 
 *.db
 

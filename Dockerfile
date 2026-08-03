@@ -10,6 +10,12 @@ FROM base AS deps
 WORKDIR /repo
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY patches ./patches
+# Every workspace member's manifest must be present before install: pnpm resolves
+# the whole workspace graph up front and fails on a missing member. Only the
+# manifests are copied here so the install layer stays cached across source edits.
+COPY apps/web/package.json ./apps/web/
+COPY packages/tsconfig/package.json ./packages/tsconfig/
+COPY packages/biome-config/package.json ./packages/biome-config/
 # The workspace file is copied above on purpose: it carries `allowBuilds`, which
 # approves the native packages (sharp, @swc/core, node-av, …) that must compile
 # for the build and runtime to work. Passing --ignore-workspace here would skip
@@ -19,6 +25,8 @@ RUN pnpm install --frozen-lockfile
 FROM base AS builder
 WORKDIR /repo
 COPY --from=deps /repo/node_modules ./node_modules
+# the app's own node_modules is a separate tree under pnpm's isolated linker
+COPY --from=deps /repo/apps/web/node_modules ./apps/web/node_modules
 COPY . .
 ENV NODE_ENV=production
 # Non-secret build-time configuration needed for `next build` (static generation reads
@@ -88,21 +96,28 @@ RUN apt-get update \
     && mv "/tmp/tailscale_${TAILSCALE_VERSION}_${TS_ARCH}/tailscaled" /usr/local/bin/ \
     && rm -rf "/tmp/tailscale_${TAILSCALE_VERSION}_${TS_ARCH}"
 COPY --from=deps /repo/node_modules ./node_modules
-COPY --from=builder /repo/.next ./.next
-COPY --from=builder /repo/public ./public
+COPY --from=deps /repo/apps/web/node_modules ./apps/web/node_modules
+COPY --from=builder /repo/apps/web/.next ./apps/web/.next
+COPY --from=builder /repo/apps/web/public ./apps/web/public
 # tsconfig.json ships too: next.config.ts is transpiled at boot and resolves
 # `@/` through its paths mapping, so without it startup fails on
-# MODULE_NOT_FOUND for @/types/environment.
-COPY package.json tsconfig.json next.config.ts payload.config.ts proxy.ts ./
-COPY src ./src
+# MODULE_NOT_FOUND for @/types/environment. The shared tsconfig package it
+# extends must ship for the same reason.
+COPY pnpm-workspace.yaml ./
+COPY packages/tsconfig ./packages/tsconfig
+COPY apps/web/package.json apps/web/tsconfig.json apps/web/next.config.ts apps/web/payload.config.ts apps/web/proxy.ts ./apps/web/
+COPY apps/web/src ./apps/web/src
 # Payload's admin panel dynamically imports its generated importMap.js (and other
 # server-only route handlers) by source path at runtime, not purely via the compiled
 # .next bundle — omitting `app` breaks the Payload admin UI even though `next start`
 # itself comes up. Keeping the full `app` dir here matches CON-002's
 # "full node_modules / no pruned standalone bundle" approach.
-COPY app ./app
+COPY apps/web/app ./apps/web/app
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+# next must run with the app as its cwd; the workspace root above stays in the
+# image only so pnpm's isolated node_modules links still resolve.
+WORKDIR /repo/apps/web
 EXPOSE 3000
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 # next is invoked directly rather than through `pnpm run start`: pnpm re-runs its

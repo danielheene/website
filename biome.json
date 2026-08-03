@@ -15,13 +15,18 @@
       "**/*.ts",
       "**/*.tsx",
       "**/*.json",
-      "/src/**/*",
-      "/app/**",
-      "/public/**",
+      "**/*.jsonc",
+      "**/*.css",
 
       "!!**/dist",
       "!!**/build",
-      "!!**/.cache"
+      "!!**/.cache",
+      "!!**/.next",
+      "!!**/.turbo",
+      "!!**/node_modules",
+      "!!**/coverage",
+      "!!**/playwright-report",
+      "!!**/test-results"
     ],
     "ignoreUnknown": false
   }
