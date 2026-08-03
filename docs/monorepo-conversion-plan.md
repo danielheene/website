@@ -1,8 +1,8 @@
 # Turborepo Monorepo Conversion Plan
 
-Status: **in progress — Phases 0–5 complete. Phase 6 is largely done (the
-Storybook glob was widened in Phase 5); Phase 7 (turbo tuning) is the remaining
-work.**
+Status: **complete — all phases (0–7) done.** Phase 6 landed with Phase 5 (the
+Storybook glob was widened there); Phase 7 also repaired `pnpm start` and
+`pnpm test:e2e`, which had been broken at the root since Phase 3.
 Target: `website` (single package, flat layout) → Turborepo monorepo
 
 ## Target structure
@@ -310,7 +310,7 @@ Fonts stay in the app — no moved component references them.
 - Update the stories glob to cover the workspace; keep `TsconfigPathsPlugin` aimed at the
   app tsconfig.
 
-### Phase 7 — Turbo tuning
+### Phase 7 — Turbo tuning ✅ done
 - Set `outputs` accurately: Next `[".next/**", "!.next/cache/**", "!.next/dev/**"]`,
   packages `["dist/**"]`, typecheck `.tsbuildinfo` (tsconfig has `incremental: true`, so
   `tsc --noEmit` *does* write a cache file).
@@ -323,6 +323,49 @@ Fonts stay in the app — no moved component references them.
   hard blocker there, not optional cleanup.
 - Declare the env vars biome flagged in Phase 3 (`NEXT_RUNTIME`, `REDIS_DATABASE`,
   `REDIS_KEY_PREFIX`, `REDIS_TIMEOUT_MS`, `PORT`, `E2E_BASE_URL`, `E2E_NO_SERVER`).
+
+**Corrections found during execution:**
+
+- ***`pnpm start` and `pnpm test:e2e` were broken at the root, not merely
+  untuned.*** Neither task existed in `turbo.json`, so both root scripts exited
+  with "Could not find task ... in project". This phase was scoped as cache
+  tuning, but two of the repo's advertised entry points had been dead since
+  Phase 3 flipped the root scripts to `turbo run`. Both now have task
+  definitions (`dependsOn: ["build"]`, `cache: false` — an e2e pass against a
+  live database must not be replayed from cache).
+- *`dist/**` in `build.outputs` was dead, and `build:storybook`'s `dependsOn:
+  ["^build"]` was a phantom chain.* No package has a `build` script — per Phase
+  4 they ship raw TypeScript — so the dependency resolved to four no-op tasks
+  and the `dist` glob matched nothing a `build` ever wrote. Removed both;
+  `dist/**` stays only on `build:storybook`, which genuinely writes it.
+- *`build:storybook` needed the full env declaration too.* Storybook loads
+  `next.config.ts`, which validates the whole env schema at boot, so its cache
+  key had the same gap as `build`. The optional Sentry/Cloudflare vars are
+  excluded — they do not affect Storybook output.
+- *The `generate` fan-out is safe to parallelise* — `generate:types` writes
+  `src/types/payload.ts` and `generate:importmap` writes the admin importMap, so
+  there is no shared output to race on. `generate` is now a `dependsOn` node over
+  the two, and the app's `pnpm run --parallel` wrappers for both `dev` and
+  `generate` are gone.
+- *`--affected` needs `fetch-depth: 0` and explicit SCM refs.* The default
+  shallow clone has too little history to compute a change set. CI applies
+  `--affected` on pull requests only; pushes to a protected branch still run the
+  full suite, so a merge is never gated on a partial run.
+- *A stale root `coverage/` directory survives from the pre-monorepo layout*
+  (last written 31 Jul, superseded by `apps/web/coverage`). It is gitignored and
+  was left in place rather than deleted.
+
+**Verification performed:** typecheck 5 errors (3 web + 2 utils + 0 ui) and tests
+28 files / 207 passing — both exactly the Phase 5 baseline. Lint unchanged at
+8/34/141 errors per package, confirmed identical against a stashed HEAD rather
+than assumed. Build, Storybook and `generate` all pass, and `generate:importmap`
+reports "No new imports found" — the admin map is still consistent after the
+package extraction. Cache behaviour was verified rather than trusted: a second
+build is `FULL TURBO` (69s → 30ms), deleting `.next` entirely still restores a
+complete artifact tree from cache, and each newly-declared env var
+(`NEXT_RUNTIME`, `REDIS_TIMEOUT_MS`, `REDIS_KEY_PREFIX`) changes the task hash
+while an undeclared var does not. A real Docker image was built against the
+running MongoDB and the container serves both `/` and `/admin` with 200.
 
 ## What this does *not* deliver
 

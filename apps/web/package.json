@@ -33,8 +33,6 @@
     "test:e2e:ui": "node --env-file=.env.test node_modules/@playwright/test/cli.js test --ui",
     "test:watch": "vitest",
     "ci": "pnpm run migrate && pnpm run build",
-    "dev": "pnpm run --stream --parallel /^dev:.*/",
-    "generate": "pnpm run --stream --parallel /^generate:.*/",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
