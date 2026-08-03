@@ -1,3 +1,7 @@
+packages:
+  - apps/*
+  - packages/*
+
 # next and wrangler pull older sharp majors transitively. Two libvips builds
 # loading into one process collide on Objective-C class names ("Class
 # GNotificationCenterDelegate is implemented in both ..."), so every consumer is

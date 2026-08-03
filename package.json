@@ -155,6 +155,7 @@
     "storybook": "^10.5.5",
     "syncpack": "^15.3.2",
     "tsconfig-paths-webpack-plugin": "^4.2.0",
+    "turbo": "^2.10.8",
     "typescript": "^6.0.3",
     "vitest": "^4.1.10",
     "wrangler": "^4.118.0"

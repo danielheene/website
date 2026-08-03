@@ -78,12 +78,21 @@ revertable. Do not start a phase before the previous one is committed.
 ### Phase 1 — Workspace skeleton (no source moves)
 - Add `packages:` to `pnpm-workspace.yaml` (`apps/*`, `packages/*`); keep every existing
   key (`allowBuilds`, `nodeLinker`, `hoistWorkspacePackages`, `minimumReleaseAgeExclude`).
-- Remove `ignoreWorkspaceRootCheck: true` and drop `--ignore-workspace` from
-  `chore:reinstall` — both exist to suppress workspace behaviour we now want.
-- Add `turbo.json` with `build`/`lint`/`test`/`typecheck`/`dev` and a `transit` node for
+- Add `turbo` as a root devDependency.
+- Add `turbo.json` with `build`/`lint`/`test`/`typecheck`/`dev` and a `//#transit` node for
   lint/typecheck (parallel execution, correct invalidation).
-- Root `package.json`: scripts become `turbo run <task>` only.
 - **Risk:** low. **Verify:** all tasks still run from root.
+
+**Corrections found during execution** — the two items below were in the original plan
+under this phase and had to move; keeping them here would have ended the phase red:
+
+- *Root scripts → `turbo run <task>`* **moves to Phase 3.** Phase 1 does no source moves,
+  so `apps/*` and `packages/*` match nothing and turbo reports "Running lint in 0
+  packages". Flipping the scripts now makes every root command a silent no-op. The switch
+  belongs in the same commit that creates `apps/web`.
+- *Remove `ignoreWorkspaceRootCheck` and `--ignore-workspace`* **moves to Phase 3.** Both
+  suppress warnings about dependencies living at the workspace root — which, until the app
+  moves into `apps/web`, is where every dependency correctly lives.
 
 ### Phase 2 — Config packages
 - `packages/tsconfig`: `base.json`, `nextjs.json`, `react-library.json`. Keep
