@@ -6,23 +6,28 @@ const meta = {
   title: 'Components/Button',
   component: Button,
   args: {
-    size: 'default',
+    size: 'lg',
     variant: 'default',
+    type: 'button',
     children: 'Button',
   },
   argTypes: {
     size: {
-      control: {
-        type: 'select',
-        options: Object.values(buttonStyles.variants.size),
-        defaultValue: 'default',
+      control: 'select',
+      options: Object.keys(buttonStyles.variants.size),
+      table: {
+        defaultValue: {
+          summary: 'default',
+        },
       },
     },
     variant: {
-      control: {
-        type: 'select',
-        options: Object.values(buttonStyles.variants.variant),
-        defaultValue: 'default',
+      control: 'select',
+      options: Object.keys(buttonStyles.variants.variant),
+      table: {
+        defaultValue: {
+          summary: 'default',
+        },
       },
     },
     type: {

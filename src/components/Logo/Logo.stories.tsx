@@ -1,5 +1,4 @@
-import type { Meta } from '@storybook/nextjs'
-import { StoryObj } from '@storybook/nextjs'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 
 import { Logo, LogoColor, LogoVariant } from './Logo'
 

@@ -16,12 +16,16 @@ export const ResumeDownloadButton = ({
   subline: string
 }) => {
   return (
-    <Button variant="ghost" className="uppercase bg-white font-mono px-4 py-2 h-auto" asChild>
+    <Button
+      variant="ghost"
+      className="uppercase bg-card text-card-foreground border-border font-mono px-4 py-2 h-auto"
+      asChild
+    >
       <Link href={url} download={fileName}>
         <div className="flex items-center gap-6">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-10 w-10 text-foreground/80 dark:text-background/80"
+            className="h-10 w-10 text-card-foreground/80"
             viewBox="0 0 124 124"
           >
             {locale === 'en' && (
@@ -44,10 +48,8 @@ export const ResumeDownloadButton = ({
               d="m80.83 35.17-28-28A4 4 0 0 0 50 6H10a8 8 0 0 0-8 8v96a8 8 0 0 0 8 8h32v-8H10V14h32v24a8 8 0 0 0 8 8h24v16h8V38a4 4 0 0 0-1.17-2.83M50 15.66 72.34 38H50Z"
             />
           </svg>
-          <div className="flex flex-col items-center gap-1 text-neutral-800">
-            <span className="text-2xl leading-none text-neutral-800 font-medium tracking-tighter">
-              {label}
-            </span>
+          <div className="flex flex-col items-center gap-1 text-card-foreground">
+            <span className="text-2xl leading-none font-medium tracking-tighter">{label}</span>
             <span className="text-xs leading-none  opacity-80">{subline}</span>
           </div>
         </div>

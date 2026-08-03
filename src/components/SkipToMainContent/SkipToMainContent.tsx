@@ -1,8 +1,7 @@
 'use client'
 
-import Link from 'next/link'
-
 import { JSX, useCallback } from 'react'
+import Link from 'next/link'
 
 import { cn } from '@/lib/cn'
 
@@ -27,7 +26,7 @@ export const SkipToMainContent = ({ targetId }: SkipToMainContentProps): JSX.Ele
       href={`#${targetId}`}
       className={cn(
         'absolute left-0 top-0  py-6 px-12 z-999',
-        'bg-white text-primary',
+        'bg-background text-primary',
         'text-3xl font-medium font-pp-supply-sans',
         'transform -translate-y-full focus:translate-y-0',
       )}

@@ -82,14 +82,14 @@ export const buttonStyles = tv({
   },
 })
 
-export interface ButtonProps extends VariantProps<typeof buttonStyles>, ComponentProps<'button'> {
+export interface ButtonProps extends VariantProps<typeof buttonStyles> {
   children?: ReactNode
   asChild?: boolean
 }
 
 const ButtonSlot = Slot.createSlot<HTMLButtonElement, ButtonProps>('Button.Slot')
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+export const Button = forwardRef<HTMLButtonElement, ButtonProps & ComponentProps<'button'>>(
   ({ variant, size, className, asChild, ...props }, ref) => {
     const Component = asChild ? ButtonSlot : 'button'
 

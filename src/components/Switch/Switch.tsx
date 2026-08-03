@@ -1,8 +1,8 @@
 'use client'
 
-import * as SwitchPrimitives from '@radix-ui/react-switch'
-
 import { HTMLAttributes, JSX, Ref, RefAttributes, useState } from 'react'
+
+import * as SwitchPrimitives from '@radix-ui/react-switch'
 
 import { ClassValue, cn } from '@/lib/cn'
 
@@ -46,7 +46,7 @@ export const Switch = ({
       <span tabIndex={0} role="switch" aria-checked={checked}>
         <SwitchPrimitives.Thumb
           className={cn([
-            'block h-5 w-5 rounded-full bg-white',
+            'block h-5 w-5 rounded-full bg-background',
             'pointer-events-none shadow-lg ring-0',
             'transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0',
           ])}

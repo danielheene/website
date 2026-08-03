@@ -22,10 +22,12 @@ export const bannerStyles = tv({
   base: 'border-2 p-4 flex items-start gap-4 rounded',
   variants: {
     variant: {
-      [BannerVariant.Info]: 'border-info/75 bg-info/20 text-info-900',
-      [BannerVariant.Warning]: 'border-warning/75 bg-warning/20 text-warning-900',
-      [BannerVariant.Success]: 'border-success/75 bg-success/20 text-success-900',
-      [BannerVariant.Error]: 'border-error/75 bg-error/20 text-error-900',
+      [BannerVariant.Info]: 'border-info/75 bg-info/20 text-info-900 dark:text-info-100',
+      [BannerVariant.Warning]:
+        'border-warning/50 bg-[color-mix(in_oklch,_var(--color-warning-400)_20%,_var(--color-background))] text-warning-700 dark:text-warning-100)  ',
+      [BannerVariant.Success]:
+        'border-success/75 bg-success/20 text-success-900 dark:text-success-100',
+      [BannerVariant.Error]: 'border-error/75 bg-error/20 text-error-900 dark:text-error-100',
     },
   },
 })

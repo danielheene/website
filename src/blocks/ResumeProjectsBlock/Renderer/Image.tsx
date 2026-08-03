@@ -31,7 +31,7 @@ export const Image = memo(function ResumeProjectsSectionImage({
           aspectRatio: `${Math.round(image.width / image.height)}`,
         }}
         className={cn([
-          'relative bg-white border-4 border-primary rounded-sm',
+          'relative bg-card border-4 border-primary rounded-sm',
           'transition-all duration-300 ease-in-out',
           'md:max-h-none md:h-full w-full md:w-auto overflow-hidden',
           showImage ? 'max-h-[1000px]' : 'max-h-40',
@@ -57,7 +57,7 @@ export const Image = memo(function ResumeProjectsSectionImage({
           'md:hidden',
           'relative z-10 w-10 h-10 mx-auto -mt-5',
           'flex items-center justify-center text-3xl leading-none',
-          'text-foreground bg-primary rounded-full hover:bg-primary-800',
+          'text-primary-foreground bg-primary rounded-full hover:bg-primary-800',
           'transition-all duration-300 ease-in-out',
           showImage ? 'rotate-180' : 'rotate-0',
         ])}

@@ -35,6 +35,16 @@ export default definePreview({
     'autodocs',
   ],
   decorators: [
+    /**
+     * Paints the story surface with the same semantic tokens the app uses, so a
+     * story toggled to dark sits on `--background` instead of Storybook's
+     * default white canvas.
+     */
+    (Story) => (
+      <div className="bg-background text-foreground p-8">
+        <Story />
+      </div>
+    ),
     withThemeByDataAttribute({
       defaultTheme: 'light',
       themes: {

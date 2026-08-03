@@ -47,6 +47,7 @@ export default defineMain({
     '@storybook/addon-a11y',
     '@storybook/addon-docs',
     '@storybook/addon-onboarding',
+    '@storybook/addon-themes',
     '@storybook/addon-webpack5-compiler-swc',
   ],
   typescript: {

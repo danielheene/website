@@ -22,7 +22,7 @@ const meta = {
 
 export default meta
 
-type Story = StoryObj<typeof Banner>
+type Story = StoryObj<typeof meta>
 
 export const Info: Story = {
   args: {
