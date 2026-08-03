@@ -1,6 +1,6 @@
 # Turborepo Monorepo Conversion Plan
 
-Status: **proposed — no code changed yet**
+Status: **in progress — Phases 0–2 complete, Phase 3 next**
 Target: `website` (single package, flat layout) → Turborepo monorepo
 
 ## Target structure
@@ -75,7 +75,7 @@ revertable. Do not start a phase before the previous one is committed.
 - Record baseline: `pnpm lint && pnpm test && pnpm build` output + timings.
 - Create the branch (`refactor/monorepo`) and work in a worktree.
 
-### Phase 1 — Workspace skeleton (no source moves)
+### Phase 1 — Workspace skeleton (no source moves) ✅ done
 - Add `packages:` to `pnpm-workspace.yaml` (`apps/*`, `packages/*`); keep every existing
   key (`allowBuilds`, `nodeLinker`, `hoistWorkspacePackages`, `minimumReleaseAgeExclude`).
 - Add `turbo` as a root devDependency.
@@ -94,12 +94,30 @@ under this phase and had to move; keeping them here would have ended the phase r
   suppress warnings about dependencies living at the workspace root — which, until the app
   moves into `apps/web`, is where every dependency correctly lives.
 
-### Phase 2 — Config packages
+### Phase 2 — Config packages ✅ done (`5f52c2c`)
 - `packages/tsconfig`: `base.json`, `nextjs.json`, `react-library.json`. Keep
   `strict: false` in base to match today; tightening is separate work.
 - `packages/biome-config`: extract `biome.json`.
 - Nothing consumes them yet beyond the root.
 - **Risk:** low.
+
+**Corrections found during execution:**
+
+- *The shared biome file cannot be named `biome.json`.* Biome 2.x treats any nested
+  `biome.json` as a competing root configuration and exits with "Found a nested root
+  configuration, but there's already a root configuration." It is named `base.jsonc`
+  instead, and the root extends `./packages/biome-config/base.jsonc`.
+- *Root-anchored globs had to be relaxed.* The original config's `/src/**/*`, `/app/**`
+  and `/public/**` includes are anchored to the config's own directory, so they would
+  match nothing once the app lives in `apps/web`. The shared copy uses `**`-prefixed
+  equivalents; the root config keeps its own anchored globs for the still-flat tree.
+- *The `react` → `@types/react` alias needs `${configDir}`.* A plain relative path in a
+  preset resolves against the preset's directory, not the consumer's.
+
+**Baseline note:** `pnpm lint` was already red before this phase (101 pre-existing
+`format` / `organizeImports` errors, unrelated to the refactor) and `tsc --noEmit` has 5
+pre-existing errors in `src/lib/jsonLd/jsonLd.test.ts`. Phases are verified by comparing
+counts against that baseline, not by expecting zero.
 
 ### Phase 3 — Move the app to `apps/web`
 The big structural move, done as one atomic commit.
