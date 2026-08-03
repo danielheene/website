@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import type { Interval } from '@/lib/date'
+import type { Interval } from '@repo/utils/date'
 
 interface UseSectionDataResult<T> {
   data: T | null

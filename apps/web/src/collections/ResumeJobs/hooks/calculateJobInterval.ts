@@ -1,6 +1,6 @@
 import { FieldHook } from 'payload'
 
-import { Interval } from '@/lib/date'
+import { Interval } from '@repo/utils/date'
 import { ResumeJobData } from '@/types/payload'
 
 export const calculateJobInterval: FieldHook<

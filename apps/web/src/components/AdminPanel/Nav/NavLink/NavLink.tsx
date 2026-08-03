@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 
 import { Icon } from '@/components/Icon'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 
 import './NavLink.styles.css'
 

@@ -1,5 +1,5 @@
 import { CMSLink } from '@/components/Link'
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 import type { FooterSettings } from '@/types/payload'
 
 interface FooterLegalLinksProps extends Pick<FooterSettings, 'legalPages'> {

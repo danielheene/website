@@ -1,6 +1,6 @@
 import { FC, Fragment } from 'react'
 
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 
 export const defaultFontWeight: number = 400
 export const defaultSampleText: string = 'Heavy boxes perform quick waltzes and jigs.'

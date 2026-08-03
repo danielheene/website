@@ -8,7 +8,7 @@ import { Button } from '@/components/Button'
 import { ButtonGroup, ButtonGroupSeparator } from '@/components/ButtonGroup'
 import { Icon } from '@/components/Icon'
 import { Skeleton } from '@/components/Skeleton'
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 
 interface HeaderProps {
   domain: string | null

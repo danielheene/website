@@ -1,5 +1,5 @@
 import { CMSLink } from '@/components/Link'
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 import type { LinkFieldData } from '@/types/payload'
 
 interface FooterSocialLinksProps {

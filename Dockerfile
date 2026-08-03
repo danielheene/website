@@ -16,6 +16,7 @@ COPY patches ./patches
 COPY apps/web/package.json ./apps/web/
 COPY packages/tsconfig/package.json ./packages/tsconfig/
 COPY packages/biome-config/package.json ./packages/biome-config/
+COPY packages/utils/package.json ./packages/utils/
 # The workspace file is copied above on purpose: it carries `allowBuilds`, which
 # approves the native packages (sharp, @swc/core, node-av, …) that must compile
 # for the build and runtime to work. Passing --ignore-workspace here would skip
@@ -105,6 +106,10 @@ COPY --from=builder /repo/apps/web/public ./apps/web/public
 # extends must ship for the same reason.
 COPY pnpm-workspace.yaml ./
 COPY packages/tsconfig ./packages/tsconfig
+# @repo/utils ships raw TypeScript (no dist), so its source has to be present at
+# runtime for the same reason src/ is: next.config.ts and payload.config.ts are
+# transpiled at boot and pull it in through the workspace link.
+COPY packages/utils ./packages/utils
 COPY apps/web/package.json apps/web/tsconfig.json apps/web/next.config.ts apps/web/payload.config.ts apps/web/proxy.ts ./apps/web/
 COPY apps/web/src ./apps/web/src
 # Payload's admin panel dynamically imports its generated importMap.js (and other

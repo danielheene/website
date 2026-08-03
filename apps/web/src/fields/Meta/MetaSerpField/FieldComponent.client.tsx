@@ -4,7 +4,7 @@ import { useField } from '@payloadcms/ui'
 import type { UIFieldClientProps } from 'payload'
 import type { CSSProperties } from 'react'
 
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 
 type FieldComponentClientProps = {
   pageUrl?: string

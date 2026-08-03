@@ -20,8 +20,8 @@ import isNumber from 'lodash-es/isNumber'
 import prettyMs from 'pretty-ms'
 import timestring from 'timestring'
 
-import { cn } from '@/lib/cn'
-import { extractErrorMessage } from '@/lib/extractErrorMessage'
+import { cn } from '@repo/utils/cn'
+import { extractErrorMessage } from '@repo/utils/extractErrorMessage'
 
 export const FieldComponent: NumberFieldClientComponent = ({
   field,

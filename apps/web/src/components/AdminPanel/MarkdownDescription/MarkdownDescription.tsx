@@ -2,7 +2,7 @@ import type { GroupFieldDescriptionServerComponent } from 'payload'
 import { Fragment } from 'react'
 import ReactMarkdown from 'react-markdown'
 
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 
 export const MarkdownDescription: GroupFieldDescriptionServerComponent = async ({
   field: { admin: { description } = {} } = {

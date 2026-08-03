@@ -3,7 +3,7 @@
 import { useState } from 'react'
 
 import { ICON, Icon } from '@/components/Icon'
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 
 import { useIconSearch } from '../useIconSearch'
 

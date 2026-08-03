@@ -12,7 +12,7 @@ import {
   subMilliseconds,
 } from 'date-fns'
 
-import { nanoid } from '@/lib/nanoid'
+import { nanoid } from '@repo/utils/nanoid'
 import { CollectionSlug } from '@/types/collections'
 import { GlobalSlug } from '@/types/globals'
 import { QueueSlug, WorkflowSlug } from '@/types/jobs-queue'

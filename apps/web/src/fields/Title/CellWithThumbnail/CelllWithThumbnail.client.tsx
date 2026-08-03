@@ -4,7 +4,7 @@ import Link from 'next/link'
 import type { CollectionSlug, DefaultCellComponentProps, TextFieldClient } from 'payload'
 import { useListDrawerContext } from '@payloadcms/ui'
 
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 
 import { Thumbnail } from '../Thumbnail'
 

@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 import { CMSLink } from '@/components/Link'
 import { Logo } from '@/components/Logo'
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 import { fetchSiteSettingsCached } from '@/lib/fetchers'
 
 export const Header = async () => {

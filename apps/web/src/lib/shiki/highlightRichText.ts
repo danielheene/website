@@ -1,6 +1,6 @@
 import { BlockSlug } from '@/types/blocks'
 
-import { codeBlockKey, type HighlightedCodeMap } from './codeBlockKey'
+import { codeBlockKey, type HighlightedCodeMap } from '@repo/utils/shiki/codeBlockKey'
 import { highlightCodeCached } from './highlightCodeCached'
 
 type LexicalNode = {

@@ -1,4 +1,4 @@
-import { generateSlug } from '@/lib/generateSlug'
+import { generateSlug } from './generateSlug'
 
 export interface ExtractedHeading {
   id: string

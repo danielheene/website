@@ -11,7 +11,7 @@ import { FieldLabel } from '@payloadcms/ui/fields/FieldLabel'
 import { TextInput } from '@payloadcms/ui/fields/Text'
 
 import { Icon } from '@/components/Icon'
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 
 export type TextFieldGenerateFunction = () => string | Promise<string>
 

@@ -7,7 +7,7 @@ import { cn } from 'tailwind-variants'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/AdminPanel/Card'
 import { Icon, type IconName } from '@/components/Icon'
 import { Skeleton } from '@/components/Skeleton'
-import { formatSecondsToDuration } from '@/lib/formatSecondsToDuration'
+import { formatSecondsToDuration } from '@repo/utils/formatSecondsToDuration'
 
 import type { UmamiStats } from './UmamiWidget.data'
 

@@ -2,7 +2,7 @@ import { memo } from 'react'
 
 import { Headline } from '@/components/Headline'
 import RichText from '@/components/RichText'
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 import { CollectionData, CollectionSlug } from '@/types/collections'
 
 import { Image } from './Image'

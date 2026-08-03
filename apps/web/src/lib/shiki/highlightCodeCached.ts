@@ -1,6 +1,6 @@
 import { cacheLife } from 'next/cache'
 
-import { type HighlightCodeOptions, highlightCode } from './highlightCode'
+import { type HighlightCodeOptions, highlightCode } from '@repo/utils/shiki/highlightCode'
 
 /**
  * Server-side entry point for highlighting.

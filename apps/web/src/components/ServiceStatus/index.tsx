@@ -3,7 +3,7 @@
 import { type JSX, useEffect, useState } from 'react'
 import Link from 'next/link'
 
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 import { OverallStatus, type OverallStatusResponse } from '@/types/uptime-kuma'
 
 interface ServiceStatusProps {

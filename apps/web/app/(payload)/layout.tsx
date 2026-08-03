@@ -7,7 +7,7 @@ import { handleServerFunctions, RootLayout } from '@payloadcms/next/layouts'
 import type { ServerFunctionClient } from 'payload'
 import type React from 'react'
 
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 import PPFrama from '@/fonts/pp-frama/next'
 import PPFramaText from '@/fonts/pp-frama-text/next'
 import PPSupplyMono from '@/fonts/pp-supply-mono/next'

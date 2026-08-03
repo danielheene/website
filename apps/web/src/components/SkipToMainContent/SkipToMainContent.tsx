@@ -3,7 +3,7 @@
 import { JSX, useCallback } from 'react'
 import Link from 'next/link'
 
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 
 interface SkipToMainContentProps {
   targetId: string

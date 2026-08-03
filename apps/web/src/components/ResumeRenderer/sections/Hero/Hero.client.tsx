@@ -3,7 +3,7 @@
 import { useState } from 'react'
 
 import { ImageMedia } from '@/components/ImageMedia'
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 import type { MediaImage } from '@/types/payload'
 
 export const HeroClient = ({

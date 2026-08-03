@@ -6,7 +6,7 @@ import { FooterLegalLinks } from '@/components/Footer/FooterLegalLinks'
 import { FooterNavGroups } from '@/components/Footer/FooterNavGroups'
 import { Logo } from '@/components/Logo'
 import { ServiceStatus } from '@/components/ServiceStatus'
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fetchers'
 import type { LinkFieldData } from '@/types/payload'
 

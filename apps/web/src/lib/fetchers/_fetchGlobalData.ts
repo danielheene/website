@@ -3,7 +3,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
-import { extractErrorMessage } from '@/lib/extractErrorMessage'
+import { extractErrorMessage } from '@repo/utils/extractErrorMessage'
 import { Locale, reduceDataToLocale } from '@/lib/i18n'
 import { resolveRelations } from '@/lib/resolveRelation'
 import { GlobalData, GlobalSlugValue, RegisteredGlobalSlug } from '@/types/globals'

@@ -123,6 +123,12 @@ export default async (phase, { defaultConfig }) => {
       browserToTerminal: 'error',
     },
 
+    // @repo/utils ships raw TypeScript rather than a built dist, so Next has to
+    // compile it like app source. This keeps the package build-step-free.
+    transpilePackages: [
+      '@repo/utils',
+    ],
+
     serverExternalPackages: [
       // WASM decoder must not be inlined by Turbopack (invalid octal escapes
       // in the generated template string break the server chunk)

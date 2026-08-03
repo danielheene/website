@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 
 interface MetricsTableData {
   className?: string

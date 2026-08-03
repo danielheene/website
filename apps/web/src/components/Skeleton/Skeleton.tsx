@@ -1,6 +1,6 @@
 import type React from 'react'
 
-import { type ClassValue, cn } from '@/lib/cn'
+import { type ClassValue, cn } from '@repo/utils/cn'
 
 export interface SkeletonProps
   extends Omit<React.HTMLProps<HTMLDivElement>, 'className'> {

@@ -2,7 +2,7 @@ import type React from 'react'
 
 import { Button } from '@/components/Button'
 import { Icon } from '@/components/Icon'
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 
 export const Card = ({ className, ...props }: React.ComponentProps<'div'>) => {
   return (

@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react'
 
-import { cn } from '@/lib/cn'
-import type { ExtractedHeading } from '@/lib/extractHeadings'
+import { cn } from '@repo/utils/cn'
+import type { ExtractedHeading } from '@repo/utils/extractHeadings'
 
 export interface TableOfContentsProps {
   headings: ExtractedHeading[]

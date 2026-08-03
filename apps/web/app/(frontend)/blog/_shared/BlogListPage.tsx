@@ -8,7 +8,7 @@ import { format } from 'date-fns'
 
 import { ImageMedia } from '@/components/ImageMedia'
 import { PageContainer } from '@/components/PageContainer'
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 import { CollectionSlug } from '@/types/collections'
 import type { BlogPostData, Topic } from '@/types/payload'
 

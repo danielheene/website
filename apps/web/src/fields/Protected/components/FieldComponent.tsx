@@ -1,6 +1,6 @@
 import { CheckboxFieldServerProps } from 'payload'
 
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 
 export const FieldComponent = async ({ value }: CheckboxFieldServerProps) => {
   return value ? (

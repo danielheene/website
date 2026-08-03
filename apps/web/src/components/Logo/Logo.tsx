@@ -1,6 +1,6 @@
 import { type JSX, type Ref, type SVGAttributes, useMemo } from 'react'
 
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 
 export enum LogoColor {
   Primary = 'primary',

@@ -4,7 +4,7 @@ import { useNav } from '@payloadcms/ui'
 
 import { get } from 'lodash-es'
 
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 import { ResolvedRelations } from '@/lib/resolveRelation'
 import { AdminNavigationGroup } from '@/types/admin-panel'
 import { User } from '@/types/payload'

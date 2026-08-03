@@ -58,6 +58,7 @@
     "@radix-ui/react-tooltip": "^1.2.16",
     "@react-pdf/renderer": "^4.5.1",
     "@react-pdf/types": "^2.11.1",
+    "@repo/utils": "workspace:*",
     "@sindresorhus/slugify": "^3.0.0",
     "@tailwindcss/typography": "^0.5.20",
     "@trieb.work/nextjs-turbo-redis-cache": "^1.15.0",

@@ -5,7 +5,7 @@ import { FullscreenModal, useModal } from '@payloadcms/ui'
 
 import { parseISO } from 'date-fns'
 
-import { Interval } from '@/lib/date'
+import { Interval } from '@repo/utils/date'
 
 import { DateRangeModal } from './UmamiWidget.DateRangeModal'
 import type { UmamiEvent, UmamiPageViews, UmamiPath, UmamiStats } from './UmamiWidget.data'

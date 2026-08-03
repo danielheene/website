@@ -22,10 +22,10 @@ import {
 } from 'lodash-es'
 import pupa from 'pupa'
 
-import { extractErrorMessage } from '@/lib/extractErrorMessage'
+import { extractErrorMessage } from '@repo/utils/extractErrorMessage'
 import { fetchGlobalUserSettings, fetchSiteSettings } from '@/lib/fetchers'
 import { Locale } from '@/lib/i18n'
-import { nanoid } from '@/lib/nanoid'
+import { nanoid } from '@repo/utils/nanoid'
 
 export type RenderTemplateArgs = {
   template: string

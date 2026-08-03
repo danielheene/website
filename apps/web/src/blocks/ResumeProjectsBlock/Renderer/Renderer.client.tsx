@@ -5,7 +5,7 @@ import type { JSX } from 'react'
 import { Headline } from '@/components/Headline'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 import { CollectionData, CollectionSlug } from '@/types/collections'
 import { ResumeProjectsBlock } from '@/types/payload'
 

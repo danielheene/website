@@ -3,7 +3,7 @@ import { Fragment, memo, useState } from 'react'
 import { GroupFieldClientProps } from 'payload'
 import { RenderFields } from '@payloadcms/ui'
 
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 
 export interface ResumeLayoutBlockProps extends GroupFieldClientProps {
   imageSrc: string

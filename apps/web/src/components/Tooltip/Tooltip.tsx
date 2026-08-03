@@ -3,7 +3,7 @@ import { TooltipContentProps } from '@radix-ui/react-tooltip'
 
 import React, { JSX } from 'react'
 
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 
 interface TooltipProps extends TooltipContentProps {
   children: React.ReactNode

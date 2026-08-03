@@ -3,7 +3,7 @@ import React, { Fragment, FunctionComponent } from 'react'
 import { ResetWrapper } from 'storybook/internal/components'
 
 
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 
 type Colors = string[] | { [key: string]: string }
 

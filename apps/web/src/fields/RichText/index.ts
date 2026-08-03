@@ -27,7 +27,7 @@ import {
 
 import { IconPickerFeature } from '@/fields/IconPicker/lexical/feature.server'
 import { LinkField } from '@/fields/Link'
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 import { BlockSlug } from '@/types/blocks'
 
 const rootFeatures = [

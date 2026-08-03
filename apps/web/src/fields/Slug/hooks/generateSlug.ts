@@ -1,7 +1,7 @@
 import { get } from 'lodash-es'
 import type { FieldHook } from 'payload'
 
-import { generateSlug } from '@/lib/generateSlug'
+import { generateSlug } from '@repo/utils/generateSlug'
 
 export const generateSlugHook =
   (fieldToUse: string): FieldHook =>

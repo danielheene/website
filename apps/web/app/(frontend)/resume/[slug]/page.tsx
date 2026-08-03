@@ -1,7 +1,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 import { CollectionSlug } from '@/types/collections'
 
 export default async function ResumeDocumentPage({ params }: PageProps<'/resume/[slug]'>) {

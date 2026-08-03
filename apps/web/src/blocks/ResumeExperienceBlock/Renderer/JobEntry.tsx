@@ -1,6 +1,6 @@
 import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintext'
 
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 import type { ReducedToLocale } from '@/lib/i18n'
 import { generateExperienceInterval } from '@/lib/i18n'
 import type { ResumeJobData } from '@/types/payload'

@@ -3,7 +3,7 @@ import { GroupFieldDescriptionServerComponent } from 'payload'
 
 import { get } from 'lodash-es'
 
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 
 export const DescriptionComponent: GroupFieldDescriptionServerComponent = async ({ field }) => {
   const description = get(field, 'admin.description')

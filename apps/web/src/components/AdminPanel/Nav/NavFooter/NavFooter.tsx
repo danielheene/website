@@ -8,7 +8,7 @@ import { useClickOutside, useNav, useTheme } from '@payloadcms/ui'
 
 import { Icon } from '@/components/Icon'
 import { Switch } from '@/components/Switch'
-import { cn } from '@/lib/cn'
+import { cn } from '@repo/utils/cn'
 
 interface NavFooterProps {
   avatarSrc?: string
