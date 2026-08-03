@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-import { ICON, Icon } from '@/components/Icon'
+import { ICON, Icon } from '@repo/ui/Icon'
 import { cn } from '@repo/utils/cn'
 
 import { useIconSearch } from '../useIconSearch'

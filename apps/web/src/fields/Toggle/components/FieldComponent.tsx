@@ -5,8 +5,8 @@ import { fieldBaseClass, useField } from '@payloadcms/ui'
 
 import { cn } from 'tailwind-variants'
 
-import { Button } from '@/components/Button'
-import { Icon } from '@/components/Icon'
+import { Button } from '@repo/ui/Button'
+import { Icon } from '@repo/ui/Icon'
 
 type FieldComponentProps = {
   tooltip?: string

@@ -6,7 +6,7 @@ import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts'
 import { cn } from 'tailwind-variants'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/AdminPanel/Card'
-import { Skeleton } from '@/components/Skeleton'
+import { Skeleton } from '@repo/ui/Skeleton'
 
 import type { UmamiPageViews } from './UmamiWidget.data'
 

@@ -3,7 +3,7 @@
 import type { PageLayout } from '@/types/payload'
 import type { JSX, ReactNode } from 'react'
 
-import { SectionNavigationProvider } from '@/components/PageContainer/SectionNavigation'
+import { SectionNavigationProvider } from '@repo/ui/SectionNavigation'
 
 interface PageContainerProps {
   layout?: PageLayout

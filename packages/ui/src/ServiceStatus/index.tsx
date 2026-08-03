@@ -4,7 +4,7 @@ import { type JSX, useEffect, useState } from 'react'
 import Link from 'next/link'
 
 import { cn } from '@repo/utils/cn'
-import { OverallStatus, type OverallStatusResponse } from '@/types/uptime-kuma'
+import { OverallStatus, type OverallStatusResponse } from '@repo/utils/uptime-kuma'
 
 interface ServiceStatusProps {
   className?: string

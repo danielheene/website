@@ -6,7 +6,7 @@ import {
   type SSEStatus,
   type UseServerSentEventsResult,
   useServerSentEvents,
-} from '@/hooks/use-server-sent-events'
+} from '../hooks/use-server-sent-events'
 
 export interface EventStreamProps<T> {
   /** Redis channel to subscribe to. */

@@ -1,6 +1,6 @@
 import { deepMerge, type SelectField } from 'payload'
 
-import { BRAND_ICON, Icon } from '@/components/Icon'
+import { BRAND_ICON, Icon } from '@repo/ui/Icon'
 
 type IconFieldOverrides = Partial<
   Omit<SelectField, 'name' | 'type' | 'options'>

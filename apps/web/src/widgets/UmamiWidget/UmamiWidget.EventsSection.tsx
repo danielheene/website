@@ -9,8 +9,8 @@ import {
   CardPagination,
   CardTitle,
 } from '@/components/AdminPanel/Card'
-import { MetricsTable } from '@/components/MetricsTable'
-import { Skeleton } from '@/components/Skeleton'
+import { MetricsTable } from '@repo/ui/MetricsTable'
+import { Skeleton } from '@repo/ui/Skeleton'
 import { useArrayPagination } from '@/hooks/use-array-pagination'
 
 import type { UmamiEvent } from './UmamiWidget.data'

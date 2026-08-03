@@ -6,7 +6,7 @@ import { useIntersectionObserver } from 'usehooks-ts'
 
 import { cn } from '@repo/utils/cn'
 
-import { useSectionNavigation } from '../PageContainer/SectionNavigation'
+import { useSectionNavigation } from '../SectionNavigation'
 
 export interface SectionContainerProps {
   id: string

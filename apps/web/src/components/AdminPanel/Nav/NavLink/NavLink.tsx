@@ -4,7 +4,7 @@ import React, { type JSX } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-import { Icon } from '@/components/Icon'
+import { Icon } from '@repo/ui/Icon'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@repo/utils/cn'
 
@@ -14,7 +14,7 @@ import { useConfig, useNav, useTranslation } from '@payloadcms/ui'
 
 import { formatAdminURL } from 'payload/shared'
 
-import { Tooltip } from '@/components/Tooltip'
+import { Tooltip } from '@repo/ui/Tooltip'
 import { AdminNavigationTypeValue } from '@/types/admin-panel'
 import { CollectionSlugValue } from '@/types/collections'
 import { GlobalSlugValue } from '@/types/globals'

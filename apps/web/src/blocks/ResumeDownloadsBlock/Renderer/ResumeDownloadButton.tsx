@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import { Button } from '@/components/Button'
+import { Button } from '@repo/ui/Button'
 
 export const ResumeDownloadButton = ({
   url,

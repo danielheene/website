@@ -2,7 +2,7 @@ import { Fragment } from 'react'
 
 import type { Meta, StoryObj } from '@storybook/nextjs'
 
-import { Separator } from '@/components/Separator'
+import { Separator } from '../Separator'
 
 import { Badge, BadgeProps, badgeStyles } from './Badge'
 

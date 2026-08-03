@@ -11,8 +11,8 @@ import { getPayload } from 'payload'
 
 import { format } from 'date-fns'
 
-import { ArticleSidebar } from '@/components/ArticleSidebar'
-import { DuoTone } from '@/components/DuoTone'
+import { ArticleSidebar } from '@repo/ui/ArticleSidebar'
+import { DuoTone } from '@repo/ui/DuoTone'
 import { ImageMedia } from '@/components/ImageMedia'
 import { RichText } from '@/components/RichText'
 import { extractHeadings } from '@repo/utils/extractHeadings'

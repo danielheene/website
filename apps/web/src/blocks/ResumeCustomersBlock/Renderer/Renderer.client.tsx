@@ -1,9 +1,9 @@
 'use client'
 
-import { Headline } from '@/components/Headline'
+import { Headline } from '@repo/ui/Headline'
 import { LogoCarousel, LogoCarouselProps } from '@/components/LogoCarousel/LogoCarousel'
 import RichText from '@/components/RichText'
-import { SectionContainer } from '@/components/SectionContainer'
+import { SectionContainer } from '@repo/ui/SectionContainer'
 import { ResumeCustomersBlock } from '@/types/payload'
 
 interface ResumeCustomersBlockClientRendererProps extends ResumeCustomersBlock {

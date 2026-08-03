@@ -1,7 +1,7 @@
 'use client'
 
-import { Button } from '@/components/Button'
-import { Icon } from '@/components/Icon'
+import { Button } from '../Button'
+import { Icon } from '../Icon'
 
 interface ThemeToggleIconButtonProps {
   theme?: string

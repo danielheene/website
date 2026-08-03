@@ -10,7 +10,7 @@ import {
   type NodeKey,
 } from '@payloadcms/richtext-lexical/lexical'
 
-import { Icon } from '@/components/Icon'
+import { Icon } from '@repo/ui/Icon'
 
 import type { SerializedIconNode } from './IconNode.server'
 

@@ -17,6 +17,9 @@
 @import "./payload/_richtext-lexical.css" layer(payload-default);
 @import "./payload/_list-header.css" layer(payload-default);
 
+/* see frontend.css — @repo/ui is outside Tailwind's auto-detected source root */
+@source "../../../../packages/ui/src";
+
 @plugin "@tailwindcss/typography";
 
 

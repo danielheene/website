@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from 'react'
 import type { JSONFieldClientComponent, JSONFieldClientProps } from 'payload'
 import { DraggableSortable, DraggableSortableItem, fieldBaseClass, useField } from '@payloadcms/ui'
 
-import { Button } from '@/components/Button'
+import { Button } from '@repo/ui/Button'
 import { ClassValue, cn } from '@repo/utils/cn'
 import { SkillEntrySortable, SkillSorting, SkillTypeSortable } from '@/types/payload'
 

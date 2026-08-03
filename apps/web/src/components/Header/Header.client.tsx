@@ -4,7 +4,7 @@ import React from 'react'
 import Link from 'next/link'
 
 import { CMSLink } from '@/components/Link'
-import { Logo } from '@/components/Logo'
+import { Logo } from '@repo/ui/Logo'
 import { cn } from '@repo/utils/cn'
 import type { HeaderSettings } from '@/types/payload'
 

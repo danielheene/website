@@ -123,10 +123,11 @@ export default async (phase, { defaultConfig }) => {
       browserToTerminal: 'error',
     },
 
-    // @repo/utils ships raw TypeScript rather than a built dist, so Next has to
-    // compile it like app source. This keeps the package build-step-free.
+    // Both workspace packages ship raw TypeScript rather than a built dist, so
+    // Next has to compile them like app source. This keeps them build-step-free.
     transpilePackages: [
       '@repo/utils',
+      '@repo/ui',
     ],
 
     serverExternalPackages: [

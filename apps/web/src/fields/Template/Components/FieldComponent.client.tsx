@@ -10,7 +10,7 @@ import { mergeFieldStyles } from '@payloadcms/ui/shared'
 
 import * as Collapsible from '@radix-ui/react-collapsible'
 
-import { Icon } from '@/components/Icon'
+import { Icon } from '@repo/ui/Icon'
 import { TemplateFieldAnnotation, TemplateFieldData } from '@/fields/Template/types'
 import { cn } from '@repo/utils/cn'
 import { Locale } from '@/lib/i18n'

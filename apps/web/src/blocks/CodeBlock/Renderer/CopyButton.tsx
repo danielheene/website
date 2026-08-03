@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { CopyIcon } from '@payloadcms/ui/icons/Copy'
 
-import { Button } from '@/components/Button'
+import { Button } from '@repo/ui/Button'
 
 export function CopyButton({ code }: { code: string }) {
   const [text, setText] = useState('Copy')

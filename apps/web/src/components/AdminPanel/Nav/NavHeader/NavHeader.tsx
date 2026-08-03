@@ -4,7 +4,7 @@ import './NavHeader.styles.css'
 
 import { useNav } from '@payloadcms/ui'
 
-import { Logo } from '@/components/Logo'
+import { Logo } from '@repo/ui/Logo'
 import { useIsMobile } from '@/hooks/use-mobile'
 
 export const NavHeader = () => {

@@ -14,6 +14,14 @@
 @import "./theme/_text.css" layer(theme);
 @import "./theme/_text-shadows.css" layer(theme);
 
+/**
+ *    Tailwind auto-detects sources relative to this file, which stops at the app
+ *    boundary. @repo/ui lives outside it, so its class names have to be declared
+ *    explicitly or every utility used only by a UI component gets tree-shaken
+ *    out of the stylesheet.
+ */
+@source "../../../../packages/ui/src";
+
 @plugin "@tailwindcss/typography";
 
 @custom-variant light (&:where(.light, .light *, [data-theme="light"], [data-theme="light"] *));

@@ -1,4 +1,5 @@
-@reference "#frontend.css";
+/* the theme tokens applied below live in the app's stylesheet */
+@reference "../../../../apps/web/src/styles/frontend.css";
 
 
 .Container {

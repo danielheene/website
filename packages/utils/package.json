@@ -13,13 +13,14 @@
     "./generateSlug": "./src/generateSlug.ts",
     "./i18n/reduceDataToLocale": "./src/i18n/reduceDataToLocale.ts",
     "./i18n/shared": "./src/i18n/shared.ts",
-    "./jsonLd/JsonLd": "./src/jsonLd/JsonLd.tsx",
     "./jsonLd/*": "./src/jsonLd/*.ts",
+    "./jsonLd/JsonLd": "./src/jsonLd/JsonLd.tsx",
     "./nanoid": "./src/nanoid.ts",
     "./removeObjectKeys": "./src/removeObjectKeys.ts",
     "./shiki": "./src/shiki/index.ts",
     "./shiki/codeBlockKey": "./src/shiki/codeBlockKey.ts",
-    "./shiki/highlightCode": "./src/shiki/highlightCode.ts"
+    "./shiki/highlightCode": "./src/shiki/highlightCode.ts",
+    "./uptime-kuma": "./src/uptime-kuma.ts"
   },
   "scripts": {
     "lint": "biome check",

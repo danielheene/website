@@ -10,7 +10,7 @@ import { useField } from '@payloadcms/ui'
 import { FieldLabel } from '@payloadcms/ui/fields/FieldLabel'
 import { TextInput } from '@payloadcms/ui/fields/Text'
 
-import { Icon } from '@/components/Icon'
+import { Icon } from '@repo/ui/Icon'
 import { cn } from '@repo/utils/cn'
 
 export type TextFieldGenerateFunction = () => string | Promise<string>

@@ -2,7 +2,7 @@
 
 import { ThemeProvider } from 'next-themes'
 
-import { UmamiProvider } from '@/contexts/Umami'
+import { UmamiProvider } from '../contexts/Umami'
 
 export const AllProviders = ({ children }: { children: React.ReactNode }) => {
   /**

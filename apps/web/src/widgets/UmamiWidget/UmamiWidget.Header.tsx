@@ -4,10 +4,10 @@ import Link from 'next/link'
 
 import { formatDate } from 'date-fns'
 
-import { Button } from '@/components/Button'
-import { ButtonGroup, ButtonGroupSeparator } from '@/components/ButtonGroup'
-import { Icon } from '@/components/Icon'
-import { Skeleton } from '@/components/Skeleton'
+import { Button } from '@repo/ui/Button'
+import { ButtonGroup, ButtonGroupSeparator } from '@repo/ui/ButtonGroup'
+import { Icon } from '@repo/ui/Icon'
+import { Skeleton } from '@repo/ui/Skeleton'
 import { cn } from '@repo/utils/cn'
 
 interface HeaderProps {

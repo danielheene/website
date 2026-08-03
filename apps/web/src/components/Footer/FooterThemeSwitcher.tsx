@@ -2,7 +2,7 @@
 
 import { useTheme } from 'next-themes'
 
-import { ThemeToggleIconButton } from '@/components/ThemeToggle'
+import { ThemeToggleIconButton } from '@repo/ui/ThemeToggle'
 
 export const FooterThemeSwitcher = () => {
   const { theme, setTheme } = useTheme()

@@ -2,7 +2,7 @@ import React, { JSX } from 'react'
 
 import { tv, VariantProps } from 'tailwind-variants'
 
-import { Icon } from '@/components/Icon'
+import { Icon } from '../Icon'
 
 export const BannerVariant = {
   Info: 'info',

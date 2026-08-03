@@ -3,7 +3,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import { useUmami } from '@/contexts/Umami'
+import { useUmami } from '../contexts/Umami'
 
 const audioContents = [
   'SUQzAwAAAAAAIVRFTkMAAAAIAAAARmlzc2lvblRMRU4AAAAFAAAAMTE4OP/7mMQAAAAAAAAAAA',

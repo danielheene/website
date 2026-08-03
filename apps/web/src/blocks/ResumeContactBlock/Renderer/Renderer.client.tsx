@@ -1,8 +1,8 @@
 'use client'
 
-import { Headline } from '@/components/Headline'
+import { Headline } from '@repo/ui/Headline'
 import RichText from '@/components/RichText'
-import { SectionContainer } from '@/components/SectionContainer'
+import { SectionContainer } from '@repo/ui/SectionContainer'
 import { cn } from '@repo/utils/cn'
 import { ResumeContactBlock } from '@/types/payload'
 

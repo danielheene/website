@@ -2,7 +2,7 @@
 
 import { createClientFeature } from '@payloadcms/richtext-lexical/client'
 
-import { Icon } from '@/components/Icon'
+import { Icon } from '@repo/ui/Icon'
 
 import { INSERT_ICON_COMMAND } from './nodes/commands'
 import { IconNode } from './nodes/IconNode.client'

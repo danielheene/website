@@ -5,7 +5,7 @@ import type { TextFieldClientProps } from 'payload'
 import { useField } from '@payloadcms/ui'
 import { FieldLabel } from '@payloadcms/ui/fields/FieldLabel'
 
-import { Icon } from '@/components/Icon'
+import { Icon } from '@repo/ui/Icon'
 
 import { IconPickerPanel } from './IconPickerPanel'
 

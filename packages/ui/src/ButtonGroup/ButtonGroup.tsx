@@ -3,7 +3,7 @@ import React, { ComponentProps } from 'react'
 import { createSlot } from '@radix-ui/react-slot'
 import { cn, tv, VariantProps } from 'tailwind-variants'
 
-import { Separator } from '@/components/Separator'
+import { Separator } from '../Separator'
 
 const buttonGroupStyles = tv({
   base: cn([

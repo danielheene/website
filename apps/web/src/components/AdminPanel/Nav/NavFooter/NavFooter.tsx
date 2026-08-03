@@ -6,8 +6,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useClickOutside, useNav, useTheme } from '@payloadcms/ui'
 
-import { Icon } from '@/components/Icon'
-import { Switch } from '@/components/Switch'
+import { Icon } from '@repo/ui/Icon'
+import { Switch } from '@repo/ui/Switch'
 import { cn } from '@repo/utils/cn'
 
 interface NavFooterProps {

@@ -1,7 +1,7 @@
 import type React from 'react'
 
-import { Button } from '@/components/Button'
-import { Icon } from '@/components/Icon'
+import { Button } from '@repo/ui/Button'
+import { Icon } from '@repo/ui/Icon'
 import { cn } from '@repo/utils/cn'
 
 export const Card = ({ className, ...props }: React.ComponentProps<'div'>) => {

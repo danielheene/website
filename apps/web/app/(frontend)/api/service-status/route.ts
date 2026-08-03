@@ -6,7 +6,7 @@ import {
   HeartbeatStatus,
   OverallStatus,
   type OverallStatusResponse,
-} from '@/types/uptime-kuma'
+} from '@repo/utils/uptime-kuma'
 
 /**
  *

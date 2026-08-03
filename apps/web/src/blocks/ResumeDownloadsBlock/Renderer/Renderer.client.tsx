@@ -5,9 +5,9 @@ import { JSX } from 'react'
 import { cn } from 'tailwind-variants'
 
 import { ResumePreviewImage } from '@/blocks/ResumeDownloadsBlock/Renderer/ResumePreviewImage'
-import { Headline } from '@/components/Headline'
+import { Headline } from '@repo/ui/Headline'
 import RichText from '@/components/RichText'
-import { SectionContainer } from '@/components/SectionContainer'
+import { SectionContainer } from '@repo/ui/SectionContainer'
 import { MediaDocument, MediaImage, ResumeDownloadsBlock } from '@/types/payload'
 
 import { ResumeDownloadButton } from './ResumeDownloadButton'

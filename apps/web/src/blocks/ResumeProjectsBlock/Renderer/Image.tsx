@@ -2,7 +2,7 @@
 
 import { memo, useState } from 'react'
 
-import { Icon } from '@/components/Icon'
+import { Icon } from '@repo/ui/Icon'
 import { ImageMedia } from '@/components/ImageMedia'
 import { cn } from '@repo/utils/cn'
 import type { MediaImage } from '@/types/payload'

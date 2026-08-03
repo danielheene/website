@@ -23,6 +23,11 @@ export default defineMain({
   stories: [
     '../src/**/*.mdx',
     '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
+    // @repo/ui owns most presentational components now, and its stories live
+    // with them. Storybook stays in the app because it loads next.config.ts for
+    // the Next.js framework integration.
+    '../../../packages/ui/src/**/*.mdx',
+    '../../../packages/ui/src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
   ],
   staticDirs: [
     '../public',
