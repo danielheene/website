@@ -1,6 +1,7 @@
 # Turborepo Monorepo Conversion Plan
 
-Status: **in progress — Phases 0–3 complete, Phase 4 next**
+Status: **in progress — Phases 0–4 complete. This is the plan's recommended cut
+point; Phase 5 is optional.**
 Target: `website` (single package, flat layout) → Turborepo monorepo
 
 ## Target structure
@@ -174,7 +175,7 @@ with 200 — confirming the Payload admin importMap still resolves. Without a re
 database the Docker build fails at page-data collection, but `68d4be3` fails that same
 build identically, so it is not a regression.
 
-### Phase 4 — `packages/utils`
+### Phase 4 — `packages/utils` ✅ done (`e9212f5`)
 Prerequisite for `packages/ui`. Do this before touching components.
 - Move the 69 Payload-free files from `apps/web/src/lib` → `packages/utils/src`
   (`cn`, `formatSecondsToDuration`, `generateSlug`, `generateContentPath`,
@@ -186,6 +187,43 @@ Prerequisite for `packages/ui`. Do this before touching components.
 - Add `@repo/utils` dep to `apps/web`; rewrite the affected imports.
 - **Risk:** medium — mechanical but wide. Verified by typecheck + the moved unit tests.
 
+**Corrections found during execution:**
+
+- *"69 Payload-free lib files" was wrong — the real movable count is 41.* That
+  number counted only **direct** Payload imports. Coupling is transitive: a
+  Payload-free file that imports a coupled one is itself coupled. The closure adds
+  22 files the direct scan misses, including `generateContentURL`,
+  `generateMetaTitle` and `generatePreviewPath`. **`generateContentPath` was named
+  in this plan as movable but imports Payload types and stays in the app.**
+- *Only 34 of those 41 belong in a utils package.* Payload-free is not the same as
+  framework-free. Left behind deliberately: `fetchAnthropicImageAltText` /
+  `fetchAnthropicMetaDescription` (`'use server'` + AI SDK), `highlightCodeCached`
+  (`next/cache`), `useCreatePortalHost` (React hook), and `RedisHandler` /
+  `sentry/options` (app infrastructure bound to this app's env and config).
+  Moving them would pull Next, the AI SDK and app config into the package.
+- *Mixed barrels stay in the app and re-export.* `@/lib/jsonLd` and `@/lib/i18n`
+  each re-export both moved and Payload-coupled modules, so neither could move.
+  Re-exporting from `@repo/utils` keeps every consumer's import path unchanged —
+  which matters most for `@/lib/i18n`'s 10+ call sites.
+- *`jsonLd.test.ts` straddled the split* and had to be divided with the code it
+  covers: 8 suites to the package, 2 left with the app-local generators. This is
+  why the test-file count goes 27 → 28 while the test count stays at 207.
+- *The package needs its own `vitest.setup.ts` for `TZ=UTC`.* The date helpers
+  assert absolute ISO strings; without it 4 tests fail outside UTC. The app's
+  setup file does not apply to a sibling package.
+- *`exports` needs an explicit `./jsonLd/JsonLd` entry* — the `./jsonLd/*` pattern
+  resolves to `.ts` and `JsonLd` is a `.tsx` file.
+- *The package ships raw TypeScript, no build step.* This keeps turbo simple (no
+  `dist` to depend on), but costs `transpilePackages: ['@repo/utils']` in
+  `next.config.ts` and a `COPY packages/utils` in the Dockerfile runner, since the
+  Next/Payload configs are transpiled at boot.
+
+**Verification performed:** typecheck totals 5 errors across both packages (3 web +
+2 utils) — the same 5 pre-existing `jsonLd` failures as the baseline, redistributed
+by the test split. Tests 28 files / 207 passing (17/120 web, 11/87 utils) against a
+27/207 baseline. Lint holds at 13 files. Build, Storybook and a real Docker image
+all pass, and the container serves `/admin` with 200.
+
 ### Phase 5 — `packages/ui` (incremental, component by component)
 Not a bulk move. Order chosen so each step stays green:
 1. `Separator`, `Shaders` — pure, and *not* in the importMap. Safest first.
@@ -194,6 +232,10 @@ Not a bulk move. Order chosen so each step stays green:
    as their own commit so a regression is easy to bisect.
 3. Components whose only remaining deps are `@repo/utils` + `@/types` (post-Phase-4) —
    re-measure after Phase 4, the set will be larger than 4.
+   **Re-measure with a transitive closure, not a direct-import grep.** The Phase 4
+   counts in this plan were wrong precisely because they scanned direct imports
+   only; the component numbers in "Evidence" above were produced the same way and
+   should be assumed equally optimistic until re-derived.
 4. **Stop.** `AdminPanel`, `LivePreviewListener`, `ResumeRenderer`, `RichText` stay in
    `apps/web` permanently. They import `@payloadcms/*` and generated `payload-types`; a UI
    package that depends on the app's codegen is not a package.
