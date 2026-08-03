@@ -54,6 +54,8 @@ export default async (phase, { defaultConfig }) => {
     if (server) {
       process.env.SERVER_HOST = process.env.CLOUDFLARE_TUNNEL_HOST
       process.env.SERVER_URL = process.env.CLOUDFLARE_TUNNEL_URL
+      process.env.HOST = process.env.CLOUDFLARE_TUNNEL_HOST
+      process.env.PORT = String(443)
     }
   }
 
