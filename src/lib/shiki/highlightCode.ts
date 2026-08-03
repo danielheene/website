@@ -30,7 +30,7 @@ const THEMES = {
   dark: 'github-dark',
 } as const
 
-const FALLBACK_LANGUAGE: SupportedLanguage = 'typescript'
+export const FALLBACK_LANGUAGE: SupportedLanguage = 'typescript'
 
 /**
  * Creating a highlighter loads the regex engine and grammars, which is far too
@@ -65,6 +65,11 @@ export interface HighlightCodeOptions {
  * Unknown languages fall back rather than throwing: the field's options can
  * change independently of the grammars loaded here, and a mismatch should
  * degrade to plain formatting instead of breaking the page.
+ *
+ * Shiki's tokenizer reads `Date.now()` internally for its grammar timeout
+ * guard, which Cache Components rejects during an uncached prerender — server
+ * callers must go through `highlightCodeCached` rather than calling this
+ * directly.
  */
 export const highlightCode = async ({
   code,

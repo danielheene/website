@@ -20,6 +20,7 @@ import { generateMeta } from '@/lib/generateMeta'
 import { reduceDataToLocale } from '@/lib/i18n'
 import { generateBlogPosting, generateBreadcrumbList } from '@/lib/jsonLd'
 import { resolveRelations } from '@/lib/resolveRelation'
+import { highlightRichText } from '@/lib/shiki/highlightRichText'
 import { CollectionData, CollectionSlug } from '@/types/collections'
 
 export async function generateStaticParams() {
@@ -73,6 +74,9 @@ export default async function Page({ params: paramsPromise }: PageProps) {
 
   const heroData = heroImage?.value
   const headings = extractHeadings(content)
+  // Shiki is server-only, so code blocks are highlighted here and handed to
+  // RichText, which renders on the client
+  const highlightedCode = await highlightRichText(content)
 
   // topics are a polymorphic hasMany relation — only populated entries are usable
   const topicList = (topics ?? [])
@@ -218,7 +222,11 @@ export default async function Page({ params: paramsPromise }: PageProps) {
                   // RichText is a Client Component that calls randomUUID(), which
                   // Cache Components requires to sit behind a Suspense boundary
                   <Suspense fallback={<div className="h-96 animate-pulse rounded-lg bg-muted" />}>
-                    <RichText data={content} enableGutter={false} />
+                    <RichText
+                      data={content}
+                      enableGutter={false}
+                      highlightedCode={highlightedCode}
+                    />
                   </Suspense>
                 ) : (
                   <p className="text-muted-foreground">This post has no content yet.</p>

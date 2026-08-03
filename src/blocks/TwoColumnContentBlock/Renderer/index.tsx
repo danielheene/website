@@ -1,26 +1,35 @@
-'use client'
-
 import type { JSX } from 'react'
 
-import RichText from '@/components/RichText'
-import { cn } from '@/lib/cn'
+import { highlightRichText } from '@/lib/shiki/highlightRichText'
 import type { TwoColumnContentBlock } from '@/types/payload'
+
+import { Columns } from './Columns'
 
 type TwoColumnContentBlockRendererProps = {
   className?: string
 } & TwoColumnContentBlock
 
-export const TwoColumnContentBlockRenderer = ({
+/**
+ * Server Component so code blocks can be highlighted before `RichText` — a
+ * Client Component — renders them.
+ */
+export const TwoColumnContentBlockRenderer = async ({
   className,
   contentLeft,
   contentRight,
-}: TwoColumnContentBlockRendererProps): JSX.Element => (
-  <div className={cn('grid', className)}>
-    <div className={cn('col-span-12 md:col-span-6')}>
-      <RichText data={contentLeft} enableGutter={false} />
-    </div>
-    <div className={cn('col-span-12 md:col-span-6')}>
-      <RichText data={contentRight} enableGutter={false} />
-    </div>
-  </div>
-)
+}: TwoColumnContentBlockRendererProps): Promise<JSX.Element> => {
+  const [highlightedLeft, highlightedRight] = await Promise.all([
+    highlightRichText(contentLeft),
+    highlightRichText(contentRight),
+  ])
+
+  return (
+    <Columns
+      className={className}
+      contentLeft={contentLeft}
+      contentRight={contentRight}
+      highlightedLeft={highlightedLeft}
+      highlightedRight={highlightedRight}
+    />
+  )
+}

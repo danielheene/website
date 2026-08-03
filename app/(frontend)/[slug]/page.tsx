@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { cacheLife, cacheTag } from 'next/cache'
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
+import { connection } from 'next/server'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
@@ -131,6 +132,12 @@ const queryPublishedPageBySlug = async (slug: string) => {
 }
 
 const queryDraftPageBySlug = async (slug: string) => {
+  // Draft reads are request-scoped and uncached: Payload's `find()` reads the
+  // current time internally, which a static prerender is not allowed to observe.
+  // `connection()` marks this branch dynamic so the time access happens after
+  // Request data has been read.
+  await connection()
+
   const payload = await getPayload({
     config,
   })

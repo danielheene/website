@@ -28,6 +28,10 @@ vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
   revalidateTag: vi.fn(),
   unstable_cache: (fn: unknown) => fn,
+  // Cache Components directives are no-ops outside the Next.js runtime; the
+  // functions they annotate still need to run.
+  cacheLife: vi.fn(),
+  cacheTag: vi.fn(),
 }))
 
 vi.mock('payload', async (importOriginal) => ({
