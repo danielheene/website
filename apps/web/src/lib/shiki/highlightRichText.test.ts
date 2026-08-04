@@ -1,6 +1,6 @@
+import { codeBlockKey } from '@repo/utils/shiki/codeBlockKey'
 import { describe, expect, it } from 'vitest'
 
-import { codeBlockKey } from '@repo/utils/shiki/codeBlockKey'
 import { highlightRichText } from './highlightRichText'
 
 const codeNode = (code: string, language?: string) => ({

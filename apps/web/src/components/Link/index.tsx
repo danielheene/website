@@ -3,6 +3,7 @@ import Link from 'next/link'
 
 import { Button, ButtonProps } from '@repo/ui/Button'
 import { Icon } from '@repo/ui/Icon'
+
 import { generateContentURL } from '@/lib/generateContentURL'
 import type { LinkFieldData } from '@/types/payload'
 

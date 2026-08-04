@@ -9,10 +9,10 @@ import { FieldError } from '@payloadcms/ui/fields/FieldError'
 import { mergeFieldStyles } from '@payloadcms/ui/shared'
 
 import * as Collapsible from '@radix-ui/react-collapsible'
-
 import { Icon } from '@repo/ui/Icon'
-import { TemplateFieldAnnotation, TemplateFieldData } from '@/fields/Template/types'
 import { cn } from '@repo/utils/cn'
+
+import { TemplateFieldAnnotation, TemplateFieldData } from '@/fields/Template/types'
 import { Locale } from '@/lib/i18n'
 import { renderTemplate } from '@/lib/renderTemplate'
 

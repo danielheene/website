@@ -1,5 +1,6 @@
-import { CMSLink } from '@/components/Link'
 import { cn } from '@repo/utils/cn'
+
+import { CMSLink } from '@/components/Link'
 import type { FooterSettings } from '@/types/payload'
 
 interface FooterNavGroupsProps {

@@ -3,9 +3,10 @@
 import type { JSX } from 'react'
 
 import { Headline } from '@repo/ui/Headline'
-import RichText from '@/components/RichText'
 import { SectionContainer } from '@repo/ui/SectionContainer'
 import { cn } from '@repo/utils/cn'
+
+import RichText from '@/components/RichText'
 import { generateExperienceInterval, ReducedToLocale } from '@/lib/i18n'
 import { ResolvedRelations } from '@/lib/resolveRelation'
 import { ResumeExperienceBlock, ResumeJobData, ResumeSkillTagData } from '@/types/payload'

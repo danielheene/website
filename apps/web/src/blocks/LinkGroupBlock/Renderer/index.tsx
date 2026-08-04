@@ -1,7 +1,8 @@
 import type { JSX } from 'react'
 
-import { CMSLink } from '@/components/Link'
 import { cn } from '@repo/utils/cn'
+
+import { CMSLink } from '@/components/Link'
 import { BlockData, BlockSlug } from '@/types/blocks'
 
 type LinkGroupBlockRendererProps = {

@@ -1,9 +1,10 @@
-import type { AddressData } from '@/types/payload'
-import { isEqual } from 'lodash-es'
 import type { FieldHookArgs } from 'payload'
+
+import { isEqual } from 'lodash-es'
 
 import { fetchMapboxAddressData } from '@/lib/fetchMapboxAddressData'
 import { fetchMapboxCoordinatesData } from '@/lib/fetchMapboxCoordinatesData'
+import type { AddressData } from '@/types/payload'
 
 export const syncAddressDataBetweenLocale = async ({
   value,
@@ -18,7 +19,10 @@ export const syncAddressDataBetweenLocale = async ({
   if (siblingLatLongChanged) {
     try {
       const locale = path.at(-1) as 'de' | 'en'
-      return await fetchMapboxCoordinatesData({ locale, location: siblingData.location })
+      return await fetchMapboxCoordinatesData({
+        locale,
+        location: siblingData.location,
+      })
     } catch (error) {
       console.error('Error fetching coordinates data:', error)
     }
@@ -27,7 +31,10 @@ export const syncAddressDataBetweenLocale = async ({
   if (ownDataHasChanged) {
     try {
       const locale = path.at(-1) as 'de' | 'en'
-      return await fetchMapboxAddressData({ locale, ...value })
+      return await fetchMapboxAddressData({
+        locale,
+        ...value,
+      })
     } catch (error) {
       console.error('Error fetching address data:', error)
     }

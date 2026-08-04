@@ -1,5 +1,10 @@
 import { revalidatePath, revalidateTag } from 'next/cache'
-import type { CollectionAfterChangeHook, GlobalAfterChangeHook, PayloadRequest, RequestContext } from 'payload'
+import type {
+  CollectionAfterChangeHook,
+  GlobalAfterChangeHook,
+  PayloadRequest,
+  RequestContext,
+} from 'payload'
 
 import { generateContentPath } from '@/lib/generateContentPath'
 import { CollectionSlug, CollectionSlugValue } from '@/types/collections'
@@ -14,18 +19,20 @@ interface RevalidateResumeSectionHookOptions {
 }
 
 const revalidateResumeSection = async ({
-                                         doc,
-                                         context,
-                                         req: { payload },
-                                         slug,
-                                       }: RevalidateResumeSectionHookOptions) => {
+  doc,
+  context,
+  req: { payload },
+  slug,
+}: RevalidateResumeSectionHookOptions) => {
   if (process.env.CI) return doc
   if (context.skipRevalidate) return doc
 
   if ('_status' in doc && doc._status !== 'published') return
 
   payload.logger.info(`Revalidating Resume Section: ${slug}`)
-  revalidateTag(slug, { expire: 0 })
+  revalidateTag(slug, {
+    expire: 0,
+  })
 
   /**
    * Revalidate all Pages including resumne layouts
@@ -54,10 +61,7 @@ const revalidateResumeSection = async ({
       revalidatePath(path)
     })
   } catch (error) {
-    console.error(
-      `Failed to revalidate resume section with slug: ${slug}`,
-      error,
-    )
+    console.error(`Failed to revalidate resume section with slug: ${slug}`, error)
   }
 
   return doc
@@ -65,22 +69,22 @@ const revalidateResumeSection = async ({
 
 export const revalidateResumeSectionCollectionHook =
   (slug: GlobalSlugValue): CollectionAfterChangeHook =>
-    async ({ doc, context, req }) => {
-      return await revalidateResumeSection({
-        doc,
-        context,
-        req,
-        slug,
-      })
-    }
+  async ({ doc, context, req }) => {
+    return await revalidateResumeSection({
+      doc,
+      context,
+      req,
+      slug,
+    })
+  }
 
 export const revalidateResumeSectionGlobalHook =
   (slug: GlobalSlugValue): GlobalAfterChangeHook =>
-    async ({ doc, context, req }) => {
-      return await revalidateResumeSection({
-        doc,
-        context,
-        req,
-        slug,
-      })
-    }
+  async ({ doc, context, req }) => {
+    return await revalidateResumeSection({
+      doc,
+      context,
+      req,
+      slug,
+    })
+  }

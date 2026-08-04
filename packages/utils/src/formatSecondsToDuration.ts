@@ -5,13 +5,24 @@ import { type FormatDurationOptions, formatDuration, intervalToDuration } from '
  * @param seconds
  */
 export const formatSecondsToDuration = (seconds: number = 0) => {
-  const formatDistanceLocale = { xSeconds: '{{count}}s', xMinutes: '{{count}}m', xHours: '{{count}} h' }
+  const formatDistanceLocale = {
+    xSeconds: '{{count}}s',
+    xMinutes: '{{count}}m',
+    xHours: '{{count}} h',
+  }
 
   const durationOptions = {
-    format: ['hours', 'minutes', 'seconds'],
+    format: [
+      'hours',
+      'minutes',
+      'seconds',
+    ],
     zero: false,
     delimiter: ' ',
-    locale: { formatDistance: (token: string, count: number) => formatDistanceLocale[token].replace('{{count}}', count.toString()) },
+    locale: {
+      formatDistance: (token: string, count: number) =>
+        formatDistanceLocale[token].replace('{{count}}', count.toString()),
+    },
   } as FormatDurationOptions
 
   return seconds > 0

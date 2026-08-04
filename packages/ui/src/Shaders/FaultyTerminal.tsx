@@ -1,27 +1,31 @@
-import { Renderer, Program, Mesh, Color, Triangle } from 'ogl'
-import React, { useEffect, useRef, useMemo, useCallback } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 
-type Vec2 = [number, number];
+import { Color, Mesh, Program, Renderer, Triangle } from 'ogl'
+
+type Vec2 = [
+  number,
+  number,
+]
 
 export interface FaultyTerminalProps extends React.HTMLAttributes<HTMLDivElement> {
-  scale?: number;
-  gridMul?: Vec2;
-  digitSize?: number;
-  timeScale?: number;
-  pause?: boolean;
-  scanlineIntensity?: number;
-  glitchAmount?: number;
-  flickerAmount?: number;
-  noiseAmp?: number;
-  chromaticAberration?: number;
-  dither?: number | boolean;
-  curvature?: number;
-  tint?: string;
-  mouseReact?: boolean;
-  mouseStrength?: number;
-  dpr?: number;
-  pageLoadAnimation?: boolean;
-  brightness?: number;
+  scale?: number
+  gridMul?: Vec2
+  digitSize?: number
+  timeScale?: number
+  pause?: boolean
+  scanlineIntensity?: number
+  glitchAmount?: number
+  flickerAmount?: number
+  noiseAmp?: number
+  chromaticAberration?: number
+  dither?: number | boolean
+  curvature?: number
+  tint?: string
+  mouseReact?: boolean
+  mouseStrength?: number
+  dpr?: number
+  pageLoadAnimation?: boolean
+  brightness?: number
 }
 
 const vertexShader = `
@@ -230,53 +234,80 @@ void main() {
 }
 `
 
-function hexToRgb(hex: string): [number, number, number] {
+function hexToRgb(hex: string): [
+  number,
+  number,
+  number,
+] {
   let h = hex.replace('#', '').trim()
   if (h.length === 3)
     h = h
       .split('')
-      .map(c => c + c)
+      .map((c) => c + c)
       .join('')
   const num = parseInt(h, 16)
-  return [((num >> 16) & 255) / 255, ((num >> 8) & 255) / 255, (num & 255) / 255]
+  return [
+    ((num >> 16) & 255) / 255,
+    ((num >> 8) & 255) / 255,
+    (num & 255) / 255,
+  ]
 }
 
 export default function FaultyTerminal({
-                                         scale = 1,
-                                         gridMul = [2, 1],
-                                         digitSize = 1.5,
-                                         timeScale = 0.3,
-                                         pause = false,
-                                         scanlineIntensity = 0.3,
-                                         glitchAmount = 1,
-                                         flickerAmount = 1,
-                                         noiseAmp = 1,
-                                         chromaticAberration = 0,
-                                         dither = 0,
-                                         curvature = 0.2,
-                                         tint = '#ffffff',
-                                         mouseReact = true,
-                                         mouseStrength = 0.2,
-                                         dpr = Math.min(window.devicePixelRatio || 1, 2),
-                                         pageLoadAnimation = true,
-                                         brightness = 1,
-                                         className,
-                                         style,
-                                         ...rest
-                                       }: FaultyTerminalProps) {
+  scale = 1,
+  gridMul = [
+    2,
+    1,
+  ],
+  digitSize = 1.5,
+  timeScale = 0.3,
+  pause = false,
+  scanlineIntensity = 0.3,
+  glitchAmount = 1,
+  flickerAmount = 1,
+  noiseAmp = 1,
+  chromaticAberration = 0,
+  dither = 0,
+  curvature = 0.2,
+  tint = '#ffffff',
+  mouseReact = true,
+  mouseStrength = 0.2,
+  dpr = Math.min(window.devicePixelRatio || 1, 2),
+  pageLoadAnimation = true,
+  brightness = 1,
+  className,
+  style,
+  ...rest
+}: FaultyTerminalProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const programRef = useRef<Program>(null)
   const rendererRef = useRef<Renderer>(null)
-  const mouseRef = useRef({ x: 0.5, y: 0.5 })
-  const smoothMouseRef = useRef({ x: 0.5, y: 0.5 })
+  const mouseRef = useRef({
+    x: 0.5,
+    y: 0.5,
+  })
+  const smoothMouseRef = useRef({
+    x: 0.5,
+    y: 0.5,
+  })
   const frozenTimeRef = useRef(0)
   const rafRef = useRef<number>(0)
   const loadAnimationStartRef = useRef<number>(0)
   const timeOffsetRef = useRef<number>(Math.random() * 100)
 
-  const tintVec = useMemo(() => hexToRgb(tint), [tint])
+  const tintVec = useMemo(
+    () => hexToRgb(tint),
+    [
+      tint,
+    ],
+  )
 
-  const ditherValue = useMemo(() => (typeof dither === 'boolean' ? (dither ? 1 : 0) : dither), [dither])
+  const ditherValue = useMemo(
+    () => (typeof dither === 'boolean' ? (dither ? 1 : 0) : dither),
+    [
+      dither,
+    ],
+  )
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     const ctn = containerRef.current
@@ -284,14 +315,19 @@ export default function FaultyTerminal({
     const rect = ctn.getBoundingClientRect()
     const x = (e.clientX - rect.left) / rect.width
     const y = 1 - (e.clientY - rect.top) / rect.height
-    mouseRef.current = { x, y }
+    mouseRef.current = {
+      x,
+      y,
+    }
   }, [])
 
   useEffect(() => {
     const ctn = containerRef.current
     if (!ctn) return
 
-    const renderer = new Renderer({ dpr })
+    const renderer = new Renderer({
+      dpr,
+    })
     rendererRef.current = renderer
     const gl = renderer.gl
     gl.clearColor(0, 0, 0, 1)
@@ -302,35 +338,75 @@ export default function FaultyTerminal({
       vertex: vertexShader,
       fragment: fragmentShader,
       uniforms: {
-        iTime: { value: 0 },
+        iTime: {
+          value: 0,
+        },
         iResolution: {
           value: new Color(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height),
         },
-        uScale: { value: scale },
-
-        uGridMul: { value: new Float32Array(gridMul) },
-        uDigitSize: { value: digitSize },
-        uScanlineIntensity: { value: scanlineIntensity },
-        uGlitchAmount: { value: glitchAmount },
-        uFlickerAmount: { value: flickerAmount },
-        uNoiseAmp: { value: noiseAmp },
-        uChromaticAberration: { value: chromaticAberration },
-        uDither: { value: ditherValue },
-        uCurvature: { value: curvature },
-        uTint: { value: new Color(tintVec[0], tintVec[1], tintVec[2]) },
-        uMouse: {
-          value: new Float32Array([smoothMouseRef.current.x, smoothMouseRef.current.y]),
+        uScale: {
+          value: scale,
         },
-        uMouseStrength: { value: mouseStrength },
-        uUseMouse: { value: mouseReact ? 1 : 0 },
-        uPageLoadProgress: { value: pageLoadAnimation ? 0 : 1 },
-        uUsePageLoadAnimation: { value: pageLoadAnimation ? 1 : 0 },
-        uBrightness: { value: brightness },
+
+        uGridMul: {
+          value: new Float32Array(gridMul),
+        },
+        uDigitSize: {
+          value: digitSize,
+        },
+        uScanlineIntensity: {
+          value: scanlineIntensity,
+        },
+        uGlitchAmount: {
+          value: glitchAmount,
+        },
+        uFlickerAmount: {
+          value: flickerAmount,
+        },
+        uNoiseAmp: {
+          value: noiseAmp,
+        },
+        uChromaticAberration: {
+          value: chromaticAberration,
+        },
+        uDither: {
+          value: ditherValue,
+        },
+        uCurvature: {
+          value: curvature,
+        },
+        uTint: {
+          value: new Color(tintVec[0], tintVec[1], tintVec[2]),
+        },
+        uMouse: {
+          value: new Float32Array([
+            smoothMouseRef.current.x,
+            smoothMouseRef.current.y,
+          ]),
+        },
+        uMouseStrength: {
+          value: mouseStrength,
+        },
+        uUseMouse: {
+          value: mouseReact ? 1 : 0,
+        },
+        uPageLoadProgress: {
+          value: pageLoadAnimation ? 0 : 1,
+        },
+        uUsePageLoadAnimation: {
+          value: pageLoadAnimation ? 1 : 0,
+        },
+        uBrightness: {
+          value: brightness,
+        },
       },
     })
     programRef.current = program
 
-    const mesh = new Mesh(gl, { geometry, program })
+    const mesh = new Mesh(gl, {
+      geometry,
+      program,
+    })
 
     function resize() {
       if (!ctn || !renderer) return
@@ -380,7 +456,9 @@ export default function FaultyTerminal({
         mouseUniform[1] = smoothMouse.y
       }
 
-      renderer.render({ scene: mesh })
+      renderer.render({
+        scene: mesh,
+      })
     }
     rafRef.current = requestAnimationFrame(update)
     ctn.appendChild(gl.canvas)

@@ -1,7 +1,9 @@
 // biome-ignore-all lint: <external code>
-import type { LinkFieldData, ResumeAboutMeBlock } from '@/types/payload'
-import type { DefaultNodeTypes, SerializedBlockNode } from '@payloadcms/richtext-lexical'
+
 import React, { Fragment, type JSX } from 'react'
+import type { DefaultNodeTypes, SerializedBlockNode } from '@payloadcms/richtext-lexical'
+
+import type { LinkFieldData, ResumeAboutMeBlock } from '@/types/payload'
 
 import { CMSLink } from '../Link'
 import {

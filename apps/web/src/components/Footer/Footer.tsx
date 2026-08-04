@@ -1,12 +1,12 @@
 import Link from 'next/link'
 
+import { Logo } from '@repo/ui/Logo'
+import { ServiceStatus } from '@repo/ui/ServiceStatus'
+import { cn } from '@repo/utils/cn'
 import parsePhoneNumber from 'libphonenumber-js'
 
 import { FooterLegalLinks } from '@/components/Footer/FooterLegalLinks'
 import { FooterNavGroups } from '@/components/Footer/FooterNavGroups'
-import { Logo } from '@repo/ui/Logo'
-import { ServiceStatus } from '@repo/ui/ServiceStatus'
-import { cn } from '@repo/utils/cn'
 import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fetchers'
 import type { LinkFieldData } from '@/types/payload'
 

@@ -6,6 +6,7 @@ import type { ImageProps } from 'next/image'
 import NextImage from 'next/image'
 
 import { type ClassValue, cn } from '@repo/utils/cn'
+
 import type { MediaImage } from '@/types/payload'
 
 export interface ImageMediaProps

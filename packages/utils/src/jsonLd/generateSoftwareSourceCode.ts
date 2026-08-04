@@ -42,12 +42,16 @@ export interface SoftwareSourceCodeData {
  * })
  * ```
  */
-export function generateSoftwareSourceCode(data: SoftwareSourceCodeData): WithContext<SoftwareSourceCode> {
+export function generateSoftwareSourceCode(
+  data: SoftwareSourceCodeData,
+): WithContext<SoftwareSourceCode> {
   const author: Person | undefined = data.author
     ? {
         '@type': 'Person',
         name: data.author.name,
-        ...(data.author.url && { url: data.author.url }),
+        ...(data.author.url && {
+          url: data.author.url,
+        }),
       }
     : undefined
 

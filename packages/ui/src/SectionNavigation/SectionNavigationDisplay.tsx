@@ -4,16 +4,22 @@ import { type MouseEvent, useCallback } from 'react'
 import ReactDOM from 'react-dom'
 
 import { cn } from '@repo/utils/cn'
-import { useCreatePortalHost } from '../hooks/useCreatePortalHost'
 
-import type { SectionNavigationAnchor, SetScrollingToAnchorFunction } from './SectionNavigation.types'
+import { useCreatePortalHost } from '../hooks/useCreatePortalHost'
+import type {
+  SectionNavigationAnchor,
+  SetScrollingToAnchorFunction,
+} from './SectionNavigation.types'
 
 export interface SectionNavigationDisplayProps {
   anchors: SectionNavigationAnchor[]
   setScrollingToAnchor: SetScrollingToAnchorFunction
 }
 
-export const SectionNavigationDisplay = ({ anchors, setScrollingToAnchor }: SectionNavigationDisplayProps) => {
+export const SectionNavigationDisplay = ({
+  anchors,
+  setScrollingToAnchor,
+}: SectionNavigationDisplayProps) => {
   const portalHost = useCreatePortalHost('anchor-navigation')
 
   const handleAnchorClick = useCallback(
@@ -35,7 +41,9 @@ export const SectionNavigationDisplay = ({ anchors, setScrollingToAnchor }: Sect
         }
       }
     },
-    [setScrollingToAnchor],
+    [
+      setScrollingToAnchor,
+    ],
   )
 
   return (
@@ -43,7 +51,10 @@ export const SectionNavigationDisplay = ({ anchors, setScrollingToAnchor }: Sect
     portalHost.current &&
     ReactDOM.createPortal(
       <nav
-        className={cn(['fixed top-0 h-screen hidden md:flex flex-col justify-center animate-fade-in bg-background/60 backdrop-blur-md overflow-hidden z-50'])}>
+        className={cn([
+          'fixed top-0 h-screen hidden md:flex flex-col justify-center animate-fade-in bg-background/60 backdrop-blur-md overflow-hidden z-50',
+        ])}
+      >
         {anchors.map(({ id, title, active }) => (
           <a
             key={id}

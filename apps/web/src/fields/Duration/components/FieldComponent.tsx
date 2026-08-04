@@ -16,12 +16,11 @@ import { FieldLabel } from '@payloadcms/ui/fields/FieldLabel'
 import { useThrottledValue } from '@payloadcms/ui/hooks/useThrottledValue'
 import { mergeFieldStyles } from '@payloadcms/ui/shared'
 
+import { cn } from '@repo/utils/cn'
+import { extractErrorMessage } from '@repo/utils/extractErrorMessage'
 import isNumber from 'lodash-es/isNumber'
 import prettyMs from 'pretty-ms'
 import timestring from 'timestring'
-
-import { cn } from '@repo/utils/cn'
-import { extractErrorMessage } from '@repo/utils/extractErrorMessage'
 
 export const FieldComponent: NumberFieldClientComponent = ({
   field,

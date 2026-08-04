@@ -14,5 +14,8 @@ export const generateAlt: CollectionBeforeChangeHook = async ({ data, req: { fil
   if (!file || !file?.mimetype?.includes('image')) return data
 
   const alt = await fetchAnthropicImageAltText(file.data)
-  return { ...data, alt }
+  return {
+    ...data,
+    alt,
+  }
 }

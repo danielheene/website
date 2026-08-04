@@ -1,10 +1,11 @@
 'use client'
 
 import { Headline } from '@repo/ui/Headline'
-import { ImageMedia } from '@/components/ImageMedia'
-import RichText from '@/components/RichText'
 import { SectionContainer } from '@repo/ui/SectionContainer'
 import { cn } from '@repo/utils/cn'
+
+import { ImageMedia } from '@/components/ImageMedia'
+import RichText from '@/components/RichText'
 import { ResolvedRelations } from '@/lib/resolveRelation'
 import { ResumeAboutMeBlock } from '@/types/payload'
 

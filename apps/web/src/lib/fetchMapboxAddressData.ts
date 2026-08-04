@@ -1,7 +1,8 @@
 'use server'
 
-import type { AddressData } from '@/types/payload'
 import { get } from 'lodash-es'
+
+import type { AddressData } from '@/types/payload'
 
 type Params = {
   locale: string
@@ -26,7 +27,9 @@ export const fetchMapboxAddressData = async ({
     limit: '1',
   })
 
-  const data = await fetch(`https://api.mapbox.com/search/geocode/v6/forward?${searchParams.toString()}`).then((res) => res.json())
+  const data = await fetch(
+    `https://api.mapbox.com/search/geocode/v6/forward?${searchParams.toString()}`,
+  ).then((res) => res.json())
 
   return {
     location: get(data, 'features.0.geometry.coordinates'),

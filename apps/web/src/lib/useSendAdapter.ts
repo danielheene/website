@@ -20,26 +20,54 @@ type useSendError = {
   }
 }
 
-type useSendResponse = { emailId: string } | useSendError
+type useSendResponse =
+  | {
+      emailId: string
+    }
+  | useSendError
 
 /**
  * Email adapter for [useSend](https://usesend.com) REST API
  */
 export const useSendAdapter = (args: useSendAdapterArgs): UseSendEmailAdapter => {
-  const { apiKey, defaultFromAddress, defaultFromName, scheduledAt, templateId, useSendUrl, variables } = args
+  const {
+    apiKey,
+    defaultFromAddress,
+    defaultFromName,
+    scheduledAt,
+    templateId,
+    useSendUrl,
+    variables,
+  } = args
 
   const adapter: UseSendEmailAdapter = () => ({
     name: 'usesend-rest',
     defaultFromName,
     defaultFromAddress,
     sendEmail: async (message) => {
-      const sendEmailOptions = mapPayloadToUseSendEmail(defaultFromName, defaultFromAddress, message)
+      const sendEmailOptions = mapPayloadToUseSendEmail(
+        defaultFromName,
+        defaultFromAddress,
+        message,
+      )
 
       const payload = {
         ...sendEmailOptions,
-        ...(scheduledAt ? { scheduledAt } : {}),
-        ...(templateId ? { templateId } : {}),
-        ...(variables ? { variables } : {}),
+        ...(scheduledAt
+          ? {
+              scheduledAt,
+            }
+          : {}),
+        ...(templateId
+          ? {
+              templateId,
+            }
+          : {}),
+        ...(variables
+          ? {
+              variables,
+            }
+          : {}),
       }
 
       const res = await fetch(`${useSendUrl}/api/v1/emails`, {
@@ -70,7 +98,11 @@ export const useSendAdapter = (args: useSendAdapterArgs): UseSendEmailAdapter =>
   return adapter
 }
 
-function mapPayloadToUseSendEmail(defaultFromName: string, defaultFromAddress: string, message: SendEmailOptions): useSendEmailOptions {
+function mapPayloadToUseSendEmail(
+  defaultFromName: string,
+  defaultFromAddress: string,
+  message: SendEmailOptions,
+): useSendEmailOptions {
   const emailOptions: Partial<useSendEmailOptions> = {
     from: mapFromAddress(message.from, defaultFromName, defaultFromAddress),
     subject: message.subject,
@@ -142,10 +174,14 @@ function mapAddresses(addresses: SendEmailOptions['to']): useSendEmailOptions['t
     return addresses.map((address) => (typeof address === 'string' ? address : address.address))
   }
 
-  return [addresses.address]
+  return [
+    addresses.address,
+  ]
 }
 
-function mapAttachments(attachments: SendEmailOptions['attachments']): useSendEmailOptions['attachments'] {
+function mapAttachments(
+  attachments: SendEmailOptions['attachments'],
+): useSendEmailOptions['attachments'] {
   if (!attachments) {
     return []
   }

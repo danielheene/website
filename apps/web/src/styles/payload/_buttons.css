@@ -40,9 +40,7 @@
     @apply my-6;
   }
 
-  &:not(.toolbar-popup__dropdown-item):not(
-      .toolbar-popup__dropdown-item-paragraph
-    ) {
+  &:not(.toolbar-popup__dropdown-item):not(.toolbar-popup__dropdown-item-paragraph) {
     .btn__content,
     .pill {
       @apply pt-px font-mono uppercase bg-transparent;

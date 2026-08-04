@@ -2,19 +2,13 @@ import type React from 'react'
 
 import { type ClassValue, cn } from '@repo/utils/cn'
 
-export interface SkeletonProps
-  extends Omit<React.HTMLProps<HTMLDivElement>, 'className'> {
+export interface SkeletonProps extends Omit<React.HTMLProps<HTMLDivElement>, 'className'> {
   ref?: React.Ref<HTMLDivElement>
   className?: ClassValue
   noPulse?: boolean
 }
 
-export const Skeleton = ({
-  ref,
-  className,
-  noPulse,
-  ...props
-}: SkeletonProps) => {
+export const Skeleton = ({ ref, className, noPulse, ...props }: SkeletonProps) => {
   return (
     <aside
       ref={ref}

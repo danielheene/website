@@ -1,9 +1,8 @@
 import ReactMarkdown from 'react-markdown'
 import { GroupFieldDescriptionServerComponent } from 'payload'
 
-import { get } from 'lodash-es'
-
 import { cn } from '@repo/utils/cn'
+import { get } from 'lodash-es'
 
 export const DescriptionComponent: GroupFieldDescriptionServerComponent = async ({ field }) => {
   const description = get(field, 'admin.description')

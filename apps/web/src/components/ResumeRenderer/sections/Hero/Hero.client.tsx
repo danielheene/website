@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 
-import { ImageMedia } from '@/components/ImageMedia'
 import { cn } from '@repo/utils/cn'
+
+import { ImageMedia } from '@/components/ImageMedia'
 import type { MediaImage } from '@/types/payload'
 
 export const HeroClient = ({

@@ -1,6 +1,7 @@
 import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintext'
 
 import { cn } from '@repo/utils/cn'
+
 import type { ReducedToLocale } from '@/lib/i18n'
 import { generateExperienceInterval } from '@/lib/i18n'
 import type { ResumeJobData } from '@/types/payload'
@@ -31,9 +32,7 @@ export const JobEntry = ({
       <header className="flex row justify-between font-mono">
         <h3 className="flex flex-col">
           <span className="text-sm lg:text-lg font-medium">{employer}</span>
-          <span className="text-xl lg:text-2xl font-extrabold text-primary">
-            {title}
-          </span>
+          <span className="text-xl lg:text-2xl font-extrabold text-primary">{title}</span>
         </h3>
         <time className="text-sm lg:text-lg font-medium uppercase whitespace-nowrap">
           {timeString}

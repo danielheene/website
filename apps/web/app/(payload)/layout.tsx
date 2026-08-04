@@ -3,11 +3,12 @@
 import config from '@payload-config'
 import '@payloadcms/next/css'
 
-import { handleServerFunctions, RootLayout } from '@payloadcms/next/layouts'
-import type { ServerFunctionClient } from 'payload'
 import type React from 'react'
+import type { ServerFunctionClient } from 'payload'
+import { handleServerFunctions, RootLayout } from '@payloadcms/next/layouts'
 
 import { cn } from '@repo/utils/cn'
+
 import PPFrama from '@/fonts/pp-frama/next'
 import PPFramaText from '@/fonts/pp-frama-text/next'
 import PPSupplyMono from '@/fonts/pp-supply-mono/next'

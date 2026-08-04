@@ -1,8 +1,9 @@
 import type { JSX } from 'react'
 
-import RichText from '@/components/RichText'
 import { cn } from '@repo/utils/cn'
 import type { HighlightedCodeMap } from '@repo/utils/shiki/codeBlockKey'
+
+import RichText from '@/components/RichText'
 import type { TwoColumnContentBlock } from '@/types/payload'
 
 /**

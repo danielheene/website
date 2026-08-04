@@ -1,37 +1,53 @@
-import React, { useEffect, useRef, JSX } from 'react'
-import { Renderer, Program, Mesh, Triangle } from 'ogl'
+import React, { JSX, useEffect, useRef } from 'react'
+
+import { Mesh, Program, Renderer, Triangle } from 'ogl'
 import './Grainient.css'
 
 interface GrainientProps {
-  timeSpeed?: number;
-  colorBalance?: number;
-  warpStrength?: number;
-  warpFrequency?: number;
-  warpSpeed?: number;
-  warpAmplitude?: number;
-  blendAngle?: number;
-  blendSoftness?: number;
-  rotationAmount?: number;
-  noiseScale?: number;
-  grainAmount?: number;
-  grainScale?: number;
-  grainAnimated?: boolean;
-  contrast?: number;
-  gamma?: number;
-  saturation?: number;
-  centerX?: number;
-  centerY?: number;
-  zoom?: number;
-  color1?: string;
-  color2?: string;
-  color3?: string;
-  className?: string;
+  timeSpeed?: number
+  colorBalance?: number
+  warpStrength?: number
+  warpFrequency?: number
+  warpSpeed?: number
+  warpAmplitude?: number
+  blendAngle?: number
+  blendSoftness?: number
+  rotationAmount?: number
+  noiseScale?: number
+  grainAmount?: number
+  grainScale?: number
+  grainAnimated?: boolean
+  contrast?: number
+  gamma?: number
+  saturation?: number
+  centerX?: number
+  centerY?: number
+  zoom?: number
+  color1?: string
+  color2?: string
+  color3?: string
+  className?: string
 }
 
-const hexToRgb = (hex: string): [number, number, number] => {
+const hexToRgb = (
+  hex: string,
+): [
+  number,
+  number,
+  number,
+] => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-  if (!result) return [1, 1, 1]
-  return [parseInt(result[1], 16) / 255, parseInt(result[2], 16) / 255, parseInt(result[3], 16) / 255]
+  if (!result)
+    return [
+      1,
+      1,
+      1,
+    ]
+  return [
+    parseInt(result[1], 16) / 255,
+    parseInt(result[2], 16) / 255,
+    parseInt(result[3], 16) / 255,
+  ]
 }
 
 const vertex = `#version 300 es
@@ -125,14 +141,13 @@ void main(){
 }
 `
 
-
 // Keep renderer/program alive across re-renders so Effect 2 can update
 // uniforms without ever rebuilding the WebGL context.
 type GrainientCtx = {
-  renderer: InstanceType<typeof Renderer>;
-  program: InstanceType<typeof Program>;
-  mesh: InstanceType<typeof Mesh>;
-};
+  renderer: InstanceType<typeof Renderer>
+  program: InstanceType<typeof Program>
+  mesh: InstanceType<typeof Mesh>
+}
 const ctxMap = new WeakMap<HTMLDivElement, GrainientCtx>()
 
 export const Grainient = (props: GrainientProps): JSX.Element => {
@@ -188,44 +203,121 @@ export const Grainient = (props: GrainientProps): JSX.Element => {
       vertex,
       fragment,
       uniforms: {
-        iTime: { value: 0 },
-        iResolution: { value: new Float32Array([1, 1]) },
-        uTimeSpeed: { value: 0.25 },
-        uColorBalance: { value: 0.0 },
-        uWarpStrength: { value: 1.0 },
-        uWarpFrequency: { value: 5.0 },
-        uWarpSpeed: { value: 2.0 },
-        uWarpAmplitude: { value: 50.0 },
-        uBlendAngle: { value: 0.0 },
-        uBlendSoftness: { value: 0.05 },
-        uRotationAmount: { value: 500.0 },
-        uNoiseScale: { value: 2.0 },
-        uGrainAmount: { value: 0.1 },
-        uGrainScale: { value: 2.0 },
-        uGrainAnimated: { value: 0.0 },
-        uContrast: { value: 1.5 },
-        uGamma: { value: 1.0 },
-        uSaturation: { value: 1.0 },
-        uCenterOffset: { value: new Float32Array([0, 0]) },
-        uZoom: { value: 0.9 },
-        uColor1: { value: new Float32Array([1, 1, 1]) },
-        uColor2: { value: new Float32Array([1, 1, 1]) },
-        uColor3: { value: new Float32Array([1, 1, 1]) },
+        iTime: {
+          value: 0,
+        },
+        iResolution: {
+          value: new Float32Array([
+            1,
+            1,
+          ]),
+        },
+        uTimeSpeed: {
+          value: 0.25,
+        },
+        uColorBalance: {
+          value: 0.0,
+        },
+        uWarpStrength: {
+          value: 1.0,
+        },
+        uWarpFrequency: {
+          value: 5.0,
+        },
+        uWarpSpeed: {
+          value: 2.0,
+        },
+        uWarpAmplitude: {
+          value: 50.0,
+        },
+        uBlendAngle: {
+          value: 0.0,
+        },
+        uBlendSoftness: {
+          value: 0.05,
+        },
+        uRotationAmount: {
+          value: 500.0,
+        },
+        uNoiseScale: {
+          value: 2.0,
+        },
+        uGrainAmount: {
+          value: 0.1,
+        },
+        uGrainScale: {
+          value: 2.0,
+        },
+        uGrainAnimated: {
+          value: 0.0,
+        },
+        uContrast: {
+          value: 1.5,
+        },
+        uGamma: {
+          value: 1.0,
+        },
+        uSaturation: {
+          value: 1.0,
+        },
+        uCenterOffset: {
+          value: new Float32Array([
+            0,
+            0,
+          ]),
+        },
+        uZoom: {
+          value: 0.9,
+        },
+        uColor1: {
+          value: new Float32Array([
+            1,
+            1,
+            1,
+          ]),
+        },
+        uColor2: {
+          value: new Float32Array([
+            1,
+            1,
+            1,
+          ]),
+        },
+        uColor3: {
+          value: new Float32Array([
+            1,
+            1,
+            1,
+          ]),
+        },
       },
     })
 
-    const mesh = new Mesh(gl, { geometry, program })
-    ctxMap.set(container, { renderer, program, mesh })
+    const mesh = new Mesh(gl, {
+      geometry,
+      program,
+    })
+    ctxMap.set(container, {
+      renderer,
+      program,
+      mesh,
+    })
 
     const setSize = () => {
       const rect = container.getBoundingClientRect()
       const w = Math.max(1, Math.floor(rect.width))
       const h = Math.max(1, Math.floor(rect.height))
       renderer.setSize(w, h)
-      const res = (program.uniforms.iResolution as { value: Float32Array }).value
+      const res = (
+        program.uniforms.iResolution as {
+          value: Float32Array
+        }
+      ).value
       res[0] = gl.drawingBufferWidth
       res[1] = gl.drawingBufferHeight
-      renderer.render({ scene: mesh })
+      renderer.render({
+        scene: mesh,
+      })
     }
 
     const ro = new ResizeObserver(setSize)
@@ -238,8 +330,14 @@ export const Grainient = (props: GrainientProps): JSX.Element => {
     const t0 = performance.now()
 
     const loop = (t: number) => {
-      (program.uniforms.iTime as { value: number }).value = (t - t0) * 0.001
-      renderer.render({ scene: mesh })
+      ;(
+        program.uniforms.iTime as {
+          value: number
+        }
+      ).value = (t - t0) * 0.001
+      renderer.render({
+        scene: mesh,
+      })
       raf = requestAnimationFrame(loop)
     }
 
@@ -258,7 +356,9 @@ export const Grainient = (props: GrainientProps): JSX.Element => {
         isVisible = entry.isIntersecting
         isVisible ? tryStart() : tryStop()
       },
-      { threshold: 0 },
+      {
+        threshold: 0,
+      },
     )
     io.observe(container)
 
@@ -278,7 +378,8 @@ export const Grainient = (props: GrainientProps): JSX.Element => {
       ctxMap.delete(container)
       try {
         container.removeChild(canvas)
-      } catch { /* ignore */
+      } catch {
+        /* ignore */
       }
     }
   }, []) // renderer created once
@@ -290,7 +391,12 @@ export const Grainient = (props: GrainientProps): JSX.Element => {
     const ctx = ctxMap.get(container)
     if (!ctx) return
     const { program } = ctx
-    const u = program.uniforms as Record<string, { value: any }>
+    const u = program.uniforms as Record<
+      string,
+      {
+        value: any
+      }
+    >
 
     u.uTimeSpeed.value = timeSpeed
     u.uColorBalance.value = colorBalance
@@ -308,26 +414,49 @@ export const Grainient = (props: GrainientProps): JSX.Element => {
     u.uContrast.value = contrast
     u.uGamma.value = gamma
     u.uSaturation.value = saturation
-    u.uCenterOffset.value = new Float32Array([centerX, centerY])
+    u.uCenterOffset.value = new Float32Array([
+      centerX,
+      centerY,
+    ])
     u.uZoom.value = zoom
     u.uColor1.value = new Float32Array(hexToRgb(color1))
     u.uColor2.value = new Float32Array(hexToRgb(color2))
     u.uColor3.value = new Float32Array(hexToRgb(color3))
   }, [
-    timeSpeed, colorBalance, warpStrength, warpFrequency, warpSpeed,
-    warpAmplitude, blendAngle, blendSoftness, rotationAmount, noiseScale,
-    grainAmount, grainScale, grainAnimated, contrast, gamma, saturation,
-    centerX, centerY, zoom, color1, color2, color3,
+    timeSpeed,
+    colorBalance,
+    warpStrength,
+    warpFrequency,
+    warpSpeed,
+    warpAmplitude,
+    blendAngle,
+    blendSoftness,
+    rotationAmount,
+    noiseScale,
+    grainAmount,
+    grainScale,
+    grainAnimated,
+    contrast,
+    gamma,
+    saturation,
+    centerX,
+    centerY,
+    zoom,
+    color1,
+    color2,
+    color3,
   ])
 
-
-  return <div
-    ref={containerRef}
-    className={className}
-    style={{
-      width: '100%',
-      height: '100%',
-      position: 'relative',
-      overflow: 'hidden',
-    }} />
+  return (
+    <div
+      ref={containerRef}
+      className={className}
+      style={{
+        width: '100%',
+        height: '100%',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    />
+  )
 }

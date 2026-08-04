@@ -22,7 +22,9 @@ export function generateBreadcrumbList(items: BreadcrumbItem[]): WithContext<Bre
     '@type': 'ListItem',
     position: index + 1,
     name: item.name,
-    ...(item.url && { item: item.url }),
+    ...(item.url && {
+      item: item.url,
+    }),
   }))
 
   return {

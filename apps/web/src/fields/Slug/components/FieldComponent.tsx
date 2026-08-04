@@ -4,8 +4,9 @@ import type React from 'react'
 import type { TextFieldClientProps } from 'payload'
 import { useForm } from '@payloadcms/ui'
 
-import { TextFieldWithLockAndGenerate } from '@/components/AdminPanel/TextFieldWithLockAndGenerate'
 import { generateSlug } from '@repo/utils/generateSlug'
+
+import { TextFieldWithLockAndGenerate } from '@/components/AdminPanel/TextFieldWithLockAndGenerate'
 
 type FieldComponentProps = {
   fieldToUse: string

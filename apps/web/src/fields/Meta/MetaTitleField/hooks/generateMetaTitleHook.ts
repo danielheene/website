@@ -4,7 +4,7 @@ import { generateMetaTitle } from '@/lib/generateMetaTitle'
 
 export const generateMetaTitleHook =
   (titlePath: string): FieldHook =>
-  async ({ data, operation, value,  }) => {
+  async ({ data, operation, value }) => {
     if (operation === 'create' || typeof value !== 'string' || value === '') {
       const fieldData = data?.[titlePath]
 

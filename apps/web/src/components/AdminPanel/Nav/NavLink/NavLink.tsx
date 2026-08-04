@@ -5,16 +5,17 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 import { Icon } from '@repo/ui/Icon'
-import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@repo/utils/cn'
+
+import { useIsMobile } from '@/hooks/use-mobile'
 
 import './NavLink.styles.css'
 
 import { useConfig, useNav, useTranslation } from '@payloadcms/ui'
 
+import { Tooltip } from '@repo/ui/Tooltip'
 import { formatAdminURL } from 'payload/shared'
 
-import { Tooltip } from '@repo/ui/Tooltip'
 import { AdminNavigationTypeValue } from '@/types/admin-panel'
 import { CollectionSlugValue } from '@/types/collections'
 import { GlobalSlugValue } from '@/types/globals'

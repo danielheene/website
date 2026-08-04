@@ -1,9 +1,9 @@
 import { type JSX, useMemo } from 'react'
 
+import { cn } from '@repo/utils/cn'
 import Autoplay from 'embla-carousel-autoplay'
 import useEmblaCarousel from 'embla-carousel-react'
 
-import { cn } from '@repo/utils/cn'
 import { ResumeCustomerData } from '@/types/payload'
 
 type LogoCarouselRow = [

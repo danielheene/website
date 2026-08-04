@@ -2,12 +2,12 @@
 
 import { useMemo } from 'react'
 
-import { cn } from 'tailwind-variants'
-
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/AdminPanel/Card'
 import { Icon, type IconName } from '@repo/ui/Icon'
 import { Skeleton } from '@repo/ui/Skeleton'
 import { formatSecondsToDuration } from '@repo/utils/formatSecondsToDuration'
+import { cn } from 'tailwind-variants'
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/AdminPanel/Card'
 
 import type { UmamiStats } from './UmamiWidget.data'
 

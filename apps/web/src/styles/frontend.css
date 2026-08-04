@@ -27,7 +27,6 @@
 @custom-variant light (&:where(.light, .light *, [data-theme="light"], [data-theme="light"] *));
 @custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
 
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -49,7 +48,6 @@
 }
 
 @layer base {
-
 }
 
 @utility container {
@@ -100,7 +98,7 @@
       text-decoration: var(--shiki-light-text-decoration);
     }
 
-    [data-theme='dark'] & {
+    [data-theme="dark"] & {
       .shiki,
       .shiki span {
         color: var(--shiki-dark);

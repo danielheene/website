@@ -61,7 +61,9 @@ export function generateBlogPosting(data: BlogPostingData): WithContext<BlogPost
     ? {
         '@type': 'Person',
         name: data.author.name,
-        ...(data.author.url && { url: data.author.url }),
+        ...(data.author.url && {
+          url: data.author.url,
+        }),
       }
     : undefined
 
@@ -91,8 +93,12 @@ export function generateBlogPosting(data: BlogPostingData): WithContext<BlogPost
     blogPosting.audio = {
       '@type': 'AudioObject',
       contentUrl: data.audio.url,
-      ...(data.audio.name && { name: data.audio.name }),
-      ...(data.audio.description && { description: data.audio.description }),
+      ...(data.audio.name && {
+        name: data.audio.name,
+      }),
+      ...(data.audio.description && {
+        description: data.audio.description,
+      }),
     }
   }
 
@@ -106,9 +112,15 @@ export function generateBlogPosting(data: BlogPostingData): WithContext<BlogPost
       blogPosting.image = {
         '@type': 'ImageObject',
         url: data.image.url,
-        ...(data.image.width && { width: `${data.image.width}px` }),
-        ...(data.image.height && { height: `${data.image.height}px` }),
-        ...(data.image.alt && { caption: data.image.alt }),
+        ...(data.image.width && {
+          width: `${data.image.width}px`,
+        }),
+        ...(data.image.height && {
+          height: `${data.image.height}px`,
+        }),
+        ...(data.image.alt && {
+          caption: data.image.alt,
+        }),
       }
     }
   }

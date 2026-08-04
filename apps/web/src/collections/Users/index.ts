@@ -1,8 +1,8 @@
 import type { CollectionConfig } from 'payload'
 
-import { AdminGroup } from '@/types/admin-panel'
 import { hoursToSeconds, minutesToMilliseconds } from 'date-fns'
 
+import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 
 import { loginAfterCreate } from './hooks/loginAfterCreate'

@@ -2,6 +2,7 @@ import config from '@payload-config'
 import { getPayload, TaskConfig } from 'payload'
 
 import { Interval } from '@repo/utils/date'
+
 import { CollectionSlug } from '@/types/collections'
 import { TaskSlug } from '@/types/jobs-queue'
 

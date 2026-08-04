@@ -3,9 +3,10 @@
 import type { JSX } from 'react'
 
 import { Headline } from '@repo/ui/Headline'
-import RichText from '@/components/RichText'
 import { SectionContainer } from '@repo/ui/SectionContainer'
 import { cn } from '@repo/utils/cn'
+
+import RichText from '@/components/RichText'
 import { CollectionData, CollectionSlug } from '@/types/collections'
 import { ResumeProjectsBlock } from '@/types/payload'
 

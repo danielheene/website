@@ -1,8 +1,8 @@
 'use client'
 
-import { useField } from '@payloadcms/ui'
-import type { UIFieldClientProps } from 'payload'
 import type { CSSProperties } from 'react'
+import type { UIFieldClientProps } from 'payload'
+import { useField } from '@payloadcms/ui'
 
 import { cn } from '@repo/utils/cn'
 
@@ -90,11 +90,7 @@ export const FieldComponentClient = ({
               ])}
             >
               {/** biome-ignore lint/performance/noImgElement: <explanation> */}
-              <img
-                className="block aspect-square h-full w-full"
-                src={faviconUrl}
-                alt=""
-              />
+              <img className="block aspect-square h-full w-full" src={faviconUrl} alt="" />
             </div>
           )}
           <div className="flex flex-col">

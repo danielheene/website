@@ -12,8 +12,14 @@ import sharp, { type SharpInput } from 'sharp'
 export const fetchAnthropicImageAltText = async (input: SharpInput): Promise<string> => {
   const resizedImageBuffer = await sharp(input)
     .autoOrient()
-    .resize({ width: 512, height: 512, fit: 'inside' })
-    .jpeg({ quality: 75 })
+    .resize({
+      width: 512,
+      height: 512,
+      fit: 'inside',
+    })
+    .jpeg({
+      quality: 75,
+    })
     .toBuffer()
 
   const anthropic = createAnthropic({

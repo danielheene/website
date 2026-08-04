@@ -2,13 +2,12 @@
 
 import Link from 'next/link'
 
-import { formatDate } from 'date-fns'
-
 import { Button } from '@repo/ui/Button'
 import { ButtonGroup, ButtonGroupSeparator } from '@repo/ui/ButtonGroup'
 import { Icon } from '@repo/ui/Icon'
 import { Skeleton } from '@repo/ui/Skeleton'
 import { cn } from '@repo/utils/cn'
+import { formatDate } from 'date-fns'
 
 interface HeaderProps {
   domain: string | null

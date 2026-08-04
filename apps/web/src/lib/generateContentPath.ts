@@ -5,10 +5,7 @@ import { COLLECTION_PREFIX_MAP } from '@/types/collections'
  * @param collection
  * @param slug
  */
-export const generateContentPath = (
-  collection: string,
-  slug: string = '',
-): string => {
+export const generateContentPath = (collection: string, slug: string = ''): string => {
   const path = [
     COLLECTION_PREFIX_MAP[collection],
     slug,

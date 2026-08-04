@@ -1,5 +1,6 @@
 import type { GlobalConfig } from 'payload'
 
+import { nanoid } from '@repo/utils/nanoid'
 import dedent from 'dedent'
 
 import { authenticated } from '@/access/authenticated'
@@ -7,7 +8,6 @@ import { DurationField } from '@/fields/Duration'
 import { TemplateField } from '@/fields/Template'
 import { generateResumeDocumentHook } from '@/lib/hooks/global'
 import { translate } from '@/lib/i18n'
-import { nanoid } from '@repo/utils/nanoid'
 import { AdminGroup } from '@/types/admin-panel'
 import { GlobalSlug } from '@/types/globals'
 import { SkillSorting, SkillType, SkillTypeSortable } from '@/types/payload'

@@ -1,8 +1,9 @@
 import { memo } from 'react'
 
 import { Headline } from '@repo/ui/Headline'
-import RichText from '@/components/RichText'
 import { cn } from '@repo/utils/cn'
+
+import RichText from '@/components/RichText'
 import { CollectionData, CollectionSlug } from '@/types/collections'
 
 import { Image } from './Image'

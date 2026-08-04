@@ -1,5 +1,6 @@
-import { useRef, useEffect } from 'react'
-import { Renderer, Program, Mesh, Triangle, Vec2 } from 'ogl'
+import { useEffect, useRef } from 'react'
+
+import { Mesh, Program, Renderer, Triangle, Vec2 } from 'ogl'
 
 const vertex = `
 attribute vec2 position;
@@ -74,24 +75,24 @@ void main(){
 `
 
 type Props = {
-  hueShift?: number;
-  noiseIntensity?: number;
-  scanlineIntensity?: number;
-  speed?: number;
-  scanlineFrequency?: number;
-  warpAmount?: number;
-  resolutionScale?: number;
-};
+  hueShift?: number
+  noiseIntensity?: number
+  scanlineIntensity?: number
+  speed?: number
+  scanlineFrequency?: number
+  warpAmount?: number
+  resolutionScale?: number
+}
 
 export default function DarkVeil({
-                                   hueShift = 0,
-                                   noiseIntensity = 0,
-                                   scanlineIntensity = 0,
-                                   speed = 0.5,
-                                   scanlineFrequency = 0,
-                                   warpAmount = 0,
-                                   resolutionScale = 1,
-                                 }: Props) {
+  hueShift = 0,
+  noiseIntensity = 0,
+  scanlineIntensity = 0,
+  speed = 0.5,
+  scanlineFrequency = 0,
+  warpAmount = 0,
+  resolutionScale = 1,
+}: Props) {
   const ref = useRef<HTMLCanvasElement>(null)
   useEffect(() => {
     const canvas = ref.current as HTMLCanvasElement
@@ -109,17 +110,34 @@ export default function DarkVeil({
       vertex,
       fragment,
       uniforms: {
-        uTime: { value: 0 },
-        uResolution: { value: new Vec2() },
-        uHueShift: { value: hueShift },
-        uNoise: { value: noiseIntensity },
-        uScan: { value: scanlineIntensity },
-        uScanFreq: { value: scanlineFrequency },
-        uWarp: { value: warpAmount },
+        uTime: {
+          value: 0,
+        },
+        uResolution: {
+          value: new Vec2(),
+        },
+        uHueShift: {
+          value: hueShift,
+        },
+        uNoise: {
+          value: noiseIntensity,
+        },
+        uScan: {
+          value: scanlineIntensity,
+        },
+        uScanFreq: {
+          value: scanlineFrequency,
+        },
+        uWarp: {
+          value: warpAmount,
+        },
       },
     })
 
-    const mesh = new Mesh(gl, { geometry, program })
+    const mesh = new Mesh(gl, {
+      geometry,
+      program,
+    })
 
     const resize = () => {
       const w = parent.clientWidth,
@@ -141,10 +159,11 @@ export default function DarkVeil({
       program.uniforms.uScan.value = scanlineIntensity
       program.uniforms.uScanFreq.value = scanlineFrequency
       program.uniforms.uWarp.value = warpAmount
-      renderer.render({ scene: mesh })
+      renderer.render({
+        scene: mesh,
+      })
       frame = requestAnimationFrame(loop)
     }
-
 
     loop()
 
@@ -152,7 +171,15 @@ export default function DarkVeil({
       cancelAnimationFrame(frame)
       window.removeEventListener('resize', resize)
     }
-  }, [hueShift, noiseIntensity, scanlineIntensity, speed, scanlineFrequency, warpAmount, resolutionScale])
+  }, [
+    hueShift,
+    noiseIntensity,
+    scanlineIntensity,
+    speed,
+    scanlineFrequency,
+    warpAmount,
+    resolutionScale,
+  ])
 
   return (
     <canvas

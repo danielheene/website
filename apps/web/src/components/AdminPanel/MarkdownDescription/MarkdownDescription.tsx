@@ -1,6 +1,6 @@
-import type { GroupFieldDescriptionServerComponent } from 'payload'
 import { Fragment } from 'react'
 import ReactMarkdown from 'react-markdown'
+import type { GroupFieldDescriptionServerComponent } from 'payload'
 
 import { cn } from '@repo/utils/cn'
 

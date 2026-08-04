@@ -9,13 +9,13 @@ import { notFound } from 'next/navigation'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
-import { format } from 'date-fns'
-
 import { ArticleSidebar } from '@repo/ui/ArticleSidebar'
 import { DuoTone } from '@repo/ui/DuoTone'
+import { extractHeadings } from '@repo/utils/extractHeadings'
+import { format } from 'date-fns'
+
 import { ImageMedia } from '@/components/ImageMedia'
 import { RichText } from '@/components/RichText'
-import { extractHeadings } from '@repo/utils/extractHeadings'
 import { generateMeta } from '@/lib/generateMeta'
 import { reduceDataToLocale } from '@/lib/i18n'
 import { generateBlogPosting, generateBreadcrumbList } from '@/lib/jsonLd'

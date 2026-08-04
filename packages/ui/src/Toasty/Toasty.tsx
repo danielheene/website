@@ -349,9 +349,7 @@ const imageContents = [
   'YYBP/mP7RCWhJIczaOmivX0qmvqHQii/F9IiHR/bTf/1A6yn0AsAgF8jymFXSuj+ejoo5NUHyQ',
   '+lrV/ZvtoiIi7m4R7fUcpbvwoTJrOcFtkBYvLhfk5ZCqXGx+dFaWtc2w8Bu3Bqiu1jHR0VJ5ST',
   'UClTKj4a/BmsqLsnwAAA==',
-
 ]
-
 
 enum ActionType {
   KeyUp = 'Toasty/KeyUp',
@@ -362,20 +360,20 @@ enum ActionType {
 
 type Action =
   | {
-  type: `${ActionType.KeyUp}`
-  payload: string
-}
+      type: `${ActionType.KeyUp}`
+      payload: string
+    }
   | {
-  type: `${ActionType.Reset}`
-}
+      type: `${ActionType.Reset}`
+    }
   | {
-  type: `${ActionType.SetAudioBuffer}`
-  payload: AudioBuffer
-}
+      type: `${ActionType.SetAudioBuffer}`
+      payload: AudioBuffer
+    }
   | {
-  type: `${ActionType.SetImageBlob}`
-  payload: Blob
-}
+      type: `${ActionType.SetImageBlob}`
+      payload: Blob
+    }
 
 type State = {
   success: boolean
@@ -453,12 +451,12 @@ export const reducer = (state: State, action: Action): State => {
 const printHintMessage = (): void => {
   console.info(
     '\n%c' +
-    '                                                    \n' +
-    '                                                    \n' +
-    '     You played video games back in the 90s? 🎮     \n' +
-    '     Then good luck in finding the easter egg! 😉   \n' +
-    '                                                    \n' +
-    '                                                    \n',
+      '                                                    \n' +
+      '                                                    \n' +
+      '     You played video games back in the 90s? 🎮     \n' +
+      '     Then good luck in finding the easter egg! 😉   \n' +
+      '                                                    \n' +
+      '                                                    \n',
     `
           background: #000;
           color: #fff;
@@ -535,7 +533,6 @@ export const Toasty = function Toasty(): React.JSX.Element {
    */
   React.useEffect((): void => {
     if (success && !imageBlob) {
-
       const imageData = `data:image/webp;base64,${imageContents.join('')}`
 
       fetch(imageData)

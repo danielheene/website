@@ -3,8 +3,9 @@
 import { memo, useState } from 'react'
 
 import { Icon } from '@repo/ui/Icon'
-import { ImageMedia } from '@/components/ImageMedia'
 import { cn } from '@repo/utils/cn'
+
+import { ImageMedia } from '@/components/ImageMedia'
 import type { MediaImage } from '@/types/payload'
 
 interface ResumeProjectsSectionImageProps {

@@ -13,7 +13,11 @@ export interface JsonLdProps {
  * script tag. The result is still valid JSON — parsers treat <\/ identically.
  */
 export function JsonLd({ data }: JsonLdProps) {
-  const schemas = Array.isArray(data) ? data : [data]
+  const schemas = Array.isArray(data)
+    ? data
+    : [
+        data,
+      ]
 
   return (
     <>

@@ -1,9 +1,10 @@
 // @ts-nocheck — WIP copy from @paper-design/shaders; relative imports do not
 // exist in this repo yet and the file is not exported/used anywhere.
-import type { vec4 } from '../types.js'
+
 import type { ShaderMotionParams } from '../shader-mount.js'
 import { type ShaderSizingParams, type ShaderSizingUniforms } from '../shader-sizing.js'
-import { declarePI, rotation2, proceduralHash21 } from '../shader-utils.js'
+import { declarePI, proceduralHash21, rotation2 } from '../shader-utils.js'
+import type { vec4 } from '../types.js'
 
 export const staticMeshGradientMeta = {
   maxColorCount: 10,

@@ -1,8 +1,7 @@
-import * as TooltipPrimitive from '@radix-ui/react-tooltip'
-import { TooltipContentProps } from '@radix-ui/react-tooltip'
-
 import React, { JSX } from 'react'
 
+import * as TooltipPrimitive from '@radix-ui/react-tooltip'
+import { TooltipContentProps } from '@radix-ui/react-tooltip'
 import { cn } from '@repo/utils/cn'
 
 interface TooltipProps extends TooltipContentProps {

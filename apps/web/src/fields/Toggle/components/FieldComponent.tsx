@@ -3,10 +3,9 @@
 import { CheckboxFieldClientComponent, CheckboxFieldClientProps } from 'payload'
 import { fieldBaseClass, useField } from '@payloadcms/ui'
 
-import { cn } from 'tailwind-variants'
-
 import { Button } from '@repo/ui/Button'
 import { Icon } from '@repo/ui/Icon'
+import { cn } from 'tailwind-variants'
 
 type FieldComponentProps = {
   tooltip?: string

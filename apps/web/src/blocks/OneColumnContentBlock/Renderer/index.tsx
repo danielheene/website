@@ -1,7 +1,8 @@
 import type { JSX } from 'react'
 
-import RichText from '@/components/RichText'
 import { cn } from '@repo/utils/cn'
+
+import RichText from '@/components/RichText'
 import { highlightRichText } from '@/lib/shiki/highlightRichText'
 import type { OneColumnContentBlock } from '@/types/payload'
 

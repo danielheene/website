@@ -7,8 +7,9 @@ import { connection } from 'next/server'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
-import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { Headline } from '@repo/ui/Headline'
+
+import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { ImageMedia } from '@/components/ImageMedia'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PageContainer } from '@/components/PageContainer'

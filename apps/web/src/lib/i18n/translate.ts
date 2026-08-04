@@ -1,11 +1,10 @@
+import type { Locale } from '@repo/utils/i18n/shared'
 import { format } from 'date-fns'
 import { get } from 'lodash-es'
 import pupa from 'pupa'
 
 import { AdminGroupValue } from '@/types/admin-panel'
 import type { LanguageCode, LanguageProficiency, SkillType } from '@/types/payload'
-
-import type { Locale } from '@repo/utils/i18n/shared'
 
 const translations = {
   en: {

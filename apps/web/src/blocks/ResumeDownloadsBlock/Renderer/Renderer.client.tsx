@@ -2,12 +2,12 @@
 
 import { JSX } from 'react'
 
+import { Headline } from '@repo/ui/Headline'
+import { SectionContainer } from '@repo/ui/SectionContainer'
 import { cn } from 'tailwind-variants'
 
 import { ResumePreviewImage } from '@/blocks/ResumeDownloadsBlock/Renderer/ResumePreviewImage'
-import { Headline } from '@repo/ui/Headline'
 import RichText from '@/components/RichText'
-import { SectionContainer } from '@repo/ui/SectionContainer'
 import { MediaDocument, MediaImage, ResumeDownloadsBlock } from '@/types/payload'
 
 import { ResumeDownloadButton } from './ResumeDownloadButton'

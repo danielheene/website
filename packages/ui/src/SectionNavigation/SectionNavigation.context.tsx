@@ -7,4 +7,6 @@ export const initialSectionNavigationContextValue: SectionNavigationContextValue
   setActiveAnchor: () => undefined,
 }
 
-export const SectionNavigationContext = React.createContext<SectionNavigationContextValue>(initialSectionNavigationContextValue)
+export const SectionNavigationContext = React.createContext<SectionNavigationContextValue>(
+  initialSectionNavigationContextValue,
+)

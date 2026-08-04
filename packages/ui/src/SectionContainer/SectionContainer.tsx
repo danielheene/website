@@ -1,10 +1,10 @@
 'use client'
 
-import slugify from '@sindresorhus/slugify'
 import { type ReactNode, useEffect } from 'react'
-import { useIntersectionObserver } from 'usehooks-ts'
 
 import { cn } from '@repo/utils/cn'
+import slugify from '@sindresorhus/slugify'
+import { useIntersectionObserver } from 'usehooks-ts'
 
 import { useSectionNavigation } from '../SectionNavigation'
 
@@ -15,19 +15,42 @@ export interface SectionContainerProps {
   children: ReactNode
 }
 
-export const SectionContainer = ({ id: rawId, title, variant = 'default', children }: SectionContainerProps) => {
-  const [observerRef, isObserving, entry] = useIntersectionObserver({ threshold: [0.1, 0.25], rootMargin: '-10%' })
+export const SectionContainer = ({
+  id: rawId,
+  title,
+  variant = 'default',
+  children,
+}: SectionContainerProps) => {
+  const [observerRef, isObserving, entry] = useIntersectionObserver({
+    threshold: [
+      0.1,
+      0.25,
+    ],
+    rootMargin: '-10%',
+  })
   const { setActiveAnchor, registerAnchor } = useSectionNavigation()
 
   const id = slugify(rawId)
 
   useEffect(() => {
-    if (id && title) registerAnchor({ id, title })
-  }, [id, registerAnchor, title])
+    if (id && title)
+      registerAnchor({
+        id,
+        title,
+      })
+  }, [
+    id,
+    registerAnchor,
+    title,
+  ])
 
   useEffect(() => {
     if (id && isObserving) setActiveAnchor(id)
-  }, [isObserving, id, setActiveAnchor])
+  }, [
+    isObserving,
+    id,
+    setActiveAnchor,
+  ])
 
   return (
     <section

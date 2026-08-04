@@ -1,11 +1,13 @@
 import React, { Fragment, FunctionComponent } from 'react'
 
+import { cn } from '@repo/utils/cn'
 import { ResetWrapper } from 'storybook/internal/components'
 
-
-import { cn } from '@repo/utils/cn'
-
-type Colors = string[] | { [key: string]: string }
+type Colors =
+  | string[]
+  | {
+      [key: string]: string
+    }
 
 interface ColorItemProps {
   title: string
@@ -19,7 +21,9 @@ function renderSwatch(color: string, index: number) {
       key={`${color}-${index}`}
       title={color}
       className="relative flex-1"
-      style={{ backgroundColor: color }}
+      style={{
+        backgroundColor: color,
+      }}
     />
   )
 }
@@ -32,8 +36,8 @@ function renderSwatchLabel(color: string, index: number, colorDescription?: stri
       className={cn([
         'flex-1 text-center font-mono text-xs leading-none overflow-hidden text-foreground/40 dark:text-foreground/60',
         '[&>div]:inline-block [&>div]:overflow-hidden [&>div]:max-w-full [&>div]:text-ellipsis',
-        '[&_span]:block [&_span]:mt-0.5'],
-      )}
+        '[&_span]:block [&_span]:mt-0.5',
+      ])}
     >
       <div>
         {color}
@@ -48,10 +52,16 @@ function renderSwatchSpecimen(colors: Colors) {
     return (
       <div className="flex flex-col flex-1 relative mb-7.5">
         <div
-          className={cn('rounded-md border border-border bg-card shadow-[0_1px_3px_rgba(0,0,0,0.10)] dark:shadow-[0_2px_5px_rgba(0,0,0,0.20)]', 'flex flex-row h-12.5 mb-2.5 overflow-hidden bg-white bg-[repeating-linear-gradient(-45deg,#ccc,#ccc_1px,#fff_1px,#fff_16px)] bg-clip-padding')}>
+          className={cn(
+            'rounded-md border border-border bg-card shadow-[0_1px_3px_rgba(0,0,0,0.10)] dark:shadow-[0_2px_5px_rgba(0,0,0,0.20)]',
+            'flex flex-row h-12.5 mb-2.5 overflow-hidden bg-white bg-[repeating-linear-gradient(-45deg,#ccc,#ccc_1px,#fff_1px,#fff_16px)] bg-clip-padding',
+          )}
+        >
           {colors.map((color, index) => renderSwatch(color, index))}
         </div>
-        <div className="flex flex-row">{colors.map((color, index) => renderSwatchLabel(color, index))}</div>
+        <div className="flex flex-row">
+          {colors.map((color, index) => renderSwatchLabel(color, index))}
+        </div>
       </div>
     )
   }
@@ -73,12 +83,18 @@ function renderSwatchSpecimen(colors: Colors) {
     const primaryLabelColor = `rgb(from ${primaryColor} r g b / 0.1)`
 
     primarySwatch = (
-      <div
-        className="flex flex-row h-12.5 -mb-0.5 overflow-hidden bg-white bg-[repeating-linear-gradient(-45deg,#ccc,#ccc_1px,#fff_1px,#fff_16px)] bg-clip-padding rounded-b-none [&+.swatch-colors]:rounded-t-none">
-        <div className="relative flex-1" style={{ backgroundColor: primaryColor }}>
+      <div className="flex flex-row h-12.5 -mb-0.5 overflow-hidden bg-white bg-[repeating-linear-gradient(-45deg,#ccc,#ccc_1px,#fff_1px,#fff_16px)] bg-clip-padding rounded-b-none [&+.swatch-colors]:rounded-t-none">
+        <div
+          className="relative flex-1"
+          style={{
+            backgroundColor: primaryColor,
+          }}
+        >
           <div
             className="absolute inset-0 flex justify-center items-center font-bold font-mono"
-            style={{ color: primaryLabelColor }}
+            style={{
+              color: primaryLabelColor,
+            }}
           >
             {primaryColor}
           </div>
@@ -91,7 +107,11 @@ function renderSwatchSpecimen(colors: Colors) {
     <div className="flex flex-col flex-1 relative mb-7.5">
       {primarySwatch}
       <div
-        className={cn('rounded-md border border-border bg-card shadow-[0_1px_3px_rgba(0,0,0,0.10)] dark:shadow-[0_2px_5px_rgba(0,0,0,0.20)]', 'swatch-colors flex flex-row h-12.5 mb-2.5 overflow-hidden bg-white bg-[repeating-linear-gradient(-45deg,#ccc,#ccc_1px,#fff_1px,#fff_16px)] bg-clip-padding')}>
+        className={cn(
+          'rounded-md border border-border bg-card shadow-[0_1px_3px_rgba(0,0,0,0.10)] dark:shadow-[0_2px_5px_rgba(0,0,0,0.20)]',
+          'swatch-colors flex flex-row h-12.5 mb-2.5 overflow-hidden bg-white bg-[repeating-linear-gradient(-45deg,#ccc,#ccc_1px,#fff_1px,#fff_16px)] bg-clip-padding',
+        )}
+      >
         {swatchElements}
       </div>
       <div className="flex flex-row">{labelElements}</div>

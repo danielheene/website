@@ -3,6 +3,7 @@
 import { useRowLabel } from '@payloadcms/ui'
 
 import { Icon } from '@repo/ui/Icon'
+
 import type { GlobalUserSettings } from '@/types/payload'
 
 import styles from './SharedRowLabel.module.css'

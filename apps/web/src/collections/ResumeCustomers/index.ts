@@ -1,10 +1,11 @@
 import { CollectionConfig } from 'payload'
 
+import { cn } from '@repo/utils/cn'
+
 import { authenticated } from '@/access/authenticated'
 import { SlugField } from '@/fields/Slug'
 import { SVGUpload } from '@/fields/SVGUpload'
 import { TitleField } from '@/fields/Title'
-import { cn } from '@repo/utils/cn'
 import { CollectionSlug } from '@/types/collections'
 
 export const ResumeCustomers: CollectionConfig<CollectionSlug['ResumeCustomers']> = {

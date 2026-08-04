@@ -1,4 +1,5 @@
 import type { Locale } from '@repo/utils/i18n/shared'
+
 import { translate } from './translate'
 
 /**

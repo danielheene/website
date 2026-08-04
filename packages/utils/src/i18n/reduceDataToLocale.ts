@@ -5,9 +5,7 @@ import type { Locale } from './shared'
 /**
  * Recursive type that selects the localized value from objects containing only locale keys.
  */
-export type ReducedToLocale<T, L extends Locale = 'en'> = T extends
-  | null
-  | undefined
+export type ReducedToLocale<T, L extends Locale = 'en'> = T extends null | undefined
   ? T
   : T extends Array<infer V>
     ? Array<ReducedToLocale<V, L>>

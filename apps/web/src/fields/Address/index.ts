@@ -1,10 +1,10 @@
 import type { Field, GroupField } from 'payload'
 
+import { cn } from '@repo/utils/cn'
 import { startCase } from 'lodash-es'
 
 import { resolveAddressData } from '@/fields/Address/hooks/resolveAddressData'
 import { syncAddressDataBetweenLocale } from '@/fields/Address/hooks/syncAddressDataBetweenLocale'
-import { cn } from '@repo/utils/cn'
 
 const fields: Field[] = [
   {

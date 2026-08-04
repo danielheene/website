@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { CollectionSlug } from '@/types/collections'
+
 import { generateAPIPath } from './generateAPIPath'
 
 describe('generateAPIPath', () => {

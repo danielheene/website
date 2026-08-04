@@ -3,7 +3,6 @@
 import { HTMLAttributes, JSX, Ref, RefAttributes, useState } from 'react'
 
 import * as SwitchPrimitives from '@radix-ui/react-switch'
-
 import { ClassValue, cn } from '@repo/utils/cn'
 
 interface SwitchProps extends Omit<HTMLAttributes<HTMLElement>, 'className'> {

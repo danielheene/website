@@ -1,14 +1,21 @@
 'use server'
 
-import type { AddressData } from '@/types/payload'
 import { get } from 'lodash-es'
+
+import type { AddressData } from '@/types/payload'
 
 type Params = {
   locale: string
-  location: [number, number]
+  location: [
+    number,
+    number,
+  ]
 }
 
-export const fetchMapboxCoordinatesData = async ({ locale, location }: Params): Promise<AddressData> => {
+export const fetchMapboxCoordinatesData = async ({
+  locale,
+  location,
+}: Params): Promise<AddressData> => {
   const searchParams = new URLSearchParams({
     longitude: location[0].toString(),
     latitude: location[1].toString(),
@@ -18,7 +25,9 @@ export const fetchMapboxCoordinatesData = async ({ locale, location }: Params): 
     limit: '1',
   })
 
-  const data = await fetch(`https://api.mapbox.com/search/geocode/v6/reverse?${searchParams.toString()}`).then((res) => res.json())
+  const data = await fetch(
+    `https://api.mapbox.com/search/geocode/v6/reverse?${searchParams.toString()}`,
+  ).then((res) => res.json())
 
   return {
     location: get(data, 'features.0.geometry.coordinates'),

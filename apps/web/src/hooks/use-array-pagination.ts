@@ -1,7 +1,8 @@
 'use client'
 
-import { chunk } from 'lodash-es'
 import { useEffect, useMemo, useRef, useState } from 'react'
+
+import { chunk } from 'lodash-es'
 
 export const useArrayPagination = <T>(
   data: T[],

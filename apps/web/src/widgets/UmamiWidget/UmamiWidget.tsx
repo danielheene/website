@@ -1,8 +1,7 @@
 import type { WidgetServerProps } from 'payload'
 
-import { isValid, parseISO } from 'date-fns'
-
 import { Interval } from '@repo/utils/date'
+import { isValid, parseISO } from 'date-fns'
 
 import { UmamiWidgetClient } from './UmamiWidget.client'
 import { fetchWebsite } from './UmamiWidget.data'

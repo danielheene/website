@@ -1,4 +1,5 @@
 import type { Access } from 'payload'
+
 import { describe, expect, it } from 'vitest'
 
 import { anyone } from './anyone'

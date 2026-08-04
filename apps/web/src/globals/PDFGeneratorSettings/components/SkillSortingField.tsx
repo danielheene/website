@@ -6,6 +6,7 @@ import { DraggableSortable, DraggableSortableItem, fieldBaseClass, useField } fr
 
 import { Button } from '@repo/ui/Button'
 import { ClassValue, cn } from '@repo/utils/cn'
+
 import { SkillEntrySortable, SkillSorting, SkillTypeSortable } from '@/types/payload'
 
 export const SkillSortingField: JSONFieldClientComponent = ({ path }: JSONFieldClientProps) => {

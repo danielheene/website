@@ -4,7 +4,8 @@ import React from 'react'
 
 export const useCreatePortalHost = <
   ElementTag extends keyof HTMLElementTagNameMap = 'div',
-  ElementRef extends HTMLElementTagNameMap[keyof HTMLElementTagNameMap] = HTMLElementTagNameMap[ElementTag],
+  ElementRef extends
+    HTMLElementTagNameMap[keyof HTMLElementTagNameMap] = HTMLElementTagNameMap[ElementTag],
 >(
   id: string,
   elementTag: ElementTag = 'div' as ElementTag,
@@ -35,7 +36,10 @@ export const useCreatePortalHost = <
 
     // pass empty dependencies to avoid updates on render,
     // because the portal is bound to the host after mounting
-  }, [elementTag, id])
+  }, [
+    elementTag,
+    id,
+  ])
 
   return hostRef
 }

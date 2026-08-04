@@ -3,9 +3,10 @@
 import React from 'react'
 import Link from 'next/link'
 
-import { CMSLink } from '@/components/Link'
 import { Logo } from '@repo/ui/Logo'
 import { cn } from '@repo/utils/cn'
+
+import { CMSLink } from '@/components/Link'
 import type { HeaderSettings } from '@/types/payload'
 
 interface HeaderClientProps {

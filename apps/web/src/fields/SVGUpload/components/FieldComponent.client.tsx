@@ -4,10 +4,9 @@ import { ChangeEvent, DragEvent, Fragment, JSX, useCallback, useId, useMemo, use
 import { UIFieldClientProps } from 'payload'
 import { toast, useField } from '@payloadcms/ui'
 
-import { optimize } from 'svgo/browser'
-
 import { cn } from '@repo/utils/cn'
 import { extractErrorMessage } from '@repo/utils/extractErrorMessage'
+import { optimize } from 'svgo/browser'
 
 interface FieldComponentClientProps extends UIFieldClientProps {
   initialValue?: string

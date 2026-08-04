@@ -2,19 +2,14 @@ import { deepMerge, type SelectField } from 'payload'
 
 import { BRAND_ICON, Icon } from '@repo/ui/Icon'
 
-type IconFieldOverrides = Partial<
-  Omit<SelectField, 'name' | 'type' | 'options'>
->
+type IconFieldOverrides = Partial<Omit<SelectField, 'name' | 'type' | 'options'>>
 
 type IconFieldProps = {
   name?: string
   overrides?: Partial<Omit<SelectField, 'type' | 'name' | 'options'>>
 }
 
-export const IconField = ({
-  name = 'icon',
-  overrides,
-}: IconFieldProps = {}): SelectField =>
+export const IconField = ({ name = 'icon', overrides }: IconFieldProps = {}): SelectField =>
   deepMerge<SelectField, IconFieldOverrides>(
     {
       name,
@@ -30,9 +25,7 @@ export const IconField = ({
               }
               `}</style>
               <Icon name={iconName} className="size-[20px] text-[20px]" />
-              <span className="whitespace-nowrap overflow-hidden text-ellipsis">
-                {iconName}
-              </span>
+              <span className="whitespace-nowrap overflow-hidden text-ellipsis">{iconName}</span>
             </div>
           ),
           value: iconName,

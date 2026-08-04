@@ -1,9 +1,10 @@
 'use client'
 
 import { Headline } from '@repo/ui/Headline'
-import RichText from '@/components/RichText'
 import { SectionContainer } from '@repo/ui/SectionContainer'
 import { cn } from '@repo/utils/cn'
+
+import RichText from '@/components/RichText'
 import { ResumeContactBlock } from '@/types/payload'
 
 interface ResumeContactBlockClientRendererProps extends ResumeContactBlock {

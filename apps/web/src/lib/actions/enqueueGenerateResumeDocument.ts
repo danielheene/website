@@ -3,6 +3,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
+import { nanoid } from '@repo/utils/nanoid'
 import {
   addMilliseconds,
   addMinutes,
@@ -12,7 +13,6 @@ import {
   subMilliseconds,
 } from 'date-fns'
 
-import { nanoid } from '@repo/utils/nanoid'
 import { CollectionSlug } from '@/types/collections'
 import { GlobalSlug } from '@/types/globals'
 import { QueueSlug, WorkflowSlug } from '@/types/jobs-queue'

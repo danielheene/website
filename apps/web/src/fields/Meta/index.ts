@@ -1,6 +1,6 @@
-import dedent from 'dedent'
-
 import type { GroupField } from 'payload'
+
+import dedent from 'dedent'
 
 import { MetaDescriptionField } from '@/fields/Meta/MetaDescriptionField'
 import { MetaSerpField } from '@/fields/Meta/MetaSerpField'

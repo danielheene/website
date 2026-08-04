@@ -1,8 +1,7 @@
 import type { FunctionComponent, ReactNode } from 'react'
 
-import { ResetWrapper,  } from 'storybook/internal/components'
-
 import { cn } from '@repo/utils/cn'
+import { ResetWrapper } from 'storybook/internal/components'
 
 interface IconItemProps {
   name: string

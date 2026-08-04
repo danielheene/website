@@ -1,6 +1,6 @@
-import { get } from 'lodash-es'
-
 import type { TextFieldServerComponent, TextFieldServerProps } from 'payload'
+
+import { get } from 'lodash-es'
 
 import { fetchAnthropicMetaDescription } from '@/lib/fetchAnthropicMetaDescription'
 import { generateContentURL } from '@/lib/generateContentURL'

@@ -22,7 +22,6 @@
 
 @plugin "@tailwindcss/typography";
 
-
 @custom-variant dark {
   /* Explicit: .dark class or data-theme="dark" on element or ancestor */
   &:is(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *) {
