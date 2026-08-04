@@ -1,5 +1,7 @@
 import { CheckboxField, deepMerge } from 'payload'
 
+import { preserveProtected } from './hooks/preserveProtected'
+
 type ProtectedFieldOverrides = Partial<
   Omit<
     CheckboxField,
@@ -9,7 +11,8 @@ type ProtectedFieldOverrides = Partial<
     | 'access'
     | 'required'
     | 'index'
-    | 'hooks.beforeValidate'
+    | 'defaultValue'
+    | 'hooks.beforeChange'
     | 'admin.position'
     | 'admin.readOnly'
     | 'admin.components'
@@ -36,6 +39,7 @@ export const ProtectedField = ({
         update: () => false,
       },
       required: true,
+      defaultValue: false,
       index: true,
       admin: {
         position: 'sidebar',
@@ -47,11 +51,8 @@ export const ProtectedField = ({
         disableBulkEdit: true,
       },
       hooks: {
-        beforeValidate: [
-          ({ value }) => value === true,
-        ],
-        afterRead: [
-          ({ value }) => value === true,
+        beforeChange: [
+          preserveProtected,
         ],
       },
     },
