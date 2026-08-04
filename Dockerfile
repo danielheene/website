@@ -120,6 +120,10 @@ COPY apps/web/src ./apps/web/src
 # itself comes up. Keeping the full `app` dir here matches CON-002's
 # "full node_modules / no pruned standalone bundle" approach.
 COPY apps/web/app ./apps/web/app
+# Payload CLI scripts (`payload run scripts/<name>.ts`) — data initialization and
+# backfills are run against a deployed container, so they have to ship with it.
+# Only the .ts entries: dev.mjs and e2e-docker.sh are development-only.
+COPY apps/web/scripts/*.ts ./apps/web/scripts/
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 # next must run with the app as its cwd; the workspace root above stays in the
