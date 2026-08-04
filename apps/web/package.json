@@ -11,7 +11,7 @@
   "scripts": {
     "build": "pnpm run next build",
     "build:storybook": "storybook build -o dist",
-    "dev:app": "pnpm run next dev",
+    "dev:app": "NODE_OPTIONS=\"--trace-deprecation --disable-warning=DeprecationWarning\" node scripts/dev.mjs",
     "dev:storybook": "pnpm run storybook dev -p 6006",
     "format": "biome format --write",
     "generate:importmap": "pnpm run payload generate:importmap",

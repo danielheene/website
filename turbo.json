@@ -151,7 +151,13 @@
 
     "dev:app": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "env": [
+        "DEV_TUNNEL",
+        "CLOUDFLARE_TUNNEL_HOST",
+        "CLOUDFLARE_TUNNEL_URL",
+        "CLOUDFLARE_TUNNEL_TOKEN"
+      ]
     },
 
     "dev:storybook": {

@@ -18,13 +18,18 @@ const workspaceRoot = path.resolve(dirname, '../..')
 let server: ChildProcess
 const createTunnel = (token: string) =>
   new Promise<ChildProcess | null>((resolve) => {
+    // No `shell: true`: the token is passed as its own argv entry rather than
+    // concatenated into a command string, which also silences DEP0190.
     const childProcess = spawn(
-      'npx wrangler tunnel run',
+      'npx',
       [
-        `--token ${token}`,
+        'wrangler',
+        'tunnel',
+        'run',
+        '--token',
+        token,
       ],
       {
-        shell: true,
         stdio: 'ignore',
       },
     )
@@ -34,6 +39,28 @@ const createTunnel = (token: string) =>
     childProcess.once('error', () => {
       resolve(null)
     })
+
+    /**
+     *    Reap the tunnel with the dev server. Without this every `next dev`
+     *    leaves a live `wrangler tunnel run` behind, and they accumulate
+     *    silently across restarts.
+     */
+    const stop = () => {
+      if (!childProcess.killed) {
+        childProcess.kill('SIGTERM')
+      }
+    }
+
+    process.once('exit', stop)
+    for (const signal of [
+      'SIGINT',
+      'SIGTERM',
+    ] as const) {
+      process.once(signal, () => {
+        stop()
+        process.exit(0)
+      })
+    }
   })
 
 export default async (phase, { defaultConfig }) => {
@@ -43,21 +70,45 @@ export default async (phase, { defaultConfig }) => {
     process.exit(1)
   }
 
-  if (phase === PHASE_DEVELOPMENT_SERVER) {
-    if (
-      !server &&
-      process.env.CLOUDFLARE_TUNNEL_URL &&
-      process.env.CLOUDFLARE_TUNNEL_HOST &&
-      process.env.CLOUDFLARE_TUNNEL_TOKEN
-    ) {
-      server = await createTunnel(process.env.CLOUDFLARE_TUNNEL_TOKEN)
+  /**
+   *    The tunnel is opt-in via `pnpm dev --tunnel`, which scripts/dev.mjs
+   *    translates into DEV_TUNNEL=1. Having the credentials in .env.local is
+   *    no longer enough to start it — otherwise every `next dev` opens a
+   *    public tunnel as a side effect of the file being present.
+   */
+  if (phase === PHASE_DEVELOPMENT_SERVER && process.env.DEV_TUNNEL === '1') {
+    const { CLOUDFLARE_TUNNEL_URL, CLOUDFLARE_TUNNEL_HOST, CLOUDFLARE_TUNNEL_TOKEN } = process.env
+
+    if (!CLOUDFLARE_TUNNEL_URL || !CLOUDFLARE_TUNNEL_HOST || !CLOUDFLARE_TUNNEL_TOKEN) {
+      console.error(
+        '\n[tunnel] --tunnel needs CLOUDFLARE_TUNNEL_URL, CLOUDFLARE_TUNNEL_HOST and CLOUDFLARE_TUNNEL_TOKEN\n',
+      )
+      process.exit(1)
     }
-    if (server) {
-      process.env.SERVER_HOST = process.env.CLOUDFLARE_TUNNEL_HOST
-      process.env.SERVER_URL = process.env.CLOUDFLARE_TUNNEL_URL
-      process.env.HOST = process.env.CLOUDFLARE_TUNNEL_HOST
-      process.env.PORT = String(443)
+
+    if (!server) {
+      server = await createTunnel(CLOUDFLARE_TUNNEL_TOKEN)
+
+      if (!server) {
+        console.error('\n[tunnel] failed to start `wrangler tunnel run` — is wrangler installed?\n')
+        process.exit(1)
+      }
     }
+
+    process.env.SERVER_HOST = CLOUDFLARE_TUNNEL_HOST
+    process.env.SERVER_URL = CLOUDFLARE_TUNNEL_URL
+    process.env.HOST = CLOUDFLARE_TUNNEL_HOST
+    process.env.PORT = String(443)
+
+    /**
+     *    Only this process has the tunnel URL — .env.local is loaded by Next,
+     *    not by scripts/dev.mjs. Hand it to the wrapper, which splices it into
+     *    Next's address block and swallows this marker.
+     *
+     *    stderr, not stdout: Next captures stdout while the config loads, so a
+     *    marker written there never reaches the parent.
+     */
+    process.stderr.write(`__DEV_TUNNEL_URL__${CLOUDFLARE_TUNNEL_URL}\n`)
   }
 
   const nextConfig: NextConfig = {
