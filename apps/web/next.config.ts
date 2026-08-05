@@ -152,12 +152,22 @@ export default async (phase, { defaultConfig }) => {
 
     /**
      *    Environment Variables
+     *
+     *    Anything listed here is INLINED into the compiled bundle by Next and
+     *    can no longer be changed by the runtime environment. So this list is
+     *    deliberately limited to values that client components read:
+     *
+     *      - SERVER_URL      → src/components/LivePreviewListener ('use client')
+     *      - STATUS_PAGE_URL → @repo/ui ServiceStatus ('use client')
+     *      - SENTRY_DSN      → public by design, shipped to the browser SDK
+     *
+     *    SERVER_HOST and STATUS_PAGE_HEARTBEAT_URL were removed: both are read
+     *    only on the server, so leaving them here would freeze deployment
+     *    config into the image for no reason.
      */
     env: {
-      SERVER_HOST: process.env.SERVER_HOST,
       SERVER_URL: process.env.SERVER_URL,
       STATUS_PAGE_URL: process.env.STATUS_PAGE_URL,
-      STATUS_PAGE_HEARTBEAT_URL: process.env.STATUS_PAGE_HEARTBEAT_URL,
       SENTRY_DSN: process.env.SENTRY_DSN,
     },
 

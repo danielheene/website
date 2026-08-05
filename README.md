@@ -26,11 +26,20 @@ This repository contains the source code for my personal website: [daniel.heene.
 
 ### 1. Environment Configuration
 
-Copy the example environment file and fill in the required secrets:
+Configuration and secrets are managed in [Doppler](https://doppler.com); there is no
+`.env` file to fill in. Install the CLI and link this directory to the project:
 
 ```bash
-cp .env.example .env.local
+brew install dopplerhq/cli/doppler   # see docs.doppler.com/docs/install-cli for other platforms
+doppler login
+doppler setup                        # picks up project/config from doppler.yaml
 ```
+
+`doppler.yaml` pins this directory to the `website` project's `development` config, so
+`doppler setup` needs no further input. The `pnpm dev:app`, `pnpm payload` and `pnpm next`
+scripts run under `doppler run`, which injects the variables at launch.
+
+To inspect what will be injected, run `doppler secrets` (or `doppler run -- env | sort`).
 
 ### 2. Start Services
 
@@ -67,26 +76,78 @@ pnpm dev
 
 ## Environment Variables
 
-The project uses several environment variables for configuration. See `.env.example` for a complete list of required variables.
+`apps/web/src/types/environment.ts` is the source of truth: it declares a Zod schema that
+`next.config.ts` validates at load time, so the process exits immediately if anything
+required is missing or malformed. Doppler stores the values; the list below explains them.
 
-- `DATABASE_URL`: MongoDB connection string.
-- `PAYLOAD_SECRET`: Secret used to encrypt Payload JWT tokens.
-- `PREVIEW_SECRET`: Secret used for Next.js/Payload draft previews.
-- `CRON_SECRET`: Reserved for triggering cron tasks. Declared in the schema but not yet enforced by any route (see `AGENTS.md`).
-- `SERVER_URL`: The public URL of the server.
-- `REDIS_URL`: Redis connection URL.
-- `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `S3_BUCKET`, `S3_REGION`, `S3_ENDPOINT`: S3-compatible storage configuration.
-- `USESEND_API_KEY`, `USESEND_URL`, `USESEND_DEFAULT_FROM_ADDRESS`, `USESEND_DEFAULT_FROM_NAME` (optional): Email provider configuration.
-- `NEXT_PUBLIC_UMAMI_URL`, `UMAMI_WEBSITE_ID` (optional): Analytics rewrite and site ID.
+Everything is **required** unless marked optional.
+
+### Core
+
+| Variable | Purpose |
+| --- | --- |
+| `DATABASE_URL` | MongoDB connection string. |
+| `REDIS_URL` | Redis connection URL (KV adapter and cache handler). |
+| `SERVER_URL` | Public URL of the server. Inlined into the client bundle. |
+| `SERVER_HOST` | Host/port used for server-side URL construction. |
+| `PAYLOAD_SECRET` | Encrypts Payload JWT tokens. |
+| `PREVIEW_SECRET` | Authenticates Next.js/Payload draft previews. |
+| `CRON_SECRET` | Reserved for cron tasks. Declared but not yet enforced by any route (see `AGENTS.md`). |
+
+### Status page
+
+| Variable | Purpose |
+| --- | --- |
+| `STATUS_PAGE_URL` | Status page link. Inlined into the client bundle. |
+| `STATUS_PAGE_HEARTBEAT_URL` | Heartbeat endpoint pinged server-side. |
+
+### Storage (Minio in local dev)
+
+`S3_BUCKET`, `S3_REGION`, `S3_ENDPOINT`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`.
+
+### Analytics, email, and third-party APIs
+
+| Variable | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_UMAMI_URL`, `NEXT_PUBLIC_UMAMI_SITE_ID` | Umami rewrite target and site ID (a UUID). |
+| `UMAMI_USERNAME`, `UMAMI_PASSWORD` | Credentials for the server-side Umami stats query. |
+| `USESEND_URL`, `USESEND_API_KEY`, `USESEND_DEFAULT_FROM_ADDRESS`, `USESEND_DEFAULT_FROM_NAME` | UseSend email provider. |
+| `OPENAI_API_KEY`, `ANTHROPIC_API_KEY` | Generated alt text and meta descriptions. |
+| `MAPBOX_API_KEY` | Address and coordinate lookups. |
+
+### Sentry (all optional)
+
+With no DSN the SDK is never initialised and the app runs unchanged. `SENTRY_DSN` is public
+by design and is inlined into the client bundle. `SENTRY_ENVIRONMENT`, `SENTRY_RELEASE` and
+`SENTRY_TRACES_SAMPLE_RATE` tune reporting; `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` and
+`SENTRY_PROJECT` are only needed to upload source maps during a build;
+`NEXT_PUBLIC_SENTRY_REPLAY_RATE` and `NEXT_PUBLIC_SENTRY_REPLAY_ERROR_RATE` control replay
+sampling.
+
+### Cloudflare tunnel (all optional)
+
+`CLOUDFLARE_TUNNEL_HOST`, `CLOUDFLARE_TUNNEL_URL` and `CLOUDFLARE_TUNNEL_TOKEN` are only
+read when starting the dev server with `--tunnel`.
+
+> **Inlined at build time.** `SERVER_URL`, `STATUS_PAGE_URL` and `SENTRY_DSN` are listed in
+> `next.config.ts`'s `env:` block, which bakes them into the compiled bundle. They must be
+> correct when the image is built and cannot be changed by the runtime environment.
+> Everything else is read from the container environment at boot.
 
 ## Available Scripts
+
+Scripts that are meant to be run locally (`dev`, `payload`, `generate`, `seed`) wrap
+`doppler run`, so they pick up configuration automatically. `build`, `start` and `migrate`
+deliberately do **not** — they run inside the container, where Dokploy and Docker build args
+already supply the environment. To run one of those on your machine, wrap it yourself:
+`doppler run -- pnpm migrate`.
 
 - `pnpm dev`: Starts the Next.js development server (and Storybook, in parallel).
 - `pnpm build`: Builds the application for production.
 - `pnpm start`: Starts the production server.
 - `pnpm generate`: Runs `generate:types` and `generate:importmap` in parallel.
 - `pnpm payload`: Wrapper for Payload CLI.
-- `pnpm payload migrate`: Runs database migrations.
+- `pnpm migrate`: Runs database migrations.
 - `pnpm ci`: Sequence for CI/CD (migration + build).
 - `pnpm lint`: Runs `biome check` (lint + format check) for code quality.
 - `pnpm format`: Runs `biome format --write` to auto-fix formatting.
