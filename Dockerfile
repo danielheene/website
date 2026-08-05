@@ -101,10 +101,13 @@ RUN --mount=type=secret,id=DATABASE_URL \
              CRON_SECRET REDIS_URL S3_ACCESS_KEY S3_SECRET_KEY \
              UMAMI_USERNAME UMAMI_PASSWORD USESEND_API_KEY \
              OPENAI_API_KEY ANTHROPIC_API_KEY MAPBOX_API_KEY; do \
-      # `read` keeps values with spaces or shell metacharacters intact, which
-      # `export $(...)` word-splitting would mangle.
+      # Quoting the whole assignment word keeps values containing spaces or shell
+      # metacharacters intact, which bare `export $(...)` word-splitting would mangle.
+      # Do NOT use `read` here: it returns 1 at EOF when the file has no trailing
+      # newline, which is exactly how BuildKit writes secrets — that both skipped
+      # the export and aborted this RUN before the build could start.
       if [ -s "/run/secrets/$s" ]; then \
-        IFS= read -r v < "/run/secrets/$s" && export "$s=$v"; \
+        export "$s=$(cat "/run/secrets/$s")"; \
       fi; \
     done \
     && pnpm run build
