@@ -171,6 +171,18 @@ export const AdminPanelNavigation: AdminNavigationGroup[] = [
       },
       {
         type: AdminNavigationType.Collection,
+        slug: CollectionSlug.Redirects,
+        label: 'Redirects',
+        icon: '',
+      },
+      {
+        type: AdminNavigationType.Collection,
+        slug: CollectionSlug.DocumentReferences,
+        label: 'Document References',
+        icon: '',
+      },
+      {
+        type: AdminNavigationType.Collection,
         slug: CollectionSlug.PayloadJobs,
         label: 'Payload Jobs',
         icon: 'ri:file-pdf-line',

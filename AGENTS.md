@@ -37,6 +37,13 @@ pnpm deps:lint        # syncpack: dependency version groups
 pnpm test:e2e         # Playwright E2E (needs docker compose up -d)
 ```
 
+Environment variables come from **Doppler**, not `.env` files (see `README.md`). Scripts split
+into two families: `dev:app`, `next` and `payload` (plus everything built on them — `generate`,
+`seed`, `refs:backfill`) wrap `doppler run` and work locally as-is, while `build`, `start` and
+`migrate` call the unwrapped `_next`/`_payload` variants because they run inside the container,
+where Dokploy and Docker build args already supply the environment. Running those locally needs
+an explicit wrapper: `doppler run -- pnpm migrate`.
+
 Always run `pnpm generate` after adding/renaming a collection, global, field, or block — many
 files import generated types from `src/types/payload.ts` and `@/types/collections`.
 
@@ -119,10 +126,13 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   only sanitization (`svgo`) currently runs client-side in the admin UI and is not a real security
   boundary. Do not add other raw-HTML/SVG fields rendered this way without server-side
   sanitization (e.g. a `beforeChange` hook stripping `<script>`/`on*`/`javascript:` URIs).
-- **`CRON_SECRET`** is declared in `.env.example` / `src/types/environment.ts` but not enforced
-  anywhere — there is no cron route yet. If you add one, validate this secret explicitly (ideally
-  with `crypto.timingSafeEqual`, not `!==`).
-- Never commit real secrets; only placeholder values belong in `.env.example`.
+- **`CRON_SECRET`** is declared in `src/types/environment.ts` but not enforced anywhere — there
+  is no cron route yet. If you add one, validate this secret explicitly (ideally with
+  `crypto.timingSafeEqual`, not `!==`).
+- Never commit real secrets. Configuration lives in Doppler (`doppler.yaml` pins the project
+  and config); `src/types/environment.ts` declares the schema and is the only place the full
+  set of variables is enumerated. The one committed env file is `.env.test`, which holds
+  dummy, format-valid values for E2E runs.
 - New authenticated API routes should mirror `app/(frontend)/api/preview/route.ts`'s pattern of
   pairing a shared-secret check with a real `payload.auth()` session check where feasible.
 

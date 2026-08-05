@@ -26,12 +26,12 @@ export const MetricsTable = ({ className, data, maxValue }: MetricsTableData) =>
 const MetricsTableRow = ({
   metric,
   value,
-  maxValue,
+  maxValue = 0,
   className,
 }: {
   metric: string
   value: number
-  maxValue: number
+  maxValue?: number
   className?: string
 }) => {
   const barWidth = useMemo(

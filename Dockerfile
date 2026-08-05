@@ -31,49 +31,86 @@ COPY --from=deps /repo/node_modules ./node_modules
 COPY --from=deps /repo/apps/web/node_modules ./apps/web/node_modules
 COPY . .
 ENV NODE_ENV=production
-# Non-secret build-time configuration needed for `next build` (static generation reads
-# these directly via process.env in next.config.ts / payload.config.ts). DATABASE_URL is
-# deliberately NOT an ARG/ENV here — it is injected only via the BuildKit secret below
-# (SEC-003) so it never lands in an image layer or the build cache metadata.
-ARG SERVER_HOST=localhost:3000
-ARG SERVER_URL=http://localhost:3000
-ARG STATUS_PAGE_URL=http://localhost:3000
-ARG STATUS_PAGE_HEARTBEAT_URL=http://localhost:3000
-ENV SERVER_HOST=$SERVER_HOST
-ENV SERVER_URL=$SERVER_URL
-ENV STATUS_PAGE_URL=$STATUS_PAGE_URL
-ENV STATUS_PAGE_HEARTBEAT_URL=$STATUS_PAGE_HEARTBEAT_URL
-# next.config.ts validates the full env schema at load time and exits on failure,
-# so every required var needs a value here even when the build never calls the
-# service behind it. These are non-secret placeholders; real values come from the
-# runtime environment.
-ENV PAYLOAD_SECRET=build-time-placeholder
-ENV PREVIEW_SECRET=build-time-placeholder
-ENV CRON_SECRET=build-time-placeholder
-ENV REDIS_URL=redis://localhost:6379
-ENV S3_BUCKET=placeholder
-ENV S3_REGION=us-east-1
-ENV S3_ACCESS_KEY=placeholder
-ENV S3_SECRET_KEY=placeholder
-ENV S3_ENDPOINT=http://localhost:9000
-ENV UMAMI_USERNAME=placeholder
-ENV UMAMI_PASSWORD=placeholder
-ENV NEXT_PUBLIC_UMAMI_URL=http://localhost:3002
-ENV NEXT_PUBLIC_UMAMI_SITE_ID=00000000-0000-4000-8000-000000000000
-ENV USESEND_URL=http://localhost:3003
-ENV USESEND_API_KEY=placeholder
-ENV USESEND_DEFAULT_FROM_ADDRESS=build@example.com
-ENV USESEND_DEFAULT_FROM_NAME=Build
-ENV OPENAI_API_KEY=placeholder
-ENV ANTHROPIC_API_KEY=placeholder
-ENV MAPBOX_API_KEY=placeholder
+# Only genuinely build-time values are declared here, and none of them are secret.
+#
+# Next inlines everything listed in next.config.ts's `env:` block into the compiled
+# bundle, so those values are frozen at build time and cannot be changed by the
+# runtime environment. Two of them are read from client components
+# ('use client': packages/ui/src/ServiceStatus and src/components/LivePreviewListener),
+# which means they MUST be correct here — a placeholder would ship to the browser.
+#
+# Everything else — secrets and server-only config alike — is deliberately absent:
+# it is read from the container environment at boot, so Doppler/Dokploy supply it
+# at runtime and it never lands in an image layer.
+#
+# The remaining ARGs below are not inlined; they exist only because next.config.ts
+# validates the full schema before building. A Sentry DSN is public by design — it
+# ships to the browser SDK — so it is a build arg rather than a secret.
+ARG SERVER_URL
+ARG SERVER_HOST
+ARG STATUS_PAGE_URL
+ARG STATUS_PAGE_HEARTBEAT_URL
+ARG SENTRY_DSN
+ARG S3_BUCKET
+ARG S3_REGION
+ARG S3_ENDPOINT
+ARG NEXT_PUBLIC_UMAMI_URL
+ARG NEXT_PUBLIC_UMAMI_SITE_ID
+ARG USESEND_URL
+ARG USESEND_DEFAULT_FROM_ADDRESS
+ARG USESEND_DEFAULT_FROM_NAME
+ENV SERVER_URL=$SERVER_URL \
+    SERVER_HOST=$SERVER_HOST \
+    STATUS_PAGE_URL=$STATUS_PAGE_URL \
+    STATUS_PAGE_HEARTBEAT_URL=$STATUS_PAGE_HEARTBEAT_URL \
+    SENTRY_DSN=$SENTRY_DSN \
+    S3_BUCKET=$S3_BUCKET \
+    S3_REGION=$S3_REGION \
+    S3_ENDPOINT=$S3_ENDPOINT \
+    NEXT_PUBLIC_UMAMI_URL=$NEXT_PUBLIC_UMAMI_URL \
+    NEXT_PUBLIC_UMAMI_SITE_ID=$NEXT_PUBLIC_UMAMI_SITE_ID \
+    USESEND_URL=$USESEND_URL \
+    USESEND_DEFAULT_FROM_ADDRESS=$USESEND_DEFAULT_FROM_ADDRESS \
+    USESEND_DEFAULT_FROM_NAME=$USESEND_DEFAULT_FROM_NAME
+# Fail loudly at build time rather than silently baking `undefined` into the client
+# bundle, which would surface much later as a broken status link / live preview.
+RUN test -n "$SERVER_URL" || { echo "SERVER_URL build arg is required (inlined into the client bundle)" >&2; exit 1; }
 # pnpm's "deps status" check tries to interactively confirm removal of a stale
 # node_modules dir when it detects the manifest changed since install; there is no TTY
 # in a Docker build, so this aborts unless CI=true tells pnpm to run non-interactively.
 ENV CI=true
+# generateStaticParams() calls payload.find() in six routes, so the build needs a
+# reachable database. It arrives as a BuildKit secret — mounted only for the lifetime
+# of this RUN, never written to a layer or recorded in build-cache metadata.
+# SENTRY_AUTH_TOKEN is optional and only enables source-map upload when present.
 RUN --mount=type=secret,id=DATABASE_URL \
-    DATABASE_URL="$(cat /run/secrets/DATABASE_URL)" \
-    pnpm run build
+    --mount=type=secret,id=SENTRY_AUTH_TOKEN \
+    --mount=type=secret,id=PAYLOAD_SECRET \
+    --mount=type=secret,id=PREVIEW_SECRET \
+    --mount=type=secret,id=CRON_SECRET \
+    --mount=type=secret,id=REDIS_URL \
+    --mount=type=secret,id=S3_ACCESS_KEY \
+    --mount=type=secret,id=S3_SECRET_KEY \
+    --mount=type=secret,id=UMAMI_USERNAME \
+    --mount=type=secret,id=UMAMI_PASSWORD \
+    --mount=type=secret,id=USESEND_API_KEY \
+    --mount=type=secret,id=OPENAI_API_KEY \
+    --mount=type=secret,id=ANTHROPIC_API_KEY \
+    --mount=type=secret,id=MAPBOX_API_KEY \
+    for s in DATABASE_URL SENTRY_AUTH_TOKEN PAYLOAD_SECRET PREVIEW_SECRET \
+             CRON_SECRET REDIS_URL S3_ACCESS_KEY S3_SECRET_KEY \
+             UMAMI_USERNAME UMAMI_PASSWORD USESEND_API_KEY \
+             OPENAI_API_KEY ANTHROPIC_API_KEY MAPBOX_API_KEY; do \
+      # Quoting the whole assignment word keeps values containing spaces or shell
+      # metacharacters intact, which bare `export $(...)` word-splitting would mangle.
+      # Do NOT use `read` here: it returns 1 at EOF when the file has no trailing
+      # newline, which is exactly how BuildKit writes secrets — that both skipped
+      # the export and aborted this RUN before the build could start.
+      if [ -s "/run/secrets/$s" ]; then \
+        export "$s=$(cat "/run/secrets/$s")"; \
+      fi; \
+    done \
+    && pnpm run build
 
 FROM base AS runner
 WORKDIR /repo
