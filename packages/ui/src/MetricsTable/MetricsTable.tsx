@@ -23,7 +23,7 @@ export const MetricsTable = ({ className, data, maxValue }: MetricsTableData) =>
   )
 }
 
-const MetricsTableRow = ({
+const sMetricsTableRow = ({
   metric,
   value,
   maxValue,
