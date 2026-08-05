@@ -24,10 +24,16 @@ jobs:
     # config matching the branch. Selecting the environment here replaces the
     # former manual PROD_/DEVELOP_/PREVIEW_ secret-name juggling.
     #
-    # `base_ref` is the PR's target branch and is set only on pull_request;
-    # `ref_name` is the pushed branch. Coalescing them means a PR is judged by
-    # what it would merge INTO, not by its own `refs/pull/N/merge` ref.
-    environment: ${{ (github.base_ref || github.ref_name) == 'main' && 'Production' || 'Development' }}
+    # Pull requests always build against Development, whatever they target.
+    # GitHub evaluates an environment's deployment branch policy against the
+    # run's own ref, and a PR's ref is `refs/pull/N/merge`, which is not a
+    # branch. Production is restricted to `main`, so a PR selecting it is
+    # rejected outright ("Branch is not allowed to deploy to Production").
+    # Development allows all branches, which is what makes PR builds possible;
+    # PR images are only ever a build check and are never deployed, so building
+    # them with development config is sufficient. Production credentials stay
+    # reachable only from `main`.
+    environment: ${{ github.event_name != 'pull_request' && github.ref_name == 'main' && 'Production' || 'Development' }}
     steps:
       - name: Checkout code repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -115,9 +121,10 @@ jobs:
     needs: [build-web]
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
     runs-on: ubuntu-latest
-    # Same selector as build-web. This job is gated to pushes, so `base_ref` is
-    # always empty here — it is kept identical so the two never drift apart.
-    environment: ${{ (github.base_ref || github.ref_name) == 'main' && 'Production' || 'Development' }}
+    # Same selector as build-web. This job is gated to pushes, so the
+    # pull_request arm never applies here — it is kept identical so the two
+    # never drift apart.
+    environment: ${{ github.event_name != 'pull_request' && github.ref_name == 'main' && 'Production' || 'Development' }}
     steps:
       # One step for both branches: the environment selected above already
       # resolves DOKPLOY_WEBHOOK_URL to the right Doppler config, so there is no
