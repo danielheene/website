@@ -99,11 +99,7 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          # Every run publishes, including pull requests — a PR's preview image is
-          # there to be pulled and inspected. What a PR must not do is write the
-          # tags a deployment follows; see the tag list above.
           push: true
-          platforms: linux/amd64,linux/arm64
           # the build reaches the database over Tailscale during static generation
           network: host
           # Passed as BuildKit secrets: mounted only for the RUN that needs them
