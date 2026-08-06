@@ -3,13 +3,13 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { NextConfig } from 'next'
-import { PHASE_DEVELOPMENT_SERVER } from 'next/constants'
+import { PHASE_DEVELOPMENT_SERVER, PHASE_PRODUCTION_BUILD } from 'next/constants'
 import { withPayload } from '@payloadcms/next/withPayload'
 
 import { withSentryConfig } from '@sentry/nextjs'
 import z from 'zod'
 
-import { envSchema } from '@/types/environment'
+import { buildTimeEnvSchema, envSchema } from '@/types/environment'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -64,7 +64,19 @@ const createTunnel = (token: string) =>
   })
 
 export default async (phase, { defaultConfig }) => {
-  const parsedEnv = envSchema.safeParse(process.env)
+  /**
+   *    Environment validation
+   *
+   *    A production build validates only the build-time subset: requiring the
+   *    full schema here would force every value to be supplied as a build arg
+   *    and baked into the image, making the image environment-specific. The
+   *    server validates the full schema at boot instead (`next start` runs
+   *    this config file too, under a different phase), so a missing runtime
+   *    variable still fails fast — just at the point where it can actually be
+   *    supplied.
+   */
+  const schema = phase === PHASE_PRODUCTION_BUILD ? buildTimeEnvSchema : envSchema
+  const parsedEnv = schema.safeParse(process.env)
   if (!parsedEnv.success) {
     console.error(`\n${z.prettifyError(parsedEnv.error)}\n`)
     process.exit(1)
@@ -154,16 +166,28 @@ export default async (phase, { defaultConfig }) => {
      *    Environment Variables
      *
      *    Anything listed here is INLINED into the compiled bundle by Next and
-     *    can no longer be changed by the runtime environment. So this list is
-     *    deliberately limited to values that client components read:
+     *    can no longer be changed by the runtime environment.
      *
-     *      - SERVER_URL      → src/components/LivePreviewListener ('use client')
-     *      - STATUS_PAGE_URL → @repo/ui ServiceStatus ('use client')
-     *      - SENTRY_DSN      → public by design, shipped to the browser SDK
+     *    These three are structurally build-time and cannot be made runtime,
+     *    which is worth stating plainly because it is not obvious:
      *
-     *    SERVER_HOST and STATUS_PAGE_HEARTBEAT_URL were removed: both are read
-     *    only on the server, so leaving them here would freeze deployment
-     *    config into the image for no reason.
+     *      - SENTRY_DSN      → instrumentation-client.ts calls Sentry.init at
+     *                          module scope, before any component renders.
+     *      - SERVER_URL      → read by robots.ts and the root layout's
+     *                          metadataBase, both of which are prerendered.
+     *      - STATUS_PAGE_URL → reaches ServiceStatus through the Footer, which
+     *                          renders inside the prerendered shell.
+     *
+     *    With `cacheComponents: true` nearly every route has a shell rendered
+     *    at build time, so a process.env read on the server is captured into
+     *    that shell and served from cache — moving the read up the tree does
+     *    not change this. All three are public values (a DSN ships to the
+     *    browser SDK; the other two are this site's own addresses), so the
+     *    cost is that images are environment-specific, not that anything
+     *    secret is baked in.
+     *
+     *    Everything else — every secret and all server-only config — is read
+     *    from the container environment at boot and is genuinely runtime.
      */
     env: {
       SERVER_URL: process.env.SERVER_URL,
@@ -252,7 +276,11 @@ export default async (phase, { defaultConfig }) => {
         384,
       ],
       remotePatterns: [
-        new URL(`${process.env.SERVER_URL}/**`),
+        // Deliberately a static list rather than `new URL(SERVER_URL)`: Next
+        // needs these at build time to compile the image optimizer, and
+        // reading SERVER_URL here would put a build-time env dependency back
+        // into an otherwise environment-portable image. Every host the app is
+        // served from is enumerated below.
         new URL('https://daniel.heene.io/**'),
         new URL('https://daniel.heene.dev/**'),
         new URL('https://daniel.heene.review/**'),

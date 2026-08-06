@@ -82,47 +82,43 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          push: true
+          # Pull requests are a build check only: they prove the Dockerfile still
+          # builds end to end, but publishing them would litter GHCR with pr-N
+          # package versions that nothing ever deploys.
+          push: ${{ github.event_name != 'pull_request' }}
+          platforms: linux/amd64,linux/arm64
           # the build reaches the database over Tailscale during static generation
           network: host
           # Passed as BuildKit secrets: mounted only for the RUN that needs them
-          # and never persisted into an image layer or the build cache.
-          # next.config.ts validates the whole env schema before building, so
-          # every required value must be present — but only DATABASE_URL is
-          # actually used (generateStaticParams() queries Payload in six routes).
+          # and never persisted into an image layer or the build cache. This list
+          # mirrors the --mount=type=secret block in the Dockerfile, which in
+          # turn mirrors buildTimeEnvKeys in src/types/environment.ts. Runtime-only
+          # secrets are deliberately absent — the build never reads them, and
+          # Dokploy supplies them from Doppler at boot.
+          #
+          # S3_BUCKET/REGION/ENDPOINT are not secret, but they travel here rather
+          # than as build-args because the prerender pass reads them through the
+          # same secret mount as the rest; a build-arg would not be visible to it.
           secrets: |
             DATABASE_URL=${{ secrets.DATABASE_URL }}
-            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             PAYLOAD_SECRET=${{ secrets.PAYLOAD_SECRET }}
-            PREVIEW_SECRET=${{ secrets.PREVIEW_SECRET }}
-            CRON_SECRET=${{ secrets.CRON_SECRET }}
             REDIS_URL=${{ secrets.REDIS_URL }}
-            S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}
-            S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}
-            UMAMI_USERNAME=${{ secrets.UMAMI_USERNAME }}
-            UMAMI_PASSWORD=${{ secrets.UMAMI_PASSWORD }}
-            USESEND_API_KEY=${{ secrets.USESEND_API_KEY }}
-            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
-            ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
-            MAPBOX_API_KEY=${{ secrets.MAPBOX_API_KEY }}
-          # Non-secret config. SERVER_URL / STATUS_PAGE_URL / SENTRY_DSN are
-          # inlined into the client bundle by next.config.ts's `env:` block; the
-          # rest only need to be present for schema validation and are supplied
-          # again at runtime by Dokploy.
-          build-args: |
-            SERVER_URL=${{ vars.SERVER_URL }}
-            SERVER_HOST=${{ vars.SERVER_HOST }}
-            STATUS_PAGE_URL=${{ vars.STATUS_PAGE_URL }}
-            STATUS_PAGE_HEARTBEAT_URL=${{ vars.STATUS_PAGE_HEARTBEAT_URL }}
-            SENTRY_DSN=${{ vars.SENTRY_DSN }}
             S3_BUCKET=${{ vars.S3_BUCKET }}
             S3_REGION=${{ vars.S3_REGION }}
             S3_ENDPOINT=${{ vars.S3_ENDPOINT }}
-            NEXT_PUBLIC_UMAMI_URL=${{ vars.NEXT_PUBLIC_UMAMI_URL }}
-            NEXT_PUBLIC_UMAMI_SITE_ID=${{ vars.NEXT_PUBLIC_UMAMI_SITE_ID }}
-            USESEND_URL=${{ vars.USESEND_URL }}
-            USESEND_DEFAULT_FROM_ADDRESS=${{ vars.USESEND_DEFAULT_FROM_ADDRESS }}
-            USESEND_DEFAULT_FROM_NAME=${{ vars.USESEND_DEFAULT_FROM_NAME }}
+            S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}
+            S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}
+            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+            SENTRY_ORG=${{ vars.SENTRY_ORG }}
+            SENTRY_PROJECT=${{ vars.SENTRY_PROJECT }}
+          # The only three values baked into the image, all public: Next inlines
+          # them via next.config.ts's `env:` block and they are captured in the
+          # prerendered shell, so they cannot be supplied at runtime. Everything
+          # else is read from the container environment at boot.
+          build-args: |
+            SERVER_URL=${{ vars.SERVER_URL }}
+            STATUS_PAGE_URL=${{ vars.STATUS_PAGE_URL }}
+            SENTRY_DSN=${{ vars.SENTRY_DSN }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
