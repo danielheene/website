@@ -31,50 +31,35 @@ COPY --from=deps /repo/node_modules ./node_modules
 COPY --from=deps /repo/apps/web/node_modules ./apps/web/node_modules
 COPY . .
 ENV NODE_ENV=production
-# Only genuinely build-time values are declared here, and none of them are secret.
+# Exactly three values are baked into the image, and all three are public.
 #
 # Next inlines everything listed in next.config.ts's `env:` block into the compiled
-# bundle, so those values are frozen at build time and cannot be changed by the
-# runtime environment. Two of them are read from client components
-# ('use client': packages/ui/src/ServiceStatus and src/components/LivePreviewListener),
-# which means they MUST be correct here — a placeholder would ship to the browser.
+# bundle, where the runtime environment can no longer change it. On top of that,
+# `cacheComponents: true` gives nearly every route a shell rendered at build time,
+# so a server-side process.env read is captured into that shell and served from
+# cache. Between the two, these three cannot be made runtime-configurable:
 #
-# Everything else — secrets and server-only config alike — is deliberately absent:
-# it is read from the container environment at boot, so Doppler/Dokploy supply it
-# at runtime and it never lands in an image layer.
+#   SERVER_URL       robots.ts and the root layout's metadataBase, both prerendered
+#   STATUS_PAGE_URL  reaches ServiceStatus through the prerendered Footer
+#   SENTRY_DSN       Sentry.init runs at module scope in instrumentation-client.ts
 #
-# The remaining ARGs below are not inlined; they exist only because next.config.ts
-# validates the full schema before building. A Sentry DSN is public by design — it
-# ships to the browser SDK — so it is a build arg rather than a secret.
+# The consequence is that an image is specific to one environment. Nothing secret
+# is involved: a DSN ships to the browser SDK either way, and the other two are
+# this site's own public addresses.
+#
+# Every secret and all server-only config is deliberately absent — it is read from
+# the container environment at boot, so it never lands in a layer.
 ARG SERVER_URL
-ARG SERVER_HOST
 ARG STATUS_PAGE_URL
-ARG STATUS_PAGE_HEARTBEAT_URL
 ARG SENTRY_DSN
-ARG S3_BUCKET
-ARG S3_REGION
-ARG S3_ENDPOINT
-ARG NEXT_PUBLIC_UMAMI_URL
-ARG NEXT_PUBLIC_UMAMI_SITE_ID
-ARG USESEND_URL
-ARG USESEND_DEFAULT_FROM_ADDRESS
-ARG USESEND_DEFAULT_FROM_NAME
 ENV SERVER_URL=$SERVER_URL \
-    SERVER_HOST=$SERVER_HOST \
     STATUS_PAGE_URL=$STATUS_PAGE_URL \
-    STATUS_PAGE_HEARTBEAT_URL=$STATUS_PAGE_HEARTBEAT_URL \
-    SENTRY_DSN=$SENTRY_DSN \
-    S3_BUCKET=$S3_BUCKET \
-    S3_REGION=$S3_REGION \
-    S3_ENDPOINT=$S3_ENDPOINT \
-    NEXT_PUBLIC_UMAMI_URL=$NEXT_PUBLIC_UMAMI_URL \
-    NEXT_PUBLIC_UMAMI_SITE_ID=$NEXT_PUBLIC_UMAMI_SITE_ID \
-    USESEND_URL=$USESEND_URL \
-    USESEND_DEFAULT_FROM_ADDRESS=$USESEND_DEFAULT_FROM_ADDRESS \
-    USESEND_DEFAULT_FROM_NAME=$USESEND_DEFAULT_FROM_NAME
-# Fail loudly at build time rather than silently baking `undefined` into the client
-# bundle, which would surface much later as a broken status link / live preview.
+    SENTRY_DSN=$SENTRY_DSN
+# Fail loudly rather than baking `undefined` into the client bundle and the
+# prerendered robots.txt, which surfaces much later as a broken status link,
+# wrong canonical URLs, and `Sitemap: undefined/sitemap.xml`.
 RUN test -n "$SERVER_URL" || { echo "SERVER_URL build arg is required (inlined into the client bundle)" >&2; exit 1; }
+RUN test -n "$STATUS_PAGE_URL" || { echo "STATUS_PAGE_URL build arg is required (inlined into the client bundle)" >&2; exit 1; }
 # pnpm's "deps status" check tries to interactively confirm removal of a stale
 # node_modules dir when it detects the manifest changed since install; there is no TTY
 # in a Docker build, so this aborts unless CI=true tells pnpm to run non-interactively.
@@ -83,24 +68,26 @@ ENV CI=true
 # reachable database. It arrives as a BuildKit secret — mounted only for the lifetime
 # of this RUN, never written to a layer or recorded in build-cache metadata.
 # SENTRY_AUTH_TOKEN is optional and only enables source-map upload when present.
+# Only what the build itself reads, matching buildTimeEnvKeys in
+# src/types/environment.ts: the database and Payload's secret for the prerender
+# pass, the S3 settings the media collections resolve against, and the optional
+# Sentry credentials for source-map upload. Runtime-only secrets are no longer
+# passed at all — the build has no use for them, and not passing them is one
+# fewer place they can leak.
 RUN --mount=type=secret,id=DATABASE_URL \
-    --mount=type=secret,id=SENTRY_AUTH_TOKEN \
     --mount=type=secret,id=PAYLOAD_SECRET \
-    --mount=type=secret,id=PREVIEW_SECRET \
-    --mount=type=secret,id=CRON_SECRET \
     --mount=type=secret,id=REDIS_URL \
+    --mount=type=secret,id=S3_BUCKET \
+    --mount=type=secret,id=S3_REGION \
+    --mount=type=secret,id=S3_ENDPOINT \
     --mount=type=secret,id=S3_ACCESS_KEY \
     --mount=type=secret,id=S3_SECRET_KEY \
-    --mount=type=secret,id=UMAMI_USERNAME \
-    --mount=type=secret,id=UMAMI_PASSWORD \
-    --mount=type=secret,id=USESEND_API_KEY \
-    --mount=type=secret,id=OPENAI_API_KEY \
-    --mount=type=secret,id=ANTHROPIC_API_KEY \
-    --mount=type=secret,id=MAPBOX_API_KEY \
-    for s in DATABASE_URL SENTRY_AUTH_TOKEN PAYLOAD_SECRET PREVIEW_SECRET \
-             CRON_SECRET REDIS_URL S3_ACCESS_KEY S3_SECRET_KEY \
-             UMAMI_USERNAME UMAMI_PASSWORD USESEND_API_KEY \
-             OPENAI_API_KEY ANTHROPIC_API_KEY MAPBOX_API_KEY; do \
+    --mount=type=secret,id=SENTRY_AUTH_TOKEN \
+    --mount=type=secret,id=SENTRY_ORG \
+    --mount=type=secret,id=SENTRY_PROJECT \
+    for s in DATABASE_URL PAYLOAD_SECRET REDIS_URL S3_BUCKET S3_REGION S3_ENDPOINT \
+             S3_ACCESS_KEY S3_SECRET_KEY \
+             SENTRY_AUTH_TOKEN SENTRY_ORG SENTRY_PROJECT; do \
       # Quoting the whole assignment word keeps values containing spaces or shell
       # metacharacters intact, which bare `export $(...)` word-splitting would mangle.
       # Do NOT use `read` here: it returns 1 at EOF when the file has no trailing

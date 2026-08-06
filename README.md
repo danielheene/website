@@ -129,10 +129,87 @@ sampling.
 `CLOUDFLARE_TUNNEL_HOST`, `CLOUDFLARE_TUNNEL_URL` and `CLOUDFLARE_TUNNEL_TOKEN` are only
 read when starting the dev server with `--tunnel`.
 
-> **Inlined at build time.** `SERVER_URL`, `STATUS_PAGE_URL` and `SENTRY_DSN` are listed in
-> `next.config.ts`'s `env:` block, which bakes them into the compiled bundle. They must be
-> correct when the image is built and cannot be changed by the runtime environment.
-> Everything else is read from the container environment at boot.
+> **Fixed at build time.** `SERVER_URL`, `STATUS_PAGE_URL` and `SENTRY_DSN` are listed in
+> `next.config.ts`'s `env:` block, which inlines them into the compiled bundle. On top of
+> that, `cacheComponents: true` gives nearly every route a shell rendered at build time,
+> so a server-side `process.env` read is captured into that shell and served from cache —
+> moving the read further up the tree does not change this. All three must therefore be
+> correct when the image is built, which makes an image specific to one environment. All
+> three are public values, so nothing secret is baked in.
+>
+> Everything else — every secret and all server-only config — is read from the container
+> environment at boot. See `buildTimeEnvKeys` in `src/types/environment.ts` for the exact
+> set the build requires.
+
+## Running the Container Locally
+
+The image contains no `.env` and no Doppler CLI: in production Dokploy injects the
+environment, and in CI the Doppler GitHub App syncs into GitHub environments. Neither
+exists on your machine, so both the build and the run have to be wrapped in `doppler run`
+yourself.
+
+### Build
+
+Three public URLs are baked in as build args (see the callout above), so an image belongs
+to one environment. Everything else the build needs arrives as a BuildKit secret, mounted
+only for the build `RUN` so it never lands in a layer or in build-cache metadata. The
+exact set is `buildTimeEnvKeys` in `src/types/environment.ts`.
+
+The build needs a reachable database because `generateStaticParams()` calls
+`payload.find()`, and a Redis URL because the KV adapter is constructed while
+`payload.config.ts` loads.
+
+```bash
+doppler run -- sh -c 'docker build \
+  --build-arg SERVER_URL="$SERVER_URL" \
+  --build-arg STATUS_PAGE_URL="$STATUS_PAGE_URL" \
+  --build-arg SENTRY_DSN="$SENTRY_DSN" \
+  --secret id=DATABASE_URL,env=DATABASE_URL \
+  --secret id=PAYLOAD_SECRET,env=PAYLOAD_SECRET \
+  --secret id=REDIS_URL,env=REDIS_URL \
+  --secret id=S3_BUCKET,env=S3_BUCKET \
+  --secret id=S3_REGION,env=S3_REGION \
+  --secret id=S3_ENDPOINT,env=S3_ENDPOINT \
+  --secret id=S3_ACCESS_KEY,env=S3_ACCESS_KEY \
+  --secret id=S3_SECRET_KEY,env=S3_SECRET_KEY \
+  --secret id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN \
+  --secret id=SENTRY_ORG,env=SENTRY_ORG \
+  --secret id=SENTRY_PROJECT,env=SENTRY_PROJECT \
+  -t website:local .'
+```
+
+The Sentry trio is optional and only enables source-map upload. A production build
+validates only the build-time subset of the schema; the full schema is validated at boot,
+so a missing runtime variable still fails fast — at the point where it can be supplied.
+
+### Run
+
+At boot the app reads everything from the container environment, so the whole Doppler
+config can be handed over as an env file:
+
+```bash
+docker run --rm -p 3000:3000 \
+  --env-file <(doppler secrets download --no-file --format docker) \
+  website:local
+```
+
+`--format docker` emits plain `KEY=value` lines, which is what `--env-file` expects.
+Docker does no shell interpretation on that file — no quoting, no `$` expansion — so
+values containing spaces or metacharacters pass through literally.
+
+Notes:
+
+- **The image is environment-specific.** `SERVER_URL`, `STATUS_PAGE_URL` and `SENTRY_DSN`
+  are fixed when the image is built, so passing them at run time only satisfies the
+  schema check — it does not change what is served. Build with the config you intend to
+  run. Every secret and all server-only config *is* runtime, so a container can be
+  repointed at a different database, cache, bucket or mail provider without rebuilding.
+- **Private hosts need Tailscale.** The `development` config points `DATABASE_URL` and
+  `REDIS_URL` at hosts on the tailnet. They resolve and connect from a container on a
+  machine that is already on the tailnet; elsewhere, set `TAILSCALE_AUTHKEY` and the
+  entrypoint brings up userspace-networking `tailscaled` before starting Next.
+- **`docker compose up -d` is only the local infrastructure** (Mongo, Redis, rustfs).
+  The app is not a compose service — it runs via `pnpm dev`, or as the container above.
 
 ## Available Scripts
 
