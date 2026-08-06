@@ -67,14 +67,31 @@ jobs:
       - name: Compute image metadata
         id: meta
         uses: docker/metadata-action@v6
+        env:
+          # Makes `type=ref,event=pr` use the head branch name instead of the PR
+          # number, so the preview tag reads as the feature branch. The action
+          # slugifies it: slashes become dashes and the result is lowercased.
+          DOCKER_METADATA_PR_HEAD_REF: 'true'
         with:
           images: ghcr.io/${{ github.repository }}/web
+          # A pull request publishes a preview image so the implementation can be
+          # pulled and checked visually. It is tagged from the *head* branch —
+          # preview-chore-doppler-config-management — which is stable for the life
+          # of the PR and says what it is at a glance.
+          #
+          # `type=ref,event=branch` is gated to non-PR events on purpose. On a
+          # pull_request it resolves to the BASE branch, so a PR against develop
+          # would tag its image `develop` and overwrite the tag Dokploy deploys
+          # from. Nothing would deploy at that moment — the deploy job is gated to
+          # pushes — but the next restart or redeploy would pull the PR's image.
+          # Gating it keeps develop/production/latest writable only by a
+          # post-merge push. The type=raw lines below are already safe: they test
+          # github.ref, which on a PR is refs/pull/N/merge and never matches.
           tags: |
             type=sha,prefix=sha-,format=short
-            type=ref,event=branch
-            type=ref,event=pr
+            type=ref,event=branch,enable=${{ github.event_name != 'pull_request' }}
+            type=ref,event=pr,prefix=preview-
             type=raw,value=production,enable=${{ github.ref == 'refs/heads/main' }}
-            type=raw,value=develop,enable=${{ github.ref == 'refs/heads/develop' }}
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
 
       - name: Build and push web image
@@ -82,10 +99,10 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          # Pull requests are a build check only: they prove the Dockerfile still
-          # builds end to end, but publishing them would litter GHCR with pr-N
-          # package versions that nothing ever deploys.
-          push: ${{ github.event_name != 'pull_request' }}
+          # Every run publishes, including pull requests — a PR's preview image is
+          # there to be pulled and inspected. What a PR must not do is write the
+          # tags a deployment follows; see the tag list above.
+          push: true
           platforms: linux/amd64,linux/arm64
           # the build reaches the database over Tailscale during static generation
           network: host
