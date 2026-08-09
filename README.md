@@ -331,15 +331,19 @@ Note: `payload run` only forwards CLI arguments after a `--` separator — see t
 
 ## CI / Deployment
 
-- CI entrypoint: `pnpm ci` runs `payload migrate` then `next build`.
-- **CI** (`.github/workflows/test.yml`) runs unit tests, the dependency version check,
-  commitlint, and a full `next build`. The build job joins the tailnet first because
-  `generateStaticParams()` reaches the database during static generation, and it fails
-  fast if `SERVER_URL` or `STATUS_PAGE_URL` is missing rather than baking `undefined`
-  into the client bundle.
-- **Deployment** is handled by Dokploy, which watches the repository and builds from
-  source on the deployment server. CI publishes no artifact and triggers nothing — there
-  is no image registry in the loop.
+Tests and the build run in different places because they need different things.
+
+- **GitHub Actions runs the tests** (`.github/workflows/test.yml`, plus commitlint in
+  `commitlint.yml`). The suite mocks `payload` and stubs its own environment in
+  `vitest.setup.ts`, so it needs no database, no tailnet and no secrets — a clean runner
+  is the right place for it, and keeping it there proves it stays self-contained. Running
+  on pull requests also catches a failure before merge.
+- **Dokploy runs the build** on the deployment server, via `pnpm ci`
+  (`payload migrate && next build`). The build cannot move to CI cheaply:
+  `generateStaticParams()` calls `payload.find()` in six routes, so it needs a reachable
+  database over the tailnet, which Dokploy already has.
+- Dokploy watches the repository and builds from source. CI publishes no artifact and
+  triggers nothing — there is no image registry in the loop.
 - Secrets and non-secret config reach both CI and the server from Doppler: the Doppler
   GitHub App syncs into GitHub environments (`Production` for `main`, `Development`
   otherwise), and Dokploy injects the environment at build and boot.
