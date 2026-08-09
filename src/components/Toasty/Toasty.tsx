@@ -471,7 +471,6 @@ export const Toasty = function Toasty(): React.JSX.Element {
   const { track } = useUmami()
   const audioContextRef = React.useRef<AudioContext>(null)
   const keyEventBoundRef = React.useRef<boolean>(false)
-  const [eventIsRegistered, setEventIsRegistered] = React.useState(false)
   const [{ success, imageBlob, audioBuffer }, dispatch] = React.useReducer(reducer, initialState)
 
   const handleKeyUpEvent = React.useCallback((event: KeyboardEvent): void => {
@@ -482,7 +481,9 @@ export const Toasty = function Toasty(): React.JSX.Element {
   }, [])
 
   /**
-   *
+   *    Binds the konami-code listener once for the component's lifetime.
+   *    handleKeyUpEvent is a useCallback with no dependencies, so it is stable
+   *    and the effect never re-runs.
    */
   React.useEffect(() => {
     if (!keyEventBoundRef.current) {
@@ -498,7 +499,7 @@ export const Toasty = function Toasty(): React.JSX.Element {
       }
     }
   }, [
-    eventIsRegistered,
+    handleKeyUpEvent,
   ])
 
   /**
