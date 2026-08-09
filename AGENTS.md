@@ -37,12 +37,11 @@ pnpm deps:lint        # syncpack: dependency version groups
 pnpm test:e2e         # Playwright E2E (needs docker compose up -d)
 ```
 
-Environment variables come from **Doppler**, not `.env` files (see `README.md`). Scripts split
-into two families: `dev:app`, `next` and `payload` (plus everything built on them — `generate`,
-`seed`, `refs:backfill`) wrap `doppler run` and work locally as-is, while `build`, `start` and
-`migrate` call the unwrapped `_next`/`_payload` variants because they run inside the container,
-where Dokploy and Docker build args already supply the environment. Running those locally needs
-an explicit wrapper: `doppler run -- pnpm migrate`.
+Environment variables come from **Doppler**, but no script wraps `doppler run`. `pnpm load-env`
+writes the active Doppler config to `.env.local`, which Next loads on its own, so every script
+works unwrapped. Re-run it after changing anything in Doppler or switching configs — nothing
+detects drift automatically, and `pnpm load-env --check` reports it without writing. On the
+deployment server Dokploy supplies the environment directly.
 
 Always run `pnpm generate` after adding/renaming a collection, global, field, or block — many
 files import generated types from `src/types/payload.ts` and `@/types/collections`.

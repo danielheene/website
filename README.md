@@ -26,20 +26,29 @@ This repository contains the source code for my personal website: [daniel.heene.
 
 ### 1. Environment Configuration
 
-Configuration and secrets are managed in [Doppler](https://doppler.com); there is no
-`.env` file to fill in. Install the CLI and link this directory to the project:
+Configuration and secrets are managed in [Doppler](https://doppler.com). Install the CLI,
+link this directory to the project, then write the config out to `.env.local`:
 
 ```bash
 brew install dopplerhq/cli/doppler   # see docs.doppler.com/docs/install-cli for other platforms
 doppler login
 doppler setup                        # picks up project/config from doppler.yaml
+pnpm load-env                        # writes .env.local from the active config
 ```
 
 `doppler.yaml` pins this directory to the `website` project's `development` config, so
-`doppler setup` needs no further input. The `pnpm dev:app`, `pnpm payload` and `pnpm next`
-scripts run under `doppler run`, which injects the variables at launch.
+`doppler setup` needs no further input.
 
-To inspect what will be injected, run `doppler secrets` (or `doppler run -- env | sort`).
+`pnpm load-env` is the only thing that talks to Doppler. Next loads `.env.local`
+automatically, so no package script wraps `doppler run` — `pnpm dev`, `pnpm payload` and
+the rest just work. **Re-run it after changing anything in Doppler, or after switching
+configs** with `doppler setup --config <name>`; nothing detects drift on its own.
+
+- `pnpm load-env --check` reports whether `.env.local` is current and exits non-zero if
+  not, without writing.
+- The file is gitignored and written owner-only (`0600`) — it holds every secret the
+  project uses. It is never generated as a side effect of another script.
+- To inspect what will be written without touching the filesystem, run `doppler secrets`.
 
 ### 2. Start Services
 
@@ -152,8 +161,8 @@ calls `payload.find()`, and a Redis URL because the KV adapter is constructed wh
 To reproduce a production build locally:
 
 ```bash
-doppler run -- pnpm run build
-doppler run -- pnpm run start
+pnpm build
+pnpm start
 ```
 
 Notes:
@@ -176,12 +185,13 @@ Notes:
 
 ## Available Scripts
 
-Scripts that are meant to be run locally (`dev`, `payload`, `generate`, `seed`) wrap
-`doppler run`, so they pick up configuration automatically. `build`, `start` and `migrate`
-deliberately do **not** — they run on the deployment server, where Dokploy already supplies
-the environment. To run one of those on your machine, wrap it yourself:
-`doppler run -- pnpm migrate`.
+No script wraps `doppler run`. Locally the environment comes from `.env.local`, which
+Next loads on its own — see [Environment Configuration](#1-environment-configuration) for
+how to generate it. On the deployment server Dokploy supplies the environment directly.
+The one script that does talk to Doppler is `pnpm load-env`, which writes that file.
 
+- `pnpm load-env`: Writes `.env.local` from the active Doppler config (`--check` to
+  report drift without writing).
 - `pnpm dev`: Starts the Next.js development server (and Storybook, in parallel).
 - `pnpm build`: Builds the application for production.
 - `pnpm start`: Starts the production server.
