@@ -19,6 +19,7 @@ import { RichText } from '@/components/RichText'
 import { generateMeta } from '@/lib/generateMeta'
 import { reduceDataToLocale } from '@/lib/i18n'
 import { generateBlogPosting, generateBreadcrumbList } from '@/lib/jsonLd'
+import { placeholderParams } from '@/lib/placeholderParams'
 import { resolveRelations } from '@/lib/resolveRelation'
 import { highlightRichText } from '@/lib/shiki/highlightRichText'
 import { CollectionData, CollectionSlug } from '@/types/collections'
@@ -40,13 +41,7 @@ export async function generateStaticParams() {
   })
 
   if (docs.length === 0) {
-    // Cache Components requires at least one param for build-time validation;
-    // '__placeholder__' resolves to notFound() against an empty database.
-    return [
-      {
-        slug: '__placeholder__',
-      },
-    ]
+    return placeholderParams('/blog/post/[slug]')
   }
 
   return docs.map(({ slug }) => ({

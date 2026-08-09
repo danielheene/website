@@ -14,8 +14,6 @@ export const ResumeDownloadsBlockRenderer = async ({
   const { document_en, document_de, thumbnails_en, thumbnails_de } =
     await fetchLatestResumeDocumentCore()
 
-  console.log('thumbnails_en', document_de)
-
   return (
     <ResumeDownloadsBlockClientRenderer
       title={title}

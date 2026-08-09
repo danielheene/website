@@ -4,6 +4,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 
 import { generateMeta } from '@/lib/generateMeta'
+import { placeholderParams } from '@/lib/placeholderParams'
 import { RESERVED_TOPIC_SLUGS } from '@/types/blog'
 import { CollectionSlug } from '@/types/collections'
 
@@ -25,13 +26,7 @@ export async function generateStaticParams() {
   })
 
   if (docs.length === 0) {
-    // Cache Components requires at least one param for build-time validation;
-    // '__placeholder__' resolves to notFound() against an empty database.
-    return [
-      {
-        slug: '__placeholder__',
-      },
-    ]
+    return placeholderParams('/blog/[slug]')
   }
 
   return docs.map(({ slug }) => ({

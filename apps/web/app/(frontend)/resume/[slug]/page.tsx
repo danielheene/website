@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 
 import { cn } from '@repo/utils/cn'
 
+import { placeholderParams } from '@/lib/placeholderParams'
 import { CollectionSlug } from '@/types/collections'
 
 export default async function ResumeDocumentPage({ params }: PageProps<'/resume/[slug]'>) {
@@ -51,13 +52,7 @@ export async function generateStaticParams() {
   })
 
   if (docs.length === 0) {
-    // Cache Components requires at least one param for build-time validation;
-    // '__placeholder__' resolves to notFound() against an empty database.
-    return [
-      {
-        slug: '__placeholder__',
-      },
-    ]
+    return placeholderParams('/resume/[slug]')
   }
 
   return docs.map(({ slug }) => ({
