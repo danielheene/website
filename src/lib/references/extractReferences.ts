@@ -140,7 +140,9 @@ export const extractReferences = (
     if (!node || typeof node !== 'object') return
 
     if (Array.isArray(node)) {
-      node.forEach((item, index) => walk(item, joinPath(path, index), fieldName))
+      node.forEach((item, index) => {
+        walk(item, joinPath(path, index), fieldName)
+      })
       return
     }
 

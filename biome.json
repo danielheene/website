@@ -26,7 +26,8 @@
       "!!**/node_modules",
       "!!**/coverage",
       "!!**/playwright-report",
-      "!!**/test-results"
+      "!!**/test-results",
+      "!!**/next-env.d.ts"
     ],
     "ignoreUnknown": false
   }

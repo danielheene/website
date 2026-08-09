@@ -67,7 +67,19 @@ export const useServerSentEvents = <T = unknown>({
       return
     }
 
-    const source = new EventSource(`/api/sse?channel=${encodeURIComponent(channel)}`)
+    // reconnectToken is what re-runs this effect: reconnect() bumps it, which
+    // tears the EventSource down and opens a fresh one. Carrying it in the URL
+    // both makes that dependency real rather than incidental, and stops a
+    // forced reconnect from being served a cached response.
+    //
+    // Built by hand rather than with URLSearchParams: that encodes a space as
+    // `+` (form encoding) where encodeURIComponent emits `%20`. Both decode the
+    // same server-side, but the channel name is asserted verbatim in tests and
+    // there is no reason to change the wire format here.
+    const source = new EventSource(
+      `/api/sse?channel=${encodeURIComponent(channel)}` +
+        (reconnectToken > 0 ? `&r=${reconnectToken}` : ''),
+    )
     setStatus('connecting')
 
     let lastActivity = Date.now()
