@@ -26,20 +26,32 @@ This repository contains the source code for my personal website: [daniel.heene.
 
 ### 1. Environment Configuration
 
-Configuration and secrets are managed in [Doppler](https://doppler.com); there is no
-`.env` file to fill in. Install the CLI and link this directory to the project:
+Configuration and secrets are managed in [Doppler](https://doppler.com). Install the CLI,
+link this directory to the project, then write the config out to `.env.local`:
 
 ```bash
 brew install dopplerhq/cli/doppler   # see docs.doppler.com/docs/install-cli for other platforms
 doppler login
-doppler setup                        # picks up project/config from doppler.yaml
+doppler setup --project website --config <your-config>
+pnpm load-env                        # writes .env.local from the active config
 ```
 
-`doppler.yaml` pins this directory to the `website` project's `development` config, so
-`doppler setup` needs no further input. The `pnpm dev:app`, `pnpm payload` and `pnpm next`
-scripts run under `doppler run`, which injects the variables at launch.
+`doppler setup` stores the project and config against this directory in `~/.doppler`, so
+it is a one-time step per clone. There is no checked-in default: configs differ per
+developer (`development_personal` and the like), and pinning one in the repo made it easy
+to build against the wrong database without noticing. `doppler configure` shows what the
+current directory resolves to.
 
-To inspect what will be injected, run `doppler secrets` (or `doppler run -- env | sort`).
+`pnpm load-env` is the only thing that talks to Doppler. Next loads `.env.local`
+automatically, so no package script wraps `doppler run` — `pnpm dev`, `pnpm payload` and
+the rest just work. **Re-run it after changing anything in Doppler, or after switching
+configs** with `doppler setup --config <name>`; nothing detects drift on its own.
+
+- `pnpm load-env --check` reports whether `.env.local` is current and exits non-zero if
+  not, without writing.
+- The file is gitignored and written owner-only (`0600`) — it holds every secret the
+  project uses. It is never generated as a side effect of another script.
+- To inspect what will be written without touching the filesystem, run `doppler secrets`.
 
 ### 2. Start Services
 
@@ -134,91 +146,55 @@ read when starting the dev server with `--tunnel`.
 > that, `cacheComponents: true` gives nearly every route a shell rendered at build time,
 > so a server-side `process.env` read is captured into that shell and served from cache —
 > moving the read further up the tree does not change this. All three must therefore be
-> correct when the image is built, which makes an image specific to one environment. All
+> correct when the app is built, which makes a build specific to one environment. All
 > three are public values, so nothing secret is baked in.
 >
 > Everything else — every secret and all server-only config — is read from the container
 > environment at boot. See `buildTimeEnvKeys` in `src/types/environment.ts` for the exact
 > set the build requires.
 
-## Running the Container Locally
+## Production Build
 
-The image contains no `.env` and no Doppler CLI: in production Dokploy injects the
-environment, and in CI the Doppler GitHub App syncs into GitHub environments. Neither
-exists on your machine, so both the build and the run have to be wrapped in `doppler run`
-yourself.
+Dokploy builds the app from source on the deployment server; there is no image to
+build or push. The build needs a reachable database because `generateStaticParams()`
+calls `payload.find()`, and a Redis URL because the KV adapter is constructed while
+`payload.config.ts` loads. The exact set is `buildTimeEnvKeys` in
+`src/types/environment.ts`.
 
-### Build
-
-Three public URLs are baked in as build args (see the callout above), so an image belongs
-to one environment. Everything else the build needs arrives as a BuildKit secret, mounted
-only for the build `RUN` so it never lands in a layer or in build-cache metadata. The
-exact set is `buildTimeEnvKeys` in `src/types/environment.ts`.
-
-The build needs a reachable database because `generateStaticParams()` calls
-`payload.find()`, and a Redis URL because the KV adapter is constructed while
-`payload.config.ts` loads.
+To reproduce a production build locally:
 
 ```bash
-doppler run -- sh -c 'docker build \
-  --build-arg SERVER_URL="$SERVER_URL" \
-  --build-arg STATUS_PAGE_URL="$STATUS_PAGE_URL" \
-  --build-arg SENTRY_DSN="$SENTRY_DSN" \
-  --secret id=DATABASE_URL,env=DATABASE_URL \
-  --secret id=PAYLOAD_SECRET,env=PAYLOAD_SECRET \
-  --secret id=REDIS_URL,env=REDIS_URL \
-  --secret id=S3_BUCKET,env=S3_BUCKET \
-  --secret id=S3_REGION,env=S3_REGION \
-  --secret id=S3_ENDPOINT,env=S3_ENDPOINT \
-  --secret id=S3_ACCESS_KEY,env=S3_ACCESS_KEY \
-  --secret id=S3_SECRET_KEY,env=S3_SECRET_KEY \
-  --secret id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN \
-  --secret id=SENTRY_ORG,env=SENTRY_ORG \
-  --secret id=SENTRY_PROJECT,env=SENTRY_PROJECT \
-  -t website:local .'
+pnpm build
+pnpm start
 ```
-
-The Sentry trio is optional and only enables source-map upload. A production build
-validates only the build-time subset of the schema; the full schema is validated at boot,
-so a missing runtime variable still fails fast — at the point where it can be supplied.
-
-### Run
-
-At boot the app reads everything from the container environment, so the whole Doppler
-config can be handed over as an env file:
-
-```bash
-docker run --rm -p 3000:3000 \
-  --env-file <(doppler secrets download --no-file --format docker) \
-  website:local
-```
-
-`--format docker` emits plain `KEY=value` lines, which is what `--env-file` expects.
-Docker does no shell interpretation on that file — no quoting, no `$` expansion — so
-values containing spaces or metacharacters pass through literally.
 
 Notes:
 
-- **The image is environment-specific.** `SERVER_URL`, `STATUS_PAGE_URL` and `SENTRY_DSN`
-  are fixed when the image is built, so passing them at run time only satisfies the
-  schema check — it does not change what is served. Build with the config you intend to
-  run. Every secret and all server-only config *is* runtime, so a container can be
-  repointed at a different database, cache, bucket or mail provider without rebuilding.
+- **Three values are inlined at build time.** `SERVER_URL`, `STATUS_PAGE_URL` and
+  `SENTRY_DSN` are baked into the client bundle and captured in the prerendered shell
+  (`cacheComponents: true` gives nearly every route a build-time shell), so passing them
+  at run time only satisfies the schema check — it does not change what is served. Build
+  with the config you intend to run. Every secret and all server-only config *is*
+  runtime, so a deployment can be repointed at a different database, cache, bucket or
+  mail provider without rebuilding.
+- **A production build validates only the build-time subset** of the schema; the full
+  schema is validated at boot, so a missing runtime variable still fails fast — at the
+  point where it can be supplied.
 - **Private hosts need Tailscale.** The `development` config points `DATABASE_URL` and
-  `REDIS_URL` at hosts on the tailnet. They resolve and connect from a container on a
-  machine that is already on the tailnet; elsewhere, set `TAILSCALE_AUTHKEY` and the
-  entrypoint brings up userspace-networking `tailscaled` before starting Next.
+  `REDIS_URL` at hosts on the tailnet, so the build only resolves them from a machine
+  already on the tailnet.
 - **`docker compose up -d` is only the local infrastructure** (Mongo, Redis, rustfs).
-  The app is not a compose service — it runs via `pnpm dev`, or as the container above.
+  The app is not a compose service — it runs via `pnpm dev`.
 
 ## Available Scripts
 
-Scripts that are meant to be run locally (`dev`, `payload`, `generate`, `seed`) wrap
-`doppler run`, so they pick up configuration automatically. `build`, `start` and `migrate`
-deliberately do **not** — they run inside the container, where Dokploy and Docker build args
-already supply the environment. To run one of those on your machine, wrap it yourself:
-`doppler run -- pnpm migrate`.
+No script wraps `doppler run`. Locally the environment comes from `.env.local`, which
+Next loads on its own — see [Environment Configuration](#1-environment-configuration) for
+how to generate it. On the deployment server Dokploy supplies the environment directly.
+The one script that does talk to Doppler is `pnpm load-env`, which writes that file.
 
+- `pnpm load-env`: Writes `.env.local` from the active Doppler config (`--check` to
+  report drift without writing).
 - `pnpm dev`: Starts the Next.js development server (and Storybook, in parallel).
 - `pnpm build`: Builds the application for production.
 - `pnpm start`: Starts the production server.
@@ -368,8 +344,22 @@ Note: `payload run` only forwards CLI arguments after a `--` separator — see t
 
 ## CI / Deployment
 
-- CI entrypoint: `pnpm ci` runs `payload migrate` then `next build`.
-- TODO: Document hosting provider and production environment configuration (e.g., Docker, Vercel, Fly.io).
+Tests and the build run in different places because they need different things.
+
+- **GitHub Actions runs the tests** (`.github/workflows/test.yml`, plus commitlint in
+  `commitlint.yml`). The suite mocks `payload` and stubs its own environment in
+  `vitest.setup.ts`, so it needs no database, no tailnet and no secrets — a clean runner
+  is the right place for it, and keeping it there proves it stays self-contained. Running
+  on pull requests also catches a failure before merge.
+- **Dokploy runs the build** on the deployment server, via `pnpm ci`
+  (`payload migrate && next build`). The build cannot move to CI cheaply:
+  `generateStaticParams()` calls `payload.find()` in six routes, so it needs a reachable
+  database over the tailnet, which Dokploy already has.
+- Dokploy watches the repository and builds from source. CI publishes no artifact and
+  triggers nothing — there is no image registry in the loop.
+- Secrets and non-secret config reach both CI and the server from Doppler: the Doppler
+  GitHub App syncs into GitHub environments (`Production` for `main`, `Development`
+  otherwise), and Dokploy injects the environment at build and boot.
 
 ## Code Quality & Security Notes
 

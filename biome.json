@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "extends": [
-    "./packages/biome-config/base.jsonc"
+    "./biome.base.jsonc"
   ],
   "files": {
     "includes": [
@@ -26,7 +26,8 @@
       "!!**/node_modules",
       "!!**/coverage",
       "!!**/playwright-report",
-      "!!**/test-results"
+      "!!**/test-results",
+      "!!**/next-env.d.ts"
     ],
     "ignoreUnknown": false
   }

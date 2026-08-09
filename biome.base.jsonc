@@ -1,0 +1,184 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "includes": [
+      "**/*.js",
+      "**/*.jsx",
+      "**/*.ts",
+      "**/*.tsx",
+      "**/*.json",
+
+      "!!**/dist",
+      "!!**/build",
+      "!!**/.cache"
+    ],
+    "ignoreUnknown": false
+  },
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 100,
+    "attributePosition": "auto",
+    "bracketSameLine": false,
+    "bracketSpacing": true,
+    "expand": "always",
+    "useEditorconfig": true,
+
+    "includes": [
+      "**",
+      "!**/.tmp",
+      "!**/.git",
+      "!**/.hg",
+      "!**/.pnp.*",
+      "!**/.svn",
+      "!**/.yarn/**",
+      "!**/build",
+      "!**/dist",
+      "!**/node_modules",
+      "!**/temp",
+      "!**/docs/**",
+      "!**/tsconfig.json",
+      "!**/src/types/payload.ts",
+      "!**/README.md"
+    ]
+  },
+  "linter": {
+    "enabled": true,
+    "domains": {
+      "react": "recommended",
+      "next": "recommended",
+      "project": "recommended",
+      "types": "recommended"
+    },
+    "rules": {
+      "preset": "recommended",
+      "style": {
+        "useImportType": {
+          "level": "off"
+        }
+      },
+      "suspicious": {
+        "noArrayIndexKey": "off",
+        "noUselessEscapeInString": "off"
+      },
+      "a11y": {
+        "noSvgWithoutTitle": "off",
+        "useValidAriaRole": {
+          "level": "warn",
+          "options": {
+            "ignoreNonDom": true,
+            "allowInvalidRoles": [
+              "application",
+              "draggable"
+            ]
+          }
+        },
+        "noNoninteractiveTabindex": {
+          "level": "warn"
+        }
+      }
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true,
+      "cssModules": true
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "enabled": true,
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "trailingCommas": "all",
+      "semicolons": "asNeeded",
+      "arrowParentheses": "always",
+      "bracketSameLine": false,
+      "quoteStyle": "single",
+      "attributePosition": "auto",
+      "bracketSpacing": true,
+      "trailingNewline": true
+    }
+  },
+  "json": {
+    "formatter": {
+      "enabled": true
+    }
+  },
+  "html": {
+    "formatter": {
+      "enabled": true,
+      "indentScriptAndStyle": false,
+      "selfCloseVoidElements": "always"
+    }
+  },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [
+              [
+                ":URL:"
+              ],
+              ":BLANK_LINE",
+              [
+                ":BUN:",
+                ":NODE:"
+              ],
+              ":BLANK_LINE:",
+
+              "react*",
+              "react/**",
+              "@react*",
+              "@react*/**",
+              "react-*",
+              "react-*/**",
+              "next*",
+              "next/**",
+              "next-*",
+              "next-*/**",
+              "@payload-config",
+              "payload",
+              "@payloadcms/**",
+              "payload-*",
+
+              ":BLANK_LINE:",
+              [
+                ":PACKAGE:",
+                ":PACKAGE_WITH_PROTOCOL:",
+                "!@/**",
+                "!react*",
+                "!@react*",
+                "!next*",
+                "!@next*",
+                "!payload*",
+                "!@payloadcms/**",
+                "!@payload*"
+              ],
+              ":BLANK_LINE:",
+              [
+                ":ALIAS:",
+                "@/**"
+              ],
+              ":BLANK_LINE:",
+              ":PATH:",
+              ":BLANK_LINE:",
+              ":STYLE:"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
