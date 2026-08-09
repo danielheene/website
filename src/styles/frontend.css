@@ -1,0 +1,169 @@
+@layer fonts, theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@import "./theme/_animations.css" layer(theme);
+@import "./theme/_aspects.css" layer(theme);
+@import "./theme/_colors.css" layer(theme);
+@import "./theme/_fonts.css" layer(theme);
+@import "./theme/_radii.css" layer(theme);
+@import "./theme/_sizes.css" layer(theme);
+@import "./theme/_shadows.css" layer(theme);
+@import "./theme/_text.css" layer(theme);
+@import "./theme/_text-shadows.css" layer(theme);
+
+/**
+ *    Tailwind auto-detects sources relative to this file, which stops at the app
+ *    boundary. @/components lives outside it, so its class names have to be declared
+ *    explicitly or every utility used only by a UI component gets tree-shaken
+ *    out of the stylesheet.
+ */
+@source "../components";
+
+@plugin "@tailwindcss/typography";
+
+@custom-variant light (&:where(.light, .light *, [data-theme="light"], [data-theme="light"] *));
+@custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html,
+  body {
+    @apply h-full min-h-full font-sans antialiased scroll-smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@layer base {
+}
+
+@utility container {
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+@layer utilities {
+  .horizontal-writing-tb {
+    writing-mode: horizontal-tb;
+  }
+
+  .vertical-writing-lr {
+    writing-mode: vertical-lr;
+  }
+
+  .vertical-writing-rl {
+    writing-mode: vertical-rl;
+  }
+
+  .orientation-mixed {
+    text-orientation: mixed;
+  }
+
+  .orientation-upright {
+    text-orientation: upright;
+  }
+
+  .orientation-sideways {
+    text-orientation: sideways;
+  }
+}
+
+@layer components {
+  /**
+   * Shiki emits one token span carrying both `--shiki-light` and
+   * `--shiki-dark` custom properties, so switching themes is a CSS variable
+   * swap rather than a re-highlight. `defaultColor: false` in
+   * `@/lib/shiki` is what produces this dual output.
+   */
+  .shiki-container {
+    .shiki,
+    .shiki span {
+      color: var(--shiki-light);
+      background-color: var(--shiki-light-bg);
+      font-style: var(--shiki-light-font-style);
+      font-weight: var(--shiki-light-font-weight);
+      text-decoration: var(--shiki-light-text-decoration);
+    }
+
+    [data-theme="dark"] & {
+      .shiki,
+      .shiki span {
+        color: var(--shiki-dark);
+        background-color: var(--shiki-dark-bg);
+        font-style: var(--shiki-dark-font-style);
+        font-weight: var(--shiki-dark-font-weight);
+        text-decoration: var(--shiki-dark-text-decoration);
+      }
+    }
+
+    .shiki {
+      @apply m-0 overflow-x-auto p-4;
+    }
+
+    /* line numbers, matching the previous prism-based renderer */
+    .shiki code {
+      @apply grid;
+      counter-reset: shiki-line;
+    }
+
+    .shiki code .line {
+      counter-increment: shiki-line;
+    }
+
+    .shiki code .line::before {
+      content: counter(shiki-line);
+      @apply mr-4 inline-block w-6 shrink-0 select-none text-right text-foreground/40;
+    }
+  }
+
+  .prose {
+    p {
+      @apply text-inherit leading-normal my-4;
+    }
+
+    h2 {
+      @apply text-inherit text-4xl font-mono font-bold leading-normal mb-1;
+    }
+
+    h3 {
+      @apply text-inherit text-3xl font-mono font-semibold leading-snug mb-0;
+    }
+
+    h4 {
+      @apply text-inherit text-3xl font-bold leading-snug mb-0;
+    }
+
+    h5 {
+      @apply text-inherit text-2xl font-semibold leading-snug mb-0;
+    }
+
+    h6 {
+      @apply text-inherit text-xl font-medium leading-snug mb-0;
+    }
+
+    a {
+      @apply text-inherit font-semibold hover:underline;
+    }
+
+    ul {
+      @apply list-disc pl-6;
+    }
+
+    li {
+      @apply leading-snug my-3 first:mt-0 last:mb-0 marker:text-primary;
+    }
+  }
+}

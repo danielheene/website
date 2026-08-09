@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "extends": [
-    "./packages/biome-config/base.jsonc"
+    "./biome.base.jsonc"
   ],
   "files": {
     "includes": [

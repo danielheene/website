@@ -1,9 +1,8 @@
-packages:
-  - apps/*
-  - packages/*
+# Single-package repo: no `packages:` globs. This file stays because pnpm reads
+# overrides, patchedDependencies, allowBuilds and the linker settings from here
+# regardless of whether a workspace is defined.
 
-# patches are keyed from the workspace root, where the lockfile lives, so the
-# `patches/` dir stays at the root rather than following the app into apps/web.
+# `patches/` dir stays at the repo root, where the lockfile lives.
 patchedDependencies:
   pdfjs-dist@5.4.296: patches/pdfjs-dist@5.4.296.patch
 

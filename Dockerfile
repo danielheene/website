@@ -8,27 +8,21 @@ RUN npm install -g corepack@latest && corepack enable
 
 FROM base AS deps
 WORKDIR /repo
+# Only the manifests are copied here so the install layer stays cached across
+# source edits.
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY patches ./patches
-# Every workspace member's manifest must be present before install: pnpm resolves
-# the whole workspace graph up front and fails on a missing member. Only the
-# manifests are copied here so the install layer stays cached across source edits.
-COPY apps/web/package.json ./apps/web/
-COPY packages/tsconfig/package.json ./packages/tsconfig/
-COPY packages/biome-config/package.json ./packages/biome-config/
-COPY packages/utils/package.json ./packages/utils/
-COPY packages/ui/package.json ./packages/ui/
-# The workspace file is copied above on purpose: it carries `allowBuilds`, which
-# approves the native packages (sharp, @swc/core, node-av, …) that must compile
-# for the build and runtime to work. Passing --ignore-workspace here would skip
-# it and fail with ERR_PNPM_IGNORED_BUILDS.
+# pnpm-workspace.yaml is copied on purpose even though this is a single-package
+# repo: it carries `allowBuilds`, which approves the native packages (sharp,
+# @swc/core, node-av, …) that must compile for the build and runtime to work,
+# along with the overrides and patchedDependencies the lockfile is resolved
+# against. Passing --ignore-workspace here would skip it and fail with
+# ERR_PNPM_IGNORED_BUILDS.
 RUN pnpm install --frozen-lockfile
 
 FROM base AS builder
 WORKDIR /repo
 COPY --from=deps /repo/node_modules ./node_modules
-# the app's own node_modules is a separate tree under pnpm's isolated linker
-COPY --from=deps /repo/apps/web/node_modules ./apps/web/node_modules
 COPY . .
 ENV NODE_ENV=production
 # Exactly three values are baked into the image, and all three are public.
@@ -122,37 +116,28 @@ RUN apt-get update \
     && mv "/tmp/tailscale_${TAILSCALE_VERSION}_${TS_ARCH}/tailscaled" /usr/local/bin/ \
     && rm -rf "/tmp/tailscale_${TAILSCALE_VERSION}_${TS_ARCH}"
 COPY --from=deps /repo/node_modules ./node_modules
-COPY --from=deps /repo/apps/web/node_modules ./apps/web/node_modules
-COPY --from=builder /repo/apps/web/.next ./apps/web/.next
-COPY --from=builder /repo/apps/web/public ./apps/web/public
+COPY --from=builder /repo/.next ./.next
+COPY --from=builder /repo/public ./public
 # tsconfig.json ships too: next.config.ts is transpiled at boot and resolves
 # `@/` through its paths mapping, so without it startup fails on
-# MODULE_NOT_FOUND for @/types/environment. The shared tsconfig package it
-# extends must ship for the same reason.
-COPY pnpm-workspace.yaml ./
-COPY packages/tsconfig ./packages/tsconfig
-# @repo/utils and @repo/ui ship raw TypeScript (no dist), so their source has to
-# be present at runtime for the same reason src/ is: next.config.ts and
-# payload.config.ts are transpiled at boot and pull them in via workspace links.
-COPY packages/utils ./packages/utils
-COPY packages/ui ./packages/ui
-COPY apps/web/package.json apps/web/tsconfig.json apps/web/next.config.ts apps/web/payload.config.ts apps/web/proxy.ts ./apps/web/
-COPY apps/web/src ./apps/web/src
+# MODULE_NOT_FOUND for @/types/environment.
+COPY package.json tsconfig.json next.config.ts payload.config.ts proxy.ts ./
+# src/ ships as raw TypeScript because next.config.ts and payload.config.ts are
+# transpiled at boot and pull it in — this now includes the components and lib
+# helpers that used to live in packages/ui and packages/utils.
+COPY src ./src
 # Payload's admin panel dynamically imports its generated importMap.js (and other
 # server-only route handlers) by source path at runtime, not purely via the compiled
 # .next bundle — omitting `app` breaks the Payload admin UI even though `next start`
 # itself comes up. Keeping the full `app` dir here matches CON-002's
 # "full node_modules / no pruned standalone bundle" approach.
-COPY apps/web/app ./apps/web/app
+COPY app ./app
 # Payload CLI scripts (`payload run scripts/<name>.ts`) — data initialization and
 # backfills are run against a deployed container, so they have to ship with it.
 # Only the .ts entries: dev.mjs and e2e-docker.sh are development-only.
-COPY apps/web/scripts/*.ts ./apps/web/scripts/
+COPY scripts/*.ts ./scripts/
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-# next must run with the app as its cwd; the workspace root above stays in the
-# image only so pnpm's isolated node_modules links still resolve.
-WORKDIR /repo/apps/web
 EXPOSE 3000
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 # next is invoked directly rather than through `pnpm run start`: pnpm re-runs its
