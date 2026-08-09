@@ -128,10 +128,11 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
 - **`CRON_SECRET`** is declared in `src/types/environment.ts` but not enforced anywhere — there
   is no cron route yet. If you add one, validate this secret explicitly (ideally with
   `crypto.timingSafeEqual`, not `!==`).
-- Never commit real secrets. Configuration lives in Doppler (`doppler.yaml` pins the project
-  and config); `src/types/environment.ts` declares the schema and is the only place the full
-  set of variables is enumerated. The one committed env file is `.env.test`, which holds
-  dummy, format-valid values for E2E runs.
+- Never commit real secrets. Configuration lives in Doppler, selected per clone with
+  `doppler setup` and written to a gitignored `.env.local` by `pnpm load-env`;
+  `src/types/environment.ts` declares the schema and is the only place the full set of
+  variables is enumerated. The one committed env file is `.env.test`, which holds dummy,
+  format-valid values for E2E runs.
 - New authenticated API routes should mirror `app/(frontend)/api/preview/route.ts`'s pattern of
   pairing a shared-secret check with a real `payload.auth()` session check where feasible.
 

@@ -36,8 +36,9 @@ const fail = (message) => {
 /**
  *    `doppler secrets download --no-file` prints to stdout and never touches
  *    the filesystem, so nothing is written until this script decides to. The
- *    active project/config comes from doppler.yaml plus any local override
- *    made with `doppler setup`, which is why neither is hardcoded here.
+ *    active project/config is whatever `doppler setup` recorded for this
+ *    directory in ~/.doppler; nothing is pinned in the repo, which is why
+ *    neither is hardcoded here and why the config is echoed on every write.
  */
 let secrets
 try {

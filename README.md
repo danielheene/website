@@ -32,12 +32,15 @@ link this directory to the project, then write the config out to `.env.local`:
 ```bash
 brew install dopplerhq/cli/doppler   # see docs.doppler.com/docs/install-cli for other platforms
 doppler login
-doppler setup                        # picks up project/config from doppler.yaml
+doppler setup --project website --config <your-config>
 pnpm load-env                        # writes .env.local from the active config
 ```
 
-`doppler.yaml` pins this directory to the `website` project's `development` config, so
-`doppler setup` needs no further input.
+`doppler setup` stores the project and config against this directory in `~/.doppler`, so
+it is a one-time step per clone. There is no checked-in default: configs differ per
+developer (`development_personal` and the like), and pinning one in the repo made it easy
+to build against the wrong database without noticing. `doppler configure` shows what the
+current directory resolves to.
 
 `pnpm load-env` is the only thing that talks to Doppler. Next loads `.env.local`
 automatically, so no package script wraps `doppler run` — `pnpm dev`, `pnpm payload` and
