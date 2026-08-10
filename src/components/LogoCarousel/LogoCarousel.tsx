@@ -111,7 +111,7 @@ export function LogoCarouselTile({
         'fill-primary bg-white',
         '*:w-full *:h-full *:object-contain *:object-center',
       )}
-      // biome-ignore lint/security/noDangerouslySetInnerHtml: <sanitized contents>
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: <sanitized server-side by sanitizeSvg — on write via the ResumeCustomers beforeChange hook, and again in ResumeCustomersBlock/Renderer before reaching this component>
       dangerouslySetInnerHTML={{
         __html: svg,
       }}

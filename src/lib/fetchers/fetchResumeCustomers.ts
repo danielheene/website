@@ -4,6 +4,7 @@ import { getPayload } from 'payload'
 
 import { Locale, reduceDataToLocale } from '@/lib/i18n'
 import { resolveRelations } from '@/lib/resolveRelation'
+import { sanitizeSvg } from '@/lib/sanitizeSvg'
 import { CollectionSlug } from '@/types/collections'
 
 export const fetchResumeCustomers = async (locale: Locale = 'en') => {
@@ -18,7 +19,20 @@ export const fetchResumeCustomers = async (locale: Locale = 'en') => {
     limit: 0,
   })
 
-  return await resolveRelations(reduceDataToLocale(docs, locale))
+  const resolved = await resolveRelations(reduceDataToLocale(docs, locale))
+
+  /**
+   * Sanitized on read as well as on write: rows saved before the
+   * `ResumeCustomers` `beforeChange` hook existed still hold whatever was
+   * stored then, and `LogoCarousel` renders this with
+   * `dangerouslySetInnerHTML`. Done here — inside the caller's `use cache`
+   * boundary — because DOMPurify's JSDOM backing reads the current time, which
+   * a bare prerender is not allowed to observe.
+   */
+  return resolved.map((customer) => ({
+    ...customer,
+    svg: typeof customer.svg === 'string' ? sanitizeSvg(customer.svg) : customer.svg,
+  }))
 }
 
 export const fetchResumeCustomersCached = async (locale: Locale = 'en') => {

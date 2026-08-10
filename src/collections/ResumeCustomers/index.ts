@@ -5,6 +5,7 @@ import { SlugField } from '@/fields/Slug'
 import { SVGUpload } from '@/fields/SVGUpload'
 import { TitleField } from '@/fields/Title'
 import { cn } from '@/lib/cn'
+import { sanitizeSvg } from '@/lib/sanitizeSvg'
 import { CollectionSlug } from '@/types/collections'
 
 export const ResumeCustomers: CollectionConfig<CollectionSlug['ResumeCustomers']> = {
@@ -74,6 +75,17 @@ export const ResumeCustomers: CollectionConfig<CollectionSlug['ResumeCustomers']
               type: 'code',
               name: 'svg',
               label: false,
+              hooks: {
+                /**
+                 * Sanitizes on write, server-side. The admin panel runs uploads
+                 * through `svgo` in the browser, but that is bypassable by
+                 * posting to the API — and this value is rendered with
+                 * `dangerouslySetInnerHTML` on the public resume page.
+                 */
+                beforeChange: [
+                  ({ value }) => (typeof value === 'string' ? sanitizeSvg(value) : value),
+                ],
+              },
               admin: {
                 disableBulkEdit: true,
                 disableListColumn: true,

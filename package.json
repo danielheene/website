@@ -78,6 +78,7 @@
     "embla-carousel-react": "^8.6.0",
     "hash-wasm": "^4.12.0",
     "hyphen": "^1.14.1",
+    "isomorphic-dompurify": "^3.22.0",
     "libphonenumber-js": "^1.13.10",
     "lodash-es": "^4.18.1",
     "mediabunny": "^1.52.2",
