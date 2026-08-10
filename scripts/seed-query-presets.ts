@@ -43,10 +43,16 @@ const buildPresets = () =>
     title: `${TITLE_PREFIX} — ${relatedCollection}`,
     relatedCollection,
     isShared: true,
+    /**
+     * `generatorFlags` stores bare flags: the `+`/`-` prefixes are operators
+     * consumed by the field's `beforeChange` hook, so a document written with
+     * `+auto-generated` is stored as `auto-generated`. Filter on the stored
+     * form, not the operator form.
+     */
     where: {
       generatorFlags: {
         not_in: [
-          '+auto-generated',
+          'auto-generated',
         ],
       },
     },
