@@ -91,7 +91,7 @@ export const MediaVideos: CollectionConfig<CollectionSlug['MediaVideos']> = {
     },
 
     RichTextField({
-      name: 'caption',
+      name: 'credits',
       editorVariant: 'caption',
     }),
 

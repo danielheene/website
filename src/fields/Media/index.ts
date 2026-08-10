@@ -3,18 +3,12 @@ import { UploadField } from 'payload'
 import { ClassValue, cn } from 'tailwind-variants'
 import { OmitDeep } from 'type-fest'
 
-import { CollectionSlug, CollectionSlugValue } from '@/types/collections'
-
-type MediaCollection =
-  | CollectionSlug['MediaImages']
-  | CollectionSlug['MediaDocuments']
-  | CollectionSlug['MediaVideos']
-  | CollectionSlug['MediaAudios']
+import { CollectionSlugValue, MediaCollectionSlug } from '@/types/collections'
 
 type MediaFieldProps = {
   name: string
   label?: string
-  relationTo: MediaCollection[]
+  relationTo: MediaCollectionSlug[]
   position?: UploadField['admin']['position']
   disabled?: UploadField['admin']['disabled']
   allowCreate?: UploadField['admin']['allowCreate']
@@ -57,15 +51,6 @@ export const MediaField = (props: MediaFieldProps): UploadField => {
     relationTo,
     defaultValue: [],
     ...restProps,
-    hooks: {
-      ...restProps.hooks,
-      afterChange: [
-        async ({ value, previousValue }) => {
-          console.log('value', value)
-          console.log('previousValue', previousValue)
-        },
-      ],
-    },
     admin: {
       disableGroupBy: true,
       disableBulkEdit: true,

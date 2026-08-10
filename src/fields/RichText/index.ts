@@ -105,7 +105,7 @@ const captionFeatures = [
   ...inlineFeatures,
   LinkFeature({
     fields: [
-      LinkField(),
+      ...LinkField().fields,
     ],
   }),
 ]
@@ -167,7 +167,7 @@ export const RichTextField = ({
       name,
       admin: {
         className: cn([
-          String.raw`[&_.rich-text-lexical\_\_label-row]:hidden`,
+          // String.raw`[&_.rich-text-lexical\_\_label-row]:hidden`,
           String.raw`[&_.rich-text-lexical\_\_label-row]:border-none`,
           String.raw`[&_.rich-text-lexical\_\_wrap_.fixed-toolbar]:top-0`,
           String.raw`[&_.rich-text-lexical\_\_wrap_.fixed-toolbar]:border-[0_0_1px_0]`,

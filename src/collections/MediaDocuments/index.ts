@@ -4,6 +4,7 @@ import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { MediaField } from '@/fields/Media'
+import { RichTextField } from '@/fields/RichText'
 import { generateChecksum } from '@/lib/hooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
@@ -87,17 +88,10 @@ export const MediaDocuments: CollectionConfig<CollectionSlug['MediaDocuments']> 
         disableListFilter: true,
       },
     },
-    {
-      name: 'prefix',
-      type: 'text',
-      label: 'Prefix',
-      admin: {
-        hidden: true,
-        disableGroupBy: true,
-        disableListColumn: true,
-        disableListFilter: true,
-      },
-    },
+    RichTextField({
+      name: 'credits',
+      editorVariant: 'caption',
+    }),
     {
       name: 'width',
       type: 'number',

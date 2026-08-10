@@ -48,7 +48,7 @@ export const LinkField = ({
               type: 'radio',
               label: false,
               admin: {
-                layout: 'horizontal',
+                // layout: 'horizontal',
                 className: 'link-field__type-option',
               },
               defaultValue: 'reference',

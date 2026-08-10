@@ -6,9 +6,7 @@ import type { TextFieldClientProps } from 'payload'
 
 import './TextFieldWithLockAndGenerate.styles.css'
 
-import { useField } from '@payloadcms/ui'
-import { FieldLabel } from '@payloadcms/ui/fields/FieldLabel'
-import { TextInput } from '@payloadcms/ui/fields/Text'
+import { FieldLabel, TextInput, useField } from '@payloadcms/ui'
 
 import { Icon } from '@/components/Icon'
 import { cn } from '@/lib/cn'

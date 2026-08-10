@@ -3,9 +3,14 @@
 import { ChangeEvent, JSX, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { TextFieldClientProps } from 'payload'
 import { getTranslation } from '@payloadcms/translations'
-import { fieldBaseClass, RenderCustomComponent, useField, useTranslation } from '@payloadcms/ui'
-import { FieldDescription } from '@payloadcms/ui/fields/FieldDescription'
-import { FieldError } from '@payloadcms/ui/fields/FieldError'
+import {
+  FieldDescription,
+  FieldError,
+  fieldBaseClass,
+  RenderCustomComponent,
+  useField,
+  useTranslation,
+} from '@payloadcms/ui'
 import { mergeFieldStyles } from '@payloadcms/ui/shared'
 
 import * as Collapsible from '@radix-ui/react-collapsible'

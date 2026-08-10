@@ -79,12 +79,12 @@ export const MediaAudios: CollectionConfig<CollectionSlug['MediaAudios']> = {
       },
     },
 
-    GeneratorFlagsField(),
-
     RichTextField({
-      name: 'caption',
+      name: 'credits',
       editorVariant: 'caption',
     }),
+
+    GeneratorFlagsField(),
   ],
   versions: {
     drafts: false,

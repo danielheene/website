@@ -2,8 +2,7 @@
 
 import { useState } from 'react'
 import type { TextFieldClientProps } from 'payload'
-import { useField } from '@payloadcms/ui'
-import { FieldLabel } from '@payloadcms/ui/fields/FieldLabel'
+import { FieldLabel, useField } from '@payloadcms/ui'
 
 import { Icon } from '@/components/Icon'
 

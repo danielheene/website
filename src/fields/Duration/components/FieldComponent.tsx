@@ -4,15 +4,15 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { NumberFieldClientComponent, NumberFieldClientProps } from 'payload'
 import { getTranslation } from '@payloadcms/translations'
 import {
+  FieldDescription,
+  FieldError,
+  FieldLabel,
   fieldBaseClass,
   RenderCustomComponent,
   toast,
   useField,
   useTranslation,
 } from '@payloadcms/ui'
-import { FieldDescription } from '@payloadcms/ui/fields/FieldDescription'
-import { FieldError } from '@payloadcms/ui/fields/FieldError'
-import { FieldLabel } from '@payloadcms/ui/fields/FieldLabel'
 import { useThrottledValue } from '@payloadcms/ui/hooks/useThrottledValue'
 import { mergeFieldStyles } from '@payloadcms/ui/shared'
 
