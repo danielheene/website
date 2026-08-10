@@ -24,7 +24,7 @@ export const fetchPDFGeneratorSettingsCached = async (locale: Locale = 'en') => 
   'use cache'
   cacheLife('max')
   cacheTag(GlobalSlug.PDFGeneratorSettings)
-  return fetchPDFGeneratorSettings(locale)
+  return await fetchPDFGeneratorSettings(locale)
 }
 
 export const revalidatePDFGeneratorSettings = async (): Promise<void> => {

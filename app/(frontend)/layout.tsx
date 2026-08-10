@@ -1,12 +1,11 @@
 import '#frontend.css'
 
-import { JSX, ReactNode } from 'react'
+import { JSX, ReactNode, Suspense } from 'react'
 import type { Metadata, Viewport } from 'next'
-import { draftMode } from 'next/headers'
 
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
-import { LivePreviewListener } from '@/components/LivePreviewListener'
+import { DraftModeListener } from '@/components/LivePreviewListener'
 import { AllProviders } from '@/components/Providers'
 import { SkipToMainContent } from '@/components/SkipToMainContent'
 import { Toasty } from '@/components/Toasty'
@@ -23,7 +22,6 @@ export default async function RootLayout({
 }: {
   children: ReactNode | ReactNode[]
 }): Promise<JSX.Element> {
-  const { isEnabled: draft } = await draftMode()
   const globalUserSettings = await fetchGlobalUserSettingsCached()
   const SiteSettings = await fetchSiteSettingsCached()
   const personSchema = generatePersonSchema(globalUserSettings)
@@ -51,7 +49,14 @@ export default async function RootLayout({
         />
       </head>
       <body>
-        {/*{draft && <LivePreviewListener />}*/}
+        {/*
+          `draftMode()` is a runtime API, so it is read inside this boundary
+          rather than in the layout body — otherwise it blocks the whole route
+          from prerendering under `cacheComponents`.
+        */}
+        <Suspense fallback={null}>
+          <DraftModeListener />
+        </Suspense>
         <AllProviders>
           <SkipToMainContent targetId="main-content" />
           <Header />

@@ -25,7 +25,7 @@ export const fetchResumeCustomersCached = async (locale: Locale = 'en') => {
   'use cache'
   cacheLife('max')
   cacheTag(CollectionSlug.ResumeCustomers)
-  return fetchResumeCustomers(locale)
+  return await fetchResumeCustomers(locale)
 }
 
 export const revalidateResumeCustomers = async (): Promise<void> => {

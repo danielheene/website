@@ -25,7 +25,7 @@ export const fetchResumeSkillTagsCached = async (locale: Locale = 'en') => {
   'use cache'
   cacheLife('max')
   cacheTag(CollectionSlug.ResumeSkillTags)
-  return fetchResumeSkillTags(locale)
+  return await fetchResumeSkillTags(locale)
 }
 
 export const revalidateResumeSkillTags = async (): Promise<void> => {

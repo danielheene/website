@@ -44,7 +44,7 @@ export const Entry = memo(function ResumeProjectsSectionEntry({
           <RichText data={description} enableGutter={false} className="mt-16 order-3" />
         )}
       </div>
-      {images && <Image image={images[0].value} odd={!!(index % 2)} />}
+      {images?.[0]?.value && <Image image={images[0].value} odd={!!(index % 2)} />}
     </article>
   )
 })

@@ -27,9 +27,13 @@ export const Image = memo(function ResumeProjectsSectionImage({
       ])}
     >
       <div
-        style={{
-          aspectRatio: `${Math.round(image.width / image.height)}`,
-        }}
+        style={
+          image.width && image.height
+            ? {
+                aspectRatio: `${Math.round(image.width / image.height)}`,
+              }
+            : undefined
+        }
         className={cn([
           'relative bg-card border-4 border-primary rounded-sm',
           'transition-all duration-300 ease-in-out',

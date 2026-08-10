@@ -23,7 +23,7 @@ export const fetchGlobalUserSettingsCached = async (locale: Locale = 'en') => {
   'use cache'
   cacheLife('max')
   cacheTag(GlobalSlug.GlobalUserSettings)
-  return fetchGlobalUserSettings(locale)
+  return await fetchGlobalUserSettings(locale)
 }
 
 export const revalidateGlobalUserSettings = async (): Promise<void> => {

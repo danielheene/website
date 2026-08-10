@@ -25,7 +25,7 @@ export const fetchResumeJobsCached = async (locale: Locale = 'en') => {
   'use cache'
   cacheLife('max')
   cacheTag(CollectionSlug.ResumeJobs)
-  return fetchResumeJobs(locale)
+  return await fetchResumeJobs(locale)
 }
 
 export const revalidateResumeJobs = async (): Promise<void> => {
