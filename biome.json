@@ -27,7 +27,8 @@
       "!!**/coverage",
       "!!**/playwright-report",
       "!!**/test-results",
-      "!!**/next-env.d.ts"
+      "!!**/next-env.d.ts",
+      "!!**/admin/importMap.js"
     ],
     "ignoreUnknown": false
   }
