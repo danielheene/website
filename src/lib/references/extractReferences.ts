@@ -1,4 +1,4 @@
-import type { Field } from 'payload'
+import type { Block, Field } from 'payload'
 
 import { CollectionSlug, type CollectionSlugValue } from '@/types/collections'
 
@@ -31,6 +31,12 @@ export interface ExtractReferencesOptions {
    * bare id carrying no collection information.
    */
   fields?: Field[]
+  /**
+   * Config-level block definitions (`config.blocks`). Needed when a blocks
+   * field lists `blockReferences` by slug instead of inlining the blocks, since
+   * the field itself then carries no field config to walk.
+   */
+  blocks?: Block[]
 }
 
 const isId = (value: unknown): value is string | number =>
@@ -58,11 +64,30 @@ const joinPath = (parent: string, key: string | number) =>
  * Keyed by field name rather than full path: names are stable, whereas full
  * paths vary per block/array index and would have to be recomputed for every
  * document.
+ *
+ * `blocks` carries the config-level block registry so `blockReferences` entries
+ * — which may be a bare slug rather than the block itself — can be resolved.
+ * `seen` guards against a block that (transitively) contains itself.
  */
 const collectMonomorphicTargets = (
   fields: Field[] | undefined,
+  blocks: Map<string, Block> = new Map(),
   target: Map<string, string> = new Map(),
+  seen: Set<string> = new Set(),
 ): Map<string, string> => {
+  const walkBlock = (block: Block | string): void => {
+    const resolved = typeof block === 'string' ? blocks.get(block) : block
+    if (!resolved?.fields) return
+
+    // a slug can appear under several fields; only its first visit adds anything
+    if (resolved.slug) {
+      if (seen.has(resolved.slug)) return
+      seen.add(resolved.slug)
+    }
+
+    collectMonomorphicTargets(resolved.fields, blocks, target, seen)
+  }
+
   for (const field of fields ?? []) {
     if (
       (field.type === 'relationship' || field.type === 'upload') &&
@@ -75,19 +100,27 @@ const collectMonomorphicTargets = (
     }
 
     if ('fields' in field && Array.isArray(field.fields)) {
-      collectMonomorphicTargets(field.fields as Field[], target)
+      collectMonomorphicTargets(field.fields as Field[], blocks, target, seen)
     }
     if ('blocks' in field && Array.isArray(field.blocks)) {
       for (const block of field.blocks) {
-        if (block && typeof block === 'object' && 'fields' in block) {
-          collectMonomorphicTargets(block.fields as Field[], target)
-        }
+        walkBlock(block as Block | string)
+      }
+    }
+    /**
+     *    Blocks defined once on the config and referenced by slug. The field's
+     *    own `blocks` array is typically empty in that case, so skipping these
+     *    would leave every monomorphic field inside a block untracked.
+     */
+    if ('blockReferences' in field && Array.isArray(field.blockReferences)) {
+      for (const block of field.blockReferences) {
+        walkBlock(block as Block | string)
       }
     }
     if ('tabs' in field && Array.isArray(field.tabs)) {
       for (const tab of field.tabs) {
         if (tab && typeof tab === 'object' && 'fields' in tab) {
-          collectMonomorphicTargets(tab.fields as Field[], target)
+          collectMonomorphicTargets(tab.fields as Field[], blocks, target, seen)
         }
       }
     }
@@ -112,9 +145,17 @@ export const extractReferences = (
   data: unknown,
   options: ExtractReferencesOptions = {},
 ): DocumentReference[] => {
-  const { only, fields } = options
+  const { only, fields, blocks } = options
   const allowed = only ? new Set(only) : null
-  const monomorphic = collectMonomorphicTargets(fields)
+  const monomorphic = collectMonomorphicTargets(
+    fields,
+    new Map(
+      (blocks ?? []).map((block) => [
+        block.slug,
+        block,
+      ]),
+    ),
+  )
   const found = new Map<string, DocumentReference>()
 
   const add = (relationTo: string, id: string, path: string) => {

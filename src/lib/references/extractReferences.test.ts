@@ -94,7 +94,7 @@ describe('extractReferences', () => {
     ])
   })
 
-  it('deduplicates repeated references to the same asset', () => {
+  it('deduplicates repeated references to the same target', () => {
     const references = extractReferences({
       a: {
         relationTo: 'images',
@@ -254,6 +254,165 @@ describe('extractReferences', () => {
         path: 'author',
       },
     ])
+  })
+
+  it('resolves monomorphic fields in blocks referenced by slug', () => {
+    const references = extractReferences(
+      {
+        content: [
+          {
+            blockType: 'HeroBlock',
+            relatedPost: 'post-1',
+          },
+        ],
+      },
+      {
+        // the pattern Pages uses: an empty `blocks` array plus slug references
+        fields: [
+          {
+            name: 'content',
+            type: 'blocks',
+            blocks: [],
+            blockReferences: [
+              'HeroBlock',
+            ],
+          },
+        ] as never,
+        blocks: [
+          {
+            slug: 'HeroBlock',
+            fields: [
+              {
+                name: 'relatedPost',
+                type: 'relationship',
+                relationTo: 'posts',
+              },
+            ],
+          },
+        ] as never,
+      },
+    )
+
+    expect(references).toEqual([
+      {
+        relationTo: 'posts',
+        value: 'post-1',
+        path: 'content.0.relatedPost',
+      },
+    ])
+  })
+
+  it('resolves an inline block object listed in blockReferences', () => {
+    const references = extractReferences(
+      {
+        content: [
+          {
+            blockType: 'HeroBlock',
+            portrait: 'img-1',
+          },
+        ],
+      },
+      {
+        fields: [
+          {
+            name: 'content',
+            type: 'blocks',
+            blocks: [],
+            blockReferences: [
+              {
+                slug: 'HeroBlock',
+                fields: [
+                  {
+                    name: 'portrait',
+                    type: 'upload',
+                    relationTo: 'images',
+                  },
+                ],
+              },
+            ],
+          },
+        ] as never,
+      },
+    )
+
+    expect(references.map(({ relationTo, value }) => `${relationTo}:${value}`)).toEqual([
+      'images:img-1',
+    ])
+  })
+
+  it('terminates on a block that transitively contains itself', () => {
+    const references = extractReferences(
+      {
+        content: [
+          {
+            blockType: 'SelfBlock',
+            relatedPost: 'post-1',
+          },
+        ],
+      },
+      {
+        fields: [
+          {
+            name: 'content',
+            type: 'blocks',
+            blocks: [],
+            blockReferences: [
+              'SelfBlock',
+            ],
+          },
+        ] as never,
+        blocks: [
+          {
+            slug: 'SelfBlock',
+            fields: [
+              {
+                name: 'relatedPost',
+                type: 'relationship',
+                relationTo: 'posts',
+              },
+              {
+                name: 'nested',
+                type: 'blocks',
+                blocks: [],
+                blockReferences: [
+                  'SelfBlock',
+                ],
+              },
+            ],
+          },
+        ] as never,
+      },
+    )
+
+    expect(references).toHaveLength(1)
+  })
+
+  it('ignores a blockReferences slug with no matching definition', () => {
+    expect(
+      extractReferences(
+        {
+          content: [
+            {
+              blockType: 'MissingBlock',
+              relatedPost: 'post-1',
+            },
+          ],
+        },
+        {
+          fields: [
+            {
+              name: 'content',
+              type: 'blocks',
+              blocks: [],
+              blockReferences: [
+                'MissingBlock',
+              ],
+            },
+          ] as never,
+          blocks: [] as never,
+        },
+      ),
+    ).toEqual([])
   })
 
   it('ignores bare ids when no field config identifies them', () => {

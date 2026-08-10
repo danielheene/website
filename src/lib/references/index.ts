@@ -4,9 +4,9 @@ export {
   MEDIA_COLLECTIONS,
 } from './extractReferences'
 export {
-  type AssetUsage,
   clearReferences,
-  findAssetUsages,
+  findTargetUsages,
   type SyncReferencesArgs,
   syncReferences,
+  type TargetUsage,
 } from './syncReferences'

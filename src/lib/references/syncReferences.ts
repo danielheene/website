@@ -1,4 +1,4 @@
-import type { Field, Payload, PayloadRequest } from 'payload'
+import type { Block, Field, Payload, PayloadRequest } from 'payload'
 
 import { CollectionSlug } from '@/types/collections'
 
@@ -19,6 +19,11 @@ export interface SyncReferencesArgs {
    * whose stored value is a bare id.
    */
   fields?: Field[]
+  /**
+   * Config-level block definitions, needed to resolve blocks referenced by slug
+   * via `blockReferences`.
+   */
+  blocks?: Block[]
   /** Restrict tracking to these target collections. */
   only?: string[]
 }
@@ -39,10 +44,12 @@ export const syncReferences = async ({
   sourceType = 'collection',
   data,
   fields,
+  blocks,
   only,
 }: SyncReferencesArgs): Promise<number> => {
   const references = extractReferences(data, {
     fields,
+    blocks,
     only,
   })
 
@@ -69,8 +76,8 @@ export const syncReferences = async ({
     await payload.create({
       collection: CollectionSlug.DocumentReferences,
       data: {
-        assetCollection: reference.relationTo,
-        assetId: reference.value,
+        targetCollection: reference.relationTo,
+        targetId: reference.value,
         sourceCollection,
         sourceId,
         sourceType,
@@ -110,7 +117,7 @@ export const clearReferences = async ({
   })
 }
 
-export interface AssetUsage {
+export interface TargetUsage {
   sourceCollection: string
   sourceId: string
   sourceType: 'collection' | 'global'
@@ -118,38 +125,38 @@ export interface AssetUsage {
 }
 
 /**
- * Lists the documents currently referencing an asset — the query that replaces
+ * Lists the documents currently referencing a target — the query that replaces
  * per-collection `find({ where: { <someField>: { contains: id } } })` guards.
  */
-export const findAssetUsages = async ({
+export const findTargetUsages = async ({
   payload,
   req,
-  assetCollection,
-  assetId,
+  targetCollection,
+  targetId,
   excludeSource,
 }: {
   payload: Payload
   req?: PayloadRequest
-  assetCollection: string
-  assetId: string
-  /** Ignore references from this source (e.g. the asset's own document). */
+  targetCollection: string
+  targetId: string
+  /** Ignore references from this source (e.g. the document's own record). */
   excludeSource?: {
     sourceCollection: string
     sourceId: string
   }
-}): Promise<AssetUsage[]> => {
+}): Promise<TargetUsage[]> => {
   const { docs } = await payload.find({
     collection: CollectionSlug.DocumentReferences,
     where: {
       and: [
         {
-          assetCollection: {
-            equals: assetCollection,
+          targetCollection: {
+            equals: targetCollection,
           },
         },
         {
-          assetId: {
-            equals: assetId,
+          targetId: {
+            equals: targetId,
           },
         },
       ],

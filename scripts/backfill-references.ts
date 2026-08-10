@@ -1,8 +1,8 @@
 /**
- *    Rebuilds the media-references table from existing content.
+ *    Rebuilds the references table from existing content.
  *
  *    Usage:
- *      pnpm media-refs:backfill
+ *      pnpm refs:backfill
  *
  *    References are normally written by the `references` plugin on save,
  *    so this is only needed once after enabling it (or to repair the table).
@@ -35,6 +35,19 @@ const payload = await getPayload({
   let totalDocuments = 0
   let totalReferences = 0
 
+  /**
+   *    Clear first rather than relying on the per-source replace below: rows
+   *    whose source no longer exists — or which predate a field rename — match
+   *    no source being rebuilt and would otherwise survive as dead entries.
+   *
+   *    The table is derived state, so dropping it is always recoverable by
+   *    completing this run.
+   */
+  await payload.delete({
+    collection: CollectionSlug.DocumentReferences,
+    where: {},
+  })
+
   for (const collection of Object.values(payload.collections)) {
     const slug = collection.config.slug
     if (SKIPPED_COLLECTIONS.has(slug)) continue
@@ -60,6 +73,11 @@ const payload = await getPayload({
         sourceCollection: slug,
         sourceId: String(doc.id),
         data: doc,
+        // without the field config, monomorphic relations (a bare id, with no
+        // collection in the stored value) are indistinguishable from plain
+        // strings and would be dropped from the rebuilt table
+        fields: collection.config.fields,
+        blocks: payload.config.blocks,
       })
       collectionReferences += count
     }
@@ -84,6 +102,8 @@ const payload = await getPayload({
       sourceId: global.slug,
       sourceType: 'global',
       data,
+      fields: global.fields,
+      blocks: payload.config.blocks,
     })
 
     totalReferences += count
