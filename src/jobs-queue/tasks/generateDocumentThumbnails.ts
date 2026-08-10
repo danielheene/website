@@ -3,6 +3,7 @@ import type { TaskConfig } from 'payload'
 import { isString } from 'lodash-es'
 import { PDFParse } from 'pdf-parse'
 
+import type { GeneratorFlag } from '@/fields/GeneratorFlags'
 import { CollectionSlug } from '@/types/collections'
 import { TaskSlug } from '@/types/jobs-queue'
 import { MediaDocument } from '@/types/payload'
@@ -71,12 +72,11 @@ export const generateDocumentThumbnails: TaskConfig<TaskSlug['GenerateDocumentTh
     }
 
     const generatorFlags = [
-      '+auto-generated',
-      '+document-thumbnail',
-      '+thumbnail',
-    ] as MediaDocument['generatorFlags']
+      'document-thumbnail',
+      'thumbnail',
+    ] as GeneratorFlag[]
     const filenameBase = document?.filename?.replace(/\.[^/.]+$/, '')
-    if (filenameBase.toLowerCase().includes('resume')) generatorFlags.push('+resume-asset')
+    if (filenameBase.toLowerCase().includes('resume')) generatorFlags.push('resume-asset')
 
     /* create image documents from new thumbnails */
     const ids: string[] = []

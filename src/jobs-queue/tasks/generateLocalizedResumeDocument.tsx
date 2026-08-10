@@ -149,10 +149,9 @@ export const generateLocalizedResumeDocument: TaskConfig<
             data: {
               createdAt,
               generatorFlags: [
-                '+auto-generated',
-                '+resume-asset',
-                '+thumbnail',
-                '+document',
+                'resume-asset',
+                'thumbnail',
+                'document',
               ],
             },
             file: {

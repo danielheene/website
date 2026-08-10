@@ -6,8 +6,9 @@
  *      pnpm seed:presets:clean    # remove them
  *
  *    The resume workflow writes generated PDFs and their thumbnails into the
- *    media collections tagged `+auto-generated`, which otherwise bury
- *    hand-uploaded assets in the list views. These presets filter them out.
+ *    media collections, where they otherwise bury hand-uploaded assets in the
+ *    list views. Generated files carry `generatorFlags`; hand-uploaded ones do
+ *    not, so these presets filter on the absence of that field.
  *
  *    Presets are configuration, not user data: `payload.config.ts` denies
  *    create/update/delete on `payload-query-presets`, so this script is the
@@ -19,6 +20,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
+import { GENERATOR_FLAGS } from '@/fields/GeneratorFlags'
 import { CollectionSlug } from '@/types/collections'
 
 /**
@@ -44,15 +46,16 @@ const buildPresets = () =>
     relatedCollection,
     isShared: true,
     /**
-     * `generatorFlags` stores bare flags: the `+`/`-` prefixes are operators
-     * consumed by the field's `beforeChange` hook, so a document written with
-     * `+auto-generated` is stored as `auto-generated`. Filter on the stored
-     * form, not the operator form.
+     * Generated assets always carry at least one flag; hand-uploaded ones carry
+     * none, so excluding every known flag hides exactly the task-created files.
+     *
+     * `exists: false` does not work here: the field is stored as an empty array
+     * on hand-uploaded documents, which counts as present.
      */
     where: {
       generatorFlags: {
         not_in: [
-          'auto-generated',
+          ...GENERATOR_FLAGS,
         ],
       },
     },

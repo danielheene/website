@@ -396,20 +396,7 @@ export interface MediaImage {
   } | null;
   blurDataURL?: string | null;
   generatorFlags?: (
-    | '+auto-generated'
-    | '-auto-generated'
-    | '+resume-asset'
-    | '-resume-asset'
-    | '+thumbnail'
-    | '-thumbnail'
-    | '+document'
-    | '-document'
-    | '+audio-thumbnail'
-    | '-audio-thumbnail'
-    | '+video-thumbnail'
-    | '-video-thumbnail'
-    | '+document-thumbnail'
-    | '-document-thumbnail'
+    'resume-asset' | 'thumbnail' | 'document' | 'audio-thumbnail' | 'video-thumbnail' | 'document-thumbnail'
   )[];
   prefix?: string | null;
   updatedAt: string;
@@ -520,6 +507,10 @@ export interface LegalAuthorshipsBlock {
  * via the `definition` "ResumeAboutMeBlock".
  */
 export interface ResumeAboutMeBlock {
+  /**
+   * Shown as the section headline and as its entry in the section navigation. Defaults to the block name when left empty.
+   */
+  title?: string | null;
   caption?: {
     root: {
       type: string;
@@ -548,6 +539,10 @@ export interface ResumeAboutMeBlock {
  * via the `definition` "ResumeContactBlock".
  */
 export interface ResumeContactBlock {
+  /**
+   * Shown as the section headline and as its entry in the section navigation. Defaults to the block name when left empty.
+   */
+  title?: string | null;
   caption?: {
     root: {
       type: string;
@@ -572,6 +567,10 @@ export interface ResumeContactBlock {
  * via the `definition` "ResumeCustomersBlock".
  */
 export interface ResumeCustomersBlock {
+  /**
+   * Shown as the section headline and as its entry in the section navigation. Defaults to the block name when left empty.
+   */
+  title?: string | null;
   caption?: {
     root: {
       type: string;
@@ -596,6 +595,10 @@ export interface ResumeCustomersBlock {
  * via the `definition` "ResumeDownloadsBlock".
  */
 export interface ResumeDownloadsBlock {
+  /**
+   * Shown as the section headline and as its entry in the section navigation. Defaults to the block name when left empty.
+   */
+  title?: string | null;
   caption?: {
     root: {
       type: string;
@@ -620,6 +623,10 @@ export interface ResumeDownloadsBlock {
  * via the `definition` "ResumeExperienceBlock".
  */
 export interface ResumeExperienceBlock {
+  /**
+   * Shown as the section headline and as its entry in the section navigation. Defaults to the block name when left empty.
+   */
+  title?: string | null;
   caption?: {
     root: {
       type: string;
@@ -644,6 +651,10 @@ export interface ResumeExperienceBlock {
  * via the `definition` "ResumeProjectsBlock".
  */
 export interface ResumeProjectsBlock {
+  /**
+   * Shown as the section headline and as its entry in the section navigation. Defaults to the block name when left empty.
+   */
+  title?: string | null;
   caption?: {
     root: {
       type: string;
@@ -820,20 +831,7 @@ export interface MediaVideo {
       }[]
     | null;
   generatorFlags?: (
-    | '+auto-generated'
-    | '-auto-generated'
-    | '+resume-asset'
-    | '-resume-asset'
-    | '+thumbnail'
-    | '-thumbnail'
-    | '+document'
-    | '-document'
-    | '+audio-thumbnail'
-    | '-audio-thumbnail'
-    | '+video-thumbnail'
-    | '-video-thumbnail'
-    | '+document-thumbnail'
-    | '-document-thumbnail'
+    'resume-asset' | 'thumbnail' | 'document' | 'audio-thumbnail' | 'video-thumbnail' | 'document-thumbnail'
   )[];
   prefix?: string | null;
   updatedAt: string;
@@ -877,20 +875,7 @@ export interface MediaDocument {
       }[]
     | null;
   generatorFlags?: (
-    | '+auto-generated'
-    | '-auto-generated'
-    | '+resume-asset'
-    | '-resume-asset'
-    | '+thumbnail'
-    | '-thumbnail'
-    | '+document'
-    | '-document'
-    | '+audio-thumbnail'
-    | '-audio-thumbnail'
-    | '+video-thumbnail'
-    | '-video-thumbnail'
-    | '+document-thumbnail'
-    | '-document-thumbnail'
+    'resume-asset' | 'thumbnail' | 'document' | 'audio-thumbnail' | 'video-thumbnail' | 'document-thumbnail'
   )[];
   prefix?: string | null;
   updatedAt: string;
@@ -928,20 +913,7 @@ export interface MediaAudio {
     [k: string]: unknown;
   } | null;
   generatorFlags?: (
-    | '+auto-generated'
-    | '-auto-generated'
-    | '+resume-asset'
-    | '-resume-asset'
-    | '+thumbnail'
-    | '-thumbnail'
-    | '+document'
-    | '-document'
-    | '+audio-thumbnail'
-    | '-audio-thumbnail'
-    | '+video-thumbnail'
-    | '-video-thumbnail'
-    | '+document-thumbnail'
-    | '-document-thumbnail'
+    'resume-asset' | 'thumbnail' | 'document' | 'audio-thumbnail' | 'video-thumbnail' | 'document-thumbnail'
   )[];
   prefix?: string | null;
   updatedAt: string;

@@ -5,6 +5,7 @@ import { createCanvas } from '@napi-rs/canvas'
 import { isString } from 'lodash-es'
 import { ALL_FORMATS, BufferSource, Input, type VideoSample, VideoSampleSink } from 'mediabunny'
 
+import type { GeneratorFlag } from '@/fields/GeneratorFlags'
 import { CollectionSlug } from '@/types/collections'
 import { TaskSlug } from '@/types/jobs-queue'
 import type { MediaVideo } from '@/types/payload'
@@ -155,10 +156,9 @@ export const generateVideoThumbnails: TaskConfig<TaskSlug['GenerateVideoThumbnai
         width,
         height,
         generatorFlags: [
-          '+auto-generated',
-          '+video-thumbnail',
-          '+thumbnail',
-        ] as MediaVideo['generatorFlags'],
+          'video-thumbnail',
+          'thumbnail',
+        ] as GeneratorFlag[],
       },
       file: {
         data: buffer,
