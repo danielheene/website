@@ -3,6 +3,7 @@ export const TaskSlug = {
   GenerateVideoThumbnails: 'GenerateVideoThumbnails',
   CalculateSkillTagInterval: 'CalculateSkillTagInterval',
   GenerateLocalizedResumeDocument: 'GenerateLocalizedResumeDocument',
+  PingUptimeEndpoint: 'PingUptimeEndpoint',
 } as const
 
 export type TaskSlug = typeof TaskSlug
