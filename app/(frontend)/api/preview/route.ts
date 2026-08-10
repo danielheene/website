@@ -1,10 +1,26 @@
+import { timingSafeEqual } from 'node:crypto'
+
 import { draftMode } from 'next/headers'
 import { redirect } from 'next/navigation'
 import type { NextRequest } from 'next/server'
 import configPromise from '@payload-config'
-import { getPayload, type PayloadRequest } from 'payload'
+import { getPayload, type PayloadRequest, type TypedUser } from 'payload'
 
 import { CollectionSlugValue } from '@/types/collections'
+
+/**
+ * Compares the supplied secret in constant time, so the endpoint does not leak
+ * the expected value one character at a time through response timing.
+ * `timingSafeEqual` requires equal-length buffers, hence the length check.
+ */
+const matchesPreviewSecret = (candidate: string): boolean => {
+  const expected = Buffer.from(process.env.PREVIEW_SECRET ?? '')
+  const supplied = Buffer.from(candidate)
+
+  if (expected.length === 0 || expected.length !== supplied.length) return false
+
+  return timingSafeEqual(expected, supplied)
+}
 
 export async function GET(req: NextRequest): Promise<Response> {
   const payload = await getPayload({
@@ -19,7 +35,7 @@ export async function GET(req: NextRequest): Promise<Response> {
   const slug = searchParams.get('slug')
   const previewSecret = searchParams.get('previewSecret')
 
-  if (previewSecret !== process.env.PREVIEW_SECRET) {
+  if (!previewSecret || !matchesPreviewSecret(previewSecret)) {
     return new Response('You are not allowed to preview this page', {
       status: 403,
     })
@@ -37,14 +53,19 @@ export async function GET(req: NextRequest): Promise<Response> {
     })
   }
 
-  // biome-ignore lint/suspicious/noImplicitAnyLet: <TODO>
-  let user
+  let user: TypedUser | null = null
 
   try {
-    user = await payload.auth({
+    /**
+     * `payload.auth()` resolves to `{ permissions, user }` — the result object
+     * is truthy even for an anonymous request, so the user has to be pulled out
+     * of it. Testing the result itself would let anyone holding the preview
+     * secret enable draft mode, and draft reads run with `overrideAccess: true`.
+     */
+    ;({ user } = await payload.auth({
       req: req as unknown as PayloadRequest,
       headers: req.headers,
-    })
+    }))
   } catch (error) {
     payload.logger.error(
       {
