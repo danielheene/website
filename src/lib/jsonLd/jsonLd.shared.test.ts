@@ -205,8 +205,11 @@ describe('generateOccupation', () => {
       }),
     ).toEqual({
       '@context': 'https://schema.org',
-      '@type': 'Occupation',
-      name: 'Engineer',
+      '@type': 'EmployeeRole',
+      roleName: {
+        '@type': 'Occupation',
+        name: 'Engineer',
+      },
     })
   })
 
@@ -216,8 +219,8 @@ describe('generateOccupation', () => {
       responsibilities: [],
       skills: [],
     })
-    expect(result).not.toHaveProperty('responsibilities')
-    expect(result).not.toHaveProperty('skills')
+    expect(result.roleName).not.toHaveProperty('responsibilities')
+    expect(result.roleName).not.toHaveProperty('skills')
   })
 
   it('nests the employer as hiringOrganization and passes dates', () => {
@@ -232,19 +235,23 @@ describe('generateOccupation', () => {
       skills: [
         's1',
       ],
-    }) as Record<string, unknown>
-    expect(result.hiringOrganization).toEqual({
+    })
+    expect(result.worksFor).toEqual({
       '@type': 'Organization',
       name: 'ACME',
     })
     expect(result.startDate).toBe('2020-01-01')
     expect(result.endDate).toBe('2022-01-01')
-    expect(result.responsibilities).toEqual([
-      'r1',
-    ])
-    expect(result.skills).toEqual([
-      's1',
-    ])
+    expect(result.roleName).toEqual({
+      '@type': 'Occupation',
+      name: 'E',
+      responsibilities: [
+        'r1',
+      ],
+      skills: [
+        's1',
+      ],
+    })
   })
 })
 
