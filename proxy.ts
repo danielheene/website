@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { fetchLatestResumeDocumentCore } from '@/lib/fetchers/fetchLatestResumeDocumentCore'
 import { generateAPIPath } from '@/lib/generateAPIPath'
 import { generateContentPath } from '@/lib/generateContentPath'
+import { fetchRedirect } from '@/lib/redirects/redirectCache'
 import { CollectionSlug } from '@/types/collections'
 
 /** Paths that must never be redirected, regardless of stored rows. */
@@ -16,34 +17,19 @@ const REDIRECT_EXEMPT = [
 /**
  * Resolves a redirect for the current request.
  *
- * Middleware cannot load Payload, so the lookup goes through an internal route.
+ * Runs in-process: `proxy.ts` is on the Node runtime, so Payload loads here
+ * directly. Results are memoized in the KV store and invalidated by the
+ * Redirects collection hooks.
+ *
  * Failures are swallowed: a redirect lookup must never take down a page.
  */
-const lookupRedirect = async (
-  request: NextRequest,
-): Promise<{
-  destination: string
-  statusCode: number
-} | null> => {
+const lookupRedirect = async (request: NextRequest) => {
   const { pathname } = request.nextUrl
 
   if (REDIRECT_EXEMPT.some((prefix) => pathname.startsWith(prefix))) return null
 
   try {
-    const lookupURL = new URL('/api/redirect-lookup', request.url)
-    lookupURL.searchParams.set('pathname', pathname)
-
-    const response = await fetch(lookupURL, {
-      headers: {
-        accept: 'application/json',
-      },
-    })
-    if (!response.ok) return null
-
-    return (await response.json()) as {
-      destination: string
-      statusCode: number
-    } | null
+    return await fetchRedirect(pathname)
   } catch {
     return null
   }

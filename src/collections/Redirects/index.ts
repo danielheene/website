@@ -5,6 +5,10 @@ import { authenticated } from '@/access/authenticated'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 
+import {
+  invalidateRedirectsAfterChange,
+  invalidateRedirectsAfterDelete,
+} from './hooks/invalidateRedirects'
 import { normalizeFromPath } from './hooks/normalizeFromPath'
 import { preventRedirectLoops } from './hooks/preventRedirectLoops'
 
@@ -73,6 +77,12 @@ export const Redirects: CollectionConfig = {
     ],
     beforeChange: [
       preventRedirectLoops,
+    ],
+    afterChange: [
+      invalidateRedirectsAfterChange,
+    ],
+    afterDelete: [
+      invalidateRedirectsAfterDelete,
     ],
   },
   fields: [
