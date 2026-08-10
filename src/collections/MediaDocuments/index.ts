@@ -3,7 +3,7 @@ import type { CollectionConfig } from 'payload'
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
-import { hideGeneratedAssets } from '@/fields/GeneratorFlags/baseFilter'
+import { scopeMediaAssets } from '@/fields/GeneratorFlags/baseFilter'
 import { MediaField } from '@/fields/Media'
 import { RichTextField } from '@/fields/RichText'
 import { generateChecksum } from '@/lib/hooks/collection'
@@ -30,7 +30,7 @@ export const MediaDocuments: CollectionConfig<CollectionSlug['MediaDocuments']> 
     ],
   },
   admin: {
-    baseFilter: hideGeneratedAssets,
+    baseFilter: scopeMediaAssets,
     group: AdminGroup.Media,
     useAsTitle: 'filename',
     defaultColumns: [
@@ -39,8 +39,15 @@ export const MediaDocuments: CollectionConfig<CollectionSlug['MediaDocuments']> 
       'extension',
       'updatedAt',
     ],
+    pagination: {
+      defaultLimit: 50,
+      limits: [
+        50,
+        100,
+      ],
+    },
     components: {
-      Description: false,
+      Description: '@/components/AdminPanel/MediaScopeTabs#MediaScopeTabs',
     },
   },
   access: {
@@ -133,22 +140,7 @@ export const MediaDocuments: CollectionConfig<CollectionSlug['MediaDocuments']> 
       readOnly: true,
       allowCreate: false,
     }),
-    // {
-    //   name: 'thumbnails',
-    //   type: 'upload',
-    //   label: 'Thumbnails',
-    //   relationTo: [
-    //     CollectionSlug.MediaImages,
-    //   ],
-    //   hasMany: true,
-    //   admin: {
-    //     readOnly: true,
-    //     allowCreate: false,
-    //     disableGroupBy: true,
-    //     disableListColumn: true,
-    //     disableListFilter: true,
-    //   },
-    // },
+
     {
       name: 'thumbnailURL',
       type: 'text',

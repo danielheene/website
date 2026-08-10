@@ -3,7 +3,7 @@ import type { CollectionConfig } from 'payload'
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
-import { hideGeneratedAssets } from '@/fields/GeneratorFlags/baseFilter'
+import { scopeMediaAssets } from '@/fields/GeneratorFlags/baseFilter'
 import { RichTextField } from '@/fields/RichText'
 import { generateChecksum } from '@/lib/hooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
@@ -29,7 +29,7 @@ export const MediaImages: CollectionConfig<CollectionSlug['MediaImages']> = {
     ],
   },
   admin: {
-    baseFilter: hideGeneratedAssets,
+    baseFilter: scopeMediaAssets,
     group: AdminGroup.Media,
     useAsTitle: 'filename',
     defaultColumns: [
@@ -39,8 +39,15 @@ export const MediaImages: CollectionConfig<CollectionSlug['MediaImages']> = {
       'updatedAt',
     ],
     disableCopyToLocale: true,
+    pagination: {
+      defaultLimit: 50,
+      limits: [
+        50,
+        100,
+      ],
+    },
     components: {
-      Description: false,
+      Description: '@/components/AdminPanel/MediaScopeTabs#MediaScopeTabs',
     },
   },
 

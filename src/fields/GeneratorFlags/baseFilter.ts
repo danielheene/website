@@ -1,36 +1,54 @@
-import type { BaseFilter } from 'payload'
+import type { BaseFilter, Where } from 'payload'
 
 import { GENERATOR_FLAGS } from './index'
 
 /**
- * Query parameter that opts back into seeing generated assets, e.g.
- * `/admin/collections/images?showGenerated=true`.
+ * Query parameter selecting which assets the media list shows.
+ * Absent means `uploaded` — the default the admin panel opens with.
  */
-export const SHOW_GENERATED_PARAM = 'showGenerated'
+export const MEDIA_SCOPE_PARAM = 'scope'
+
+export const MediaScope = {
+  Uploaded: 'uploaded',
+  Generated: 'generated',
+  All: 'all',
+} as const
+
+export type MediaScope = (typeof MediaScope)[keyof typeof MediaScope]
+
+const isMediaScope = (value: unknown): value is MediaScope =>
+  typeof value === 'string' && Object.values(MediaScope).includes(value as MediaScope)
 
 /**
- * Hides task-generated assets — resume PDFs and the thumbnails derived from
- * them — from the media collections.
+ * Reads the requested scope, falling back to `uploaded`.
+ */
+export const resolveMediaScope = (value: unknown): MediaScope =>
+  isMediaScope(value) ? value : MediaScope.Uploaded
+
+/**
+ * Scopes the media collections to hand-uploaded assets, task-generated ones, or
+ * everything.
  *
  * Generated assets always carry at least one `generatorFlags` entry and
- * hand-uploaded ones carry none, so excluding every known flag leaves exactly
- * the manually uploaded files.
+ * hand-uploaded ones carry none, so the two scopes are the presence or absence
+ * of any known flag.
  *
  * Applies to the list view *and* to relationship pickers and Lexical internal
- * links, which is what makes this preferable to a query preset: generated
- * thumbnails are no more wanted in a link picker than in the list.
- *
- * Pass `?showGenerated=true` to see everything, for the occasional case of
- * debugging a generated thumbnail.
+ * links — generated thumbnails are no more wanted in a link picker than in the
+ * list, which is what makes this preferable to a query preset.
  */
-export const hideGeneratedAssets: BaseFilter = ({ req }) => {
-  if (req.query?.[SHOW_GENERATED_PARAM] === 'true') return null
+export const scopeMediaAssets: BaseFilter = ({ req }) => {
+  const scope = resolveMediaScope(req.query?.[MEDIA_SCOPE_PARAM])
 
-  return {
+  if (scope === MediaScope.All) return null
+
+  const flags: Where = {
     generatorFlags: {
-      not_in: [
+      [scope === MediaScope.Generated ? 'in' : 'not_in']: [
         ...GENERATOR_FLAGS,
       ],
     },
   }
+
+  return flags
 }

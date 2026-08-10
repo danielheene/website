@@ -34,6 +34,7 @@ import { ImportListMenuItem as ImportListMenuItem_cdf7e044479f899a31f804427d568b
 import { default as default_739727f92d93200cec032c1e61a6cb15 } from '@/fields/Toggle/components/FieldComponent'
 import { default as default_22b4891c4f5fa760ee9f626882377967 } from '@/fields/Protected/components/FieldComponent'
 import { AltField as AltField_24f51e17ebe211ea3e1b6c287f79c7cc } from '@/collections/MediaImages/components'
+import { MediaScopeTabs as MediaScopeTabs_4629bc42a060e6d23d7d57d776e5da7b } from '@/components/AdminPanel/MediaScopeTabs'
 import { default as default_390597f1ad60ab95e5b4fbebc846ccb5 } from '@/fields/SVGUpload/components/FieldComponent'
 import { FormatField as FormatField_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
 import { LimitField as LimitField_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
@@ -106,6 +107,7 @@ export const importMap = {
   "@/fields/Toggle/components/FieldComponent#default": default_739727f92d93200cec032c1e61a6cb15,
   "@/fields/Protected/components/FieldComponent#default": default_22b4891c4f5fa760ee9f626882377967,
   "@/collections/MediaImages/components#AltField": AltField_24f51e17ebe211ea3e1b6c287f79c7cc,
+  "@/components/AdminPanel/MediaScopeTabs#MediaScopeTabs": MediaScopeTabs_4629bc42a060e6d23d7d57d776e5da7b,
   "@/fields/SVGUpload/components/FieldComponent#default": default_390597f1ad60ab95e5b4fbebc846ccb5,
   "@payloadcms/plugin-import-export/rsc#FormatField": FormatField_cdf7e044479f899a31f804427d568b36,
   "@payloadcms/plugin-import-export/rsc#LimitField": LimitField_cdf7e044479f899a31f804427d568b36,

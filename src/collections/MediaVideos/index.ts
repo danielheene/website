@@ -1,12 +1,9 @@
 import type { CollectionConfig } from 'payload'
 
-import { isArray, isString } from 'lodash-es'
-import { flat } from 'tailwind-variants/utils'
-
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
-import { hideGeneratedAssets } from '@/fields/GeneratorFlags/baseFilter'
+import { scopeMediaAssets } from '@/fields/GeneratorFlags/baseFilter'
 import { MediaField } from '@/fields/Media'
 import { RichTextField } from '@/fields/RichText'
 import { generateChecksum } from '@/lib/hooks/collection'
@@ -33,7 +30,7 @@ export const MediaVideos: CollectionConfig<CollectionSlug['MediaVideos']> = {
     ],
   },
   admin: {
-    baseFilter: hideGeneratedAssets,
+    baseFilter: scopeMediaAssets,
     group: AdminGroup.Media,
     useAsTitle: 'filename',
     defaultColumns: [
@@ -43,8 +40,15 @@ export const MediaVideos: CollectionConfig<CollectionSlug['MediaVideos']> = {
       'updatedAt',
     ],
     disableCopyToLocale: true,
+    pagination: {
+      defaultLimit: 50,
+      limits: [
+        50,
+        100,
+      ],
+    },
     components: {
-      Description: false,
+      Description: '@/components/AdminPanel/MediaScopeTabs#MediaScopeTabs',
     },
   },
   access: {
