@@ -12,6 +12,7 @@ import { Headline } from '@/components/Headline'
 import { ImageMedia } from '@/components/ImageMedia'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PageContainer } from '@/components/PageContainer'
+import { extractSections } from '@/lib/extractSections'
 import { generateMeta } from '@/lib/generateMeta'
 import { placeholderParams } from '@/lib/placeholderParams'
 import { isMediaImage } from '@/lib/typeGuards'
@@ -61,7 +62,7 @@ export default async function Page({ params }: PageProps) {
 
   const { title, layout, hero, content } = page
   return (
-    <PageContainer layout={layout}>
+    <PageContainer layout={layout} sections={extractSections(content)}>
       <div className="relative pt-32 h-screen">
         {/*{isHeroMediaArray(hero.media) && hero.media.map()}*/}
         {hero?.media && Array.isArray(hero.media) && isMediaImage(hero.media[0]) && (

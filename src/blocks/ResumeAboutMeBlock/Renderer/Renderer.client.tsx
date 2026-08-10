@@ -19,7 +19,7 @@ export const ResumeAboutMeBlockClientRenderer = ({
   portrait,
   title,
 }: ResumeAboutMeBlockClientRendererProps) => (
-  <SectionContainer id={blockType} title={title} variant="default">
+  <SectionContainer title={title} variant="default">
     <div className="container grid grid-cols-12 min-h-screen">
       <div className="col-span-10 col-start-2 lg:col-span-5 lg:col-start-1  order-2 lg:order-1">
         {portrait && (

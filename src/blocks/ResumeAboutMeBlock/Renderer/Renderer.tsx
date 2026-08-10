@@ -8,12 +8,11 @@ import { ResumeAboutMeBlock } from '@/types/payload'
 import { ResumeAboutMeBlockClientRenderer } from './Renderer.client'
 
 export const ResumeAboutMeBlockRenderer = async ({
+  title,
   blockType,
   caption,
   portrait,
 }: ResumeAboutMeBlock) => {
-  const title = 'About Me'
-
   const resolvedPortrait = await resolveRelations(portrait)
 
   return (

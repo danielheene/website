@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
+import { hideGeneratedAssets } from '@/fields/GeneratorFlags/baseFilter'
 import { MediaField } from '@/fields/Media'
 import { RichTextField } from '@/fields/RichText'
 import { generateChecksum } from '@/lib/hooks/collection'
@@ -20,7 +21,6 @@ export const MediaDocuments: CollectionConfig<CollectionSlug['MediaDocuments']> 
     singular: 'Document',
     plural: 'Documents',
   },
-  enableQueryPresets: true,
   hooks: {
     beforeChange: [
       generateChecksum,
@@ -30,6 +30,7 @@ export const MediaDocuments: CollectionConfig<CollectionSlug['MediaDocuments']> 
     ],
   },
   admin: {
+    baseFilter: hideGeneratedAssets,
     group: AdminGroup.Media,
     useAsTitle: 'filename',
     defaultColumns: [

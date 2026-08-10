@@ -6,6 +6,7 @@ import { flat } from 'tailwind-variants/utils'
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
+import { hideGeneratedAssets } from '@/fields/GeneratorFlags/baseFilter'
 import { MediaField } from '@/fields/Media'
 import { RichTextField } from '@/fields/RichText'
 import { generateChecksum } from '@/lib/hooks/collection'
@@ -23,7 +24,6 @@ export const MediaVideos: CollectionConfig<CollectionSlug['MediaVideos']> = {
     singular: 'Video',
     plural: 'Videos',
   },
-  enableQueryPresets: true,
   hooks: {
     beforeChange: [
       generateChecksum,
@@ -33,6 +33,7 @@ export const MediaVideos: CollectionConfig<CollectionSlug['MediaVideos']> = {
     ],
   },
   admin: {
+    baseFilter: hideGeneratedAssets,
     group: AdminGroup.Media,
     useAsTitle: 'filename',
     defaultColumns: [

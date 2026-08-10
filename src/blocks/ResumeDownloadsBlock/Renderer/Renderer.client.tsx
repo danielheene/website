@@ -29,7 +29,7 @@ export const ResumeDownloadsBlockClientRenderer = ({
   thumbnails_en,
   thumbnails_de,
 }: ResumeDownloadsBlockClientRendererProps): JSX.Element => (
-  <SectionContainer id={blockType} title={title} variant="default">
+  <SectionContainer title={title} variant="default">
     <div className="container">
       <div className="relative flex flex-col p-6 md:p-12 lg:p-20 md:flex-row overflow-hidden bg-primary text-primary-foreground rounded-md">
         <div className="flex flex-col justify-center items-center mb-72 md:mb-0 gap-8 md:w-2/3 lg:shrink-0 xl:w-1/2">

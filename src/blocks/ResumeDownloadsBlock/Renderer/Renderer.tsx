@@ -6,11 +6,10 @@ import { ResumeDownloadsBlock } from '@/types/payload'
 import { ResumeDownloadsBlockClientRenderer } from './Renderer.client'
 
 export const ResumeDownloadsBlockRenderer = async ({
+  title,
   blockType,
   caption,
 }: ResumeDownloadsBlock) => {
-  const title = 'Downloads'
-
   const { document_en, document_de, thumbnails_en, thumbnails_de } =
     await fetchLatestResumeDocumentCore()
 

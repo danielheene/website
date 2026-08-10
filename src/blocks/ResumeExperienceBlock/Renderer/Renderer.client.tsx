@@ -25,7 +25,7 @@ export const ResumeExperienceBlockClientRenderer = ({
   jobs,
   skillTags,
 }: ResumeExperienceBlockClientRendererProps): JSX.Element => (
-  <SectionContainer id={blockType} title={title} variant="primary">
+  <SectionContainer title={title} variant="primary">
     <div className={cn('container', 'my-24 lg:my-48', 'grid', 'gap-4', 'grid-cols-12')}>
       <div
         className={cn(

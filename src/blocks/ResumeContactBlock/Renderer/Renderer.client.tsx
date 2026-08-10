@@ -15,7 +15,7 @@ export const ResumeContactBlockClientRenderer = ({
   title,
   caption,
 }: ResumeContactBlockClientRendererProps) => (
-  <SectionContainer id={blockType} title={title} variant="default">
+  <SectionContainer title={title} variant="default">
     <div className={cn('container grid grid-cols-12 py-32', 'text-center')}>
       {title && (
         <div className="col-span-12 md:col-start-3 md:col-span-8">

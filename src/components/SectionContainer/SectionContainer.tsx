@@ -10,7 +10,11 @@ import { cn } from '@/lib/cn'
 import { useSectionNavigation } from '../SectionNavigation'
 
 export interface SectionContainerProps {
-  id: string
+  /**
+   * Anchor source. Falls back to `title` so the anchor reads as `/resume#about-me`
+   * rather than `#resumeaboutmeblock`.
+   */
+  id?: string
   title: string
   variant?: 'default' | 'primary'
   children: ReactNode
@@ -29,21 +33,9 @@ export const SectionContainer = ({
     ],
     rootMargin: '-10%',
   })
-  const { setActiveAnchor, registerAnchor } = useSectionNavigation()
+  const { setActiveAnchor } = useSectionNavigation()
 
-  const id = slugify(rawId)
-
-  useEffect(() => {
-    if (id && title)
-      registerAnchor({
-        id,
-        title,
-      })
-  }, [
-    id,
-    registerAnchor,
-    title,
-  ])
+  const id = slugify(rawId || title)
 
   useEffect(() => {
     if (id && isObserving) setActiveAnchor(id)

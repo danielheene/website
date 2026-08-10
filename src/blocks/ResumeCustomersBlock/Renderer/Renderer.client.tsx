@@ -18,7 +18,7 @@ export const ResumeCustomersBlockClientRenderer = ({
   logos,
 }: ResumeCustomersBlockClientRendererProps) => {
   return (
-    <SectionContainer id={blockType} title={title} variant="primary">
+    <SectionContainer title={title} variant="primary">
       <div className="container py-16 lg:py-32">
         <div className="grid grid-cols-12 items-center gap-8">
           <div className="col-span-12 lg:col-span-4 lg:col-start-2 flex flex-col justify-center gap-12 mb-16 lg:mb-0">

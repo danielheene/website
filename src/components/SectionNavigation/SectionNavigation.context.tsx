@@ -3,7 +3,6 @@ import React from 'react'
 import type { SectionNavigationContextValue } from './SectionNavigation.types'
 
 export const initialSectionNavigationContextValue: SectionNavigationContextValue = {
-  registerAnchor: () => undefined,
   setActiveAnchor: () => undefined,
 }
 

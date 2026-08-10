@@ -7,9 +7,11 @@ import { ResumeProjectsBlock } from '@/types/payload'
 
 import { ResumeProjectsBlockClientRenderer } from './Renderer.client'
 
-export const ResumeProjectsBlockRenderer = async ({ blockType, caption }: ResumeProjectsBlock) => {
-  const title = 'Projects'
-
+export const ResumeProjectsBlockRenderer = async ({
+  title,
+  blockType,
+  caption,
+}: ResumeProjectsBlock) => {
   const rawProjects = await fetchResumeProjectsCached()
   const projects = reduceDataToLocale(await resolveRelations(rawProjects))
 

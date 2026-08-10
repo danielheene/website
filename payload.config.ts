@@ -32,26 +32,6 @@ const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export const config = buildConfig({
-  /**
-   * Query presets are configuration, not user data: the fixed set is seeded by
-   * `scripts/seed-query-presets.ts` (which uses the Local API and so bypasses
-   * these rules) and hides task-generated files from the media list views.
-   *
-   * Writes are denied so a preset cannot be edited or deleted from the admin
-   * panel — the seed script is the single source of truth.
-   */
-  queryPresets: {
-    access: {
-      read: authenticated,
-      create: forbidden,
-      update: forbidden,
-      delete: forbidden,
-    },
-    // No custom constraints: presets are not created through the admin panel,
-    // so there is nothing for a create-constraint dropdown to offer.
-    constraints: {},
-    labels: {},
-  },
   admin: {
     autoRefresh: true,
     components: {

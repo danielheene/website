@@ -4,8 +4,6 @@ import { type JSX, memo, useCallback, useMemo, useRef, useState } from 'react'
 
 import { SectionNavigationContext } from './SectionNavigation.context'
 import type {
-  RegisterAnchorFunction,
-  SectionNavigationAnchor,
   SectionNavigationProviderProps,
   SetActiveAnchorFunction,
   SetScrollingToAnchorFunction,
@@ -14,11 +12,14 @@ import { SectionNavigationDisplay } from './SectionNavigationDisplay'
 
 /**
  * SectionNavigationProvider
- * provides context for registering and updating scroll anchors as also renders the navigation display
+ *
+ * Renders the section navigation from the `sections` derived on the server and
+ * tracks which one is currently in view. Sections are known up front, so the
+ * navigation renders with the page rather than appearing once children mount.
  */
 export const SectionNavigationProvider = memo(
-  ({ children }: SectionNavigationProviderProps): JSX.Element => {
-    const [anchors, setAnchors] = useState<SectionNavigationAnchor[]>([])
+  ({ sections = [], children }: SectionNavigationProviderProps): JSX.Element => {
+    const [activeId, setActiveId] = useState<string | null>(null)
 
     /**
      * reference to the id of the anchor that is currently being scrolled to
@@ -27,33 +28,13 @@ export const SectionNavigationProvider = memo(
     const scrollingToLockRef = useRef<string | null>(null)
 
     /**
-     * register an anchor to the navigation and filter out duplicates
-     */
-    const registerAnchor = useCallback<RegisterAnchorFunction>((anchor) => {
-      setAnchors((anchors: SectionNavigationAnchor[]) =>
-        [
-          ...anchors,
-          {
-            ...anchor,
-            active: false,
-          },
-        ].filter(({ id: vid }, i, arr) => i === arr.findIndex(({ id: fid }) => fid === vid)),
-      )
-    }, [])
-
-    /**
      * set anchor with matching id to active unless a scroll lock is set
      */
     const setActiveAnchor = useCallback<SetActiveAnchorFunction>((id) => {
       if (scrollingToLockRef.current && id !== scrollingToLockRef.current) return
 
       scrollingToLockRef.current = null
-      setAnchors((anchors) =>
-        anchors.map((anchor) => ({
-          ...anchor,
-          active: anchor.id === id,
-        })),
-      )
+      setActiveId(id)
     }, [])
 
     /**
@@ -70,16 +51,26 @@ export const SectionNavigationProvider = memo(
       ],
     )
 
+    const anchors = useMemo(
+      () =>
+        sections.map((section) => ({
+          ...section,
+          active: section.id === activeId,
+        })),
+      [
+        sections,
+        activeId,
+      ],
+    )
+
     /**
      * memoize the context value to prevent unnecessary re-renders
      */
     const value = useMemo(
       () => ({
         setActiveAnchor,
-        registerAnchor,
       }),
       [
-        registerAnchor,
         setActiveAnchor,
       ],
     )

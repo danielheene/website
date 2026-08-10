@@ -22,7 +22,7 @@ export const ResumeProjectsBlockClientRenderer = ({
   title,
   projects,
 }: ResumeProjectsBlockClientRendererProps): JSX.Element => (
-  <SectionContainer id={blockType} title={title} variant="default">
+  <SectionContainer title={title} variant="default">
     <div className={cn('container', 'py-32', 'flex', 'flex-col', 'gap-32')}>
       <header className={cn('text-center', 'mb-14', 'flex flex-col gap-24')}>
         {title && <Headline variant="section">{title}</Headline>}

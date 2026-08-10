@@ -92,6 +92,27 @@ export const ResumeBlockField = <
           },
         },
         fields: [
+          {
+            name: 'title',
+            type: 'text',
+            label: 'Section title',
+            admin: {
+              description:
+                'Shown as the section headline and as its entry in the section navigation. Defaults to the block name when left empty.',
+            },
+            hooks: {
+              /**
+               * Falls back to the block's own label rather than a lookup table,
+               * so a block added later cannot end up with a missing title. Runs
+               * on read so existing documents — which have no stored value —
+               * resolve too, without a migration.
+               */
+              afterRead: [
+                ({ value }) =>
+                  typeof value === 'string' && value.trim() !== '' ? value : labels.singular,
+              ],
+            },
+          },
           RichTextField({
             name: 'caption',
             editorVariant: 'inline',

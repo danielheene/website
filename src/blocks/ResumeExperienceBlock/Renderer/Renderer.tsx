@@ -11,11 +11,10 @@ import { ResumeExperienceBlock } from '@/types/payload'
 import { ResumeExperienceBlockClientRenderer } from './Renderer.client'
 
 export const ResumeExperienceBlockRenderer = async ({
+  title,
   caption,
   blockType,
 }: ResumeExperienceBlock) => {
-  const title = 'Experience'
-
   const rawjobs = await fetchResumeJobsCached()
   const skillTags = await fetchResumeSkillTagsCached()
   const jobs = reduceDataToLocale(await resolveRelations(rawjobs))
