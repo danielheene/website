@@ -13,6 +13,8 @@ import { s3Storage } from '@payloadcms/storage-s3'
 import * as Sentry from '@sentry/nextjs'
 import sharp from 'sharp'
 
+import { authenticated } from '@/access/authenticated'
+import { forbidden } from '@/access/forbidden'
 import { BLOCKS } from '@/blocks'
 import { COLLECTIONS } from '@/collections'
 import { GLOBALS } from '@/globals'
@@ -30,22 +32,24 @@ const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export const config = buildConfig({
+  /**
+   * Query presets are configuration, not user data: the fixed set is seeded by
+   * `scripts/seed-query-presets.ts` (which uses the Local API and so bypasses
+   * these rules) and hides task-generated files from the media list views.
+   *
+   * Writes are denied so a preset cannot be edited or deleted from the admin
+   * panel — the seed script is the single source of truth.
+   */
   queryPresets: {
     access: {
-      read: () => true,
-      create: () => true,
-      update: () => true,
-      delete: () => true,
+      read: authenticated,
+      create: forbidden,
+      update: forbidden,
+      delete: forbidden,
     },
-    constraints: {
-      create: [
-        {
-          access: () => true,
-          label: 'Test Create',
-          value: 'testCreate',
-        },
-      ],
-    },
+    // No custom constraints: presets are not created through the admin panel,
+    // so there is nothing for a create-constraint dropdown to offer.
+    constraints: {},
     labels: {},
   },
   admin: {

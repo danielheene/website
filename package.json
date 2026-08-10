@@ -36,6 +36,8 @@
     "seed": "pnpm run seed:blog",
     "seed:blog": "pnpm run payload run scripts/seed-blog.ts",
     "seed:blog:clean": "pnpm run payload run scripts/seed-blog.ts -- --clean",
+    "seed:presets": "pnpm run payload run scripts/seed-query-presets.ts",
+    "seed:presets:clean": "pnpm run payload run scripts/seed-query-presets.ts -- --clean",
     "start": "pnpm run next start",
     "start:job-runner": "pnpm run payload jobs:run --cron \"* * * * *\" --all-queues --handle-schedules --limit 10",
     "storybook": "NODE_OPTIONS=\"--trace-deprecation --disable-warning=DeprecationWarning\" storybook",
