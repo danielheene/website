@@ -15,6 +15,7 @@ export const BlockGroup = {
   General: 'General',
   Blog: 'Blog',
   Resume: 'Resume',
+  Legal: 'Legal',
 } as const
 
 export type BlockGroup = typeof BlockGroup
@@ -30,7 +31,10 @@ export const BlockSlug = {
   TwoColumnContent: 'TwoColumnContentBlock',
   Code: 'CodeBlock',
   LinkGroup: 'LinkGroupBlock',
-  // LegalAddress = 'LegalAddressBlock',2§
+
+  /* legal blocks */
+  LegalPublisher: 'LegalPublisherBlock',
+  LegalAuthorships: 'LegalAuthorshipsBlock',
 
   /* resume related blocks */
   ResumeAboutMe: 'ResumeAboutMeBlock',

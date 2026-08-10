@@ -1,6 +1,8 @@
 import type { BlockSlug as RegisteredBlockSlug } from 'payload'
 
 import { CodeBlock } from '@/blocks/CodeBlock'
+import { LegalAuthorshipsBlock } from '@/blocks/LegalAuthorshipsBlock'
+import { LegalPublisherBlock } from '@/blocks/LegalPublisherBlock'
 import { LinkGroupBlock } from '@/blocks/LinkGroupBlock'
 import { OneColumnContentBlock } from '@/blocks/OneColumnContentBlock'
 import { ResumeAboutMeBlock } from '@/blocks/ResumeAboutMeBlock'
@@ -17,6 +19,10 @@ export const BLOCKS = [
   LinkGroupBlock,
   OneColumnContentBlock,
   TwoColumnContentBlock,
+
+  /* legal blocks */
+  LegalPublisherBlock,
+  LegalAuthorshipsBlock,
 
   /* resume related blocks */
   ResumeAboutMeBlock,

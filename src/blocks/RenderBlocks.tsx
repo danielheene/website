@@ -3,6 +3,8 @@ import { ElementType, Suspense } from 'react'
 import { type BlockData, BlockSlug, RegisteredBlockSlug } from '@/types/blocks'
 
 import { CodeBlockRenderer } from './CodeBlock/Renderer'
+import { LegalAuthorshipsBlockRenderer } from './LegalAuthorshipsBlock/Renderer'
+import { LegalPublisherBlockRenderer } from './LegalPublisherBlock/Renderer'
 import { LinkGroupBlockRenderer } from './LinkGroupBlock/Renderer'
 import { OneColumnContentBlockRenderer } from './OneColumnContentBlock/Renderer'
 import { ResumeAboutMeBlockRenderer } from './ResumeAboutMeBlock/Renderer'
@@ -18,6 +20,8 @@ const blockComponentMap = {
   [BlockSlug.TwoColumnContent]: TwoColumnContentBlockRenderer,
   [BlockSlug.LinkGroup]: LinkGroupBlockRenderer,
   [BlockSlug.Code]: CodeBlockRenderer,
+  [BlockSlug.LegalPublisher]: LegalPublisherBlockRenderer,
+  [BlockSlug.LegalAuthorships]: LegalAuthorshipsBlockRenderer,
   [BlockSlug.ResumeAboutMe]: ResumeAboutMeBlockRenderer,
   [BlockSlug.ResumeCustomers]: ResumeCustomersBlockRenderer,
   [BlockSlug.ResumeContact]: ResumeContactBlockRenderer,
