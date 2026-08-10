@@ -1,7 +1,7 @@
 'use client'
 
 import { startTransition, useCallback, useMemo, useState } from 'react'
-import { FullscreenModal, useModal } from '@payloadcms/ui'
+import { FullscreenModal, Modal, useModal } from '@payloadcms/ui'
 
 import { parseISO } from 'date-fns'
 
@@ -102,7 +102,7 @@ export const UmamiWidgetClient = ({
     teamId,
   ])
 
-  const { openModal, closeModal } = useModal()
+  const { openModal, closeModal, isModalOpen } = useModal()
 
   const handleModalOpen = useCallback(() => {
     openModal(modalSlug)
@@ -165,21 +165,29 @@ export const UmamiWidgetClient = ({
           onOpenModal={handleModalOpen}
           onMoveInterval={handleMoveInterval}
         />
-        <FullscreenModal slug={modalSlug} trapFocus={true} lockBodyScroll={true} closeOnBlur={true}>
-          <DateRangeModal
-            tempStartDate={tempStartDate}
-            tempEndDate={tempEndDate}
-            setTempStartDate={setTempStartDate}
-            setTempEndDate={setTempEndDate}
-            minDate={minDate}
-            maxDate={maxDate}
-            startDate={startDate}
-            endDate={endDate}
-            onQuickSelect={handleQuickSelect}
-            onCancel={handleCancel}
-            onConfirm={handleConfirm}
-          />
-        </FullscreenModal>
+        {isModalOpen(modalSlug) && (
+          <FullscreenModal
+            open={isModalOpen(modalSlug)}
+            slug={modalSlug}
+            trapFocus={true}
+            lockBodyScroll={true}
+            closeOnBlur={true}
+          >
+            <DateRangeModal
+              tempStartDate={tempStartDate}
+              tempEndDate={tempEndDate}
+              setTempStartDate={setTempStartDate}
+              setTempEndDate={setTempEndDate}
+              minDate={minDate}
+              maxDate={maxDate}
+              startDate={startDate}
+              endDate={endDate}
+              onQuickSelect={handleQuickSelect}
+              onCancel={handleCancel}
+              onConfirm={handleConfirm}
+            />
+          </FullscreenModal>
+        )}
       </div>
 
       <StatsSection data={stats.data} dataIsLoading={stats.isLoading} className="col-span-12" />

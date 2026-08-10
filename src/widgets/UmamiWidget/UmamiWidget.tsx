@@ -1,6 +1,6 @@
 import type { WidgetServerProps } from 'payload'
 
-import { isValid, parseISO } from 'date-fns'
+import { isAfter, isBefore, isValid, parseISO } from 'date-fns'
 
 import { Interval } from '@/lib/date'
 
@@ -20,11 +20,13 @@ export const UmamiWidget = async (_props: WidgetServerProps) => {
 
   const maxDate = deletedAt && isValid(parseISO(deletedAt)) ? parseISO(deletedAt) : new Date()
 
-  const [startDate, endDate] = new Interval().setToLastSevenDays().value
+  const lastSevenDays = new Interval().setToLastSevenDays().value
+  const startDate = isAfter(lastSevenDays[0], minDate) ? lastSevenDays[0] : minDate
+  const endDate = isBefore(lastSevenDays[1], maxDate) ? lastSevenDays[1] : maxDate
 
   return (
     <UmamiWidgetClient
-      startDate={startDate.toISOString()}
+      startDate={isAfter(startDate, minDate) ? startDate.toISOString() : undefined}
       endDate={endDate.toISOString()}
       minDate={minDate.toISOString()}
       maxDate={maxDate.toISOString()}

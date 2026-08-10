@@ -56,7 +56,7 @@ export const Header = ({
         <ButtonGroup>
           <Button
             variant="secondary"
-            typeof="button"
+            type="button"
             size="icon-lg"
             onClick={() => onMoveInterval(-1)}
           >
@@ -65,7 +65,7 @@ export const Header = ({
           <ButtonGroupSeparator />
           <Button
             variant="secondary"
-            typeof="button"
+            type="button"
             size="icon-lg"
             onClick={() => onMoveInterval(1)}
           >
