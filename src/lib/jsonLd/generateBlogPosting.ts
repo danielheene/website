@@ -1,4 +1,4 @@
-import type { BlogPosting, Person, WithContext } from 'schema-dts'
+import type { BlogPostingLeaf, Person, WithContext } from 'schema-dts'
 
 export interface BlogPostingData {
   headline: string
@@ -56,7 +56,7 @@ export interface BlogPostingData {
  * })
  * ```
  */
-export function generateBlogPosting(data: BlogPostingData): WithContext<BlogPosting> {
+export function generateBlogPosting(data: BlogPostingData): WithContext<BlogPostingLeaf> {
   const author: Person | undefined = data.author
     ? {
         '@type': 'Person',
@@ -67,7 +67,7 @@ export function generateBlogPosting(data: BlogPostingData): WithContext<BlogPost
       }
     : undefined
 
-  const blogPosting: WithContext<BlogPosting> = {
+  const blogPosting: WithContext<BlogPostingLeaf> = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: data.headline,

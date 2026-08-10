@@ -1,4 +1,4 @@
-import type { CollectionPage, WithContext } from 'schema-dts'
+import type { CollectionPageLeaf, WithContext } from 'schema-dts'
 
 export interface CollectionPageData {
   name: string
@@ -18,8 +18,8 @@ export interface CollectionPageData {
  * })
  * ```
  */
-export function generateCollectionPage(data: CollectionPageData): WithContext<CollectionPage> {
-  const collectionPage: WithContext<CollectionPage> = {
+export function generateCollectionPage(data: CollectionPageData): WithContext<CollectionPageLeaf> {
+  const collectionPage: WithContext<CollectionPageLeaf> = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: data.name,

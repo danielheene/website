@@ -1,4 +1,4 @@
-import type { WebSite, WithContext } from 'schema-dts'
+import type { WebSiteLeaf, WithContext } from 'schema-dts'
 
 import { isMediaImage } from '@/lib/typeGuards'
 import { GlobalData, GlobalSlug } from '@/types/globals'
@@ -9,8 +9,8 @@ import { GlobalData, GlobalSlug } from '@/types/globals'
  */
 export function generateWebSiteSchema({
   general: data,
-}: GlobalData<GlobalSlug['SiteSettings']>): WithContext<WebSite> {
-  const webSite: WithContext<WebSite> = {
+}: GlobalData<GlobalSlug['SiteSettings']>): WithContext<WebSiteLeaf> {
+  const webSite: WithContext<WebSiteLeaf> = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: data.siteName,

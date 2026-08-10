@@ -1,4 +1,4 @@
-import type { Blog, WithContext } from 'schema-dts'
+import type { BlogLeaf, WithContext } from 'schema-dts'
 
 export interface BlogData {
   name: string
@@ -22,8 +22,8 @@ export interface BlogData {
  * })
  * ```
  */
-export function generateBlog(data: BlogData): WithContext<Blog> {
-  const blog: WithContext<Blog> = {
+export function generateBlog(data: BlogData): WithContext<BlogLeaf> {
+  const blog: WithContext<BlogLeaf> = {
     '@context': 'https://schema.org',
     '@type': 'Blog',
     name: data.name,

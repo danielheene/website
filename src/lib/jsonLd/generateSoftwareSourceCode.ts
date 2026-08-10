@@ -1,4 +1,4 @@
-import type { Person, SoftwareSourceCode, WithContext } from 'schema-dts'
+import type { Person, SoftwareSourceCodeLeaf, WithContext } from 'schema-dts'
 
 export interface SoftwareSourceCodeData {
   name: string
@@ -44,7 +44,7 @@ export interface SoftwareSourceCodeData {
  */
 export function generateSoftwareSourceCode(
   data: SoftwareSourceCodeData,
-): WithContext<SoftwareSourceCode> {
+): WithContext<SoftwareSourceCodeLeaf> {
   const author: Person | undefined = data.author
     ? {
         '@type': 'Person',
@@ -55,7 +55,7 @@ export function generateSoftwareSourceCode(
       }
     : undefined
 
-  const softwareSourceCode: WithContext<SoftwareSourceCode> = {
+  const softwareSourceCode: WithContext<SoftwareSourceCodeLeaf> = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareSourceCode',
     name: data.name,

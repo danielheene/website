@@ -1,4 +1,4 @@
-import type { Person, WithContext } from 'schema-dts'
+import type { PersonLeaf, WithContext } from 'schema-dts'
 
 import { translate } from '@/lib/i18n'
 import { isMediaImage } from '@/lib/typeGuards'
@@ -6,28 +6,11 @@ import { GlobalData, GlobalSlug } from '@/types/globals'
 
 /**
  * Generates Person JSON-LD
- *
- * @example
- * ```
- * const personLd = generatePerson({
- *   name: 'Daniel Heene',
- *   jobTitle: 'Software Engineer',
- *   url: 'https://daniel.heene.io',
- *   email: 'daniel@heene.io',
- *   sameAs: ['https://github.com/danielheene', 'https://linkedin.com/in/danielheene'],
- *   knowsLanguage: ['German', 'English'],
- *   homeLocation: 'Germany',
- *   worksFor: {
- *     name: 'Self-Employed',
- *     url: 'https://daniel.heene.io'
- *   }
- * })
- * ```
  */
 export function generatePersonSchema(
   data: GlobalData<GlobalSlug['GlobalUserSettings']>,
-): WithContext<Person> {
-  const person: WithContext<Person> = {
+): WithContext<PersonLeaf> {
+  const person: WithContext<PersonLeaf> = {
     '@context': 'https://schema.org',
     '@type': 'Person',
     name: data.name,
@@ -74,10 +57,10 @@ export function generatePersonSchema(
     }
   }
 
-  if (data.languages && Array.isArray(data.languages) && data.languages.length > 0) {
+  if (Array.isArray(data.languages) && data.languages.length > 0) {
     person.knowsLanguage = data.languages.map(({ language }) => ({
       '@type': 'Language',
-      name: translate('en', 'language.name.da'),
+      name: translate('en', `language.name.${language}`),
       alternateName: language,
     }))
   }

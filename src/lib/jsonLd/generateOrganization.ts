@@ -1,4 +1,4 @@
-import type { Organization, WithContext } from 'schema-dts'
+import type { OrganizationLeaf, WithContext } from 'schema-dts'
 
 export interface OrganizationData {
   name: string
@@ -18,8 +18,8 @@ export interface OrganizationData {
  * })
  * ```
  */
-export function generateOrganization(data: OrganizationData): WithContext<Organization> {
-  const organization: WithContext<Organization> = {
+export function generateOrganization(data: OrganizationData): WithContext<OrganizationLeaf> {
+  const organization: WithContext<OrganizationLeaf> = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: data.name,

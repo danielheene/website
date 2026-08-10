@@ -1,4 +1,4 @@
-import type { BreadcrumbList, ListItem, WithContext } from 'schema-dts'
+import type { BreadcrumbListLeaf, ListItem, WithContext } from 'schema-dts'
 
 export interface BreadcrumbItem {
   name: string
@@ -17,7 +17,7 @@ export interface BreadcrumbItem {
  * ])
  * ```
  */
-export function generateBreadcrumbList(items: BreadcrumbItem[]): WithContext<BreadcrumbList> {
+export function generateBreadcrumbList(items: BreadcrumbItem[]): WithContext<BreadcrumbListLeaf> {
   const listItems: ListItem[] = items.map((item, index) => ({
     '@type': 'ListItem',
     position: index + 1,
