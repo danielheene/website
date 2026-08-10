@@ -5,12 +5,11 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 import { Icon } from '@/components/Icon'
-import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@/lib/cn'
 
 import './NavLink.styles.css'
 
-import { useConfig, useNav, useTranslation } from '@payloadcms/ui'
+import { useConfig, useNav } from '@payloadcms/ui'
 
 import { formatAdminURL } from 'payload/shared'
 
@@ -28,9 +27,6 @@ interface NavLinkProps {
 
 export const NavLink = ({ slug, type, label, icon }: NavLinkProps): JSX.Element => {
   const pathname = usePathname()
-  const isMobile = useIsMobile()
-  const [isHovered, setIsHovered] = React.useState(false)
-  const { i18n } = useTranslation()
   const { navOpen } = useNav()
 
   const {
@@ -56,8 +52,6 @@ export const NavLink = ({ slug, type, label, icon }: NavLinkProps): JSX.Element 
         ])}
         href={href}
         prefetch={false}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
       >
         <Icon className="nav-link__icon" name={icon} />
         <span className="nav-link__label">{label}</span>

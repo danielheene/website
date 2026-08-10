@@ -1,5 +1,3 @@
-'use server'
-
 import type { FC } from 'react'
 import type { ServerProps } from 'payload'
 

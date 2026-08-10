@@ -4,11 +4,13 @@ import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } fr
 import ReactDOM from 'react-dom'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useClickOutside, useNav, useTheme } from '@payloadcms/ui'
+import { useTheme } from '@payloadcms/ui'
 
 import { Icon } from '@/components/Icon'
 import { Switch } from '@/components/Switch'
 import { cn } from '@/lib/cn'
+
+import './NavFooter.styles.css'
 
 interface NavFooterProps {
   avatarSrc?: string
@@ -16,44 +18,81 @@ interface NavFooterProps {
   name: string
 }
 
+interface DropdownPosition {
+  top: number
+  left: number
+}
+
 export function NavFooter({ avatarSrc, email, name }: NavFooterProps) {
   const { theme, setTheme } = useTheme()
   const dropdownRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const [dropdownIsOpen, setDropdownIsOpen] = useState<boolean>(false)
+  const [dropdownPosition, setDropdownPosition] = useState<DropdownPosition | null>(null)
 
-  const { navOpen } = useNav()
+  // Measure the trigger so the portalled dropdown can anchor to it. Reading layout
+  // during render would break with a null ref and thrash on every re-render, so the
+  // position is captured up front and refreshed only while the dropdown is open.
+  const syncDropdownPosition = useCallback(() => {
+    const trigger = buttonRef.current
+    if (!trigger) return
 
-  const handleButtonClick = useCallback((event: React.PointerEvent<HTMLButtonElement>) => {
-    event.preventDefault()
-    setDropdownIsOpen((state) => !state)
+    const { top, left } = trigger.getBoundingClientRect()
+    setDropdownPosition({
+      top,
+      left,
+    })
   }, [])
 
-  const handleOutsideClick = useCallback(
-    (event: PointerEvent) => {
-      event.preventDefault()
-      if (
-        dropdownIsOpen &&
-        event.target !== buttonRef.current &&
-        !buttonRef.current.contains(event.target as Node) &&
-        event.target !== dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setDropdownIsOpen((state) => !state)
-      }
+  const handleButtonClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      // Keep this click from reaching the window-level outside-click listener below,
+      // which would otherwise close the dropdown immediately after this reopens it.
+      event.stopPropagation()
+      syncDropdownPosition()
+      setDropdownIsOpen((state) => !state)
     },
     [
-      dropdownIsOpen,
+      syncDropdownPosition,
     ],
   )
 
+  const handleOutsideClick = useCallback((event: MouseEvent) => {
+    const target = event.target as Node | null
+    if (!target) return
+
+    // The trigger button handles its own toggling; ignore clicks inside it or the dropdown.
+    if (buttonRef.current?.contains(target)) return
+    if (dropdownRef.current?.contains(target)) return
+
+    setDropdownIsOpen(false)
+  }, [])
+
   useEffect(() => {
+    if (!dropdownIsOpen) return
+
     window.addEventListener('click', handleOutsideClick)
     return () => {
       window.removeEventListener('click', handleOutsideClick)
     }
   }, [
+    dropdownIsOpen,
     handleOutsideClick,
+  ])
+
+  // The trigger moves when the nav rail opens/collapses or the viewport changes.
+  useEffect(() => {
+    if (!dropdownIsOpen) return
+
+    syncDropdownPosition()
+
+    window.addEventListener('resize', syncDropdownPosition)
+    return () => {
+      window.removeEventListener('resize', syncDropdownPosition)
+    }
+  }, [
+    dropdownIsOpen,
+    syncDropdownPosition,
   ])
 
   const initials = useMemo(() => {
@@ -72,20 +111,12 @@ export function NavFooter({ avatarSrc, email, name }: NavFooterProps) {
         <Image
           width={40}
           height={40}
-          className="size-10 rounded-md object-cover"
+          className="nav-footer__avatar"
           src={avatarSrc}
           alt={name || 'User Avatar'}
         />
       ) : (
-        <div
-          className={cn([
-            'flex justify-center items-center',
-            'size-10 text-primary-foreground font-medium',
-            'bg-linear-to-r/oklch from-primary-500 to-cyan-500',
-          ])}
-        >
-          {initials}
-        </div>
+        <div className="nav-footer__avatar-fallback">{initials}</div>
       ),
     [
       avatarSrc,
@@ -96,9 +127,9 @@ export function NavFooter({ avatarSrc, email, name }: NavFooterProps) {
 
   const nameComponent = useMemo(
     () => (
-      <div className="min-w-0 flex flex-col flex-1 grow text-left text-sm leading-tight">
-        <span className="block truncate font-pp-supply-sans font-semibold">{name}</span>
-        <span className="block truncate text-xs font-mono text-muted-foreground">{email}</span>
+      <div className="nav-footer__identity">
+        <span className="nav-footer__name">{name}</span>
+        <span className="nav-footer__email">{email}</span>
       </div>
     ),
     [
@@ -107,99 +138,79 @@ export function NavFooter({ avatarSrc, email, name }: NavFooterProps) {
     ],
   )
 
-  const menuItemClasses = cn([
-    'relative w-full h-8 p-1.5 pl-10',
-    'flex flex-row justify-between items-center',
-    'no-underline cursor-pointer leading-0 font-mono rounded-md border-none',
-    'bg-neutral/0 hover:bg-neutral-800/10 dark:hover:bg-neutral-200/10',
-    'text-neutral-950 dark:text-neutral-50',
-    '[&>svg]:absolute [&>svg]:left-5 [&>svg]:top-4',
-    '[&>svg]:-translate-x-1/2 [&>svg]:-translate-y-1/2',
-    '[&>svg]:transition-opacity',
-  ])
-
   return (
     <Fragment>
-      <footer
-        className={cn([
-          'nav__footer',
-          'p-1',
-        ])}
-      >
-        <div
-          className={cn([
-            'block relative w-full',
-          ])}
-        >
+      <footer className="nav-footer">
+        <div className="nav-footer__trigger-wrapper">
           <button
             type="button"
             ref={buttonRef}
             onClick={handleButtonClick}
+            aria-expanded={dropdownIsOpen}
+            aria-haspopup="menu"
             className={cn([
-              'w-full m-0 p-1.5 flex flex-row items-center gap-3',
-              'cursor-pointer rounded-md overflow-hidden border-none',
-              'bg-neutral-100/10 hover:bg-neutral-100/20 text-neutral-50',
-              dropdownIsOpen && 'bg-neutral-100/20',
-              !navOpen && 'p-0 w-10',
+              'nav-footer__trigger',
+              dropdownIsOpen && 'nav-footer__trigger--active',
             ])}
           >
             {avatarComponent}
             {nameComponent}
-            <Icon name="lucide:chevrons-up-down" className="ml-auto size-4 text-muted-foreground" />
+            <Icon name="lucide:chevrons-up-down" className="nav-footer__chevron" />
           </button>
         </div>
       </footer>
       {dropdownIsOpen &&
+        dropdownPosition &&
         ReactDOM.createPortal(
           <div
             ref={dropdownRef}
             style={{
-              top: buttonRef.current.getBoundingClientRect().top,
-              left: buttonRef.current.getBoundingClientRect().left,
+              top: dropdownPosition.top,
+              left: dropdownPosition.left,
             }}
-            className={cn([
-              'fixed',
-              'w-[calc(var(--nav-width-open)-var(--nav-spacing))]',
-              'm-0 p-1.5 -translate-y-[calc(100%+1rem)]',
-              'flex flex-col gap-2 overflow-hidden rounded-md',
-              'bg-neutral-50/90 dark:bg-neutral-950/90 backdrop-blur-xs',
-            ])}
+            className="nav-footer__dropdown"
           >
-            <div
-              className={cn([
-                'flex flex-row items-center gap-4',
-                'p-2 border-bottom',
-              ])}
-            >
+            <div className="nav-footer__dropdown-header">
               {avatarComponent}
               {nameComponent}
             </div>
 
-            <hr className="block w-[90%] h-px border-b border-b-border opacity-40" />
+            <hr className="nav-footer__separator" />
 
-            <Link href="/admin/account" className={menuItemClasses}>
+            <Link href="/admin/account" className="nav-footer__item">
               <Icon name="lucide:settings" />
               <span>Account Settings</span>
             </Link>
 
             <button
               type="button"
-              onClick={(event) => {
-                event.preventDefault()
-                setTheme(theme === 'dark' ? 'light' : 'dark')
-              }}
-              className={menuItemClasses}
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="nav-footer__item"
             >
-              <Icon name="lucide:moon" className={theme === 'dark' ? 'opacity-100' : 'opacity-0'} />
+              <Icon
+                name="lucide:moon"
+                className={
+                  theme === 'dark'
+                    ? 'nav-footer__item-icon--visible'
+                    : 'nav-footer__item-icon--hidden'
+                }
+              />
 
-              <Icon name="lucide:sun" className={theme === 'dark' ? 'opacity-0' : 'opacity-100'} />
+              <Icon
+                name="lucide:sun"
+                className={
+                  theme === 'dark'
+                    ? 'nav-footer__item-icon--hidden'
+                    : 'nav-footer__item-icon--visible'
+                }
+              />
               <span>Dark Mode</span>
               <Switch checked={theme === 'dark'} />
             </button>
 
-            <hr className="block w-[90%] h-px border-b border-b-border opacity-40" />
+            <hr className="nav-footer__separator" />
 
-            <Link href="/admin/logout" className={menuItemClasses}>
+            <Link href="/admin/logout" className="nav-footer__item">
               <Icon name="lucide:log-out" />
               <span>Log out</span>
             </Link>
