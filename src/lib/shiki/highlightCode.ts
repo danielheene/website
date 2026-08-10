@@ -15,7 +15,9 @@ export const SUPPORTED_LANGUAGES = [
   'json',
   'bash',
   'html',
+  'xml',
   'markdown',
+  'yaml',
 ] as const satisfies readonly BundledLanguage[]
 
 export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number]

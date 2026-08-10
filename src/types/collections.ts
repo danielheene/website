@@ -46,6 +46,12 @@ export type CollectionSlug = typeof CollectionSlug
 export type CollectionSlugKey = keyof CollectionSlug & string
 export type CollectionSlugValue = CollectionSlug[CollectionSlugKey] & string
 
+export type MediaCollectionSlug =
+  | CollectionSlug['MediaImages']
+  | CollectionSlug['MediaDocuments']
+  | CollectionSlug['MediaVideos']
+  | CollectionSlug['MediaAudios']
+
 export const COLLECTION_PREFIX_MAP: Partial<Record<CollectionSlugValue, string>> = {
   [CollectionSlug.Pages]: '',
   [CollectionSlug.BlogTopics]: 'blog',

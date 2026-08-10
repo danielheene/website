@@ -7,9 +7,9 @@ import { withPayload } from '@payloadcms/next/withPayload'
 import { withSentryConfig } from '@sentry/nextjs'
 import z from 'zod'
 
-import { buildTimeEnvSchema, envSchema } from '@/types/environment'
+import { envSchema } from '@/types/environment'
 
-let server: ChildProcess
+let server: ChildProcess | null = null
 const createTunnel = (token: string) =>
   new Promise<ChildProcess | null>((resolve) => {
     // No `shell: true`: the token is passed as its own argv entry rather than
@@ -27,62 +27,53 @@ const createTunnel = (token: string) =>
         stdio: 'ignore',
       },
     )
+
+    /**
+     *    Reap the tunnel with the dev server. Without this every `next dev`
+     *    leaves a live `wrangler tunnel run` behind, and they accumulate
+     *    silently across restarts.
+     *
+     *    Only `exit` is hooked: scripts/dev.mjs already forwards SIGINT/SIGTERM
+     *    to this process and re-raises them, so adding handlers here would
+     *    replace Node's default signal behaviour and let the wrapper's own
+     *    exit-code handling be pre-empted by a hardcoded `process.exit(0)`.
+     */
+    process.once('exit', () => {
+      if (!childProcess.killed) {
+        childProcess.kill('SIGTERM')
+      }
+    })
+
+    /**
+     *    `spawn` fires for npx itself, so it only proves the launcher started —
+     *    wrangler may still fail afterwards (missing binary, rejected token).
+     *    An early exit is therefore treated as a failed tunnel, and whichever
+     *    of the two settles first wins.
+     */
     childProcess.once('spawn', () => {
       resolve(childProcess)
     })
     childProcess.once('error', () => {
       resolve(null)
     })
-
-    /**
-     *    Reap the tunnel with the dev server. Without this every `next dev`
-     *    leaves a live `wrangler tunnel run` behind, and they accumulate
-     *    silently across restarts.
-     */
-    const stop = () => {
-      if (!childProcess.killed) {
-        childProcess.kill('SIGTERM')
-      }
-    }
-
-    process.once('exit', stop)
-    for (const signal of [
-      'SIGINT',
-      'SIGTERM',
-    ] as const) {
-      process.once(signal, () => {
-        stop()
-        process.exit(0)
-      })
-    }
+    childProcess.once('exit', (code) => {
+      if (code !== 0) resolve(null)
+    })
   })
 
 export default async (phase, { defaultConfig }) => {
-  /**
-   *    Environment validation
-   *
-   *    A production build validates only the build-time subset: requiring the
-   *    full schema here would force every value to be supplied as a build arg
-   *    and baked into the image, making the image environment-specific. The
-   *    server validates the full schema at boot instead (`next start` runs
-   *    this config file too, under a different phase), so a missing runtime
-   *    variable still fails fast — just at the point where it can actually be
-   *    supplied.
-   */
-  const schema = phase === PHASE_PRODUCTION_BUILD ? buildTimeEnvSchema : envSchema
-  const parsedEnv = schema.safeParse(process.env)
-  if (!parsedEnv.success) {
-    console.error(`\n${z.prettifyError(parsedEnv.error)}\n`)
-    process.exit(1)
-  }
-
   /**
    *    The tunnel is opt-in via `pnpm dev --tunnel`, which scripts/dev.mjs
    *    translates into DEV_TUNNEL=1. Having the credentials in .env.local is
    *    no longer enough to start it — otherwise every `next dev` opens a
    *    public tunnel as a side effect of the file being present.
+   *
+   *    This runs before validation so the addresses it swaps in are the ones
+   *    the schema checks.
    */
-  if (phase === PHASE_DEVELOPMENT_SERVER && process.env.DEV_TUNNEL === '1') {
+  const tunnelRequested = phase === PHASE_DEVELOPMENT_SERVER && process.env.DEV_TUNNEL === '1'
+
+  if (tunnelRequested) {
     const { CLOUDFLARE_TUNNEL_URL, CLOUDFLARE_TUNNEL_HOST, CLOUDFLARE_TUNNEL_TOKEN } = process.env
 
     if (!CLOUDFLARE_TUNNEL_URL || !CLOUDFLARE_TUNNEL_HOST || !CLOUDFLARE_TUNNEL_TOKEN) {
@@ -92,19 +83,29 @@ export default async (phase, { defaultConfig }) => {
       process.exit(1)
     }
 
+    process.env.SERVER_HOST = CLOUDFLARE_TUNNEL_HOST
+    process.env.SERVER_URL = CLOUDFLARE_TUNNEL_URL
+    process.env.HOST = CLOUDFLARE_TUNNEL_HOST
+    process.env.PORT = String(443)
+  }
+
+  /* Environment validation */
+  const parsedEnv = envSchema.safeParse(process.env)
+  if (!parsedEnv.success) {
+    console.error(`\n${z.prettifyError(parsedEnv.error)}\n`)
+    process.exit(1)
+  }
+
+  if (tunnelRequested) {
+    // Next reloads this config on edit; the tunnel outlives those reloads.
     if (!server) {
-      server = await createTunnel(CLOUDFLARE_TUNNEL_TOKEN)
+      server = await createTunnel(process.env.CLOUDFLARE_TUNNEL_TOKEN)
 
       if (!server) {
         console.error('\n[tunnel] failed to start `wrangler tunnel run` — is wrangler installed?\n')
         process.exit(1)
       }
     }
-
-    process.env.SERVER_HOST = CLOUDFLARE_TUNNEL_HOST
-    process.env.SERVER_URL = CLOUDFLARE_TUNNEL_URL
-    process.env.HOST = CLOUDFLARE_TUNNEL_HOST
-    process.env.PORT = String(443)
 
     /**
      *    Only this process has the tunnel URL — .env.local is loaded by Next,
@@ -114,7 +115,7 @@ export default async (phase, { defaultConfig }) => {
      *    stderr, not stdout: Next captures stdout while the config loads, so a
      *    marker written there never reaches the parent.
      */
-    process.stderr.write(`__DEV_TUNNEL_URL__${CLOUDFLARE_TUNNEL_URL}\n`)
+    process.stderr.write(`__DEV_TUNNEL_URL__${process.env.SERVER_URL}\n`)
   }
 
   const nextConfig: NextConfig = {
@@ -125,8 +126,8 @@ export default async (phase, { defaultConfig }) => {
     // cacheHandler: require.resolve('./next.cache-handler.ts'),
 
     experimental: {
-      viewTransition: true,
       appNewScrollHandler: true,
+      turbopackServerFastRefresh: true,
       serverActions: {
         bodySizeLimit: '10mb',
       },
@@ -137,8 +138,6 @@ export default async (phase, { defaultConfig }) => {
      */
     allowedDevOrigins: [
       'localhost:3000',
-      // Docker-based Playwright E2E reaches the host dev server via this name
-      'host.docker.internal:3000',
       '*.localhost:3000',
       'daniel.heene.nexus',
       '*.daniel.heene.nexus',
@@ -252,11 +251,7 @@ export default async (phase, { defaultConfig }) => {
         384,
       ],
       remotePatterns: [
-        // Deliberately a static list rather than `new URL(SERVER_URL)`: Next
-        // needs these at build time to compile the image optimizer, and
-        // reading SERVER_URL here would put a build-time env dependency back
-        // into an otherwise environment-portable image. Every host the app is
-        // served from is enumerated below.
+        new URL('http://localhost:3000/**'),
         new URL('https://daniel.heene.io/**'),
         new URL('https://daniel.heene.dev/**'),
         new URL('https://daniel.heene.review/**'),

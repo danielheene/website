@@ -148,18 +148,13 @@ read when starting the dev server with `--tunnel`.
 > moving the read further up the tree does not change this. All three must therefore be
 > correct when the app is built, which makes a build specific to one environment. All
 > three are public values, so nothing secret is baked in.
->
-> Everything else — every secret and all server-only config — is read from the container
-> environment at boot. See `buildTimeEnvKeys` in `src/types/environment.ts` for the exact
-> set the build requires.
 
 ## Production Build
 
 Dokploy builds the app from source on the deployment server; there is no image to
 build or push. The build needs a reachable database because `generateStaticParams()`
 calls `payload.find()`, and a Redis URL because the KV adapter is constructed while
-`payload.config.ts` loads. The exact set is `buildTimeEnvKeys` in
-`src/types/environment.ts`.
+`payload.config.ts` loads.
 
 To reproduce a production build locally:
 

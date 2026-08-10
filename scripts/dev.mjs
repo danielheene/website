@@ -47,6 +47,9 @@ if (tunnel) {
   const splice = (text) => {
     const lines = text.split('\n')
     const at = lines.findIndex((line) => line.startsWith('- Network:'))
+    // Nothing to anchor to: pass the banner through rather than lose it.
+    if (at === -1) return text
+
     const label = '- Tunnel:'
     // Match the column Next pads its own labels to.
     const pad = ' '.repeat(Math.max(1, lines[at].indexOf('http') - label.length))

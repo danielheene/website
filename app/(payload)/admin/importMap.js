@@ -56,6 +56,8 @@ import {
 } from '@payloadcms/richtext-lexical/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 
+import { default as default_fc395b9a25a9319ce396eaf2d5ad72f0 } from '@/blocks/LegalAuthorshipsBlock/AdminInfo'
+import { default as default_7fee387b14eeaddab1962311bb67b35e } from '@/blocks/LegalPublisherBlock/Renderer'
 import { AltField as AltField_24f51e17ebe211ea3e1b6c287f79c7cc } from '@/collections/MediaImages/components'
 import {
   Icon as Icon_a316a6ec12a12cd0fe58ccec01a444ca,
@@ -199,6 +201,8 @@ export const importMap = {
   '@/fields/Address/components/FieldComponent#default': default_741a914cdfef7b5df9221de4f2e22dd9,
   '@/globals/SettingsGlobalUser/components/SameAsRowLabel#default':
     default_8a51036bc2d88e014190cca6baa944f2,
+  '@/blocks/LegalPublisherBlock/Renderer#default': default_7fee387b14eeaddab1962311bb67b35e,
+  '@/blocks/LegalAuthorshipsBlock/AdminInfo#default': default_fc395b9a25a9319ce396eaf2d5ad72f0,
   '@/fields/ResumeBlock/components/FieldComponent#default':
     default_dbb6fe4ada93d1133d8de1ea56eb20d6,
   '@/components/AdminPanel#Nav': Nav_a316a6ec12a12cd0fe58ccec01a444ca,

@@ -129,6 +129,7 @@ export const config = buildConfig({
     },
     user: CollectionSlug.Users,
   },
+  bin: [],
   blocks: BLOCKS,
   csrf: [
     process.env.SERVER_URL,
@@ -167,20 +168,19 @@ export const config = buildConfig({
     tasks: TASKS,
     workflows: WORKFLOWS,
     shouldAutoRun: async () => {
-      return process.env.ENABLE_JOB_WORKERS === 'true'
+      return process.env.PAYLOAD_JOBS_ENABLE_APP_WORKERS === 'true'
     },
     deleteJobOnComplete: false,
-
     autoRun: [
       {
         cron: '* * * * *',
         queue: QueueSlug.Default,
-        limit: 1,
+        limit: 10,
       },
       {
         cron: '* * * * *',
         queue: QueueSlug.ResumeGeneration,
-        limit: 1,
+        limit: 10,
       },
     ],
     jobsCollectionOverrides: ({ defaultJobsCollection }) => ({

@@ -127,6 +127,8 @@ export interface Config {
     LinkGroupBlock: LinkGroupBlock;
     OneColumnContentBlock: OneColumnContentBlock;
     TwoColumnContentBlock: TwoColumnContentBlock;
+    LegalPublisherBlock: LegalPublisherBlock;
+    LegalAuthorshipsBlock: LegalAuthorshipsBlock;
     ResumeAboutMeBlock: ResumeAboutMeBlock;
     ResumeContactBlock: ResumeContactBlock;
     ResumeCustomersBlock: ResumeCustomersBlock;
@@ -197,11 +199,13 @@ export interface Config {
     'settings-site': SiteSettings;
     'settings-pdf-builder': PDFGeneratorSettings;
     'settings-global-user': GlobalUserSettings;
+    'payload-jobs-stats': PayloadJobsStat;
   };
   globalsSelect: {
     'settings-site': SettingsSiteSelect<false> | SettingsSiteSelect<true>;
     'settings-pdf-builder': SettingsPdfBuilderSelect<false> | SettingsPdfBuilderSelect<true>;
     'settings-global-user': SettingsGlobalUserSelect<false> | SettingsGlobalUserSelect<true>;
+    'payload-jobs-stats': PayloadJobsStatsSelect<false> | PayloadJobsStatsSelect<true>;
   };
   locale: null;
   widgets: {
@@ -215,6 +219,7 @@ export interface Config {
       GenerateVideoThumbnails: TaskGenerateVideoThumbnails;
       CalculateSkillTagInterval: TaskCalculateSkillTagInterval;
       GenerateLocalizedResumeDocument: TaskGenerateLocalizedResumeDocument;
+      PingUptimeEndpoint: TaskPingUptimeEndpoint;
       createCollectionExport: TaskCreateCollectionExport;
       createCollectionImport: TaskCreateCollectionImport;
       schedulePublish: TaskSchedulePublish;
@@ -343,6 +348,8 @@ export interface Page {
         | LinkGroupBlock
         | OneColumnContentBlock
         | TwoColumnContentBlock
+        | LegalPublisherBlock
+        | LegalAuthorshipsBlock
         | ResumeAboutMeBlock
         | ResumeContactBlock
         | ResumeCustomersBlock
@@ -489,6 +496,24 @@ export interface TwoColumnContentBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'TwoColumnContentBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LegalPublisherBlock".
+ */
+export interface LegalPublisherBlock {
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'LegalPublisherBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LegalAuthorshipsBlock".
+ */
+export interface LegalAuthorshipsBlock {
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'LegalAuthorshipsBlock';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -773,7 +798,7 @@ export interface User {
 export interface MediaVideo {
   id: string;
   checksum?: string | null;
-  caption?: {
+  credits?: {
     root: {
       type: string;
       children: {
@@ -830,6 +855,21 @@ export interface MediaVideo {
 export interface MediaDocument {
   id: string;
   checksum?: string | null;
+  credits?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   thumbnails?:
     | {
         relationTo: 'images';
@@ -872,6 +912,21 @@ export interface MediaDocument {
 export interface MediaAudio {
   id: string;
   checksum?: string | null;
+  credits?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   generatorFlags?: (
     | '+auto-generated'
     | '-auto-generated'
@@ -888,21 +943,6 @@ export interface MediaAudio {
     | '+document-thumbnail'
     | '-document-thumbnail'
   )[];
-  caption?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
   prefix?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -1038,6 +1078,7 @@ export interface PayloadJob {
           | 'GenerateVideoThumbnails'
           | 'CalculateSkillTagInterval'
           | 'GenerateLocalizedResumeDocument'
+          | 'PingUptimeEndpoint'
           | 'createCollectionExport'
           | 'createCollectionImport'
           | 'schedulePublish';
@@ -1081,6 +1122,7 @@ export interface PayloadJob {
         | 'GenerateVideoThumbnails'
         | 'CalculateSkillTagInterval'
         | 'GenerateLocalizedResumeDocument'
+        | 'PingUptimeEndpoint'
         | 'createCollectionExport'
         | 'createCollectionImport'
         | 'schedulePublish'
@@ -1093,6 +1135,15 @@ export interface PayloadJob {
    * Used for concurrency control. Jobs with the same key are subject to exclusive/supersedes rules.
    */
   concurrencyKey?: string | null;
+  meta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1240,13 +1291,13 @@ export interface ResumeSkillData {
 export interface DocumentReference {
   id: string;
   /**
-   * Slug of the referenced media collection.
+   * Slug of the referenced collection.
    */
-  assetCollection: string;
+  targetCollection: string;
   /**
-   * ID of the referenced media document.
+   * ID of the referenced document.
    */
-  assetId: string;
+  targetId: string;
   /**
    * Slug of the collection or global holding the reference.
    */
@@ -1677,7 +1728,7 @@ export interface ImagesSelect<T extends boolean = true> {
  */
 export interface VideosSelect<T extends boolean = true> {
   checksum?: T;
-  caption?: T;
+  credits?: T;
   thumbnails?: T;
   generatorFlags?: T;
   prefix?: T;
@@ -1699,6 +1750,7 @@ export interface VideosSelect<T extends boolean = true> {
  */
 export interface DocumentsSelect<T extends boolean = true> {
   checksum?: T;
+  credits?: T;
   thumbnails?: T;
   generatorFlags?: T;
   prefix?: T;
@@ -1720,8 +1772,8 @@ export interface DocumentsSelect<T extends boolean = true> {
  */
 export interface AudiosSelect<T extends boolean = true> {
   checksum?: T;
+  credits?: T;
   generatorFlags?: T;
-  caption?: T;
   prefix?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1849,8 +1901,8 @@ export interface ResumeSkillTagsSelect<T extends boolean = true> {
  * via the `definition` "document-references_select".
  */
 export interface DocumentReferencesSelect<T extends boolean = true> {
-  assetCollection?: T;
-  assetId?: T;
+  targetCollection?: T;
+  targetId?: T;
   sourceCollection?: T;
   sourceId?: T;
   sourceType?: T;
@@ -1961,6 +2013,7 @@ export interface PayloadJobsSelect<T extends boolean = true> {
   waitUntil?: T;
   processing?: T;
   concurrencyKey?: T;
+  meta?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2298,6 +2351,24 @@ export interface AddressData {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs-stats".
+ */
+export interface PayloadJobsStat {
+  id: string;
+  stats?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "settings-site_select".
  */
 export interface SettingsSiteSelect<T extends boolean = true> {
@@ -2498,6 +2569,16 @@ export interface AddressDataSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs-stats_select".
+ */
+export interface PayloadJobsStatsSelect<T extends boolean = true> {
+  stats?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "umami-widget_widget".
  */
 export interface UmamiWidgetWidget {
@@ -2580,6 +2661,14 @@ export interface TaskGenerateLocalizedResumeDocument {
       | boolean
       | null;
   };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskPingUptimeEndpoint".
+ */
+export interface TaskPingUptimeEndpoint {
+  input?: unknown;
+  output?: unknown;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

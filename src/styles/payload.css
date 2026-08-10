@@ -17,58 +17,10 @@
 @import "./payload/_richtext-lexical.css" layer(payload-default);
 @import "./payload/_list-header.css" layer(payload-default);
 
-/* see frontend.css — @/components is outside Tailwind's auto-detected source root */
-@source "../components";
-
 @plugin "@tailwindcss/typography";
 
-@custom-variant dark {
-  /* Explicit: .dark class or data-theme="dark" on element or ancestor */
-  &:is(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *) {
-    @slot;
-
-    &::before,
-    &::after {
-      @slot;
-    }
-  }
-
-  /* Fallback: system prefers dark color scheme */
-  @media (prefers-color-scheme: dark) {
-    &:not(:is(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *)) & {
-      @slot;
-
-      &::before,
-      &::after {
-        @slot;
-      }
-    }
-  }
-}
-
-@custom-variant light {
-  /* Explicit: .dark class or data-theme="dark" on element or ancestor */
-  &:is(.light, .light *, [data-theme="light"], [data-theme="light"] *) {
-    @slot;
-
-    &::before,
-    &::after {
-      @slot;
-    }
-  }
-
-  /* Fallback: system prefers dark color scheme */
-  @media (prefers-color-scheme: light) {
-    &:not(:is(.light, .light *, [data-theme="light"], [data-theme="light"] *)) & {
-      @slot;
-
-      &::before,
-      &::after {
-        @slot;
-      }
-    }
-  }
-}
+@custom-variant light (&:where(.light, .light *, [data-theme="light"], [data-theme="light"] *));
+@custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
 
 @source not inline("table");
 @source not inline("table-cell");

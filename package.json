@@ -37,6 +37,7 @@
     "seed:blog": "pnpm run payload run scripts/seed-blog.ts",
     "seed:blog:clean": "pnpm run payload run scripts/seed-blog.ts -- --clean",
     "start": "pnpm run next start",
+    "start:job-runner": "pnpm run payload jobs:run --cron \"* * * * *\" --all-queues --handle-schedules --limit 10",
     "storybook": "NODE_OPTIONS=\"--trace-deprecation --disable-warning=DeprecationWarning\" storybook",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
@@ -157,7 +158,6 @@
     ]
   },
   "resolutions": {
-    "@emnapi/runtime": "^2.0.0-alpha",
     "pdfjs-dist": "5.4.296",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
