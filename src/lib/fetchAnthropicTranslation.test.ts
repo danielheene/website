@@ -84,4 +84,42 @@ describe('fetchAnthropicTranslation', () => {
     }
     expect(root.children[0].children[0].text).toBe('Hallo Welt')
   })
+
+  it('throws a friendly error when ANTHROPIC_API_KEY is not configured', async () => {
+    vi.stubEnv('ANTHROPIC_API_KEY', '')
+
+    await expect(
+      fetchAnthropicTranslation({
+        value: paragraphDocument('Hello world') as never,
+        sourceLanguage: 'en',
+        targetLanguage: 'de',
+      }),
+    ).rejects.toThrow(/ANTHROPIC_API_KEY/)
+
+    expect(generateTextMock).not.toHaveBeenCalled()
+  })
+
+  it("strips a leading '```html' + trailing '```' fence from the model output before parsing", async () => {
+    generateTextMock.mockResolvedValue({
+      text: '```html\n<p>Hallo Welt</p>\n```',
+    })
+
+    const result = await fetchAnthropicTranslation({
+      value: paragraphDocument('Hello world') as never,
+      sourceLanguage: 'en',
+      targetLanguage: 'de',
+    })
+
+    const root = result?.root as unknown as {
+      children: Array<{
+        children: Array<{
+          text: string
+        }>
+      }>
+    }
+    expect(root.children[0].children[0].text).toBe('Hallo Welt')
+    // Nothing from the fence leaks through as literal text
+    expect(JSON.stringify(result)).not.toMatch(/```/)
+    expect(JSON.stringify(result)).not.toMatch(/html/i)
+  })
 })

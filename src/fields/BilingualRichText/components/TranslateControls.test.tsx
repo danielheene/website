@@ -123,6 +123,19 @@ describe('TranslateControls', () => {
     expect(state['task.de'].setValue).not.toHaveBeenCalled()
   })
 
+  it('surfaces a toast and leaves the target field untouched when translation resolves null (whitespace-only source round-trip)', async () => {
+    fetchAnthropicTranslationMock.mockResolvedValue(null)
+    renderControls()
+
+    fireEvent.click(screen.getByLabelText('Translate English to German'))
+
+    await waitFor(() => {
+      expect(toastErrorMock).toHaveBeenCalledTimes(1)
+    })
+    expect(toastErrorMock.mock.calls[0]?.[0]).toMatch(/empty result/i)
+    expect(state['task.de'].setValue).not.toHaveBeenCalled()
+  })
+
   it("treats the default single-empty-paragraph shape (Payload's persisted empty value) as empty and disables the button", () => {
     setField('task.en', {
       root: {

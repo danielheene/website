@@ -1,8 +1,24 @@
 import type { RowField, UIField } from 'payload'
 
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
-import { BilingualRichTextField } from './index'
+// The real `lexicalEditor()` (from `@payloadcms/richtext-lexical`) returns an
+// opaque async resolver function that can't be introspected without a full
+// sanitized Payload config (collections, i18n translations, etc). Replace it
+// with an identity function so the `features` array `createRichTextEditor`
+// builds per variant (see src/fields/RichText/index.ts:216-329) is directly
+// visible on the returned field's `editor` property, which lets the
+// editorVariant-propagation test below assert something real instead of a
+// tautology.
+vi.mock('@payloadcms/richtext-lexical', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@payloadcms/richtext-lexical')>()
+  return {
+    ...actual,
+    lexicalEditor: (args: unknown) => args,
+  }
+})
+
+const { BilingualRichTextField } = await import('./index')
 
 describe('BilingualRichTextField', () => {
   it('stacks en, translate controls, and de in column layout (the default)', () => {
@@ -144,18 +160,41 @@ describe('BilingualRichTextField', () => {
     ).toBe('German')
   })
 
-  it('propagates a non-default editorVariant to both inner richText fields', () => {
-    const field = BilingualRichTextField({
+  it("propagates a non-default editorVariant into the inner richText fields' editor config", () => {
+    const inlineField = BilingualRichTextField({
+      name: 'task',
+      editorVariant: 'inline',
+    })
+    const captionField = BilingualRichTextField({
       name: 'task',
       editorVariant: 'caption',
     })
 
-    // Both inner richText fields exist; we cannot easily assert Lexical's
-    // internal feature list from the outside, but we can confirm the two
-    // fields kept their richText type and the factory did not swap them for
-    // some other shape when a non-default variant is passed.
-    expect(field.fields[0].type).toBe('richText')
-    expect(field.fields[2].type).toBe('richText')
+    // `lexicalEditor` is mocked to an identity function above, so `editor`
+    // here is the raw `{ features, ... }` args createRichTextEditor built
+    // for each variant (see src/fields/RichText/index.ts:216-329).
+    // `captionFeatures` is a strict superset of `inlineFeatures`, so the
+    // feature counts must differ. If a future edit dropped `editorVariant`
+    // on its way to RichTextField, both sides would collapse to the same
+    // default-variant ('inline') feature set and this would fail.
+    const inlineEditor = (
+      inlineField.fields[0] as {
+        editor?: {
+          features?: unknown[]
+        }
+      }
+    ).editor
+    const captionEditor = (
+      captionField.fields[0] as {
+        editor?: {
+          features?: unknown[]
+        }
+      }
+    ).editor
+
+    expect(inlineEditor?.features).toBeDefined()
+    expect(captionEditor?.features).toBeDefined()
+    expect(captionEditor?.features?.length).toBeGreaterThan(inlineEditor?.features?.length ?? 0)
   })
 
   it('sets the group label when a label is passed', () => {
