@@ -116,4 +116,54 @@ describe('BilingualRichTextField', () => {
       '@/fields/BilingualRichText/components/TranslateControls',
     )
   })
+
+  it('merges caller overrides.en onto the base English field overrides (caller wins)', () => {
+    const field = BilingualRichTextField({
+      name: 'task',
+      overrides: {
+        en: {
+          label: 'English (custom)',
+        },
+      },
+    })
+
+    expect(
+      (
+        field.fields[0] as {
+          label?: unknown
+        }
+      ).label,
+    ).toBe('English (custom)')
+    // German stays untouched
+    expect(
+      (
+        field.fields[2] as {
+          label?: unknown
+        }
+      ).label,
+    ).toBe('German')
+  })
+
+  it('propagates a non-default editorVariant to both inner richText fields', () => {
+    const field = BilingualRichTextField({
+      name: 'task',
+      editorVariant: 'caption',
+    })
+
+    // Both inner richText fields exist; we cannot easily assert Lexical's
+    // internal feature list from the outside, but we can confirm the two
+    // fields kept their richText type and the factory did not swap them for
+    // some other shape when a non-default variant is passed.
+    expect(field.fields[0].type).toBe('richText')
+    expect(field.fields[2].type).toBe('richText')
+  })
+
+  it('sets the group label when a label is passed', () => {
+    const field = BilingualRichTextField({
+      name: 'task',
+      label: 'Task (bilingual)',
+    })
+
+    expect(field.label).toBe('Task (bilingual)')
+  })
 })

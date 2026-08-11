@@ -39,6 +39,10 @@ export const fetchAnthropicTranslation = async ({
 
   if (!html.trim()) return null
 
+  if (!process.env.ANTHROPIC_API_KEY) {
+    throw new Error('Translation is unavailable — ANTHROPIC_API_KEY is not configured.')
+  }
+
   const anthropic = createAnthropic({
     apiKey: process.env.ANTHROPIC_API_KEY,
   })
@@ -56,5 +60,10 @@ export const fetchAnthropicTranslation = async ({
     prompt: html,
   })
 
-  return parseHtmlToLexical(translatedHtml)
+  const stripped = translatedHtml
+    .replace(/^\s*```(?:html)?\s*\n?/i, '')
+    .replace(/\n?\s*```\s*$/, '')
+    .trim()
+
+  return parseHtmlToLexical(stripped)
 }

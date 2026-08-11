@@ -8,6 +8,7 @@ import '@testing-library/jest-dom/vitest'
  */
 process.env.SERVER_URL ??= 'http://localhost:3000'
 process.env.PREVIEW_SECRET ??= 'test-preview-secret'
+process.env.ANTHROPIC_API_KEY ??= 'sk-ant-test'
 process.env.TZ = 'UTC'
 
 afterEach(() => {
@@ -55,6 +56,13 @@ vi.mock('payload', async (importOriginal) => ({
     })),
   })),
 }))
+
+// `server-only`'s package.json only resolves to its no-op `empty.js` under
+// Next.js's `react-server` export condition; vitest's `node` environment
+// doesn't set that condition, so a bare `import 'server-only'` would throw
+// "This module cannot be imported from a Client Component module" in every
+// test that transitively imports a guarded module. Stub it to a no-op here.
+vi.mock('server-only', () => ({}))
 
 vi.mock('redis', () => ({
   createClient: vi.fn(() => ({

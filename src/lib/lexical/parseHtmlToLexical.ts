@@ -1,3 +1,5 @@
+import 'server-only'
+
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 import { $getRoot, $insertNodes } from '@payloadcms/richtext-lexical/lexical'
 import { createHeadlessEditor } from '@payloadcms/richtext-lexical/lexical/headless'

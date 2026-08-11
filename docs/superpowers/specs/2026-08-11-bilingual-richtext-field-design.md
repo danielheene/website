@@ -50,6 +50,11 @@ extends that same pattern to translation between the two language fields.
 - Swapping to DeepL or another translation provider. The translation call
   is isolated in one function (`fetchAnthropicTranslation`) specifically so
   that swap is a future, low-friction change — not part of this work.
+- Preserving Lexical link nodes through translation. This codebase's
+  `LinkFeature` (`src/fields/Link/index.ts`) stores custom `fields` on link
+  nodes; the HTML round-trip only sees the bare `<a>` and cannot reconstruct
+  that payload. Documented in `BilingualRichTextField`'s JSDoc as an
+  accepted limitation, matching the existing "blocks/tables" caveat.
 
 ## Design
 

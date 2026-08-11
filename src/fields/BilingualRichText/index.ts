@@ -18,6 +18,25 @@ type BilingualRichTextFieldProps = {
   overrides?: BilingualRichTextFieldOverrides
 }
 
+/**
+ * A reusable Payload group field with side-by-side English and German
+ * rich-text editors and two AI-translate buttons between them.
+ *
+ * The translation round-trips through HTML via Claude. Formatting available
+ * in the `inline` and `caption` variants (bold, italic, underline,
+ * strikethrough) survives. Two documented limitations to be aware of:
+ *
+ * - **Blocks/tables** from the `markdown` and `post` variants may not
+ *   round-trip cleanly — the HTML converter emits them, but the headless
+ *   parser doesn't register nodes for them, so they degrade to plain-text
+ *   paragraphs via the fallback path.
+ * - **Links** are NOT preserved by translation in any variant. This
+ *   codebase's `LinkFeature` extends Lexical's default link node with a
+ *   custom `fields` payload (type/doc/newTab/appearance — see
+ *   `src/fields/Link/index.ts`) that the headless parser cannot recreate
+ *   from an HTML `<a>` alone. If your content contains links, translate
+ *   manually rather than through this button.
+ */
 export const BilingualRichTextField = ({
   name,
   layout = 'column',

@@ -122,4 +122,20 @@ describe('TranslateControls', () => {
     })
     expect(state['task.de'].setValue).not.toHaveBeenCalled()
   })
+
+  it("treats the default single-empty-paragraph shape (Payload's persisted empty value) as empty and disables the button", () => {
+    setField('task.en', {
+      root: {
+        children: [
+          {
+            type: 'paragraph',
+            children: [],
+          },
+        ],
+      },
+    })
+    renderControls()
+
+    expect(screen.getByLabelText('Translate English to German')).toBeDisabled()
+  })
 })

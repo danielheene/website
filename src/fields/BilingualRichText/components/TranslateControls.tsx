@@ -74,7 +74,13 @@ export const TranslateControls: UIFieldClientComponent = ({ path }) => {
           sourceLanguage,
           targetLanguage,
         })
-        if (translated) setTargetValue(translated)
+        if (translated) {
+          setTargetValue(translated)
+        } else {
+          toast.error(
+            'Translation returned an empty result — the source content may not contain translatable text.',
+          )
+        }
       } catch (error) {
         toast.error(extractErrorMessage(error))
       } finally {
