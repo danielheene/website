@@ -116,12 +116,15 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
               name: 'media',
               type: 'upload',
               relationTo: [
-                CollectionSlug['MediaImages'],
+                CollectionSlug.MediaImages,
+                CollectionSlug.MediaVideos,
               ],
               hasMany: true,
               displayPreview: true,
               label: false,
               admin: {
+                description:
+                  'Fills the first screen. Two or more entries become a cross-fading carousel; a single entry renders on its own.',
                 disableListColumn: true,
                 disableListFilter: true,
                 disableGroupBy: true,
@@ -149,7 +152,7 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
             },
             RichTextField({
               name: 'content',
-              editorVariant: 'caption',
+              editorVariant: 'post',
               overrides: {
                 admin: {
                   condition: ({ hero }) => hero.contentType === 'custom',

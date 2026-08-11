@@ -8,57 +8,6 @@
 
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "IconFieldValue".
- */
-export type IconFieldValue =
-  | (
-      | 'archlinux'
-      | 'cloudflare'
-      | 'cloudflare-pages'
-      | 'cloudflare-workers'
-      | 'debian'
-      | 'docker'
-      | 'figma'
-      | 'github'
-      | 'github-actions'
-      | 'github-pages'
-      | 'gitlab'
-      | 'goland'
-      | 'home-assistant'
-      | 'intellij'
-      | 'javascript'
-      | 'jetbrains'
-      | 'kubernetes'
-      | 'linkedin'
-      | 'linux'
-      | 'mail'
-      | 'phone'
-      | 'namecheap'
-      | 'next-js'
-      | 'node-js'
-      | 'one-password'
-      | 'payload'
-      | 'phpstorm'
-      | 'pycharm'
-      | 'rancher'
-      | 'react'
-      | 'rust'
-      | 'sanity'
-      | 'storybook'
-      | 'synology'
-      | 'tailscale'
-      | 'ubuntu'
-      | 'unsplash'
-      | 'vercel'
-      | 'webstorm'
-      | 'whatsapp'
-      | 'wireguard'
-      | 'xing'
-      | 'zigbee'
-    )
-  | null;
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "PageLayout".
  */
 export type PageLayout = ('default' | 'home' | 'resume' | 'legal') | null;
@@ -288,7 +237,7 @@ export interface LinkGroupBlock {
 export interface LinkFieldData {
   type?: ('reference' | 'custom') | null;
   newTab?: boolean | null;
-  icon?: IconFieldValue;
+  icon?: string | null;
   label: string;
   iconOnly?: boolean | null;
   reference?:
@@ -317,11 +266,20 @@ export interface Page {
   slug: string;
   layout?: PageLayout;
   hero?: {
+    /**
+     * Fills the first screen. Two or more entries become a cross-fading carousel; a single entry renders on its own.
+     */
     media?:
-      | {
-          relationTo: 'images';
-          value: string | MediaImage;
-        }[]
+      | (
+          | {
+              relationTo: 'images';
+              value: string | MediaImage;
+            }
+          | {
+              relationTo: 'videos';
+              value: string | MediaVideo;
+            }
+        )[]
       | null;
     contentType?: ('title' | 'custom') | null;
     content?: {
@@ -418,6 +376,50 @@ export interface MediaImage {
       filename?: string | null;
     };
   };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "videos".
+ */
+export interface MediaVideo {
+  id: string;
+  checksum?: string | null;
+  credits?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  thumbnails?:
+    | {
+        relationTo: 'images';
+        value: string | MediaImage;
+      }[]
+    | null;
+  generatorFlags?: (
+    'resume-asset' | 'thumbnail' | 'document' | 'audio-thumbnail' | 'video-thumbnail' | 'document-thumbnail'
+  )[];
+  prefix?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -799,50 +801,6 @@ export interface User {
     | null;
   password?: string | null;
   collection: 'users';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "videos".
- */
-export interface MediaVideo {
-  id: string;
-  checksum?: string | null;
-  credits?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  thumbnails?:
-    | {
-        relationTo: 'images';
-        value: string | MediaImage;
-      }[]
-    | null;
-  generatorFlags?: (
-    'resume-asset' | 'thumbnail' | 'document' | 'audio-thumbnail' | 'video-thumbnail' | 'document-thumbnail'
-  )[];
-  prefix?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2193,7 +2151,7 @@ export interface GlobalUserSettings {
    */
   sameAs?:
     | {
-        icon?: IconFieldValue;
+        icon?: string | null;
         name?: string | null;
         url?: string | null;
         id?: string | null;

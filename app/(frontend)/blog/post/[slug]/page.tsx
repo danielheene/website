@@ -12,8 +12,7 @@ import { getPayload } from 'payload'
 import { format } from 'date-fns'
 
 import { ArticleSidebar } from '@/components/ArticleSidebar'
-import { DuoTone } from '@/components/DuoTone'
-import { ImageMedia } from '@/components/ImageMedia'
+import { HeroMedia } from '@/components/HeroMedia'
 import { RichText } from '@/components/RichText'
 import { extractHeadings } from '@/lib/extractHeadings'
 import { generateMeta } from '@/lib/generateMeta'
@@ -136,78 +135,64 @@ export default async function Page({ params: paramsPromise }: PageProps) {
     >
       <div className="flex flex-1 items-center justify-center">
         <section className="pb-32 w-full">
-          <div className="bg-muted py-20 relative">
-            <div className="container  relative flex flex-col items-start justify-start gap-16 py-20 lg:flex-row lg:items-end lg:justify-between z-1">
-              <div className="flex w-full flex-col items-center justify-center gap-12">
-                <div className="flex w-full max-w-[36rem] flex-col items-center justify-center gap-8">
-                  <nav aria-label="breadcrumb">
-                    <ol className="text-muted-foreground gap-1.5 text-sm sm:gap-2.5 flex flex-wrap items-center wrap-break-word">
-                      <li className="gap-1.5 inline-flex items-center">
-                        <Link className="hover:text-foreground transition-colors" href="/blog">
-                          Blog
-                        </Link>
-                      </li>
-                      {primaryTopic && (
-                        <>
-                          <li aria-hidden="true" className="[&>svg]:size-3.5">
-                            /
-                          </li>
-                          <li className="gap-1.5 inline-flex items-center">
-                            <Link
-                              className="hover:text-foreground transition-colors"
-                              href={`/blog/${primaryTopic.slug}`}
-                            >
-                              {primaryTopic.title}
-                            </Link>
-                          </li>
-                        </>
-                      )}
-                    </ol>
-                  </nav>
-                  <div className="flex w-full flex-col gap-5">
-                    <div className="flex items-center justify-center gap-2.5 text-sm font-medium text-foreground/60">
-                      <time dateTime={createdAt}>{format(createdAt, 'MMMM d, yyyy')}</time>
-                    </div>
-                    <h1 className="text-center text-[2.5rem] leading-[1.2] font-semibold md:text-5xl lg:text-6xl">
-                      {title}
-                    </h1>
-                    {post.meta?.description && (
-                      <p className="text-center text-xl leading-[1.4] font-semibold text-foreground">
-                        {post.meta.description}
-                      </p>
+          {/* A post carries at most one hero image, so this never becomes a carousel. */}
+          <HeroMedia fallbackAlt={title} media={heroImage}>
+            <div className="pt-40 pb-16">
+              <div className="container flex flex-col items-center gap-8 text-center">
+                <nav aria-label="breadcrumb">
+                  <ol className="text-foreground/70 gap-1.5 text-sm sm:gap-2.5 flex flex-wrap items-center justify-center wrap-break-word">
+                    <li className="gap-1.5 inline-flex items-center">
+                      <Link className="hover:text-foreground transition-colors" href="/blog">
+                        Blog
+                      </Link>
+                    </li>
+                    {primaryTopic && (
+                      <>
+                        <li aria-hidden="true" className="[&>svg]:size-3.5">
+                          /
+                        </li>
+                        <li className="gap-1.5 inline-flex items-center">
+                          <Link
+                            className="hover:text-foreground transition-colors"
+                            href={`/blog/${primaryTopic.slug}`}
+                          >
+                            {primaryTopic.title}
+                          </Link>
+                        </li>
+                      </>
                     )}
-                    {topicList.length > 0 && (
-                      <ul className="flex flex-wrap items-center justify-center gap-2">
-                        {topicList.map((topic) => (
-                          <li key={topic.id}>
-                            <Link
-                              href={`/blog/${topic.slug}`}
-                              className="rounded-full border border-border px-3 py-1 font-mono text-xs transition-colors hover:bg-muted"
-                            >
-                              {topic.title}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+                  </ol>
+                </nav>
+                <div className="flex w-full max-w-[48rem] flex-col gap-5">
+                  <div className="flex items-center justify-center gap-2.5 font-mono text-sm text-foreground/60">
+                    <time dateTime={createdAt}>{format(createdAt, 'MMMM d, yyyy')}</time>
                   </div>
+                  <h1 className="text-[2.5rem] leading-[1.1] font-semibold text-balance md:text-6xl lg:text-7xl">
+                    {title}
+                  </h1>
+                  {post.meta?.description && (
+                    <p className="text-xl leading-[1.4] text-pretty text-foreground/80">
+                      {post.meta.description}
+                    </p>
+                  )}
+                  {topicList.length > 0 && (
+                    <ul className="flex flex-wrap items-center justify-center gap-2">
+                      {topicList.map((topic) => (
+                        <li key={topic.id}>
+                          <Link
+                            href={`/blog/${topic.slug}`}
+                            className="rounded-full border border-foreground/25 bg-background/30 px-3 py-1 font-mono text-xs backdrop-blur-sm transition-colors hover:bg-background/60"
+                          >
+                            {topic.title}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
             </div>
-            {heroData && typeof heroData === 'object' && heroData.url && (
-              <DuoTone>
-                <ImageMedia
-                  url={heroData.url}
-                  alt={heroData.alt || title}
-                  blurDataURL={heroData.blurDataURL}
-                  fill
-                  priority
-                  sizes="(min-width: 1024px) 64rem, 100vw"
-                  className="object-cover"
-                />
-              </DuoTone>
-            )}
-          </div>
+          </HeroMedia>
 
           <div className="container pt-20">
             <div className="mx-auto flex w-full max-w-5xl items-start justify-between gap-16">

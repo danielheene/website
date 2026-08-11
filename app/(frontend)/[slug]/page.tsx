@@ -9,13 +9,12 @@ import { getPayload } from 'payload'
 
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { Headline } from '@/components/Headline'
-import { ImageMedia } from '@/components/ImageMedia'
+import { HeroMedia } from '@/components/HeroMedia'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PageContainer } from '@/components/PageContainer'
 import { extractSections } from '@/lib/extractSections'
 import { generateMeta } from '@/lib/generateMeta'
 import { placeholderParams } from '@/lib/placeholderParams'
-import { isMediaImage } from '@/lib/typeGuards'
 import { CollectionData, CollectionSlug } from '@/types/collections'
 
 export async function generateStaticParams() {
@@ -63,30 +62,24 @@ export default async function Page({ params }: PageProps) {
   const { title, layout, hero, content } = page
   return (
     <PageContainer layout={layout} sections={extractSections(content)}>
-      <div className="relative pt-32 h-screen">
-        {/*{isHeroMediaArray(hero.media) && hero.media.map()}*/}
-        {hero?.media && Array.isArray(hero.media) && isMediaImage(hero.media[0]) && (
-          <ImageMedia
-            url={hero.media[0].url}
-            className="absolute top-0 left-0 right-0 bottom-0 border-b-2 border-b-primary"
-            alt={hero.media[0].alt || title || 'Hero Image'}
-            width={hero.media[0].width}
-            height={hero.media[0].height}
-            sizes="100vw"
-            blurDataURL={hero.media[0].blurDataURL}
-            priority
-            fill
-          />
-        )}
+      <HeroMedia
+        className="border-b-2 border-b-primary"
+        fallbackAlt={title || 'Hero Image'}
+        media={hero?.media}
+      >
         {title && (
-          <Headline
-            variant="page-title"
-            className="relative z-10 mt-28 mb-32 text-foreground textshadow-lg shadow-primary/75"
-          >
-            {title}
-          </Headline>
+          <div className="pt-40 pb-20">
+            <div className="container">
+              <Headline
+                variant="page-title"
+                className="text-balance text-foreground textshadow-lg shadow-primary/75"
+              >
+                {title}
+              </Headline>
+            </div>
+          </div>
         )}
-      </div>
+      </HeroMedia>
       <RenderBlocks blocks={content} />
 
       {draft && <LivePreviewListener />}

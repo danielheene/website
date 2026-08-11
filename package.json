@@ -75,6 +75,7 @@
     "date-fns": "^4.4.0",
     "dedent": "^1.7.2",
     "embla-carousel-autoplay": "^8.6.0",
+    "embla-carousel-fade": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "hash-wasm": "^4.12.0",
     "hyphen": "^1.14.1",
