@@ -482,7 +482,7 @@ export const Toasty = function Toasty(): React.JSX.Element {
 
   /**
    *    Binds the konami-code listener once for the component's lifetime.
-   *    handleKeyUpEvent is a useCallback with no dependencies, so it is stable
+   *    handleKeyUpEvent is a useCallback with no dependencies, so it is stable,
    *    and the effect never re-runs.
    */
   React.useEffect(() => {

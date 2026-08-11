@@ -14,6 +14,10 @@
   font-size: 1.25rem;
 }
 
+.Icon svg {
+  display: block;
+}
+
 .Name {
   font-weight: 600;
 }

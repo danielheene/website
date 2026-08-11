@@ -117,46 +117,6 @@
       @apply mr-4 inline-block w-6 shrink-0 select-none text-right text-foreground/40;
     }
   }
-
-  .prose {
-    @apply text-foreground leading-normal;
-
-    p {
-      @apply text-inherit leading-normal my-4;
-    }
-
-    h2 {
-      @apply text-inherit text-4xl font-mono font-bold leading-normal mb-1;
-    }
-
-    h3 {
-      @apply text-inherit text-3xl font-mono font-semibold leading-snug mb-0;
-    }
-
-    h4 {
-      @apply text-inherit text-3xl font-bold leading-snug mb-0;
-    }
-
-    h5 {
-      @apply text-inherit text-2xl font-semibold leading-snug mb-0;
-    }
-
-    h6 {
-      @apply text-inherit text-xl font-medium leading-snug mb-0;
-    }
-
-    a {
-      @apply text-inherit font-semibold hover:underline;
-    }
-
-    ul {
-      @apply list-disc pl-6;
-    }
-
-    li {
-      @apply leading-snug my-3 first:mt-0 last:mb-0 marker:text-primary;
-    }
-  }
 }
 
 @layer utilities {
@@ -191,5 +151,45 @@
     --tw-prose-pre-bg: var(--card);
     --tw-prose-th-borders: var(--border);
     --tw-prose-td-borders: var(--border);
+  }
+
+  .prose {
+    @apply text-foreground leading-normal;
+
+    h2 {
+      @apply text-inherit text-4xl font-mono font-bold leading-normal mb-1;
+    }
+
+    h3 {
+      @apply text-inherit text-3xl font-mono font-semibold leading-snug mb-0;
+    }
+
+    h4 {
+      @apply text-inherit text-3xl font-bold leading-snug mb-0;
+    }
+
+    h5 {
+      @apply text-inherit text-2xl font-semibold leading-snug mb-0;
+    }
+
+    h6 {
+      @apply text-inherit text-xl font-medium leading-snug mb-0;
+    }
+
+    :where(p):not(:where([class~="not-prose"], [class~="not-prose"] *)) p {
+      @apply text-inherit leading-normal my-4;
+    }
+
+    a {
+      @apply text-inherit font-semibold hover:underline;
+    }
+
+    ul {
+      @apply list-disc pl-6;
+    }
+
+    li {
+      @apply leading-snug my-3 first:mt-0 last:mb-0 marker:text-primary;
+    }
   }
 }

@@ -14,6 +14,7 @@ import {
   InlineCodeFeature,
   InlineToolbarFeature,
   ItalicFeature,
+  LexicalFieldAdminProps,
   LinkFeature,
   lexicalEditor,
   OrderedListFeature,
@@ -29,6 +30,14 @@ import { IconPickerFeature } from '@/fields/Icon/lexical/feature.server'
 import { LinkField } from '@/fields/Link'
 import { cn } from '@/lib/cn'
 import { BlockSlug } from '@/types/blocks'
+
+const defaultAdminConfig: LexicalFieldAdminProps = {
+  hideGutter: true,
+  hideInsertParagraphAtEnd: true,
+  hideDraggableBlockElement: true,
+  hideAddBlockButton: true,
+  placeholder: () => ' ',
+}
 
 const rootFeatures = [
   FixedToolbarFeature({
@@ -88,8 +97,6 @@ const rootFeatures = [
     },
     disableIfParentHasFixedToolbar: true,
   }),
-
-  InlineToolbarFeature(),
 ]
 
 const inlineFeatures = [
@@ -167,15 +174,33 @@ export const RichTextField = ({
       name,
       admin: {
         className: cn([
-          // String.raw`[&_.rich-text-lexical\_\_label-row]:hidden`,
+          'bg-(--theme-elevation-0)',
+          String.raw`[&_.rich-text-lexical\_\_label-row]:hidden`,
           String.raw`[&_.rich-text-lexical\_\_label-row]:border-none`,
           String.raw`[&_.rich-text-lexical\_\_wrap_.fixed-toolbar]:top-0`,
-          String.raw`[&_.rich-text-lexical\_\_wrap_.fixed-toolbar]:border-[0_0_1px_0]`,
+          // String.raw`[&_.rich-text-lexical\_\_wrap_.fixed-toolbar]:border-[0_0_1px_0]`,
           String.raw`[&_.rich-text-lexical\_\_wrap_.fixed-toolbar]:min-h-auto`,
           String.raw`[&_.rich-text-lexical\_\_wrap_.fixed-toolbar]:p-0.5`,
           String.raw`[&_.rich-text-lexical\_\_wrap_.toolbar-popup\_\_button-alignJustify]:hidden`,
-          String.raw`[&_.rich-text-lexical\_\_wrap_.editor]:border-none`,
+          String.raw`[&_.rich-text-lexical\_\_wrap_.editor-container]:border`,
+          String.raw`[&_.rich-text-lexical\_\_wrap_.editor-container]:border-(--theme-elevation-150)`,
+          String.raw`[&_.rich-text-lexical\_\_wrap_.editor-container]:font-sans`,
           String.raw`[&_.rich-text-lexical\_\_wrap_.ContentEditable\_\_root]:p-2.5`,
+          String.raw`[&_.rich-text-lexical\_\_wrap_.draggable-block-menu]:left-[30px]`,
+
+          [
+            'inline',
+            'caption',
+          ].includes(editorVariant) && [
+            String.raw`[&_.rich-text-lexical\_\_wrap_.ContentEditable\_\_root]:min-h-[200px]`,
+          ],
+
+          [
+            'markdown',
+            'post',
+          ].includes(editorVariant) && [
+            String.raw`[&_.rich-text-lexical\_\_wrap_.ContentEditable\_\_root]:min-h-[500px]`,
+          ],
         ]),
         disableGroupBy: true,
         disableListFilter: true,
@@ -272,11 +297,7 @@ function createRichTextEditor(variant: RichTextEditorVariant) {
         },
       },
       admin: {
-        hideGutter: true,
-        hideInsertParagraphAtEnd: true,
-        hideDraggableBlockElement: true,
-        hideAddBlockButton: true,
-        placeholder: ' ',
+        ...defaultAdminConfig,
       },
     })
   }
@@ -284,11 +305,7 @@ function createRichTextEditor(variant: RichTextEditorVariant) {
     return lexicalEditor({
       features: captionFeatures,
       admin: {
-        hideGutter: true,
-        hideInsertParagraphAtEnd: true,
-        hideDraggableBlockElement: true,
-        hideAddBlockButton: true,
-        placeholder: ' ',
+        ...defaultAdminConfig,
       },
     })
   }
@@ -296,17 +313,17 @@ function createRichTextEditor(variant: RichTextEditorVariant) {
     return lexicalEditor({
       features: markdownFeatures,
       admin: {
-        hideGutter: true,
-        hideInsertParagraphAtEnd: true,
-        hideDraggableBlockElement: true,
-        hideAddBlockButton: true,
-        placeholder: ' ',
+        ...defaultAdminConfig,
       },
     })
   }
   if (variant === 'post') {
     return lexicalEditor({
       features: postFeatures,
+      admin: {
+        ...defaultAdminConfig,
+        hideDraggableBlockElement: false,
+      },
     })
   }
 }
