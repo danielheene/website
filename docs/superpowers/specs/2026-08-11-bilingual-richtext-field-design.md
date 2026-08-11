@@ -124,10 +124,14 @@ On click:
 3. Call `fetchAnthropicTranslation({ value: sourceValue, sourceLanguage, targetLanguage, editorVariant })`.
 4. On success, `setValue` on the target field with the returned Lexical
    JSON.
-5. On failure (thrown error, e.g. Anthropic call failed or HTML failed to
-   parse twice — see fallback below), leave the target field untouched and
-   surface the error via the existing `Toasty` toast component
-   (`src/components/Toasty/Toasty.tsx`) rather than failing silently.
+5. On failure (thrown error, e.g. Anthropic call failed), leave the target
+   field untouched and surface the error via `toast.error(...)` from
+   `@payloadcms/ui` (already used this way in
+   `src/fields/SVGUpload/components/FieldComponent.client.tsx`), formatting
+   the message with the existing `extractErrorMessage` helper
+   (`src/lib/extractErrorMessage.ts`) rather than failing silently.
+   (Correction: `src/components/Toasty/Toasty.tsx` is an unrelated Konami-code
+   easter egg, not a toast-notification component — caught during planning.)
 6. Clear `isPending` in a `finally`.
 
 ### 3. Translation — `src/lib/fetchAnthropicTranslation.ts` (`'use server'`)
@@ -213,7 +217,7 @@ reads and writes the same way.
 | Failure point | Behavior |
 | --- | --- |
 | Source field empty | Button disabled, no call made |
-| `ANTHROPIC_API_KEY` missing / API call fails | Error thrown up to `TranslateControls`, surfaced via `Toasty`, target field untouched |
+| `ANTHROPIC_API_KEY` missing / API call fails | Error thrown up to `TranslateControls`, surfaced via `toast.error(extractErrorMessage(error))`, target field untouched |
 | Model returns malformed HTML | Caught in `parseHtmlToLexical`, falls back to a plain-text paragraph node instead of failing |
 | Target field already has content | `window.confirm` gate before any call is made |
 
