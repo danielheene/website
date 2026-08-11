@@ -1,4 +1,6 @@
+import { cleanup } from '@testing-library/react'
 import { afterEach, vi } from 'vitest'
+import '@testing-library/jest-dom/vitest'
 
 /**
  *    Deterministic environment for tests. Several modules read these at call
@@ -12,6 +14,9 @@ afterEach(() => {
   vi.unstubAllEnvs()
   vi.unstubAllGlobals()
   vi.useRealTimers()
+  // `globals: false` means @testing-library/react's own afterEach-detection
+  // auto-cleanup never registers, so jsdom component tests must do it here.
+  cleanup()
 })
 
 /**
