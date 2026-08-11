@@ -1,4 +1,4 @@
-import type { GroupField, RowField, UIField } from 'payload'
+import type { RowField, UIField } from 'payload'
 
 import { describe, expect, it } from 'vitest'
 
