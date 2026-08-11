@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from 'react'
 
-/**
- * Base URL of the Iconify API. The project self-hosts one (see
- * `src/components/Icon/Icon.tsx`), so search stays on the same origin as the
- * icon data that will eventually be rendered.
- */
-export const ICONIFY_API = 'https://icons.heene.io'
+import { ICONIFY_API } from '@/components/Icon'
+
+/** Shortest query worth sending to the API; below this, results are noise. */
+export const MIN_QUERY_LENGTH = 2
+
+/** Debounce applied to keystrokes before a search is issued, in ms. */
+const SEARCH_DEBOUNCE_MS = 250
 
 export interface UseIconSearchOptions {
   query: string
@@ -41,7 +42,7 @@ export const useIconSearch = ({
   useEffect(() => {
     const trimmed = query.trim()
 
-    if (!enabled || trimmed.length < 2) {
+    if (!enabled || trimmed.length < MIN_QUERY_LENGTH) {
       setIcons([])
       setLoading(false)
       setError(null)
@@ -52,13 +53,13 @@ export const useIconSearch = ({
     setLoading(true)
 
     const timer = setTimeout(async () => {
-      try {
-        const params = new URLSearchParams({
-          query: trimmed,
-          limit: String(limit),
-        })
-        if (prefix) params.set('prefix', prefix)
+      const params = new URLSearchParams({
+        query: trimmed,
+        limit: String(limit),
+      })
+      if (prefix) params.set('prefix', prefix)
 
+      try {
         const response = await fetch(`${ICONIFY_API}/search?${params.toString()}`, {
           signal: controller.signal,
         })
@@ -67,16 +68,20 @@ export const useIconSearch = ({
         const data = (await response.json()) as {
           icons?: string[]
         }
+
         setIcons(Array.isArray(data.icons) ? data.icons : [])
         setError(null)
       } catch (caught) {
-        if ((caught as Error).name === 'AbortError') return
+        // an aborted request was superseded by a newer one — the state it would
+        // have written is already stale, so leave it to the request that won
+        if (controller.signal.aborted) return
+
         setIcons([])
-        setError((caught as Error).message)
+        setError(caught instanceof Error ? caught.message : 'Icon search failed')
       } finally {
-        setLoading(false)
+        if (!controller.signal.aborted) setLoading(false)
       }
-    }, 250)
+    }, SEARCH_DEBOUNCE_MS)
 
     return () => {
       controller.abort()

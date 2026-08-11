@@ -4,9 +4,17 @@ import { type ComponentPropsWithoutRef, forwardRef, type JSX } from 'react'
 
 import { addAPIProvider, IconifyIcon, Icon as IconifyIconComponent } from '@iconify/react'
 
+import { ICONIFY_API } from './api'
+
+/**
+ * Re-exported so existing `@/components/Icon` imports keep working. The value
+ * lives in `./api` because this module is `'use client'` — see the note there.
+ */
+export { ICONIFY_API }
+
 addAPIProvider('', {
   resources: [
-    'https://icons.heene.io',
+    ICONIFY_API,
   ],
 })
 

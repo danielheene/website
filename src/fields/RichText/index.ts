@@ -25,7 +25,7 @@ import {
   UploadFeature,
 } from '@payloadcms/richtext-lexical'
 
-import { IconPickerFeature } from '@/fields/IconPicker/lexical/feature.server'
+import { IconPickerFeature } from '@/fields/Icon/lexical/feature.server'
 import { LinkField } from '@/fields/Link'
 import { cn } from '@/lib/cn'
 import { BlockSlug } from '@/types/blocks'
