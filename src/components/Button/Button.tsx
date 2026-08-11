@@ -5,6 +5,8 @@ import { ComponentProps, forwardRef, ReactNode } from 'react'
 import * as Slot from '@radix-ui/react-slot'
 import { tv, VariantProps } from 'tailwind-variants'
 
+import { Icon } from '@/components/Icon'
+
 export const buttonStyles = tv({
   base: [
     'group/button inline-flex shrink-0 items-center justify-center rounded-none',
@@ -75,22 +77,32 @@ export const buttonStyles = tv({
         'size-11',
       ],
     },
+    fullWidth: {
+      false: 'inline-flex',
+      true: 'flex',
+    },
   },
   defaultVariants: {
     variant: 'default',
     size: 'default',
+    fullWidth: false,
   },
 })
 
 export interface ButtonProps extends VariantProps<typeof buttonStyles> {
   children?: ReactNode
+  startIcon?: string
+  endIcon?: string
   asChild?: boolean
 }
 
 const ButtonSlot = Slot.createSlot<HTMLButtonElement, ButtonProps>('Button.Slot')
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps & ComponentProps<'button'>>(
-  ({ variant, size, className, asChild, ...props }, ref) => {
+  (
+    { variant, size, fullWidth, startIcon, endIcon, className, asChild, children, ...props },
+    ref,
+  ) => {
     const Component = asChild ? ButtonSlot : 'button'
 
     return (
@@ -99,10 +111,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps & ComponentProps
         className={buttonStyles({
           variant,
           size,
+          fullWidth,
           class: className,
         })}
         {...props}
-      />
+      >
+        {startIcon && <Icon name={startIcon} data-icon="inline-start" />}
+        {children}
+        {endIcon && <Icon name={endIcon} data-icon="inline-end" />}
+      </Component>
     )
   },
 )
