@@ -123,7 +123,16 @@ export default async (phase, { defaultConfig }) => {
     productionBrowserSourceMaps: false,
     reactStrictMode: true,
     cacheComponents: true,
-    // cacheHandler: require.resolve('./next.cache-handler.ts'),
+    /*
+     * Redis-backed `use cache` storage.
+     *
+     * `cacheHandlers` (plural) is the Cache Components extension point; the
+     * singular `cacheHandler` this once used is the legacy ISR one and does not
+     * receive `'use cache'` entries. See `next.cache-handler.ts`.
+     */
+    cacheHandlers: {
+      default: require.resolve('./next.cache-handler.ts'),
+    },
 
     experimental: {
       appNewScrollHandler: true,

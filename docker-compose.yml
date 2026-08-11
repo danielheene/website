@@ -25,7 +25,11 @@ services:
       - "6379:6379"
     volumes:
       - "redis-data:/data"
-    command: redis-server --maxmemory-policy noeviction
+    # `notify-keyspace-events Exe` is required by the Next cache handler
+    # (@trieb.work/nextjs-turbo-redis-cache): it subscribes to key-event
+    # notifications to keep its tag manifest in sync across instances, and
+    # refuses to start when they are disabled.
+    command: redis-server --maxmemory-policy noeviction --notify-keyspace-events Exe
     healthcheck:
       <<: *healthcheck-props
       test: [ "CMD-SHELL", "redis-cli PING" ]
