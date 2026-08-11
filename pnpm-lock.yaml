@@ -115,6 +115,9 @@ importers:
       isomorphic-dompurify:
         specifier: ^3.22.0
         version: 3.22.0(@noble/hashes@1.8.0)(canvas@3.2.3)
+      jsdom:
+        specifier: ^30.0.1
+        version: 30.0.1(@noble/hashes@1.8.0)(canvas@3.2.3)
       libphonenumber-js:
         specifier: ^1.13.10
         version: 1.13.10
@@ -281,9 +284,6 @@ importers:
       husky:
         specifier: ^9.1.7
         version: 9.1.7
-      jsdom:
-        specifier: ^30.0.1
-        version: 30.0.1(@noble/hashes@1.8.0)(canvas@3.2.3)
       lint-staged:
         specifier: ^17.3.0
         version: 17.3.0
