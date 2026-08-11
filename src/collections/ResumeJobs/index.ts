@@ -1,8 +1,7 @@
 import type { CollectionConfig } from 'payload'
-import { convertLexicalToHTML } from '@payloadcms/richtext-lexical/html'
 
 import { authenticated } from '@/access/authenticated'
-import { RichTextField } from '@/fields/RichText'
+import { BilingualRichTextField } from '@/fields/BilingualRichText'
 import { generateResumeDocumentHook } from '@/lib/hooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
@@ -111,48 +110,13 @@ export const ResumeJobs: CollectionConfig<CollectionSlug['ResumeJobs']> = {
           },
           defaultValue: [],
           fields: [
-            {
-              type: 'group',
+            BilingualRichTextField({
               name: 'task',
+              layout: 'column',
+              editorVariant: 'inline',
+              required: true,
               label: false,
-              admin: {
-                hideGutter: true,
-              },
-              fields: [
-                RichTextField({
-                  name: 'en',
-                  editorVariant: 'inline',
-                  overrides: {
-                    label: 'English',
-                    required: true,
-                    hooks: {
-                      beforeChange: [
-                        async ({ value, siblingData, data, previousValue }) => {
-                          // if (value === previousValue) {
-                          const html = convertLexicalToHTML({
-                            disableContainer: true,
-                            data: value,
-                          })
-                          console.log(html)
-                          // }
-                          // if (!value) {
-                          //   throw new Error('English task is required')
-                          // }
-                        },
-                      ],
-                    },
-                  },
-                }),
-                RichTextField({
-                  name: 'de',
-                  editorVariant: 'inline',
-                  overrides: {
-                    label: 'German',
-                    required: true,
-                  },
-                }),
-              ],
-            },
+            }),
           ],
         },
       ],
