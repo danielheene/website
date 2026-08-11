@@ -152,8 +152,8 @@ const postFeatures = [
   IconPickerFeature(),
 ]
 
-type RichTextEditorVariant = 'inline' | 'caption' | 'markdown' | 'post'
-type RichTextFieldOverrides = Partial<Omit<PayloadRichTextField, 'name' | 'type' | 'editor'>>
+export type RichTextEditorVariant = 'inline' | 'caption' | 'markdown' | 'post'
+export type RichTextFieldOverrides = Partial<Omit<PayloadRichTextField, 'name' | 'type' | 'editor'>>
 
 type RichTextFieldProps = {
   name: string
