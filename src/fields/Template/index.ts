@@ -1,4 +1,4 @@
-import { TextField } from 'payload'
+import { deepMerge, TextField } from 'payload'
 
 import { Locale } from '@/lib/i18n'
 
@@ -9,6 +9,8 @@ import {
   TemplateFieldDataFunction,
 } from './types'
 
+type TemplateFieldOverrides = Partial<Omit<TextField, 'name' | 'type'>>
+
 type TemplateFieldProps = {
   name: string
   label?: string | false
@@ -18,6 +20,12 @@ type TemplateFieldProps = {
 
   data?: TemplateFieldData | TemplateFieldDataFunction
   anntotation?: TemplateFieldAnnotation | TemplateFieldAnnotationFunction
+  /**
+   * Escape hatch for call sites that need a different client component —
+   * the link label, for instance, sources `{title}` from live form state
+   * rather than from server props.
+   */
+  overrides?: TemplateFieldOverrides
 }
 
 export const TemplateField = ({
@@ -27,28 +35,31 @@ export const TemplateField = ({
   defaultValue,
   data,
   anntotation,
+  overrides = {},
   renderLocale = [
     'en',
   ],
-}: TemplateFieldProps): TextField => {
-  return {
-    type: 'text',
-    name,
-    label,
-    defaultValue,
-    admin: {
-      description,
-      components: {
-        Description: '@/components/AdminPanel#MarkdownDescription',
-        Field: {
-          path: '@/fields/Template/Components/FieldComponent',
-          serverProps: {
-            customAnnotation: anntotation,
-            customData: data,
-            renderLocale,
+}: TemplateFieldProps): TextField =>
+  deepMerge<TextField, TemplateFieldOverrides>(
+    {
+      type: 'text',
+      name,
+      label,
+      defaultValue,
+      admin: {
+        description,
+        components: {
+          Description: '@/components/AdminPanel#MarkdownDescription',
+          Field: {
+            path: '@/fields/Template/Components/FieldComponent',
+            serverProps: {
+              customAnnotation: anntotation,
+              customData: data,
+              renderLocale,
+            },
           },
         },
       },
     },
-  }
-}
+    overrides,
+  )
