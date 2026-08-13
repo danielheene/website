@@ -14,8 +14,13 @@ const ALLOWED_PROTOCOLS = [
  * Whether a string is acceptable as a custom link target.
  *
  * Accepts absolute http(s), `mailto:`, `tel:`, root-relative paths and bare
- * fragments. Protocol-relative URLs (`//host`) are rejected — they read as
- * root-relative but resolve off-site.
+ * fragments. Rejects anything that can resolve off-site while looking
+ * same-origin: protocol-relative URLs (`//host`), and any relative value
+ * containing a backslash. Browsers normalize `\` to `/` for special schemes
+ * (per the WHATWG URL spec), so `/\evil.com` and `\/evil.com` resolve to
+ * `//evil.com` at the browser even though neither starts with `//` as
+ * written — a relative value has no legitimate use for a backslash, so any
+ * backslash is treated as hostile rather than normalized.
  */
 export const isValidCustomURL = (value: unknown): boolean => {
   if (typeof value !== 'string') return false
@@ -24,10 +29,13 @@ export const isValidCustomURL = (value: unknown): boolean => {
   if (!trimmed) return false
 
   if (trimmed.startsWith('//')) return false
-  if (trimmed.startsWith('/') || trimmed.startsWith('#')) return true
+  if (trimmed.startsWith('/') || trimmed.startsWith('#')) {
+    return !trimmed.includes('\\')
+  }
 
   try {
-    return ALLOWED_PROTOCOLS.includes(new URL(trimmed).protocol)
+    const url = new URL(trimmed)
+    return ALLOWED_PROTOCOLS.includes(url.protocol)
   } catch {
     return false
   }

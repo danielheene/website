@@ -25,6 +25,10 @@ describe('isValidCustomURL', () => {
     'not a url',
     '',
     '   ',
+    '/\\evil.com',
+    '/\\/evil.com',
+    '\\\\evil.com',
+    '/path\\to\\evil.com',
   ])('rejects %s', (value) => {
     expect(isValidCustomURL(value)).toBe(false)
   })
