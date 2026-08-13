@@ -21,6 +21,7 @@ const loadReferenceTitle = async (
   relationTo: string,
   id: number | string,
   req: PayloadRequest,
+  draft: boolean | undefined,
 ): Promise<string> => {
   const cacheKey = `${TITLE_CONTEXT_KEY}:${relationTo}:${id}`
   const cached = req.context?.[cacheKey] as Promise<string> | undefined
@@ -51,12 +52,11 @@ const loadReferenceTitle = async (
       disableErrors: true,
       // Population resolves drafts when the read is a draft read; mirror that
       // so admin/live-preview sees the draft title rather than the published
-      // one. `undefined` leaves the local API's own default in place.
-      draft: (
-        req as PayloadRequest & {
-          draft?: boolean
-        }
-      ).draft,
+      // one. Payload hands `draft` to the hook as a sibling of `req` (see
+      // `FieldHookArgs`), not as a property of the request — reading it off
+      // `req` would always be `undefined`. `undefined` leaves the local API's
+      // own default in place.
+      draft,
       req,
     })
 
@@ -97,6 +97,7 @@ const loadReferenceTitle = async (
 const resolveTitle = async (
   link: Partial<LinkFieldData> | undefined,
   req: PayloadRequest | undefined,
+  draft: boolean | undefined,
 ): Promise<string> => {
   const target = resolveLinkTarget(link)
 
@@ -111,7 +112,7 @@ const resolveTitle = async (
   if (typeof value === 'object' || !req?.payload?.findByID) return ''
 
   try {
-    return await loadReferenceTitle(target.relationTo, value, req)
+    return await loadReferenceTitle(target.relationTo, value, req, draft)
   } catch (error) {
     req.payload?.logger?.error(
       {
@@ -136,13 +137,17 @@ const resolveTitle = async (
  * label — a visible `{title}` is a far better signal than a link that
  * silently loses its text.
  */
-export const renderLinkLabel: FieldHook<TypeWithID, string> = async ({ req, siblingData }) => {
+export const renderLinkLabel: FieldHook<TypeWithID, string> = async ({
+  draft,
+  req,
+  siblingData,
+}) => {
   const link = siblingData as Partial<LinkFieldData> | undefined
   const template = typeof link?.label === 'string' ? link.label : ''
 
   if (!template) return ''
 
-  const title = await resolveTitle(link, req)
+  const title = await resolveTitle(link, req, draft)
 
   const { result, error } = await renderTemplateCore({
     template,

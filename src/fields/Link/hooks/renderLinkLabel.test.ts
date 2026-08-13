@@ -25,11 +25,17 @@ const req = (locale?: string) =>
     },
   }) as never
 
-/** Runs the hook against a caller-owned request, so `req.context` is shared. */
-const callWith = (request: unknown, siblingData: unknown) =>
+/**
+ * Runs the hook against a caller-owned request, so `req.context` is shared.
+ *
+ * `draft` is a top-level `FieldHookArgs` member — a sibling of `req`, not a
+ * property of it — which is how Payload actually supplies it.
+ */
+const callWith = (request: unknown, siblingData: unknown, draft?: boolean) =>
   renderLinkLabel({
     siblingData,
     req: request,
+    draft,
   } as never)
 
 const call = (siblingData: unknown, locale?: string) => callWith(req(locale), siblingData)
@@ -249,20 +255,22 @@ describe('renderLinkLabel with an unpopulated reference', () => {
     )
   })
 
-  it('threads the draft flag from the request', async () => {
-    const request = req()
-
-    ;(
-      request as unknown as {
-        draft?: boolean
-      }
-    ).draft = true
-
-    await callWith(request, link('page-1'))
+  it("threads the draft flag from the hook's own arguments", async () => {
+    await callWith(req(), link('page-1'), true)
 
     expect(findByID).toHaveBeenCalledWith(
       expect.objectContaining({
         draft: true,
+      }),
+    )
+  })
+
+  it('leaves draft undefined when the hook is not a draft read', async () => {
+    await callWith(req(), link('page-1'))
+
+    expect(findByID).toHaveBeenCalledWith(
+      expect.objectContaining({
+        draft: undefined,
       }),
     )
   })
