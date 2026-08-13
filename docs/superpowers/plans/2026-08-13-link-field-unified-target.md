@@ -22,6 +22,7 @@ Spec: `docs/superpowers/specs/2026-08-13-link-field-unified-target-design.md`
 - Formatting is Biome; run `pnpm exec biome check --write <paths>` before each commit.
 - Per this repo's git config, every commit message ends with the `Co-Authored-By:` and `Claude-Session:` trailers. They are omitted from the command blocks below for brevity — add them.
 - `src/types/payload.ts` is generated. Never hand-edit it; regenerate via the dev server or `pnpm run payload generate:types`.
+- **This branch is developed alongside unrelated in-flight work in the same working tree.** Roughly 26 modified and 11 untracked files belong to a separate auto-translate feature and must never be committed here. Never run `git add -A`, `git add .`, or `git commit -a`. Stage only the exact files your task names, by path. Run `git status --porcelain` before every commit and confirm nothing outside your task's file list is staged.
 
 ---
 
@@ -135,15 +136,19 @@ git commit -m "feat(link): mount custom Field component on link reference"
 
 ---
 
-### Task 2: `isValidCustomURL`
+### Task 2: Pure link helpers — `isValidCustomURL` and `siblingPath`
+
+Two small pure helpers in the same directory, each with its own test.
 
 **Files:**
 - Create: `src/fields/Link/lib/isValidCustomURL.ts`
+- Create: `src/fields/Link/lib/siblingPath.ts`
 - Test: `src/fields/Link/lib/isValidCustomURL.test.ts`
+- Test: `src/fields/Link/lib/siblingPath.test.ts`
 
 **Interfaces:**
 - Consumes: nothing.
-- Produces: `isValidCustomURL(value: unknown): boolean` — used by Task 7's select and Task 9's `url` validate.
+- Produces: `isValidCustomURL(value: unknown): boolean` — used by Task 8's select and Task 10's `url` validate. `siblingPath(path: string, name: string): string` — used by Tasks 8 and 9 to reach sibling fields.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -244,12 +249,68 @@ export const isValidCustomURL = (value: unknown): boolean => {
 Run: `pnpm test src/fields/Link/lib/isValidCustomURL.test.ts`
 Expected: PASS, 4 test blocks / 20 assertions.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Write the failing test for `siblingPath`**
+
+`src/fields/Link/lib/siblingPath.test.ts`:
+
+```ts
+import { describe, expect, it } from 'vitest'
+
+import { siblingPath } from './siblingPath'
+
+describe('siblingPath', () => {
+  it('swaps the last segment of a deeply nested path', () => {
+    expect(siblingPath('layout.0.links.entries.2.link.reference', 'url')).toBe(
+      'layout.0.links.entries.2.link.url',
+    )
+  })
+
+  it('swaps the last segment of a shallow group path', () => {
+    expect(siblingPath('link.reference', 'url')).toBe('link.url')
+  })
+
+  it('handles a single-segment path, as used in the lexical link drawer', () => {
+    expect(siblingPath('reference', 'url')).toBe('url')
+  })
+
+  it('leaves earlier segments that share the name untouched', () => {
+    expect(siblingPath('url.0.link.reference', 'url')).toBe('url.0.link.url')
+  })
+})
+```
+
+- [ ] **Step 6: Run test to verify it fails**
+
+Run: `pnpm test src/fields/Link/lib/siblingPath.test.ts`
+Expected: FAIL — `Failed to resolve import "./siblingPath"`.
+
+- [ ] **Step 7: Write the `siblingPath` implementation**
+
+`src/fields/Link/lib/siblingPath.ts`:
+
+```ts
+/**
+ * Path of a sibling field within the same group.
+ *
+ * Derived from the caller's own path rather than hardcoded, because the link
+ * fields are spread into lexical's `LinkFeature` as well as rendered in
+ * normal document forms — and the drawer nests them at a shallower depth.
+ */
+export const siblingPath = (path: string, name: string): string =>
+  path.replace(/[^.]+$/, name)
+```
+
+- [ ] **Step 8: Run test to verify it passes**
+
+Run: `pnpm test src/fields/Link/lib/siblingPath.test.ts`
+Expected: PASS, 4 tests.
+
+- [ ] **Step 9: Commit**
 
 ```bash
 pnpm exec biome check --write src/fields/Link/lib
-git add src/fields/Link/lib
-git commit -m "feat(link): add isValidCustomURL guard"
+git add src/fields/Link/lib/isValidCustomURL.ts src/fields/Link/lib/isValidCustomURL.test.ts src/fields/Link/lib/siblingPath.ts src/fields/Link/lib/siblingPath.test.ts
+git commit -m "feat(link): add isValidCustomURL and siblingPath helpers"
 ```
 
 ---
@@ -1353,6 +1414,7 @@ import {
 } from '@/fields/Link/lib/fetchLinkTargetOptions'
 import { isValidCustomURL } from '@/fields/Link/lib/isValidCustomURL'
 import { CUSTOM_URL_SLUG } from '@/fields/Link/lib/resolveLinkTarget'
+import { siblingPath } from '@/fields/Link/lib/siblingPath'
 import { cn } from '@/lib/cn'
 
 type ReferenceValue = {
@@ -1366,13 +1428,6 @@ type TargetFieldClientProps = RelationshipFieldClientProps & {
 
 const CREATE_ERROR =
   'Enter an absolute http(s) URL, a mailto:/tel: link, a path starting with “/”, or a “#” anchor.'
-
-/**
- * Sibling path for the same link group. Derived from this field's own path
- * rather than hardcoded, because the link fields are also spread into
- * lexical's `LinkFeature`, where they sit at a shallower depth.
- */
-const siblingPath = (path: string, name: string): string => path.replace(/[^.]+$/, name)
 
 export const TargetFieldClient = ({
   field,
@@ -1635,12 +1690,11 @@ import { deriveLinkTitle } from '@/fields/Link/lib/deriveLinkTitle'
 import type { LinkTargetOptionGroup } from '@/fields/Link/lib/fetchLinkTargetOptions'
 import { linkTargetOptionValue } from '@/fields/Link/lib/fetchLinkTargetOptions'
 import { resolveLinkTarget } from '@/fields/Link/lib/resolveLinkTarget'
+import { siblingPath } from '@/fields/Link/lib/siblingPath'
 
 type LabelFieldClientProps = TextFieldClientProps & {
   optionGroups: LinkTargetOptionGroup[]
 }
-
-const siblingPath = (path: string, name: string): string => path.replace(/[^.]+$/, name)
 
 export const LabelFieldClient = ({
   optionGroups,
@@ -1784,7 +1838,9 @@ describe('LinkField', () => {
 
   it('requires exactly one of reference or url', () => {
     const reference = named('reference')
-    const validate = (reference as { validate: Function }).validate
+    const { validate } = reference as unknown as {
+      validate: (value: unknown, args: { siblingData: Record<string, unknown> }) => string | true
+    }
 
     expect(validate(null, { siblingData: {} })).toEqual(expect.any(String))
     expect(validate(null, { siblingData: { url: 'https://example.com' } })).toBe(true)
@@ -2492,13 +2548,27 @@ In `package.json`, alongside `skills:migrate-name-caption`:
 
 - [ ] **Step 7: Verify the globals collection name**
 
-The script assumes Payload's mongoose adapter stores globals in a collection literally named `globals`. Confirm before running against real data:
+The script assumes Payload's mongoose adapter stores globals in a collection literally named `globals`. Confirm before running against real data by writing a throwaway script rather than an inline `-e` flag (`payload run` takes a file path, not inline source):
 
-```bash
-pnpm run payload run -e "console.log((await (await import('payload')).getPayload({ config: (await import('@payload-config')).default }).then(p => p.db.connection.db.listCollections().toArray())).map(c => c.name))"
+`scripts/list-collections.ts`:
+
+```ts
+import config from '@payload-config'
+import { getPayload } from 'payload'
+
+const payload = await getPayload({
+  config,
+})
+
+const names = await payload.db.connection.db.listCollections().toArray()
+
+console.info(names.map((entry) => entry.name).sort())
+process.exit(0)
 ```
 
-If the name differs, correct `TARGET_COLLECTIONS`. If globals are stored per-slug, list each slug instead.
+Run: `pnpm run payload run scripts/list-collections.ts`
+
+If the globals collection is not named `globals`, correct `TARGET_COLLECTIONS`. If globals are stored one collection per slug, list each slug instead. Delete `scripts/list-collections.ts` before committing — it is a throwaway probe, not a deliverable.
 
 - [ ] **Step 8: Dry-run against a dump, then run**
 
@@ -2551,8 +2621,11 @@ Expected: the existing suite passes. If any spec drives the old link UI (a `type
 
 - [ ] **Step 6: Commit any fixes**
 
+**Never `git add -A` here.** This branch is being developed alongside unrelated in-flight work in the same tree (see Global Constraints); a blanket add would sweep it into this commit. Stage only the files you actually changed, by name:
+
 ```bash
-git add -A
+git status --porcelain          # confirm what you touched
+git add <each file you changed, by explicit path>
 git commit -m "fix(link): address verification findings"
 ```
 
