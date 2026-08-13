@@ -19,16 +19,22 @@ export const Footer = async () => {
   } = await fetchSiteSettingsCached()
   const { telephone, email, sameAs } = await fetchGlobalUserSettingsCached()
 
-  const socialLinks = []
+  // Typed rather than inferred: these are hand-built `LinkFieldData` values
+  // that never pass through the CMS, so an inferred `any[]` would let them
+  // drift from the field's shape without `tsc` noticing — which is exactly
+  // how they kept the removed `type`/`icon` keys through the link rework.
+  const socialLinks: {
+    id: string
+    link: LinkFieldData
+  }[] = []
 
   if (email) {
     socialLinks.push({
       id: 'email',
       link: {
-        type: 'custom',
         url: `mailto:${email}`,
         label: 'Email',
-        icon: 'mail',
+        iconBefore: 'mail',
         iconOnly: true,
         newTab: true,
       },
@@ -39,10 +45,9 @@ export const Footer = async () => {
     socialLinks.push({
       id: 'telephone',
       link: {
-        type: 'custom',
         url: parsePhoneNumber(telephone).getURI(),
         label: 'Telephone',
-        icon: 'phone',
+        iconBefore: 'phone',
         newTab: true,
         iconOnly: true,
       },
@@ -53,13 +58,12 @@ export const Footer = async () => {
     socialLinks.push({
       id,
       link: {
-        type: 'custom',
         url,
         label: name,
-        icon,
+        iconBefore: icon,
         iconOnly: true,
         newTab: true,
-      } as LinkFieldData,
+      },
     })
   })
 
