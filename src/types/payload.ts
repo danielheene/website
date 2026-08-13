@@ -167,6 +167,7 @@ export interface Config {
       CalculateSkillTagInterval: TaskCalculateSkillTagInterval;
       GenerateLocalizedResumeDocument: TaskGenerateLocalizedResumeDocument;
       PingUptimeEndpoint: TaskPingUptimeEndpoint;
+      AutoTranslateBilingualField: TaskAutoTranslateBilingualField;
       createCollectionExport: TaskCreateCollectionExport;
       createCollectionImport: TaskCreateCollectionImport;
       schedulePublish: TaskSchedulePublish;
@@ -235,11 +236,6 @@ export interface LinkGroupBlock {
  * via the `definition` "LinkFieldData".
  */
 export interface LinkFieldData {
-  type?: ('reference' | 'custom') | null;
-  newTab?: boolean | null;
-  icon?: string | null;
-  label: string;
-  iconOnly?: boolean | null;
   reference?:
     | ({
         relationTo: 'pages';
@@ -253,7 +249,19 @@ export interface LinkFieldData {
         relationTo: 'topics';
         value: string | Topic;
       } | null);
+  newTab?: boolean | null;
   url?: string | null;
+  iconBefore?: string | null;
+  /**
+   * Defaults to the title of the linked document. Overwrite it with any text, or mix the two — `{title}` is substituted on render.
+   */
+  label: string;
+  iconAfter?: string | null;
+  resolvedLabel?: string | null;
+  /**
+   * Hides the label visually and uses it as the accessible name instead.
+   */
+  iconOnly?: boolean | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1007,6 +1015,7 @@ export interface PayloadJob {
           | 'CalculateSkillTagInterval'
           | 'GenerateLocalizedResumeDocument'
           | 'PingUptimeEndpoint'
+          | 'AutoTranslateBilingualField'
           | 'createCollectionExport'
           | 'createCollectionImport'
           | 'schedulePublish';
@@ -1051,6 +1060,7 @@ export interface PayloadJob {
         | 'CalculateSkillTagInterval'
         | 'GenerateLocalizedResumeDocument'
         | 'PingUptimeEndpoint'
+        | 'AutoTranslateBilingualField'
         | 'createCollectionExport'
         | 'createCollectionImport'
         | 'schedulePublish'
@@ -1191,15 +1201,38 @@ export interface ResumeProjectData {
 export interface ResumeSkillData {
   id: string;
   name: {
-    en: string;
-    de: string;
-  };
-  caption?: {
-    en?: string | null;
-    de?: string | null;
+    en: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    };
+    de: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    };
   };
   name_label?: string | null;
-  caption_label?: string | null;
   published?: boolean | null;
   type?: SkillType;
   skillTags?:
@@ -1748,14 +1781,7 @@ export interface ResumeSkillsSelect<T extends boolean = true> {
         en?: T;
         de?: T;
       };
-  caption?:
-    | T
-    | {
-        en?: T;
-        de?: T;
-      };
   name_label?: T;
-  caption_label?: T;
   published?: T;
   type?: T;
   skillTags?: T;
@@ -2256,13 +2282,14 @@ export interface HeaderSettingsSelect<T extends boolean = true> {
  * via the `definition` "LinkFieldData_select".
  */
 export interface LinkFieldDataSelect<T extends boolean = true> {
-  type?: T;
-  newTab?: T;
-  icon?: T;
-  label?: T;
-  iconOnly?: T;
   reference?: T;
+  newTab?: T;
   url?: T;
+  iconBefore?: T;
+  label?: T;
+  iconAfter?: T;
+  resolvedLabel?: T;
+  iconOnly?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2510,6 +2537,30 @@ export interface TaskGenerateLocalizedResumeDocument {
  */
 export interface TaskPingUptimeEndpoint {
   input?: unknown;
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskAutoTranslateBilingualField".
+ */
+export interface TaskAutoTranslateBilingualField {
+  input: {
+    mode: string;
+    collectionSlug: string;
+    docId?: string | null;
+    path: string;
+    sourceLanguage: string;
+    targetLanguage: string;
+    sourceValue:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
   output?: unknown;
 }
 /**
