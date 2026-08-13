@@ -3,6 +3,7 @@ import Link from 'next/link'
 
 import { Button, ButtonProps } from '@/components/Button'
 import { Icon } from '@/components/Icon'
+import { CUSTOM_URL_SLUG, resolveLinkTarget } from '@/fields/Link/lib/resolveLinkTarget'
 import { generateContentURL } from '@/lib/generateContentURL'
 import type { LinkFieldData } from '@/types/payload'
 
@@ -16,28 +17,39 @@ type CMSLinkType = LinkFieldData & {
 
 export const CMSLink: React.FC<CMSLinkType> = (props) => {
   const {
-    type,
-    icon,
-    iconOnly,
     children,
     className,
+    iconAfter,
+    iconBefore,
+    iconOnly,
     label,
     newTab,
-    reference,
+    resolvedLabel,
     size,
     variant = 'link',
-    url,
   } = props
 
+  const target = resolveLinkTarget(props)
+
+  if (!target) return null
+
   const href =
-    type === 'reference' && typeof reference?.value === 'object' && reference.value.slug
-      ? generateContentURL({
-          collection: reference?.relationTo,
-          slug: reference.value.slug,
-        })
-      : url
+    target.relationTo === CUSTOM_URL_SLUG
+      ? target.value
+      : typeof target.value === 'object' && target.value.slug
+        ? generateContentURL({
+            collection: target.relationTo,
+            slug: target.value.slug,
+          })
+        : null
 
   if (!href) return null
+
+  // `resolvedLabel` is the virtual, template-rendered label. Falling back to
+  // the raw `label` keeps a caller that queried with a narrow `select` from
+  // rendering nothing — it renders the unsubstituted template instead, which
+  // is visible enough to get reported.
+  const text = resolvedLabel || label
 
   const newTabProps = newTab
     ? {
@@ -46,22 +58,26 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
       }
     : {}
 
+  const hasIcon = Boolean(iconBefore || iconAfter)
+  const showText = !(hasIcon && iconOnly)
+
   return (
     <Button
       className={className}
       size={size}
       variant={variant}
-      {...(icon && iconOnly
+      {...(hasIcon && iconOnly
         ? {
-            'aria-label': label,
+            'aria-label': text,
           }
         : {})}
       asChild
     >
-      <Link href={href || url} {...newTabProps}>
-        {icon && <Icon name={icon} />}
-        {((icon && !iconOnly) || !icon) && label && <span>{label}</span>}
-        {((icon && !iconOnly) || !icon) && children && children}
+      <Link href={href} {...newTabProps}>
+        {iconBefore && <Icon name={iconBefore} />}
+        {showText && text && <span>{text}</span>}
+        {showText && children}
+        {iconAfter && <Icon name={iconAfter} />}
       </Link>
     </Button>
   )

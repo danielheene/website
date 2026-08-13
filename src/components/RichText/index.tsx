@@ -24,6 +24,7 @@ import { Columns } from '@/blocks/TwoColumnContentBlock/Renderer/Columns'
 import { Icon } from '@/components/Icon'
 import { ImageMedia } from '@/components/ImageMedia'
 import { VideoMedia } from '@/components/VideoMedia'
+import { CUSTOM_URL_SLUG, resolveLinkTarget } from '@/fields/Link/lib/resolveLinkTarget'
 import { cn } from '@/lib/cn'
 import { generateContentURL } from '@/lib/generateContentURL'
 import { generateSlug } from '@/lib/generateSlug'
@@ -64,8 +65,9 @@ const buildJsxConverters =
       }),
       /**
        * This project's custom LinkField nests its data under `fields.link` and
-       * keys the kind by `type`, whereas LinkJSXConverter expects a flat
-       * `{ linkType, url, doc }` — so links are resolved here instead.
+       * stores a `reference` / `url` pair, whereas LinkJSXConverter expects a
+       * flat `{ linkType, url, doc }` — so links are resolved here instead,
+       * through the same `resolveLinkTarget` helper `CMSLink` uses.
        */
       link: ({ node, nodesToJSX }) => {
         const nested = (
@@ -79,18 +81,23 @@ const buildJsxConverters =
 
         if (!nested) return <>{children}</>
 
+        const target = resolveLinkTarget(nested)
+
+        if (!target) return <>{children}</>
+
+        // Only a populated reference carries a slug; an unpopulated one is a
+        // bare id, which cannot be turned into a URL.
         const href =
-          nested.type === 'reference' && typeof nested.reference?.value === 'object'
-            ? generateContentURL({
-                collection: nested.reference.relationTo,
-                slug:
-                  (
-                    nested.reference.value as {
-                      slug?: string
-                    }
-                  ).slug ?? '',
-              })
-            : (nested.url ?? '')
+          target.relationTo === CUSTOM_URL_SLUG
+            ? target.value
+            : typeof target.value === 'object' && target.value.slug
+              ? generateContentURL({
+                  collection: target.relationTo,
+                  slug: target.value.slug,
+                })
+              : null
+
+        if (!href) return <>{children}</>
 
         return (
           <a
