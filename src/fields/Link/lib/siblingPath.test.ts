@@ -17,6 +17,10 @@ describe('siblingPath', () => {
     expect(siblingPath('reference', 'url')).toBe('url')
   })
 
+  it('swaps the path the lexical link drawer actually renders the field at', () => {
+    expect(siblingPath('fields.reference', 'url')).toBe('fields.url')
+  })
+
   it('leaves earlier segments that share the name untouched', () => {
     expect(siblingPath('url.0.link.reference', 'url')).toBe('url.0.link.url')
   })
