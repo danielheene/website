@@ -1,6 +1,7 @@
 'use client'
 
-import { type JSX, useCallback, useMemo, useState } from 'react'
+import { type ComponentProps, type JSX, useCallback, useMemo, useState } from 'react'
+import { createFilter } from 'react-select'
 import type { RelationshipFieldClientProps } from 'payload'
 import { FieldError, FieldLabel, fieldBaseClass, ReactSelect, useField } from '@payloadcms/ui'
 
@@ -30,6 +31,43 @@ type TargetFieldClientProps = RelationshipFieldClientProps & {
 
 const CREATE_ERROR =
   'Enter an absolute http(s) URL, a mailto:/tel: link, a path starting with “/”, or a “#” anchor.'
+
+const matchesSearch = createFilter<unknown>()
+
+/**
+ * Ordinary menu filtering, plus an escape hatch from a bug in Payload's
+ * `ReactSelect` adapter.
+ *
+ * The adapter wires its own `onKeyDown` onto `CreatableSelect` *after*
+ * spreading our props, so ours can never override it. That handler assumes
+ * `isMulti`: with a value already selected and text typed, Enter/Tab runs
+ * `onChange([...value, createOption(inputValue)])` — which throws
+ * `TypeError: value is not iterable` on our single option object, and would
+ * otherwise hand `handleChange` a bare `{ label, value }` carrying no
+ * `__isNew__`, `relationTo` or `docID`.
+ *
+ * Its first guard is `if (filterOption && !filterOption(null, inputValue))
+ * return`, and that probe is the *only* caller anywhere that passes a null
+ * option — react-select's own `isFocusable` always passes
+ * `{ label, value, data }`. Returning `false` for null therefore
+ * short-circuits the broken branch and nothing else. It returns without
+ * calling `preventDefault`, so react-select's own `onKeyDown` still runs and
+ * selects the focused option; for typed text that is the "Create …" entry,
+ * which reaches `handleChange` properly shaped as `__isNew__` and is validated
+ * by `isValidCustomURL` like any other created option.
+ *
+ * The adapter forwards `filterOption` to `CreatableSelect` as well, so real
+ * options keep react-select's default matching (which passes the synthetic
+ * "Create …" option through untouched).
+ */
+const filterOption = (
+  option: null | {
+    data: unknown
+    label: string
+    value: string
+  },
+  search: string,
+): boolean => option !== null && matchesSearch(option, search)
 
 export const TargetFieldClient = ({
   field,
@@ -145,21 +183,38 @@ export const TargetFieldClient = ({
   )
 
   const hasError = showError || createError !== null
+  const inputId = `field-${path.replace(/\./g, '__')}`
 
   return (
-    <div className={cn(fieldBaseClass, 'relationship', hasError && 'error')}>
-      <FieldLabel label={field?.label} path={path} required />
+    <div
+      className={cn(fieldBaseClass, 'relationship', hasError && 'error', readOnly && 'read-only')}
+    >
+      {/*
+        `FieldLabel` derives its own `htmlFor` as `field-<path>-<editDepth>-<uuid>`
+        when none is passed, which can never match the id we hand the control —
+        so pass ours explicitly or the label names nothing.
+      */}
+      <FieldLabel htmlFor={inputId} label={field?.label} path={path} required={field?.required} />
 
       <ReactSelect
         isClearable
         isCreatable
         disabled={readOnly}
-        inputId={`field-${path.replace(/\./g, '__')}`}
+        filterOption={filterOption}
+        inputId={inputId}
         onChange={handleChange}
         options={optionGroups}
         placeholder="Select a document, or type a URL to link somewhere else"
         showError={hasError}
-        value={selected ?? undefined}
+        /*
+          Deliberately `null`, not `undefined`. react-select's `useStateManager`
+          resolves `value = propsValue !== undefined ? propsValue : stateValue`,
+          so `undefined` hands the displayed value to react-select's internal
+          state — a custom URL we rejected would keep showing in the control
+          next to its own error. The adapter's prop type omits `null`, hence
+          the cast.
+        */
+        value={selected as ComponentProps<typeof ReactSelect>['value']}
       />
 
       <FieldError message={createError ?? errorMessage} path={path} showError={hasError} />
