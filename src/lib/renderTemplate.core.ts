@@ -62,23 +62,32 @@ const loadTemplateGlobals = async (
   req?: PayloadRequest,
 ): Promise<TemplateGlobals> => {
   const cacheKey = `${GLOBALS_CONTEXT_KEY}:${locale}`
-  const cached = req?.context?.[cacheKey] as TemplateGlobals | undefined
+  const cached = req?.context?.[cacheKey] as Promise<TemplateGlobals> | undefined
 
   if (cached) return cached
 
-  const [site, user] = await Promise.all([
-    fetchSiteSettings(locale),
-    fetchGlobalUserSettings(locale),
-  ])
+  const pending = (async () => {
+    const [site, user] = await Promise.all([
+      fetchSiteSettings(locale),
+      fetchGlobalUserSettings(locale),
+    ])
 
-  const globals: TemplateGlobals = {
-    site,
-    user,
+    return {
+      site,
+      user,
+    }
+  })()
+
+  if (req?.context) {
+    req.context[cacheKey] = pending
+    // A rejected fetch must not leave a permanently poisoned cache entry:
+    // evict it so the next caller retries instead of re-throwing forever.
+    pending.catch(() => {
+      if (req.context?.[cacheKey] === pending) delete req.context[cacheKey]
+    })
   }
 
-  if (req?.context) req.context[cacheKey] = globals
-
-  return globals
+  return pending
 }
 
 export const renderTemplateCore = async ({

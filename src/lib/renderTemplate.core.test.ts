@@ -1,3 +1,11 @@
+/**
+ * `payload` is globally mocked in vitest.setup.ts with a stub that lacks
+ * `getAPIURL`/`getAdminURL`/`config.serverURL`. The req-absent path calls
+ * `getPayload` directly, so that one test overrides its resolved value with
+ * the same stub the other tests inject via `req.payload`.
+ */
+import { getPayload } from 'payload'
+
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 /**
@@ -126,6 +134,51 @@ describe('renderTemplateCore', () => {
 
     expect(fetchSiteSettings).toHaveBeenCalledTimes(1)
     expect(fetchGlobalUserSettings).toHaveBeenCalledTimes(1)
+  })
+
+  it('shares a single in-flight fetch across concurrent calls with the same req', async () => {
+    const sharedReq = req()
+
+    await Promise.all([
+      renderTemplateCore({
+        template: '{title}',
+        data: {
+          title: 'a',
+        },
+        req: sharedReq,
+      }),
+      renderTemplateCore({
+        template: '{title}',
+        data: {
+          title: 'b',
+        },
+        req: sharedReq,
+      }),
+      renderTemplateCore({
+        template: '{title}',
+        data: {
+          title: 'c',
+        },
+        req: sharedReq,
+      }),
+    ])
+
+    expect(fetchSiteSettings).toHaveBeenCalledTimes(1)
+    expect(fetchGlobalUserSettings).toHaveBeenCalledTimes(1)
+  })
+
+  it('renders correctly when no req is supplied', async () => {
+    vi.mocked(getPayload).mockResolvedValueOnce(payloadStub as never)
+
+    const { result, error } = await renderTemplateCore({
+      template: '{title} — {siteName}',
+      data: {
+        title: 'About us',
+      },
+    })
+
+    expect(error).toBeNull()
+    expect(result).toBe('About us — Daniel Heene')
   })
 
   it('keys the per-request cache by locale', async () => {
