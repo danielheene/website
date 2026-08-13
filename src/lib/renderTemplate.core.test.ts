@@ -84,8 +84,6 @@ describe('renderTemplateCore', () => {
 
   it('applies filters', async () => {
     const { result } = await renderTemplateCore({
-      // Filter keys are registered lowercase and pupa looks them up
-      // case-sensitively, so `kebabcase` is the real spelling.
       template: '{title | kebabcase}',
       data: {
         title: 'About Us',
@@ -94,6 +92,168 @@ describe('renderTemplateCore', () => {
     })
 
     expect(result).toBe('about-us')
+  })
+
+  describe('filter name resolution', () => {
+    const render = (template: string, data: Record<string, string>) =>
+      renderTemplateCore({
+        template,
+        data,
+        req: req(),
+      })
+
+    it('resolves the camelCase spelling the admin help panel documents', async () => {
+      const { result, error } = await render('{title | kebabCase}', {
+        title: 'About Us',
+      })
+
+      expect(error).toBeNull()
+      expect(result).toBe('about-us')
+    })
+
+    it('resolves camelCase and lowercase spellings identically', async () => {
+      const camel = await render('{title | kebabCase}', {
+        title: 'About Us',
+      })
+      const lower = await render('{title | kebabcase}', {
+        title: 'About Us',
+      })
+
+      expect(camel.result).toBe(lower.result)
+    })
+
+    it.each([
+      [
+        'trimStart',
+        '  spaced  ',
+        'spaced  ',
+      ],
+      [
+        'trimEnd',
+        '  spaced  ',
+        '  spaced',
+      ],
+      [
+        'camelCase',
+        'About Us',
+        'aboutUs',
+      ],
+      [
+        'snakeCase',
+        'About Us',
+        'about_us',
+      ],
+      [
+        'kebabCase',
+        'About Us',
+        'about-us',
+      ],
+      [
+        'startCase',
+        'about us',
+        'About Us',
+      ],
+      [
+        'upperCase',
+        'about us',
+        'ABOUT US',
+      ],
+      [
+        'upperFirst',
+        'about us',
+        'About us',
+      ],
+      [
+        'lowerCase',
+        'About Us',
+        'about us',
+      ],
+      [
+        'lowerFirst',
+        'About Us',
+        'about Us',
+      ],
+      [
+        'toLower',
+        'About US',
+        'about us',
+      ],
+      [
+        'toUpper',
+        'About Us',
+        'ABOUT US',
+      ],
+      [
+        'pascalCase',
+        'about us',
+        'AboutUs',
+      ],
+    ])('resolves the documented filter %s', async (filter, input, expected) => {
+      const { result, error } = await render(`{title | ${filter}}`, {
+        title: input,
+      })
+
+      expect(error).toBeNull()
+      expect(result).toBe(expected)
+    })
+
+    it.each([
+      [
+        'MM',
+        '08',
+      ],
+      [
+        'dd',
+        '13',
+      ],
+      [
+        'yyyy',
+        '2026',
+      ],
+    ])('keeps the exact-match date filter %s working', async (filter, expected) => {
+      const { result, error } = await render(`{when | ${filter}}`, {
+        when: '2026-08-13',
+      })
+
+      expect(error).toBeNull()
+      expect(result).toBe(expected)
+    })
+
+    it('keeps the dynamic len filter working', async () => {
+      const { result, error } = await render('{title | len10}', {
+        title: 'abcdefghijklmnop',
+      })
+
+      expect(error).toBeNull()
+      expect(result).toBe('abcdefghij')
+    })
+
+    it('keeps the dynamic trunc filter working', async () => {
+      const { result, error } = await render('{title | trunc10}', {
+        title: 'abcdefghijklmnop',
+      })
+
+      expect(error).toBeNull()
+      expect(result).toBe('abcdefg...')
+    })
+
+    it('keeps the Mar prefix filter working', async () => {
+      const { result, error } = await render('{title | Markus}', {
+        title: 'anything',
+      })
+
+      expect(error).toBeNull()
+      expect(result).toBe('Markus')
+    })
+
+    it('still fails for an unknown filter', async () => {
+      const { result, error } = await render('{title | definitelyNotAFilter}', {
+        title: 'About Us',
+      })
+
+      expect(result).toBeNull()
+      expect(error).toEqual(expect.any(String))
+    })
   })
 
   it('returns an error for an unresolvable variable', async () => {

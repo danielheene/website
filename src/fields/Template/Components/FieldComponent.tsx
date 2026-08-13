@@ -123,6 +123,9 @@ export const FieldComponent: TextFieldServerComponent = async (props: FieldCompo
             toUpper: 'Converts entire string to uppercase',
             slugify: 'Converts string to URL-friendly slug',
             pascalCase: 'Converts string to PascalCase',
+            MM: 'Formats a date value as a two-digit month (e.g., 08)',
+            dd: 'Formats a date value as a two-digit day of month (e.g., 13)',
+            yyyy: 'Formats a date value as a four-digit year (e.g., 2026)',
             lenN: 'Custom dynamic filter that slices string to N characters (e.g., len10 for first 10 chars)',
             truncN:
               'Custom dynamic filter that truncates string to N characters with ellipsis (e.g., trunc10 for first 7 chars)',

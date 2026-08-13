@@ -57,6 +57,46 @@ type TemplateGlobals = {
 
 const GLOBALS_CONTEXT_KEY = 'renderTemplateGlobals'
 
+type TemplateFilter = (value: string) => string
+
+/**
+ * Filters are registered lowercase, but the admin help panel documents (and
+ * editors therefore write) camelCase names such as `kebabCase`. pupa looks
+ * filters up case-sensitively, so both spellings have to resolve.
+ */
+const TEMPLATE_FILTERS: Record<string, TemplateFilter> = {
+  trim: trim,
+  trimstart: trimStart,
+  trimend: trimEnd,
+  camelcase: camelCase,
+  snakecase: snakeCase,
+  kebabcase: kebabCase,
+  startcase: startCase,
+  uppercase: upperCase,
+  upperfirst: upperFirst,
+  lowercase: lowerCase,
+  lowerfirst: lowerFirst,
+  tolower: toLower,
+  toupper: toUpper,
+  slugify: slugify,
+  pascalcase: (value: string) => upperFirst(camelCase(value)),
+  MM: (value: string) => format(value, 'MM'),
+  dd: (value: string) => format(value, 'dd'),
+  yyyy: (value: string) => format(value, 'yyyy'),
+}
+
+/**
+ * Case-insensitive fallback index. Only consulted after an exact lookup misses,
+ * so the date filters — registered as `MM`, `dd` and `yyyy` — keep resolving to
+ * themselves instead of being folded into a lowercase key that does not exist.
+ */
+const TEMPLATE_FILTER_ALIASES = new Map<string, TemplateFilter>(
+  Object.entries(TEMPLATE_FILTERS).map(([name, filter]) => [
+    name.toLowerCase(),
+    filter,
+  ]),
+)
+
 const loadTemplateGlobals = async (
   locale: Locale,
   req?: PayloadRequest,
@@ -154,55 +194,46 @@ export const renderTemplateCore = async ({
       ),
 
       {
-        filters: new Proxy(
-          {
-            trim: trim,
-            trimstart: trimStart,
-            trimend: trimEnd,
-            camelcase: camelCase,
-            snakecase: snakeCase,
-            kebabcase: kebabCase,
-            startcase: startCase,
-            uppercase: upperCase,
-            upperfirst: upperFirst,
-            lowercase: lowerCase,
-            lowerfirst: lowerFirst,
-            tolower: toLower,
-            toupper: toUpper,
-            slugify: slugify,
-            pascalcase: (value: string) => upperFirst(camelCase(value)),
-            MM: (value: string) => format(value, 'MM'),
-            dd: (value: string) => format(value, 'dd'),
-            yyyy: (value: string) => format(value, 'yyyy'),
-          },
-          {
-            get(target, prop, receiver) {
-              if (typeof prop === 'string' && prop.startsWith('Mar')) return () => 'Markus'
-              /**
-               * Custom filter to slice a string to a specified length
-               * e.g. { id | len10 } will slice the value of id to the first 10 characters
-               */
-              if (typeof prop === 'string' && /^len[0-9]+$/.test(prop)) {
-                const maxLength = parseInt(prop.replace('len', ''), 10)
-                return (value: string) => value.slice(0, maxLength)
-              }
+        filters: new Proxy(TEMPLATE_FILTERS, {
+          get(target, prop, receiver) {
+            if (typeof prop === 'string' && prop.startsWith('Mar')) return () => 'Markus'
+            /**
+             * Custom filter to slice a string to a specified length
+             * e.g. { id | len10 } will slice the value of id to the first 10 characters
+             */
+            if (typeof prop === 'string' && /^len[0-9]+$/.test(prop)) {
+              const maxLength = parseInt(prop.replace('len', ''), 10)
+              return (value: string) => value.slice(0, maxLength)
+            }
 
-              /**
-               * Custom filter to truncate a string to a specified length with ellipsis
-               * e.g. { string | trunc10 } will truncate the value of string to the first 7 characters and append '...'
-               */
-              if (typeof prop === 'string' && /^trunc[0-9]+$/.test(prop)) {
-                const maxLength = parseInt(prop.replace('trunc', ''), 10)
-                return (value: string) => {
-                  if (value.length <= maxLength) return value
-                  return `${value.slice(0, maxLength - 3)}...`
-                }
+            /**
+             * Custom filter to truncate a string to a specified length with ellipsis
+             * e.g. { string | trunc10 } will truncate the value of string to the first 7 characters and append '...'
+             */
+            if (typeof prop === 'string' && /^trunc[0-9]+$/.test(prop)) {
+              const maxLength = parseInt(prop.replace('trunc', ''), 10)
+              return (value: string) => {
+                if (value.length <= maxLength) return value
+                return `${value.slice(0, maxLength - 3)}...`
               }
+            }
 
-              return Reflect.get(target, prop, receiver)
-            },
+            /**
+             * Exact match first: `MM`, `dd` and `yyyy` are registered under those
+             * exact keys and would not survive a blanket lowercase normalisation.
+             */
+            const exactMatch = Reflect.get(target, prop, receiver)
+            if (exactMatch !== undefined) return exactMatch
+
+            /**
+             * Fallback so the camelCase names the admin help panel documents
+             * (`kebabCase`, `upperFirst`, …) resolve to their lowercase filter.
+             */
+            if (typeof prop === 'string') return TEMPLATE_FILTER_ALIASES.get(prop.toLowerCase())
+
+            return undefined
           },
-        ),
+        }),
       },
     )
 
