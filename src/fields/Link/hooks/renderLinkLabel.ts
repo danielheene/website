@@ -35,6 +35,28 @@ const loadReferenceTitle = async (
       select: {
         title: true,
       },
+      // The local API defaults `overrideAccess` to `true`, which would make
+      // this fallback *more* permissive than the relationship population it
+      // stands in for: population honours the collection's `read` access, so
+      // an unpublished page stays unpopulated (and title-less) for anonymous
+      // readers. Without this the title would leak into the rendered label.
+      overrideAccess: false,
+      // Access is evaluated from the acting user — `authenticatedOrPublished`
+      // reads `req.user` — so the caller's identity has to travel with the
+      // read. Passing `req` alone already carries it; naming it keeps the
+      // dependency explicit and survives a future local-req rebuild.
+      user: req.user,
+      // A denied read is routine here, not a fault: degrade to "no document"
+      // instead of throwing and logging as if something broke.
+      disableErrors: true,
+      // Population resolves drafts when the read is a draft read; mirror that
+      // so admin/live-preview sees the draft title rather than the published
+      // one. `undefined` leaves the local API's own default in place.
+      draft: (
+        req as PayloadRequest & {
+          draft?: boolean
+        }
+      ).draft,
       req,
     })
 

@@ -15,6 +15,8 @@ const req = (locale?: string) =>
   ({
     context: {},
     locale,
+    // Anonymous by default: the access-sensitive case this hook must not leak past.
+    user: null,
     payload: {
       findByID,
       logger: {
@@ -217,6 +219,52 @@ describe('renderLinkLabel with an unpopulated reference', () => {
     await expect(callWith(request, link('page-1'))).resolves.toBe('Title for page-1')
 
     expect(findByID).toHaveBeenCalledTimes(2)
+  })
+
+  it('degrades to an empty title when the read is denied', async () => {
+    // An anonymous reader hitting an unpublished target: `findByID` with
+    // `disableErrors` resolves to null rather than throwing.
+    findByID.mockResolvedValue(null)
+
+    await expect(
+      call({
+        label: 'See {title}',
+        reference: {
+          relationTo: 'pages',
+          value: 'unpublished',
+        },
+      }),
+    ).resolves.toBe('See ')
+  })
+
+  it('respects collection access control and silences denied reads', async () => {
+    await call(link('page-1'))
+
+    expect(findByID).toHaveBeenCalledWith(
+      expect.objectContaining({
+        overrideAccess: false,
+        disableErrors: true,
+        user: null,
+      }),
+    )
+  })
+
+  it('threads the draft flag from the request', async () => {
+    const request = req()
+
+    ;(
+      request as unknown as {
+        draft?: boolean
+      }
+    ).draft = true
+
+    await callWith(request, link('page-1'))
+
+    expect(findByID).toHaveBeenCalledWith(
+      expect.objectContaining({
+        draft: true,
+      }),
+    )
   })
 
   it('degrades to an empty title when the document has no title', async () => {
