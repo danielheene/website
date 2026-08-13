@@ -111,6 +111,11 @@ export const LinkField = ({
               admin: {
                 width: '75%',
                 condition: (_, siblingData: LinkFieldData) => siblingData?.type === 'reference',
+                components: {
+                  Field: {
+                    path: '@/fields/Link/components/TargetField',
+                  },
+                },
               },
               label: 'Document to link to',
               maxDepth: 1,
