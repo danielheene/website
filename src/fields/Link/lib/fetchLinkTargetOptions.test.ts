@@ -1,3 +1,5 @@
+import type { PayloadRequest } from 'payload'
+
 import { describe, expect, it, vi } from 'vitest'
 
 import {
@@ -17,18 +19,27 @@ const makeReq = (
 ) => {
   const find = vi.fn(async ({ collection }: { collection: string }) => ({
     docs: docsByCollection[collection] ?? [],
+    totalDocs: (docsByCollection[collection] ?? []).length,
   }))
+
+  const user = {
+    id: 'user-1',
+  } as PayloadRequest['user']
+
+  const req = {
+    payload: {
+      find,
+      logger: {
+        warn: vi.fn(),
+      },
+    },
+    user,
+  } as unknown as PayloadRequest
 
   return {
     find,
-    req: {
-      payload: {
-        find,
-      },
-      user: {
-        id: 'user-1',
-      },
-    } as never,
+    user,
+    req,
   }
 }
 
@@ -105,5 +116,39 @@ describe('fetchLinkTargetOptions', () => {
     const groups = await fetchLinkTargetOptions(req)
 
     expect(groups[0].options[0].label).toBe('p1')
+  })
+
+  it('warns when a collection has more documents than the option limit', async () => {
+    const { req } = makeReq({})
+    const totalDocs = LINK_TARGET_OPTION_LIMIT + 5
+    req.payload.find = vi.fn(async ({ collection }: { collection: string }) => ({
+      docs: [],
+      totalDocs: collection === 'pages' ? totalDocs : 0,
+    })) as unknown as typeof req.payload.find
+
+    await fetchLinkTargetOptions(req)
+
+    expect(req.payload.logger.warn).toHaveBeenCalledTimes(1)
+    const [message] = (req.payload.logger.warn as ReturnType<typeof vi.fn>).mock.calls[0] as [
+      string,
+    ]
+    expect(message).toContain('pages')
+    expect(message).toContain(String(LINK_TARGET_OPTION_LIMIT))
+    expect(message).toContain(String(totalDocs))
+  })
+
+  it('does not warn when totalDocs is within the option limit', async () => {
+    const { req } = makeReq({
+      pages: [
+        {
+          id: 'p1',
+          title: 'About us',
+        },
+      ],
+    })
+
+    await fetchLinkTargetOptions(req)
+
+    expect(req.payload.logger.warn).not.toHaveBeenCalled()
   })
 })

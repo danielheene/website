@@ -57,7 +57,7 @@ export const fetchLinkTargetOptions = cache(
   async (req: PayloadRequest): Promise<LinkTargetOptionGroup[]> =>
     Promise.all(
       LINK_TARGET_COLLECTIONS.map(async ({ slug, label }) => {
-        const { docs } = await req.payload.find({
+        const { docs, totalDocs } = await req.payload.find({
           collection: slug,
           depth: 0,
           limit: LINK_TARGET_OPTION_LIMIT,
@@ -65,11 +65,18 @@ export const fetchLinkTargetOptions = cache(
           req,
           select: {
             title: true,
-            slug: true,
           },
           sort: 'title',
           user: req.user,
         })
+
+        if (totalDocs > LINK_TARGET_OPTION_LIMIT) {
+          req.payload.logger.warn(
+            `fetchLinkTargetOptions: collection "${slug}" has ${totalDocs} documents, ` +
+              `exceeding the LINK_TARGET_OPTION_LIMIT of ${LINK_TARGET_OPTION_LIMIT}. ` +
+              `${totalDocs - LINK_TARGET_OPTION_LIMIT} document(s) are not selectable as link targets.`,
+          )
+        }
 
         return {
           label,
