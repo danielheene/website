@@ -8,27 +8,38 @@ vi.mock('@/lib/renderTemplate.core', () => ({
 
 import { renderLinkLabel } from './renderLinkLabel'
 
+const findByID = vi.fn()
+const loggerError = vi.fn()
+
 const req = (locale?: string) =>
   ({
     context: {},
     locale,
     payload: {
+      findByID,
       logger: {
-        error: vi.fn(),
+        error: loggerError,
       },
     },
   }) as never
 
-const call = (siblingData: unknown, locale?: string) =>
+/** Runs the hook against a caller-owned request, so `req.context` is shared. */
+const callWith = (request: unknown, siblingData: unknown) =>
   renderLinkLabel({
     siblingData,
-    req: req(locale),
+    req: request,
   } as never)
+
+const call = (siblingData: unknown, locale?: string) => callWith(req(locale), siblingData)
 
 beforeEach(() => {
   renderTemplateCore.mockImplementation(async ({ template, data }) => ({
     result: template.replace('{title}', String(data?.title ?? '')),
     error: null,
+  }))
+  findByID.mockImplementation(async ({ id }: { id: string }) => ({
+    id,
+    title: `Title for ${id}`,
   }))
 })
 
@@ -119,5 +130,128 @@ describe('renderLinkLabel', () => {
         url: 'https://example.com',
       }),
     ).resolves.toBe('{nope}')
+  })
+})
+
+describe('renderLinkLabel with an unpopulated reference', () => {
+  const link = (id: string, relationTo = 'pages') => ({
+    label: '{title}',
+    reference: {
+      relationTo,
+      value: id,
+    },
+  })
+
+  it('resolves {title} from a bare reference id', async () => {
+    await expect(call(link('page-1'))).resolves.toBe('Title for page-1')
+
+    expect(findByID).toHaveBeenCalledTimes(1)
+    expect(findByID).toHaveBeenCalledWith(
+      expect.objectContaining({
+        collection: 'pages',
+        id: 'page-1',
+        depth: 0,
+        select: {
+          title: true,
+        },
+      }),
+    )
+  })
+
+  it('fetches the same document only once per request', async () => {
+    const request = req()
+
+    await expect(
+      Promise.all([
+        callWith(request, link('page-1')),
+        callWith(request, link('page-1')),
+      ]),
+    ).resolves.toEqual([
+      'Title for page-1',
+      'Title for page-1',
+    ])
+
+    expect(findByID).toHaveBeenCalledTimes(1)
+  })
+
+  it('fetches each distinct document once per request', async () => {
+    const request = req()
+
+    await expect(
+      Promise.all([
+        callWith(request, link('page-1')),
+        callWith(request, link('page-2')),
+        callWith(request, link('page-1', 'posts')),
+      ]),
+    ).resolves.toEqual([
+      'Title for page-1',
+      'Title for page-2',
+      'Title for page-1',
+    ])
+
+    expect(findByID).toHaveBeenCalledTimes(3)
+  })
+
+  it('degrades to an empty title when the lookup fails', async () => {
+    findByID.mockRejectedValue(new Error('not found'))
+
+    await expect(
+      call({
+        label: 'See {title}',
+        reference: {
+          relationTo: 'pages',
+          value: 'missing',
+        },
+      }),
+    ).resolves.toBe('See ')
+
+    expect(loggerError).toHaveBeenCalled()
+  })
+
+  it('retries a failed lookup instead of caching the rejection', async () => {
+    const request = req()
+
+    findByID.mockRejectedValueOnce(new Error('transient'))
+
+    await expect(callWith(request, link('page-1'))).resolves.toBe('')
+    await expect(callWith(request, link('page-1'))).resolves.toBe('Title for page-1')
+
+    expect(findByID).toHaveBeenCalledTimes(2)
+  })
+
+  it('degrades to an empty title when the document has no title', async () => {
+    findByID.mockResolvedValue({
+      id: 'page-1',
+    })
+
+    await expect(call(link('page-1'))).resolves.toBe('')
+  })
+
+  it('does not fetch when the reference is already populated', async () => {
+    await expect(
+      call({
+        label: '{title}',
+        reference: {
+          relationTo: 'pages',
+          value: {
+            id: 'page-1',
+            title: 'About us',
+          },
+        },
+      }),
+    ).resolves.toBe('About us')
+
+    expect(findByID).not.toHaveBeenCalled()
+  })
+
+  it('does not fetch for a custom URL', async () => {
+    await expect(
+      call({
+        label: '{title}',
+        url: 'https://example.com',
+      }),
+    ).resolves.toBe('example.com')
+
+    expect(findByID).not.toHaveBeenCalled()
   })
 })
