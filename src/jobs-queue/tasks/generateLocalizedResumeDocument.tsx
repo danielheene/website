@@ -1,16 +1,15 @@
-import { renderToBuffer } from '@react-pdf/renderer'
 import { TaskConfig } from 'payload'
 
-import { PDFParse } from 'pdf-parse'
-import z from 'zod'
-
-import { generateContentURL } from '@/lib/generateContentURL'
-import { renderTemplate } from '@/lib/renderTemplate'
-import { ResumeDocument } from '@/pdf'
-import { buildResumeDocumentData } from '@/pdf/lib/buildResumeDocumentData'
-import { CollectionSlug } from '@/types/collections'
 import { TaskSlug } from '@/types/jobs-queue'
 
+/**
+ * Orchestrates the steps needed to generate one localized resume document.
+ * Each step below is its own top-level task (own slug, own file) rather than
+ * an inline sub-step here — a crash surfaces with the specific task's slug
+ * instead of collapsing into one large handler, and no task passes a large
+ * blob (the rendered PDF buffer) through its input/output; that stays local
+ * to GenerateResumeFile.
+ */
 export const generateLocalizedResumeDocument: TaskConfig<
   TaskSlug['GenerateLocalizedResumeDocument']
 > = {
@@ -82,133 +81,80 @@ export const generateLocalizedResumeDocument: TaskConfig<
       required: true,
     },
   ],
-  handler: async ({ tasks, inlineTask, input, req: { payload } }) => {
+  handler: async ({ tasks, input, req: { payload } }) => {
     'use server'
 
     const { locale, sharedId, filenameTemplate, createdAt, documentSlug } = input
 
-    try {
-      payload.logger.info(`Generating resume document for locale: ${locale}`)
+    // TEMPORARY DIAGNOSTIC: Payload's TaskError wrapper only preserves
+    // err.message, discarding the original stack, even for a task called via
+    // tasks.X() from another task's handler. Name the failing step and log
+    // the raw stack here so it survives into the job's logger output. Remove
+    // once the "Cannot read properties of null (reading 'url')" crash is found.
+    const runStep = async <T,>(step: string, run: () => Promise<T>): Promise<T> => {
+      try {
+        return await run()
+      } catch (err) {
+        payload.logger.error(
+          `RAW ERROR STACK [${step}:${locale}]: ${err instanceof Error ? err.stack : String(err)}`,
+        )
+        throw err
+      }
+    }
 
-      const { filename } = await inlineTask(`GenerateFilename:${locale}`, {
-        task: async () => {
-          const { result, error } = await renderTemplate({
-            template: filenameTemplate,
-            data: {
-              nanoid: sharedId,
-            },
-            locale,
-          })
+    payload.logger.info(`Generating resume document for locale: ${locale}`)
 
-          if (error) {
-            throw new Error(error)
-          }
-
-          return {
-            output: {
-              filename: result,
-            },
-          }
+    const { filename } = await runStep('GenerateResumeFilename', () =>
+      tasks.GenerateResumeFilename(`GenerateFilename:${locale}`, {
+        input: {
+          filenameTemplate,
+          sharedId,
+          locale,
         },
-      })
-      payload.logger.info(`Generated localized resume document filename: ${filename}`)
+      }),
+    )
 
-      payload.logger.info('Building resume document data')
-      const { resumeDocumentData } = await inlineTask(`BuildResumeData:${locale}`, {
-        task: async () => {
-          const { data, success, error } = await buildResumeDocumentData({
-            locale,
-            creationDate: new Date(createdAt),
-            fileName: filename,
-            fileUrl: generateContentURL({
-              path: `/resume/${documentSlug}`,
-            }),
-          })
-
-          if (!success) {
-            throw new Error(z.prettifyError(error))
-          }
-
-          return {
-            output: {
-              resumeDocumentData: data,
-            },
-          }
+    const { resumeDocumentData } = await runStep('BuildLocalizedResumeData', () =>
+      tasks.BuildLocalizedResumeData(`BuildResumeData:${locale}`, {
+        input: {
+          locale,
+          filename,
+          createdAt,
+          documentSlug,
         },
-      })
-      payload.logger.info('Built resume document data')
+      }),
+    )
 
-      payload.logger.info('Uploading resume file')
-      const { resumeFileId, resumeFileUrl, resumeFileChecksum } = await inlineTask(
-        `BuildResumeFile:${locale}`,
-        {
-          task: async () => {
-            const arrayBufferLike = await renderToBuffer(<ResumeDocument {...resumeDocumentData} />)
-
-            const { id, url, checksum } = await payload.create({
-              collection: CollectionSlug.MediaDocuments,
-              data: {
-                createdAt,
-                generatorFlags: [
-                  'resume-asset',
-                  'thumbnail',
-                  'document',
-                ],
-              },
-              file: {
-                data: Buffer.from(arrayBufferLike),
-                name: `${filename}.pdf`,
-                mimetype: 'application/pdf',
-                size: Buffer.byteLength(arrayBufferLike),
-              },
-              context: {
-                skipGenerateDocumentThumbnails: true,
-              },
-            })
-
-            return {
-              output: {
-                resumeFileId: id,
-                resumeFileUrl: url,
-                resumeFileChecksum: checksum,
-              },
-            }
-          },
-        },
-      )
-
-      payload.logger.info('Uploading resume thumbnails')
-
-      const { thumbnailIDs: resumeThumbnailIds } = await tasks.GenerateDocumentThumbnails(
-        `BuildResumeThumbnails:${locale}`,
-        {
-          input: {
-            documentId: resumeFileId,
-            maxThumbnails: Number.MAX_SAFE_INTEGER,
-          },
-        },
-      )
-
-      payload.logger.info('Finished uploading resume thumbnails')
-      return {
-        output: {
-          resumeFileId,
-          resumeFileChecksum,
-          resumeThumbnailIds,
+    const { resumeFileId, resumeFileChecksum } = await runStep('GenerateResumeFile', () =>
+      tasks.GenerateResumeFile(`BuildResumeFile:${locale}`, {
+        input: {
+          filename,
+          createdAt,
           resumeDocumentData,
         },
-      }
-    } catch (err) {
-      // TEMPORARY DIAGNOSTIC: Payload's TaskError wrapper only preserves
-      // err.message, discarding the original stack — log it raw here so the
-      // real crash site survives into the job's logger output. Remove once
-      // the "Cannot read properties of null (reading 'url')" crash is found.
-      payload.logger.error(
-        `RAW ERROR STACK [GenerateLocalizedResumeDocument:${locale}]: ${
-          err instanceof Error ? err.stack : String(err)
-        }`,
-      )
-      throw err
+      }),
+    )
+
+    payload.logger.info('Uploading resume thumbnails')
+
+    const { thumbnailIDs: resumeThumbnailIds } = await runStep('GenerateDocumentThumbnails', () =>
+      tasks.GenerateDocumentThumbnails(`BuildResumeThumbnails:${locale}`, {
+        input: {
+          documentId: resumeFileId,
+          maxThumbnails: Number.MAX_SAFE_INTEGER,
+        },
+      }),
+    )
+
+    payload.logger.info(`Finished generating resume document for locale: ${locale}`)
+
+    return {
+      output: {
+        resumeFileId,
+        resumeFileChecksum,
+        resumeThumbnailIds,
+        resumeDocumentData,
+      },
     }
   },
 }

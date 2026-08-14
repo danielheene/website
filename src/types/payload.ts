@@ -166,6 +166,9 @@ export interface Config {
       GenerateVideoThumbnails: TaskGenerateVideoThumbnails;
       CalculateSkillTagInterval: TaskCalculateSkillTagInterval;
       GenerateLocalizedResumeDocument: TaskGenerateLocalizedResumeDocument;
+      GenerateResumeFilename: TaskGenerateResumeFilename;
+      BuildLocalizedResumeData: TaskBuildLocalizedResumeData;
+      GenerateResumeFile: TaskGenerateResumeFile;
       PingUptimeEndpoint: TaskPingUptimeEndpoint;
       AutoTranslateBilingualField: TaskAutoTranslateBilingualField;
       createCollectionExport: TaskCreateCollectionExport;
@@ -1014,6 +1017,9 @@ export interface PayloadJob {
           | 'GenerateVideoThumbnails'
           | 'CalculateSkillTagInterval'
           | 'GenerateLocalizedResumeDocument'
+          | 'GenerateResumeFilename'
+          | 'BuildLocalizedResumeData'
+          | 'GenerateResumeFile'
           | 'PingUptimeEndpoint'
           | 'AutoTranslateBilingualField'
           | 'createCollectionExport'
@@ -2529,6 +2535,66 @@ export interface TaskGenerateLocalizedResumeDocument {
       | number
       | boolean
       | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskGenerateResumeFilename".
+ */
+export interface TaskGenerateResumeFilename {
+  input: {
+    filenameTemplate: string;
+    sharedId: string;
+    locale: 'en' | 'de';
+  };
+  output: {
+    filename: string;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskBuildLocalizedResumeData".
+ */
+export interface TaskBuildLocalizedResumeData {
+  input: {
+    locale: 'en' | 'de';
+    filename: string;
+    createdAt: string;
+    documentSlug: string;
+  };
+  output: {
+    resumeDocumentData:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskGenerateResumeFile".
+ */
+export interface TaskGenerateResumeFile {
+  input: {
+    filename: string;
+    createdAt: string;
+    resumeDocumentData:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+  output: {
+    resumeFileId: string;
+    resumeFileChecksum: string;
   };
 }
 /**

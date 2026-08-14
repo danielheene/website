@@ -3,6 +3,9 @@ export const TaskSlug = {
   GenerateVideoThumbnails: 'GenerateVideoThumbnails',
   CalculateSkillTagInterval: 'CalculateSkillTagInterval',
   GenerateLocalizedResumeDocument: 'GenerateLocalizedResumeDocument',
+  GenerateResumeFilename: 'GenerateResumeFilename',
+  BuildLocalizedResumeData: 'BuildLocalizedResumeData',
+  GenerateResumeFile: 'GenerateResumeFile',
   PingUptimeEndpoint: 'PingUptimeEndpoint',
 } as const
 
