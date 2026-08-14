@@ -55,7 +55,7 @@ export type MediaCollectionSlug =
 export const COLLECTION_PREFIX_MAP: Partial<Record<CollectionSlugValue, string>> = {
   [CollectionSlug.Pages]: '',
   [CollectionSlug.BlogTopics]: 'blog',
-  [CollectionSlug.BlogPosts]: 'posts',
+  [CollectionSlug.BlogPosts]: 'blog/post',
   [CollectionSlug.ResumeDocuments]: 'resume',
 } as const
 

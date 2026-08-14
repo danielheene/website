@@ -12,16 +12,13 @@ type RenderedCollection =
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const pages = await getCollectionSitemapEntries(CollectionSlug['Pages'])
-  // const posts = await getCollectionSitemapEntries(
-  //   CollectionSlug['BlogPosts'],
-  //   true,
-  // )
-  // const tags = await getCollectionSitemapEntries(CollectionSlug['BlogTopics'], true)
+  const posts = await getCollectionSitemapEntries(CollectionSlug['BlogPosts'], true)
+  const tags = await getCollectionSitemapEntries(CollectionSlug['BlogTopics'], true)
 
   return [
     ...pages,
-    // ...posts,
-    // ...tags,
+    ...posts,
+    ...tags,
   ]
 }
 
@@ -39,7 +36,13 @@ async function getCollectionData(collection: RenderedCollection): Promise<
     collection,
     limit: 10000,
     pagination: false,
-    draft: false,
+    // BlogTopics has no drafts/versions system, so `draft` is not a valid
+    // query option for it (see src/collections/BlogTopics/index.ts).
+    ...(collection === CollectionSlug['BlogTopics']
+      ? {}
+      : {
+          draft: false,
+        }),
     where: {},
     select: {
       slug: true,
