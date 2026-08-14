@@ -59,9 +59,9 @@ export const LinkField = ({
               label: 'Links to',
               maxDepth: 1,
               relationTo: [
-                CollectionSlug['Pages'],
-                CollectionSlug['BlogPosts'],
-                CollectionSlug['BlogTopics'],
+                CollectionSlug.Pages,
+                CollectionSlug.BlogPosts,
+                CollectionSlug.BlogTopics,
               ],
               validate: (
                 value: unknown,
