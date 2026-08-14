@@ -28,6 +28,7 @@
     "generate:types": "pnpm run payload generate:types",
     "lint": "biome check",
     "load-env": "node scripts/load-env.mjs",
+    "links:migrate": "pnpm run payload run scripts/migrate-link-fields.ts",
     "migrate": "pnpm run payload migrate",
     "next": "NODE_OPTIONS=\"--trace-deprecation --disable-warning=DeprecationWarning\" next",
     "payload": "NODE_OPTIONS=\"--trace-deprecation --disable-warning=DeprecationWarning\" payload",
