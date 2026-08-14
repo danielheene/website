@@ -7,7 +7,10 @@ import { IconPickerFeatureClient as IconPickerFeatureClient_fe65449e66dc9de6fc63
 import { TableFeatureClient as TableFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { IndentFeatureClient as IndentFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { default as default_9b0297ef7573d0f14d0202a4ec4c25b3 } from '@/fields/Link/components/TargetField'
 import { default as default_9b6261ce8a0d1158d29e3a547520dffd } from '@/fields/Icon/Field'
+import { MarkdownDescription as MarkdownDescription_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
+import { default as default_6f065390cceb85c61ba22c773204fe20 } from '@/fields/Link/components/LabelField'
 import { FixedToolbarFeatureClient as FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
@@ -28,7 +31,6 @@ import { RelationshipFeatureClient as RelationshipFeatureClient_e70f5e05f09f93e0
 import { default as default_7ec004ac4b8008ecdc0f3947d3557629 } from '@/fields/Meta/MetaSerpField/FieldComponent'
 import { default as default_72b1e1394ea6e44d1092fa18980ba9fd } from '@/fields/Meta/MetaTitleField/FieldComponent'
 import { default as default_a57516f3ad5847138e2e9cad77905a21 } from '@/fields/Meta/MetaDescriptionField/FieldComponent'
-import { MarkdownDescription as MarkdownDescription_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { ExportListMenuItem as ExportListMenuItem_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
 import { ImportListMenuItem as ImportListMenuItem_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
 import { default as default_739727f92d93200cec032c1e61a6cb15 } from '@/fields/Toggle/components/FieldComponent'
@@ -81,7 +83,10 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#TableFeatureClient": TableFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#IndentFeatureClient": IndentFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BlocksFeatureClient": BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@/fields/Link/components/TargetField#default": default_9b0297ef7573d0f14d0202a4ec4c25b3,
   "@/fields/Icon/Field#default": default_9b6261ce8a0d1158d29e3a547520dffd,
+  "@/components/AdminPanel#MarkdownDescription": MarkdownDescription_a316a6ec12a12cd0fe58ccec01a444ca,
+  "@/fields/Link/components/LabelField#default": default_6f065390cceb85c61ba22c773204fe20,
   "@payloadcms/richtext-lexical/client#FixedToolbarFeatureClient": FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
@@ -102,7 +107,6 @@ export const importMap = {
   "@/fields/Meta/MetaSerpField/FieldComponent#default": default_7ec004ac4b8008ecdc0f3947d3557629,
   "@/fields/Meta/MetaTitleField/FieldComponent#default": default_72b1e1394ea6e44d1092fa18980ba9fd,
   "@/fields/Meta/MetaDescriptionField/FieldComponent#default": default_a57516f3ad5847138e2e9cad77905a21,
-  "@/components/AdminPanel#MarkdownDescription": MarkdownDescription_a316a6ec12a12cd0fe58ccec01a444ca,
   "@payloadcms/plugin-import-export/rsc#ExportListMenuItem": ExportListMenuItem_cdf7e044479f899a31f804427d568b36,
   "@payloadcms/plugin-import-export/rsc#ImportListMenuItem": ImportListMenuItem_cdf7e044479f899a31f804427d568b36,
   "@/fields/Toggle/components/FieldComponent#default": default_739727f92d93200cec032c1e61a6cb15,

@@ -7,8 +7,6 @@ import {
   renderTemplateCore,
 } from './renderTemplate.core'
 
-export type { RenderTemplateArgs, RenderTemplateError, RenderTemplateResult }
-
 /**
  * Server-action entry point for template rendering.
  *
