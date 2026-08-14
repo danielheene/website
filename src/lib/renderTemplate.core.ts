@@ -1,4 +1,3 @@
-import config from '@payload-config'
 import { getPayload, type PayloadRequest } from 'payload'
 
 import slugify from '@sindresorhus/slugify'
@@ -57,6 +56,29 @@ type TemplateGlobals = {
 
 const GLOBALS_CONTEXT_KEY = 'renderTemplateGlobals'
 
+/**
+ * Guards against a real infinite recursion, not just a slow path:
+ * `loadTemplateGlobals` calls `fetchSiteSettings`, which reads the
+ * `SiteSettings` global — and `SiteSettings.footer` holds `LinkField`
+ * entries of its own. Reading those runs `renderLinkLabel`'s `afterRead`
+ * hook on each one, which calls back into `renderTemplateCore` to resolve
+ * `{title}`, which calls `loadTemplateGlobals` again to get the same
+ * `SiteSettings` — forever, because `fetchSiteSettings`/
+ * `fetchGlobalUserSettings` take no `req` and so never share the
+ * request-scoped in-flight cache above across these nested calls.
+ *
+ * One process-wide flag (rather than a `req`-scoped one) is deliberate:
+ * the recursive call is a *different*, `req`-less invocation each time —
+ * exactly the case the `req.context` cache above cannot see. While a
+ * globals fetch is already in flight anywhere in this process, a nested
+ * attempt degrades to empty globals instead of recursing. A blank
+ * `{siteName}` on a link label nested this deeply is an acceptable
+ * trade for a build that terminates.
+ */
+const globalsFetchState = {
+  inFlight: false,
+}
+
 type TemplateFilter = (value: string) => string
 
 /**
@@ -97,6 +119,31 @@ const TEMPLATE_FILTER_ALIASES = new Map<string, TemplateFilter>(
   ]),
 )
 
+/**
+ * Globals to fall back to when a nested/recursive fetch is refused (see
+ * `globalsFetchInFlight` above). Empty rather than throwing: a degraded
+ * label beats an unrenderable one.
+ */
+const EMPTY_TEMPLATE_GLOBALS: TemplateGlobals = {
+  site: {
+    general: {
+      siteName: '',
+      siteURL: '',
+      siteHost: '',
+    },
+  },
+  user: {
+    firstName: '',
+    lastName: '',
+    name: '',
+    jobTitle: '',
+    birthDate: '',
+    email: '',
+    gender: '',
+    pronouns: '',
+  },
+} as TemplateGlobals
+
 const loadTemplateGlobals = async (
   locale: Locale,
   req?: PayloadRequest,
@@ -106,15 +153,23 @@ const loadTemplateGlobals = async (
 
   if (cached) return cached
 
-  const pending = (async () => {
-    const [site, user] = await Promise.all([
-      fetchSiteSettings(locale),
-      fetchGlobalUserSettings(locale),
-    ])
+  if (globalsFetchState.inFlight) return EMPTY_TEMPLATE_GLOBALS
 
-    return {
-      site,
-      user,
+  globalsFetchState.inFlight = true
+
+  const pending = (async () => {
+    try {
+      const [site, user] = await Promise.all([
+        fetchSiteSettings(locale),
+        fetchGlobalUserSettings(locale),
+      ])
+
+      return {
+        site,
+        user,
+      }
+    } finally {
+      globalsFetchState.inFlight = false
     }
   })()
 
@@ -136,10 +191,21 @@ export const renderTemplateCore = async ({
   locale = 'en',
   req,
 }: RenderTemplateCoreArgs): Promise<RenderTemplateError | RenderTemplateResult> => {
+  /**
+   * Lazy rather than a top-of-module `import config from '@payload-config'`:
+   * this module is reached via `LinkField`'s field hook (see
+   * `src/fields/Link/index.ts`), which is itself embedded in
+   * `payload.config.ts`'s own module graph (RichText -> LinkFeature ->
+   * LinkField). A static import here would make `payload.config.ts` import
+   * itself mid-evaluation on every read of a link — most callers always
+   * carry `req` (this fallback never runs for them), so paying the import
+   * cost only when it is genuinely needed avoids the cycle entirely rather
+   * than merely tolerating it.
+   */
   const payload =
     req?.payload ??
     (await getPayload({
-      config,
+      config: (await import('@payload-config')).default,
     }))
 
   const {
