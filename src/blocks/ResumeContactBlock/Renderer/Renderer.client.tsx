@@ -6,6 +6,8 @@ import { SectionContainer } from '@/components/SectionContainer'
 import { cn } from '@/lib/cn'
 import { ResumeContactBlock } from '@/types/payload'
 
+import { ContactForm } from './ContactForm.client'
+
 interface ResumeContactBlockClientRendererProps extends ResumeContactBlock {
   title: string
 }
@@ -27,13 +29,7 @@ export const ResumeContactBlockClientRenderer = ({
           <RichText data={caption} enableGutter={false} className="text-lg" />
         </div>
       )}
-      {/*{mailButton?.label && mailButton?.href && (*/}
-      {/*  <Button asChild variant="default" type="submit">*/}
-      {/*    <Link className="font-bold text-xl col-span-12 md:col-start-4 md:col-span-6 my-2 cursor-pointer" href={mailButton.href}>*/}
-      {/*      {mailButton.label}*/}
-      {/*    </Link>*/}
-      {/*  </Button>*/}
-      {/*)}*/}
+      <ContactForm />
     </div>
   </SectionContainer>
 )
