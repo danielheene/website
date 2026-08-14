@@ -12,7 +12,7 @@ describe('generateContentPath', () => {
   })
 
   it('prefixes blog post paths', () => {
-    expect(generateContentPath('posts', 'my-post')).toBe('/posts/my-post')
+    expect(generateContentPath('posts', 'my-post')).toBe('/blog/post/my-post')
   })
 
   it('prefixes blog topic paths', () => {
@@ -24,7 +24,7 @@ describe('generateContentPath', () => {
   })
 
   it('defaults the slug to an empty string', () => {
-    expect(generateContentPath('posts')).toBe('/posts/')
+    expect(generateContentPath('posts')).toBe('/blog/post/')
   })
 
   it('produces "/undefined/..." for unknown collections (documents current behavior)', () => {

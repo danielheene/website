@@ -20,7 +20,7 @@ describe('generatePreviewPath', () => {
     const params = new URLSearchParams(query)
     expect(params.get('slug')).toBe('my-post')
     expect(params.get('collection')).toBe('posts')
-    expect(params.get('path')).toBe('/posts/my-post')
+    expect(params.get('path')).toBe('/blog/post/my-post')
     expect(params.get('previewSecret')).toBe('shhh')
   })
 

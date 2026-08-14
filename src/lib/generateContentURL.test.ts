@@ -10,7 +10,7 @@ describe('generateContentURL', () => {
         collection: 'posts',
         slug: 'my-post',
       }),
-    ).toBe('https://example.test/posts/my-post')
+    ).toBe('https://example.test/blog/post/my-post')
   })
 
   it('uses an explicit path when given', () => {
