@@ -31,11 +31,24 @@ const payload = await getPayload({
   config,
 })
 
-/** Every store that can contain a link, including the globals collection. */
+/**
+ * Every store that can contain a link, including the globals collection.
+ *
+ * "Can contain a link" means a `RichTextField` whose `editorVariant` builds
+ * on `captionFeatures` or `markdownFeatures` in `src/fields/RichText/index.ts`
+ * — those are the only variants `LinkFeature` is spread into. The `inline`
+ * variant (`ResumeJobs`, `ResumeSkills`) stops one layer short of that and
+ * cannot hold a link node, so those collections are correctly absent here.
+ */
 const TARGET_COLLECTIONS = [
   CollectionSlug.Pages,
   CollectionSlug.BlogPosts,
   CollectionSlug.BlogTopics,
+  CollectionSlug.ResumeProjects,
+  CollectionSlug.MediaImages,
+  CollectionSlug.MediaVideos,
+  CollectionSlug.MediaDocuments,
+  CollectionSlug.MediaAudios,
   'globals',
 ]
 
