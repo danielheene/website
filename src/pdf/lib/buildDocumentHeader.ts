@@ -12,8 +12,15 @@ export const buildDocumentHeader = async (locale: Locale): Promise<DocumentHeade
   const phone = parsePhoneNumber(telephone)
   const github = sameAs?.find(({ url }) => url.includes('github'))
 
+  const portraitUrl = portrait?.regular?.value?.url
+  if (!portraitUrl) {
+    throw new Error(
+      'GlobalUserSettings.portrait is missing a "regular" image variant — set a portrait in the admin panel before generating a resume document.',
+    )
+  }
+
   return {
-    portraitUrl: portrait.regular.value.url,
+    portraitUrl,
     address: {
       street: `${address.street} ${address.number}`,
       city: `${address.postCode} ${address.place}`,
