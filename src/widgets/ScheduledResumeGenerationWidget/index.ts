@@ -1,0 +1,1 @@
+export { ScheduledResumeGenerationWidget } from './ScheduledResumeGenerationWidget'
