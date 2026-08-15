@@ -25,6 +25,9 @@ vi.mock('@payloadcms/ui', () => ({
 
 vi.mock('@/lib/fetchAnthropicTranslation', () => ({
   fetchAnthropicTranslation: (...args: unknown[]) => fetchAnthropicTranslationMock(...args),
+}))
+
+vi.mock('@/lib/bilingualLanguage', () => ({
   BILINGUAL_LANGUAGE_LABEL: {
     en: 'English',
     de: 'German',

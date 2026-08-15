@@ -7,13 +7,10 @@ import { fieldBaseClass, toast, useField } from '@payloadcms/ui'
 
 import { Button } from '@/components/Button'
 import { Icon } from '@/components/Icon'
+import { BILINGUAL_LANGUAGE_LABEL, BilingualLanguage } from '@/lib/bilingualLanguage'
 import { cn } from '@/lib/cn'
 import { extractErrorMessage } from '@/lib/extractErrorMessage'
-import {
-  BILINGUAL_LANGUAGE_LABEL,
-  BilingualLanguage,
-  fetchAnthropicTranslation,
-} from '@/lib/fetchAnthropicTranslation'
+import { fetchAnthropicTranslation } from '@/lib/fetchAnthropicTranslation'
 
 const isEmptyValue = (value: SerializedEditorState | undefined): boolean => {
   const children = (
