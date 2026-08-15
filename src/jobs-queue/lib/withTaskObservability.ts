@@ -34,7 +34,9 @@ export const withTaskObservability = <T extends TaskConfig<never>>(taskConfig: T
       return Sentry.startSpan(
         {
           name: `job.task/${taskSlug}`,
-          op: 'queue.task',
+          // 'task': Sentry's documented op for background/scheduled work —
+          // 'queue.process' is for message-queue consumers, which this isn't.
+          op: 'task',
           attributes: {
             'job.id': String(job.id),
             'job.task_slug': taskSlug,
