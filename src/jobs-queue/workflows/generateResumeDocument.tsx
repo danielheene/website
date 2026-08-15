@@ -1,14 +1,8 @@
 import { WorkflowConfig } from 'payload'
 
 import { secondsToMilliseconds } from 'date-fns'
-import { millisecondsInMinute } from 'date-fns/constants'
-import { formatAdminURL } from 'payload/shared'
 
 import { getLocalISOString } from '@/lib/date'
-import { extractErrorMessage } from '@/lib/extractErrorMessage'
-import { generateSlug } from '@/lib/generateSlug'
-import { renderTemplate } from '@/lib/renderTemplate'
-import { CollectionSlug } from '@/types/collections'
 import { QueueSlug, TaskSlug, WorkflowSlug } from '@/types/jobs-queue'
 
 /**
@@ -23,6 +17,12 @@ import { QueueSlug, TaskSlug, WorkflowSlug } from '@/types/jobs-queue'
  * The workflow uses a queue-based execution model with concurrency control to ensure
  * only one generation process runs at a time, superseding any existing workflows with
  * the same slug. All generated documents are stored with checksums for integrity verification.
+ *
+ * Every step is its own top-level task (own slug, own file, under
+ * src/jobs-queue/tasks/) rather than an inline sub-step here — each runs through
+ * withTaskObservability (applied once, to every entry in TASKS), so a failure
+ * surfaces in Sentry with the specific task's span/slug/job-id context instead
+ * of collapsing into one large workflow handler.
  *
  * Required input parameters:
  * - documentTitleTemplate: Template string for generating the document title
@@ -65,70 +65,47 @@ export const generateResumeDocument: WorkflowConfig<WorkflowSlug['GenerateResume
       required: true,
     },
   ],
-  handler: async ({ inlineTask, job: { id, input }, req: { payload }, tasks }) => {
+  handler: async ({ job: { id, input }, req: { payload }, tasks }) => {
     'use server'
 
     const { documentTitleTemplate, filenameTemplate, sharedId, maximumRetries } = input
     const createdAt = getLocalISOString('Europe/Berlin', new Date())
+    const retries = {
+      attempts: maximumRetries,
+      backoff: {
+        delay: secondsToMilliseconds(15),
+        type: 'exponential' as const,
+      },
+    }
 
     payload.logger.info(`Workflow: ${WorkflowSlug.GenerateResumeDocument}:${sharedId} started`)
 
-    /**
-     * Generate document title
-     */
-    payload.logger.info(`Generating document title`)
-    const { documentTitle } = await inlineTask(`GenerateDocumentTitle:${sharedId}`, {
-      task: async () => {
-        const { result, error } = await renderTemplate({
-          template: documentTitleTemplate,
-          data: {
-            nanoid: sharedId,
-          },
-          locale: 'en',
-        })
-
-        if (error) {
-          throw new Error(error)
-        }
-
-        return {
-          output: {
-            documentTitle: result,
-          },
-        }
+    const { documentTitle } = await tasks.GenerateResumeDocumentTitle(
+      `GenerateDocumentTitle:${sharedId}`,
+      {
+        retries,
+        input: {
+          documentTitleTemplate,
+          sharedId,
+        },
       },
-    })
-    payload.logger.info(`Successfully generated document title: ${documentTitle}`)
+    )
 
-    /**
-     * Generate document slug
-     */
-    payload.logger.info(`Generating document slug`)
-    const { documentSlug } = await inlineTask(`GenerateDocumentSlug:${sharedId}`, {
-      task: async () => {
-        return {
-          output: {
-            documentSlug: generateSlug(documentTitle),
-          },
-        }
+    const { documentSlug } = await tasks.GenerateResumeDocumentSlug(
+      `GenerateDocumentSlug:${sharedId}`,
+      {
+        retries,
+        input: {
+          documentTitle,
+        },
       },
-    })
-    payload.logger.info(`Successfully generated document slug: ${documentSlug}`)
+    )
 
-    /**
-     * Processing LozalizedResumeDocument Tasks: EN
-     */
-    payload.logger.info(`Processing LozalizedResumeDocument Tasks: EN`)
+    payload.logger.info('Processing LocalizedResumeDocument Tasks: EN')
     const en = await tasks.GenerateLocalizedResumeDocument(
       `${TaskSlug.GenerateLocalizedResumeDocument}:${sharedId}:EN`,
       {
-        retries: {
-          attempts: maximumRetries,
-          backoff: {
-            delay: secondsToMilliseconds(15),
-            type: 'exponential',
-          },
-        },
+        retries,
         input: {
           locale: 'en',
           documentSlug,
@@ -138,22 +115,13 @@ export const generateResumeDocument: WorkflowConfig<WorkflowSlug['GenerateResume
         },
       },
     )
-    payload.logger.info(`Successfully processed LozalizedResumeDocument Tasks: EN`)
+    payload.logger.info('Successfully processed LocalizedResumeDocument Tasks: EN')
 
-    /**
-     * Processing LozalizedResumeDocument Tasks: DE
-     */
-    payload.logger.info(`Processing LozalizedResumeDocument Tasks: DE`)
+    payload.logger.info('Processing LocalizedResumeDocument Tasks: DE')
     const de = await tasks.GenerateLocalizedResumeDocument(
       `${TaskSlug.GenerateLocalizedResumeDocument}:${sharedId}:DE`,
       {
-        retries: {
-          attempts: maximumRetries,
-          backoff: {
-            delay: secondsToMilliseconds(15),
-            type: 'exponential',
-          },
-        },
+        retries,
         input: {
           locale: 'de',
           documentSlug,
@@ -163,75 +131,27 @@ export const generateResumeDocument: WorkflowConfig<WorkflowSlug['GenerateResume
         },
       },
     )
-    payload.logger.info(`Successfully processed LozalizedResumeDocument Tasks: DE`)
+    payload.logger.info('Successfully processed LocalizedResumeDocument Tasks: DE')
 
-    /**
-     * Create ResumeDocument
-     */
-    await inlineTask(`CreateResumeDocument:${sharedId}`, {
-      retries: {
-        attempts: maximumRetries,
-        backoff: {
-          delay: secondsToMilliseconds(15),
-          type: 'exponential',
-        },
-      },
-      task: async () => {
-        let success = true
-        try {
-          payload.logger.info(`Creating ResumeDocument: ${documentTitle}`)
-          const doc = await payload.create({
-            collection: CollectionSlug.ResumeDocuments,
-            data: {
-              title: documentTitle,
-              slug: documentSlug,
-              createdAt,
-              jobId: id,
-              document_en: {
-                relationTo: CollectionSlug.MediaDocuments,
-                value: en.resumeFileId,
-              },
-              checksum_en: en.resumeFileChecksum,
-              thumbnails_en: en.resumeThumbnailIds.map((id) => ({
-                relationTo: CollectionSlug.MediaImages,
-                value: id,
-              })),
-              document_de: {
-                relationTo: CollectionSlug.MediaDocuments,
-                value: de.resumeFileId,
-              },
-              checksum_de: de.resumeFileChecksum,
-              thumbnails_de: de.resumeThumbnailIds.map((id) => ({
-                relationTo: CollectionSlug.MediaImages,
-                value: id,
-              })),
-              data_en: en.resumeDocumentData,
-              data_de: de.resumeDocumentData,
-            },
-          })
-
-          payload.logger.info(`Successfully created ResumeDocument: ${doc.title}`)
-          payload.logger.info(
-            `open document: ${formatAdminURL({
-              adminRoute: payload.config.routes.admin,
-              path: `/${CollectionSlug.ResumeDocuments}/${doc.id}`,
-            })}`,
-          )
-        } catch (error) {
-          success = false
-          payload.logger.error(`Error creating resume document: ${extractErrorMessage(error)}`)
-        }
-
-        return {
-          output: {
-            success,
-          },
-        }
+    await tasks.CreateResumeDocument(`CreateResumeDocument:${sharedId}`, {
+      retries,
+      input: {
+        documentTitle,
+        documentSlug,
+        createdAt,
+        jobId: String(id),
+        resumeFileIdEn: en.resumeFileId,
+        resumeFileChecksumEn: en.resumeFileChecksum,
+        resumeThumbnailIdsEn: en.resumeThumbnailIds,
+        resumeDocumentDataEn: en.resumeDocumentData,
+        resumeFileIdDe: de.resumeFileId,
+        resumeFileChecksumDe: de.resumeFileChecksum,
+        resumeThumbnailIdsDe: de.resumeThumbnailIds,
+        resumeDocumentDataDe: de.resumeDocumentData,
       },
     })
 
     payload.logger.info('Finished generating localized resume documents')
-    payload.logger.info('Creating final resume document')
 
     return void 0
   },
