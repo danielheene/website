@@ -7,8 +7,14 @@ import { createAnthropic } from '@ai-sdk/anthropic'
 import { generateText } from 'ai'
 import dedent from 'dedent'
 
-import { BILINGUAL_LANGUAGE_LABEL, BilingualLanguage } from '@/lib/bilingualLanguage'
 import { parseHtmlToLexical } from '@/lib/lexical/parseHtmlToLexical'
+
+export type BilingualLanguage = 'en' | 'de'
+
+export const BILINGUAL_LANGUAGE_LABEL: Record<BilingualLanguage, string> = {
+  en: 'English',
+  de: 'German',
+}
 
 type FetchAnthropicTranslationArgs = {
   value: SerializedEditorState
