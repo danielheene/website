@@ -119,7 +119,7 @@ describe('generateLocalizedResumeDocument', () => {
     })
   })
 
-  it('logs the raw stack and rethrows when a step fails', async () => {
+  it('propagates a step failure and does not run later steps', async () => {
     const payload = makePayloadStub()
     const failure = new Error('boom')
 
@@ -145,9 +145,8 @@ describe('generateLocalizedResumeDocument', () => {
       } as any),
     ).rejects.toThrow('boom')
 
-    expect(payload.logger.error).toHaveBeenCalledWith(
-      expect.stringContaining('RAW ERROR STACK [GenerateResumeFilename:en]'),
-    )
     expect(tasks.BuildLocalizedResumeData).not.toHaveBeenCalled()
+    expect(tasks.GenerateResumeFile).not.toHaveBeenCalled()
+    expect(tasks.GenerateDocumentThumbnails).not.toHaveBeenCalled()
   })
 })
