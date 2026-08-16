@@ -44,6 +44,12 @@ export const autoTranslateBilingualField: TaskConfig<TaskSlug['AutoTranslateBili
   concurrency: {
     // Per-target-cell key: a newer save/click on the same field supersedes
     // an in-flight job for it, so only the latest translation wins.
+    // exclusive: true matches every other task in this repo (see
+    // generateDocumentThumbnails.ts, generateVideoThumbnails.ts,
+    // generateLocalizedResumeDocument.tsx) — without it, two jobs sharing
+    // this key could run concurrently instead of one waiting for the
+    // other, which would let a stale in-flight job's result land after a
+    // newer one's.
     key: ({ input }) =>
       [
         TaskSlug.AutoTranslateBilingualField,
@@ -54,6 +60,7 @@ export const autoTranslateBilingualField: TaskConfig<TaskSlug['AutoTranslateBili
         input.targetLanguage,
       ].join(':'),
     supersedes: true,
+    exclusive: true,
   },
   inputSchema: [
     {
@@ -120,9 +127,15 @@ export const autoTranslateBilingualField: TaskConfig<TaskSlug['AutoTranslateBili
 
         // Re-check: has someone (the user, another job) already filled the
         // target between enqueue and this run?
+        // depth: 0 keeps relationships as bare IDs — the writeback below
+        // re-submits this same read via `data`, and a depth-populated
+        // relationship object fed back into `update` is a known Payload
+        // footgun (validation failure, or silently writing a nested object
+        // where an ID belongs).
         const currentDoc = await payload.findByID({
           collection: collectionSlug as never,
           id: docId,
+          depth: 0,
         })
         const currentTarget = get(currentDoc, `${path}.${targetLanguage}`) as
           | SerializedEditorState
@@ -170,9 +183,11 @@ export const autoTranslateBilingualField: TaskConfig<TaskSlug['AutoTranslateBili
           message: 'Saving translation…',
         })
 
+        // depth: 0 — see the matching comment on the re-check findByID above.
         const doc = await payload.findByID({
           collection: collectionSlug as never,
           id: docId,
+          depth: 0,
         })
         const nextDoc = cloneDeep(doc)
         set(nextDoc, `${path}.${targetLanguage}`, translated)

@@ -217,6 +217,15 @@ describe('autoTranslateBilingualField', () => {
       expect(call[0].data.tasks[0].task.de).toEqual(paragraph('Hallo'))
       // The re-check read must not be mutated in place before cloning.
       expect(call[0].data).not.toBe(findByIDMock.mock.results[0]?.value)
+      // Both findByID reads (the re-check and the pre-writeback read) must
+      // request depth: 0 — a depth-populated relationship fed back through
+      // this task's whole-document `payload.update` would either fail
+      // validation or silently write a nested object where an ID belongs.
+      for (const call of findByIDMock.mock.calls) {
+        expect(call[0]).toMatchObject({
+          depth: 0,
+        })
+      }
       expect(publishMock).toHaveBeenLastCalledWith('bilingual-translate:job-1', {
         status: 'success',
         translated: paragraph('Hallo'),
