@@ -156,6 +156,7 @@ export interface Config {
   };
   locale: null;
   widgets: {
+    'scheduled-resume-generation-widget': ScheduledResumeGenerationWidgetWidget;
     'umami-widget': UmamiWidgetWidget;
     collections: CollectionsWidget;
   };
@@ -169,8 +170,8 @@ export interface Config {
       GenerateResumeFilename: TaskGenerateResumeFilename;
       BuildLocalizedResumeData: TaskBuildLocalizedResumeData;
       GenerateResumeFile: TaskGenerateResumeFile;
-      PingUptimeEndpoint: TaskPingUptimeEndpoint;
       AutoTranslateBilingualField: TaskAutoTranslateBilingualField;
+      PingUptimeEndpoint: TaskPingUptimeEndpoint;
       createCollectionExport: TaskCreateCollectionExport;
       createCollectionImport: TaskCreateCollectionImport;
       schedulePublish: TaskSchedulePublish;
@@ -1020,8 +1021,8 @@ export interface PayloadJob {
           | 'GenerateResumeFilename'
           | 'BuildLocalizedResumeData'
           | 'GenerateResumeFile'
-          | 'PingUptimeEndpoint'
           | 'AutoTranslateBilingualField'
+          | 'PingUptimeEndpoint'
           | 'createCollectionExport'
           | 'createCollectionImport'
           | 'schedulePublish';
@@ -1065,8 +1066,11 @@ export interface PayloadJob {
         | 'GenerateVideoThumbnails'
         | 'CalculateSkillTagInterval'
         | 'GenerateLocalizedResumeDocument'
-        | 'PingUptimeEndpoint'
+        | 'GenerateResumeFilename'
+        | 'BuildLocalizedResumeData'
+        | 'GenerateResumeFile'
         | 'AutoTranslateBilingualField'
+        | 'PingUptimeEndpoint'
         | 'createCollectionExport'
         | 'createCollectionImport'
         | 'schedulePublish'
@@ -1206,7 +1210,7 @@ export interface ResumeProjectData {
  */
 export interface ResumeSkillData {
   id: string;
-  name: {
+  content: {
     en: {
       root: {
         type: string;
@@ -1238,7 +1242,7 @@ export interface ResumeSkillData {
       [k: string]: unknown;
     };
   };
-  name_label?: string | null;
+  title?: string | null;
   published?: boolean | null;
   type?: SkillType;
   skillTags?:
@@ -1781,13 +1785,13 @@ export interface ResumeProjectsSelect<T extends boolean = true> {
  * via the `definition` "resume-skills_select".
  */
 export interface ResumeSkillsSelect<T extends boolean = true> {
-  name?:
+  content?:
     | T
     | {
         en?: T;
         de?: T;
       };
-  name_label?: T;
+  title?: T;
   published?: T;
   type?: T;
   skillTags?: T;
@@ -2454,6 +2458,16 @@ export interface PayloadJobsStatsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "scheduled-resume-generation-widget_widget".
+ */
+export interface ScheduledResumeGenerationWidgetWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "umami-widget_widget".
  */
 export interface UmamiWidgetWidget {
@@ -2599,14 +2613,6 @@ export interface TaskGenerateResumeFile {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TaskPingUptimeEndpoint".
- */
-export interface TaskPingUptimeEndpoint {
-  input?: unknown;
-  output?: unknown;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "TaskAutoTranslateBilingualField".
  */
 export interface TaskAutoTranslateBilingualField {
@@ -2627,6 +2633,14 @@ export interface TaskAutoTranslateBilingualField {
       | boolean
       | null;
   };
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskPingUptimeEndpoint".
+ */
+export interface TaskPingUptimeEndpoint {
+  input?: unknown;
   output?: unknown;
 }
 /**

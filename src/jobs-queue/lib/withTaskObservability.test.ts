@@ -63,7 +63,7 @@ describe('withTaskObservability', () => {
     expect(startSpan).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'job.task/SomeTask',
-        op: 'queue.task',
+        op: 'task',
         attributes: expect.objectContaining({
           'job.id': 'job-1',
           'job.task_slug': 'SomeTask',

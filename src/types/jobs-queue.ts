@@ -7,6 +7,7 @@ export const TaskSlug = {
   BuildLocalizedResumeData: 'BuildLocalizedResumeData',
   GenerateResumeFile: 'GenerateResumeFile',
   PingUptimeEndpoint: 'PingUptimeEndpoint',
+  AutoTranslateBilingualField: 'AutoTranslateBilingualField',
 } as const
 
 export type TaskSlug = typeof TaskSlug
