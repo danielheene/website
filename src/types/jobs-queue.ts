@@ -6,6 +6,9 @@ export const TaskSlug = {
   GenerateResumeFilename: 'GenerateResumeFilename',
   BuildLocalizedResumeData: 'BuildLocalizedResumeData',
   GenerateResumeFile: 'GenerateResumeFile',
+  GenerateResumeDocumentTitle: 'GenerateResumeDocumentTitle',
+  GenerateResumeDocumentSlug: 'GenerateResumeDocumentSlug',
+  CreateResumeDocument: 'CreateResumeDocument',
   PingUptimeEndpoint: 'PingUptimeEndpoint',
   AutoTranslateBilingualField: 'AutoTranslateBilingualField',
 } as const

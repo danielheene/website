@@ -171,6 +171,9 @@ export interface Config {
       BuildLocalizedResumeData: TaskBuildLocalizedResumeData;
       GenerateResumeFile: TaskGenerateResumeFile;
       AutoTranslateBilingualField: TaskAutoTranslateBilingualField;
+      GenerateResumeDocumentTitle: TaskGenerateResumeDocumentTitle;
+      GenerateResumeDocumentSlug: TaskGenerateResumeDocumentSlug;
+      CreateResumeDocument: TaskCreateResumeDocument;
       PingUptimeEndpoint: TaskPingUptimeEndpoint;
       createCollectionExport: TaskCreateCollectionExport;
       createCollectionImport: TaskCreateCollectionImport;
@@ -1022,6 +1025,9 @@ export interface PayloadJob {
           | 'BuildLocalizedResumeData'
           | 'GenerateResumeFile'
           | 'AutoTranslateBilingualField'
+          | 'GenerateResumeDocumentTitle'
+          | 'GenerateResumeDocumentSlug'
+          | 'CreateResumeDocument'
           | 'PingUptimeEndpoint'
           | 'createCollectionExport'
           | 'createCollectionImport'
@@ -1070,6 +1076,9 @@ export interface PayloadJob {
         | 'BuildLocalizedResumeData'
         | 'GenerateResumeFile'
         | 'AutoTranslateBilingualField'
+        | 'GenerateResumeDocumentTitle'
+        | 'GenerateResumeDocumentSlug'
+        | 'CreateResumeDocument'
         | 'PingUptimeEndpoint'
         | 'createCollectionExport'
         | 'createCollectionImport'
@@ -2634,6 +2643,70 @@ export interface TaskAutoTranslateBilingualField {
       | null;
   };
   output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskGenerateResumeDocumentTitle".
+ */
+export interface TaskGenerateResumeDocumentTitle {
+  input: {
+    documentTitleTemplate: string;
+    sharedId: string;
+  };
+  output: {
+    documentTitle: string;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskGenerateResumeDocumentSlug".
+ */
+export interface TaskGenerateResumeDocumentSlug {
+  input: {
+    documentTitle: string;
+  };
+  output: {
+    documentSlug: string;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCreateResumeDocument".
+ */
+export interface TaskCreateResumeDocument {
+  input: {
+    documentTitle: string;
+    documentSlug: string;
+    createdAt: string;
+    jobId: string;
+    resumeFileIdEn: string;
+    resumeFileChecksumEn: string;
+    resumeThumbnailIdsEn: string[];
+    resumeDocumentDataEn:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    resumeFileIdDe: string;
+    resumeFileChecksumDe: string;
+    resumeThumbnailIdsDe: string[];
+    resumeDocumentDataDe:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+  output: {
+    success: boolean;
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
