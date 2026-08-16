@@ -1,8 +1,10 @@
-import type { GroupField, RowField, UIField } from 'payload'
+import type { NamedGroupField, UIField } from 'payload'
 import { deepMerge } from 'payload'
 
+import { enqueueAutoTranslate } from '@/fields/BilingualRichText/hooks/enqueueAutoTranslate'
 import type { RichTextEditorVariant, RichTextFieldOverrides } from '@/fields/RichText'
 import { RichTextField } from '@/fields/RichText'
+import { cn } from '@/lib/cn'
 
 type BilingualRichTextFieldOverrides = {
   en?: RichTextFieldOverrides
@@ -44,17 +46,10 @@ export const BilingualRichTextField = ({
   label = false,
   required = false,
   overrides = {},
-}: BilingualRichTextFieldProps): GroupField => {
+}: BilingualRichTextFieldProps): NamedGroupField => {
   const baseOverrides = (language: 'English' | 'German'): RichTextFieldOverrides => ({
     label: language,
     required,
-    ...(layout === 'row'
-      ? {
-          admin: {
-            width: '45%',
-          },
-        }
-      : {}),
   })
 
   const enField = RichTextField({
@@ -79,34 +74,16 @@ export const BilingualRichTextField = ({
     type: 'ui',
     name: `${name}TranslateControls`,
     admin: {
-      ...(layout === 'row'
-        ? {
-            width: '10%',
-          }
-        : {}),
       components: {
-        Field: '@/fields/BilingualRichText/components/TranslateControls',
+        Field: {
+          path: '@/fields/BilingualRichText/components/TranslateControls',
+          clientProps: {
+            layout,
+          },
+        },
       },
     },
   }
-
-  const fields: GroupField['fields'] =
-    layout === 'row'
-      ? [
-          {
-            type: 'row',
-            fields: [
-              enField,
-              translateControls,
-              deField,
-            ],
-          } satisfies RowField,
-        ]
-      : [
-          enField,
-          translateControls,
-          deField,
-        ]
 
   return {
     type: 'group',
@@ -115,6 +92,30 @@ export const BilingualRichTextField = ({
     admin: {
       hideGutter: true,
     },
-    fields,
+    hooks: {
+      afterChange: [
+        enqueueAutoTranslate,
+      ],
+    },
+    fields: [
+      {
+        type: 'row',
+        admin: {
+          className: cn([
+            '[&.field-type.row>.render-fields]:flex [&.field-type.row>.render-fields]:flex-col',
+            '[&.field-type.row>.render-fields]:justify-between [&.field-type.row>.render-fields]:gap-y- 0',
+            layout === 'row' && [
+              '[&.field-type.row>.render-fields]:md:grid',
+              '[&.field-type.row>.render-fields]:md:grid-cols-[1fr_max-content_1fr]',
+            ],
+          ]),
+        },
+        fields: [
+          enField,
+          translateControls,
+          deField,
+        ],
+      },
+    ],
   }
 }
