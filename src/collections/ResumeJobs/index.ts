@@ -112,7 +112,7 @@ export const ResumeJobs: CollectionConfig<CollectionSlug['ResumeJobs']> = {
           fields: [
             BilingualRichTextField({
               name: 'task',
-              layout: 'column',
+              layout: 'row',
               editorVariant: 'inline',
               required: true,
               label: false,
