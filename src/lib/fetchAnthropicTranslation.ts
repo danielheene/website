@@ -8,18 +8,12 @@ import { generateText } from 'ai'
 import dedent from 'dedent'
 
 import { parseHtmlToLexical } from '@/lib/lexical/parseHtmlToLexical'
-
-export type BilingualLanguage = 'en' | 'de'
-
-export const BILINGUAL_LANGUAGE_LABEL: Record<BilingualLanguage, string> = {
-  en: 'English',
-  de: 'German',
-}
+import { BilingualLanguageLabel, BilingualLanguageValue } from '@/types/bilingualLanguage'
 
 type FetchAnthropicTranslationArgs = {
   value: SerializedEditorState
-  sourceLanguage: BilingualLanguage
-  targetLanguage: BilingualLanguage
+  sourceLanguage: BilingualLanguageValue
+  targetLanguage: BilingualLanguageValue
 }
 
 /**
@@ -50,8 +44,8 @@ export const fetchAnthropicTranslation = async ({
   const { text: translatedHtml } = await generateText({
     model: anthropic('claude-haiku-4-5'),
     system: dedent`
-      Translate the following ${BILINGUAL_LANGUAGE_LABEL[sourceLanguage]} HTML fragment
-      into ${BILINGUAL_LANGUAGE_LABEL[targetLanguage]}. Preserve the HTML tags and
+      Translate the following ${BilingualLanguageLabel[sourceLanguage]} HTML fragment
+      into ${BilingualLanguageLabel[targetLanguage]}. Preserve the HTML tags and
       structure exactly - translate only the text content. Keep the tone
       concise and professional, appropriate for a CV/résumé bullet point.
       Return only the translated HTML fragment, no explanation, no code
