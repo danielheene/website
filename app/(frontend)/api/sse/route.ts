@@ -1,5 +1,8 @@
+import config from '@payload-config'
+import { getPayload, type PayloadRequest } from 'payload'
+
 import { type RedisListener, subscribe } from '@/lib/RedisHandler'
-import { isSseChannel } from '@/lib/sse/channels'
+import { isBilingualTranslateChannel, isSseChannel } from '@/lib/sse/channels'
 
 const HEARTBEAT_INTERVAL_MS = 30_000
 
@@ -30,7 +33,38 @@ export async function GET(request: Request): Promise<Response> {
    *    Unknown channels get the same 400 as a missing one — enumerating which
    *    channels exist is not something an anonymous caller needs to do.
    */
-  if (!isSseChannel(channel)) {
+  if (isBilingualTranslateChannel(channel)) {
+    /**
+     *    Unlike the public channels in `SSE_CHANNELS`, a bilingual-translate
+     *    job channel carries translated CV content, so it requires a signed-in
+     *    admin session rather than being open to anonymous callers.
+     */
+    const payload = await getPayload({
+      config,
+    })
+
+    let isAuthenticated = false
+    try {
+      const { user } = await payload.auth({
+        req: request as unknown as PayloadRequest,
+        headers: request.headers,
+      })
+      isAuthenticated = Boolean(user)
+    } catch (error) {
+      payload.logger.error(
+        {
+          err: error,
+        },
+        'Error authenticating SSE request for a bilingual-translate channel',
+      )
+    }
+
+    if (!isAuthenticated) {
+      return new Response('You must be signed in to stream this channel', {
+        status: 401,
+      })
+    }
+  } else if (!isSseChannel(channel)) {
     return new Response('Missing or unsupported "channel" query parameter', {
       status: 400,
     })
