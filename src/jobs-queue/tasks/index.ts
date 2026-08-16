@@ -1,6 +1,7 @@
 import { withTaskObservability } from '@/jobs-queue/lib/withTaskObservability'
 import { TaskSlugValue } from '@/types/jobs-queue'
 
+import { autoTranslateBilingualField } from './autoTranslateBilingualField'
 import { buildLocalizedResumeData } from './buildLocalizedResumeData'
 import { calculateSkillTagInterval } from './calculateSkillTagInterval'
 import { generateDocumentThumbnails } from './generateDocumentThumbnails'
@@ -22,6 +23,7 @@ export const TASKS = [
   generateResumeFilename,
   buildLocalizedResumeData,
   generateResumeFile,
+  autoTranslateBilingualField,
   pingUptimeEndpoint,
 ].map(withTaskObservability)
 
