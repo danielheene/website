@@ -1,5 +1,7 @@
 import { TaskConfig } from 'payload'
 
+import * as Sentry from '@sentry/nextjs'
+
 import { TaskSlug } from '@/types/jobs-queue'
 
 /**
@@ -14,7 +16,7 @@ export const generateLocalizedResumeDocument: TaskConfig<
   TaskSlug['GenerateLocalizedResumeDocument']
 > = {
   slug: TaskSlug.GenerateLocalizedResumeDocument,
-  label: 'Generate ResumeDocument for Locale',
+  label: 'Generate ResumeDocument for BilingualLanguage',
   retries: 3,
   concurrency: {
     key: ({ input }) =>
@@ -119,6 +121,7 @@ export const generateLocalizedResumeDocument: TaskConfig<
           filename,
           createdAt,
           resumeDocumentData,
+          locale,
         },
       },
     )
@@ -136,6 +139,16 @@ export const generateLocalizedResumeDocument: TaskConfig<
     )
 
     payload.logger.info(`Finished generating resume document for locale: ${locale}`)
+
+    // Business KPI, not a span metric: how often a resume actually gets
+    // produced per locale, i.e. the core product outcome this whole
+    // workflow exists for — distinct from whether the underlying tasks
+    // succeeded quickly, which withTaskObservability's spans already cover.
+    Sentry.metrics.count('resume_document.generated', 1, {
+      attributes: {
+        locale,
+      },
+    })
 
     return {
       output: {

@@ -924,6 +924,7 @@ export interface ResumeDocumentData {
   jobId?: (string | null) | PayloadJob;
   checksum_en?: string | null;
   checksum_de?: string | null;
+  newerVersions?: number | null;
   document_en?: {
     relationTo: 'documents';
     value: string | MediaDocument;
@@ -1741,6 +1742,7 @@ export interface ResumeDocumentsSelect<T extends boolean = true> {
   jobId?: T;
   checksum_en?: T;
   checksum_de?: T;
+  newerVersions?: T;
   document_en?: T;
   document_de?: T;
   thumbnails_en?: T;
@@ -2614,6 +2616,7 @@ export interface TaskGenerateResumeFile {
       | number
       | boolean
       | null;
+    locale: string;
   };
   output: {
     resumeFileId: string;

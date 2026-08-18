@@ -1,6 +1,8 @@
 import { renderToBuffer } from '@react-pdf/renderer'
 import { TaskConfig } from 'payload'
 
+import * as Sentry from '@sentry/nextjs'
+
 import { ResumeDocument } from '@/pdf'
 import { DocumentData } from '@/pdf/types'
 import { CollectionSlug } from '@/types/collections'
@@ -26,6 +28,13 @@ export const generateResumeFile: TaskConfig<TaskSlug['GenerateResumeFile']> = {
       name: 'resumeDocumentData',
       required: true,
     },
+    {
+      // Only used to tag the resume.file.size_bytes metric below — not
+      // referenced by rendering or upload.
+      type: 'text',
+      name: 'locale',
+      required: true,
+    },
   ],
   outputSchema: [
     {
@@ -42,7 +51,7 @@ export const generateResumeFile: TaskConfig<TaskSlug['GenerateResumeFile']> = {
   handler: async ({ input, req: { payload } }) => {
     'use server'
 
-    const { filename, createdAt, resumeDocumentData } = input
+    const { filename, createdAt, resumeDocumentData, locale } = input
 
     payload.logger.info(`Rendering resume PDF: ${filename}`)
 
@@ -51,6 +60,7 @@ export const generateResumeFile: TaskConfig<TaskSlug['GenerateResumeFile']> = {
     const arrayBufferLike = await renderToBuffer(
       <ResumeDocument {...(resumeDocumentData as DocumentData)} />,
     )
+    const fileSizeBytes = Buffer.byteLength(arrayBufferLike)
 
     payload.logger.info(`Uploading resume file: ${filename}`)
 
@@ -68,7 +78,7 @@ export const generateResumeFile: TaskConfig<TaskSlug['GenerateResumeFile']> = {
         data: Buffer.from(arrayBufferLike),
         name: `${filename}.pdf`,
         mimetype: 'application/pdf',
-        size: Buffer.byteLength(arrayBufferLike),
+        size: fileSizeBytes,
       },
       context: {
         skipGenerateDocumentThumbnails: true,
@@ -76,6 +86,16 @@ export const generateResumeFile: TaskConfig<TaskSlug['GenerateResumeFile']> = {
     })
 
     payload.logger.info(`Uploaded resume file: ${filename}`)
+
+    // Business KPI, not a span metric: tracks how generated-resume PDF size
+    // trends over time per locale. Duration/success are already covered by
+    // withJobObservability's span on this task.
+    Sentry.metrics.distribution('resume.file.size_bytes', fileSizeBytes, {
+      unit: 'byte',
+      attributes: {
+        locale,
+      },
+    })
 
     return {
       output: {

@@ -1,6 +1,7 @@
 import { TaskConfig } from 'payload'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 
+import * as Sentry from '@sentry/nextjs'
 import { cloneDeep, get, set } from 'lodash-es'
 
 import { extractErrorMessage } from '@/lib/extractErrorMessage'
@@ -111,9 +112,24 @@ export const autoTranslateBilingualField: TaskConfig<TaskSlug['AutoTranslateBili
     const emit = (progress: AutoTranslateBilingualFieldProgress) =>
       publish(bilingualTranslateChannel(String(job.id)), progress)
 
+    // Business KPI, not a span metric: how often auto-translate actually
+    // translates vs. no-ops, and why — a signal spans can't answer since
+    // every path here is still a "successful" task run. Tagged, not just
+    // counted globally, so e.g. a spike in 'target-already-populated' for
+    // one language is visible.
+    const recordOutcome = (reason: string) =>
+      Sentry.metrics.count('bilingual_translate.outcome', 1, {
+        attributes: {
+          mode,
+          reason,
+          target_language: targetLanguage,
+        },
+      })
+
     try {
       if (mode === 'auto') {
         if (!docId) {
+          recordOutcome('no-doc-id')
           await emit({
             status: 'skipped',
             reason: 'no-doc-id',
@@ -142,6 +158,7 @@ export const autoTranslateBilingualField: TaskConfig<TaskSlug['AutoTranslateBili
           | undefined
 
         if (!isEmptyValue(currentTarget)) {
+          recordOutcome('target-already-populated')
           await emit({
             status: 'skipped',
             reason: 'target-already-populated',
@@ -166,6 +183,7 @@ export const autoTranslateBilingualField: TaskConfig<TaskSlug['AutoTranslateBili
       })
 
       if (!translated) {
+        recordOutcome('empty-translation')
         await emit({
           status: 'skipped',
           reason: 'empty-translation',
@@ -202,6 +220,7 @@ export const autoTranslateBilingualField: TaskConfig<TaskSlug['AutoTranslateBili
         })
       }
 
+      recordOutcome('translated')
       await emit({
         status: 'success',
         translated,
