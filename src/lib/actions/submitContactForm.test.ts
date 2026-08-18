@@ -1,3 +1,4 @@
+import type { SendEmailOptions } from 'payload'
 import { getPayload } from 'payload'
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -9,17 +10,25 @@ vi.mock('@payload-config', () => ({
 }))
 
 const RECIPIENT_EMAIL = 'owner@example.com'
+const OWNER_FIRST_NAME = 'Daniel'
 
-const findGlobal = vi.fn(async () => ({
-  email: RECIPIENT_EMAIL,
-}))
-const sendEmail = vi.fn(async () => ({}))
+const findGlobal = vi.fn(
+  async (): Promise<{
+    email?: string
+    firstName?: string
+  }> => ({
+    email: RECIPIENT_EMAIL,
+    firstName: OWNER_FIRST_NAME,
+  }),
+)
+const sendEmail = vi.fn(async (_options: SendEmailOptions) => ({}))
 const loggerError = vi.fn()
 
 beforeEach(() => {
   findGlobal.mockClear()
   findGlobal.mockResolvedValue({
     email: RECIPIENT_EMAIL,
+    firstName: OWNER_FIRST_NAME,
   })
   sendEmail.mockClear()
   sendEmail.mockResolvedValue({})
@@ -50,7 +59,7 @@ const formData = (fields: Partial<Record<'name' | 'email' | 'message' | 'company
 }
 
 describe('submitContactForm', () => {
-  it('sends an email to the configured recipient with the submitter as reply-to', async () => {
+  it('notifies the configured recipient with the submitter as reply-to, and sends the submitter a copy', async () => {
     const result = await submitContactForm(
       initialState,
       formData({
@@ -61,13 +70,41 @@ describe('submitContactForm', () => {
     )
 
     expect(result.status).toBe('success')
-    expect(sendEmail).toHaveBeenCalledTimes(1)
-    expect(sendEmail.mock.calls[0][0]).toMatchObject({
+    expect(sendEmail).toHaveBeenCalledTimes(2)
+
+    const [notificationCall, confirmationCall] = sendEmail.mock.calls
+
+    expect(notificationCall?.[0]).toMatchObject({
       to: RECIPIENT_EMAIL,
       replyTo: 'Ada Lovelace <ada@example.com>',
       subject: 'New contact form message from Ada Lovelace',
     })
-    expect(sendEmail.mock.calls[0][0].text).toContain('Hello there')
+    expect(notificationCall?.[0].text).toContain('Hello there')
+    expect(notificationCall?.[0].html).toContain('Hello there')
+
+    expect(confirmationCall?.[0]).toMatchObject({
+      to: 'Ada Lovelace <ada@example.com>',
+      replyTo: RECIPIENT_EMAIL,
+    })
+    expect(confirmationCall?.[0].text).toContain('Hello there')
+    expect(confirmationCall?.[0].html).toContain('Hello there')
+  })
+
+  it('still reports success when only the confirmation copy fails to send', async () => {
+    sendEmail.mockResolvedValueOnce({}).mockRejectedValueOnce(new Error('usesend: 500'))
+
+    const result = await submitContactForm(
+      initialState,
+      formData({
+        name: 'Ada Lovelace',
+        email: 'ada@example.com',
+        message: 'Hello there',
+      }),
+    )
+
+    expect(result.status).toBe('success')
+    expect(sendEmail).toHaveBeenCalledTimes(2)
+    expect(loggerError).toHaveBeenCalledWith(expect.stringContaining('confirmation'))
   })
 
   it('rejects an invalid email without sending', async () => {
