@@ -1,5 +1,6 @@
 'use server'
 
+import { isTrackingSuppressed } from './isTrackingSuppressed.server'
 import { sendUmamiPayload } from './sendUmamiPayload'
 import type { UmamiSendPayload, UmamiSendPayloadPayload } from './Umami.types'
 
@@ -20,9 +21,8 @@ const isDoNotTrackEnabled = () => process.env.NEXT_PUBLIC_UMAMI_DO_NOT_TRACK ===
  * `hostname` explicitly if they want them included. Builds a payload and
  * fires it via `sendUmamiPayload`, without awaiting or surfacing its result.
  * Honors `NEXT_PUBLIC_UMAMI_DO_NOT_TRACK`, no-oping when tracking is
- * suppressed.
- *
- * TASK-011 will add an `isTrackingSuppressed()` early-return guard here.
+ * suppressed, and suppresses tracking for the site owner's own
+ * authenticated Payload sessions unless they've opted back in.
  */
 export const trackServerEvent = async ({
   name,
@@ -32,6 +32,10 @@ export const trackServerEvent = async ({
   hostname,
 }: TrackServerEventInput): Promise<void> => {
   if (isDoNotTrackEnabled()) {
+    return
+  }
+
+  if (await isTrackingSuppressed()) {
     return
   }
 

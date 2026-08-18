@@ -1,10 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { isTrackingSuppressed } from './isTrackingSuppressed.server'
 import { sendUmamiPayload } from './sendUmamiPayload'
 import { trackServerEvent } from './track.server'
 
 vi.mock('./sendUmamiPayload', () => ({
   sendUmamiPayload: vi.fn().mockResolvedValue(undefined),
+}))
+
+vi.mock('./isTrackingSuppressed.server', () => ({
+  isTrackingSuppressed: vi.fn().mockResolvedValue(false),
 }))
 
 const SITE_ID = 'site-abc'
@@ -84,6 +89,16 @@ describe('trackServerEvent', () => {
 
   it('does not send when NEXT_PUBLIC_UMAMI_DO_NOT_TRACK is true', async () => {
     vi.stubEnv('NEXT_PUBLIC_UMAMI_DO_NOT_TRACK', 'true')
+
+    await trackServerEvent({
+      name: 'my-event',
+    })
+
+    expect(sendUmamiPayload).not.toHaveBeenCalled()
+  })
+
+  it('does not send when isTrackingSuppressed resolves true', async () => {
+    vi.mocked(isTrackingSuppressed).mockResolvedValueOnce(true)
 
     await trackServerEvent({
       name: 'my-event',
