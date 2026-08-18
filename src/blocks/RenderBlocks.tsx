@@ -13,6 +13,7 @@ import { ResumeCustomersBlockRenderer } from './ResumeCustomersBlock/Renderer'
 import { ResumeDownloadsBlockRenderer } from './ResumeDownloadsBlock/Renderer'
 import { ResumeExperienceBlockRenderer } from './ResumeExperienceBlock/Renderer'
 import { ResumeProjectsBlockRenderer } from './ResumeProjectsBlock/Renderer'
+import { TrendingBlogPostsBlockRenderer } from './TrendingBlogPostsBlock/Renderer'
 import { TwoColumnContentBlockRenderer } from './TwoColumnContentBlock/Renderer'
 
 const blockComponentMap = {
@@ -20,6 +21,7 @@ const blockComponentMap = {
   [BlockSlug.TwoColumnContent]: TwoColumnContentBlockRenderer,
   [BlockSlug.LinkGroup]: LinkGroupBlockRenderer,
   [BlockSlug.Code]: CodeBlockRenderer,
+  [BlockSlug.TrendingBlogPosts]: TrendingBlogPostsBlockRenderer,
   [BlockSlug.LegalPublisher]: LegalPublisherBlockRenderer,
   [BlockSlug.LegalAuthorships]: LegalAuthorshipsBlockRenderer,
   [BlockSlug.ResumeAboutMe]: ResumeAboutMeBlockRenderer,
