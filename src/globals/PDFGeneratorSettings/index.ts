@@ -4,6 +4,7 @@ import dedent from 'dedent'
 
 import { authenticated } from '@/access/authenticated'
 import { DurationField } from '@/fields/Duration'
+import { SectionGroupField } from '@/fields/SectionGroup'
 import { TemplateField } from '@/fields/Template'
 import { generateResumeDocumentHook } from '@/lib/hooks/global'
 import { translate } from '@/lib/i18n'
@@ -101,20 +102,13 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
         }),
       ],
     },
-    {
-      type: 'group',
+    SectionGroupField({
       label: 'Queue Handling',
-      admin: {
-        hideGutter: true,
-        description: dedent`
+      description: `
           __Generate Throttle:__ Time to wait between the last change and the next scheduled PDF generation. This prevents multiple scheduled Jobs during a set of changes.${'  '}
           __Timeout Between Jobs:__ Time to wait between the last scheduled Job and the next scheduled Job. This prevents too many generated PDFs over the time of a day.${'  '}
           __Maximum Attempts:__ Number of attempts before a scheduled Job is marked as failed. To avoid hard failures due to flaky network connections or server issues.${'  '}
         `,
-        components: {
-          Description: '@/components/AdminPanel#MarkdownDescription',
-        },
-      },
       fields: [
         {
           type: 'row',
@@ -141,20 +135,13 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
           fields: [],
         },
       ],
-    },
+    }),
 
-    {
-      type: 'group',
+    SectionGroupField({
       label: 'Skill Type Sorting',
-      admin: {
-        hideGutter: true,
-        description: dedent`
+      description: `
           Order the skill types in the generated document.
         `,
-        components: {
-          Description: '@/components/AdminPanel#MarkdownDescription',
-        },
-      },
       fields: [
         {
           name: 'skillSorting',
@@ -197,7 +184,7 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
           },
         },
       ],
-    },
+    }),
   ],
   versions: false,
 }

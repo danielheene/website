@@ -49,7 +49,7 @@ export const TemplateField = ({
       admin: {
         description,
         components: {
-          Description: '@/components/AdminPanel#MarkdownDescription',
+          Description: '@/fields/SectionGroup/components/DescriptionComponent',
           Field: {
             path: '@/fields/Template/Components/FieldComponent',
             serverProps: {
