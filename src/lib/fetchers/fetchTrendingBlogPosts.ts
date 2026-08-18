@@ -1,12 +1,14 @@
 'use server'
 
-import { subDays } from 'date-fns'
+import { minutesToSeconds, subDays } from 'date-fns'
 
 import { get, set } from '@/lib/RedisHandler'
 import { getToken } from '@/widgets/UmamiWidget/UmamiWidget.data'
 
 const BLOG_POST_PATH_PREFIX = '/blog/post/'
-const CACHE_TTL_SECONDS = 60 * 60 * 2
+// Intentionally shorter than the admin widget's 2h TTL (UmamiWidget.data.ts)
+// so "trending" reflects more recent popularity shifts.
+const CACHE_TTL_SECONDS = minutesToSeconds(45)
 
 type Metric = {
   x: string

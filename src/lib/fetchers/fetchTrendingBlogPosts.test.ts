@@ -189,4 +189,22 @@ describe('fetchTrendingBlogPosts', () => {
     expect(result).toBeNull()
     expect(fetchMock).not.toHaveBeenCalled()
   })
+
+  it('caches the fetched metrics with a 45 minute TTL', async () => {
+    fetchMock.mockResolvedValue({
+      json: async () => [
+        {
+          x: '/blog/post/foo',
+          y: 10,
+        },
+      ],
+    })
+
+    await fetchTrendingBlogPosts({
+      days: 7,
+      limit: 10,
+    })
+
+    expect(setMock).toHaveBeenCalledWith(expect.any(String), expect.any(Array), 60 * 45)
+  })
 })
