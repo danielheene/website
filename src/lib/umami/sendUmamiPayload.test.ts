@@ -34,7 +34,7 @@ describe('sendUmamiPayload', () => {
       })
 
       expect(sendBeacon).toHaveBeenCalledTimes(1)
-      expect(sendBeacon).toHaveBeenCalledWith(`${UMAMI_URL}/api/send`, expect.any(Blob))
+      expect(sendBeacon).toHaveBeenCalledWith('/stats/api/send', expect.any(Blob))
       expect(fetchMock).not.toHaveBeenCalled()
     })
 
@@ -55,7 +55,7 @@ describe('sendUmamiPayload', () => {
 
       expect(fetchMock).toHaveBeenCalledTimes(1)
       const [url, init] = fetchMock.mock.calls[0]
-      expect(url).toBe(`${UMAMI_URL}/api/send`)
+      expect(url).toBe('/stats/api/send')
       expect(init).toMatchObject({
         method: 'POST',
         keepalive: true,
@@ -94,7 +94,7 @@ describe('sendUmamiPayload', () => {
       expect(sendBeacon).not.toHaveBeenCalled()
       expect(fetchMock).toHaveBeenCalledTimes(1)
       const [url, init] = fetchMock.mock.calls[0]
-      expect(url).toBe(`${UMAMI_URL}/api/send`)
+      expect(url).toBe('/stats/api/send')
       expect(init).toMatchObject({
         method: 'POST',
         keepalive: true,

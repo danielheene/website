@@ -37,7 +37,13 @@ const sendViaFetch = async (url: string, body: string, keepalive: boolean) => {
  * `console.debug` so tracking issues never break the calling code.
  */
 export const sendUmamiPayload = async (payload: UmamiSendPayload): Promise<void> => {
-  const url = `${process.env.NEXT_PUBLIC_UMAMI_URL}/api/send`
+  // In the browser, route through the same-origin `/stats` rewrite (see
+  // next.config.ts) so the request doesn't visibly hit the Umami domain,
+  // which keeps it out of ad-blocker filter lists that target known
+  // analytics hosts/paths. On the server there is no origin to resolve a
+  // relative URL against and no rewrite applies to a raw server fetch, so
+  // the absolute Umami URL is used instead.
+  const url = isBrowser() ? '/stats/api/send' : `${process.env.NEXT_PUBLIC_UMAMI_URL}/api/send`
   const body = JSON.stringify(payload)
 
   try {
