@@ -20,6 +20,15 @@ export const SENTRY_ENABLED = Boolean(SENTRY_DSN)
 export const sharedSentryOptions = {
   dsn: SENTRY_DSN,
   environment: process.env.SENTRY_ENVIRONMENT ?? process.env.NODE_ENV,
+
+  /**
+   * `SENTRY_RELEASE` is set at build time (see next.config.ts's `env` block
+   * and `withSentryConfig`'s `release.name`) to `website@<package.json
+   * version>` — the same string CI's semantic-release step creates the
+   * Sentry release under. Both must derive from that one value: passing a
+   * *different* release here (or hardcoding one) would silently tag events
+   * under a release with no commits or deploy attached.
+   */
   release: process.env.SENTRY_RELEASE,
 
   /** Forwards console calls and structured logs to Sentry. */

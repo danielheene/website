@@ -165,6 +165,13 @@ export default async (phase, { defaultConfig }) => {
      *
      *      - SENTRY_DSN      → instrumentation-client.ts calls Sentry.init at
      *                          module scope, before any component renders.
+     *      - SENTRY_RELEASE  → same module-scope Sentry.init call reads this
+     *                          to tag client events with the release. It must
+     *                          reach the browser bundle the same way the DSN
+     *                          does, and must be byte-identical to the
+     *                          `release.name` given to withSentryConfig below
+     *                          — that's the value CI's release object is
+     *                          created under.
      *      - SERVER_URL      → read by robots.ts and the root layout's
      *                          metadataBase, both of which are prerendered.
      *      - STATUS_PAGE_URL → reaches ServiceStatus through the Footer, which
@@ -185,6 +192,7 @@ export default async (phase, { defaultConfig }) => {
       SERVER_URL: process.env.SERVER_URL,
       STATUS_PAGE_URL: process.env.STATUS_PAGE_URL,
       SENTRY_DSN: process.env.SENTRY_DSN,
+      SENTRY_RELEASE: process.env.SENTRY_RELEASE,
     },
 
     /**
@@ -361,6 +369,30 @@ export default async (phase, { defaultConfig }) => {
       disable: !uploadSourceMaps,
       // uploaded maps are deleted afterwards so they are never served publicly
       deleteSourcemapsAfterUpload: true,
+    },
+
+    /**
+     * Pins the release this build creates/finalizes in Sentry to the exact
+     * same string every runtime tags its events with (SENTRY_RELEASE, read
+     * above into the `env` block for the client bundle and directly by
+     * instrumentation.ts for server/edge). Without an explicit name here the
+     * plugin falls back to the git HEAD SHA, which drifts from
+     * SENTRY_RELEASE the moment that's set to anything else — two releases
+     * result: one with commits and no events, one with events and no
+     * commits. semantic-release (.github/workflows/release.yml) sets
+     * SENTRY_RELEASE to `website@<version>` before this build runs.
+     *
+     * `deploy.env` records this build under an environment so the release's
+     * Deploys tab isn't permanently empty — see SENTRY_ENVIRONMENT in
+     * src/lib/sentry/options.ts for the same value used at runtime.
+     */
+    release: {
+      name: process.env.SENTRY_RELEASE,
+      deploy: process.env.SENTRY_RELEASE
+        ? {
+            env: process.env.SENTRY_ENVIRONMENT || process.env.NODE_ENV || 'production',
+          }
+        : undefined,
     },
 
     // proxies Sentry requests through the app so ad blockers cannot drop them

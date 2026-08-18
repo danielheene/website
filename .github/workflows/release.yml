@@ -1,0 +1,56 @@
+name: Release
+
+# Runs the version half of Sentry release tracking (see release.config.mjs):
+# on every push to main, semantic-release reads Conventional Commits since
+# the last tag, decides whether a release is warranted, bumps package.json,
+# commits it back with [skip ci], and pushes a vX.Y.Z tag.
+#
+# Dokploy picks up that commit on its own (it watches the repo, per
+# test.yml's comments) and builds from it — this workflow does not deploy
+# anything, it only produces the version number the build/Sentry wiring
+# reads.
+on:
+  push:
+    branches:
+      - main
+
+# semantic-release needs to push a commit and a tag, and @semantic-release/github
+# needs to create a GitHub release.
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # The commit semantic-release itself pushes carries [skip ci] in its
+    # subject, but that only suppresses workflows that check for it — this
+    # guard is the actual backstop against the release job re-triggering
+    # itself in a loop.
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # semantic-release computes the next version from the full commit
+          # history since the last tag — a shallow clone would see nothing.
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 26
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Release
+        run: pnpm exec semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
