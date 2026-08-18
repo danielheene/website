@@ -51,12 +51,14 @@ export const TrendingBlogPostsBlockRenderer = async ({
               href={`/blog/post/${slug}`}
               className="group flex flex-col gap-4 rounded-sm border-4 border-primary bg-card overflow-hidden transition-colors hover:border-primary-800"
             >
-              {heroImage && (
+              {heroImage?.url && (
                 <div className="relative aspect-video w-full overflow-hidden">
                   <ImageMedia
                     url={heroImage.url}
                     alt={heroImage.alt ?? post.title}
+                    blurDataURL={heroImage.blurDataURL}
                     fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                     imgClassName="transition-transform duration-300 ease-in-out group-hover:scale-105"
                   />
                 </div>

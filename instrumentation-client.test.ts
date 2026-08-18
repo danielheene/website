@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@sentry/nextjs', () => ({
@@ -7,7 +8,7 @@ vi.mock('@sentry/nextjs', () => ({
 }))
 
 vi.mock('@/lib/umami/track', () => ({
-  track: vi.fn(),
+  trackPageview: vi.fn(),
 }))
 
 /**
@@ -25,15 +26,27 @@ beforeEach(() => {
   vi.unstubAllEnvs()
 })
 
+describe('module evaluation (initial page load)', () => {
+  it('fires an initial bare Umami pageview when window is defined', async () => {
+    const { trackPageview } = await import('@/lib/umami/track')
+
+    await loadInstrumentationClient()
+
+    expect(trackPageview).toHaveBeenCalledWith()
+  })
+})
+
 describe('onRouterTransitionStart', () => {
-  it('captures the router transition start and fires a bare Umami pageview', async () => {
+  it('captures the router transition start and fires an Umami pageview for the destination href', async () => {
     const Sentry = await import('@sentry/nextjs')
-    const { track } = await import('@/lib/umami/track')
+    const { trackPageview } = await import('@/lib/umami/track')
     const { onRouterTransitionStart } = await loadInstrumentationClient()
+    vi.mocked(trackPageview).mockClear()
 
-    onRouterTransitionStart('/some/path', 'push')
+    onRouterTransitionStart('/new/path', 'push')
 
-    expect(Sentry.captureRouterTransitionStart).toHaveBeenCalledWith('/some/path', 'push')
-    expect(track).toHaveBeenCalledWith()
+    expect(Sentry.captureRouterTransitionStart).toHaveBeenCalledWith('/new/path', 'push')
+    expect(trackPageview).toHaveBeenCalledWith('/new/path')
+    expect(trackPageview).not.toHaveBeenCalledWith()
   })
 })

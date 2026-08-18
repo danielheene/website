@@ -46,6 +46,35 @@ export const isTrackingAllowed = (): boolean => {
 }
 
 /**
+ * Shared guard used by both `track()` and `trackPageview()`: true when
+ * tracking should be skipped, either because the current session was flagged
+ * suppressed (`window.__UMAMI_SUPPRESSED__`) or because
+ * `isTrackingAllowed()`'s do-not-track/domain config says no.
+ */
+const shouldSuppressTracking = (): boolean =>
+  (isBrowser() && window.__UMAMI_SUPPRESSED__ === true) || !isTrackingAllowed()
+
+/**
+ * Populates the browser-derived fields (hostname/language/screen/title/
+ * referrer) shared by `track()` and `trackPageview()`. No-ops outside a
+ * browser context.
+ */
+const applyBrowserPayloadFields = (payload: UmamiSendPayloadPayload): void => {
+  if (!isBrowser()) {
+    return
+  }
+
+  payload.hostname = location.hostname
+  payload.language = navigator.language
+  payload.screen = `${screen.width}x${screen.height}`
+  payload.title = document.title
+
+  if (document.referrer) {
+    payload.referrer = document.referrer
+  }
+}
+
+/**
  * Directly-importable, isomorphic replacement for Umami's script-injected
  * `track()` global. Builds a payload from browser globals (when available)
  * plus the caller-supplied event name/data and fires it via
@@ -62,11 +91,7 @@ export const track: TrackFunction = (
     | ((data: Record<string, unknown>) => Record<string, unknown>),
   data?: Record<string, unknown>,
 ): void => {
-  if (isBrowser() && window.__UMAMI_SUPPRESSED__ === true) {
-    return
-  }
-
-  if (!isTrackingAllowed()) {
+  if (shouldSuppressTracking()) {
     return
   }
 
@@ -98,15 +123,44 @@ export const track: TrackFunction = (
 
   if (isBrowser()) {
     payload.url = location.pathname + location.search
-    payload.hostname = location.hostname
-    payload.language = navigator.language
-    payload.screen = `${screen.width}x${screen.height}`
-    payload.title = document.title
-
-    if (document.referrer) {
-      payload.referrer = document.referrer
-    }
   }
+  applyBrowserPayloadFields(payload)
+
+  const sendPayload: UmamiSendPayload = {
+    type: 'event',
+    payload,
+  }
+
+  void sendUmamiPayload(sendPayload)
+}
+
+/**
+ * Fires a plain Umami pageview, similar to `track()` called bare, but lets
+ * the caller supply the destination `url` explicitly. This matters for
+ * client-side route transitions: `onRouterTransitionStart` fires BEFORE
+ * `location` updates to the destination, so deriving the URL from
+ * `location.pathname + location.search` (as bare `track()` does) would
+ * record the page being left, not the page being navigated to. Called with
+ * no `url` argument (e.g. for the very first page load, before any
+ * navigation has started), it falls back to the current
+ * `location.pathname + location.search`, matching bare `track()`'s prior
+ * pageview behavior.
+ */
+export const trackPageview = (url?: string): void => {
+  if (shouldSuppressTracking()) {
+    return
+  }
+
+  const payload: UmamiSendPayloadPayload = {
+    website: process.env.NEXT_PUBLIC_UMAMI_SITE_ID ?? '',
+  }
+
+  if (url !== undefined) {
+    payload.url = url
+  } else if (isBrowser()) {
+    payload.url = location.pathname + location.search
+  }
+  applyBrowserPayloadFields(payload)
 
   const sendPayload: UmamiSendPayload = {
     type: 'event',
