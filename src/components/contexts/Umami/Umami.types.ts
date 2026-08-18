@@ -1,10 +1,6 @@
-export interface TrackFunction {
-  (): void
-  (eventName: string): void
-  (data: Record<string, unknown>): void
-  (eventName: string, data: Record<string, unknown>): void
-  (fn: (data: Record<string, unknown>) => Record<string, unknown>): void
-}
+import type { TrackFunction } from '@/lib/umami/Umami.types'
+
+export type { TrackFunction } from '@/lib/umami/Umami.types'
 
 export type IdentifyFunction = {
   (uniqueId: string): void
