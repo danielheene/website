@@ -12,17 +12,14 @@ export interface TrackServerEventInput {
   hostname?: string
 }
 
-const isDoNotTrackEnabled = () => process.env.NEXT_PUBLIC_UMAMI_DO_NOT_TRACK === 'true'
-
 /**
  * Server-callable equivalent of `track()` for use in Route Handlers, Server
  * Actions, and RSC data fetchers, where there's no `window`/`document`/
  * `location` to infer context from. Callers must pass `url`/`referrer`/
  * `hostname` explicitly if they want them included. Builds a payload and
  * fires it via `sendUmamiPayload`, without awaiting or surfacing its result.
- * Honors `NEXT_PUBLIC_UMAMI_DO_NOT_TRACK`, no-oping when tracking is
- * suppressed, and suppresses tracking for the site owner's own
- * authenticated Payload sessions unless they've opted back in.
+ * Suppresses tracking for the site owner's own authenticated Payload
+ * sessions unless they've opted back in.
  */
 export const trackServerEvent = async ({
   name,
@@ -31,10 +28,6 @@ export const trackServerEvent = async ({
   referrer,
   hostname,
 }: TrackServerEventInput): Promise<void> => {
-  if (isDoNotTrackEnabled()) {
-    return
-  }
-
   if (await isTrackingSuppressed()) {
     return
   }

@@ -17,42 +17,12 @@ declare global {
 
 const isBrowser = () => typeof window !== 'undefined'
 
-const isDoNotTrackEnabled = () => process.env.NEXT_PUBLIC_UMAMI_DO_NOT_TRACK === 'true'
-
-const getAllowedDomains = (): string[] =>
-  (process.env.NEXT_PUBLIC_UMAMI_DOMAINS ?? '')
-    .split(',')
-    .map((domain) => domain.trim())
-    .filter(Boolean)
-
 /**
- * Determines whether `track()` should send its payload, based on the
- * `NEXT_PUBLIC_UMAMI_DO_NOT_TRACK`/`NEXT_PUBLIC_UMAMI_DOMAINS` config. Both
- * are optional; when unset, tracking is neither suppressed nor restricted to
- * specific domains.
+ * Shared guard used by both `track()` and `trackPageview()`: true when the
+ * current session was flagged suppressed (`window.__UMAMI_SUPPRESSED__`, set
+ * by `UmamiSuppressionFlag` for authenticated Payload sessions).
  */
-export const isTrackingAllowed = (): boolean => {
-  if (isDoNotTrackEnabled()) {
-    return false
-  }
-
-  const allowedDomains = getAllowedDomains()
-
-  if (allowedDomains.length > 0 && isBrowser() && !allowedDomains.includes(location.hostname)) {
-    return false
-  }
-
-  return true
-}
-
-/**
- * Shared guard used by both `track()` and `trackPageview()`: true when
- * tracking should be skipped, either because the current session was flagged
- * suppressed (`window.__UMAMI_SUPPRESSED__`) or because
- * `isTrackingAllowed()`'s do-not-track/domain config says no.
- */
-const shouldSuppressTracking = (): boolean =>
-  (isBrowser() && window.__UMAMI_SUPPRESSED__ === true) || !isTrackingAllowed()
+const shouldSuppressTracking = (): boolean => isBrowser() && window.__UMAMI_SUPPRESSED__ === true
 
 /**
  * Populates the browser-derived fields (hostname/language/screen/title/
@@ -78,11 +48,9 @@ const applyBrowserPayloadFields = (payload: UmamiSendPayloadPayload): void => {
  * Directly-importable, isomorphic replacement for Umami's script-injected
  * `track()` global. Builds a payload from browser globals (when available)
  * plus the caller-supplied event name/data and fires it via
- * `sendUmamiPayload`, without awaiting or surfacing its result. Honors the
- * `NEXT_PUBLIC_UMAMI_DO_NOT_TRACK`/`NEXT_PUBLIC_UMAMI_DOMAINS` config, and (in
+ * `sendUmamiPayload`, without awaiting or surfacing its result. Honors (in
  * the browser) the `window.__UMAMI_SUPPRESSED__` flag set for authenticated
- * Payload sessions, no-oping when tracking is suppressed or the current
- * domain isn't allowed.
+ * Payload sessions, no-oping when tracking is suppressed.
  */
 export const track: TrackFunction = (
   eventNameOrData?:

@@ -1,5 +1,6 @@
 import { ElementType, Suspense } from 'react'
 
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { type BlockData, BlockSlug, RegisteredBlockSlug } from '@/types/blocks'
 
 import { CodeBlockRenderer } from './CodeBlock/Renderer'
@@ -50,9 +51,17 @@ export const RenderBlocks = ({ blocks }: BlockRendererProps) => {
 
           return (
             Block && (
-              <Suspense key={index}>
-                <Block key={index} {...block} />
-              </Suspense>
+              /*
+                Blocks are CMS-authored and several fetch live external data
+                (Umami, Payload), so one failing block must not take down the
+                whole page. The boundary reports to Sentry and renders nothing,
+                letting the remaining blocks display normally.
+              */
+              <ErrorBoundary key={index} name={blockType}>
+                <Suspense>
+                  <Block {...block} />
+                </Suspense>
+              </ErrorBoundary>
             )
           )
         }

@@ -84,13 +84,6 @@ export const envSchema = z.object({
   NEXT_PUBLIC_SENTRY_REPLAY_ERROR_RATE: emptyAsUndefined(z.string()),
 
   /**
-   * Optional client-side tracking suppression for `track()`/`trackServerEvent()`.
-   * Unset means tracking is not suppressed and not restricted to specific domains.
-   */
-  NEXT_PUBLIC_UMAMI_DO_NOT_TRACK: emptyAsUndefined(z.string()),
-  NEXT_PUBLIC_UMAMI_DOMAINS: emptyAsUndefined(z.string()),
-
-  /**
    * Cloudflare Tunnel is used to expose the app to the internet on local development
    */
   CLOUDFLARE_TUNNEL_HOST: emptyAsUndefined(z.string()),

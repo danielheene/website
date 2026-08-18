@@ -159,52 +159,6 @@ describe('track', () => {
     })
   })
 
-  describe('doNotTrack/domains config', () => {
-    beforeEach(() => {
-      vi.stubGlobal('window', {})
-      vi.stubGlobal('location', {
-        pathname: '/foo',
-        search: '?bar=baz',
-        hostname: 'example.com',
-      })
-      vi.stubGlobal('navigator', {
-        language: 'en-US',
-      })
-      vi.stubGlobal('screen', {
-        width: 1920,
-        height: 1080,
-      })
-      vi.stubGlobal('document', {
-        title: 'Foo Page',
-        referrer: '',
-      })
-    })
-
-    it('does not send when NEXT_PUBLIC_UMAMI_DO_NOT_TRACK is true', () => {
-      vi.stubEnv('NEXT_PUBLIC_UMAMI_DO_NOT_TRACK', 'true')
-
-      track()
-
-      expect(sendUmamiPayload).not.toHaveBeenCalled()
-    })
-
-    it('does not send when NEXT_PUBLIC_UMAMI_DOMAINS does not include the current hostname', () => {
-      vi.stubEnv('NEXT_PUBLIC_UMAMI_DOMAINS', 'other.com,another.com')
-
-      track()
-
-      expect(sendUmamiPayload).not.toHaveBeenCalled()
-    })
-
-    it('sends when NEXT_PUBLIC_UMAMI_DOMAINS includes the current hostname', () => {
-      vi.stubEnv('NEXT_PUBLIC_UMAMI_DOMAINS', 'other.com,example.com')
-
-      track()
-
-      expect(sendUmamiPayload).toHaveBeenCalledTimes(1)
-    })
-  })
-
   describe('window.__UMAMI_SUPPRESSED__ flag', () => {
     beforeEach(() => {
       vi.stubGlobal('location', {
@@ -358,16 +312,7 @@ describe('trackPageview', () => {
       expect(sendUmamiPayload).not.toHaveBeenCalled()
     })
 
-    it('does not send when NEXT_PUBLIC_UMAMI_DO_NOT_TRACK is true', () => {
-      vi.stubGlobal('window', {})
-      vi.stubEnv('NEXT_PUBLIC_UMAMI_DO_NOT_TRACK', 'true')
-
-      trackPageview('/destination/path')
-
-      expect(sendUmamiPayload).not.toHaveBeenCalled()
-    })
-
-    it('sends when not suppressed and allowed', () => {
+    it('sends when not suppressed', () => {
       vi.stubGlobal('window', {})
 
       trackPageview('/destination/path')

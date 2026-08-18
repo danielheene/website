@@ -6,6 +6,7 @@ import { Headline } from '@/components/Headline'
 import { ImageMedia } from '@/components/ImageMedia'
 import { fetchTrendingBlogPosts } from '@/lib/fetchers/fetchTrendingBlogPosts'
 import { reduceDataToLocale } from '@/lib/i18n'
+import { isRenderableImage } from '@/lib/typeGuards'
 
 const TRENDING_WINDOW_DAYS = 7
 
@@ -40,10 +41,7 @@ export const TrendingBlogPostsBlockRenderer = async ({
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {posts.map(({ slug, post }) => {
-          const heroImage =
-            post.heroImage?.value && typeof post.heroImage.value === 'object'
-              ? post.heroImage.value
-              : null
+          const heroImage = isRenderableImage(post.heroImage?.value) ? post.heroImage.value : null
 
           return (
             <Link
@@ -51,7 +49,7 @@ export const TrendingBlogPostsBlockRenderer = async ({
               href={`/blog/post/${slug}`}
               className="group flex flex-col gap-4 rounded-sm border-4 border-primary bg-card overflow-hidden transition-colors hover:border-primary-800"
             >
-              {heroImage?.url && (
+              {heroImage && (
                 <div className="relative aspect-video w-full overflow-hidden">
                   <ImageMedia
                     url={heroImage.url}
