@@ -1,20 +1,22 @@
 import { Traverse } from 'neotraverse/modern'
 
-import type { Locale } from './shared'
+import type { BilingualLanguage } from './shared'
 
 /**
  * Recursive type that selects the localized value from objects containing only locale keys.
  */
-export type ReducedToLocale<T, L extends Locale = 'en'> = T extends null | undefined
+export type ReducedToBilingualLanguage<T, L extends BilingualLanguage = 'en'> = T extends
+  | null
+  | undefined
   ? T
   : T extends Array<infer V>
-    ? Array<ReducedToLocale<V, L>>
+    ? Array<ReducedToBilingualLanguage<V, L>>
     : T extends object
       ? L extends keyof T
-        ? keyof T extends Locale
-          ? ReducedToLocale<T[L], L>
-          : { [K in keyof T]: ReducedToLocale<T[K], L> }
-        : { [K in keyof T]: ReducedToLocale<T[K], L> }
+        ? keyof T extends BilingualLanguage
+          ? ReducedToBilingualLanguage<T[L], L>
+          : { [K in keyof T]: ReducedToBilingualLanguage<T[K], L> }
+        : { [K in keyof T]: ReducedToBilingualLanguage<T[K], L> }
       : T
 
 /**
@@ -27,10 +29,10 @@ export type ReducedToLocale<T, L extends Locale = 'en'> = T extends null | undef
  * @param locale The locale to select ('en' or 'de', defaults to 'en').
  * @returns A new object with localized values selected.
  */
-export const reduceDataToLocale = <T, L extends Locale = 'en'>(
+export const reduceDataToBilingualLanguage = <T, L extends BilingualLanguage = 'en'>(
   data: T,
   locale: L = 'en' as L,
-): ReducedToLocale<T, L> => {
+): ReducedToBilingualLanguage<T, L> => {
   const locales: string[] = [
     'en',
     'de',

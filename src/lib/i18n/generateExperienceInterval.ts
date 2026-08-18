@@ -1,4 +1,4 @@
-import type { Locale } from '@/lib/i18n/shared'
+import type { BilingualLanguage } from '@/lib/i18n/shared'
 
 import { translate } from './translate'
 
@@ -15,7 +15,7 @@ export const generateExperienceInterval = ({
 }: {
   startDate: string
   endDate?: string
-  locale?: Locale
+  locale?: BilingualLanguage
 }): string => {
   if (startDate && endDate) {
     return translate(locale, 'interval.finished', {

@@ -2,11 +2,11 @@ import { cacheLife, cacheTag, revalidateTag } from 'next/cache'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
-import { type Locale, reduceDataToLocale } from '@/lib/i18n'
+import { type BilingualLanguage, reduceDataToBilingualLanguage } from '@/lib/i18n'
 import { type GlobalData, GlobalSlug } from '@/types/globals'
 
 export const fetchPDFGeneratorSettings = async (
-  locale: Locale = 'en',
+  locale: BilingualLanguage = 'en',
 ): Promise<GlobalData<GlobalSlug['PDFGeneratorSettings']>> => {
   const payload = await getPayload({
     config,
@@ -17,10 +17,10 @@ export const fetchPDFGeneratorSettings = async (
     draft: false,
   })
 
-  return reduceDataToLocale(data, locale)
+  return reduceDataToBilingualLanguage(data, locale)
 }
 
-export const fetchPDFGeneratorSettingsCached = async (locale: Locale = 'en') => {
+export const fetchPDFGeneratorSettingsCached = async (locale: BilingualLanguage = 'en') => {
   'use cache'
   cacheLife('max')
   cacheTag(GlobalSlug.PDFGeneratorSettings)

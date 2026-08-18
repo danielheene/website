@@ -49,3 +49,6 @@ export const isMediaVideoReference = (
   object.referenceTo === CollectionSlug.MediaVideos &&
   'value' in object &&
   isMediaVideo(object.value)
+
+export const isArrayBuffer = (data: unknown): data is ArrayBuffer =>
+  typeof data === 'object' && data !== null && data.toString() === '[object ArrayBuffer]'

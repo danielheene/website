@@ -142,9 +142,9 @@ const postFeatures = [
   HorizontalRuleFeature(),
   BlocksFeature({
     blocks: [
-      BlockSlug['LinkGroup'],
-      BlockSlug['Code'],
-      BlockSlug['TwoColumnContent'],
+      BlockSlug.LinkGroup,
+      BlockSlug.Code,
+      BlockSlug.TwoColumnContent,
     ],
   }),
   IndentFeature(),

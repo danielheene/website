@@ -1,6 +1,6 @@
 import type { GlobalSlug as RegisteredGlobalSlug, TypedGlobal } from 'payload'
 
-import type { Locale, ReducedToLocale } from '@/lib/i18n'
+import type { BilingualLanguage, ReducedToBilingualLanguage } from '@/lib/i18n'
 import { ResolvedRelations } from '@/lib/resolveRelation'
 
 export const GlobalSlug = {
@@ -18,5 +18,5 @@ export type GlobalSlugValue = string & GlobalSlug[GlobalSlugKey]
 export type { GlobalSlug as RegisteredGlobalSlug } from 'payload'
 export type GlobalData<
   T extends RegisteredGlobalSlug = RegisteredGlobalSlug,
-  L extends Locale = 'en',
-> = ReducedToLocale<ResolvedRelations<TypedGlobal[T]>, L>
+  L extends BilingualLanguage = 'en',
+> = ReducedToBilingualLanguage<ResolvedRelations<TypedGlobal[T]>, L>

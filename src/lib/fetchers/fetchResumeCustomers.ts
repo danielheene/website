@@ -2,12 +2,12 @@ import { cacheLife, cacheTag, revalidateTag } from 'next/cache'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
-import { Locale, reduceDataToLocale } from '@/lib/i18n'
+import { BilingualLanguage, reduceDataToBilingualLanguage } from '@/lib/i18n'
 import { resolveRelations } from '@/lib/resolveRelation'
 import { sanitizeSvg } from '@/lib/sanitizeSvg'
 import { CollectionSlug } from '@/types/collections'
 
-export const fetchResumeCustomers = async (locale: Locale = 'en') => {
+export const fetchResumeCustomers = async (locale: BilingualLanguage = 'en') => {
   const payload = await getPayload({
     config,
   })
@@ -19,7 +19,7 @@ export const fetchResumeCustomers = async (locale: Locale = 'en') => {
     limit: 0,
   })
 
-  const resolved = await resolveRelations(reduceDataToLocale(docs, locale))
+  const resolved = await resolveRelations(reduceDataToBilingualLanguage(docs, locale))
 
   /**
    * Sanitized on read as well as on write: rows saved before the
@@ -35,7 +35,7 @@ export const fetchResumeCustomers = async (locale: Locale = 'en') => {
   }))
 }
 
-export const fetchResumeCustomersCached = async (locale: Locale = 'en') => {
+export const fetchResumeCustomersCached = async (locale: BilingualLanguage = 'en') => {
   'use cache'
   cacheLife('max')
   cacheTag(CollectionSlug.ResumeCustomers)

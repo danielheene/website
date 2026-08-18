@@ -4,7 +4,7 @@ import { round } from 'lodash-es'
 
 import { registerFonts } from '@/pdf/fonts'
 
-const { PPSupplySans, PPSupplyMono, PPFrama, PPFramaText } = registerFonts([
+const { PPSupplySans, PPSupplyMono, PPFrama } = registerFonts([
   'PPSupplySans',
   'PPSupplyMono',
   'PPFrama',
@@ -109,11 +109,6 @@ export const textStyles = {
   get bulletPoint() {
     return {
       ...this.__body,
-    } as Styles[string]
-  },
-  get skillNameWithCaption() {
-    return {
-      fontWeight: 500,
     } as Styles[string]
   },
   get footerNote() {

@@ -1,11 +1,15 @@
 import type { Metadata } from 'next'
 
 import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fetchers'
-import type { ReducedToLocale } from '@/lib/i18n'
+import type { ReducedToBilingualLanguage } from '@/lib/i18n'
 import type { BlogPostData, Page, Topic } from '@/types/payload'
 
 interface GenerateMetaArgs {
-  doc: ReducedToLocale<Page> | ReducedToLocale<BlogPostData> | ReducedToLocale<Topic> | null
+  doc:
+    | ReducedToBilingualLanguage<Page>
+    | ReducedToBilingualLanguage<BlogPostData>
+    | ReducedToBilingualLanguage<Topic>
+    | null
 }
 
 export const generateMeta = async ({ doc }: GenerateMetaArgs): Promise<Metadata> => {

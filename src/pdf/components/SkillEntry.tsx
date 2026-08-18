@@ -1,11 +1,8 @@
-import { Text } from '@react-pdf/renderer'
+import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 
 import { BulletPoint } from '@/pdf/components/BulletPoint'
-import { textStyles } from '@/pdf/constants'
+import { lexicalToJSX } from '@/pdf/lib/lexicalToJSX'
 
-export const SkillEntry = ({ name, caption }: { name: string; caption?: string }) => (
-  <BulletPoint>
-    <Text style={caption && textStyles.skillNameWithCaption}>{name}</Text>
-    {caption && <Text>{'\u0020' + caption}</Text>}
-  </BulletPoint>
+export const SkillEntry = ({ content }: { content: SerializedEditorState }) => (
+  <BulletPoint>{lexicalToJSX(content)}</BulletPoint>
 )

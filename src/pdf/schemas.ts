@@ -1,6 +1,18 @@
+import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
+
 import z from 'zod'
 
 import { DocumentSectionType } from '@/pdf/types'
+
+/**
+ * Loose structural passthrough for a Lexical `SerializedEditorState` — the
+ * `inline` `RichTextField` editor variant, in practice, but this schema only
+ * needs to confirm "yes, this looks like a Lexical document" so
+ * `SkillEntry`'s `lexicalToJSX(content)` has something real to render.
+ */
+const serializedEditorStateSchema = z.custom<SerializedEditorState>(
+  (value) => typeof value === 'object' && value !== null && 'root' in value,
+)
 
 export const documentHeaderSchema = z.strictObject({
   portraitUrl: z.url(),
@@ -72,8 +84,7 @@ export const skillSectionSchema = z.strictObject({
     headline: z.string(),
     entries: z.array(
       z.object({
-        name: z.string(),
-        caption: z.string().optional(),
+        content: serializedEditorStateSchema,
       }),
     ),
   }),

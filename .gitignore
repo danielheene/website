@@ -29,5 +29,12 @@ storybook-static/
 coverage
 playwright-report
 test-results
+docs
+plan
 
 certificates
+
+
+.claude
+.junie
+.worktrees

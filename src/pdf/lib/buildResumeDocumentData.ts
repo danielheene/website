@@ -3,7 +3,7 @@
 import { ZodSafeParseResult } from 'zod'
 
 import { fetchGlobalUserSettings } from '@/lib/fetchers'
-import { type Locale, translate } from '@/lib/i18n'
+import { type BilingualLanguage, translate } from '@/lib/i18n'
 import { buildDocumentFooter } from '@/pdf/lib/buildDocumentFooter'
 import { buildDocumentHeader } from '@/pdf/lib/buildDocumentHeader'
 import { buildIntroductionSection } from '@/pdf/lib/buildIntroductionSection'
@@ -14,7 +14,7 @@ import { documentSchema } from '@/pdf/schemas'
 import { DocumentData } from '@/pdf/types'
 
 interface GenerateResumeDocumentArgs {
-  locale: Locale
+  locale: BilingualLanguage
   fileName: string
   fileUrl: string
   creationDate: Date
@@ -24,7 +24,7 @@ export const buildResumeDocumentData = async (
   args: GenerateResumeDocumentArgs,
 ): Promise<ZodSafeParseResult<DocumentData>> => {
   const { fileName, fileUrl, creationDate } = args
-  const locale: Locale = args?.locale === 'de' ? 'de' : 'en'
+  const locale: BilingualLanguage = args?.locale === 'de' ? 'de' : 'en'
   const language = locale === 'en' ? 'en_EN' : 'de_DE'
 
   const { name } = await fetchGlobalUserSettings(locale)

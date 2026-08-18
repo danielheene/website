@@ -1,7 +1,7 @@
 'use server'
 
 import { fetchResumeProjectsCached } from '@/lib/fetchers/fetchResumeProjects'
-import { reduceDataToLocale } from '@/lib/i18n'
+import { reduceDataToBilingualLanguage } from '@/lib/i18n'
 import { resolveRelations } from '@/lib/resolveRelation'
 import { ResumeProjectsBlock } from '@/types/payload'
 
@@ -13,7 +13,7 @@ export const ResumeProjectsBlockRenderer = async ({
   caption,
 }: ResumeProjectsBlock) => {
   const rawProjects = await fetchResumeProjectsCached()
-  const projects = reduceDataToLocale(await resolveRelations(rawProjects))
+  const projects = reduceDataToBilingualLanguage(await resolveRelations(rawProjects))
 
   return (
     <ResumeProjectsBlockClientRenderer

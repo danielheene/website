@@ -1,11 +1,11 @@
 import { cn } from '@/lib/cn'
 
-interface LocaleToggleProps {
-  currentLocale: string
-  setLocale: (locale: string) => void
+interface LanguageToggleProps {
+  currentLanguage: string
+  setLanguage: (locale: string) => void
 }
 
-export const LocaleToggle = ({ currentLocale, setLocale }: LocaleToggleProps) => {
+export const LanguageToggle = ({ currentLanguage, setLanguage }: LanguageToggleProps) => {
   return (
     <button
       type="button"
@@ -16,14 +16,14 @@ export const LocaleToggle = ({ currentLocale, setLocale }: LocaleToggleProps) =>
         const nextLocale = [
           'en',
           'de',
-        ].find((locale) => locale !== currentLocale)
-        setLocale(nextLocale)
+        ].find((locale) => locale !== currentLanguage)
+        setLanguage(nextLocale)
       }}
     >
       <span
         className={cn([
           'absolute top-0 left-0.5',
-          currentLocale === 'en' ? 'text-primary' : 'text-gray-400',
+          currentLanguage === 'en' ? 'text-primary' : 'text-gray-400',
         ])}
       >
         EN
@@ -38,7 +38,7 @@ export const LocaleToggle = ({ currentLocale, setLocale }: LocaleToggleProps) =>
       <span
         className={cn([
           'absolute bottom-0 right-0.5',
-          currentLocale === 'de' ? 'text-primary' : 'text-gray-400',
+          currentLanguage === 'de' ? 'text-primary' : 'text-gray-400',
         ])}
       >
         DE

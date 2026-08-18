@@ -1,4 +1,3 @@
-/* the theme tokens applied below live in the app's stylesheet */
 @reference "../../styles/frontend.css";
 
 /**
@@ -16,7 +15,7 @@
  * caller's own positioned ancestor, and siblings of the wrapper can be lifted
  * above it with a z-index. `app/(frontend)/not-found.tsx` relies on that.
  */
-.Container {
+.duo-tone {
   @apply contents bg-background;
 
   /* Desaturate the media itself rather than filtering the backdrop, so the
@@ -41,11 +40,11 @@
  * `isolate` keeps the mix-blend layer from compositing against the page behind
  * the hero.
  */
-.Contained {
+.duo-tone--contained {
   @apply relative isolate overflow-hidden;
 }
 
-.Vignette {
+.duo-tone__vignette {
   @apply absolute inset-0 z-20;
   @apply pointer-events-none inset-shadow-vignette text-black;
 }

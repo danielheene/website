@@ -1,6 +1,6 @@
 import { deepMerge, TextField } from 'payload'
 
-import { Locale } from '@/lib/i18n'
+import { BilingualLanguage } from '@/lib/i18n'
 
 import {
   TemplateFieldAnnotation,
@@ -16,7 +16,7 @@ type TemplateFieldProps = {
   label?: string | false
   description?: string
   defaultValue?: string
-  renderLocale?: Locale[]
+  renderLocale?: BilingualLanguage[]
 
   data?: TemplateFieldData | TemplateFieldDataFunction
   anntotation?: TemplateFieldAnnotation | TemplateFieldAnnotationFunction

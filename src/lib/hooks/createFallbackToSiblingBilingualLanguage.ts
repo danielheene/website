@@ -1,6 +1,6 @@
 import type { FieldHook } from 'payload'
 
-export const createFallbackToSiblingLocale = (locale: 'en' | 'de'): FieldHook => {
+export const createFallbackToSiblingBilingualLanguage = (locale: 'en' | 'de'): FieldHook => {
   return async ({ siblingData, value }) => {
     const siblingHasValue =
       locale in siblingData &&

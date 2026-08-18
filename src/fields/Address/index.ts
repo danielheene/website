@@ -3,7 +3,7 @@ import type { Field, GroupField } from 'payload'
 import { startCase } from 'lodash-es'
 
 import { resolveAddressData } from '@/fields/Address/hooks/resolveAddressData'
-import { syncAddressDataBetweenLocale } from '@/fields/Address/hooks/syncAddressDataBetweenLocale'
+import { syncAddressDataBetweenBilingualLanguage } from '@/fields/Address/hooks/syncAddressDataBetweenBilingualLanguage'
 import { cn } from '@/lib/cn'
 
 const fields: Field[] = [
@@ -155,7 +155,7 @@ export const AddressField = ({
         resolveAddressData,
       ],
       beforeChange: [
-        syncAddressDataBetweenLocale,
+        syncAddressDataBetweenBilingualLanguage,
       ],
     },
     fields,

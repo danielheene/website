@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
-import { reduceDataToLocale } from './reduceDataToLocale'
+import { reduceDataToBilingualLanguage } from './reduceDataToBilingualLanguage'
 
-describe('reduceDataToLocale', () => {
+describe('reduceDataToBilingualLanguage', () => {
   it('selects the requested locale from locale-only objects', () => {
     expect(
-      reduceDataToLocale(
+      reduceDataToBilingualLanguage(
         {
           title: {
             en: 'A',
@@ -21,7 +21,7 @@ describe('reduceDataToLocale', () => {
 
   it('defaults to en', () => {
     expect(
-      reduceDataToLocale({
+      reduceDataToBilingualLanguage({
         title: {
           en: 'A',
           de: 'B',
@@ -42,7 +42,7 @@ describe('reduceDataToLocale', () => {
       },
       plain: 'untouched',
     }
-    expect(reduceDataToLocale(input, 'de')).toEqual({
+    expect(reduceDataToBilingualLanguage(input, 'de')).toEqual({
       meta: {
         description: 'hallo',
       },
@@ -61,7 +61,7 @@ describe('reduceDataToLocale', () => {
         },
       ],
     }
-    expect(reduceDataToLocale(input, 'de')).toEqual({
+    expect(reduceDataToBilingualLanguage(input, 'de')).toEqual({
       items: [
         {
           label: 'eins',
@@ -77,7 +77,7 @@ describe('reduceDataToLocale', () => {
         other: 'x',
       },
     }
-    expect(reduceDataToLocale(input, 'en')).toEqual({
+    expect(reduceDataToBilingualLanguage(input, 'en')).toEqual({
       mixed: {
         en: 'A',
         other: 'x',
@@ -86,7 +86,7 @@ describe('reduceDataToLocale', () => {
   })
 
   it('passes primitives and null through', () => {
-    expect(reduceDataToLocale(null)).toBeNull()
-    expect(reduceDataToLocale('str')).toBe('str')
+    expect(reduceDataToBilingualLanguage(null)).toBeNull()
+    expect(reduceDataToBilingualLanguage('str')).toBe('str')
   })
 })

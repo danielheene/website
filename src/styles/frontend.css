@@ -19,6 +19,13 @@
 @custom-variant light (&:where(.light, .light *, [data-theme="light"], [data-theme="light"] *));
 @custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
 
+@source inline("col-span-{1..12..1}");
+@source inline("col-start-{1..12..1}");
+@source inline("col-end-{1..12..1}");
+@source inline("row-span-{1..12..1}");
+@source inline("row-start-{1..12..1}");
+@source inline("row-end-{1..12..1}");
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

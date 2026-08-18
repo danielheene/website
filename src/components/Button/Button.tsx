@@ -116,9 +116,21 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps & ComponentProps
         })}
         {...props}
       >
-        {startIcon && <Icon name={startIcon} data-icon="inline-start" />}
-        {children}
-        {endIcon && <Icon name={endIcon} data-icon="inline-end" />}
+        {asChild ? (
+          // Radix's Slot requires exactly one element child to merge props
+          // onto — start/end icons would make this two-or-three children,
+          // so `asChild` callers own their own icon (see e.g.
+          // ResumeDownloadButton, which renders its icon inside the `<Link>`
+          // that becomes the Slot's child) and this component leaves
+          // `children` alone.
+          children
+        ) : (
+          <>
+            {startIcon && <Icon name={startIcon} data-icon="inline-start" />}
+            {children}
+            {endIcon && <Icon name={endIcon} data-icon="inline-end" />}
+          </>
+        )}
       </Component>
     )
   },

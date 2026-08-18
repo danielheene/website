@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { createFallbackToSiblingLocale } from './createFallbackToSiblingLocale'
+import { createFallbackToSiblingBilingualLanguage } from './createFallbackToSiblingBilingualLanguage'
 
 const run = (
   locale: 'en' | 'de',
@@ -8,9 +8,9 @@ const run = (
     siblingData: Record<string, unknown>
     value?: unknown
   },
-) => createFallbackToSiblingLocale(locale)(args as never)
+) => createFallbackToSiblingBilingualLanguage(locale)(args as never)
 
-describe('createFallbackToSiblingLocale', () => {
+describe('createFallbackToSiblingBilingualLanguage', () => {
   it('falls back to the sibling locale when the value is empty', async () => {
     expect(
       await run('en', {

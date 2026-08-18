@@ -1,5 +1,3 @@
-import 'server-only'
-
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 import { $getRoot, $insertNodes } from '@payloadcms/richtext-lexical/lexical'
 import { createHeadlessEditor } from '@payloadcms/richtext-lexical/lexical/headless'
@@ -42,7 +40,7 @@ const buildPlainParagraphValue = (text: string): SerializedEditorState =>
         },
       ],
     },
-  }) as SerializedEditorState
+  }) as unknown as SerializedEditorState
 
 /** Strips HTML tags and collapses whitespace, for the plain-text fallback. */
 const stripHtml = (html: string): string =>

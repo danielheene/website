@@ -1,6 +1,7 @@
 'use server'
 
 import { FieldHook } from 'payload'
+import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintext'
 
 import { get } from 'lodash-es'
 
@@ -53,10 +54,11 @@ export const sanitizeSkillSorting: FieldHook<
         ...prevEntries,
         ...skills
           .filter(({ type }) => type === configKey)
-          .map(({ id, name: label, caption }) => ({
+          .map(({ id, content }) => ({
             id,
-            label,
-            caption,
+            label: convertLexicalToPlaintext({
+              data: content,
+            }).trim(),
           })),
       ].filter(
         (entry: SkillEntrySortable, index, array) =>

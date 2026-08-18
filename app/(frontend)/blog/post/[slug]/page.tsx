@@ -16,7 +16,7 @@ import { HeroMedia } from '@/components/HeroMedia'
 import { RichText } from '@/components/RichText'
 import { extractHeadings } from '@/lib/extractHeadings'
 import { generateMeta } from '@/lib/generateMeta'
-import { reduceDataToLocale } from '@/lib/i18n'
+import { reduceDataToBilingualLanguage } from '@/lib/i18n'
 import { generateBlogPosting, generateBreadcrumbList } from '@/lib/jsonLd'
 import { placeholderParams } from '@/lib/placeholderParams'
 import { resolveRelations } from '@/lib/resolveRelation'
@@ -258,7 +258,7 @@ const queryPublishedPostBySlug = async (
 
   if (!docs[0]) return null
 
-  return reduceDataToLocale(await resolveRelations(docs[0]))
+  return reduceDataToBilingualLanguage(await resolveRelations(docs[0]))
 }
 
 const queryDraftPostBySlug = async (
@@ -283,7 +283,7 @@ const queryDraftPostBySlug = async (
 
   if (!docs[0]) return null
 
-  return reduceDataToLocale(await resolveRelations(docs[0]))
+  return reduceDataToBilingualLanguage(await resolveRelations(docs[0]))
 }
 
 const queryPostBySlug = cache(

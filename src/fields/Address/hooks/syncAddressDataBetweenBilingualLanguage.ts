@@ -6,7 +6,7 @@ import { fetchMapboxAddressData } from '@/lib/fetchMapboxAddressData'
 import { fetchMapboxCoordinatesData } from '@/lib/fetchMapboxCoordinatesData'
 import type { AddressData } from '@/types/payload'
 
-export const syncAddressDataBetweenLocale = async ({
+export const syncAddressDataBetweenBilingualLanguage = async ({
   value,
   previousValue,
   previousSiblingDoc,

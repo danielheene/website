@@ -69,6 +69,7 @@ import { Logo as Logo_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/Admi
 import { ImportExportProvider as ImportExportProvider_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
 import { AdminErrorBoundary as AdminErrorBoundary_e5a9e14bdbe97e70ba60697217fe7688 } from '@payloadcms/plugin-sentry/client'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
+import { ScheduledResumeGenerationWidget as ScheduledResumeGenerationWidget_b45dcac1fb7d46a70633a62c5bb79a78 } from '@/widgets/ScheduledResumeGenerationWidget'
 import { UmamiWidget as UmamiWidget_e8503f7e90ff08c694ccb2bb86491894 } from '@/widgets/UmamiWidget'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
@@ -145,6 +146,7 @@ export const importMap = {
   "@payloadcms/plugin-import-export/rsc#ImportExportProvider": ImportExportProvider_cdf7e044479f899a31f804427d568b36,
   "@payloadcms/plugin-sentry/client#AdminErrorBoundary": AdminErrorBoundary_e5a9e14bdbe97e70ba60697217fe7688,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
+  "@/widgets/ScheduledResumeGenerationWidget#ScheduledResumeGenerationWidget": ScheduledResumeGenerationWidget_b45dcac1fb7d46a70633a62c5bb79a78,
   "@/widgets/UmamiWidget#UmamiWidget": UmamiWidget_e8503f7e90ff08c694ccb2bb86491894,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

@@ -1,15 +1,19 @@
 import type { CollectionConfig } from 'payload'
+import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
+import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintext'
+
+import { truncate } from 'lodash-es'
 
 import { authenticated } from '@/access/authenticated'
+import { BilingualRichTextField } from '@/fields/BilingualRichText'
 import { generateResumeDocumentHook } from '@/lib/hooks/collection'
-import { createFallbackToSiblingLocale } from '@/lib/hooks/createFallbackToSiblingLocale'
 import { translate } from '@/lib/i18n'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 import { SKILL_TYPE } from '@/types/select-options'
 
 export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
-  slug: CollectionSlug['ResumeSkills'],
+  slug: CollectionSlug.ResumeSkills,
   labels: {
     singular: 'Skill',
     plural: 'Skills',
@@ -30,18 +34,17 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
     ],
   },
   admin: {
-    useAsTitle: 'name_label',
+    useAsTitle: 'title',
     group: AdminGroup.Resume,
     groupBy: true,
     defaultColumns: [
-      'name_label',
-      'caption_label',
+      'title',
       'type',
     ],
     disableCopyToLocale: true,
   },
   // defaultPopulate: {
-  //   name: {
+  //   content: {
   //     en: true,
   //     de: true,
   //   },
@@ -53,120 +56,26 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
   disableDuplicate: true,
   lockDocuments: false,
   forceSelect: {
-    name: true,
-    caption: true,
+    content: true,
     type: true,
   },
   fields: [
     /* -------------- Main  Content -------------- */
-    {
-      type: 'group',
-      name: 'name',
-      label: 'Name',
-      admin: {
-        hideGutter: true,
-        disableListFilter: true,
-        disableListColumn: true,
-        disableGroupBy: true,
-        disableBulkEdit: true,
-      },
+    BilingualRichTextField({
+      name: 'content',
+      label: 'Content',
+      editorVariant: 'inline',
 
-      fields: [
-        {
-          type: 'row',
-          fields: [
-            {
-              type: 'text',
-              name: 'en',
-              label: 'English',
-              required: true,
-              admin: {
-                width: '50%',
-                disableListFilter: true,
-                disableListColumn: true,
-                disableGroupBy: true,
-                disableBulkEdit: true,
-              },
-              hooks: {
-                beforeValidate: [
-                  createFallbackToSiblingLocale('de'),
-                ],
-              },
-            },
-            {
-              type: 'text',
-              name: 'de',
-              label: 'German',
-              required: true,
-              admin: {
-                width: '50%',
-                disableListFilter: true,
-                disableListColumn: true,
-                disableGroupBy: true,
-                disableBulkEdit: true,
-              },
-              hooks: {
-                beforeValidate: [
-                  createFallbackToSiblingLocale('en'),
-                ],
-              },
-            },
-          ],
-        },
-      ],
-    },
-    {
-      type: 'group',
-      name: 'caption',
-      label: 'Caption',
-      admin: {
-        hideGutter: true,
-        disableListFilter: false,
-        disableListColumn: false,
-        disableGroupBy: true,
-        disableBulkEdit: true,
-      },
-      fields: [
-        {
-          type: 'row',
-          fields: [
-            {
-              type: 'text',
-              name: 'en',
-              label: 'English',
-              admin: {
-                width: '50%',
-                disableListFilter: false,
-                disableListColumn: false,
-                disableGroupBy: true,
-                disableBulkEdit: true,
-              },
-              defaultValue: '',
-            },
-            {
-              type: 'text',
-              name: 'de',
-              label: 'German',
-              admin: {
-                width: '50%',
-                disableListFilter: true,
-                disableListColumn: true,
-                disableGroupBy: true,
-                disableBulkEdit: true,
-              },
-              defaultValue: '',
-            },
-          ],
-        },
-      ],
-    },
+      layout: 'row',
+      required: true,
+    }),
 
     /* -------------- Virtual Fields -------------- */
     {
       type: 'text',
-      name: 'name_label',
-      label: 'Name',
-      virtual: 'name.en',
+      name: 'title',
+      label: 'Content',
+      // virtual: true,
       admin: {
         hidden: true,
         readOnly: true,
@@ -175,19 +84,28 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
         disableGroupBy: true,
         disableBulkEdit: true,
       },
-    },
-    {
-      type: 'text',
-      name: 'caption_label',
-      label: 'Caption',
-      virtual: 'caption.en',
-      admin: {
-        hidden: true,
-        readOnly: true,
-        disableListFilter: false,
-        disableListColumn: false,
-        disableGroupBy: true,
-        disableBulkEdit: true,
+      hooks: {
+        afterRead: [
+          ({ siblingData }) => {
+            const content = (
+              siblingData as
+                | {
+                    content?: {
+                      en?: SerializedEditorState
+                    }
+                  }
+                | undefined
+            )?.content?.en
+            if (!content) return ''
+            const textValue = convertLexicalToPlaintext({
+              data: content,
+            }).trim()
+
+            return truncate(textValue, {
+              length: 35,
+            })
+          },
+        ],
       },
     },
     // {

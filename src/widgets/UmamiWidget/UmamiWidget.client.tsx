@@ -1,7 +1,7 @@
 'use client'
 
 import { startTransition, useCallback, useMemo, useState } from 'react'
-import { FullscreenModal, Modal, useModal } from '@payloadcms/ui'
+import { FullscreenModal, useModal } from '@payloadcms/ui'
 
 import { parseISO } from 'date-fns'
 
@@ -51,7 +51,10 @@ const fetchPageViewsForInterval = (interval: Interval): Promise<UmamiPageViews |
   })
 
 interface UmamiWidgetClientProps {
-  startDate: string
+  // Server sends `undefined` when the derived start date collapses to `minDate`
+  // (e.g. the site was created within the last 7 days) — treat that as "use
+  // the earliest data we have" rather than `Invalid Date`.
+  startDate?: string
   endDate: string
   minDate: string
   maxDate: string
@@ -71,7 +74,16 @@ export const UmamiWidgetClient = ({
   name,
   teamId,
 }: UmamiWidgetClientProps) => {
-  const [selectedInterval, setSelectedIntervalState] = useState<Interval | null>(null)
+  const effectiveStartDate = startDateFromProps
+    ? parseISO(startDateFromProps)
+    : parseISO(minDateFromProps)
+  const effectiveEndDate = parseISO(endDateFromProps)
+
+  // Seed with the server-provided window so all four section fetches fire on
+  // mount instead of waiting for the user to open the date-range modal.
+  const [selectedInterval, setSelectedIntervalState] = useState<Interval | null>(
+    () => new Interval(effectiveStartDate, effectiveEndDate),
+  )
 
   const stats = useSectionData(selectedInterval, fetchStatsForInterval)
   const events = useSectionData(selectedInterval, fetchEventsForInterval)
@@ -82,13 +94,13 @@ export const UmamiWidgetClient = ({
     setSelectedIntervalState(new Interval(startAt, endAt))
   }, [])
 
-  const [tempStartDate, setTempStartDate] = useState<Date>(parseISO(startDateFromProps))
-  const [tempEndDate, setTempEndDate] = useState<Date>(parseISO(endDateFromProps))
+  const [tempStartDate, setTempStartDate] = useState<Date>(effectiveStartDate)
+  const [tempEndDate, setTempEndDate] = useState<Date>(effectiveEndDate)
   const [startDate, endDate] = selectedInterval
     ? selectedInterval.value
     : [
-        new Date(startDateFromProps),
-        new Date(endDateFromProps),
+        effectiveStartDate,
+        effectiveEndDate,
       ]
 
   const minDate = parseISO(minDateFromProps)
