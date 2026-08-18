@@ -81,4 +81,14 @@ describe('trackServerEvent', () => {
       }),
     ).resolves.toBeUndefined()
   })
+
+  it('does not send when NEXT_PUBLIC_UMAMI_DO_NOT_TRACK is true', async () => {
+    vi.stubEnv('NEXT_PUBLIC_UMAMI_DO_NOT_TRACK', 'true')
+
+    await trackServerEvent({
+      name: 'my-event',
+    })
+
+    expect(sendUmamiPayload).not.toHaveBeenCalled()
+  })
 })

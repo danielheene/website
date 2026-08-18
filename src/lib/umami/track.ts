@@ -3,14 +3,41 @@ import type { TrackFunction, UmamiSendPayload, UmamiSendPayloadPayload } from '.
 
 const isBrowser = () => typeof window !== 'undefined'
 
+const isDoNotTrackEnabled = () => process.env.NEXT_PUBLIC_UMAMI_DO_NOT_TRACK === 'true'
+
+const getAllowedDomains = (): string[] =>
+  (process.env.NEXT_PUBLIC_UMAMI_DOMAINS ?? '')
+    .split(',')
+    .map((domain) => domain.trim())
+    .filter(Boolean)
+
+/**
+ * Determines whether `track()` should send its payload, based on the
+ * `NEXT_PUBLIC_UMAMI_DO_NOT_TRACK`/`NEXT_PUBLIC_UMAMI_DOMAINS` config. Both
+ * are optional; when unset, tracking is neither suppressed nor restricted to
+ * specific domains.
+ */
+export const isTrackingAllowed = (): boolean => {
+  if (isDoNotTrackEnabled()) {
+    return false
+  }
+
+  const allowedDomains = getAllowedDomains()
+
+  if (allowedDomains.length > 0 && isBrowser() && !allowedDomains.includes(location.hostname)) {
+    return false
+  }
+
+  return true
+}
+
 /**
  * Directly-importable, isomorphic replacement for Umami's script-injected
  * `track()` global. Builds a payload from browser globals (when available)
  * plus the caller-supplied event name/data and fires it via
- * `sendUmamiPayload`, without awaiting or surfacing its result.
- *
- * doNotTrack/domains suppression will be wired in by TASK-005; this function
- * intentionally omits it for now.
+ * `sendUmamiPayload`, without awaiting or surfacing its result. Honors the
+ * `NEXT_PUBLIC_UMAMI_DO_NOT_TRACK`/`NEXT_PUBLIC_UMAMI_DOMAINS` config,
+ * no-oping when tracking is suppressed or the current domain isn't allowed.
  */
 export const track: TrackFunction = (
   eventNameOrData?:
@@ -19,6 +46,10 @@ export const track: TrackFunction = (
     | ((data: Record<string, unknown>) => Record<string, unknown>),
   data?: Record<string, unknown>,
 ): void => {
+  if (!isTrackingAllowed()) {
+    return
+  }
+
   let name: string | undefined
   let eventData: Record<string, unknown> | undefined
 
