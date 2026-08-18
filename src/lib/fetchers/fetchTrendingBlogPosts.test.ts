@@ -1,3 +1,5 @@
+import { getPayload } from 'payload'
+
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const getMock = vi.fn()
@@ -13,9 +15,20 @@ vi.mock('@/widgets/UmamiWidget/UmamiWidget.data', () => ({
   getToken: (...args: unknown[]) => getTokenMock(...args),
 }))
 
+vi.mock('@payload-config', () => ({
+  default: {},
+}))
+
 const { fetchTrendingBlogPosts } = await import('./fetchTrendingBlogPosts')
 
 const fetchMock = vi.fn()
+const findMock = vi.fn()
+
+const docFor = (slug: string) => ({
+  id: slug,
+  title: `Title: ${slug}`,
+  slug,
+})
 
 describe('fetchTrendingBlogPosts', () => {
   beforeEach(() => {
@@ -24,6 +37,14 @@ describe('fetchTrendingBlogPosts', () => {
     vi.stubEnv('NEXT_PUBLIC_UMAMI_SITE_ID', 'site-abc')
     getMock.mockResolvedValue(null)
     getTokenMock.mockResolvedValue('token-abc')
+
+    findMock.mockReset()
+    findMock.mockResolvedValue({
+      docs: [],
+    })
+    vi.mocked(getPayload).mockResolvedValue({
+      find: findMock,
+    } as never)
   })
 
   afterEach(() => {
@@ -32,7 +53,7 @@ describe('fetchTrendingBlogPosts', () => {
     vi.clearAllMocks()
   })
 
-  it('filters to blog-post paths and strips the prefix', async () => {
+  it('filters to blog-post paths, strips the prefix, and resolves matching documents', async () => {
     fetchMock.mockResolvedValue({
       json: async () => [
         {
@@ -53,6 +74,12 @@ describe('fetchTrendingBlogPosts', () => {
         },
       ],
     })
+    findMock.mockResolvedValue({
+      docs: [
+        docFor('foo'),
+        docFor('bar'),
+      ],
+    })
 
     const result = await fetchTrendingBlogPosts({
       days: 7,
@@ -63,10 +90,12 @@ describe('fetchTrendingBlogPosts', () => {
       {
         slug: 'foo',
         views: 10,
+        post: docFor('foo'),
       },
       {
         slug: 'bar',
         views: 5,
+        post: docFor('bar'),
       },
     ])
   })
@@ -88,6 +117,13 @@ describe('fetchTrendingBlogPosts', () => {
         },
       ],
     })
+    findMock.mockResolvedValue({
+      docs: [
+        docFor('low'),
+        docFor('high'),
+        docFor('mid'),
+      ],
+    })
 
     const result = await fetchTrendingBlogPosts({
       days: 7,
@@ -98,14 +134,17 @@ describe('fetchTrendingBlogPosts', () => {
       {
         slug: 'high',
         views: 100,
+        post: docFor('high'),
       },
       {
         slug: 'mid',
         views: 50,
+        post: docFor('mid'),
       },
       {
         slug: 'low',
         views: 1,
+        post: docFor('low'),
       },
     ])
   })
@@ -127,6 +166,12 @@ describe('fetchTrendingBlogPosts', () => {
         },
       ],
     })
+    findMock.mockResolvedValue({
+      docs: [
+        docFor('a'),
+        docFor('b'),
+      ],
+    })
 
     const result = await fetchTrendingBlogPosts({
       days: 7,
@@ -137,12 +182,117 @@ describe('fetchTrendingBlogPosts', () => {
       {
         slug: 'a',
         views: 3,
+        post: docFor('a'),
       },
       {
         slug: 'b',
         views: 2,
+        post: docFor('b'),
       },
     ])
+  })
+
+  it('drops slugs with no matching document and preserves popularity order for the rest', async () => {
+    fetchMock.mockResolvedValue({
+      json: async () => [
+        {
+          x: '/blog/post/a',
+          y: 3,
+        },
+        {
+          x: '/blog/post/b',
+          y: 2,
+        },
+        {
+          x: '/blog/post/c',
+          y: 1,
+        },
+      ],
+    })
+    // 'b' has no matching document (deleted/unpublished).
+    findMock.mockResolvedValue({
+      docs: [
+        docFor('a'),
+        docFor('c'),
+      ],
+    })
+
+    const result = await fetchTrendingBlogPosts({
+      days: 7,
+      limit: 10,
+    })
+
+    expect(result).toEqual([
+      {
+        slug: 'a',
+        views: 3,
+        post: docFor('a'),
+      },
+      {
+        slug: 'c',
+        views: 1,
+        post: docFor('c'),
+      },
+    ])
+  })
+
+  it('re-orders query results to match popularity ranking regardless of query return order', async () => {
+    fetchMock.mockResolvedValue({
+      json: async () => [
+        {
+          x: '/blog/post/a',
+          y: 10,
+        },
+        {
+          x: '/blog/post/c',
+          y: 5,
+        },
+      ],
+    })
+    // Query returns docs in a different order than the ranking.
+    findMock.mockResolvedValue({
+      docs: [
+        docFor('c'),
+        docFor('a'),
+      ],
+    })
+
+    const result = await fetchTrendingBlogPosts({
+      days: 7,
+      limit: 10,
+    })
+
+    expect(result).toEqual([
+      {
+        slug: 'a',
+        views: 10,
+        post: docFor('a'),
+      },
+      {
+        slug: 'c',
+        views: 5,
+        post: docFor('c'),
+      },
+    ])
+  })
+
+  it('returns null when the payload query throws, without throwing', async () => {
+    fetchMock.mockResolvedValue({
+      json: async () => [
+        {
+          x: '/blog/post/foo',
+          y: 10,
+        },
+      ],
+    })
+    findMock.mockRejectedValue(new Error('db error'))
+
+    const result = await fetchTrendingBlogPosts({
+      days: 7,
+      limit: 10,
+    })
+
+    expect(result).toBeNull()
   })
 
   it('returns cached data without calling fetch on a cache hit', async () => {
@@ -152,6 +302,11 @@ describe('fetchTrendingBlogPosts', () => {
         y: 7,
       },
     ])
+    findMock.mockResolvedValue({
+      docs: [
+        docFor('cached'),
+      ],
+    })
 
     const result = await fetchTrendingBlogPosts({
       days: 7,
@@ -162,6 +317,7 @@ describe('fetchTrendingBlogPosts', () => {
       {
         slug: 'cached',
         views: 7,
+        post: docFor('cached'),
       },
     ])
     expect(fetchMock).not.toHaveBeenCalled()
@@ -197,6 +353,11 @@ describe('fetchTrendingBlogPosts', () => {
           x: '/blog/post/foo',
           y: 10,
         },
+      ],
+    })
+    findMock.mockResolvedValue({
+      docs: [
+        docFor('foo'),
       ],
     })
 
