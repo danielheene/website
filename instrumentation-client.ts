@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/nextjs'
 
 import { SENTRY_ENABLED, sharedSentryOptions } from '@/lib/sentry/options'
+import { track } from '@/lib/umami/track'
 
 if (SENTRY_ENABLED) {
   Sentry.init({
@@ -24,5 +25,12 @@ if (SENTRY_ENABLED) {
   })
 }
 
-/** Required for Sentry to instrument client-side navigations. */
-export const onRouterTransitionStart = Sentry.captureRouterTransitionStart
+/**
+ * Required for Sentry to instrument client-side navigations. Also fires an
+ * Umami pageview on each transition, replacing the auto-tracking Umami's
+ * vendor script used to do via `data-auto-track`.
+ */
+export const onRouterTransitionStart = (href: string, navigationType: string): void => {
+  Sentry.captureRouterTransitionStart(href, navigationType)
+  track()
+}
