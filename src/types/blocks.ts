@@ -32,6 +32,9 @@ export const BlockSlug = {
   Code: 'CodeBlock',
   LinkGroup: 'LinkGroupBlock',
 
+  /* blog related blocks */
+  TrendingBlogPosts: 'TrendingBlogPostsBlock',
+
   /* legal blocks */
   LegalPublisher: 'LegalPublisherBlock',
   LegalAuthorships: 'LegalAuthorshipsBlock',
