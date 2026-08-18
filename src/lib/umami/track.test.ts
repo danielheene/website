@@ -204,4 +204,53 @@ describe('track', () => {
       expect(sendUmamiPayload).toHaveBeenCalledTimes(1)
     })
   })
+
+  describe('window.__UMAMI_SUPPRESSED__ flag', () => {
+    beforeEach(() => {
+      vi.stubGlobal('location', {
+        pathname: '/foo',
+        search: '?bar=baz',
+        hostname: 'example.com',
+      })
+      vi.stubGlobal('navigator', {
+        language: 'en-US',
+      })
+      vi.stubGlobal('screen', {
+        width: 1920,
+        height: 1080,
+      })
+      vi.stubGlobal('document', {
+        title: 'Foo Page',
+        referrer: '',
+      })
+    })
+
+    it('does not send when window.__UMAMI_SUPPRESSED__ is true', () => {
+      vi.stubGlobal('window', {
+        __UMAMI_SUPPRESSED__: true,
+      })
+
+      track()
+
+      expect(sendUmamiPayload).not.toHaveBeenCalled()
+    })
+
+    it('sends when window.__UMAMI_SUPPRESSED__ is false', () => {
+      vi.stubGlobal('window', {
+        __UMAMI_SUPPRESSED__: false,
+      })
+
+      track()
+
+      expect(sendUmamiPayload).toHaveBeenCalledTimes(1)
+    })
+
+    it('sends when window.__UMAMI_SUPPRESSED__ is unset', () => {
+      vi.stubGlobal('window', {})
+
+      track()
+
+      expect(sendUmamiPayload).toHaveBeenCalledTimes(1)
+    })
+  })
 })
