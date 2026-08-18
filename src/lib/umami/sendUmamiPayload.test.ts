@@ -113,7 +113,9 @@ describe('sendUmamiPayload', () => {
 
       await expect(
         sendUmamiPayload({
-          payload: {},
+          payload: {
+            website: 'abc',
+          },
           type: 'event',
         }),
       ).resolves.toBeUndefined()
@@ -157,7 +159,9 @@ describe('sendUmamiPayload', () => {
 
       await expect(
         sendUmamiPayload({
-          payload: {},
+          payload: {
+            website: 'abc',
+          },
           type: 'event',
         }),
       ).resolves.toBeUndefined()
@@ -174,7 +178,9 @@ describe('sendUmamiPayload', () => {
 
       await expect(
         sendUmamiPayload({
-          payload: {},
+          payload: {
+            website: 'abc',
+          },
           type: 'event',
         }),
       ).resolves.toBeUndefined()

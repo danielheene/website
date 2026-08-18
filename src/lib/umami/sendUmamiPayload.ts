@@ -1,4 +1,4 @@
-type UmamiSendPayload = Record<string, unknown>
+import type { UmamiSendPayload } from './Umami.types'
 
 // `navigator.sendBeacon` rejects payloads over ~64KB. Use a slightly
 // conservative threshold to leave headroom for browser-specific overhead.
