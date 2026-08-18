@@ -84,6 +84,7 @@ export interface Config {
     ResumeDownloadsBlock: ResumeDownloadsBlock;
     ResumeExperienceBlock: ResumeExperienceBlock;
     ResumeProjectsBlock: ResumeProjectsBlock;
+    TrendingBlogPostsBlock: TrendingBlogPostsBlock;
   };
   collections: {
     posts: BlogPostData;
@@ -327,6 +328,7 @@ export interface Page {
         | ResumeDownloadsBlock
         | ResumeExperienceBlock
         | ResumeProjectsBlock
+        | TrendingBlogPostsBlock
       )[]
     | null;
   /**
@@ -691,6 +693,26 @@ export interface ResumeProjectsBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TrendingBlogPostsBlock".
+ */
+export interface TrendingBlogPostsBlock {
+  /**
+   * Optional heading shown above the trending blog posts.
+   */
+  heading?: {
+    en?: string | null;
+    de?: string | null;
+  };
+  /**
+   * How many trending blog posts to display in this block.
+   */
+  postCount?: number | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'TrendingBlogPostsBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "posts".
  */
 export interface BlogPostData {
@@ -798,6 +820,10 @@ export interface User {
     relationTo: 'images';
     value: string | MediaImage;
   } | null;
+  /**
+   * When enabled, your own visits will be tracked in analytics like any other visitor. Off by default so your admin browsing doesn't skew site statistics.
+   */
+  enableOwnTracking?: boolean | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -1600,6 +1626,7 @@ export interface PagesSelect<T extends boolean = true> {
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
   avatar?: T;
+  enableOwnTracking?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;

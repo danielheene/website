@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Headline } from '@/components/Headline'
 import { ImageMedia } from '@/components/ImageMedia'
 import { fetchTrendingBlogPosts } from '@/lib/fetchers/fetchTrendingBlogPosts'
-import { reduceDataToLocale } from '@/lib/i18n'
+import { reduceDataToBilingualLanguage } from '@/lib/i18n'
 import { isRenderableImage } from '@/lib/typeGuards'
 
 const TRENDING_WINDOW_DAYS = 7
@@ -30,7 +30,7 @@ export const TrendingBlogPostsBlockRenderer = async ({
 
   if (!posts || posts.length === 0) return null
 
-  const resolvedHeading = heading ? reduceDataToLocale(heading) : undefined
+  const resolvedHeading = heading ? reduceDataToBilingualLanguage(heading) : undefined
 
   return (
     <section className="container mx-auto px-4 py-16">
