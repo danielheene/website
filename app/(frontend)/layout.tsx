@@ -9,6 +9,7 @@ import { DraftModeListener } from '@/components/LivePreviewListener'
 import { AllProviders } from '@/components/Providers'
 import { SkipToMainContent } from '@/components/SkipToMainContent'
 import { Toasty } from '@/components/Toasty'
+import { UmamiSuppressionFlag } from '@/components/UmamiSuppressionFlag'
 import PPFrama from '@/fonts/pp-frama/next'
 import PPFramaText from '@/fonts/pp-frama-text/next'
 import PPSupplyMono from '@/fonts/pp-supply-mono/next'
@@ -56,6 +57,15 @@ export default async function RootLayout({
         */}
         <Suspense fallback={null}>
           <DraftModeListener />
+        </Suspense>
+        {/*
+          `isTrackingSuppressed()` calls `cookies()` — a runtime API — so it
+          is read inside this boundary rather than in the layout body,
+          otherwise it blocks the whole route from prerendering under
+          `cacheComponents`.
+        */}
+        <Suspense fallback={null}>
+          <UmamiSuppressionFlag />
         </Suspense>
         <AllProviders>
           <SkipToMainContent targetId="main-content" />

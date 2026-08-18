@@ -2,8 +2,6 @@
 
 import { ThemeProvider } from 'next-themes'
 
-import { UmamiProvider } from '../contexts/Umami'
-
 export const AllProviders = ({ children }: { children: React.ReactNode }) => {
   /**
    * React 19 / Next 16 fix: suppress the <script> tag warning by
@@ -24,7 +22,7 @@ export const AllProviders = ({ children }: { children: React.ReactNode }) => {
       enableSystem
       scriptProps={scriptProps}
     >
-      <UmamiProvider websiteId={process.env.NEXT_PUBLIC_UMAMI_SITE_ID}>{children}</UmamiProvider>
+      {children}
     </ThemeProvider>
   )
 }

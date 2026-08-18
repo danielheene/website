@@ -24,6 +24,45 @@ export const isHeroMedia = (media: unknown): media is MediaImage | MediaVideo =>
 export const isHeroMediaArray = (media: unknown): media is (MediaImage | MediaVideo)[] =>
   Array.isArray(media) && media.length > 0 && media.every(isHeroMedia)
 
+/**
+ * Narrows a `MediaImage` to one that is actually renderable by `ImageMedia`.
+ *
+ * `MediaImage.url` is optional/nullable in the generated Payload types, but
+ * `ImageMedia` does `new URL(src)` on it — which throws on a relative or
+ * missing value. Guarding with this before rendering keeps a half-populated
+ * upload from taking down the whole page, and narrows `url` to `string` so
+ * callers don't need a non-null assertion.
+ */
+export const isRenderableImage = (
+  media: unknown,
+): media is MediaImage & {
+  url: string
+} => isMediaImage(media) && typeof media.url === 'string' && media.url.length > 0
+
+/**
+ * Narrows a Payload upload/relationship field (`{ relationTo, value }`) to one
+ * whose `value` has been populated into a renderable `MediaImage` rather than
+ * left as an unpopulated ID string.
+ */
+export const isRenderableImageRelation = (
+  object: unknown,
+): object is {
+  relationTo: CollectionSlug['MediaImages']
+  value: MediaImage & {
+    url: string
+  }
+} =>
+  !!object &&
+  typeof object === 'object' &&
+  'value' in object &&
+  isRenderableImage(
+    (
+      object as {
+        value: unknown
+      }
+    ).value,
+  )
+
 export const isMediaImageReference = (
   object: unknown,
 ): object is {

@@ -3,7 +3,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import { useUmami } from '../contexts/Umami'
+import { track } from '@/lib/umami/track'
 
 const audioContents = [
   'SUQzAwAAAAAAIVRFTkMAAAAIAAAARmlzc2lvblRMRU4AAAAFAAAAMTE4OP/7mMQAAAAAAAAAAA',
@@ -468,7 +468,6 @@ const printHintMessage = (): void => {
 }
 
 export const Toasty = function Toasty(): React.JSX.Element {
-  const { track } = useUmami()
   const audioContextRef = React.useRef<AudioContext>(null)
   const keyEventBoundRef = React.useRef<boolean>(false)
   const [{ success, imageBlob, audioBuffer }, dispatch] = React.useReducer(reducer, initialState)
@@ -575,7 +574,6 @@ export const Toasty = function Toasty(): React.JSX.Element {
     audioBuffer,
     imageBlob,
     success,
-    track,
   ])
 
   /**

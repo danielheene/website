@@ -115,6 +115,9 @@ importers:
       isomorphic-dompurify:
         specifier: ^3.22.0
         version: 3.22.0(@noble/hashes@1.8.0)(canvas@3.2.3)
+      jose:
+        specifier: 5.10.0
+        version: 5.10.0
       jsdom:
         specifier: ^30.0.1
         version: 30.0.1(@noble/hashes@1.8.0)(canvas@3.2.3)

@@ -29,6 +29,17 @@ export const Users: CollectionConfig = {
         CollectionSlug['MediaImages'],
       ],
     },
+    {
+      type: 'checkbox',
+      name: 'enableOwnTracking',
+      label: 'Track my own visits (debug)',
+      defaultValue: false,
+      saveToJWT: true,
+      admin: {
+        description:
+          "When enabled, your own visits will be tracked in analytics like any other visitor. Off by default so your admin browsing doesn't skew site statistics.",
+      },
+    },
   ],
   hooks: {
     afterChange: [

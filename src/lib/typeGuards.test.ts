@@ -10,6 +10,8 @@ import {
   isMediaObject,
   isMediaVideo,
   isMediaVideoReference,
+  isRenderableImage,
+  isRenderableImageRelation,
 } from './typeGuards'
 
 const image = {
@@ -128,5 +130,83 @@ describe('reference guards', () => {
       }),
     ).toBe(false)
     expect(isMediaImageReference(null)).toBeFalsy()
+  })
+})
+
+describe('isRenderableImage', () => {
+  it('accepts an image with a non-empty url', () => {
+    expect(isRenderableImage(image)).toBe(true)
+  })
+
+  it('rejects an image with a missing, null, or empty url', () => {
+    expect(
+      isRenderableImage({
+        mimeType: 'image/png',
+      }),
+    ).toBe(false)
+    expect(
+      isRenderableImage({
+        mimeType: 'image/png',
+        url: null,
+      }),
+    ).toBe(false)
+    expect(
+      isRenderableImage({
+        mimeType: 'image/png',
+        url: '',
+      }),
+    ).toBe(false)
+  })
+
+  it('rejects non-image media even when a url is present', () => {
+    expect(
+      isRenderableImage({
+        mimeType: 'video/mp4',
+        url: '/clip.mp4',
+      }),
+    ).toBe(false)
+  })
+
+  it('rejects unpopulated relation ids and nullish values', () => {
+    expect(isRenderableImage('some-doc-id')).toBeFalsy()
+    expect(isRenderableImage(null)).toBeFalsy()
+    expect(isRenderableImage(undefined)).toBeFalsy()
+  })
+})
+
+describe('isRenderableImageRelation', () => {
+  it('accepts a relation whose value is a populated, renderable image', () => {
+    expect(
+      isRenderableImageRelation({
+        relationTo: 'images',
+        value: image,
+      }),
+    ).toBe(true)
+  })
+
+  it('rejects a relation whose value is still an unpopulated id string', () => {
+    expect(
+      isRenderableImageRelation({
+        relationTo: 'images',
+        value: 'some-doc-id',
+      }),
+    ).toBe(false)
+  })
+
+  it('rejects a relation whose populated image has no url', () => {
+    expect(
+      isRenderableImageRelation({
+        relationTo: 'images',
+        value: {
+          mimeType: 'image/png',
+        },
+      }),
+    ).toBe(false)
+  })
+
+  it('rejects nullish and value-less objects', () => {
+    expect(isRenderableImageRelation(null)).toBe(false)
+    expect(isRenderableImageRelation(undefined)).toBe(false)
+    expect(isRenderableImageRelation({})).toBe(false)
   })
 })

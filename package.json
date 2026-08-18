@@ -84,6 +84,7 @@
     "hash-wasm": "^4.12.0",
     "hyphen": "^1.14.1",
     "isomorphic-dompurify": "^3.22.0",
+    "jose": "5.10.0",
     "jsdom": "^30.0.1",
     "libphonenumber-js": "^1.13.10",
     "lodash-es": "^4.18.1",

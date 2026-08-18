@@ -11,6 +11,7 @@ import { ResumeCustomersBlock } from '@/blocks/ResumeCustomersBlock'
 import { ResumeDownloadsBlock } from '@/blocks/ResumeDownloadsBlock'
 import { ResumeExperienceBlock } from '@/blocks/ResumeExperienceBlock'
 import { ResumeProjectsBlock } from '@/blocks/ResumeProjectsBlock'
+import { TrendingBlogPostsBlock } from '@/blocks/TrendingBlogPostsBlock'
 import { TwoColumnContentBlock } from '@/blocks/TwoColumnContentBlock'
 
 export const BLOCKS = [
@@ -31,6 +32,9 @@ export const BLOCKS = [
   ResumeDownloadsBlock,
   ResumeExperienceBlock,
   ResumeProjectsBlock,
+
+  /* blog related blocks */
+  TrendingBlogPostsBlock,
 ]
 
 export const BLOCK_SLUGS = BLOCKS.map((block) => block.slug) as RegisteredBlockSlug[]
