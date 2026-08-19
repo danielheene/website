@@ -1,10 +1,10 @@
-import type { TailwindConfig } from '@react-email/tailwind'
-import { pixelBasedPreset } from '@react-email/tailwind'
+import type { TailwindConfig } from 'react-email'
+import { pixelBasedPreset } from 'react-email'
 
 /**
  * Tailwind theme for React Email templates.
  *
- * `@react-email/tailwind` compiles utility classes into literal inline
+ * `react-email`'s bundled Tailwind compiler compiles utility classes into literal inline
  * styles at render time, so it can't read the site's CSS-first Tailwind v4
  * theme (`src/styles/theme/*.css`) the way the Next.js app does. This file
  * re-declares the subset of that theme email clients can actually render:

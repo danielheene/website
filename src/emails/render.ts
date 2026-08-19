@@ -1,5 +1,5 @@
 import type React from 'react'
-import { render } from '@react-email/render'
+import { render } from 'react-email'
 
 export type RenderedEmail = {
   html: string
@@ -9,7 +9,7 @@ export type RenderedEmail = {
 /**
  * Renders a React Email template to the `html` and `text` bodies
  * `payload.sendEmail` expects, so callers don't have to invoke
- * `@react-email/render` twice.
+ * `render` from `react-email` twice.
  */
 export const renderEmail = async (element: React.ReactElement): Promise<RenderedEmail> => {
   const [html, text] = await Promise.all([
