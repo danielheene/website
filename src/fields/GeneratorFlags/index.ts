@@ -7,6 +7,10 @@ import { normalizeIncomingFlags } from './hooks/normalizeIncomingFlags'
  * generates thumbnails and resume documents, and used to filter those out of
  * the admin list views (see `scripts/seed-query-presets.ts`).
  *
+ * `seeded-dummy` is set by seed scripts (see `scripts/seed-pages.ts` and its
+ * siblings) on fixture documents, so they can be found and removed without
+ * touching real content.
+ *
  * A non-empty list *is* the "this was generated" marker — hand-uploaded assets
  * carry none — so the flags describe only what kind of artefact it is.
  *
@@ -25,6 +29,7 @@ export const GENERATOR_FLAGS = [
   'audio-thumbnail',
   'video-thumbnail',
   'document-thumbnail',
+  'seeded-dummy',
 ] as const
 
 export type GeneratorFlag = (typeof GENERATOR_FLAGS)[number]

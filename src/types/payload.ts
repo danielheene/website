@@ -369,7 +369,13 @@ export interface MediaImage {
   } | null;
   blurDataURL?: string | null;
   generatorFlags?: (
-    'resume-asset' | 'thumbnail' | 'document' | 'audio-thumbnail' | 'video-thumbnail' | 'document-thumbnail'
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'seeded-dummy'
   )[];
   prefix?: string | null;
   updatedAt: string;
@@ -423,7 +429,13 @@ export interface MediaVideo {
       }[]
     | null;
   generatorFlags?: (
-    'resume-asset' | 'thumbnail' | 'document' | 'audio-thumbnail' | 'video-thumbnail' | 'document-thumbnail'
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'seeded-dummy'
   )[];
   prefix?: string | null;
   updatedAt: string;
@@ -872,7 +884,13 @@ export interface MediaDocument {
       }[]
     | null;
   generatorFlags?: (
-    'resume-asset' | 'thumbnail' | 'document' | 'audio-thumbnail' | 'video-thumbnail' | 'document-thumbnail'
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'seeded-dummy'
   )[];
   prefix?: string | null;
   updatedAt: string;
@@ -910,7 +928,13 @@ export interface MediaAudio {
     [k: string]: unknown;
   } | null;
   generatorFlags?: (
-    'resume-asset' | 'thumbnail' | 'document' | 'audio-thumbnail' | 'video-thumbnail' | 'document-thumbnail'
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'seeded-dummy'
   )[];
   prefix?: string | null;
   updatedAt: string;
