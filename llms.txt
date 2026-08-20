@@ -11,8 +11,8 @@ important file: read it first, every time.
 ## Start Here
 
 - [AGENTS.md](AGENTS.md): Required reading before any change — stack, code style, architecture
-  notes, and known security guardrails (open `queryPresets` access, unauthenticated SSE channel
-  subscription, unsanitized raw SVG rendering, unenforced `CRON_SECRET`).
+  notes, and known security guardrails (public SSE channels remain unauthenticated by design,
+  unsanitized raw SVG rendering, unenforced `CRON_SECRET`).
 - [README.md](README.md): Setup and local development — Doppler-based env config, Docker
   services, available scripts, project structure, testing, CI/deployment.
 
@@ -45,17 +45,9 @@ important file: read it first, every time.
   Payload user is fully trusted.
 - [src/components/](src/components): React components.
 - [src/lib/](src/lib): Framework-agnostic utilities, including `RedisHandler.ts` (cache +
-  pub/sub for SSE).
+  pub/sub for SSE) and `lib/seed/` (shared seed/clean logic for fixture data, used by both
+  CLI scripts and the admin panel).
+- [src/emails/](src/emails): React Email templates and rendering (contact form notifications).
 - [src/pdf/](src/pdf): PDF generation (resume export).
 - [src/jobs-queue/](src/jobs-queue): Payload Jobs Queue tasks/workflows.
 - [e2e/](e2e): Playwright E2E specs — structural smoke tests, not content assertions.
-
-## Plans and Design Docs
-
-In-progress and historical design/planning documents; check status/dates before assuming a
-plan reflects the current state of the code.
-
-- [plan/feature-payload-migrations-1.md](plan/feature-payload-migrations-1.md): Splitting
-  Payload data bootstrapping into environment-scoped migrations.
-- [plan/refactor-umami-tracking-1.md](plan/refactor-umami-tracking-1.md): Replacing client-only
-  Umami tracking with server-callable functions and a trending-posts block.
