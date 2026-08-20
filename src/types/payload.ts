@@ -176,6 +176,7 @@ export interface Config {
       GenerateResumeDocumentSlug: TaskGenerateResumeDocumentSlug;
       CreateResumeDocument: TaskCreateResumeDocument;
       PingUptimeEndpoint: TaskPingUptimeEndpoint;
+      SeedCollection: TaskSeedCollection;
       createCollectionExport: TaskCreateCollectionExport;
       createCollectionImport: TaskCreateCollectionImport;
       schedulePublish: TaskSchedulePublish;
@@ -1125,6 +1126,7 @@ export interface PayloadJob {
           | 'GenerateResumeDocumentSlug'
           | 'CreateResumeDocument'
           | 'PingUptimeEndpoint'
+          | 'SeedCollection'
           | 'createCollectionExport'
           | 'createCollectionImport'
           | 'schedulePublish';
@@ -1176,6 +1178,7 @@ export interface PayloadJob {
         | 'GenerateResumeDocumentSlug'
         | 'CreateResumeDocument'
         | 'PingUptimeEndpoint'
+        | 'SeedCollection'
         | 'createCollectionExport'
         | 'createCollectionImport'
         | 'schedulePublish'
@@ -2858,6 +2861,18 @@ export interface TaskCreateResumeDocument {
  */
 export interface TaskPingUptimeEndpoint {
   input?: unknown;
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskSeedCollection".
+ */
+export interface TaskSeedCollection {
+  input: {
+    collection: string;
+    mode: string;
+    count?: number | null;
+  };
   output?: unknown;
 }
 /**
