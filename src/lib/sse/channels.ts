@@ -72,3 +72,40 @@ export type AutoTranslateBilingualFieldProgress =
       status: 'error'
       message: string
     }
+
+/**
+ *    Per-job progress channel for the seed/clean admin-panel action (see
+ *    `src/jobs-queue/tasks/seedCollection.ts`), one per queued job.
+ *
+ *    Requires an authenticated session, same as `bilingual-translate:` —
+ *    seed/clean is an admin-only write operation, not something an
+ *    anonymous caller has any reason to watch.
+ */
+const SEED_TASK_CHANNEL_PREFIX = 'seed-task:'
+
+export const seedTaskChannel = (jobId: string): string => `${SEED_TASK_CHANNEL_PREFIX}${jobId}`
+
+export const isSeedTaskChannel = (value: string | null): value is string =>
+  Boolean(value?.startsWith(SEED_TASK_CHANNEL_PREFIX)) &&
+  JOB_ID_PATTERN.test((value as string).slice(SEED_TASK_CHANNEL_PREFIX.length))
+
+export type SeedTaskProgress =
+  | {
+      status: 'queued'
+    }
+  | {
+      status: 'progress'
+      step: string
+      current: number
+      total: number
+    }
+  | {
+      status: 'success'
+      created?: number
+      deletedPages?: number
+      deletedMedia?: number
+    }
+  | {
+      status: 'error'
+      message: string
+    }
