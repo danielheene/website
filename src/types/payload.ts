@@ -176,6 +176,7 @@ export interface Config {
       GenerateResumeDocumentSlug: TaskGenerateResumeDocumentSlug;
       CreateResumeDocument: TaskCreateResumeDocument;
       PingUptimeEndpoint: TaskPingUptimeEndpoint;
+      SeedCollection: TaskSeedCollection;
       createCollectionExport: TaskCreateCollectionExport;
       createCollectionImport: TaskCreateCollectionImport;
       schedulePublish: TaskSchedulePublish;
@@ -339,6 +340,15 @@ export interface Page {
     title?: string | null;
     description?: string | null;
   };
+  generatorFlags?: (
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'seeded-dummy'
+  )[];
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -369,7 +379,13 @@ export interface MediaImage {
   } | null;
   blurDataURL?: string | null;
   generatorFlags?: (
-    'resume-asset' | 'thumbnail' | 'document' | 'audio-thumbnail' | 'video-thumbnail' | 'document-thumbnail'
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'seeded-dummy'
   )[];
   prefix?: string | null;
   updatedAt: string;
@@ -423,7 +439,13 @@ export interface MediaVideo {
       }[]
     | null;
   generatorFlags?: (
-    'resume-asset' | 'thumbnail' | 'document' | 'audio-thumbnail' | 'video-thumbnail' | 'document-thumbnail'
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'seeded-dummy'
   )[];
   prefix?: string | null;
   updatedAt: string;
@@ -758,6 +780,15 @@ export interface BlogPostData {
     title?: string | null;
     description?: string | null;
   };
+  generatorFlags?: (
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'seeded-dummy'
+  )[];
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -805,6 +836,15 @@ export interface Topic {
     title?: string | null;
     description?: string | null;
   };
+  generatorFlags?: (
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'seeded-dummy'
+  )[];
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -872,7 +912,13 @@ export interface MediaDocument {
       }[]
     | null;
   generatorFlags?: (
-    'resume-asset' | 'thumbnail' | 'document' | 'audio-thumbnail' | 'video-thumbnail' | 'document-thumbnail'
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'seeded-dummy'
   )[];
   prefix?: string | null;
   updatedAt: string;
@@ -910,7 +956,13 @@ export interface MediaAudio {
     [k: string]: unknown;
   } | null;
   generatorFlags?: (
-    'resume-asset' | 'thumbnail' | 'document' | 'audio-thumbnail' | 'video-thumbnail' | 'document-thumbnail'
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'seeded-dummy'
   )[];
   prefix?: string | null;
   updatedAt: string;
@@ -935,6 +987,15 @@ export interface ResumeCustomerData {
   title: string;
   slug: string;
   svg?: string | null;
+  generatorFlags?: (
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'seeded-dummy'
+  )[];
   updatedAt: string;
   createdAt: string;
 }
@@ -989,6 +1050,15 @@ export interface ResumeDocumentData {
     | number
     | boolean
     | null;
+  generatorFlags?: (
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'seeded-dummy'
+  )[];
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1056,6 +1126,7 @@ export interface PayloadJob {
           | 'GenerateResumeDocumentSlug'
           | 'CreateResumeDocument'
           | 'PingUptimeEndpoint'
+          | 'SeedCollection'
           | 'createCollectionExport'
           | 'createCollectionImport'
           | 'schedulePublish';
@@ -1107,6 +1178,7 @@ export interface PayloadJob {
         | 'GenerateResumeDocumentSlug'
         | 'CreateResumeDocument'
         | 'PingUptimeEndpoint'
+        | 'SeedCollection'
         | 'createCollectionExport'
         | 'createCollectionImport'
         | 'schedulePublish'
@@ -1185,6 +1257,15 @@ export interface ResumeJobData {
         value: string | ResumeSkillTagData;
       }[]
     | null;
+  generatorFlags?: (
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'seeded-dummy'
+  )[];
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -1199,6 +1280,15 @@ export interface ResumeSkillTagData {
   title: string;
   slug: string;
   interval?: number | null;
+  generatorFlags?: (
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'seeded-dummy'
+  )[];
   updatedAt: string;
   createdAt: string;
 }
@@ -1236,6 +1326,15 @@ export interface ResumeProjectData {
     relationTo: 'posts';
     value: string | BlogPostData;
   } | null;
+  generatorFlags?: (
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'seeded-dummy'
+  )[];
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -1287,6 +1386,15 @@ export interface ResumeSkillData {
         value: string | ResumeSkillTagData;
       }[]
     | null;
+  generatorFlags?: (
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'seeded-dummy'
+  )[];
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -1564,6 +1672,7 @@ export interface PostsSelect<T extends boolean = true> {
         title?: T;
         description?: T;
       };
+  generatorFlags?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -1587,6 +1696,7 @@ export interface TopicsSelect<T extends boolean = true> {
         title?: T;
         description?: T;
       };
+  generatorFlags?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -1614,6 +1724,7 @@ export interface PagesSelect<T extends boolean = true> {
         title?: T;
         description?: T;
       };
+  generatorFlags?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -1755,6 +1866,7 @@ export interface ResumeCustomersSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   svg?: T;
+  generatorFlags?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1776,6 +1888,7 @@ export interface ResumeDocumentsSelect<T extends boolean = true> {
   thumbnails_de?: T;
   data_en?: T;
   data_de?: T;
+  generatorFlags?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1799,6 +1912,7 @@ export interface ResumeJobsSelect<T extends boolean = true> {
   endDate?: T;
   interval?: T;
   skillTags?: T;
+  generatorFlags?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -1814,6 +1928,7 @@ export interface ResumeProjectsSelect<T extends boolean = true> {
   description?: T;
   published?: T;
   relatedPost?: T;
+  generatorFlags?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -1833,6 +1948,7 @@ export interface ResumeSkillsSelect<T extends boolean = true> {
   published?: T;
   type?: T;
   skillTags?: T;
+  generatorFlags?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -1846,6 +1962,7 @@ export interface ResumeSkillTagsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   interval?: T;
+  generatorFlags?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2744,6 +2861,18 @@ export interface TaskCreateResumeDocument {
  */
 export interface TaskPingUptimeEndpoint {
   input?: unknown;
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskSeedCollection".
+ */
+export interface TaskSeedCollection {
+  input: {
+    collection: string;
+    mode: string;
+    count?: number | null;
+  };
   output?: unknown;
 }
 /**

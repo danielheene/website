@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { authenticated } from '@/access/authenticated'
 import { BilingualRichTextField } from '@/fields/BilingualRichText'
+import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { generateResumeDocumentHook } from '@/lib/hooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
@@ -185,6 +186,8 @@ export const ResumeJobs: CollectionConfig<CollectionSlug['ResumeJobs']> = {
         isSortable: true,
       },
     },
+
+    GeneratorFlagsField(),
   ],
   trash: true,
   versions: false,

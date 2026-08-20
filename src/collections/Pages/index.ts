@@ -6,6 +6,7 @@ import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { BLOCK_SLUGS } from '@/blocks'
 import { revalidatePage } from '@/collections/Pages/hooks/revalidatePage'
+import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { MetaField } from '@/fields/Meta'
 import { ProtectedField } from '@/fields/Protected'
 import { RichTextField } from '@/fields/RichText'
@@ -61,6 +62,17 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
       url: ({ data }) => generatePreviewPath(CollectionSlug['Pages'], data.slug),
     },
     preview: (data: Partial<Page>) => generatePreviewPath(CollectionSlug['Pages'], data.slug),
+    components: {
+      listMenuItems: [
+        {
+          path: '@/components/AdminPanel/SeedActions#SeedActions',
+          clientProps: {
+            collectionSlug: CollectionSlug.Pages,
+            collectionLabel: 'Pages',
+          },
+        },
+      ],
+    },
   },
   fields: [
     /* -------------- Main  Content -------------- */
@@ -198,6 +210,8 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
         },
       ],
     },
+
+    GeneratorFlagsField(),
   ],
   hooks: {
     afterChange: [

@@ -40,6 +40,8 @@
     "seed": "pnpm run seed:blog",
     "seed:blog": "pnpm run payload run scripts/seed-blog.ts",
     "seed:blog:clean": "pnpm run payload run scripts/seed-blog.ts -- --clean",
+    "seed:pages": "pnpm run payload run scripts/seed-pages.ts",
+    "seed:pages:clean": "pnpm run payload run scripts/seed-pages.ts -- --clean",
     "skills:migrate-content-caption": "pnpm run payload run scripts/migrate-skill-content-caption.ts",
     "start": "pnpm run next start",
     "start:job-runner": "pnpm run payload jobs:run --cron \"* * * * *\" --all-queues --handle-schedules --limit 10",

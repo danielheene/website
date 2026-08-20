@@ -11,6 +11,7 @@ export const TaskSlug = {
   CreateResumeDocument: 'CreateResumeDocument',
   PingUptimeEndpoint: 'PingUptimeEndpoint',
   AutoTranslateBilingualField: 'AutoTranslateBilingualField',
+  SeedCollection: 'SeedCollection',
 } as const
 
 export type TaskSlug = typeof TaskSlug
