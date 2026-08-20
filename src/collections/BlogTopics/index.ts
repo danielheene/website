@@ -62,7 +62,7 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
         const { totalDocs } = await payload.find({
           collection: CollectionSlug.BlogPosts,
           where: {
-            tags: {
+            topics: {
               contains: id,
             },
           },
