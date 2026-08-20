@@ -317,45 +317,50 @@ const createSeedImage = async (payload: Payload, index: number): Promise<string>
  * seeded-dummy topics first, creating only the shortfall via `seedTopics` —
  * so `seedPosts` never requires topics to be seeded first as a manual
  * prerequisite.
+ *
+ * `seedTopics(payload, N)` is idempotent-by-slug, not "create N more": it
+ * walks the title pool from index 1 and skips any slot whose slug already
+ * exists, so requesting exactly the shortfall can under-create when some of
+ * those pool slots are already taken. To guarantee `count` ids regardless,
+ * request a growing batch and re-check until the count is actually met.
+ * `topicFor`'s cycling (it appends " 2", " 3", ... once the base pool is
+ * exhausted) means a large enough request always eventually mints enough
+ * *new* topics, so this is bounded rather than truly unbounded — the
+ * iteration cap is just a defensive backstop.
  */
 const resolveTopicIds = async (payload: Payload, count: number): Promise<string[]> => {
-  const { docs: existing } = await payload.find({
-    collection: CollectionSlug.BlogTopics,
-    where: {
-      generatorFlags: {
-        in: [
-          'seeded-dummy',
-        ],
+  const findSeededTopics = async () => {
+    const { docs } = await payload.find({
+      collection: CollectionSlug.BlogTopics,
+      where: {
+        generatorFlags: {
+          in: [
+            'seeded-dummy',
+          ],
+        },
       },
-    },
-    limit: count,
-    pagination: false,
-    trash: true,
-  })
-
-  const ids = existing.map((topic) => String(topic.id))
-
-  if (ids.length >= count) {
-    return ids.slice(0, count)
+      limit: count,
+      pagination: false,
+      trash: true,
+    })
+    return docs.map((topic) => String(topic.id))
   }
 
-  await seedTopics(payload, count - ids.length)
+  let ids = await findSeededTopics()
 
-  const { docs: topped } = await payload.find({
-    collection: CollectionSlug.BlogTopics,
-    where: {
-      generatorFlags: {
-        in: [
-          'seeded-dummy',
-        ],
-      },
-    },
-    limit: count,
-    pagination: false,
-    trash: true,
-  })
+  const MAX_ATTEMPTS = 10
+  for (let attempt = 1; ids.length < count && attempt <= MAX_ATTEMPTS; attempt += 1) {
+    // Request more than the raw shortfall each attempt: seedTopics may skip
+    // pool slots that already exist (possibly outside the `count` we can
+    // see here, e.g. from concurrent seeding), so asking for exactly the
+    // shortfall can repeat the same under-creation. Growing the request
+    // size each attempt guarantees progress within the pool's cycling.
+    const shortfall = count - ids.length
+    await seedTopics(payload, shortfall * attempt)
+    ids = await findSeededTopics()
+  }
 
-  return topped.map((topic) => String(topic.id)).slice(0, count)
+  return ids.slice(0, count)
 }
 
 /**

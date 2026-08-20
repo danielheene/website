@@ -119,6 +119,77 @@ describe('seedPosts', () => {
     )
   })
 
+  it('tops up to the full requested topic count even when seedTopics skips already-existing pool slots (partial shortfall)', async () => {
+    // Simulates the real seedTopics skip-by-slug behavior: one seeded topic
+    // ("TypeScript", the pool's first slot) already exists. A post that
+    // needs 2 topics should still end up with 2 topic ids related, even
+    // though a naive `seedTopics(payload, count - existing.length)` call
+    // would only ask for 1 more and that 1 slot (pool index 1, "TypeScript")
+    // is the one that's already taken — producing 0 new topics and only 1
+    // total, not the requested 2.
+    const existingTopics = [
+      {
+        id: 'existing-topic-typescript',
+        slug: 'seeded-dummy-topic-typescript',
+      },
+    ]
+    let nextTopicId = 1
+
+    find.mockImplementation(async ({ collection, where }) => {
+      if (collection === 'topics') {
+        if (where?.slug?.equals) {
+          return {
+            docs: existingTopics.filter((topic) => topic.slug === where.slug.equals),
+          }
+        }
+        if (where?.generatorFlags) {
+          return {
+            docs: existingTopics,
+          }
+        }
+      }
+      return {
+        docs: [],
+      }
+    })
+
+    const postTopicCounts: number[] = []
+
+    create.mockImplementation(async ({ collection, data }) => {
+      if (collection === 'images') {
+        return {
+          id: 'image-1',
+        }
+      }
+      if (collection === 'topics') {
+        const id = `created-topic-${nextTopicId}`
+        nextTopicId += 1
+        existingTopics.push({
+          id,
+          slug: data.slug,
+        })
+        return {
+          id,
+        }
+      }
+      postTopicCounts.push(data.topics.length)
+      return {
+        id: 'post-1',
+      }
+    })
+
+    // 3 posts: indexes 1 and 2 need 1 topic each, index 3 needs 2
+    // (topicCount = 1 + (index % 3 === 0 ? 1 : 0)) — the third post is the
+    // one that must top up beyond the single pre-existing topic.
+    await seedPosts(makePayload(), 3)
+
+    expect(postTopicCounts).toEqual([
+      1,
+      1,
+      2,
+    ])
+  })
+
   it('relates each post to 1-2 topic ids', async () => {
     find.mockImplementation(async ({ collection, where }) => {
       if (collection === 'topics' && where?.generatorFlags) {
