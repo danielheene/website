@@ -123,6 +123,18 @@ describe('cleanPages', () => {
           ],
         }
       }
+      if (collection === 'images') {
+        return {
+          docs: [
+            {
+              id: 'image-1',
+              generatorFlags: [
+                'seeded-dummy',
+              ],
+            },
+          ],
+        }
+      }
       return {
         docs: [],
       }
@@ -139,6 +151,50 @@ describe('cleanPages', () => {
       }),
     )
     expect(deleteFn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        collection: 'images',
+        id: 'image-1',
+      }),
+    )
+  })
+
+  it('does not delete media that a seeded page referenced but which no longer carries the seeded-dummy flag', async () => {
+    find.mockImplementation(async ({ collection }) => {
+      if (collection === 'pages') {
+        return {
+          docs: [
+            {
+              id: 'page-1',
+              hero: {
+                media: [
+                  {
+                    relationTo: 'images',
+                    value: 'image-1',
+                  },
+                ],
+              },
+            },
+          ],
+        }
+      }
+      if (collection === 'images') {
+        // Simulates a real, hand-uploaded image the seeded page's hero was
+        // manually edited to point at: no seeded-dummy flag, so the live
+        // find (filtered by id AND the flag) returns no match.
+        return {
+          docs: [],
+        }
+      }
+      return {
+        docs: [],
+      }
+    })
+
+    const result = await cleanPages(makePayload())
+
+    expect(result.deletedPages).toBe(1)
+    expect(result.deletedMedia).toBe(0)
+    expect(deleteFn).not.toHaveBeenCalledWith(
       expect.objectContaining({
         collection: 'images',
         id: 'image-1',

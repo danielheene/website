@@ -191,11 +191,12 @@ export const seedPages = async (
 
 /**
  * Deletes every `Pages` document tagged `seeded-dummy`, then deletes the
- * `images`-collection media those pages referenced in their hero. Relies on
- * `seedPages`' invariant that a seeded page's hero always points at media
- * `seedPages` itself created (and tagged `seeded-dummy`) — a page with no
- * hero media referenced has none of its media deleted, matching the count
- * of media entries actually present on the seeded pages found.
+ * `images`-collection media those pages referenced in their hero — but only
+ * if that media document itself still carries the `seeded-dummy` flag at
+ * delete time. A seeded page's hero could in principle be manually edited
+ * in the Payload admin UI to point at a real, hand-uploaded image, so each
+ * referenced media id is re-verified with a live `find` before deletion;
+ * media that no longer (or never did) carry the flag is left untouched.
  */
 export const cleanPages = async (
   payload: Payload,
@@ -246,6 +247,32 @@ export const cleanPages = async (
 
   let deletedMedia = 0
   for (const mediaId of mediaIds) {
+    const { docs: seededMedia } = await payload.find({
+      collection: CollectionSlug.MediaImages,
+      where: {
+        and: [
+          {
+            id: {
+              equals: mediaId,
+            },
+          },
+          {
+            generatorFlags: {
+              in: [
+                'seeded-dummy',
+              ],
+            },
+          },
+        ],
+      },
+      limit: 1,
+      pagination: false,
+    })
+
+    if (seededMedia.length === 0) {
+      continue
+    }
+
     await payload.delete({
       collection: CollectionSlug.MediaImages,
       id: mediaId,
