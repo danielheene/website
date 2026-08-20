@@ -4,7 +4,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 
 import { extractErrorMessage } from '@/lib/extractErrorMessage'
-import { Locale, reduceDataToLocale } from '@/lib/i18n'
+import { BilingualLanguage, reduceDataToBilingualLanguage } from '@/lib/i18n'
 import { resolveRelations } from '@/lib/resolveRelation'
 import { GlobalData, GlobalSlugValue, RegisteredGlobalSlug } from '@/types/globals'
 
@@ -13,13 +13,13 @@ import { GlobalData, GlobalSlugValue, RegisteredGlobalSlug } from '@/types/globa
  * it fetches the data from the source, resolves any relations, and caches the data in the KV store.
  *
  * @param {GlobalSlugValue} globalSlug - The unique identifier for the global data to be fetched
- * @param {Locale} locale - The locale for which the global data should be fetched (default: 'en')
+ * @param {BilingualLanguage} locale - The locale for which the global data should be fetched (default: 'en')
  * @returns {Promise<GlobalData<GlobalSlugValue>>} A promise that resolves to the fetched global data for the specified slug
  * @throws {Error} May throw if the invalidation or fetch operations fail
  */
 export const fetchGlobalData = async <T extends RegisteredGlobalSlug>(
   globalSlug: T,
-  locale: Locale = 'en',
+  locale: BilingualLanguage = 'en',
 ): Promise<GlobalData<T>> => {
   const payload = await getPayload({
     config,
@@ -36,7 +36,7 @@ export const fetchGlobalData = async <T extends RegisteredGlobalSlug>(
     await payload.kv.set(globalSlug, data)
   }
 
-  return reduceDataToLocale(JSON.parse(data), locale) as GlobalData<T>
+  return reduceDataToBilingualLanguage(JSON.parse(data), locale) as GlobalData<T>
 }
 
 /**

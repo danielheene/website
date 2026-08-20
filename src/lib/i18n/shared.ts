@@ -1,1 +1,1 @@
-export type Locale = 'en' | 'de'
+export type BilingualLanguage = 'en' | 'de'

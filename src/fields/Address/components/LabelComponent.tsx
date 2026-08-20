@@ -9,9 +9,9 @@ import {
   generateFieldId,
   generatePreferenceKey,
 } from '@/fields/Address/components/_shared'
-import { LocaleToggle } from '@/fields/Address/components/LocaleToggle'
+import { LanguageToggle } from '@/fields/Address/components/LanguageToggle'
 
-type Locale = 'en' | 'de' | undefined
+type BilingualLanguage = 'en' | 'de' | undefined
 
 export const LabelComponent: GroupFieldLabelClientComponent = ({ field, path }) => {
   const fieldId = generateFieldId(path)
@@ -23,7 +23,7 @@ export const LabelComponent: GroupFieldLabelClientComponent = ({ field, path }) 
   const renderFieldsRef = useRef<HTMLDivElement>(null)
 
   const { setPreference, getPreference } = usePreferences()
-  const [locale, setLocale] = useState<Locale>()
+  const [locale, setLocale] = useState<BilingualLanguage>()
 
   /**
    * bind references on the initial render
@@ -72,7 +72,7 @@ export const LabelComponent: GroupFieldLabelClientComponent = ({ field, path }) 
    * save the current selected locale to preferences to allow consistency
    */
   const updateLocale = useCallback(
-    (locale: Locale) => {
+    (locale: BilingualLanguage) => {
       setLocale(locale)
       setPreference(preferenceKey, locale)
     },
@@ -86,7 +86,9 @@ export const LabelComponent: GroupFieldLabelClientComponent = ({ field, path }) 
    * load locale from preferences on initial render
    */
   useEffect(() => {
-    getPreference<Locale>(preferenceKey).then((storedLocale) => setLocale(storedLocale ?? 'en'))
+    getPreference<BilingualLanguage>(preferenceKey).then((storedLocale) =>
+      setLocale(storedLocale ?? 'en'),
+    )
   }, [
     getPreference,
     preferenceKey,
@@ -110,7 +112,7 @@ export const LabelComponent: GroupFieldLabelClientComponent = ({ field, path }) 
           </span>
         )}
       </h3>
-      <LocaleToggle currentLocale={locale} setLocale={updateLocale} />
+      <LanguageToggle currentLanguage={locale} setLanguage={updateLocale} />
     </div>
   )
 }

@@ -2,7 +2,7 @@ import config from '@payload-config'
 import { getPayload, type PayloadRequest } from 'payload'
 
 import { type RedisListener, subscribe } from '@/lib/RedisHandler'
-import { isBilingualTranslateChannel, isSseChannel } from '@/lib/sse/channels'
+import { isBilingualTranslateChannel, isSeedTaskChannel, isSseChannel } from '@/lib/sse/channels'
 
 const HEARTBEAT_INTERVAL_MS = 30_000
 
@@ -33,7 +33,7 @@ export async function GET(request: Request): Promise<Response> {
    *    Unknown channels get the same 400 as a missing one — enumerating which
    *    channels exist is not something an anonymous caller needs to do.
    */
-  if (isBilingualTranslateChannel(channel)) {
+  if (isBilingualTranslateChannel(channel) || isSeedTaskChannel(channel)) {
     /**
      *    Unlike the public channels in `SSE_CHANNELS`, a bilingual-translate
      *    job channel carries translated CV content, so it requires a signed-in

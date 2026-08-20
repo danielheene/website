@@ -2,7 +2,7 @@ import { ReactNode } from 'react'
 
 import { type ClassValue, cn } from '@/lib/cn'
 
-import styles from './DuoTone.module.css'
+import './DuoTone.style.css'
 
 interface DuoToneProps {
   className?: ClassValue
@@ -21,8 +21,8 @@ interface DuoToneProps {
 
 export const DuoTone = ({ children, vignette, contained, className }: DuoToneProps) => {
   return (
-    <div className={cn(styles.Container, contained && styles.Contained, className)}>
-      {vignette && <div className={styles.Vignette} />}
+    <div className={cn('duo-tone', contained && 'duo-tone--contained', className)}>
+      {vignette && <div className="duo-tone__vignette" />}
       {children}
     </div>
   )

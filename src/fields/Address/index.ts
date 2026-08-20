@@ -3,7 +3,8 @@ import type { Field, GroupField } from 'payload'
 import { startCase } from 'lodash-es'
 
 import { resolveAddressData } from '@/fields/Address/hooks/resolveAddressData'
-import { syncAddressDataBetweenLocale } from '@/fields/Address/hooks/syncAddressDataBetweenLocale'
+import { syncAddressDataBetweenBilingualLanguage } from '@/fields/Address/hooks/syncAddressDataBetweenBilingualLanguage'
+import { SectionGroupField } from '@/fields/SectionGroup'
 import { cn } from '@/lib/cn'
 
 const fields: Field[] = [
@@ -121,43 +122,43 @@ type AddressFieldProps = {
 export const AddressField = ({
   name = 'address',
   label,
-  description,
-}: AddressFieldProps = {}): GroupField => ({
-  name,
-  label: label ?? startCase(name),
-  type: 'group',
-  admin: {
-    hideGutter: true,
+  description = '',
+}: AddressFieldProps = {}): GroupField =>
+  SectionGroupField({
+    name,
+    label: label ?? startCase(name),
     description,
-    className: '[&_header]:w-full',
-    components: {
-      Label: '@/fields/Address/components/LabelComponent',
-      Description: '@/components/AdminPanel#MarkdownDescription',
-      Field: '@/fields/Address/components/FieldComponent',
-    },
-  },
-  fields: [
-    'en',
-    'de',
-  ].map((locale) => ({
-    name: locale,
-    type: 'group',
-    interfaceName: 'AddressData',
-    admin: {
-      components: {
-        Label: false,
-        Description: false,
+    fields: [
+      'en',
+      'de',
+    ].map((locale) => ({
+      name: locale,
+      type: 'group',
+      interfaceName: 'AddressData',
+      admin: {
+        components: {
+          Label: false,
+          Description: false,
+        },
+        hideGutter: true,
       },
-      hideGutter: true,
+      hooks: {
+        beforeValidate: [
+          resolveAddressData,
+        ],
+        beforeChange: [
+          syncAddressDataBetweenBilingualLanguage,
+        ],
+      },
+      fields,
+    })),
+    overrides: {
+      admin: {
+        className: '[&_header]:w-full',
+        components: {
+          Label: '@/fields/Address/components/LabelComponent',
+          Field: '@/fields/Address/components/FieldComponent',
+        },
+      },
     },
-    hooks: {
-      beforeValidate: [
-        resolveAddressData,
-      ],
-      beforeChange: [
-        syncAddressDataBetweenLocale,
-      ],
-    },
-    fields,
-  })),
-})
+  })

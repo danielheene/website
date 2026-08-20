@@ -18,13 +18,13 @@ import * as Collapsible from '@radix-ui/react-collapsible'
 import { Icon } from '@/components/Icon'
 import { TemplateFieldAnnotation, TemplateFieldData } from '@/fields/Template/types'
 import { cn } from '@/lib/cn'
-import { Locale } from '@/lib/i18n'
+import { BilingualLanguage } from '@/lib/i18n'
 import { renderTemplate } from '@/lib/renderTemplate'
 
 type FieldComponentClientProps = TextFieldClientProps & {
   annotations?: TemplateFieldAnnotation[]
   data?: TemplateFieldData
-  renderLocale?: Locale[]
+  renderLocale?: BilingualLanguage[]
 }
 
 export const FieldComponentClient = ({

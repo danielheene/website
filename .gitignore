@@ -20,6 +20,9 @@ node_modules
 *storybook.log
 storybook-static/
 
+# react-email dev server cache (pnpm email:dev)
+.react-email
+
 .env
 .env.*
 !.env.example
@@ -29,5 +32,12 @@ storybook-static/
 coverage
 playwright-report
 test-results
+docs
+plan
 
 certificates
+
+
+.claude
+.junie
+.worktrees

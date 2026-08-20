@@ -1,9 +1,13 @@
 import { CMSLink } from '@/components/Link'
+import type { LinkGroupEntry } from '@/fields/Link/lib/resolveLinkTarget'
 import { cn } from '@/lib/cn'
-import type { FooterSettings } from '@/types/payload'
 
 interface FooterNavGroupsProps {
-  navGroups: (FooterSettings['column1'] | FooterSettings['column2'] | FooterSettings['column3'])[]
+  navGroups: {
+    isActive?: boolean | null
+    title?: string | null
+    entries?: LinkGroupEntry[] | null
+  }[]
   className?: string
 }
 

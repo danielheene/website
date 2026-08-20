@@ -2,11 +2,11 @@ import { cacheLife, cacheTag, revalidateTag } from 'next/cache'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
-import { Locale, reduceDataToLocale } from '@/lib/i18n'
+import { BilingualLanguage, reduceDataToBilingualLanguage } from '@/lib/i18n'
 import { resolveRelations } from '@/lib/resolveRelation'
 import { GlobalSlug } from '@/types/globals'
 
-export const fetchGlobalUserSettings = async (locale: Locale = 'en') => {
+export const fetchGlobalUserSettings = async (locale: BilingualLanguage = 'en') => {
   const payload = await getPayload({
     config,
   })
@@ -16,10 +16,10 @@ export const fetchGlobalUserSettings = async (locale: Locale = 'en') => {
     draft: false,
   })
 
-  return await resolveRelations(reduceDataToLocale(data, locale))
+  return await resolveRelations(reduceDataToBilingualLanguage(data, locale))
 }
 
-export const fetchGlobalUserSettingsCached = async (locale: Locale = 'en') => {
+export const fetchGlobalUserSettingsCached = async (locale: BilingualLanguage = 'en') => {
   'use cache'
   cacheLife('max')
   cacheTag(GlobalSlug.GlobalUserSettings)

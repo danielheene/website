@@ -1,10 +1,10 @@
 'use server'
 
-import { type Locale, translate } from '@/lib/i18n'
+import { type BilingualLanguage, translate } from '@/lib/i18n'
 import { DocumentFooter } from '@/pdf/types'
 
 type BuildDocumentFooterDataArgs = {
-  locale: Locale
+  locale: BilingualLanguage
   fileName: string
   fileUrl: string
 }

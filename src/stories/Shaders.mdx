@@ -1,0 +1,96 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+import { DarkVeil, FaultyTerminal, GradientBlinds, Grainient } from '@/components/Shaders'
+
+<Meta title="Shaders/Overview" />
+
+# Shaders
+
+WebGL background components from `src/components/Shaders`, built on [ogl](https://github.com/oframe/ogl).
+Each one fills its parent element (`width: 100%; height: 100%`) and drives its own animation loop
+via `requestAnimationFrame`, so every panel below is a real live render, not a screenshot. Each
+panel is previewed at a 16:9 aspect ratio.
+
+<div style={{ padding: '3rem 0' }}>
+  ## DarkVeil
+
+  Hue-shifting generative noise field. Component defaults.
+
+  <div style={{ width: '100%', aspectRatio: '16 / 9', position: 'relative', marginTop: '1rem' }}>
+    <DarkVeil />
+  </div>
+</div>
+
+<div style={{ padding: '3rem 0' }}>
+  ## Grainient
+
+  Warped multi-color gradient with grain. Component defaults.
+
+  <div style={{ width: '100%', aspectRatio: '16 / 9', position: 'relative', marginTop: '1rem' }}>
+    <Grainient />
+  </div>
+</div>
+
+<div style={{ padding: '3rem 0' }}>
+  ## FaultyTerminal
+
+  Glitching CRT digit grid. Props match reactbits.dev's own demo configuration for this
+  component rather than the component's built-in defaults.
+
+  <div style={{ width: '100%', aspectRatio: '16 / 9', position: 'relative', marginTop: '1rem' }}>
+    <FaultyTerminal
+      scale={1.5}
+      digitSize={1.2}
+      timeScale={0.5}
+      scanlineIntensity={0.5}
+      curvature={0.1}
+      tint="#A7EF9E"
+      mouseReact
+      mouseStrength={0.5}
+      pageLoadAnimation
+      brightness={0.6}
+    />
+  </div>
+</div>
+
+<div style={{ padding: '3rem 0' }}>
+  ## GradientBlinds
+
+  Animated color blinds with a pointer-follow spotlight. Component defaults.
+
+  {/* Its default mixBlendMode is "lighten" — on this page's light background that washes out
+      to near-white, so the panel gets a dark backdrop to actually show it. The live component
+      composites against whatever sits behind it. */}
+  <div
+    style={{
+      width: '100%',
+      aspectRatio: '16 / 9',
+      position: 'relative',
+      marginTop: '1rem',
+      background: '#0a0a0a',
+    }}
+  >
+    <GradientBlinds />
+  </div>
+</div>
+
+<div style={{ padding: '3rem 0' }}>
+  ## Notes
+
+  - Every component's own Storybook story (`Components/Shaders/*`) exposes the full prop set as
+    Controls, generated from each component's own TypeScript interface — use those to explore
+    individual props rather than editing this page.
+  - `GradientBlinds` and `Grainient` are default exports (as are `DarkVeil` and `FaultyTerminal`);
+    `Shaders/index.ts` re-exports all four by name.
+  - None of the four declare `'use client'` — they rely on whatever imports them to establish the
+    client boundary. Storybook renders every story as a client component, so that's not visible
+    here, but a Server Component import site in the app needs its own `'use client'` wrapper.
+  - `StaticMeshGradient` (also under `src/components/Shaders`) is excluded: it's an in-progress
+    port with `@ts-nocheck`, relative imports that don't exist in this repo yet, and no export
+    from `Shaders/index.ts`.
+  - **Known gap:** `FaultyTerminal` renders blank in this Storybook environment even with
+    reactbits.dev's own wrapper markup and demo props reproduced exactly — the component source
+    is unmodified from upstream (confirmed against reactbits.dev directly), so this looks like an
+    environment-specific rendering issue rather than a bug in the component. DarkVeil, Grainient,
+    and GradientBlinds all render correctly under the same Storybook/Next setup.
+</div>

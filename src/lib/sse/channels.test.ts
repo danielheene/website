@@ -3,8 +3,10 @@ import { describe, expect, it } from 'vitest'
 import {
   bilingualTranslateChannel,
   isBilingualTranslateChannel,
+  isSeedTaskChannel,
   isSseChannel,
   SSE_CHANNELS,
+  seedTaskChannel,
 } from './channels'
 
 describe('isSseChannel', () => {
@@ -73,5 +75,36 @@ describe('isBilingualTranslateChannel', () => {
   it('rejects channels outside the bilingual-translate prefix', () => {
     expect(isBilingualTranslateChannel('service-status')).toBe(false)
     expect(isBilingualTranslateChannel('other-prefix:job-1')).toBe(false)
+  })
+})
+
+describe('seedTaskChannel', () => {
+  it('prefixes the job id', () => {
+    expect(seedTaskChannel('68abc123')).toBe('seed-task:68abc123')
+  })
+})
+
+describe('isSeedTaskChannel', () => {
+  it('accepts a channel built by seedTaskChannel', () => {
+    expect(isSeedTaskChannel(seedTaskChannel('68abc123'))).toBe(true)
+  })
+
+  it('rejects a missing channel', () => {
+    expect(isSeedTaskChannel(null)).toBe(false)
+    expect(isSeedTaskChannel('')).toBe(false)
+  })
+
+  it('rejects a channel with no job id', () => {
+    expect(isSeedTaskChannel('seed-task:')).toBe(false)
+  })
+
+  it('rejects a job id containing characters outside the allowed set', () => {
+    expect(isSeedTaskChannel('seed-task:../etc/passwd')).toBe(false)
+    expect(isSeedTaskChannel('seed-task:job 1')).toBe(false)
+  })
+
+  it('rejects channels outside the seed-task prefix', () => {
+    expect(isSeedTaskChannel('service-status')).toBe(false)
+    expect(isSeedTaskChannel('other-prefix:job-1')).toBe(false)
   })
 })

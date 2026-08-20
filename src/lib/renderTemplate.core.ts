@@ -21,13 +21,13 @@ import pupa from 'pupa'
 
 import { extractErrorMessage } from '@/lib/extractErrorMessage'
 import { fetchGlobalUserSettings, fetchSiteSettings } from '@/lib/fetchers'
-import { Locale } from '@/lib/i18n'
+import { BilingualLanguage } from '@/lib/i18n'
 import { nanoid } from '@/lib/nanoid'
 
 export type RenderTemplateArgs = {
   template: string
   data?: Record<string, string>
-  locale?: Locale
+  locale?: BilingualLanguage
 }
 
 export type RenderTemplateResult = {
@@ -145,7 +145,7 @@ const EMPTY_TEMPLATE_GLOBALS: TemplateGlobals = {
 } as TemplateGlobals
 
 const loadTemplateGlobals = async (
-  locale: Locale,
+  locale: BilingualLanguage,
   req?: PayloadRequest,
 ): Promise<TemplateGlobals> => {
   const cacheKey = `${GLOBALS_CONTEXT_KEY}:${locale}`

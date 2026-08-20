@@ -2,7 +2,7 @@ import { TextFieldServerComponent, TextFieldServerProps } from 'payload'
 
 import { z } from 'zod'
 
-import { Locale } from '@/lib/i18n'
+import { BilingualLanguage } from '@/lib/i18n'
 
 import {
   TemplateFieldAnnotation,
@@ -13,7 +13,7 @@ import {
 import FieldComponentClient from './FieldComponent.client'
 
 interface FieldComponentProps extends TextFieldServerProps {
-  renderLocale?: Locale[]
+  renderLocale?: BilingualLanguage[]
   customData?: TemplateFieldData | TemplateFieldDataFunction
   customAnnotation?: TemplateFieldAnnotation | TemplateFieldAnnotationFunction
 }

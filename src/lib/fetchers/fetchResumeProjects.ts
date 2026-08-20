@@ -2,11 +2,11 @@ import { cacheLife, cacheTag, revalidateTag } from 'next/cache'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
-import { Locale, reduceDataToLocale } from '@/lib/i18n'
+import { BilingualLanguage, reduceDataToBilingualLanguage } from '@/lib/i18n'
 import { resolveRelations } from '@/lib/resolveRelation'
 import { CollectionSlug } from '@/types/collections'
 
-export const fetchResumeProjects = async (locale: Locale = 'en') => {
+export const fetchResumeProjects = async (locale: BilingualLanguage = 'en') => {
   const payload = await getPayload({
     config,
   })
@@ -18,10 +18,10 @@ export const fetchResumeProjects = async (locale: Locale = 'en') => {
     limit: 0,
   })
 
-  return await resolveRelations(reduceDataToLocale(docs, locale))
+  return await resolveRelations(reduceDataToBilingualLanguage(docs, locale))
 }
 
-export const fetchResumeProjectsCached = async (locale: Locale = 'en') => {
+export const fetchResumeProjectsCached = async (locale: BilingualLanguage = 'en') => {
   'use cache'
   cacheLife('max')
   cacheTag(CollectionSlug.ResumeProjects)

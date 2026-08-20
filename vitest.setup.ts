@@ -6,6 +6,7 @@ import '@testing-library/jest-dom/vitest'
  *    Deterministic environment for tests. Several modules read these at call
  *    time (generateContentURL, generatePreviewPath); date tests depend on TZ.
  */
+process.env.SERVER_HOST ??= 'localhost:3000'
 process.env.SERVER_URL ??= 'http://localhost:3000'
 process.env.PREVIEW_SECRET ??= 'test-preview-secret'
 process.env.ANTHROPIC_API_KEY ??= 'sk-ant-test'

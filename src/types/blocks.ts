@@ -2,7 +2,7 @@ import type { BlockSlug as RegisteredBlockSlug, TypedBlock, TypedGlobal } from '
 
 import type { PascalCase } from 'type-fest'
 
-import type { Locale, ReducedToLocale } from '@/lib/i18n'
+import type { BilingualLanguage, ReducedToBilingualLanguage } from '@/lib/i18n'
 import { ResolvedRelations } from '@/lib/resolveRelation'
 import type { GlobalData, RegisteredGlobalSlug } from '@/types/globals'
 
@@ -32,6 +32,9 @@ export const BlockSlug = {
   Code: 'CodeBlock',
   LinkGroup: 'LinkGroupBlock',
 
+  /* blog related blocks */
+  TrendingBlogPosts: 'TrendingBlogPostsBlock',
+
   /* legal blocks */
   LegalPublisher: 'LegalPublisherBlock',
   LegalAuthorships: 'LegalAuthorshipsBlock',
@@ -52,8 +55,8 @@ export type BlockSlugValue = BlockSlug[BlockSlugKey] & string
 export type { BlockSlug as RegisteredBlockSlug } from 'payload'
 export type BlockData<
   T extends RegisteredBlockSlug = RegisteredBlockSlug & string,
-  L extends Locale = 'en',
-> = ReducedToLocale<ResolvedRelations<TypedBlock[T]>, L>
+  L extends BilingualLanguage = 'en',
+> = ReducedToBilingualLanguage<ResolvedRelations<TypedBlock[T]>, L>
 
 /**
  * generic for resume blocks that only wraps data of its respective global
@@ -62,5 +65,5 @@ export type BlockData<
 export type ResumeLayoutBlockData<S extends RegisteredGlobalSlug> = {
   id?: string
   blockType: `${PascalCase<S>}Block`
-  data: ReducedToLocale<GlobalData<S>>
+  data: ReducedToBilingualLanguage<GlobalData<S>>
 }

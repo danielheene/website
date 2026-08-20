@@ -1,10 +1,11 @@
 import { CollectionConfig, JSONField } from 'payload'
 
-import dedent from 'dedent'
 import { cn } from 'tailwind-variants'
 
 import { authenticated } from '@/access/authenticated'
 import { forbidden } from '@/access/forbidden'
+import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
+import { SectionGroupField } from '@/fields/SectionGroup'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
 import { generateContentURL } from '@/lib/generateContentURL'
@@ -141,19 +142,40 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
         position: 'sidebar',
       },
     },
-
     {
-      type: 'group',
-      label: 'Generated Documents',
+      type: 'number',
+      name: 'newerVersions',
+      label: 'Newer Versions',
       admin: {
-        hideGutter: true,
-        description: dedent`
+        ...adminDefaults,
+        position: 'sidebar',
+      },
+      hooks: {
+        afterRead: [
+          async ({ req, data, value }) => {
+            console.log('data', data)
+            console.log('value', value)
+            const { docs } = await req.payload.find({
+              collection: CollectionSlug.ResumeDocuments,
+              pagination: false,
+              limit: 0,
+              where: {
+                createdAt: {
+                  greater_than_equal: value?.createdAt,
+                },
+              },
+            })
+            return Array.isArray(docs) ? docs.length - 1 : 0
+          },
+        ],
+      },
+    },
+
+    SectionGroupField({
+      label: 'Generated Documents',
+      description: `
           The following data was generated during the resume generation process and used to create the resume.
         `,
-        components: {
-          Description: '@/components/AdminPanel#MarkdownDescription',
-        },
-      },
       fields: [
         {
           type: 'upload',
@@ -180,20 +202,13 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
           },
         },
       ],
-    },
+    }),
 
-    {
-      type: 'group',
+    SectionGroupField({
       label: 'Generated Thumbnails',
-      admin: {
-        hideGutter: true,
-        description: dedent`
+      description: `
           The following data was generated during the resume generation process and used to create the resume.
         `,
-        components: {
-          Description: '@/components/AdminPanel#MarkdownDescription',
-        },
-      },
       fields: [
         {
           type: 'row',
@@ -229,20 +244,13 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
           ],
         },
       ],
-    },
+    }),
 
-    {
-      type: 'group',
+    SectionGroupField({
       label: 'Generated Data',
-      admin: {
-        hideGutter: true,
-        description: dedent`
+      description: `
           The following data was generated during the resume generation process and used to create the resume.
         `,
-        components: {
-          Description: '@/components/AdminPanel#MarkdownDescription',
-        },
-      },
       fields: [
         {
           type: 'tabs',
@@ -278,6 +286,8 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
           ],
         },
       ],
-    },
+    }),
+
+    GeneratorFlagsField(),
   ],
 }

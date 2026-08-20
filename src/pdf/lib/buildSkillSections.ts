@@ -1,11 +1,11 @@
 'use server'
 
 import { fetchPDFGeneratorSettings, fetchResumeSkills } from '@/lib/fetchers'
-import { type Locale, translate } from '@/lib/i18n'
+import { type BilingualLanguage, translate } from '@/lib/i18n'
 import { DocumentSectionType, SkillSection } from '@/pdf/types'
 import { SkillTypeSortable } from '@/types/payload'
 
-export const buildSkillSections = async (locale: Locale): Promise<SkillSection[]> => {
+export const buildSkillSections = async (locale: BilingualLanguage): Promise<SkillSection[]> => {
   const skills = await fetchResumeSkills(locale)
   const { skillSorting } = await fetchPDFGeneratorSettings(locale)
 
@@ -20,9 +20,8 @@ export const buildSkillSections = async (locale: Locale): Promise<SkillSection[]
             skillSorting[skillType.id].findIndex((order) => order.id === a.id) -
             skillSorting[skillType.id].findIndex((order) => order.id === b.id),
         )
-        .map(({ name, caption }) => ({
-          name,
-          caption,
+        .map(({ content }) => ({
+          content,
         })),
     },
   }))

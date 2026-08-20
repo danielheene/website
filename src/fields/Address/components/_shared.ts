@@ -1,6 +1,6 @@
-export type Locale = 'en' | 'de' | undefined
+export type BilingualLanguage = 'en' | 'de' | undefined
 
-export const DEFAULT_LOCALE: Locale = 'en'
+export const DEFAULT_LOCALE: BilingualLanguage = 'en'
 
 export const eventName = 'localeChange' as const
 

@@ -4,7 +4,7 @@ import { Suspense } from 'react'
 
 import { fetchResumeJobsCached } from '@/lib/fetchers/fetchResumeJobs'
 import { fetchResumeSkillTagsCached } from '@/lib/fetchers/fetchResumeSkillTags'
-import { reduceDataToLocale } from '@/lib/i18n'
+import { reduceDataToBilingualLanguage } from '@/lib/i18n'
 import { resolveRelations } from '@/lib/resolveRelation'
 import { ResumeExperienceBlock } from '@/types/payload'
 
@@ -17,7 +17,7 @@ export const ResumeExperienceBlockRenderer = async ({
 }: ResumeExperienceBlock) => {
   const rawjobs = await fetchResumeJobsCached()
   const skillTags = await fetchResumeSkillTagsCached()
-  const jobs = reduceDataToLocale(await resolveRelations(rawjobs))
+  const jobs = reduceDataToBilingualLanguage(await resolveRelations(rawjobs))
 
   return (
     <Suspense>

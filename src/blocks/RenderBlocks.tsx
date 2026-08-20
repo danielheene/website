@@ -1,5 +1,6 @@
 import { ElementType, Suspense } from 'react'
 
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { type BlockData, BlockSlug, RegisteredBlockSlug } from '@/types/blocks'
 
 import { CodeBlockRenderer } from './CodeBlock/Renderer'
@@ -13,6 +14,7 @@ import { ResumeCustomersBlockRenderer } from './ResumeCustomersBlock/Renderer'
 import { ResumeDownloadsBlockRenderer } from './ResumeDownloadsBlock/Renderer'
 import { ResumeExperienceBlockRenderer } from './ResumeExperienceBlock/Renderer'
 import { ResumeProjectsBlockRenderer } from './ResumeProjectsBlock/Renderer'
+import { TrendingBlogPostsBlockRenderer } from './TrendingBlogPostsBlock/Renderer'
 import { TwoColumnContentBlockRenderer } from './TwoColumnContentBlock/Renderer'
 
 const blockComponentMap = {
@@ -20,6 +22,7 @@ const blockComponentMap = {
   [BlockSlug.TwoColumnContent]: TwoColumnContentBlockRenderer,
   [BlockSlug.LinkGroup]: LinkGroupBlockRenderer,
   [BlockSlug.Code]: CodeBlockRenderer,
+  [BlockSlug.TrendingBlogPosts]: TrendingBlogPostsBlockRenderer,
   [BlockSlug.LegalPublisher]: LegalPublisherBlockRenderer,
   [BlockSlug.LegalAuthorships]: LegalAuthorshipsBlockRenderer,
   [BlockSlug.ResumeAboutMe]: ResumeAboutMeBlockRenderer,
@@ -48,9 +51,17 @@ export const RenderBlocks = ({ blocks }: BlockRendererProps) => {
 
           return (
             Block && (
-              <Suspense key={index}>
-                <Block key={index} {...block} />
-              </Suspense>
+              /*
+                Blocks are CMS-authored and several fetch live external data
+                (Umami, Payload), so one failing block must not take down the
+                whole page. The boundary reports to Sentry and renders nothing,
+                letting the remaining blocks display normally.
+              */
+              <ErrorBoundary key={index} name={blockType}>
+                <Suspense>
+                  <Block {...block} />
+                </Suspense>
+              </ErrorBoundary>
             )
           )
         }

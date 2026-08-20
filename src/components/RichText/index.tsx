@@ -24,6 +24,7 @@ import { Columns } from '@/blocks/TwoColumnContentBlock/Renderer/Columns'
 import { Icon } from '@/components/Icon'
 import { ImageMedia } from '@/components/ImageMedia'
 import { VideoMedia } from '@/components/VideoMedia'
+import type { LinkFieldDataLean } from '@/fields/Link/lib/resolveLinkTarget'
 import { CUSTOM_URL_SLUG, resolveLinkTarget } from '@/fields/Link/lib/resolveLinkTarget'
 import { cn } from '@/lib/cn'
 import { generateContentURL } from '@/lib/generateContentURL'
@@ -31,7 +32,6 @@ import { generateSlug } from '@/lib/generateSlug'
 import { codeBlockKey, type HighlightedCodeMap } from '@/lib/shiki/codeBlockKey'
 import { type BlockData, BlockSlug } from '@/types/blocks'
 import { CollectionSlug } from '@/types/collections'
-import type { LinkFieldData } from '@/types/payload'
 
 type NodeTypes = DefaultNodeTypes | SerializedBlockNode<BlockData>
 
@@ -72,7 +72,7 @@ const buildJsxConverters =
       link: ({ node, nodesToJSX }) => {
         const nested = (
           node.fields as {
-            link?: LinkFieldData
+            link?: LinkFieldDataLean
           }
         )?.link
         const children = nodesToJSX({

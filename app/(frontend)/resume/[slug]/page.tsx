@@ -1,15 +1,17 @@
+import { cacheLife, cacheTag } from 'next/cache'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
+import { ChecksumValidator } from '@/components/CheckumVallidatior/ChecksumValidator'
 import { cn } from '@/lib/cn'
 import { placeholderParams } from '@/lib/placeholderParams'
-import { CollectionSlug } from '@/types/collections'
+import { CollectionData, CollectionSlug } from '@/types/collections'
 
 export default async function ResumeDocumentPage({ params }: PageProps<'/resume/[slug]'>) {
   const { slug } = await params
 
-  if (slug === 'latest') {
-  }
+  const resume = await queryResumeDocumentBySlug(slug)
+
   return (
     <div>
       <section
@@ -32,6 +34,7 @@ export default async function ResumeDocumentPage({ params }: PageProps<'/resume/
         </div>
       </section>
       <h1>{slug}</h1>
+      <ChecksumValidator />
     </div>
   )
 }
@@ -57,4 +60,29 @@ export async function generateStaticParams() {
   return docs.map(({ slug }) => ({
     slug,
   }))
+}
+
+const queryResumeDocumentBySlug = async (slug: string) => {
+  'use cache'
+  cacheLife('max')
+  cacheTag(CollectionSlug.ResumeDocuments)
+
+  const payload = await getPayload({
+    config,
+  })
+
+  const { docs = [] } = await payload.find({
+    collection: CollectionSlug.ResumeDocuments,
+    draft: false,
+    limit: 1,
+    pagination: false,
+    // overrideAccess: false,
+    where: {
+      slug: {
+        equals: slug,
+      },
+    },
+  })
+
+  return (docs[0] as CollectionData<CollectionSlug['ResumeDocuments']>) || null
 }

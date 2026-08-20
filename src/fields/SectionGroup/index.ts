@@ -28,7 +28,7 @@ type SectionGroupFieldArgs = {
 export const SectionGroupField = ({
   label,
   fields,
-  name = undefined,
+  name,
   hideGutter = true,
   description = '',
   overrides = {},
@@ -37,7 +37,14 @@ export const SectionGroupField = ({
     {
       type: 'group',
       label,
-      name,
+      // `name` must be omitted entirely (not merely `undefined`) when absent:
+      // Payload's `fieldAffectsData` checks `'name' in field`, so a present-but-undefined
+      // key still marks the group as data-affecting instead of presentational-only.
+      ...(name !== undefined
+        ? {
+            name,
+          }
+        : {}),
       fields,
       admin: {
         hideGutter,

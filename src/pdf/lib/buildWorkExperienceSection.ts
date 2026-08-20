@@ -3,14 +3,19 @@
 import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintext'
 
 import { fetchResumeJobs } from '@/lib/fetchers'
-import { generateExperienceInterval, type Locale, reduceDataToLocale, translate } from '@/lib/i18n'
+import {
+  type BilingualLanguage,
+  generateExperienceInterval,
+  reduceDataToBilingualLanguage,
+  translate,
+} from '@/lib/i18n'
 import { DocumentSectionType, WorkExperienceSection } from '@/pdf/types'
 
 export const buildWorkExperienceSection = async (
-  locale: Locale,
+  locale: BilingualLanguage,
 ): Promise<WorkExperienceSection> => {
   const data = await fetchResumeJobs()
-  const jobs = reduceDataToLocale(data)
+  const jobs = reduceDataToBilingualLanguage(data)
 
   return {
     type: DocumentSectionType.WorkExperience,

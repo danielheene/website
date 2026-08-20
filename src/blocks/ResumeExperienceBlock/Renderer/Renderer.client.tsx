@@ -6,7 +6,7 @@ import { Headline } from '@/components/Headline'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
 import { cn } from '@/lib/cn'
-import { generateExperienceInterval, ReducedToLocale } from '@/lib/i18n'
+import { generateExperienceInterval, ReducedToBilingualLanguage } from '@/lib/i18n'
 import { ResolvedRelations } from '@/lib/resolveRelation'
 import { ResumeExperienceBlock, ResumeJobData, ResumeSkillTagData } from '@/types/payload'
 
@@ -14,7 +14,7 @@ import { SkillChart } from './SkillChart'
 
 interface ResumeExperienceBlockClientRendererProps extends ResumeExperienceBlock {
   title: string
-  jobs: ReducedToLocale<ResolvedRelations<ResumeJobData>>[]
+  jobs: ReducedToBilingualLanguage<ResolvedRelations<ResumeJobData>>[]
   skillTags: Pick<ResumeSkillTagData, 'id' | 'title' | 'slug' | 'interval'>[]
 }
 

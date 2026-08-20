@@ -4,7 +4,7 @@ import createHyphenator, { type HyphenationFunctionSync, type PatternsDefinition
 import dePattern from 'hyphen/patterns/de-1996'
 import enPattern from 'hyphen/patterns/en-us'
 
-import type { Locale } from '@/lib/i18n'
+import type { BilingualLanguage } from '@/lib/i18n'
 import { BulletPoint } from '@/pdf/components/BulletPoint'
 import { Footer } from '@/pdf/components/Footer'
 import { Header } from '@/pdf/components/Header'
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
 
 interface ResumeDocumentProps {
   isPreview: boolean
-  locale: Locale
+  locale: BilingualLanguage
   document: {
     title: string
     author: string

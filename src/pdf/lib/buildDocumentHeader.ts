@@ -3,10 +3,10 @@
 import parsePhoneNumber from 'libphonenumber-js'
 
 import { fetchGlobalUserSettings } from '@/lib/fetchers'
-import type { Locale } from '@/lib/i18n'
+import type { BilingualLanguage } from '@/lib/i18n'
 import { DocumentHeader } from '@/pdf/types'
 
-export const buildDocumentHeader = async (locale: Locale): Promise<DocumentHeader> => {
+export const buildDocumentHeader = async (locale: BilingualLanguage): Promise<DocumentHeader> => {
   const { portrait, address, telephone, email, url, sameAs } = await fetchGlobalUserSettings(locale)
 
   const phone = parsePhoneNumber(telephone)

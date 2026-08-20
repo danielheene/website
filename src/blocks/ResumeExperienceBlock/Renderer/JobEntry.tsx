@@ -1,7 +1,7 @@
 import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintext'
 
 import { cn } from '@/lib/cn'
-import type { ReducedToLocale } from '@/lib/i18n'
+import type { ReducedToBilingualLanguage } from '@/lib/i18n'
 import { generateExperienceInterval } from '@/lib/i18n'
 import type { ResumeJobData } from '@/types/payload'
 
@@ -12,7 +12,7 @@ export const JobEntry = ({
   endDate,
   tasks,
   // technologies,
-}: ReducedToLocale<ResumeJobData>) => {
+}: ReducedToBilingualLanguage<ResumeJobData>) => {
   const timeString = generateExperienceInterval({
     startDate,
     endDate,

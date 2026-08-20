@@ -3,7 +3,7 @@ import type {
   CollectionSlug as RegisteredCollectionSlug,
 } from 'payload'
 
-import type { Locale, ReducedToLocale } from '@/lib/i18n'
+import type { BilingualLanguage, ReducedToBilingualLanguage } from '@/lib/i18n'
 import { ResolvedRelations } from '@/lib/resolveRelation'
 
 export const CollectionSlug = {
@@ -66,5 +66,5 @@ export type {
 } from 'payload'
 export type CollectionData<
   T extends RegisteredCollectionSlug = RegisteredCollectionSlug,
-  L extends Locale = 'en',
-> = ReducedToLocale<ResolvedRelations<RegisteredCollection[T]>, L>
+  L extends BilingualLanguage = 'en',
+> = ReducedToBilingualLanguage<ResolvedRelations<RegisteredCollection[T]>, L>

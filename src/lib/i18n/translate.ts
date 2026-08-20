@@ -2,7 +2,7 @@ import { format } from 'date-fns'
 import { get } from 'lodash-es'
 import pupa from 'pupa'
 
-import type { Locale } from '@/lib/i18n/shared'
+import type { BilingualLanguage } from '@/lib/i18n/shared'
 import { AdminGroupValue } from '@/types/admin-panel'
 import type { LanguageCode, LanguageProficiency, SkillType } from '@/types/payload'
 
@@ -177,7 +177,7 @@ type StringPaths<T> = T extends string
       }[Extract<keyof T, string>]
     : never
 
-export type TranslationKey = StringPaths<(typeof translations)[Locale]>
+export type TranslationKey = StringPaths<(typeof translations)[BilingualLanguage]>
 
 export const translate = (
   locale: 'en' | 'de',

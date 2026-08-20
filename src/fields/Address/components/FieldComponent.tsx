@@ -8,7 +8,7 @@ import type {
 } from 'payload'
 import { GroupField } from '@payloadcms/ui'
 
-import { eventName, generateFieldId, type Locale } from './_shared'
+import { type BilingualLanguage, eventName, generateFieldId } from './_shared'
 
 export const FieldComponent: GroupFieldClientComponent = (props) => {
   const {
@@ -23,7 +23,7 @@ export const FieldComponent: GroupFieldClientComponent = (props) => {
     indexPath,
     readOnly,
   } = props
-  const [currentLocale, setCurrentLocale] = useState<Locale>()
+  const [currentLocale, setCurrentLocale] = useState<BilingualLanguage>()
 
   const fieldId = generateFieldId(path)
   const rootRef = useRef<HTMLElement>(null)

@@ -20,7 +20,7 @@ type LatestResumeDocumentCore = Pick<
 
 const cacheKey = `${CollectionSlug.ResumeDocuments}:latest`
 
-export const fetchLatestResumeDocumentCore = async (): Promise<LatestResumeDocumentCore> => {
+export const fetchLatestResumeDocumentCore = async (): Promise<LatestResumeDocumentCore | null> => {
   const payload = await getPayload({
     config,
   })
@@ -49,10 +49,10 @@ export const fetchLatestResumeDocumentCore = async (): Promise<LatestResumeDocum
       },
     })
 
-    if (latest) {
-      data = JSON.stringify(await resolveRelations(latest))
-      await payload.kv.set(cacheKey, data)
-    }
+    if (!latest) return null
+
+    data = JSON.stringify(await resolveRelations(latest))
+    await payload.kv.set(cacheKey, data)
   }
 
   return JSON.parse(data)

@@ -5,6 +5,9 @@ import { getPayload } from 'payload'
 
 import { z } from 'zod'
 
+import { ContactFormConfirmationEmail } from '@/emails/ContactFormConfirmationEmail'
+import { ContactFormNotificationEmail } from '@/emails/ContactFormNotificationEmail'
+import { renderEmail } from '@/emails/render'
 import { extractErrorMessage } from '@/lib/extractErrorMessage'
 import { GlobalSlug } from '@/types/globals'
 
@@ -67,7 +70,7 @@ export const submitContactForm = async (
       config,
     })
 
-    const { email: recipientEmail } = await payload.findGlobal({
+    const { email: recipientEmail, firstName: ownerFirstName } = await payload.findGlobal({
       slug: GlobalSlug.GlobalUserSettings,
       draft: false,
     })
@@ -80,17 +83,54 @@ export const submitContactForm = async (
       }
     }
 
+    const siteName = process.env.SERVER_HOST
+    const siteUrl = process.env.SERVER_URL
+
+    const notification = await renderEmail(
+      ContactFormNotificationEmail({
+        name,
+        email,
+        message,
+        ownerFirstName: ownerFirstName ?? undefined,
+        siteName,
+        siteUrl,
+      }),
+    )
+
     await payload.sendEmail({
       to: recipientEmail,
       replyTo: `${name} <${email}>`,
       subject: `New contact form message from ${name}`,
-      text: [
-        `Name: ${name}`,
-        `Email: ${email}`,
-        '',
-        message,
-      ].join('\n'),
+      html: notification.html,
+      text: notification.text,
     })
+
+    // A copy back to the form author is a nice-to-have: the owner has
+    // already been notified above, so a failure here shouldn't surface as
+    // an error to the visitor — just log it and move on.
+    try {
+      const confirmation = await renderEmail(
+        ContactFormConfirmationEmail({
+          name,
+          message,
+          ownerFirstName: ownerFirstName ?? undefined,
+          siteName,
+          siteUrl,
+        }),
+      )
+
+      await payload.sendEmail({
+        to: `${name} <${email}>`,
+        replyTo: recipientEmail,
+        subject: `We've received your message to ${siteName}`,
+        html: confirmation.html,
+        text: confirmation.text,
+      })
+    } catch (confirmationError) {
+      payload.logger.error(
+        `Failed to send contact form confirmation copy: ${extractErrorMessage(confirmationError)}`,
+      )
+    }
 
     return {
       status: 'success',

@@ -1,9 +1,8 @@
-import React, { JSX, useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 
 import { Mesh, Program, Renderer, Triangle } from 'ogl'
-import './Grainient.css'
 
-interface GrainientProps {
+export interface GrainientProps {
   timeSpeed?: number
   colorBalance?: number
   warpStrength?: number
@@ -150,33 +149,31 @@ type GrainientCtx = {
 }
 const ctxMap = new WeakMap<HTMLDivElement, GrainientCtx>()
 
-export const Grainient = (props: GrainientProps): JSX.Element => {
-  const {
-    timeSpeed = 0.25,
-    colorBalance = 0.0,
-    warpStrength = 1.0,
-    warpFrequency = 5.0,
-    warpSpeed = 2.0,
-    warpAmplitude = 50.0,
-    blendAngle = 0.0,
-    blendSoftness = 0.05,
-    rotationAmount = 500.0,
-    noiseScale = 2.0,
-    grainAmount = 0.1,
-    grainScale = 2.0,
-    grainAnimated = false,
-    contrast = 1.5,
-    gamma = 1.0,
-    saturation = 1.0,
-    centerX = 0.0,
-    centerY = 0.0,
-    zoom = 0.9,
-    color1 = '#FF9FFC',
-    color2 = '#5227FF',
-    color3 = '#B497CF',
-    className = '',
-  } = props
-
+const Grainient: React.FC<GrainientProps> = ({
+  timeSpeed = 0.25,
+  colorBalance = 0.0,
+  warpStrength = 1.0,
+  warpFrequency = 5.0,
+  warpSpeed = 2.0,
+  warpAmplitude = 50.0,
+  blendAngle = 0.0,
+  blendSoftness = 0.05,
+  rotationAmount = 500.0,
+  noiseScale = 2.0,
+  grainAmount = 0.1,
+  grainScale = 2.0,
+  grainAnimated = false,
+  contrast = 1.5,
+  gamma = 1.0,
+  saturation = 1.0,
+  centerX = 0.0,
+  centerY = 0.0,
+  zoom = 0.9,
+  color1 = '#FF9FFC',
+  color2 = '#5227FF',
+  color3 = '#B497CF',
+  className = '',
+}) => {
   const containerRef = useRef<HTMLDivElement | null>(null)
 
   // Effect 1: build WebGL context once, pause when offscreen / tab hidden
@@ -450,13 +447,9 @@ export const Grainient = (props: GrainientProps): JSX.Element => {
   return (
     <div
       ref={containerRef}
-      className={className}
-      style={{
-        width: '100%',
-        height: '100%',
-        position: 'relative',
-        overflow: 'hidden',
-      }}
+      className={`relative h-full w-full overflow-hidden ${className}`.trim()}
     />
   )
 }
+
+export default Grainient

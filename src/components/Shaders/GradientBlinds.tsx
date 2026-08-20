@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 
 import { Mesh, Program, Renderer, Triangle } from 'ogl'
-import './GradientBlinds.css'
 
 export interface GradientBlindsProps {
   className?: string
@@ -64,7 +63,7 @@ const prepStops = (stops?: string[]) => {
   }
 }
 
-export const GradientBlinds: React.FC<GradientBlindsProps> = ({
+const GradientBlinds: React.FC<GradientBlindsProps> = ({
   className,
   dpr,
   paused = false,
@@ -573,12 +572,8 @@ void main() {
   return (
     <div
       ref={containerRef}
-      className={className}
+      className={`w-full h-full overflow-hidden relative ${className}`}
       style={{
-        width: '100%',
-        height: '100%',
-        position: 'relative',
-        overflow: 'hidden',
         ...(mixBlendMode && {
           mixBlendMode: mixBlendMode as React.CSSProperties['mixBlendMode'],
         }),

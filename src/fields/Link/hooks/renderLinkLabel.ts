@@ -1,9 +1,9 @@
 import type { CollectionSlug, FieldHook, PayloadRequest, TypeWithID } from 'payload'
 
 import { deriveLinkTitle } from '@/fields/Link/lib/deriveLinkTitle'
+import type { LinkFieldDataLean } from '@/fields/Link/lib/resolveLinkTarget'
 import { CUSTOM_URL_SLUG, resolveLinkTarget } from '@/fields/Link/lib/resolveLinkTarget'
 import { renderTemplateCore } from '@/lib/renderTemplate.core'
-import type { LinkFieldData } from '@/types/payload'
 
 const TITLE_CONTEXT_KEY = 'renderLinkLabelTitle'
 
@@ -95,7 +95,7 @@ const loadReferenceTitle = async (
  * its substitution.
  */
 const resolveTitle = async (
-  link: Partial<LinkFieldData> | undefined,
+  link: Partial<LinkFieldDataLean> | undefined,
   req: PayloadRequest | undefined,
   draft: boolean | undefined,
 ): Promise<string> => {
@@ -142,7 +142,7 @@ export const renderLinkLabel: FieldHook<TypeWithID, string> = async ({
   req,
   siblingData,
 }) => {
-  const link = siblingData as Partial<LinkFieldData> | undefined
+  const link = siblingData as Partial<LinkFieldDataLean> | undefined
   const template = typeof link?.label === 'string' ? link.label : ''
 
   if (!template) return ''

@@ -13,8 +13,6 @@ import { s3Storage } from '@payloadcms/storage-s3'
 import * as Sentry from '@sentry/nextjs'
 import sharp from 'sharp'
 
-import { authenticated } from '@/access/authenticated'
-import { forbidden } from '@/access/forbidden'
 import { BLOCKS } from '@/blocks'
 import { COLLECTIONS } from '@/collections'
 import { GLOBALS } from '@/globals'
@@ -49,6 +47,13 @@ export const config = buildConfig({
         },
       ],
       widgets: [
+        {
+          slug: 'scheduled-resume-generation-widget',
+          label: 'Scheduled Resume Generation',
+          Component: '@/widgets/ScheduledResumeGenerationWidget#ScheduledResumeGenerationWidget',
+          minWidth: 'full',
+          maxWidth: 'full',
+        },
         {
           slug: 'umami-widget',
           label: 'Umami',

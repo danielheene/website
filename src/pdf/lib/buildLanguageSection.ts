@@ -1,10 +1,10 @@
 'use server'
 
 import { fetchGlobalUserSettings } from '@/lib/fetchers'
-import { Locale, translate } from '@/lib/i18n'
+import { BilingualLanguage, translate } from '@/lib/i18n'
 import { DocumentSectionType, LanguageSection } from '@/pdf/types'
 
-export const buildLanguageSection = async (locale: Locale): Promise<LanguageSection> => {
+export const buildLanguageSection = async (locale: BilingualLanguage): Promise<LanguageSection> => {
   const { languages } = await fetchGlobalUserSettings(locale)
 
   return {

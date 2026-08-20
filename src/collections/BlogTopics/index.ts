@@ -2,6 +2,7 @@ import type { AccessArgs, CollectionConfig } from 'payload'
 
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
+import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { MetaField } from '@/fields/Meta'
 import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
@@ -179,6 +180,8 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
         },
       ],
     },
+
+    GeneratorFlagsField(),
   ],
   orderable: true,
   trash: true,
