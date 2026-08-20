@@ -1,8 +1,11 @@
 import { CMSLink } from '@/components/Link'
+import type { LinkGroupEntry } from '@/fields/Link/lib/resolveLinkTarget'
 import { cn } from '@/lib/cn'
-import type { FooterSettings } from '@/types/payload'
 
-interface FooterLegalLinksProps extends Pick<FooterSettings, 'legalPages'> {
+interface FooterLegalLinksProps {
+  legalPages?: {
+    entries?: LinkGroupEntry[] | null
+  }
   className?: string
 }
 

@@ -3,7 +3,8 @@
 import React, { Fragment, type JSX } from 'react'
 import type { DefaultNodeTypes, SerializedBlockNode } from '@payloadcms/richtext-lexical'
 
-import type { LinkFieldData, ResumeAboutMeBlock } from '@/types/payload'
+import type { LinkFieldDataLean } from '@/fields/Link/lib/resolveLinkTarget'
+import type { ResumeAboutMeBlock } from '@/types/payload'
 
 import { CMSLink } from '../Link'
 import {
@@ -177,7 +178,7 @@ export function serializeLexical({ nodes }: Props): JSX.Element {
             )
           }
           case 'link': {
-            const fields = node.fields as unknown as LinkFieldData
+            const fields = node.fields as unknown as LinkFieldDataLean
 
             return (
               <CMSLink key={index} {...fields}>

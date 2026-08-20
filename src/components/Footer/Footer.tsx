@@ -6,9 +6,9 @@ import { FooterLegalLinks } from '@/components/Footer/FooterLegalLinks'
 import { FooterNavGroups } from '@/components/Footer/FooterNavGroups'
 import { Logo } from '@/components/Logo'
 import { ServiceStatus } from '@/components/ServiceStatus'
+import type { LinkFieldDataLean } from '@/fields/Link/lib/resolveLinkTarget'
 import { cn } from '@/lib/cn'
 import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fetchers'
-import type { LinkFieldData } from '@/types/payload'
 
 import { FooterSocialLinks } from './FooterSocialLinks'
 import { FooterThemeSwitcher } from './FooterThemeSwitcher'
@@ -25,7 +25,7 @@ export const Footer = async () => {
   // how they kept the removed `type`/`icon` keys through the link rework.
   const socialLinks: {
     id: string
-    link: LinkFieldData
+    link: LinkFieldDataLean
   }[] = []
 
   if (email) {

@@ -1,12 +1,12 @@
 import { CMSLink } from '@/components/Link'
+import type { LinkFieldDataLean } from '@/fields/Link/lib/resolveLinkTarget'
 import { cn } from '@/lib/cn'
-import type { LinkFieldData } from '@/types/payload'
 
 interface FooterSocialLinksProps {
   className?: string
   socialLinks: {
     id: string
-    link: LinkFieldData
+    link: LinkFieldDataLean
   }[]
 }
 

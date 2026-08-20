@@ -3,11 +3,11 @@ import Link from 'next/link'
 
 import { Button, ButtonProps } from '@/components/Button'
 import { Icon } from '@/components/Icon'
+import type { LinkFieldDataLean } from '@/fields/Link/lib/resolveLinkTarget'
 import { CUSTOM_URL_SLUG, resolveLinkTarget } from '@/fields/Link/lib/resolveLinkTarget'
 import { generateContentURL } from '@/lib/generateContentURL'
-import type { LinkFieldData } from '@/types/payload'
 
-type CMSLinkType = LinkFieldData & {
+type CMSLinkType = LinkFieldDataLean & {
   children?: React.ReactNode
   className?: string
   newTab?: boolean

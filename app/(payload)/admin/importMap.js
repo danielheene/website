@@ -9,7 +9,7 @@ import { IndentFeatureClient as IndentFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { default as default_9b0297ef7573d0f14d0202a4ec4c25b3 } from '@/fields/Link/components/TargetField'
 import { default as default_9b6261ce8a0d1158d29e3a547520dffd } from '@/fields/Icon/Field'
-import { MarkdownDescription as MarkdownDescription_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
+import { default as default_12d303178d17fe8b227602206bf99ee0 } from '@/fields/SectionGroup/components/DescriptionComponent'
 import { default as default_6f065390cceb85c61ba22c773204fe20 } from '@/fields/Link/components/LabelField'
 import { FixedToolbarFeatureClient as FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
@@ -55,7 +55,6 @@ import { default as default_eab0cf681484e45124c7c61673362c49 } from '@/fields/Te
 import { default as default_184096423d48b3396fdb451647a008e7 } from '@/fields/Duration/components/FieldComponent'
 import { default as default_d04b05675537c5553065b881d10ad13c } from '@/globals/PDFGeneratorSettings/components/SkillSortingField'
 import { default as default_4aa97ec439b446e1ea9d86b3c25e31f2 } from '@/globals/PDFGeneratorSettings/components/GenerateButton'
-import { default as default_12d303178d17fe8b227602206bf99ee0 } from '@/fields/SectionGroup/components/DescriptionComponent'
 import { default as default_25737e4ba5d8de2c3d84ba8d21bbf4ab } from '@/globals/SettingsGlobalUser/components/LanguagesRowLabel'
 import { default as default_e59c21704d4dab5076151afaebd7876b } from '@/fields/Address/components/LabelComponent'
 import { default as default_741a914cdfef7b5df9221de4f2e22dd9 } from '@/fields/Address/components/FieldComponent'
@@ -86,7 +85,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BlocksFeatureClient": BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/fields/Link/components/TargetField#default": default_9b0297ef7573d0f14d0202a4ec4c25b3,
   "@/fields/Icon/Field#default": default_9b6261ce8a0d1158d29e3a547520dffd,
-  "@/components/AdminPanel#MarkdownDescription": MarkdownDescription_a316a6ec12a12cd0fe58ccec01a444ca,
+  "@/fields/SectionGroup/components/DescriptionComponent#default": default_12d303178d17fe8b227602206bf99ee0,
   "@/fields/Link/components/LabelField#default": default_6f065390cceb85c61ba22c773204fe20,
   "@payloadcms/richtext-lexical/client#FixedToolbarFeatureClient": FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
@@ -132,7 +131,6 @@ export const importMap = {
   "@/fields/Duration/components/FieldComponent#default": default_184096423d48b3396fdb451647a008e7,
   "@/globals/PDFGeneratorSettings/components/SkillSortingField#default": default_d04b05675537c5553065b881d10ad13c,
   "@/globals/PDFGeneratorSettings/components/GenerateButton#default": default_4aa97ec439b446e1ea9d86b3c25e31f2,
-  "@/fields/SectionGroup/components/DescriptionComponent#default": default_12d303178d17fe8b227602206bf99ee0,
   "@/globals/SettingsGlobalUser/components/LanguagesRowLabel#default": default_25737e4ba5d8de2c3d84ba8d21bbf4ab,
   "@/fields/Address/components/LabelComponent#default": default_e59c21704d4dab5076151afaebd7876b,
   "@/fields/Address/components/FieldComponent#default": default_741a914cdfef7b5df9221de4f2e22dd9,

@@ -2,9 +2,9 @@ import { deepMerge, type Field, type GroupField, type OptionObject } from 'paylo
 
 import { IconField } from '@/fields/Icon'
 import { isValidCustomURL } from '@/fields/Link/lib/isValidCustomURL'
+import type { LinkFieldDataLean } from '@/fields/Link/lib/resolveLinkTarget'
 import { TemplateField } from '@/fields/Template'
 import { CollectionSlug } from '@/types/collections'
-import type { LinkFieldData } from '@/types/payload'
 
 export const appearanceOptions: Record<string, OptionObject> = {
   default: {
@@ -68,7 +68,7 @@ export const LinkField = ({
                 {
                   siblingData,
                 }: {
-                  siblingData: LinkFieldData
+                  siblingData: LinkFieldDataLean
                 },
               ) => (value || siblingData?.url ? true : 'Select a document, or enter a custom URL.'),
             },
