@@ -166,7 +166,7 @@ describe('cleanPages', () => {
         trash: true,
       }),
     )
-    expect(result.deletedPages).toBe(1)
+    expect(result.deleted).toBe(1)
     expect(result.deletedMedia).toBe(1)
     expect(deleteFn).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -223,7 +223,7 @@ describe('cleanPages', () => {
 
     const result = await cleanPages(makePayload())
 
-    expect(result.deletedPages).toBe(1)
+    expect(result.deleted).toBe(1)
     expect(result.deletedMedia).toBe(0)
     expect(deleteFn).not.toHaveBeenCalledWith(
       expect.objectContaining({
@@ -254,7 +254,7 @@ describe('cleanPages', () => {
 
     const result = await cleanPages(makePayload())
 
-    expect(result.deletedPages).toBe(1)
+    expect(result.deleted).toBe(1)
     expect(result.deletedMedia).toBe(0)
     expect(deleteFn).toHaveBeenCalledTimes(1)
   })

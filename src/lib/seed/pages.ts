@@ -203,7 +203,7 @@ export const cleanPages = async (
   payload: Payload,
   onProgress?: (progress: SeedProgress) => void,
 ): Promise<{
-  deletedPages: number
+  deleted: number
   deletedMedia: number
 }> => {
   const { docs: pages } = await payload.find({
@@ -229,7 +229,7 @@ export const cleanPages = async (
     }
   }
 
-  let deletedPages = 0
+  let deleted = 0
   for (const [index, page] of pages.entries()) {
     onProgress?.({
       step: `Deleting ${page.slug}`,
@@ -245,7 +245,7 @@ export const cleanPages = async (
       },
       trash: true,
     })
-    deletedPages += 1
+    deleted += 1
   }
 
   let deletedMedia = 0
@@ -287,7 +287,7 @@ export const cleanPages = async (
   }
 
   return {
-    deletedPages,
+    deleted,
     deletedMedia,
   }
 }

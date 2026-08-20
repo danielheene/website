@@ -102,8 +102,9 @@ export type SeedTaskProgress =
   | {
       status: 'success'
       created?: number
-      deletedPages?: number
+      deleted?: number
       deletedMedia?: number
+      skipped?: number
     }
   | {
       status: 'error'
