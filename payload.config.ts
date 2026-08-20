@@ -128,6 +128,14 @@ export const config = buildConfig({
   editor: lexicalEditor(),
   db: mongooseAdapter({
     url: process.env.DATABASE_URL,
+    /**
+     * Selects which migration directory `payload migrate` reads from.
+     * `required/` (the default) is safe to run unattended in every
+     * environment, including production. `dev/` holds sample data that must
+     * never reach production and is only reached by explicitly setting
+     * `MIGRATION_DIR=migrations/dev` (see the `migrate:dev` npm script).
+     */
+    migrationDir: path.resolve(dirname, process.env.MIGRATION_DIR ?? 'migrations/required'),
   }),
   collections: COLLECTIONS,
   debug: process.env.NODE_ENV !== 'production',
