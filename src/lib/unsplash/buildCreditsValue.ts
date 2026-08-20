@@ -17,6 +17,25 @@ const textNode = (text: string) => ({
   text,
 })
 
+/**
+ * A link node for the `caption` editor variant.
+ *
+ * The `caption` variant configures `LinkFeature({ fields: [...LinkField().fields] })`
+ * (see `src/fields/RichText/index.ts`). Passing an *array* to `LinkFeature`'s
+ * `fields` makes lexical's `transformExtraFields` **replace** the default
+ * `linkType`/`url`/`newTab` base fields rather than merge with them, so the
+ * real, validated schema for a link node's `fields` object is `LinkField()`'s
+ * own flat field list: `reference`, `newTab`, `url`, `iconBefore`, `label`,
+ * `iconAfter`, `resolvedLabel`, `iconOnly`. There is no `linkType` field.
+ *
+ * `label` is `required: true` and is what actually renders as the link text —
+ * `CMSLink` prints `resolvedLabel || label` and *then* the node's children, so
+ * the children are left empty to avoid printing the text twice. This matches
+ * the shape `migrateLinkFields` migrates lexical link nodes into.
+ *
+ * `reference` is set explicitly to `null` so the key exists: `reference`'s
+ * validator accepts an empty value as long as a sibling `url` is set.
+ */
 const linkNode = (text: string, url: string) => ({
   type: 'link',
   version: 1,
@@ -24,13 +43,12 @@ const linkNode = (text: string, url: string) => ({
   indent: 0,
   direction: 'ltr',
   fields: {
-    linkType: 'custom',
+    reference: null,
     url,
     newTab: true,
+    label: text,
   },
-  children: [
-    textNode(text),
-  ],
+  children: [],
 })
 
 /**
