@@ -62,6 +62,17 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
       url: ({ data }) => generatePreviewPath(CollectionSlug['Pages'], data.slug),
     },
     preview: (data: Partial<Page>) => generatePreviewPath(CollectionSlug['Pages'], data.slug),
+    components: {
+      listMenuItems: [
+        {
+          path: '@/components/AdminPanel/SeedActions#SeedActions',
+          clientProps: {
+            collectionSlug: CollectionSlug.Pages,
+            collectionLabel: 'Pages',
+          },
+        },
+      ],
+    },
   },
   fields: [
     /* -------------- Main  Content -------------- */
