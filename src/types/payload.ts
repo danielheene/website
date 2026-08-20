@@ -347,6 +347,7 @@ export interface Page {
     | 'audio-thumbnail'
     | 'video-thumbnail'
     | 'document-thumbnail'
+    | 'unsplash-import'
     | 'seeded-dummy'
   )[];
   updatedAt: string;
@@ -385,6 +386,7 @@ export interface MediaImage {
     | 'audio-thumbnail'
     | 'video-thumbnail'
     | 'document-thumbnail'
+    | 'unsplash-import'
     | 'seeded-dummy'
   )[];
   prefix?: string | null;
@@ -445,6 +447,7 @@ export interface MediaVideo {
     | 'audio-thumbnail'
     | 'video-thumbnail'
     | 'document-thumbnail'
+    | 'unsplash-import'
     | 'seeded-dummy'
   )[];
   prefix?: string | null;
@@ -787,6 +790,7 @@ export interface BlogPostData {
     | 'audio-thumbnail'
     | 'video-thumbnail'
     | 'document-thumbnail'
+    | 'unsplash-import'
     | 'seeded-dummy'
   )[];
   updatedAt: string;
@@ -843,6 +847,7 @@ export interface Topic {
     | 'audio-thumbnail'
     | 'video-thumbnail'
     | 'document-thumbnail'
+    | 'unsplash-import'
     | 'seeded-dummy'
   )[];
   updatedAt: string;
@@ -918,6 +923,7 @@ export interface MediaDocument {
     | 'audio-thumbnail'
     | 'video-thumbnail'
     | 'document-thumbnail'
+    | 'unsplash-import'
     | 'seeded-dummy'
   )[];
   prefix?: string | null;
@@ -962,6 +968,7 @@ export interface MediaAudio {
     | 'audio-thumbnail'
     | 'video-thumbnail'
     | 'document-thumbnail'
+    | 'unsplash-import'
     | 'seeded-dummy'
   )[];
   prefix?: string | null;
@@ -994,6 +1001,7 @@ export interface ResumeCustomerData {
     | 'audio-thumbnail'
     | 'video-thumbnail'
     | 'document-thumbnail'
+    | 'unsplash-import'
     | 'seeded-dummy'
   )[];
   updatedAt: string;
@@ -1057,6 +1065,7 @@ export interface ResumeDocumentData {
     | 'audio-thumbnail'
     | 'video-thumbnail'
     | 'document-thumbnail'
+    | 'unsplash-import'
     | 'seeded-dummy'
   )[];
 }
@@ -1264,6 +1273,7 @@ export interface ResumeJobData {
     | 'audio-thumbnail'
     | 'video-thumbnail'
     | 'document-thumbnail'
+    | 'unsplash-import'
     | 'seeded-dummy'
   )[];
   updatedAt: string;
@@ -1287,6 +1297,7 @@ export interface ResumeSkillTagData {
     | 'audio-thumbnail'
     | 'video-thumbnail'
     | 'document-thumbnail'
+    | 'unsplash-import'
     | 'seeded-dummy'
   )[];
   updatedAt: string;
@@ -1333,6 +1344,7 @@ export interface ResumeProjectData {
     | 'audio-thumbnail'
     | 'video-thumbnail'
     | 'document-thumbnail'
+    | 'unsplash-import'
     | 'seeded-dummy'
   )[];
   updatedAt: string;
@@ -1393,6 +1405,7 @@ export interface ResumeSkillData {
     | 'audio-thumbnail'
     | 'video-thumbnail'
     | 'document-thumbnail'
+    | 'unsplash-import'
     | 'seeded-dummy'
   )[];
   updatedAt: string;

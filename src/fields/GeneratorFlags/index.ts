@@ -11,6 +11,9 @@ import { normalizeIncomingFlags } from './hooks/normalizeIncomingFlags'
  * siblings) on fixture documents, so they can be found and removed without
  * touching real content.
  *
+ * `unsplash-import` marks a `MediaImages` document created via the in-admin
+ * Unsplash search, so imported stock photos can be filtered or audited later.
+ *
  * A non-empty list *is* the "this was generated" marker — hand-uploaded assets
  * carry none — so the flags describe only what kind of artefact it is.
  *
@@ -29,6 +32,7 @@ export const GENERATOR_FLAGS = [
   'audio-thumbnail',
   'video-thumbnail',
   'document-thumbnail',
+  'unsplash-import',
   'seeded-dummy',
 ] as const
 
