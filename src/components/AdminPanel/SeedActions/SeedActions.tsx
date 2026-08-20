@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button, ConfirmationModal, Modal, toast, useModal } from '@payloadcms/ui'
 
@@ -9,6 +9,17 @@ import { enqueueSeedCollection } from '@/lib/actions/enqueueSeedCollection'
 import { extractErrorMessage } from '@/lib/extractErrorMessage'
 import type { SeedTaskProgress } from '@/lib/sse/channels'
 import { seedTaskChannel } from '@/lib/sse/channels'
+
+import './SeedActions.styles.css'
+
+/**
+ * How long to wait for a terminal SSE message before assuming the job
+ * already finished. The job is triggered via `after()` and can complete
+ * (publishing its terminal message) before the client has opened its SSE
+ * subscription — Redis pub/sub has no replay, so that message would
+ * otherwise be lost and the toast would stay stuck on "Queued…" forever.
+ */
+const TERMINAL_MESSAGE_TIMEOUT_MS = 5000
 
 type SeedActionsProps = {
   collectionSlug: string
@@ -23,6 +34,15 @@ export const SeedActions = ({ collectionSlug, collectionLabel }: SeedActionsProp
 
   const [count, setCount] = useState(DEFAULT_COUNT)
   const [jobId, setJobId] = useState<string | null>(null)
+
+  const fallbackTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const clearFallbackTimeout = useCallback(() => {
+    if (fallbackTimeoutRef.current) {
+      clearTimeout(fallbackTimeoutRef.current)
+      fallbackTimeoutRef.current = null
+    }
+  }, [])
 
   const seedModalSlug = `${collectionSlug}-seed-modal`
   const cleanModalSlug = `${collectionSlug}-clean-modal`
@@ -43,14 +63,31 @@ export const SeedActions = ({ collectionSlug, collectionLabel }: SeedActionsProp
           id: newJobId,
           description: 'Queued…',
         })
+
+        // Fallback for the race where the job finishes and publishes its
+        // terminal SSE message before the client has subscribed (Redis
+        // pub/sub has no replay). If no terminal message clears jobId
+        // within the timeout, assume the job is done anyway so the toast
+        // doesn't stay stuck and the list view reflects reality.
+        clearFallbackTimeout()
+        fallbackTimeoutRef.current = setTimeout(() => {
+          fallbackTimeoutRef.current = null
+          toast.success('Done.', {
+            id: newJobId,
+          })
+          setJobId(null)
+          router.refresh()
+        }, TERMINAL_MESSAGE_TIMEOUT_MS)
       } catch (error) {
         toast.error(extractErrorMessage(error))
       }
     },
     [
+      clearFallbackTimeout,
       collectionLabel,
       collectionSlug,
       count,
+      router,
     ],
   )
 
@@ -66,6 +103,7 @@ export const SeedActions = ({ collectionSlug, collectionLabel }: SeedActionsProp
           })
           return
         case 'success': {
+          clearFallbackTimeout()
           const summary =
             data.created !== undefined
               ? `Created ${data.created} document(s).`
@@ -78,6 +116,7 @@ export const SeedActions = ({ collectionSlug, collectionLabel }: SeedActionsProp
           return
         }
         case 'error':
+          clearFallbackTimeout()
           toast.error(data.message, {
             id: jobId,
           })
@@ -86,6 +125,7 @@ export const SeedActions = ({ collectionSlug, collectionLabel }: SeedActionsProp
       }
     },
     [
+      clearFallbackTimeout,
       jobId,
       router,
     ],
