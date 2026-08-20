@@ -7,7 +7,6 @@ import {
   heading,
   horizontalRule,
   IS_BOLD,
-  IS_ITALIC,
   link,
   list,
   paragraph,
