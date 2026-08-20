@@ -48,6 +48,9 @@ export const MediaImages: CollectionConfig<CollectionSlug['MediaImages']> = {
     },
     components: {
       Description: '@/components/AdminPanel/MediaScopeTabs#MediaScopeTabs',
+      listMenuItems: [
+        '@/components/AdminPanel/UnsplashSearch#UnsplashSearch',
+      ],
     },
   },
 

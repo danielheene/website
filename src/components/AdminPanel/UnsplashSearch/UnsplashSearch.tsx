@@ -5,6 +5,7 @@ import { Button, Modal, toast, useListDrawerContext, useModal } from '@payloadcm
 
 import { extractErrorMessage } from '@/lib/extractErrorMessage'
 import { importPhoto } from '@/lib/unsplash/importPhoto'
+import { isUnsplashConfigured } from '@/lib/unsplash/isConfigured'
 import { searchPhotos } from '@/lib/unsplash/searchPhotos'
 import type { UnsplashSearchResult } from '@/lib/unsplash/types'
 import { CollectionSlug } from '@/types/collections'
@@ -27,6 +28,7 @@ export const UnsplashSearch = () => {
   const [isSearching, setIsSearching] = useState(false)
   const [isImporting, setIsImporting] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [isConfigured, setIsConfigured] = useState<boolean | null>(null)
 
   const searchSeq = useRef(0)
 
@@ -58,6 +60,10 @@ export const UnsplashSearch = () => {
     } finally {
       if (seq === searchSeq.current) setIsSearching(false)
     }
+  }, [])
+
+  useEffect(() => {
+    void isUnsplashConfigured().then(setIsConfigured)
   }, [])
 
   useEffect(() => {
@@ -129,50 +135,60 @@ export const UnsplashSearch = () => {
         <div className="unsplash-search-modal__body">
           <h3>Search Unsplash</h3>
 
-          <input
-            aria-label="Search Unsplash"
-            className="unsplash-search-modal__input"
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search for a photo…"
-            type="text"
-            value={query}
-          />
-
-          {error && <p className="unsplash-search-modal__error">{error}</p>}
-
-          {!error && query.trim() && !isSearching && results.length === 0 && (
-            <p className="unsplash-search-modal__empty">No results for "{query.trim()}".</p>
+          {isConfigured === false && (
+            <p className="unsplash-search-modal__error">
+              Unsplash isn't configured. Set `UNSPLASH_ACCESS_KEY` to enable this.
+            </p>
           )}
 
-          <div className="unsplash-search-modal__grid">
-            {results.map((result) => (
-              <button
-                aria-label={`Import "${result.description || 'Unsplash photo'}" by ${result.photographerName}`}
-                className="unsplash-search-modal__thumb"
-                disabled={isImporting !== null}
-                key={result.id}
-                onClick={() => handleImport(result.id)}
-                type="button"
-              >
-                {/** biome-ignore lint/performance/noImgElement: thumbnail preview of Unsplash search results, not the imported asset, so next/image optimization isn't warranted */}
-                <img alt={result.description} loading="lazy" src={result.thumbUrl} />
-                <span className="unsplash-search-modal__credit">{result.photographerName}</span>
-                {isImporting === result.id && (
-                  <span className="unsplash-search-modal__importing">Importing…</span>
-                )}
-              </button>
-            ))}
-          </div>
+          {isConfigured !== false && (
+            <>
+              <input
+                aria-label="Search Unsplash"
+                className="unsplash-search-modal__input"
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search for a photo…"
+                type="text"
+                value={query}
+              />
 
-          {results.length > 0 && page < totalPages && (
-            <Button
-              buttonStyle="secondary"
-              disabled={isSearching}
-              onClick={handleLoadMore}
-              type="button"
-            >
-              {isSearching ? 'Loading…' : 'Load more'}
-            </Button>
+              {error && <p className="unsplash-search-modal__error">{error}</p>}
+
+              {!error && query.trim() && !isSearching && results.length === 0 && (
+                <p className="unsplash-search-modal__empty">No results for "{query.trim()}".</p>
+              )}
+
+              <div className="unsplash-search-modal__grid">
+                {results.map((result) => (
+                  <button
+                    aria-label={`Import "${result.description || 'Unsplash photo'}" by ${result.photographerName}`}
+                    className="unsplash-search-modal__thumb"
+                    disabled={isImporting !== null}
+                    key={result.id}
+                    onClick={() => handleImport(result.id)}
+                    type="button"
+                  >
+                    {/** biome-ignore lint/performance/noImgElement: thumbnail preview of Unsplash search results, not the imported asset, so next/image optimization isn't warranted */}
+                    <img alt={result.description} loading="lazy" src={result.thumbUrl} />
+                    <span className="unsplash-search-modal__credit">{result.photographerName}</span>
+                    {isImporting === result.id && (
+                      <span className="unsplash-search-modal__importing">Importing…</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              {results.length > 0 && page < totalPages && (
+                <Button
+                  buttonStyle="secondary"
+                  disabled={isSearching}
+                  onClick={handleLoadMore}
+                  type="button"
+                >
+                  {isSearching ? 'Loading…' : 'Load more'}
+                </Button>
+              )}
+            </>
           )}
         </div>
       </Modal>
