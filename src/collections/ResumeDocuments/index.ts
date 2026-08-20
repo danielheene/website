@@ -4,6 +4,7 @@ import { cn } from 'tailwind-variants'
 
 import { authenticated } from '@/access/authenticated'
 import { forbidden } from '@/access/forbidden'
+import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { SectionGroupField } from '@/fields/SectionGroup'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
@@ -286,5 +287,7 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
         },
       ],
     }),
+
+    GeneratorFlagsField(),
   ],
 }

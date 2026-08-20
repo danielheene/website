@@ -3,6 +3,7 @@ import { CollectionConfig } from 'payload'
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
+import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { MediaField } from '@/fields/Media'
 import { MetaField } from '@/fields/Meta'
 import { RichTextField } from '@/fields/RichText'
@@ -133,6 +134,8 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
         },
       ],
     },
+
+    GeneratorFlagsField(),
   ],
   trash: true,
   versions: {

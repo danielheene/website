@@ -1,6 +1,7 @@
 import { CollectionConfig } from 'payload'
 
 import { authenticated } from '@/access/authenticated'
+import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { SlugField } from '@/fields/Slug'
 import { SVGUpload } from '@/fields/SVGUpload'
 import { TitleField } from '@/fields/Title'
@@ -111,5 +112,7 @@ export const ResumeCustomers: CollectionConfig<CollectionSlug['ResumeCustomers']
         },
       ],
     },
+
+    GeneratorFlagsField(),
   ],
 }
