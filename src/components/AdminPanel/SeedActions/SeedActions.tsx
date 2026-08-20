@@ -126,7 +126,10 @@ export const SeedActions = ({ collectionSlug, collectionLabel }: SeedActionsProp
             min={1}
             max={100}
             value={count}
-            onChange={(event) => setCount(Number.parseInt(event.target.value, 10) || 1)}
+            onChange={(event) => {
+              const parsed = Number.parseInt(event.target.value, 10)
+              setCount(Number.isNaN(parsed) ? 1 : Math.min(100, Math.max(1, parsed)))
+            }}
           />
           <div className="seed-actions-modal__footer">
             <Button type="button" buttonStyle="secondary" onClick={() => closeModal(seedModalSlug)}>
