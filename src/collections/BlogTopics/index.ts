@@ -48,6 +48,17 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
       'slug',
       'highlighted',
     ],
+    components: {
+      listMenuItems: [
+        {
+          path: '@/components/AdminPanel/SeedActions#SeedActions',
+          clientProps: {
+            collectionSlug: CollectionSlug.BlogTopics,
+            collectionLabel: 'Topics',
+          },
+        },
+      ],
+    },
   },
   access: {
     create: authenticated,
