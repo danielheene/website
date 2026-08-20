@@ -127,6 +127,7 @@ export const seedPages = async (
       },
       limit: 1,
       pagination: false,
+      trash: true,
     })
 
     if (existing.length > 0) {
@@ -216,6 +217,7 @@ export const cleanPages = async (
     },
     limit: 0,
     pagination: false,
+    trash: true,
   })
 
   const mediaIds = new Set<string>()
@@ -241,6 +243,7 @@ export const cleanPages = async (
       context: {
         skipRevalidate: true,
       },
+      trash: true,
     })
     deletedPages += 1
   }

@@ -76,6 +76,17 @@ describe('seedPages', () => {
         collection: 'pages',
       }),
     )
+    expect(find).toHaveBeenCalledWith(
+      expect.objectContaining({
+        collection: 'pages',
+        where: {
+          slug: {
+            equals: 'seeded-dummy-page-1',
+          },
+        },
+        trash: true,
+      }),
+    )
     expect(onProgress).toHaveBeenCalledWith(
       expect.objectContaining({
         current: 1,
@@ -142,18 +153,38 @@ describe('cleanPages', () => {
 
     const result = await cleanPages(makePayload())
 
+    expect(find).toHaveBeenCalledWith(
+      expect.objectContaining({
+        collection: 'pages',
+        where: {
+          generatorFlags: {
+            in: [
+              'seeded-dummy',
+            ],
+          },
+        },
+        trash: true,
+      }),
+    )
     expect(result.deletedPages).toBe(1)
     expect(result.deletedMedia).toBe(1)
     expect(deleteFn).toHaveBeenCalledWith(
       expect.objectContaining({
         collection: 'pages',
         id: 'page-1',
+        trash: true,
       }),
     )
     expect(deleteFn).toHaveBeenCalledWith(
       expect.objectContaining({
         collection: 'images',
         id: 'image-1',
+      }),
+    )
+    expect(deleteFn).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        collection: 'images',
+        trash: true,
       }),
     )
   })
