@@ -126,6 +126,7 @@ Everything is **required** unless marked optional.
 | `USESEND_URL`, `USESEND_API_KEY`, `USESEND_DEFAULT_FROM_ADDRESS`, `USESEND_DEFAULT_FROM_NAME` | UseSend email provider. |
 | `OPENAI_API_KEY`, `ANTHROPIC_API_KEY` | Generated alt text and meta descriptions. |
 | `MAPBOX_API_KEY` | Address and coordinate lookups. |
+| `UNSPLASH_ACCESS_KEY` | Stock photo search & import in the media library admin. Optional — the feature is hidden if unset. |
 
 ### Sentry (all optional)
 

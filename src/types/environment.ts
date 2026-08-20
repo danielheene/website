@@ -69,6 +69,7 @@ export const envSchema = z.object({
   OPENAI_API_KEY: z.string(),
   ANTHROPIC_API_KEY: z.string(),
   MAPBOX_API_KEY: z.string(),
+  UNSPLASH_ACCESS_KEY: emptyAsUndefined(z.string()),
 
   /**
    * Sentry is entirely optional: with no DSN the SDK is never initialized
