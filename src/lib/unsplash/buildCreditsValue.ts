@@ -20,21 +20,46 @@ const textNode = (text: string) => ({
 /**
  * A link node for the `caption` editor variant.
  *
- * The `caption` variant configures `LinkFeature({ fields: [...LinkField().fields] })`
- * (see `src/fields/RichText/index.ts`). Passing an *array* to `LinkFeature`'s
- * `fields` makes lexical's `transformExtraFields` **replace** the default
- * `linkType`/`url`/`newTab` base fields rather than merge with them, so the
- * real, validated schema for a link node's `fields` object is `LinkField()`'s
- * own flat field list: `reference`, `newTab`, `url`, `iconBefore`, `label`,
- * `iconAfter`, `resolvedLabel`, `iconOnly`. There is no `linkType` field.
+ * ## `fields` is flat (validation layer)
  *
- * `label` is `required: true` and is what actually renders as the link text —
- * `CMSLink` prints `resolvedLabel || label` and *then* the node's children, so
- * the children are left empty to avoid printing the text twice. This matches
- * the shape `migrateLinkFields` migrates lexical link nodes into.
+ * The `caption` variant configures `LinkFeature({ fields: [...LinkField().fields] })`
+ * (see `src/fields/RichText/index.ts:113-118`). Passing an *array* to
+ * `LinkFeature`'s `fields` makes lexical's `transformExtraFields`
+ * (`@payloadcms/richtext-lexical/dist/features/link/server/transformExtraFields.js`)
+ * **replace** the default `linkType`/`url`/`newTab` base fields rather than
+ * merge with them, so the real, validated schema for a link node's `fields`
+ * object is `LinkField()`'s own flat field list: `reference`, `newTab`, `url`,
+ * `iconBefore`, `label`, `iconAfter`, `resolvedLabel`, `iconOnly`. There is no
+ * `linkType` field, and crucially no `link` sub-key — the `...` spread takes
+ * the group's *inner* fields, not the `link` group itself.
+ *
+ * This is also what a human-authored link produces: the floating link editor's
+ * `handleDrawerSubmit`
+ * (`.../features/link/client/plugins/floatingLinkEditor/LinkEditor/index.js:301-331`)
+ * passes the drawer form's reduced values straight through as
+ * `$createLinkNode({ fields })` / `TOGGLE_LINK_COMMAND { fields }`, and those
+ * values are keyed by this same flat schema. `migrateLinkFields.test.ts:77-109`
+ * encodes the same flat-`fields` shape for lexical link nodes.
  *
  * `reference` is set explicitly to `null` so the key exists: `reference`'s
  * validator accepts an empty value as long as a sibling `url` is set.
+ * `label` is `required: true`; omitting it silently resolves to the `{title}`
+ * default (see `creditsLinkValidation.test.ts`).
+ *
+ * ## `children` carries the visible text (render layer)
+ *
+ * Every Lexical→JSX link converter — Payload's own
+ * (`.../converters/lexicalToJSX/converter/converters/link.js`) and this repo's
+ * override in `src/components/RichText/index.tsx:72-115` — renders the anchor's
+ * text from `nodesToJSX({ nodes: node.children })`, never from `fields.label`.
+ * An earlier version of this file set `children: []` on the theory that
+ * `CMSLink` prints `resolvedLabel || label`; `CMSLink` is not on this render
+ * path (`RichText` renders a bare `<a>{children}</a>`), so empty children
+ * produced an empty anchor. Verified by rendering this function's output
+ * through `convertLexicalNodesToJSX` + `defaultJSXConverters`: with
+ * `children: []` the output was `<a href="…"></a>`; with a text child it is
+ * `<a href="…">Jane Doe</a>`. `label` is kept as well because it is a required
+ * field of the validated schema and is what the admin link editor displays.
  */
 const linkNode = (text: string, url: string) => ({
   type: 'link',
@@ -48,7 +73,9 @@ const linkNode = (text: string, url: string) => ({
     newTab: true,
     label: text,
   },
-  children: [],
+  children: [
+    textNode(text),
+  ],
 })
 
 /**

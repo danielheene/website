@@ -36,12 +36,16 @@ describe('buildCreditsValue', () => {
 
     const children = paragraphChildren(value)
 
-    // The visible text is the plain text nodes plus each link's `label` —
-    // link nodes carry no text children, because `CMSLink` renders
-    // `resolvedLabel || label` and then the children, which would otherwise
-    // print the link text twice.
+    // The visible text is the plain text nodes plus each link's *children* —
+    // every Lexical -> JSX link converter renders the anchor body from
+    // `node.children`, not from `fields.label`. See the render-layer test in
+    // `creditsRendering.test.tsx`.
     const flatText = children
-      .map((node) => (node.type === 'link' ? (node.fields?.label as string) : (node.text ?? '')))
+      .map((node) =>
+        node.type === 'link'
+          ? (node.children ?? []).map((child) => child.text).join('')
+          : (node.text ?? ''),
+      )
       .join('')
     expect(flatText).toBe('Photo by Jane Doe on Unsplash')
 
@@ -71,7 +75,37 @@ describe('buildCreditsValue', () => {
 
     for (const node of paragraphChildren(value).filter((child) => child.type === 'link')) {
       expect(node.fields).not.toHaveProperty('linkType')
-      expect(node.children).toEqual([])
+    }
+  })
+
+  it('carries the link text as a real text child, not only as `fields.label`', () => {
+    // Regression guard for the render layer: `children: []` still validates and
+    // still passes every `fields`-only assertion above, but renders as an empty
+    // `<a href="…"></a>`.
+    const value = buildCreditsValue({
+      photographerName: 'Jane Doe',
+      photographerProfileUrl: 'https://unsplash.com/@janedoe',
+    })
+
+    const links = paragraphChildren(value).filter((child) => child.type === 'link')
+
+    expect(links.map((link) => (link.children ?? []).map((child) => child.text).join(''))).toEqual([
+      'Jane Doe',
+      'Unsplash',
+    ])
+  })
+
+  it('keeps the link fields flat — no `link` sub-key', () => {
+    // `LinkFeature({ fields: [...LinkField().fields] })` spreads the *inner*
+    // fields of the `link` group, so a link node's `fields` object is the flat
+    // field list. Nesting under `link` would fail validation.
+    const value = buildCreditsValue({
+      photographerName: 'Jane Doe',
+      photographerProfileUrl: 'https://unsplash.com/@janedoe',
+    })
+
+    for (const node of paragraphChildren(value).filter((child) => child.type === 'link')) {
+      expect(node.fields).not.toHaveProperty('link')
     }
   })
 })
