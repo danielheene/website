@@ -78,23 +78,20 @@ describe('heading', () => {
 })
 
 describe('link', () => {
-  it("builds this project's custom LinkField shape with reference set to null", () => {
+  it("builds this project's LinkField shape with reference set to null", () => {
     const node = link('Docs', 'https://example.com') as {
       fields: {
-        link: {
-          type: string
-          url: string
-          label: string
-          reference: null
-        }
+        url: string
+        label: string
+        reference: null
+        newTab: boolean
       }
     }
-    expect(node.fields.link).toEqual({
-      type: 'custom',
-      newTab: true,
-      label: 'Docs',
-      url: 'https://example.com',
+    expect(node.fields).toEqual({
       reference: null,
+      newTab: true,
+      url: 'https://example.com',
+      label: 'Docs',
     })
   })
 })

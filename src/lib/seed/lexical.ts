@@ -76,11 +76,21 @@ export const quote = (value: string) => ({
 })
 
 /**
- * Link node for the project's custom LinkField: options live under a nested
- * `link` group keyed by `type` (not Payload's default `linkType`), and both
- * `label` and `reference` are declared required — the admin `condition` hides
- * `reference` for custom URLs but does not exempt it from validation, so it
- * has to be sent as null explicitly.
+ * Link node for the project's custom LinkField. `RichTextField`'s
+ * `LinkFeature` is configured with `fields: [...LinkField().fields]`
+ * (src/fields/RichText/index.ts), which spreads `LinkField`'s field array
+ * directly as the link node's schema — so `fields` here is flat, not nested
+ * under a `link` group, and there is no `type` discriminator (that field was
+ * removed from `LinkField` in an earlier refactor). Only `reference`, `url`,
+ * `label` and `newTab` are set; `iconBefore`/`iconAfter`/`iconOnly` are left
+ * unset since seed content doesn't use them.
+ *
+ * `reference`'s `validate` (src/fields/Link/index.ts) accepts the field when
+ * either `value` or `siblingData.url` is set: `value || siblingData?.url ?
+ * true : 'Select a document, or enter a custom URL.'`. The admin UI's
+ * `condition` hides the reference picker once a custom URL is entered, but
+ * validation still runs against whatever `fields.reference` holds, so it has
+ * to be sent as `null` explicitly rather than omitted.
  */
 export const link = (value: string, url: string) => ({
   type: 'link',
@@ -89,13 +99,10 @@ export const link = (value: string, url: string) => ({
   format: '',
   indent: 0,
   fields: {
-    link: {
-      type: 'custom',
-      newTab: true,
-      label: value,
-      url,
-      reference: null,
-    },
+    reference: null,
+    newTab: true,
+    url,
+    label: value,
   },
   children: [
     text(value),
