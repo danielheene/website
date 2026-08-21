@@ -31,11 +31,11 @@ import { RelationshipFeatureClient as RelationshipFeatureClient_e70f5e05f09f93e0
 import { default as default_7ec004ac4b8008ecdc0f3947d3557629 } from '@/fields/Meta/MetaSerpField/FieldComponent'
 import { default as default_72b1e1394ea6e44d1092fa18980ba9fd } from '@/fields/Meta/MetaTitleField/FieldComponent'
 import { default as default_a57516f3ad5847138e2e9cad77905a21 } from '@/fields/Meta/MetaDescriptionField/FieldComponent'
+import { SeedActions as SeedActions_51b46a0db5b98e49ecd919f9ce43dfec } from '@/components/AdminPanel/SeedActions'
 import { ExportListMenuItem as ExportListMenuItem_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
 import { ImportListMenuItem as ImportListMenuItem_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
 import { default as default_739727f92d93200cec032c1e61a6cb15 } from '@/fields/Toggle/components/FieldComponent'
 import { default as default_22b4891c4f5fa760ee9f626882377967 } from '@/fields/Protected/components/FieldComponent'
-import { SeedActions as SeedActions_51b46a0db5b98e49ecd919f9ce43dfec } from '@/components/AdminPanel/SeedActions'
 import { AltField as AltField_24f51e17ebe211ea3e1b6c287f79c7cc } from '@/collections/MediaImages/components'
 import { MediaScopeTabs as MediaScopeTabs_4629bc42a060e6d23d7d57d776e5da7b } from '@/components/AdminPanel/MediaScopeTabs'
 import { default as default_390597f1ad60ab95e5b4fbebc846ccb5 } from '@/fields/SVGUpload/components/FieldComponent'
@@ -108,11 +108,11 @@ export const importMap = {
   "@/fields/Meta/MetaSerpField/FieldComponent#default": default_7ec004ac4b8008ecdc0f3947d3557629,
   "@/fields/Meta/MetaTitleField/FieldComponent#default": default_72b1e1394ea6e44d1092fa18980ba9fd,
   "@/fields/Meta/MetaDescriptionField/FieldComponent#default": default_a57516f3ad5847138e2e9cad77905a21,
+  "@/components/AdminPanel/SeedActions#SeedActions": SeedActions_51b46a0db5b98e49ecd919f9ce43dfec,
   "@payloadcms/plugin-import-export/rsc#ExportListMenuItem": ExportListMenuItem_cdf7e044479f899a31f804427d568b36,
   "@payloadcms/plugin-import-export/rsc#ImportListMenuItem": ImportListMenuItem_cdf7e044479f899a31f804427d568b36,
   "@/fields/Toggle/components/FieldComponent#default": default_739727f92d93200cec032c1e61a6cb15,
   "@/fields/Protected/components/FieldComponent#default": default_22b4891c4f5fa760ee9f626882377967,
-  "@/components/AdminPanel/SeedActions#SeedActions": SeedActions_51b46a0db5b98e49ecd919f9ce43dfec,
   "@/collections/MediaImages/components#AltField": AltField_24f51e17ebe211ea3e1b6c287f79c7cc,
   "@/components/AdminPanel/MediaScopeTabs#MediaScopeTabs": MediaScopeTabs_4629bc42a060e6d23d7d57d776e5da7b,
   "@/fields/SVGUpload/components/FieldComponent#default": default_390597f1ad60ab95e5b4fbebc846ccb5,

@@ -112,6 +112,57 @@ describe('seedPages', () => {
 
     expect(create).toHaveBeenCalledTimes(2)
   })
+
+  it('gives each page 2-4 content blocks, at least one OneColumnContentBlock', async () => {
+    find.mockResolvedValue({
+      docs: [],
+    })
+    create.mockImplementation(async ({ collection, data }) => {
+      if (collection === 'pages') {
+        expect(data.content.length).toBeGreaterThanOrEqual(2)
+        expect(data.content.length).toBeLessThanOrEqual(4)
+        expect(
+          data.content.some(
+            (block: { blockType: string }) => block.blockType === 'OneColumnContentBlock',
+          ),
+        ).toBe(true)
+        for (const block of data.content) {
+          expect([
+            'OneColumnContentBlock',
+            'TwoColumnContentBlock',
+            'CodeBlock',
+            'LinkGroupBlock',
+          ]).toContain(block.blockType)
+        }
+      }
+      return {
+        id: collection === 'images' ? 'image-1' : 'page-1',
+      }
+    })
+
+    await seedPages(makePayload(), 1)
+  })
+
+  it('gives each created page a non-generic title from the title pool', async () => {
+    find.mockResolvedValue({
+      docs: [],
+    })
+    const titles: string[] = []
+    create.mockImplementation(async ({ collection, data }) => {
+      if (collection === 'pages') {
+        titles.push(data.title)
+      }
+      return {
+        id: collection === 'images' ? 'image-1' : 'page-1',
+      }
+    })
+
+    await seedPages(makePayload(), 3)
+
+    for (const title of titles) {
+      expect(title).not.toMatch(/^Seeded Dummy Page/)
+    }
+  })
 })
 
 describe('cleanPages', () => {
@@ -166,7 +217,7 @@ describe('cleanPages', () => {
         trash: true,
       }),
     )
-    expect(result.deletedPages).toBe(1)
+    expect(result.deleted).toBe(1)
     expect(result.deletedMedia).toBe(1)
     expect(deleteFn).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -223,7 +274,7 @@ describe('cleanPages', () => {
 
     const result = await cleanPages(makePayload())
 
-    expect(result.deletedPages).toBe(1)
+    expect(result.deleted).toBe(1)
     expect(result.deletedMedia).toBe(0)
     expect(deleteFn).not.toHaveBeenCalledWith(
       expect.objectContaining({
@@ -254,7 +305,7 @@ describe('cleanPages', () => {
 
     const result = await cleanPages(makePayload())
 
-    expect(result.deletedPages).toBe(1)
+    expect(result.deleted).toBe(1)
     expect(result.deletedMedia).toBe(0)
     expect(deleteFn).toHaveBeenCalledTimes(1)
   })

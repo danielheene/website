@@ -34,8 +34,8 @@ const onProgress = ({ step, current, total }: { step: string; current: number; t
 }
 
 if (clean) {
-  const { deletedPages, deletedMedia } = await cleanPages(payload, onProgress)
-  console.info(`\nRemoved ${deletedPages} pages and ${deletedMedia} media documents.`)
+  const { deleted, deletedMedia } = await cleanPages(payload, onProgress)
+  console.info(`\nRemoved ${deleted} pages and ${deletedMedia} media documents.`)
 } else {
   const { created } = await seedPages(payload, count, onProgress)
   console.info(`\nCreated ${created} pages.`)

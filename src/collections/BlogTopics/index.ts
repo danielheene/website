@@ -48,6 +48,17 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
       'slug',
       'highlighted',
     ],
+    components: {
+      listMenuItems: [
+        {
+          path: '@/components/AdminPanel/SeedActions#SeedActions',
+          clientProps: {
+            collectionSlug: CollectionSlug.BlogTopics,
+            collectionLabel: 'Topics',
+          },
+        },
+      ],
+    },
   },
   access: {
     create: authenticated,
@@ -62,7 +73,7 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
         const { totalDocs } = await payload.find({
           collection: CollectionSlug.BlogPosts,
           where: {
-            tags: {
+            topics: {
               contains: id,
             },
           },
