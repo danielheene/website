@@ -1,5 +1,6 @@
 import { default as default_60b9f65365606d3c11eae014a9a986c5 } from '@/fields/Title/CellWithThumbnail'
 import { default as default_f4e2381ac6c67e8deed93345830aa6f3 } from '@/fields/Slug/components/FieldComponent'
+import { default as default_66655c4d62aab79adfa093c97fdff25e } from '@/fields/HeroBackground/Components/FieldComponent'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -37,6 +38,7 @@ import { ImportListMenuItem as ImportListMenuItem_cdf7e044479f899a31f804427d568b
 import { default as default_739727f92d93200cec032c1e61a6cb15 } from '@/fields/Toggle/components/FieldComponent'
 import { default as default_22b4891c4f5fa760ee9f626882377967 } from '@/fields/Protected/components/FieldComponent'
 import { AltField as AltField_24f51e17ebe211ea3e1b6c287f79c7cc } from '@/collections/MediaImages/components'
+import { UnsplashSearch as UnsplashSearch_5e5cb6c43e4b5799bbd5217d983bc5d0 } from '@/components/AdminPanel/UnsplashSearch'
 import { MediaScopeTabs as MediaScopeTabs_4629bc42a060e6d23d7d57d776e5da7b } from '@/components/AdminPanel/MediaScopeTabs'
 import { default as default_390597f1ad60ab95e5b4fbebc846ccb5 } from '@/fields/SVGUpload/components/FieldComponent'
 import { default as default_ee50e315ea91373bea7c5cab35816793 } from '@/fields/BilingualRichText/components/TranslateControls'
@@ -77,6 +79,7 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 export const importMap = {
   "@/fields/Title/CellWithThumbnail#default": default_60b9f65365606d3c11eae014a9a986c5,
   "@/fields/Slug/components/FieldComponent#default": default_f4e2381ac6c67e8deed93345830aa6f3,
+  "@/fields/HeroBackground/Components/FieldComponent#default": default_66655c4d62aab79adfa093c97fdff25e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -114,6 +117,7 @@ export const importMap = {
   "@/fields/Toggle/components/FieldComponent#default": default_739727f92d93200cec032c1e61a6cb15,
   "@/fields/Protected/components/FieldComponent#default": default_22b4891c4f5fa760ee9f626882377967,
   "@/collections/MediaImages/components#AltField": AltField_24f51e17ebe211ea3e1b6c287f79c7cc,
+  "@/components/AdminPanel/UnsplashSearch#UnsplashSearch": UnsplashSearch_5e5cb6c43e4b5799bbd5217d983bc5d0,
   "@/components/AdminPanel/MediaScopeTabs#MediaScopeTabs": MediaScopeTabs_4629bc42a060e6d23d7d57d776e5da7b,
   "@/fields/SVGUpload/components/FieldComponent#default": default_390597f1ad60ab95e5b4fbebc846ccb5,
   "@/fields/BilingualRichText/components/TranslateControls#default": default_ee50e315ea91373bea7c5cab35816793,
