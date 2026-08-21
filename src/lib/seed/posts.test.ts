@@ -15,6 +15,7 @@ const makePayload = (): Payload =>
     delete: deleteFn,
     logger: {
       info: vi.fn(),
+      warn: vi.fn(),
       error: vi.fn(),
     },
   }) as unknown as Payload
@@ -188,6 +189,83 @@ describe('seedPosts', () => {
       1,
       2,
     ])
+  })
+
+  it('rotates through the resolved topic pool so posts do not all get the same topic', async () => {
+    const poolIds = [
+      'topic-a',
+      'topic-b',
+      'topic-c',
+    ]
+
+    find.mockImplementation(async ({ collection, where }) => {
+      if (collection === 'topics' && where?.generatorFlags) {
+        return {
+          docs: poolIds.map((id) => ({
+            id,
+          })),
+        }
+      }
+      return {
+        docs: [],
+      }
+    })
+
+    const perPostTopicIds: string[][] = []
+
+    create.mockImplementation(async ({ collection, data }) => {
+      if (collection === 'images') {
+        return {
+          id: 'image-1',
+        }
+      }
+      perPostTopicIds.push(data.topics.map((entry: { value: string }) => entry.value))
+      return {
+        id: 'post-1',
+      }
+    })
+
+    await seedPosts(makePayload(), 4)
+
+    // Every post should have gotten at least one topic, and the leading
+    // topic must vary across posts rather than always being the pool's first.
+    const leadTopics = perPostTopicIds.map((ids) => ids[0])
+    expect(new Set(leadTopics).size).toBeGreaterThan(1)
+    for (const ids of perPostTopicIds) {
+      for (const id of ids) {
+        expect(poolIds).toContain(id)
+      }
+    }
+  })
+
+  it('resolves the topic pool once per run, not once per post', async () => {
+    find.mockImplementation(async ({ collection, where }) => {
+      if (collection === 'topics' && where?.generatorFlags) {
+        return {
+          docs: [
+            {
+              id: 'existing-topic-1',
+            },
+            {
+              id: 'existing-topic-2',
+            },
+          ],
+        }
+      }
+      return {
+        docs: [],
+      }
+    })
+    create.mockImplementation(async ({ collection }) => ({
+      id: collection === 'images' ? 'image-1' : 'post-1',
+    }))
+
+    await seedPosts(makePayload(), 5)
+
+    const topicPoolLookups = find.mock.calls.filter(
+      ([args]) => args.collection === 'topics' && args.where?.generatorFlags,
+    )
+    expect(topicPoolLookups).toHaveLength(1)
   })
 
   it('relates each post to 1-2 topic ids', async () => {

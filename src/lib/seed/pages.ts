@@ -12,6 +12,7 @@ import {
   pickSome,
   quote,
   root,
+  text,
 } from '@/lib/seed/lexical'
 import { CollectionSlug } from '@/types/collections'
 import type { Page } from '@/types/payload'
@@ -123,25 +124,9 @@ const oneColumnBlock = (random: Random) => {
     const linkTarget = pick(random, LINKS)
     nodes.push(
       paragraph([
-        {
-          type: 'text',
-          version: 1,
-          detail: 0,
-          format: 0,
-          mode: 'normal',
-          style: '',
-          text: 'For more detail, see ',
-        },
+        text('For more detail, see '),
         link(linkTarget.label, linkTarget.url),
-        {
-          type: 'text',
-          version: 1,
-          detail: 0,
-          format: 0,
-          mode: 'normal',
-          style: '',
-          text: '.',
-        },
+        text('.'),
       ]),
     )
   }
@@ -196,7 +181,6 @@ const linkGroupBlock = (random: Random) => ({
     alignment: 'list',
     entries: pickSome(random, LINKS, 2 + Math.floor(random() * 2)).map((entry) => ({
       link: {
-        type: 'custom',
         newTab: true,
         label: entry.label,
         url: entry.url,

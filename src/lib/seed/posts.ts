@@ -166,14 +166,27 @@ const LINKS = [
 /**
  * Builds a full article exercising the features of the 'post' editor
  * variant: headings, inline formatting, links, lists, quotes, code blocks,
- * horizontal rules, and (when available) an embedded image.
+ * horizontal rules, and (when available) an embedded image or video.
+ *
+ * `videoIds` is kept for parity with the ported script: nothing in this
+ * module seeds `videos`, so it always defaults to `[]` and the branch below
+ * never fires in practice. It is deliberately left in place rather than
+ * deleted (see the design spec).
  *
  * Ported from scripts/seed-blog.ts's lexicalArticle, using the shared
  * src/lib/seed/lexical builders instead of private copies. Structure and
  * prose are randomized per title so the seeded corpus has varied length
  * and shape.
  */
-const lexicalArticle = ({ title, imageIds = [] }: { title: string; imageIds?: string[] }) => {
+const lexicalArticle = ({
+  title,
+  imageIds = [],
+  videoIds = [],
+}: {
+  title: string
+  imageIds?: string[]
+  videoIds?: string[]
+}) => {
   const random = createRandom(title)
   const nodes: Record<string, unknown>[] = []
 
@@ -259,6 +272,12 @@ const lexicalArticle = ({ title, imageIds = [] }: { title: string; imageIds?: st
 
     if (imageIds.length > 0 && sectionIndex === 1 && chance(random, 0.5)) {
       nodes.push(upload('images', pick(random, imageIds)))
+    }
+
+    // Parity branch from the ported generator: inert unless videos are
+    // seeded, which nothing here does.
+    if (videoIds.length > 0 && sectionIndex === 0 && chance(random, 0.4)) {
+      nodes.push(upload('videos', pick(random, videoIds)))
     }
 
     if (chance(random, 0.25)) {
@@ -360,6 +379,14 @@ const resolveTopicIds = async (payload: Payload, count: number): Promise<string[
     ids = await findSeededTopics()
   }
 
+  if (ids.length < count) {
+    // Hoisted resolution means a single short-return now affects every post
+    // in the run, so make it visible rather than silently degrading.
+    payload.logger.warn(
+      `resolveTopicIds: wanted ${count} seeded topics, resolved ${ids.length} after ${MAX_ATTEMPTS} attempts`,
+    )
+  }
+
   return ids.slice(0, count)
 }
 
@@ -377,6 +404,13 @@ export const seedPosts = async (
   created: number
 }> => {
   let created = 0
+
+  // Resolve the widest topic pool any single post needs (2) exactly once:
+  // per-post resolution meant a redundant find round-trip per post and
+  // handed every post the same leading topic(s). Each post then rotates
+  // into this pool by index so topics spread across the corpus.
+  const MAX_TOPICS_PER_POST = 2
+  const availableTopicIds = count > 0 ? await resolveTopicIds(payload, MAX_TOPICS_PER_POST) : []
 
   for (let index = 1; index <= count; index += 1) {
     const title = postTitleFor(index)
@@ -412,14 +446,14 @@ export const seedPosts = async (
 
     const imageId = await createSeedImage(payload, index)
 
-    onProgress?.({
-      step: `Resolving topics for ${slug}`,
-      current: index,
-      total: count,
-    })
-
-    const topicCount = 1 + (index % 3 === 0 ? 1 : 0)
-    const topicIds = await resolveTopicIds(payload, topicCount)
+    const topicCount = Math.min(1 + (index % 3 === 0 ? 1 : 0), availableTopicIds.length)
+    const offset = availableTopicIds.length > 0 ? index % availableTopicIds.length : 0
+    const topicIds = Array.from(
+      {
+        length: topicCount,
+      },
+      (_unused, slot) => availableTopicIds[(offset + slot) % availableTopicIds.length],
+    )
 
     onProgress?.({
       step: `Creating ${slug}`,
