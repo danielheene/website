@@ -1,5 +1,6 @@
 import type { Payload } from 'payload'
 
+import { extractErrorMessage } from '@/lib/extractErrorMessage'
 import { generateSlug } from '@/lib/generateSlug'
 import { paragraph, root } from '@/lib/seed/lexical'
 import { CollectionSlug } from '@/types/collections'
@@ -167,11 +168,15 @@ export const cleanTopics = async (
       total: topics.length,
     })
 
+    // `topics` is stored as `{ relationTo, value }` wrapper objects (see
+    // BlogPosts' field config) even though it only ever targets one
+    // collection, so the match has to reach into `.value` rather than
+    // `contains` against the bare id.
     const { totalDocs: referencedByPosts } = await payload.find({
       collection: CollectionSlug.BlogPosts,
       where: {
-        topics: {
-          contains: topic.id,
+        'topics.value': {
+          equals: topic.id,
         },
         generatorFlags: {
           not_in: [
@@ -194,15 +199,23 @@ export const cleanTopics = async (
       total: topics.length,
     })
 
-    await payload.delete({
-      collection: CollectionSlug.BlogTopics,
-      id: topic.id,
-      context: {
-        skipRevalidate: true,
-      },
-      trash: true,
-    })
-    deleted += 1
+    try {
+      await payload.delete({
+        collection: CollectionSlug.BlogTopics,
+        id: topic.id,
+        context: {
+          skipRevalidate: true,
+        },
+        trash: true,
+      })
+      deleted += 1
+    } catch (error) {
+      // Backstop for the pre-check above: a reference created between the
+      // check and the delete (or one the query shape doesn't anticipate)
+      // must not abort the rest of the cleanup.
+      skipped += 1
+      console.warn(`skipped deleting topic "${topic.slug}":`, extractErrorMessage(error))
+    }
   }
 
   return {

@@ -135,8 +135,10 @@ describe('cleanTopics', () => {
       }
       if (collection === 'posts') {
         // Simulates a real, hand-authored post that references this
-        // seeded topic — the topic must survive Clean.
-        expect(where?.topics?.contains).toBe('topic-1')
+        // seeded topic — the topic must survive Clean. `topics` is stored
+        // as `{ relationTo, value }` wrapper objects, so the match reaches
+        // into `.value` rather than `contains` against the bare id.
+        expect(where?.['topics.value']?.equals).toBe('topic-1')
         return {
           totalDocs: 1,
           docs: [
@@ -156,5 +158,51 @@ describe('cleanTopics', () => {
     expect(result.deleted).toBe(0)
     expect(result.skipped).toBe(1)
     expect(deleteFn).not.toHaveBeenCalled()
+  })
+
+  it('skips a topic whose delete is rejected instead of aborting the rest of cleanup', async () => {
+    find.mockImplementation(async ({ collection }) => {
+      if (collection === 'topics') {
+        return {
+          docs: [
+            {
+              id: 'topic-1',
+              slug: 'seeded-dummy-topic-typescript',
+            },
+            {
+              id: 'topic-2',
+              slug: 'seeded-dummy-topic-next-js',
+            },
+          ],
+        }
+      }
+      if (collection === 'posts') {
+        // The pre-check finds nothing for either topic — the reference
+        // only surfaces once the delete actually runs (e.g. a race, or a
+        // reference the pre-check's query shape doesn't cover).
+        return {
+          totalDocs: 0,
+          docs: [],
+        }
+      }
+      return {
+        docs: [],
+      }
+    })
+
+    deleteFn.mockImplementation(async ({ id }) => {
+      if (id === 'topic-1') {
+        throw new Error(
+          'Cannot delete: still used by 1 document — Post "Test" (topics.0). Remove the reference there first.',
+        )
+      }
+      return {}
+    })
+
+    const result = await cleanTopics(makePayload())
+
+    expect(result.deleted).toBe(1)
+    expect(result.skipped).toBe(1)
+    expect(deleteFn).toHaveBeenCalledTimes(2)
   })
 })
