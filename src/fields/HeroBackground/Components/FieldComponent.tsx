@@ -23,7 +23,7 @@ const ShaderPreviewCanvas = dynamic(() => import('./ShaderPreviewCanvas'), {
  * Structurally modeled on `src/fields/Icon/Field.tsx` — `useField` for the
  * value, `useModal`/`useDrawerSlug` to open a `Drawer`, pick-and-close.
  */
-const HeroBackgroundShaderField = ({ path, field }: SelectFieldClientProps) => {
+const HeroBackgroundShaderField = ({ path, field, readOnly }: SelectFieldClientProps) => {
   const { value, setValue, showError, errorMessage } = useField<ShaderPresetKey>({
     path,
   })
@@ -54,13 +54,20 @@ const HeroBackgroundShaderField = ({ path, field }: SelectFieldClientProps) => {
           type="button"
           buttonStyle="secondary"
           size="small"
+          disabled={readOnly}
           onClick={() => openModal(drawerSlug)}
         >
           {selectedPreset ? `Change (${selectedPreset.label})` : 'Choose a shader…'}
         </Button>
       </div>
 
-      <ShaderPickerDrawer slug={drawerSlug} value={value} onSelectAction={(key) => setValue(key)} />
+      {!readOnly && (
+        <ShaderPickerDrawer
+          slug={drawerSlug}
+          value={value}
+          onSelectAction={(key) => setValue(key)}
+        />
+      )}
 
       <FieldError showError={showError} message={errorMessage} path={path} />
     </div>
