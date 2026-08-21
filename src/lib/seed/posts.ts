@@ -405,12 +405,18 @@ export const seedPosts = async (
 }> => {
   let created = 0
 
-  // Resolve the widest topic pool any single post needs (2) exactly once:
-  // per-post resolution meant a redundant find round-trip per post and
-  // handed every post the same leading topic(s). Each post then rotates
-  // into this pool by index so topics spread across the corpus.
+  // Resolve a topic pool sized to the corpus (not just the 1-2 any single
+  // post needs) exactly once: per-post resolution meant a redundant find
+  // round-trip per post and handed every post the same leading topic(s).
+  // Each post then rotates into this wider pool by index so topics spread
+  // across the whole corpus, not just alternate between two. Capped at
+  // MAX_TOPIC_POOL_SIZE so a large --count doesn't demand an equally large
+  // topic pool — seedTopics' own title pool cycles with numeric suffixes
+  // past that point anyway, which buys nothing for post-topic variety.
   const MAX_TOPICS_PER_POST = 2
-  const availableTopicIds = count > 0 ? await resolveTopicIds(payload, MAX_TOPICS_PER_POST) : []
+  const MAX_TOPIC_POOL_SIZE = 6
+  const topicPoolSize = Math.max(MAX_TOPICS_PER_POST, Math.min(count, MAX_TOPIC_POOL_SIZE))
+  const availableTopicIds = count > 0 ? await resolveTopicIds(payload, topicPoolSize) : []
 
   for (let index = 1; index <= count; index += 1) {
     const title = postTitleFor(index)

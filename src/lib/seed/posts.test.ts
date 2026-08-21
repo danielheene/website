@@ -196,6 +196,7 @@ describe('seedPosts', () => {
       'topic-a',
       'topic-b',
       'topic-c',
+      'topic-d',
     ]
 
     find.mockImplementation(async ({ collection, where }) => {
@@ -219,6 +220,11 @@ describe('seedPosts', () => {
           id: 'image-1',
         }
       }
+      if (collection === 'topics') {
+        return {
+          id: 'topic-extra',
+        }
+      }
       perPostTopicIds.push(data.topics.map((entry: { value: string }) => entry.value))
       return {
         id: 'post-1',
@@ -239,17 +245,23 @@ describe('seedPosts', () => {
   })
 
   it('resolves the topic pool once per run, not once per post', async () => {
+    // A full 6-topic pool already exists, so resolveTopicIds' shortfall/
+    // top-up loop never triggers and the pool lookup fires exactly once.
+    const poolIds = [
+      'existing-topic-1',
+      'existing-topic-2',
+      'existing-topic-3',
+      'existing-topic-4',
+      'existing-topic-5',
+      'existing-topic-6',
+    ]
+
     find.mockImplementation(async ({ collection, where }) => {
       if (collection === 'topics' && where?.generatorFlags) {
         return {
-          docs: [
-            {
-              id: 'existing-topic-1',
-            },
-            {
-              id: 'existing-topic-2',
-            },
-          ],
+          docs: poolIds.map((id) => ({
+            id,
+          })),
         }
       }
       return {
