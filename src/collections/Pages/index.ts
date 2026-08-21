@@ -78,7 +78,7 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
   fields: [
     /* -------------- Main  Content -------------- */
     TitleField({
-      listViewThumbnailPath: 'hero.background.media.0',
+      listViewThumbnailPath: 'hero.background.media.0.value',
     }),
 
     /* -------------- Sidebar Content -------------- */
