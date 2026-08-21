@@ -45,9 +45,14 @@ describe('seedPosts', () => {
       expect(data.generatorFlags).toEqual([
         'seeded-dummy',
       ])
-      expect(data.heroImage).toEqual({
-        relationTo: 'images',
-        value: 'image-1',
+      expect(data.hero).toEqual({
+        background: {
+          backgroundType: 'media',
+          media: {
+            relationTo: 'images',
+            value: 'image-1',
+          },
+        },
       })
       return {
         id: 'post-1',
@@ -326,9 +331,14 @@ describe('cleanPosts', () => {
           docs: [
             {
               id: 'post-1',
-              heroImage: {
-                relationTo: 'images',
-                value: 'image-1',
+              hero: {
+                background: {
+                  backgroundType: 'media',
+                  media: {
+                    relationTo: 'images',
+                    value: 'image-1',
+                  },
+                },
               },
             },
           ],
@@ -376,9 +386,14 @@ describe('cleanPosts', () => {
           docs: [
             {
               id: 'post-1',
-              heroImage: {
-                relationTo: 'images',
-                value: 'image-1',
+              hero: {
+                background: {
+                  backgroundType: 'media',
+                  media: {
+                    relationTo: 'images',
+                    value: 'image-1',
+                  },
+                },
               },
             },
           ],
@@ -407,7 +422,7 @@ describe('cleanPosts', () => {
           docs: [
             {
               id: 'post-1',
-              heroImage: null,
+              hero: null,
             },
           ],
         }

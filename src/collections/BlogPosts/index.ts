@@ -4,7 +4,7 @@ import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
-import { MediaField } from '@/fields/Media'
+import { HeroBackgroundField } from '@/fields/HeroBackground'
 import { MetaField } from '@/fields/Meta'
 import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
@@ -71,7 +71,7 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
   fields: [
     /* -------------- Main  Content -------------- */
     TitleField({
-      listViewThumbnailPath: 'heroImage',
+      listViewThumbnailPath: 'hero.background.media.0',
     }),
 
     /* -------------- Sidebar Content -------------- */
@@ -79,13 +79,23 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
     SlugField({
       fieldToUse: 'title',
     }),
-    MediaField({
-      name: 'heroImage',
-      relationTo: [
-        CollectionSlug.MediaImages,
+    {
+      name: 'hero',
+      type: 'group',
+      label: false,
+      admin: {
+        position: 'sidebar',
+        disableListColumn: true,
+        disableListFilter: true,
+        disableGroupBy: true,
+      },
+      fields: [
+        HeroBackgroundField({
+          name: 'background',
+          hasManyMedia: false,
+        }),
       ],
-      position: 'sidebar',
-    }),
+    },
     {
       name: 'topics',
       type: 'relationship',

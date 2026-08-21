@@ -475,9 +475,14 @@ export const seedPosts = async (
       data: {
         title,
         slug,
-        heroImage: {
-          relationTo: 'images',
-          value: imageId,
+        hero: {
+          background: {
+            backgroundType: 'media',
+            media: {
+              relationTo: 'images',
+              value: imageId,
+            },
+          },
         },
         topics: topicIds.map((id) => ({
           relationTo: 'topics' as const,
@@ -534,8 +539,9 @@ export const cleanPosts = async (
 
   const mediaIds = new Set<string>()
   for (const post of posts) {
-    if (post.heroImage?.relationTo === 'images') {
-      const { value } = post.heroImage
+    const media = post.hero?.background?.media
+    if (media && typeof media === 'object' && media.relationTo === 'images') {
+      const { value } = media
       mediaIds.add(typeof value === 'string' ? value : String(value.id))
     }
   }

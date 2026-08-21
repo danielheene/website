@@ -21,6 +21,7 @@ import { generateBlogPosting, generateBreadcrumbList } from '@/lib/jsonLd'
 import { placeholderParams } from '@/lib/placeholderParams'
 import { resolveRelations } from '@/lib/resolveRelation'
 import { highlightRichText } from '@/lib/shiki/highlightRichText'
+import { isRenderableImage } from '@/lib/typeGuards'
 import { CollectionData, CollectionSlug } from '@/types/collections'
 
 export async function generateStaticParams() {
@@ -62,11 +63,13 @@ export default async function Page({ params: paramsPromise }: PageProps) {
   })
   if (!post) return notFound()
 
-  const { title, content, heroImage, createdAt, updatedAt, topics } = post
+  const { title, content, hero, createdAt, updatedAt, topics } = post
   const baseUrl = process.env.SERVER_URL || 'https://danielheene.de'
   const postUrl = `${baseUrl}/posts/${slug}`
 
-  const heroData = heroImage?.value
+  const heroBackground = hero?.background
+  const heroMedia = heroBackground?.backgroundType === 'media' ? heroBackground.media : undefined
+  const heroData = isRenderableImage(heroMedia?.value) ? heroMedia.value : undefined
   const headings = extractHeadings(content)
   // Shiki is server-only, so code blocks are highlighted here and handed to
   // RichText, which renders on the client
@@ -136,7 +139,7 @@ export default async function Page({ params: paramsPromise }: PageProps) {
       <div className="flex flex-1 items-center justify-center">
         <section className="pb-32 w-full">
           {/* A post carries at most one hero image, so this never becomes a carousel. */}
-          <HeroMedia fallbackAlt={title} media={heroImage}>
+          <HeroMedia fallbackAlt={title} background={hero?.background}>
             <div className="pt-40 pb-16">
               <div className="container flex flex-col items-center gap-8 text-center">
                 <nav aria-label="breadcrumb">

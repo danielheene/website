@@ -748,10 +748,24 @@ export interface BlogPostData {
   id: string;
   title: string;
   slug: string;
-  heroImage?: {
-    relationTo: 'images';
-    value: string | MediaImage;
-  } | null;
+  hero?: {
+    background?: {
+      backgroundType?: ('media' | 'shader') | null;
+      /**
+       * Fills the first screen.
+       */
+      media?:
+        | ({
+            relationTo: 'images';
+            value: string | MediaImage;
+          } | null)
+        | ({
+            relationTo: 'videos';
+            value: string | MediaVideo;
+          } | null);
+      shader?: ('darkveil' | 'faulty-terminal' | 'gradient-blinds' | 'grainient') | null;
+    };
+  };
   topics?:
     | {
         relationTo: 'topics';
@@ -1679,7 +1693,17 @@ export interface PayloadMigration {
 export interface PostsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
-  heroImage?: T;
+  hero?:
+    | T
+    | {
+        background?:
+          | T
+          | {
+              backgroundType?: T;
+              media?: T;
+              shader?: T;
+            };
+      };
   topics?: T;
   relatedPosts?: T;
   content?: T;
