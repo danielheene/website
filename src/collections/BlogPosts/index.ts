@@ -71,7 +71,7 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
   fields: [
     /* -------------- Main  Content -------------- */
     TitleField({
-      listViewThumbnailPath: 'hero.background.media.0',
+      listViewThumbnailPath: 'hero.background.media.value',
     }),
 
     /* -------------- Sidebar Content -------------- */
