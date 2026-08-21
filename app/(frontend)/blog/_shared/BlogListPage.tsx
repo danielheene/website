@@ -96,9 +96,13 @@ const PostCard = ({ post }: { post: BlogPostData }) => {
     background.media.relationTo === CollectionSlug.MediaImages
       ? background.media.value
       : undefined
-  const shaderKey =
+  // guarded like the OG image routes: `shader` is typed as the preset-key
+  // union but the value comes from the database, so a preset that has since
+  // been renamed or removed resolves to undefined — degrade to no background
+  // div rather than throwing and taking down the whole server-rendered list
+  const shaderGradient =
     background?.backgroundType === 'shader' && typeof background.shader === 'string'
-      ? background.shader
+      ? SHADER_PRESET_MAP[background.shader]?.gradient
       : undefined
 
   return (
@@ -140,11 +144,11 @@ const PostCard = ({ post }: { post: BlogPostData }) => {
           ])}
         />
       )}
-      {shaderKey && (
+      {shaderGradient && (
         <div
           className="absolute inset-0 -z-10 size-full rounded-lg brightness-50"
           style={{
-            background: SHADER_PRESET_MAP[shaderKey].gradient,
+            background: shaderGradient,
           }}
         />
       )}
