@@ -21,8 +21,9 @@ import { generateBlogPosting, generateBreadcrumbList } from '@/lib/jsonLd'
 import { placeholderParams } from '@/lib/placeholderParams'
 import { resolveRelations } from '@/lib/resolveRelation'
 import { highlightRichText } from '@/lib/shiki/highlightRichText'
-import { isRenderableImage } from '@/lib/typeGuards'
 import { CollectionData, CollectionSlug } from '@/types/collections'
+
+import { size } from './opengraph-image'
 
 export async function generateStaticParams() {
   const payload = await getPayload({
@@ -67,9 +68,6 @@ export default async function Page({ params: paramsPromise }: PageProps) {
   const baseUrl = process.env.SERVER_URL || 'https://danielheene.de'
   const postUrl = `${baseUrl}/posts/${slug}`
 
-  const heroBackground = hero?.background
-  const heroMedia = heroBackground?.backgroundType === 'media' ? heroBackground.media : undefined
-  const heroData = isRenderableImage(heroMedia?.value) ? heroMedia.value : undefined
   const headings = extractHeadings(content)
   // Shiki is server-only, so code blocks are highlighted here and handed to
   // RichText, which renders on the client
@@ -81,14 +79,12 @@ export default async function Page({ params: paramsPromise }: PageProps) {
     .filter((value) => typeof value === 'object' && value !== null)
   const primaryTopic = topicList[0]
 
-  const heroImageData = heroData?.url
-    ? {
-        url: new URL(new URL(heroData.url).pathname, baseUrl).toString(),
-        width: heroData.width || undefined,
-        height: heroData.height || undefined,
-        alt: heroData.alt || title,
-      }
-    : undefined
+  const heroImageData = {
+    url: `${baseUrl}/blog/post/${slug}/opengraph-image`,
+    width: size.width,
+    height: size.height,
+    alt: title,
+  }
   //
   // // Extract keywords from tags
   // const postTags = tags
@@ -289,7 +285,7 @@ const queryDraftPostBySlug = async (
   return reduceDataToBilingualLanguage(await resolveRelations(docs[0]))
 }
 
-const queryPostBySlug = cache(
+export const queryPostBySlug = cache(
   async ({ slug }: { slug: string }): Promise<CollectionData<CollectionSlug['BlogPosts']>> => {
     const { isEnabled: draft } = await draftMode()
     return draft ? queryDraftPostBySlug(slug) : queryPublishedPostBySlug(slug)
