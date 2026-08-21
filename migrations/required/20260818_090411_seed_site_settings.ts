@@ -30,6 +30,11 @@ export async function up({ payload, req }: MigrateUpArgs): Promise<void> {
     return
   }
 
+  // The afterChange hook revalidates a Next.js cache tag, which requires a
+  // static-generation store that doesn't exist when this runs via the
+  // standalone `payload migrate` CLI (no Next.js request in flight).
+  req.context.skipUpdateCachedData = true
+
   await payload.updateGlobal({
     slug: GlobalSlug.SiteSettings,
     data: {
@@ -69,6 +74,8 @@ export async function down({ payload, req }: MigrateDownArgs): Promise<void> {
   }) => entry.link?.label === 'Home' && entry.link?.url === '/'
 
   if (!entries.some(isSeededHomeEntry)) return
+
+  req.context.skipUpdateCachedData = true
 
   await payload.updateGlobal({
     slug: GlobalSlug.SiteSettings,
