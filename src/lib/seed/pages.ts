@@ -329,12 +329,15 @@ export const seedPages = async (
         ],
         hero: {
           contentType: 'title',
-          media: [
-            {
-              relationTo: 'images',
-              value: imageId,
-            },
-          ],
+          background: {
+            backgroundType: 'media',
+            media: [
+              {
+                relationTo: 'images',
+                value: imageId,
+              },
+            ],
+          },
         },
         content: pageBlocks(slug),
       },
@@ -381,7 +384,7 @@ export const cleanPages = async (
 
   const mediaIds = new Set<string>()
   for (const page of pages) {
-    for (const entry of page.hero?.media ?? []) {
+    for (const entry of page.hero?.background?.media ?? []) {
       if (entry.relationTo === 'images') {
         mediaIds.add(typeof entry.value === 'string' ? entry.value : String(entry.value.id))
       }

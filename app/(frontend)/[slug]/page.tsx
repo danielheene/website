@@ -65,7 +65,7 @@ export default async function Page({ params }: PageProps) {
       <HeroMedia
         className="border-b-2 border-b-primary"
         fallbackAlt={title || 'Hero Image'}
-        media={hero?.media}
+        background={hero?.background}
       >
         {title && (
           <div className="pt-40 pb-20">

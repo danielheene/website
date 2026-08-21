@@ -174,12 +174,14 @@ describe('cleanPages', () => {
             {
               id: 'page-1',
               hero: {
-                media: [
-                  {
-                    relationTo: 'images',
-                    value: 'image-1',
-                  },
-                ],
+                background: {
+                  media: [
+                    {
+                      relationTo: 'images',
+                      value: 'image-1',
+                    },
+                  ],
+                },
               },
             },
           ],
@@ -248,12 +250,14 @@ describe('cleanPages', () => {
             {
               id: 'page-1',
               hero: {
-                media: [
-                  {
-                    relationTo: 'images',
-                    value: 'image-1',
-                  },
-                ],
+                background: {
+                  media: [
+                    {
+                      relationTo: 'images',
+                      value: 'image-1',
+                    },
+                  ],
+                },
               },
             },
           ],
@@ -292,7 +296,9 @@ describe('cleanPages', () => {
             {
               id: 'page-1',
               hero: {
-                media: [],
+                background: {
+                  media: [],
+                },
               },
             },
           ],

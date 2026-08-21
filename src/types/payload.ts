@@ -283,21 +283,25 @@ export interface Page {
   slug: string;
   layout?: PageLayout;
   hero?: {
-    /**
-     * Fills the first screen. Two or more entries become a cross-fading carousel; a single entry renders on its own.
-     */
-    media?:
-      | (
-          | {
-              relationTo: 'images';
-              value: string | MediaImage;
-            }
-          | {
-              relationTo: 'videos';
-              value: string | MediaVideo;
-            }
-        )[]
-      | null;
+    background?: {
+      backgroundType?: ('media' | 'shader') | null;
+      /**
+       * Fills the first screen. Two or more entries become a cross-fading carousel; a single entry renders on its own.
+       */
+      media?:
+        | (
+            | {
+                relationTo: 'images';
+                value: string | MediaImage;
+              }
+            | {
+                relationTo: 'videos';
+                value: string | MediaVideo;
+              }
+          )[]
+        | null;
+      shader?: ('darkveil' | 'faulty-terminal' | 'gradient-blinds' | 'grainient') | null;
+    };
     contentType?: ('title' | 'custom') | null;
     content?: {
       root: {
@@ -1726,7 +1730,13 @@ export interface PagesSelect<T extends boolean = true> {
   hero?:
     | T
     | {
-        media?: T;
+        background?:
+          | T
+          | {
+              backgroundType?: T;
+              media?: T;
+              shader?: T;
+            };
         contentType?: T;
         content?: T;
       };
