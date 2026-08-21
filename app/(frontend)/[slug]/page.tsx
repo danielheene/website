@@ -147,7 +147,7 @@ const queryDraftPageBySlug = async (slug: string) => {
   return (docs[0] as CollectionData<CollectionSlug['Pages']>) || null
 }
 
-const queryPageBySlug = cache(async (slug: string) => {
+export const queryPageBySlug = cache(async (slug: string) => {
   const { isEnabled: draft } = await draftMode()
   return draft ? queryDraftPageBySlug(slug) : queryPublishedPageBySlug(slug)
 })
