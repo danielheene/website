@@ -1,5 +1,6 @@
 import type { Payload } from 'payload'
 
+import { SHADER_PRESETS } from '@/components/HeroMedia/shaderPresets'
 import { generateSlug } from '@/lib/generateSlug'
 import {
   chance,
@@ -444,13 +445,33 @@ export const seedPosts = async (
       continue
     }
 
-    onProgress?.({
-      step: `Creating hero image for ${slug}`,
-      current: index,
-      total: count,
-    })
+    const random = createRandom(slug)
+    const useShader = chance(random, 0.25)
 
-    const imageId = await createSeedImage(payload, index)
+    let imageId: string | undefined
+    let background: BlogPostData['hero']['background']
+    if (useShader) {
+      background = {
+        backgroundType: 'shader',
+        shader: pick(random, SHADER_PRESETS).key,
+      }
+    } else {
+      onProgress?.({
+        step: `Creating hero image for ${slug}`,
+        current: index,
+        total: count,
+      })
+
+      imageId = await createSeedImage(payload, index)
+
+      background = {
+        backgroundType: 'media',
+        media: {
+          relationTo: 'images',
+          value: imageId,
+        },
+      }
+    }
 
     const topicCount = Math.min(1 + (index % 3 === 0 ? 1 : 0), availableTopicIds.length)
     const offset = availableTopicIds.length > 0 ? index % availableTopicIds.length : 0
@@ -476,13 +497,7 @@ export const seedPosts = async (
         title,
         slug,
         hero: {
-          background: {
-            backgroundType: 'media',
-            media: {
-              relationTo: 'images',
-              value: imageId,
-            },
-          },
+          background,
         },
         topics: topicIds.map((id) => ({
           relationTo: 'topics' as const,
@@ -490,9 +505,11 @@ export const seedPosts = async (
         })),
         content: lexicalArticle({
           title,
-          imageIds: [
-            imageId,
-          ],
+          imageIds: imageId
+            ? [
+                imageId,
+              ]
+            : [],
         }),
         generatorFlags: [
           'seeded-dummy',
