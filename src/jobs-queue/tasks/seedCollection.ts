@@ -1,10 +1,63 @@
-import type { TaskConfig } from 'payload'
+import type { Payload, TaskConfig } from 'payload'
 
 import { extractErrorMessage } from '@/lib/extractErrorMessage'
 import { publish } from '@/lib/RedisHandler'
+import { cleanBlog, seedBlog } from '@/lib/seed/blog'
 import { cleanPages, type SeedProgress, seedPages } from '@/lib/seed/pages'
 import { seedTaskChannel } from '@/lib/sse/channels'
 import { TaskSlug } from '@/types/jobs-queue'
+
+/**
+ * One seed/clean routine per seedable collection, each reporting progress
+ * the same way (`SeedProgress`) and resolving to a label → count bag for
+ * the success toast (see `SeedTaskProgress['counts']`).
+ */
+const SEED_ROUTINES: Record<
+  string,
+  {
+    seed: (
+      payload: Payload,
+      count: number,
+      onProgress: (progress: SeedProgress) => void,
+    ) => Promise<Record<string, number>>
+    clean: (
+      payload: Payload,
+      onProgress: (progress: SeedProgress) => void,
+    ) => Promise<Record<string, number>>
+  }
+> = {
+  pages: {
+    seed: async (payload, count, onProgress) => {
+      const { created } = await seedPages(payload, count, onProgress)
+      return {
+        'pages created': created,
+      }
+    },
+    clean: async (payload, onProgress) => {
+      const { deletedPages, deletedMedia } = await cleanPages(payload, onProgress)
+      return {
+        'pages deleted': deletedPages,
+        'images deleted': deletedMedia,
+      }
+    },
+  },
+  posts: {
+    seed: async (payload, count, onProgress) => {
+      const { created } = await seedBlog(payload, count, onProgress)
+      return {
+        'posts created': created,
+      }
+    },
+    clean: async (payload, onProgress) => {
+      const { deletedPosts, deletedTopics, deletedMedia } = await cleanBlog(payload, onProgress)
+      return {
+        'posts deleted': deletedPosts,
+        'topics deleted': deletedTopics,
+        'images deleted': deletedMedia,
+      }
+    },
+  },
+}
 
 /**
  * Seeds or cleans fixture data for one collection, chosen by
@@ -13,8 +66,8 @@ import { TaskSlug } from '@/types/jobs-queue'
  * 'auto'`) rather than a task per collection or per direction.
  *
  * Only used by the admin-panel action (`src/components/AdminPanel/SeedActions`)
- * — the CLI scripts call `seedPages`/`cleanPages` directly and never touch
- * the jobs queue.
+ * — the CLI scripts (`scripts/seed-pages.ts`, `scripts/seed-blog.ts`) call
+ * the seed/clean functions directly and never touch the jobs queue.
  */
 export const seedCollection: TaskConfig<TaskSlug['SeedCollection']> = {
   slug: TaskSlug.SeedCollection,
@@ -48,7 +101,8 @@ export const seedCollection: TaskConfig<TaskSlug['SeedCollection']> = {
       })
     }
 
-    if (input.collection !== 'pages') {
+    const routine = SEED_ROUTINES[input.collection]
+    if (!routine) {
       const message = `Unknown seedable collection: "${input.collection}"`
       await publish(channel, {
         status: 'error',
@@ -58,21 +112,19 @@ export const seedCollection: TaskConfig<TaskSlug['SeedCollection']> = {
     }
 
     try {
+      let counts: Record<string, number>
       if (input.mode === 'seed') {
-        const result = await seedPages(payload, input.count ?? 1, onProgress)
-        await publish(channel, {
-          status: 'success',
-          ...result,
-        })
+        counts = await routine.seed(payload, input.count ?? 1, onProgress)
       } else if (input.mode === 'clean') {
-        const result = await cleanPages(payload, onProgress)
-        await publish(channel, {
-          status: 'success',
-          ...result,
-        })
+        counts = await routine.clean(payload, onProgress)
       } else {
         throw new Error(`Unknown seed mode: "${input.mode}"`)
       }
+
+      await publish(channel, {
+        status: 'success',
+        counts,
+      })
     } catch (error) {
       await publish(channel, {
         status: 'error',

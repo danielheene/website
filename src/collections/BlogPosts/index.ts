@@ -51,6 +51,20 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
     },
     preview: (data: Partial<BlogPostData>) =>
       generatePreviewPath(CollectionSlug.BlogPosts, data.slug),
+    components: {
+      listMenuItems: [
+        {
+          // Mounted here (not also on BlogTopics): seeding/cleaning always
+          // creates or removes topics and posts together — see
+          // src/lib/seed/blog.ts — so one entry point covers both.
+          path: '@/components/AdminPanel/SeedActions#SeedActions',
+          clientProps: {
+            collectionSlug: CollectionSlug.BlogPosts,
+            collectionLabel: 'Blog Posts',
+          },
+        },
+      ],
+    },
   },
   hooks: {
     afterChange: [

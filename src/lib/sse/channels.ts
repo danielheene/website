@@ -101,9 +101,15 @@ export type SeedTaskProgress =
     }
   | {
       status: 'success'
-      created?: number
-      deletedPages?: number
-      deletedMedia?: number
+      /**
+       * Human-readable label → count, e.g. `{ 'posts created': 5 }` or
+       * `{ 'pages deleted': 3, 'images deleted': 2 }`. A bag rather than
+       * fixed fields (`created`/`deletedPages`/…) so each seedable
+       * collection's result shape — which varies (Pages seeds/deletes one
+       * document type plus media, Blog seeds/deletes two) — renders without
+       * `SeedActions` needing to special-case every collection.
+       */
+      counts: Record<string, number>
     }
   | {
       status: 'error'

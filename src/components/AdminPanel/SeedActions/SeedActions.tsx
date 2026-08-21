@@ -104,11 +104,10 @@ export const SeedActions = ({ collectionSlug, collectionLabel }: SeedActionsProp
           return
         case 'success': {
           clearFallbackTimeout()
-          const summary =
-            data.created !== undefined
-              ? `Created ${data.created} document(s).`
-              : `Deleted ${data.deletedPages ?? 0} document(s) and ${data.deletedMedia ?? 0} media file(s).`
-          toast.success(summary, {
+          const summary = Object.entries(data.counts)
+            .map(([label, count]) => `${count} ${label}`)
+            .join(', ')
+          toast.success(summary || 'Done.', {
             id: jobId,
           })
           setJobId(null)
