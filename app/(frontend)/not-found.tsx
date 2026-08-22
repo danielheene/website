@@ -11,7 +11,14 @@ export default async function NotFound() {
   } = await fetchSiteSettingsCached()
 
   return (
-    <HeroMedia align="center" fallbackAlt="" media={errorHero}>
+    <HeroMedia
+      align="center"
+      fallbackAlt=""
+      background={{
+        backgroundType: 'media',
+        media: errorHero,
+      }}
+    >
       <div className="container flex flex-col items-center py-32 text-center text-foreground">
         <div className="mb-20 font-pp-supply-mono drop-shadow-md">
           <h1 className="text-9xl">404</h1>

@@ -7,6 +7,7 @@ import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { BLOCK_SLUGS } from '@/blocks'
 import { revalidatePage } from '@/collections/Pages/hooks/revalidatePage'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
+import { HeroBackgroundField } from '@/fields/HeroBackground'
 import { MetaField } from '@/fields/Meta'
 import { ProtectedField } from '@/fields/Protected'
 import { RichTextField } from '@/fields/RichText'
@@ -77,7 +78,7 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
   fields: [
     /* -------------- Main  Content -------------- */
     TitleField({
-      listViewThumbnailPath: 'hero.media.0',
+      listViewThumbnailPath: 'hero.background.media.0.value',
     }),
 
     /* -------------- Sidebar Content -------------- */
@@ -124,24 +125,9 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
           label: 'Hero',
           name: 'hero',
           fields: [
-            {
-              name: 'media',
-              type: 'upload',
-              relationTo: [
-                CollectionSlug.MediaImages,
-                CollectionSlug.MediaVideos,
-              ],
-              hasMany: true,
-              displayPreview: true,
-              label: false,
-              admin: {
-                description:
-                  'Fills the first screen. Two or more entries become a cross-fading carousel; a single entry renders on its own.',
-                disableListColumn: true,
-                disableListFilter: true,
-                disableGroupBy: true,
-              },
-            },
+            HeroBackgroundField({
+              name: 'background',
+            }),
             {
               name: 'contentType',
               type: 'select',

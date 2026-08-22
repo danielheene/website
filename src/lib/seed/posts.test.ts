@@ -27,10 +27,11 @@ beforeEach(() => {
 })
 
 describe('seedPosts', () => {
-  it('creates the requested number of posts, each tagged and with a hero image', async () => {
+  it('creates the requested number of posts, each tagged and with a hero background', async () => {
     find.mockResolvedValue({
       docs: [],
     })
+    const heroes: unknown[] = []
     create.mockImplementation(async ({ collection, data }) => {
       if (collection === 'images') {
         return {
@@ -45,10 +46,7 @@ describe('seedPosts', () => {
       expect(data.generatorFlags).toEqual([
         'seeded-dummy',
       ])
-      expect(data.heroImage).toEqual({
-        relationTo: 'images',
-        value: 'image-1',
-      })
+      heroes.push(data.hero)
       return {
         id: 'post-1',
       }
@@ -57,6 +55,101 @@ describe('seedPosts', () => {
     const result = await seedPosts(makePayload(), 2)
 
     expect(result.created).toBe(2)
+    for (const hero of heroes) {
+      const background = (
+        hero as {
+          background: {
+            backgroundType: string
+          }
+        }
+      ).background
+      expect([
+        'media',
+        'shader',
+      ]).toContain(background.backgroundType)
+      if (background.backgroundType === 'media') {
+        expect(background).toEqual({
+          backgroundType: 'media',
+          media: {
+            relationTo: 'images',
+            value: 'image-1',
+          },
+        })
+      } else {
+        expect(background).toEqual({
+          backgroundType: 'shader',
+          shader: expect.any(String),
+        })
+      }
+    }
+  })
+
+  it('gives a shader-backed hero the correct background shape and skips image creation for it, while lexicalArticle still receives an empty imageIds', async () => {
+    find.mockResolvedValue({
+      docs: [],
+    })
+    const heroBackgrounds: unknown[] = []
+    create.mockImplementation(async ({ collection, data }) => {
+      if (collection === 'images') {
+        return {
+          id: 'image-1',
+        }
+      }
+      if (collection === 'topics') {
+        return {
+          id: 'topic-1',
+        }
+      }
+      heroBackgrounds.push(data.hero.background)
+      return {
+        id: 'post-1',
+      }
+    })
+
+    // A larger batch makes it overwhelmingly likely (with chance(random,
+    // 0.25) seeded per-slug) that at least one post lands on the shader
+    // branch, without mocking the randomness source directly.
+    await seedPosts(makePayload(), 20)
+
+    const shaderBackgrounds = heroBackgrounds.filter(
+      (background) =>
+        (
+          background as {
+            backgroundType: string
+          }
+        ).backgroundType === 'shader',
+    )
+    const mediaBackgrounds = heroBackgrounds.filter(
+      (background) =>
+        (
+          background as {
+            backgroundType: string
+          }
+        ).backgroundType === 'media',
+    )
+
+    expect(shaderBackgrounds.length).toBeGreaterThan(0)
+    expect(mediaBackgrounds.length).toBeGreaterThan(0)
+
+    for (const background of shaderBackgrounds) {
+      expect(background).toEqual({
+        backgroundType: 'shader',
+        shader: expect.any(String),
+      })
+    }
+    for (const background of mediaBackgrounds) {
+      expect(background).toEqual({
+        backgroundType: 'media',
+        media: {
+          relationTo: 'images',
+          value: 'image-1',
+        },
+      })
+    }
+
+    // Image creation is skipped entirely for shader-backed posts.
+    const imageCreates = create.mock.calls.filter(([args]) => args.collection === 'images')
+    expect(imageCreates).toHaveLength(mediaBackgrounds.length)
   })
 
   it('skips a slug that already exists instead of creating a duplicate', async () => {
@@ -326,9 +419,14 @@ describe('cleanPosts', () => {
           docs: [
             {
               id: 'post-1',
-              heroImage: {
-                relationTo: 'images',
-                value: 'image-1',
+              hero: {
+                background: {
+                  backgroundType: 'media',
+                  media: {
+                    relationTo: 'images',
+                    value: 'image-1',
+                  },
+                },
               },
             },
           ],
@@ -376,9 +474,14 @@ describe('cleanPosts', () => {
           docs: [
             {
               id: 'post-1',
-              heroImage: {
-                relationTo: 'images',
-                value: 'image-1',
+              hero: {
+                background: {
+                  backgroundType: 'media',
+                  media: {
+                    relationTo: 'images',
+                    value: 'image-1',
+                  },
+                },
               },
             },
           ],
@@ -407,7 +510,7 @@ describe('cleanPosts', () => {
           docs: [
             {
               id: 'post-1',
-              heroImage: null,
+              hero: null,
             },
           ],
         }

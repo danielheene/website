@@ -41,7 +41,11 @@ export const TrendingBlogPostsBlockRenderer = async ({
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {posts.map(({ slug, post }) => {
-          const heroImage = isRenderableImage(post.heroImage?.value) ? post.heroImage.value : null
+          const backgroundMedia =
+            post.hero?.background?.backgroundType === 'media'
+              ? post.hero.background.media
+              : undefined
+          const heroImage = isRenderableImage(backgroundMedia?.value) ? backgroundMedia.value : null
 
           return (
             <Link

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { cacheLife, cacheTag } from 'next/cache'
 import config from '@payload-config'
 import { getPayload } from 'payload'
@@ -62,7 +63,16 @@ export async function generateStaticParams() {
   }))
 }
 
-const queryResumeDocumentBySlug = async (slug: string) => {
+export async function generateMetadata({ params }: PageProps<'/resume/[slug]'>): Promise<Metadata> {
+  const { slug } = await params
+  const resume = await queryResumeDocumentBySlug(slug)
+
+  return {
+    title: resume?.title ?? 'Resume',
+  }
+}
+
+export const queryResumeDocumentBySlug = async (slug: string) => {
   'use cache'
   cacheLife('max')
   cacheTag(CollectionSlug.ResumeDocuments)

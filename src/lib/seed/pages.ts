@@ -1,5 +1,6 @@
 import type { Payload } from 'payload'
 
+import { SHADER_PRESETS } from '@/components/HeroMedia/shaderPresets'
 import type { Random } from '@/lib/seed/lexical'
 import {
   chance,
@@ -300,13 +301,34 @@ export const seedPages = async (
       continue
     }
 
-    onProgress?.({
-      step: `Creating hero image for ${slug}`,
-      current: index,
-      total: count,
-    })
+    const random = createRandom(slug)
+    const useShader = chance(random, 0.25)
 
-    const imageId = await createSeedImage(payload, index)
+    let background: Page['hero']['background']
+    if (useShader) {
+      background = {
+        backgroundType: 'shader',
+        shader: pick(random, SHADER_PRESETS).key,
+      }
+    } else {
+      onProgress?.({
+        step: `Creating hero image for ${slug}`,
+        current: index,
+        total: count,
+      })
+
+      const imageId = await createSeedImage(payload, index)
+
+      background = {
+        backgroundType: 'media',
+        media: [
+          {
+            relationTo: 'images',
+            value: imageId,
+          },
+        ],
+      }
+    }
 
     onProgress?.({
       step: `Creating ${slug}`,
@@ -329,12 +351,7 @@ export const seedPages = async (
         ],
         hero: {
           contentType: 'title',
-          media: [
-            {
-              relationTo: 'images',
-              value: imageId,
-            },
-          ],
+          background,
         },
         content: pageBlocks(slug),
       },
@@ -381,7 +398,7 @@ export const cleanPages = async (
 
   const mediaIds = new Set<string>()
   for (const page of pages) {
-    for (const entry of page.hero?.media ?? []) {
+    for (const entry of page.hero?.background?.media ?? []) {
       if (entry.relationTo === 'images') {
         mediaIds.add(typeof entry.value === 'string' ? entry.value : String(entry.value.id))
       }

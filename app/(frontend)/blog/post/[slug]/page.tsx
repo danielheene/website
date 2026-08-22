@@ -23,6 +23,8 @@ import { resolveRelations } from '@/lib/resolveRelation'
 import { highlightRichText } from '@/lib/shiki/highlightRichText'
 import { CollectionData, CollectionSlug } from '@/types/collections'
 
+import { size } from './opengraph-image'
+
 export async function generateStaticParams() {
   const payload = await getPayload({
     config,
@@ -62,11 +64,10 @@ export default async function Page({ params: paramsPromise }: PageProps) {
   })
   if (!post) return notFound()
 
-  const { title, content, heroImage, createdAt, updatedAt, topics } = post
+  const { title, content, hero, createdAt, updatedAt, topics } = post
   const baseUrl = process.env.SERVER_URL || 'https://danielheene.de'
   const postUrl = `${baseUrl}/posts/${slug}`
 
-  const heroData = heroImage?.value
   const headings = extractHeadings(content)
   // Shiki is server-only, so code blocks are highlighted here and handed to
   // RichText, which renders on the client
@@ -78,14 +79,12 @@ export default async function Page({ params: paramsPromise }: PageProps) {
     .filter((value) => typeof value === 'object' && value !== null)
   const primaryTopic = topicList[0]
 
-  const heroImageData = heroData?.url
-    ? {
-        url: new URL(new URL(heroData.url).pathname, baseUrl).toString(),
-        width: heroData.width || undefined,
-        height: heroData.height || undefined,
-        alt: heroData.alt || title,
-      }
-    : undefined
+  const heroImageData = {
+    url: `${baseUrl}/blog/post/${slug}/opengraph-image`,
+    width: size.width,
+    height: size.height,
+    alt: title,
+  }
   //
   // // Extract keywords from tags
   // const postTags = tags
@@ -136,7 +135,7 @@ export default async function Page({ params: paramsPromise }: PageProps) {
       <div className="flex flex-1 items-center justify-center">
         <section className="pb-32 w-full">
           {/* A post carries at most one hero image, so this never becomes a carousel. */}
-          <HeroMedia fallbackAlt={title} media={heroImage}>
+          <HeroMedia fallbackAlt={title} background={hero?.background}>
             <div className="pt-40 pb-16">
               <div className="container flex flex-col items-center gap-8 text-center">
                 <nav aria-label="breadcrumb">
@@ -286,7 +285,7 @@ const queryDraftPostBySlug = async (
   return reduceDataToBilingualLanguage(await resolveRelations(docs[0]))
 }
 
-const queryPostBySlug = cache(
+export const queryPostBySlug = cache(
   async ({ slug }: { slug: string }): Promise<CollectionData<CollectionSlug['BlogPosts']>> => {
     const { isEnabled: draft } = await draftMode()
     return draft ? queryDraftPostBySlug(slug) : queryPublishedPostBySlug(slug)

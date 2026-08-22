@@ -1,6 +1,14 @@
-import { describe, expect, it } from 'vitest'
+// @vitest-environment jsdom
+import { render, screen } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
 
-import { toItems } from './HeroMedia'
+import { HeroMedia, toItems } from './HeroMedia'
+
+vi.mock('./ShaderHeroBackground', () => ({
+  ShaderHeroBackground: ({ presetKey }: { presetKey: string }) => (
+    <div data-testid="shader-hero-background" data-preset={presetKey} />
+  ),
+}))
 
 const image = {
   relationTo: 'images',
@@ -204,5 +212,56 @@ describe('toItems', () => {
       kind: 'video',
       poster: undefined,
     })
+  })
+})
+
+describe('HeroMedia', () => {
+  it('renders nothing visual when backgroundType is media with no media', () => {
+    render(
+      <HeroMedia
+        background={{
+          backgroundType: 'media',
+          media: [],
+        }}
+      />,
+    )
+
+    expect(screen.queryByTestId('shader-hero-background')).not.toBeInTheDocument()
+  })
+
+  it('renders the shader background when backgroundType is shader', () => {
+    render(
+      <HeroMedia
+        background={{
+          backgroundType: 'shader',
+          shader: 'darkveil',
+        }}
+      />,
+    )
+
+    const shaderEl = screen.getByTestId('shader-hero-background')
+    expect(shaderEl).toBeInTheDocument()
+    expect(shaderEl).toHaveAttribute('data-preset', 'darkveil')
+  })
+
+  it('does not render a shader background when backgroundType is shader but no shader is selected', () => {
+    render(
+      <HeroMedia
+        background={{
+          backgroundType: 'shader',
+          shader: undefined,
+        }}
+      />,
+    )
+
+    expect(screen.queryByTestId('shader-hero-background')).not.toBeInTheDocument()
+  })
+
+  it('falls back to media rendering when background is legacy/undefined (pre-migration content)', () => {
+    // Documents saved before this field existed have no `background` key at
+    // all — only the old flat `media` shape. HeroMedia must not crash.
+    render(<HeroMedia background={undefined} />)
+
+    expect(screen.queryByTestId('shader-hero-background')).not.toBeInTheDocument()
   })
 })

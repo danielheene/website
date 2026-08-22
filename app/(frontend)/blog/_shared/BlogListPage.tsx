@@ -6,6 +6,7 @@ import { getPayload } from 'payload'
 
 import { format } from 'date-fns'
 
+import { SHADER_PRESET_MAP } from '@/components/HeroMedia/shaderPresets'
 import { ImageMedia } from '@/components/ImageMedia'
 import { PageContainer } from '@/components/PageContainer'
 import { cn } from '@/lib/cn'
@@ -86,8 +87,23 @@ const queryPublishedPosts = async ({ topicId, page }: { topicId?: string; page: 
 const PostCard = ({ post }: { post: BlogPostData }) => {
   // populated upload values omit mimeType, so isMediaImage() can't be used —
   // the relation's target collection is the reliable discriminator
+  const background = post.hero?.background
   const heroImage =
-    post.heroImage?.relationTo === CollectionSlug.MediaImages ? post.heroImage.value : undefined
+    background?.backgroundType === 'media' &&
+    typeof background.media === 'object' &&
+    background.media !== null &&
+    'relationTo' in background.media &&
+    background.media.relationTo === CollectionSlug.MediaImages
+      ? background.media.value
+      : undefined
+  // guarded like the OG image routes: `shader` is typed as the preset-key
+  // union but the value comes from the database, so a preset that has since
+  // been renamed or removed resolves to undefined — degrade to no background
+  // div rather than throwing and taking down the whole server-rendered list
+  const shaderGradient =
+    background?.backgroundType === 'shader' && typeof background.shader === 'string'
+      ? SHADER_PRESET_MAP[background.shader]?.gradient
+      : undefined
 
   return (
     <Link
@@ -126,6 +142,14 @@ const PostCard = ({ post }: { post: BlogPostData }) => {
           className={cn([
             'absolute inset-0 -z-10 size-full rounded-lg object-cover brightness-50 transition-all duration-500 ease-[cubic-bezier(0.77,0,0.175,1)] [clip-path:inset(0_0_100%_0)] group-hover:[clip-path:inset(0_0_0%_0)]',
           ])}
+        />
+      )}
+      {shaderGradient && (
+        <div
+          className="absolute inset-0 -z-10 size-full rounded-lg brightness-50"
+          style={{
+            background: shaderGradient,
+          }}
         />
       )}
     </Link>

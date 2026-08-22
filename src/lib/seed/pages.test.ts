@@ -26,7 +26,7 @@ beforeEach(() => {
 })
 
 describe('seedPages', () => {
-  it('creates the requested number of pages, each with a tagged hero image', async () => {
+  it('creates the requested number of pages, each with a tagged hero background', async () => {
     find.mockResolvedValue({
       docs: [],
     })
@@ -44,8 +44,82 @@ describe('seedPages', () => {
     const result = await seedPages(makePayload(), 3)
 
     expect(result.created).toBe(3)
-    // one image create + one page create per iteration
-    expect(create).toHaveBeenCalledTimes(6)
+    // one page create per iteration, plus one image create per
+    // media-backed page (shader-backed pages skip the image entirely)
+    const pageCreates = create.mock.calls.filter(([args]) => args.collection === 'pages')
+    const imageCreates = create.mock.calls.filter(([args]) => args.collection === 'images')
+    expect(pageCreates).toHaveLength(3)
+    expect(create).toHaveBeenCalledTimes(3 + imageCreates.length)
+  })
+
+  it('gives a shader-backed hero the correct background shape when the shader branch is chosen', async () => {
+    find.mockResolvedValue({
+      docs: [],
+    })
+    const heroBackgrounds: unknown[] = []
+    create.mockImplementation(async ({ collection, data }) => {
+      if (collection === 'images') {
+        return {
+          id: 'image-1',
+        }
+      }
+      heroBackgrounds.push(data.hero.background)
+      return {
+        id: 'page-1',
+      }
+    })
+
+    // A larger batch makes it overwhelmingly likely (with chance(random,
+    // 0.25) seeded per-slug) that at least one page lands on the shader
+    // branch, without mocking the randomness source directly.
+    await seedPages(makePayload(), 20)
+
+    const shaderBackgrounds = heroBackgrounds.filter(
+      (
+        background,
+      ): background is {
+        backgroundType: string
+        shader: string
+      } =>
+        (
+          background as {
+            backgroundType: string
+          }
+        ).backgroundType === 'shader',
+    )
+    const mediaBackgrounds = heroBackgrounds.filter(
+      (background) =>
+        (
+          background as {
+            backgroundType: string
+          }
+        ).backgroundType === 'media',
+    )
+
+    expect(shaderBackgrounds.length).toBeGreaterThan(0)
+    expect(mediaBackgrounds.length).toBeGreaterThan(0)
+
+    for (const background of shaderBackgrounds) {
+      expect(background).toEqual({
+        backgroundType: 'shader',
+        shader: expect.any(String),
+      })
+    }
+    for (const background of mediaBackgrounds) {
+      expect(background).toEqual({
+        backgroundType: 'media',
+        media: [
+          {
+            relationTo: 'images',
+            value: 'image-1',
+          },
+        ],
+      })
+    }
+
+    // Image creation is skipped entirely for shader-backed pages.
+    const imageCreates = create.mock.calls.filter(([args]) => args.collection === 'images')
+    expect(imageCreates).toHaveLength(mediaBackgrounds.length)
   })
 
   it('skips a slug that already exists instead of creating a duplicate', async () => {
@@ -174,12 +248,14 @@ describe('cleanPages', () => {
             {
               id: 'page-1',
               hero: {
-                media: [
-                  {
-                    relationTo: 'images',
-                    value: 'image-1',
-                  },
-                ],
+                background: {
+                  media: [
+                    {
+                      relationTo: 'images',
+                      value: 'image-1',
+                    },
+                  ],
+                },
               },
             },
           ],
@@ -248,12 +324,14 @@ describe('cleanPages', () => {
             {
               id: 'page-1',
               hero: {
-                media: [
-                  {
-                    relationTo: 'images',
-                    value: 'image-1',
-                  },
-                ],
+                background: {
+                  media: [
+                    {
+                      relationTo: 'images',
+                      value: 'image-1',
+                    },
+                  ],
+                },
               },
             },
           ],
@@ -292,7 +370,9 @@ describe('cleanPages', () => {
             {
               id: 'page-1',
               hero: {
-                media: [],
+                background: {
+                  media: [],
+                },
               },
             },
           ],

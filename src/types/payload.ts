@@ -283,21 +283,25 @@ export interface Page {
   slug: string;
   layout?: PageLayout;
   hero?: {
-    /**
-     * Fills the first screen. Two or more entries become a cross-fading carousel; a single entry renders on its own.
-     */
-    media?:
-      | (
-          | {
-              relationTo: 'images';
-              value: string | MediaImage;
-            }
-          | {
-              relationTo: 'videos';
-              value: string | MediaVideo;
-            }
-        )[]
-      | null;
+    background?: {
+      backgroundType?: ('media' | 'shader') | null;
+      /**
+       * Fills the first screen. Two or more entries become a cross-fading carousel; a single entry renders on its own.
+       */
+      media?:
+        | (
+            | {
+                relationTo: 'images';
+                value: string | MediaImage;
+              }
+            | {
+                relationTo: 'videos';
+                value: string | MediaVideo;
+              }
+          )[]
+        | null;
+      shader?: ('darkveil' | 'faulty-terminal' | 'gradient-blinds' | 'grainient') | null;
+    };
     contentType?: ('title' | 'custom') | null;
     content?: {
       root: {
@@ -744,10 +748,24 @@ export interface BlogPostData {
   id: string;
   title: string;
   slug: string;
-  heroImage?: {
-    relationTo: 'images';
-    value: string | MediaImage;
-  } | null;
+  hero?: {
+    background?: {
+      backgroundType?: ('media' | 'shader') | null;
+      /**
+       * Fills the first screen.
+       */
+      media?:
+        | ({
+            relationTo: 'images';
+            value: string | MediaImage;
+          } | null)
+        | ({
+            relationTo: 'videos';
+            value: string | MediaVideo;
+          } | null);
+      shader?: ('darkveil' | 'faulty-terminal' | 'gradient-blinds' | 'grainient') | null;
+    };
+  };
   topics?:
     | {
         relationTo: 'topics';
@@ -1675,7 +1693,17 @@ export interface PayloadMigration {
 export interface PostsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
-  heroImage?: T;
+  hero?:
+    | T
+    | {
+        background?:
+          | T
+          | {
+              backgroundType?: T;
+              media?: T;
+              shader?: T;
+            };
+      };
   topics?: T;
   relatedPosts?: T;
   content?: T;
@@ -1726,7 +1754,13 @@ export interface PagesSelect<T extends boolean = true> {
   hero?:
     | T
     | {
-        media?: T;
+        background?:
+          | T
+          | {
+              backgroundType?: T;
+              media?: T;
+              shader?: T;
+            };
         contentType?: T;
         content?: T;
       };

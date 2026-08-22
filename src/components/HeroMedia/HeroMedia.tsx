@@ -6,10 +6,12 @@ import type { MediaImage, MediaVideo } from '@/types/payload'
 
 import { HeroCarousel } from './HeroCarousel'
 import type { HeroMediaItem } from './HeroSlide'
+import { ShaderHeroBackground } from './ShaderHeroBackground'
+import type { ShaderPresetKey } from './shaderPresets'
 
 export interface HeroMediaProps {
-  /** Polymorphic upload references straight from Payload. */
-  media: unknown
+  /** The whole `hero.background` group value: `{ backgroundType, media, shader }`. */
+  background: unknown
   /** Falls back to this when an asset carries no alt text of its own. */
   fallbackAlt?: string
   /**
@@ -102,21 +104,50 @@ export const toItems = (media: unknown, fallbackAlt: string): HeroMediaItem[] =>
   })
 }
 
+/** Narrows an unknown `background` group value to its recognized shape. */
+const parseBackground = (
+  background: unknown,
+): {
+  backgroundType: 'media' | 'shader'
+  media: unknown
+  shader: ShaderPresetKey | undefined
+} => {
+  if (typeof background !== 'object' || background === null) {
+    return {
+      backgroundType: 'media',
+      media: undefined,
+      shader: undefined,
+    }
+  }
+
+  const record = background as Record<string, unknown>
+  const backgroundType = record.backgroundType === 'shader' ? 'shader' : 'media'
+
+  return {
+    backgroundType,
+    media: record.media,
+    shader: typeof record.shader === 'string' ? (record.shader as ShaderPresetKey) : undefined,
+  }
+}
+
 /**
- * Full-bleed hero visual: one asset, or a cross-fading carousel of several,
- * under the brand duotone treatment.
+ * Full-bleed hero visual: one asset, a cross-fading carousel of several, or
+ * a live shader background, under the brand duotone treatment.
  *
  * `children` render above the visual — that is where the headline, topics and
  * meta go.
  */
 export const HeroMedia = ({
-  media,
+  background,
   fallbackAlt = '',
   align = 'bottom',
   className,
   children,
 }: HeroMediaProps) => {
-  const items = toItems(media, fallbackAlt)
+  const { backgroundType, media, shader } = parseBackground(background)
+  const items = backgroundType === 'media' ? toItems(media, fallbackAlt) : []
+  const hasShader = backgroundType === 'shader' && Boolean(shader)
+  const hasVisual = items.length > 0 || hasShader
 
   return (
     <section
@@ -127,9 +158,11 @@ export const HeroMedia = ({
         className,
       )}
     >
-      {items.length > 0 && (
+      {hasVisual && (
         <DuoTone contained className="absolute inset-0">
-          {items.length === 1 && items[0].kind === 'image' ? (
+          {hasShader && shader ? (
+            <ShaderHeroBackground presetKey={shader} className="absolute inset-0 h-full w-full" />
+          ) : items.length === 1 && items[0].kind === 'image' ? (
             <ImageMedia
               alt={items[0].alt}
               blurDataURL={items[0].blurDataURL}
