@@ -37,6 +37,27 @@ describe('resolveLinkTypeMode', () => {
     ).toBe('reference')
   })
 
+  it('falls through to url when reference is only half-populated, matching resolveLinkTarget', () => {
+    expect(
+      resolveLinkTypeMode({
+        reference: {
+          relationTo: 'pages',
+          value: null,
+        },
+        url: 'https://example.com',
+      }),
+    ).toBe('url')
+    expect(
+      resolveLinkTypeMode({
+        reference: {
+          relationTo: undefined,
+          value: 'p1',
+        },
+        url: 'https://example.com',
+      }),
+    ).toBe('url')
+  })
+
   it('infers "reference" from legacy data that has neither linkType nor url', () => {
     expect(resolveLinkTypeMode({})).toBe('reference')
     expect(

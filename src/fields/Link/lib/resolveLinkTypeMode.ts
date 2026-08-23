@@ -17,14 +17,17 @@
  */
 export const resolveLinkTypeMode = (siblingData: {
   linkType?: unknown
-  reference?: unknown
+  reference?: {
+    relationTo?: unknown
+    value?: unknown
+  } | null
   url?: unknown
 }): 'reference' | 'url' => {
   if (siblingData?.linkType === 'reference' || siblingData?.linkType === 'url') {
     return siblingData.linkType
   }
 
-  if (siblingData?.reference) {
+  if (siblingData?.reference?.relationTo && siblingData.reference?.value) {
     return 'reference'
   }
 
