@@ -59,7 +59,10 @@ describe('LinkField', () => {
 
   it('reference is shown only when linkType resolves to reference', () => {
     const reference = named('reference')
-    const { condition } = reference!.admin as {
+    if (!reference) {
+      throw new Error('reference field not found')
+    }
+    const { condition } = reference.admin as {
       condition: (data: unknown, siblingData: Record<string, unknown>) => boolean
     }
 
@@ -95,7 +98,10 @@ describe('LinkField', () => {
 
   it('url is shown only when linkType resolves to url', () => {
     const url = named('url')
-    const { condition } = url!.admin as {
+    if (!url) {
+      throw new Error('url field not found')
+    }
+    const { condition } = url.admin as {
       condition: (data: unknown, siblingData: Record<string, unknown>) => boolean
     }
 
@@ -119,17 +125,21 @@ describe('LinkField', () => {
     const reference = named('reference')
     const url = named('url')
 
-    const referenceValidate = (reference as {
-      validate: unknown
-    })!.validate as (
+    const referenceValidate = (
+      reference as {
+        validate: unknown
+      }
+    ).validate as (
       value: unknown,
       args: {
         siblingData: Record<string, unknown>
       },
     ) => string | true
-    const urlValidate = (url as {
-      validate: unknown
-    })!.validate as (
+    const urlValidate = (
+      url as {
+        validate: unknown
+      }
+    ).validate as (
       value: unknown,
       args: {
         siblingData: Record<string, unknown>
@@ -199,7 +209,10 @@ describe('LinkField', () => {
 
   it('iconAfter is hidden when iconOnly is checked', () => {
     const iconAfter = named('iconAfter')
-    const { condition } = iconAfter!.admin as {
+    if (!iconAfter) {
+      throw new Error('iconAfter field not found')
+    }
+    const { condition } = iconAfter.admin as {
       condition: (data: unknown, siblingData: Record<string, unknown>) => boolean
     }
 
