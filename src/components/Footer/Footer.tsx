@@ -32,6 +32,7 @@ export const Footer = async () => {
     socialLinks.push({
       id: 'email',
       link: {
+        linkType: 'url',
         url: `mailto:${email}`,
         label: 'Email',
         iconBefore: 'mail',
@@ -45,6 +46,7 @@ export const Footer = async () => {
     socialLinks.push({
       id: 'telephone',
       link: {
+        linkType: 'url',
         url: parsePhoneNumber(telephone).getURI(),
         label: 'Telephone',
         iconBefore: 'phone',
@@ -58,6 +60,7 @@ export const Footer = async () => {
     socialLinks.push({
       id,
       link: {
+        linkType: 'url',
         url,
         label: name,
         iconBefore: icon,

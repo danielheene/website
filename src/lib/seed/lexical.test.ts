@@ -81,6 +81,7 @@ describe('link', () => {
   it("builds this project's LinkField shape with reference set to null", () => {
     const node = link('Docs', 'https://example.com') as {
       fields: {
+        linkType: string
         url: string
         label: string
         reference: null
@@ -88,6 +89,7 @@ describe('link', () => {
       }
     }
     expect(node.fields).toEqual({
+      linkType: 'url',
       reference: null,
       newTab: true,
       url: 'https://example.com',

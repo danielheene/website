@@ -245,6 +245,9 @@ export interface LinkGroupBlock {
  * via the `definition` "LinkFieldData".
  */
 export interface LinkFieldData {
+  linkType: 'reference' | 'url';
+  newTab?: boolean | null;
+  iconOnly?: boolean | null;
   reference?:
     | ({
         relationTo: 'pages';
@@ -258,19 +261,10 @@ export interface LinkFieldData {
         relationTo: 'topics';
         value: string | Topic;
       } | null);
-  newTab?: boolean | null;
   url?: string | null;
   iconBefore?: string | null;
-  /**
-   * Defaults to the title of the linked document. Overwrite it with any text, or mix the two — `{title}` is substituted on render.
-   */
   label: string;
   iconAfter?: string | null;
-  resolvedLabel?: string | null;
-  /**
-   * Hides the label visually and uses it as the accessible name instead.
-   */
-  iconOnly?: boolean | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2494,14 +2488,14 @@ export interface HeaderSettingsSelect<T extends boolean = true> {
  * via the `definition` "LinkFieldData_select".
  */
 export interface LinkFieldDataSelect<T extends boolean = true> {
-  reference?: T;
+  linkType?: T;
   newTab?: T;
+  iconOnly?: T;
+  reference?: T;
   url?: T;
   iconBefore?: T;
   label?: T;
   iconAfter?: T;
-  resolvedLabel?: T;
-  iconOnly?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

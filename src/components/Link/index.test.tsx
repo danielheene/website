@@ -7,7 +7,9 @@ import { CMSLink } from './index'
 
 describe('CMSLink', () => {
   it('renders the label directly, with no resolvedLabel fallback', () => {
-    render(<CMSLink label="Visit example" reference={null} url="https://example.com" />)
+    render(
+      <CMSLink label="Visit example" linkType="url" reference={null} url="https://example.com" />,
+    )
 
     expect(screen.getByText('Visit example')).toBeInTheDocument()
   })
@@ -18,6 +20,7 @@ describe('CMSLink', () => {
         iconBefore="arrow-right"
         iconOnly
         label="Visit example"
+        linkType="url"
         reference={null}
         url="https://example.com"
       />,
