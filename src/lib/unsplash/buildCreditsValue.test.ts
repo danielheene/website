@@ -54,6 +54,7 @@ describe('buildCreditsValue', () => {
 
     expect(links[0]?.fields).toEqual({
       reference: null,
+      linkType: 'url',
       url: 'https://unsplash.com/@janedoe?utm_source=heene_io&utm_medium=referral',
       newTab: true,
       label: 'Jane Doe',
@@ -61,20 +62,21 @@ describe('buildCreditsValue', () => {
 
     expect(links[1]?.fields).toEqual({
       reference: null,
+      linkType: 'url',
       url: 'https://unsplash.com/?utm_source=heene_io&utm_medium=referral',
       newTab: true,
       label: 'Unsplash',
     })
   })
 
-  it('emits no `linkType` field — the caption editor replaces the base link fields', () => {
+  it('emits LinkField’s own linkType value — not lexical’s default internal/custom vocabulary', () => {
     const value = buildCreditsValue({
       photographerName: 'Jane Doe',
       photographerProfileUrl: 'https://unsplash.com/@janedoe',
     })
 
     for (const node of paragraphChildren(value).filter((child) => child.type === 'link')) {
-      expect(node.fields).not.toHaveProperty('linkType')
+      expect(node.fields).toHaveProperty('linkType', 'url')
     }
   })
 

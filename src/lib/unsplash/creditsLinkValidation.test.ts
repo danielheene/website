@@ -42,11 +42,9 @@ import { buildCreditsValue } from './buildCreditsValue'
  * returns both the `errorPaths` it would collect and the resolved field
  * values.
  *
- * The resolved values matter as much as the errors here. `label` carries
- * `defaultValue: '{title}'`, so a link node that omits `label` entirely still
- * passes validation — Payload fills the default in — and then renders the
- * literal text `{title}` in the credits line. Asserting on errors alone would
- * therefore not have caught the original bug.
+ * The resolved values matter as much as the errors here: they are what
+ * confirms a passing link actually carries the real link text, not just that
+ * validation didn't fail for some unrelated reason.
  */
 const validateLinkFields = async (
   fields: Field[],
@@ -132,11 +130,13 @@ describe('credits link nodes pass Payload link validation', () => {
           ).map((child) => ('name' in child ? child.name : '')),
     )
 
-    // Guards the premise of this whole file: if `linkType` ever appears here,
-    // the base fields are no longer being replaced and the fix must be redone.
-    expect(names).not.toContain('linkType')
+    // Guards the premise of this whole file: if `linkType` is missing here,
+    // the base fields are not being replaced by LinkField()'s own — it would
+    // mean lexical's default `internal`/`custom` field is still in play.
+    expect(names).toContain('linkType')
     expect(names).toEqual(
       expect.arrayContaining([
+        'linkType',
         'reference',
         'newTab',
         'url',
@@ -189,6 +189,7 @@ describe('credits link nodes pass Payload link validation', () => {
     // Negative control. Without this, the passing assertion above would be
     // indistinguishable from a harness that never surfaces errors at all.
     const { errorPaths } = await validateLinkFields(linkFields, {
+      linkType: 'url',
       reference: null,
       url: 'not a url',
       newTab: true,
@@ -203,17 +204,15 @@ describe('credits link nodes pass Payload link validation', () => {
     )
   })
 
-  it('a link node that omits label silently resolves to the `{title}` default', async () => {
-    // Documents *why* the assertion above checks values and not just errors:
-    // omitting `label` is not a validation failure, it is a rendering failure.
-    // This is the exact trap the original buggy shape fell into.
-    const { errorPaths, values } = await validateLinkFields(linkFields, {
-      linkType: 'custom',
+  it('a link node that omits label is now a validation error, not a silent default', async () => {
+    // `label` lost its `{title}` default when LinkField was simplified — an
+    // omitted label must now fail validation instead of silently resolving.
+    const { errorPaths } = await validateLinkFields(linkFields, {
+      linkType: 'url',
       url: 'https://unsplash.com/@janedoe',
       newTab: true,
     })
 
-    expect(errorPaths).toEqual([])
-    expect(values.label).toBe('{title}')
+    expect(errorPaths).toContain('label')
   })
 })

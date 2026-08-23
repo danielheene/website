@@ -28,23 +28,28 @@ const textNode = (text: string) => ({
  * (`@payloadcms/richtext-lexical/dist/features/link/server/transformExtraFields.js`)
  * **replace** the default `linkType`/`url`/`newTab` base fields rather than
  * merge with them, so the real, validated schema for a link node's `fields`
- * object is `LinkField()`'s own flat field list: `reference`, `newTab`, `url`,
- * `iconBefore`, `label`, `iconAfter`, `resolvedLabel`, `iconOnly`. There is no
- * `linkType` field, and crucially no `link` sub-key — the `...` spread takes
- * the group's *inner* fields, not the `link` group itself.
+ * object is `LinkField()`'s own flat field list: `linkType`, `reference`,
+ * `newTab`, `url`, `iconBefore`, `label`, `iconAfter`, `iconOnly`. There is
+ * still no `link` sub-key — the `...` spread takes the group's *inner*
+ * fields, not the `link` group itself.
+ *
+ * `LinkField()`'s own `linkType` field reuses lexical's base-field name
+ * deliberately (`'reference'` standing in for lexical's `'internal'`,
+ * `'url'` for its `'custom'`) — see the doc comment on `LinkField` itself.
+ * This function always emits `linkType: 'url'`, since every credits link is
+ * a custom URL, never a CMS document reference.
  *
  * This is also what a human-authored link produces: the floating link editor's
  * `handleDrawerSubmit`
  * (`.../features/link/client/plugins/floatingLinkEditor/LinkEditor/index.js:301-331`)
  * passes the drawer form's reduced values straight through as
  * `$createLinkNode({ fields })` / `TOGGLE_LINK_COMMAND { fields }`, and those
- * values are keyed by this same flat schema. `migrateLinkFields.test.ts:77-109`
- * encodes the same flat-`fields` shape for lexical link nodes.
+ * values are keyed by this same flat schema.
  *
  * `reference` is set explicitly to `null` so the key exists: `reference`'s
- * validator accepts an empty value as long as a sibling `url` is set.
- * `label` is `required: true`; omitting it silently resolves to the `{title}`
- * default (see `creditsLinkValidation.test.ts`).
+ * validator accepts an empty value whenever `linkType` isn't `'reference'`.
+ * `label` is `required: true` and has no default value, so it must always be
+ * passed explicitly (see `creditsLinkValidation.test.ts`).
  *
  * ## `children` carries the visible text (render layer)
  *
@@ -53,11 +58,11 @@ const textNode = (text: string) => ({
  * override in `src/components/RichText/index.tsx:72-115` — renders the anchor's
  * text from `nodesToJSX({ nodes: node.children })`, never from `fields.label`.
  * An earlier version of this file set `children: []` on the theory that
- * `CMSLink` prints `resolvedLabel || label`; `CMSLink` is not on this render
- * path (`RichText` renders a bare `<a>{children}</a>`), so empty children
- * produced an empty anchor. Verified by rendering this function's output
- * through `convertLexicalNodesToJSX` + `defaultJSXConverters`: with
- * `children: []` the output was `<a href="…"></a>`; with a text child it is
+ * `CMSLink` prints `fields.label`; `CMSLink` is not on this render path
+ * (`RichText` renders a bare `<a>{children}</a>`), so empty children produced
+ * an empty anchor. Verified by rendering this function's output through
+ * `convertLexicalNodesToJSX` + `defaultJSXConverters`: with `children: []` the
+ * output was `<a href="…"></a>`; with a text child it is
  * `<a href="…">Jane Doe</a>`. `label` is kept as well because it is a required
  * field of the validated schema and is what the admin link editor displays.
  */
@@ -68,6 +73,7 @@ const linkNode = (text: string, url: string) => ({
   indent: 0,
   direction: 'ltr',
   fields: {
+    linkType: 'url',
     reference: null,
     url,
     newTab: true,
