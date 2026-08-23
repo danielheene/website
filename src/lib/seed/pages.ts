@@ -182,6 +182,7 @@ const linkGroupBlock = (random: Random) => ({
     alignment: 'list',
     entries: pickSome(random, LINKS, 2 + Math.floor(random() * 2)).map((entry) => ({
       link: {
+        linkType: 'url',
         newTab: true,
         label: entry.label,
         url: entry.url,
