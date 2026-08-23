@@ -247,6 +247,9 @@ export interface LinkGroupBlock {
 export interface LinkFieldData {
   linkType: 'reference' | 'url';
   newTab?: boolean | null;
+  /**
+   * Hides the label visually and uses it as the accessible name instead.
+   */
   iconOnly?: boolean | null;
   reference?:
     | ({
@@ -263,6 +266,9 @@ export interface LinkFieldData {
       } | null);
   url?: string | null;
   iconBefore?: string | null;
+  /**
+   * Also used as the accessible name when Icon only is checked.
+   */
   label: string;
   iconAfter?: string | null;
 }
