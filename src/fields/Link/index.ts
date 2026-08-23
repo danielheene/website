@@ -83,6 +83,7 @@ export const LinkField = ({ overrides = {} }: LinkFieldConfig = {}): GroupField 
               name: 'iconOnly',
               type: 'checkbox',
               admin: {
+                description: 'Hides the label visually and uses it as the accessible name instead.',
                 width: '25%',
               },
               label: 'Icon only',
@@ -157,6 +158,7 @@ export const LinkField = ({ overrides = {} }: LinkFieldConfig = {}): GroupField 
               name: 'label',
               type: 'text',
               admin: {
+                description: 'Also used as the accessible name when Icon only is checked.',
                 width: '70%',
               },
               label: 'Label',

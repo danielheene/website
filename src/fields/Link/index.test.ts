@@ -124,6 +124,12 @@ describe('LinkField', () => {
   it('reference and url each validate only when they are the active mode', () => {
     const reference = named('reference')
     const url = named('url')
+    if (!reference) {
+      throw new Error('reference field not found')
+    }
+    if (!url) {
+      throw new Error('url field not found')
+    }
 
     const referenceValidate = (
       reference as {

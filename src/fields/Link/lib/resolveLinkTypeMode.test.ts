@@ -25,6 +25,18 @@ describe('resolveLinkTypeMode', () => {
     ).toBe('url')
   })
 
+  it('prefers reference over url for legacy data that has both, matching resolveLinkTarget precedence', () => {
+    expect(
+      resolveLinkTypeMode({
+        reference: {
+          relationTo: 'pages',
+          value: 'p1',
+        },
+        url: 'https://example.com',
+      }),
+    ).toBe('reference')
+  })
+
   it('infers "reference" from legacy data that has neither linkType nor url', () => {
     expect(resolveLinkTypeMode({})).toBe('reference')
     expect(
