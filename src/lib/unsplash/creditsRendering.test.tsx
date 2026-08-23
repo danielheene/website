@@ -24,15 +24,15 @@ import { buildCreditsValue } from './buildCreditsValue'
  * `defaultJSXConverters` + `LinkJSXConverter` — over the real output of
  * `buildCreditsValue`, and asserts on the resulting HTML.
  *
- * Scope note: `src/components/RichText/index.tsx` overrides the `link`
- * converter with one that reads `node.fields.link` (a nested sub-key). This
- * project's `LinkFeature` is configured with `[...LinkField().fields]`, which
- * spreads the group's *inner* fields, so a link node's `fields` object is flat
- * and that override's `nested` lookup is always `undefined` — it drops the
- * `<a>` for every link in every rich text field, human-authored ones included.
- * That is a pre-existing bug in shared rendering infrastructure, not something
- * this module can or should work around, so it is deliberately not asserted
- * here.
+ * Scope note: `src/components/RichText/index.tsx` uses its own `link`
+ * converter (`src/components/RichText/linkConverter.tsx`, unit-tested in
+ * `RichText/linkConverter.test.tsx`), not the bare `defaultJSXConverters` +
+ * `LinkJSXConverter` stack this file drives. That override correctly reads
+ * `node.fields` directly (the group's *inner* fields, flat — `LinkFeature`
+ * is configured with `[...LinkField().fields]`), rather than the nested
+ * `node.fields.link` shape an earlier version of it read by mistake. This
+ * file is deliberately scoped to the generic Payload converter stack, not
+ * this project's override, so it doesn't re-assert that fix here.
  */
 
 // biome-ignore lint/suspicious/noExplicitAny: converter args are structurally typed against internal Lexical node unions
