@@ -6,65 +6,65 @@ describe('resolveLinkTypeMode', () => {
   it('returns the explicit linkType when it is a valid value', () => {
     expect(
       resolveLinkTypeMode({
-        linkType: 'url',
+        linkType: 'custom',
         url: undefined,
       }),
-    ).toBe('url')
+    ).toBe('custom')
     expect(
       resolveLinkTypeMode({
-        linkType: 'reference',
+        linkType: 'internal',
       }),
-    ).toBe('reference')
+    ).toBe('internal')
   })
 
-  it('infers "url" from legacy data that has a url but no linkType', () => {
+  it('infers "custom" from legacy data that has a url but no linkType', () => {
     expect(
       resolveLinkTypeMode({
         url: 'https://example.com',
       }),
-    ).toBe('url')
+    ).toBe('custom')
   })
 
-  it('prefers reference over url for legacy data that has both, matching resolveLinkTarget precedence', () => {
+  it('prefers doc over url for legacy data that has both, matching resolveLinkTarget precedence', () => {
     expect(
       resolveLinkTypeMode({
-        reference: {
+        doc: {
           relationTo: 'pages',
           value: 'p1',
         },
         url: 'https://example.com',
       }),
-    ).toBe('reference')
+    ).toBe('internal')
   })
 
-  it('falls through to url when reference is only half-populated, matching resolveLinkTarget', () => {
+  it('falls through to url when doc is only half-populated, matching resolveLinkTarget', () => {
     expect(
       resolveLinkTypeMode({
-        reference: {
+        doc: {
           relationTo: 'pages',
           value: null,
         },
         url: 'https://example.com',
       }),
-    ).toBe('url')
+    ).toBe('custom')
     expect(
       resolveLinkTypeMode({
-        reference: {
+        doc: {
           relationTo: undefined,
           value: 'p1',
         },
         url: 'https://example.com',
       }),
-    ).toBe('url')
+    ).toBe('custom')
   })
 
-  it('infers "reference" from legacy data that has neither linkType nor url', () => {
-    expect(resolveLinkTypeMode({})).toBe('reference')
+  it('infers "internal" from legacy data that has neither linkType nor url', () => {
+    expect(resolveLinkTypeMode({})).toBe('internal')
     expect(
       resolveLinkTypeMode({
         url: '',
       }),
-    ).toBe('reference')
+    ).toBe('internal')
   })
 
   it('ignores an invalid or unrecognized linkType value and falls back to inference', () => {
@@ -73,11 +73,11 @@ describe('resolveLinkTypeMode', () => {
         linkType: 'bogus',
         url: 'https://example.com',
       }),
-    ).toBe('url')
+    ).toBe('custom')
     expect(
       resolveLinkTypeMode({
         linkType: 'bogus',
       }),
-    ).toBe('reference')
+    ).toBe('internal')
   })
 })

@@ -153,8 +153,6 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
       hooks: {
         afterRead: [
           async ({ req, data, value }) => {
-            console.log('data', data)
-            console.log('value', value)
             const { docs } = await req.payload.find({
               collection: CollectionSlug.ResumeDocuments,
               pagination: false,

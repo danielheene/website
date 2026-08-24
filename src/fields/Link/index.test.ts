@@ -30,17 +30,17 @@ describe('LinkField', () => {
     expect(named('iconAfter')).toBeDefined()
   })
 
-  it('exposes linkType as a required select defaulting to reference', () => {
+  it('exposes linkType as a required select defaulting to internal', () => {
     expect(named('linkType')).toMatchObject({
       type: 'select',
       required: true,
-      defaultValue: 'reference',
+      defaultValue: 'internal',
       options: expect.arrayContaining([
         expect.objectContaining({
-          value: 'reference',
+          value: 'internal',
         }),
         expect.objectContaining({
-          value: 'url',
+          value: 'custom',
         }),
       ]),
     })
@@ -57,16 +57,16 @@ describe('LinkField', () => {
     expect(label?.admin?.components).toBeUndefined()
   })
 
-  it('reference is shown only when linkType resolves to reference', () => {
-    const reference = named('reference')
-    if (!reference) {
-      throw new Error('reference field not found')
+  it('doc is shown only when linkType resolves to internal', () => {
+    const doc = named('doc')
+    if (!doc) {
+      throw new Error('doc field not found')
     }
-    const { condition } = reference.admin as {
+    const { condition } = doc.admin as {
       condition: (data: unknown, siblingData: Record<string, unknown>) => boolean
     }
 
-    expect(reference).toMatchObject({
+    expect(doc).toMatchObject({
       type: 'relationship',
       relationTo: [
         'pages',
@@ -74,29 +74,29 @@ describe('LinkField', () => {
         'topics',
       ],
     })
-    expect(reference?.admin?.components).toBeUndefined()
+    expect(doc?.admin?.components).toBeUndefined()
 
     expect(
       condition(null, {
-        linkType: 'reference',
+        linkType: 'internal',
       }),
     ).toBe(true)
     expect(
       condition(null, {
-        linkType: 'url',
+        linkType: 'custom',
       }),
     ).toBe(false)
-    // legacy data: no linkType, but a url is set -> infers 'url', hides reference
+    // legacy data: no linkType, but a url is set -> infers 'custom', hides doc
     expect(
       condition(null, {
         url: 'https://example.com',
       }),
     ).toBe(false)
-    // legacy data: no linkType, no url -> infers 'reference', shows reference
+    // legacy data: no linkType, no url -> infers 'internal', shows doc
     expect(condition(null, {})).toBe(true)
   })
 
-  it('url is shown only when linkType resolves to url', () => {
+  it('url is shown only when linkType resolves to custom', () => {
     const url = named('url')
     if (!url) {
       throw new Error('url field not found')
@@ -111,28 +111,28 @@ describe('LinkField', () => {
     })
     expect(
       condition(null, {
-        linkType: 'url',
+        linkType: 'custom',
       }),
     ).toBe(true)
     expect(
       condition(null, {
-        linkType: 'reference',
+        linkType: 'internal',
       }),
     ).toBe(false)
   })
 
-  it('reference and url each validate only when they are the active mode', () => {
-    const reference = named('reference')
+  it('doc and url each validate only when they are the active mode', () => {
+    const doc = named('doc')
     const url = named('url')
-    if (!reference) {
-      throw new Error('reference field not found')
+    if (!doc) {
+      throw new Error('doc field not found')
     }
     if (!url) {
       throw new Error('url field not found')
     }
 
-    const referenceValidate = (
-      reference as {
+    const docValidate = (
+      doc as {
         validate: unknown
       }
     ).validate as (
@@ -153,30 +153,30 @@ describe('LinkField', () => {
     ) => string | true
 
     expect(
-      referenceValidate(null, {
+      docValidate(null, {
         siblingData: {
-          linkType: 'reference',
+          linkType: 'internal',
         },
       }),
     ).toEqual(expect.any(String))
     expect(
-      referenceValidate(
+      docValidate(
         {
           relationTo: 'pages',
           value: 'p1',
         },
         {
           siblingData: {
-            linkType: 'reference',
+            linkType: 'internal',
           },
         },
       ),
     ).toBe(true)
-    // Not the active mode: an empty reference must not block save.
+    // Not the active mode: an empty doc must not block save.
     expect(
-      referenceValidate(null, {
+      docValidate(null, {
         siblingData: {
-          linkType: 'url',
+          linkType: 'custom',
         },
       }),
     ).toBe(true)
@@ -184,14 +184,14 @@ describe('LinkField', () => {
     expect(
       urlValidate(null, {
         siblingData: {
-          linkType: 'url',
+          linkType: 'custom',
         },
       }),
     ).toEqual(expect.any(String))
     expect(
       urlValidate('https://example.com', {
         siblingData: {
-          linkType: 'url',
+          linkType: 'custom',
         },
       }),
     ).toBe(true)
@@ -199,7 +199,7 @@ describe('LinkField', () => {
     expect(
       urlValidate(null, {
         siblingData: {
-          linkType: 'reference',
+          linkType: 'internal',
         },
       }),
     ).toBe(true)
@@ -207,7 +207,7 @@ describe('LinkField', () => {
     expect(
       urlValidate('not a url', {
         siblingData: {
-          linkType: 'url',
+          linkType: 'custom',
         },
       }),
     ).toEqual(expect.any(String))

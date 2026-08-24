@@ -76,25 +76,16 @@ export const quote = (value: string) => ({
 })
 
 /**
- * Link node for the project's custom LinkField. `RichTextField`'s
- * `LinkFeature` is configured with `fields: [...LinkField().fields]`
- * (src/fields/RichText/index.ts), which spreads `LinkField`'s field array
- * directly as the link node's schema — so `fields` here is flat, not nested
- * under a `link` group. `linkType`, `reference`, `url`, `label` and `newTab`
- * are set; `iconBefore`/`iconAfter`/`iconOnly` are left unset since seed
- * content doesn't use them.
+ * Link node using lexical's own stock link fields. `RichTextField`'s
+ * `LinkFeature` (src/fields/RichText/index.ts) no longer swaps in
+ * `LinkField`'s fields, so a link node's `fields` here is lexical's native
+ * `{ linkType, doc, url, newTab }` shape — no `label`, no icon fields; the
+ * link's visible text is just its `children`, same as a human selecting text
+ * and clicking "link" in the editor. This helper always builds a custom-URL
+ * link, so `linkType` is always `'custom'`.
  *
- * `linkType` reuses lexical's own base-field name deliberately (see
- * `src/fields/Link/index.ts`): `'reference'` stands in for lexical's
- * `'internal'`, `'url'` for its `'custom'`. This helper always builds a
- * custom-URL link, so `linkType` is always `'url'`.
- *
- * `reference` and `url`'s `validate` (src/fields/Link/index.ts) resolve
- * which one is required via `resolveLinkTypeMode(siblingData)` — for a
- * `linkType: 'url'` node that means `url` must be set and `reference` is
- * allowed to be empty, but it still has to be sent as `null` explicitly
- * rather than omitted, since the admin UI's `condition` only hides the
- * reference picker, it doesn't remove the key from stored data.
+ * `doc` still has to be sent as `null` explicitly rather than omitted,
+ * mirroring what the editor itself writes for a custom-URL link.
  */
 export const link = (value: string, url: string) => ({
   type: 'link',
@@ -103,11 +94,10 @@ export const link = (value: string, url: string) => ({
   format: '',
   indent: 0,
   fields: {
-    linkType: 'url',
-    reference: null,
+    linkType: 'custom',
+    doc: null,
     newTab: true,
     url,
-    label: value,
   },
   children: [
     text(value),

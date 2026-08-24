@@ -116,3 +116,34 @@ export type SeedTaskProgress =
       status: 'error'
       message: string
     }
+
+/**
+ *    Per-job channel for manually-triggered scheduled-job actions — running a
+ *    job now (`runScheduledJobNow`) or cancelling it (`cancelScheduledJob`) —
+ *    one per job ID.
+ *
+ *    Requires an authenticated session, same as `bilingual-translate:` and
+ *    `seed-task:` — triggering a job on demand is an admin-only action from
+ *    the admin panel's scheduled-jobs widget, not something an anonymous
+ *    caller has any reason to watch.
+ */
+const SCHEDULED_JOB_CHANNEL_PREFIX = 'scheduled-job:'
+
+export const scheduledJobChannel = (jobId: string): string =>
+  `${SCHEDULED_JOB_CHANNEL_PREFIX}${jobId}`
+
+export const isScheduledJobChannel = (value: string | null): value is string =>
+  Boolean(value?.startsWith(SCHEDULED_JOB_CHANNEL_PREFIX)) &&
+  JOB_ID_PATTERN.test((value as string).slice(SCHEDULED_JOB_CHANNEL_PREFIX.length))
+
+export type ScheduledJobActionProgress =
+  | {
+      status: 'success'
+    }
+  | {
+      status: 'cancelled'
+    }
+  | {
+      status: 'error'
+      message: string
+    }

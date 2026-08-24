@@ -6,15 +6,12 @@ import { describe, expect, it } from 'vitest'
 import { linkConverter } from './linkConverter'
 
 /**
- * A render-boundary test for the `link` converter override, closing the gap
- * `creditsRendering.test.tsx` deliberately left open: that file's "Scope
- * note" documented that this converter used to read `node.fields.link` (a
- * nested sub-key), which is always `undefined` for this project's
- * `LinkFeature` — configured with `[...LinkField().fields]`, which spreads
- * the group's *inner* fields flat onto the link node's `fields` object
- * directly, never nested under a `link` key. The old code therefore dropped
- * the `<a>` for every link in every rich text field, human-authored ones
- * included.
+ * A render-boundary test for the `link` converter override.
+ *
+ * `LinkFeature()` (see `RichText/index.ts`) uses lexical's own stock link
+ * fields — `{ linkType: 'internal' | 'custom', doc, url, newTab }` — so this
+ * exercises `node.fields` in that shape, same as what a human-authored link
+ * actually produces.
  *
  * Imports only `linkConverter`, not `RichText/index.tsx` itself — that
  * module's `blocks.CodeBlock` converter transitively pulls in
@@ -68,11 +65,10 @@ describe('linkConverter', () => {
     const html = renderNode(
       linkNode(
         {
-          linkType: 'url',
-          reference: null,
+          linkType: 'custom',
+          doc: null,
           url: 'https://example.com',
           newTab: true,
-          label: 'Example',
         },
         'Example',
       ),
@@ -87,10 +83,9 @@ describe('linkConverter', () => {
     const html = renderNode(
       linkNode(
         {
-          linkType: 'url',
-          reference: null,
+          linkType: 'custom',
+          doc: null,
           url: 'https://example.com',
-          label: 'Example',
         },
         'Example',
       ),
@@ -103,10 +98,9 @@ describe('linkConverter', () => {
     const html = renderNode(
       linkNode(
         {
-          linkType: 'reference',
-          reference: null,
+          linkType: 'internal',
+          doc: null,
           url: null,
-          label: 'Nowhere',
         },
         'Nowhere',
       ),

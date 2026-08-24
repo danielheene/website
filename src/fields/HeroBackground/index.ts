@@ -31,6 +31,7 @@ export const HeroBackgroundField = ({
   type: 'group',
   label: false,
   admin: {
+    hideGutter: true,
     disableListColumn: true,
     disableListFilter: true,
     disableGroupBy: true,

@@ -20,51 +20,32 @@ const textNode = (text: string) => ({
 /**
  * A link node for the `caption` editor variant.
  *
- * ## `fields` is flat (validation layer)
+ * ## `fields` is lexical's own stock shape (validation layer)
  *
- * The `caption` variant configures `LinkFeature({ fields: [...LinkField().fields] })`
- * (see `src/fields/RichText/index.ts:113-118`). Passing an *array* to
- * `LinkFeature`'s `fields` makes lexical's `transformExtraFields`
- * (`@payloadcms/richtext-lexical/dist/features/link/server/transformExtraFields.js`)
- * **replace** the default `linkType`/`url`/`newTab` base fields rather than
- * merge with them, so the real, validated schema for a link node's `fields`
- * object is `LinkField()`'s own flat field list: `linkType`, `reference`,
- * `newTab`, `url`, `iconBefore`, `label`, `iconAfter`, `iconOnly`. There is
- * still no `link` sub-key — the `...` spread takes the group's *inner*
- * fields, not the `link` group itself.
+ * `LinkFeature()` (see `src/fields/RichText/index.ts`) no longer swaps in
+ * `LinkField`'s fields, so the validated schema for a link node's `fields`
+ * object is lexical's own: `linkType`, `doc`, `url`, `newTab` — no `label`,
+ * no icon fields. `linkType` here is always `'custom'`, since every credits
+ * link is a custom URL, never a CMS document reference. `doc` is set
+ * explicitly to `null` so the key exists, mirroring what the editor itself
+ * writes for a custom-URL link.
  *
- * `LinkField()`'s own `linkType` field reuses lexical's base-field name
- * deliberately (`'reference'` standing in for lexical's `'internal'`,
- * `'url'` for its `'custom'`) — see the doc comment on `LinkField` itself.
- * This function always emits `linkType: 'url'`, since every credits link is
- * a custom URL, never a CMS document reference.
- *
- * This is also what a human-authored link produces: the floating link editor's
- * `handleDrawerSubmit`
+ * This is also what a human-authored link produces: the floating link
+ * editor's `handleDrawerSubmit`
  * (`.../features/link/client/plugins/floatingLinkEditor/LinkEditor/index.js:301-331`)
  * passes the drawer form's reduced values straight through as
  * `$createLinkNode({ fields })` / `TOGGLE_LINK_COMMAND { fields }`, and those
- * values are keyed by this same flat schema.
- *
- * `reference` is set explicitly to `null` so the key exists: `reference`'s
- * validator accepts an empty value whenever `linkType` isn't `'reference'`.
- * `label` is `required: true` and has no default value, so it must always be
- * passed explicitly (see `creditsLinkValidation.test.ts`).
+ * values are keyed by this same stock schema.
  *
  * ## `children` carries the visible text (render layer)
  *
  * Every Lexical→JSX link converter — Payload's own
- * (`.../converters/lexicalToJSX/converter/converters/link.js`) and this repo's
- * override in `src/components/RichText/index.tsx:72-115` — renders the anchor's
- * text from `nodesToJSX({ nodes: node.children })`, never from `fields.label`.
- * An earlier version of this file set `children: []` on the theory that
- * `CMSLink` prints `fields.label`; `CMSLink` is not on this render path
- * (`RichText` renders a bare `<a>{children}</a>`), so empty children produced
- * an empty anchor. Verified by rendering this function's output through
- * `convertLexicalNodesToJSX` + `defaultJSXConverters`: with `children: []` the
- * output was `<a href="…"></a>`; with a text child it is
- * `<a href="…">Jane Doe</a>`. `label` is kept as well because it is a required
- * field of the validated schema and is what the admin link editor displays.
+ * (`.../converters/lexicalToJSX/converter/converters/link.js`) and this
+ * repo's override in `src/components/RichText/linkConverter.tsx` — renders
+ * the anchor's text from `nodesToJSX({ nodes: node.children })`, never from
+ * a `label` field (which doesn't exist on this shape). `children: []` would
+ * produce an empty `<a href="…"></a>`; a text child produces
+ * `<a href="…">Jane Doe</a>`.
  */
 const linkNode = (text: string, url: string) => ({
   type: 'link',
@@ -73,11 +54,10 @@ const linkNode = (text: string, url: string) => ({
   indent: 0,
   direction: 'ltr',
   fields: {
-    linkType: 'url',
-    reference: null,
+    linkType: 'custom',
+    doc: null,
     url,
     newTab: true,
-    label: text,
   },
   children: [
     textNode(text),

@@ -103,9 +103,9 @@ describe('importPhoto', () => {
     expect(call[0].data.generatorFlags).toEqual([
       'unsplash-import',
     ])
-    // The link text lives in the node's `label` field, not in text children —
-    // see buildCreditsValue and creditsLinkValidation.test.ts.
-    expect(call[0].data.credits.root.children[0].children[1].fields.label).toBe('Jane Doe')
+    // The link text lives in the node's `children`, not a `label` field —
+    // lexical's stock link fields have no `label`. See buildCreditsValue.
+    expect(call[0].data.credits.root.children[0].children[1].children[0].text).toBe('Jane Doe')
     expect(call[0].file.data).toBeInstanceOf(Buffer)
     expect(call[0].file.mimetype).toBe('image/jpeg')
 

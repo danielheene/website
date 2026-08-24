@@ -38,8 +38,8 @@ describe('buildCreditsValue', () => {
 
     // The visible text is the plain text nodes plus each link's *children* —
     // every Lexical -> JSX link converter renders the anchor body from
-    // `node.children`, not from `fields.label`. See the render-layer test in
-    // `creditsRendering.test.tsx`.
+    // `node.children`, not from a `label` field (which doesn't exist on this
+    // shape). See the render-layer test in `creditsRendering.test.tsx`.
     const flatText = children
       .map((node) =>
         node.type === 'link'
@@ -53,30 +53,28 @@ describe('buildCreditsValue', () => {
     expect(links).toHaveLength(2)
 
     expect(links[0]?.fields).toEqual({
-      reference: null,
-      linkType: 'url',
+      doc: null,
+      linkType: 'custom',
       url: 'https://unsplash.com/@janedoe?utm_source=heene_io&utm_medium=referral',
       newTab: true,
-      label: 'Jane Doe',
     })
 
     expect(links[1]?.fields).toEqual({
-      reference: null,
-      linkType: 'url',
+      doc: null,
+      linkType: 'custom',
       url: 'https://unsplash.com/?utm_source=heene_io&utm_medium=referral',
       newTab: true,
-      label: 'Unsplash',
     })
   })
 
-  it('emits LinkField’s own linkType value — not lexical’s default internal/custom vocabulary', () => {
+  it('emits lexical’s own linkType vocabulary', () => {
     const value = buildCreditsValue({
       photographerName: 'Jane Doe',
       photographerProfileUrl: 'https://unsplash.com/@janedoe',
     })
 
     for (const node of paragraphChildren(value).filter((child) => child.type === 'link')) {
-      expect(node.fields).toHaveProperty('linkType', 'url')
+      expect(node.fields).toHaveProperty('linkType', 'custom')
     }
   })
 
@@ -98,9 +96,8 @@ describe('buildCreditsValue', () => {
   })
 
   it('keeps the link fields flat — no `link` sub-key', () => {
-    // `LinkFeature({ fields: [...LinkField().fields] })` spreads the *inner*
-    // fields of the `link` group, so a link node's `fields` object is the flat
-    // field list. Nesting under `link` would fail validation.
+    // Lexical's stock `LinkFeature` fields are flat (`linkType`, `doc`, `url`,
+    // `newTab`) — there is no nested `link` sub-key.
     const value = buildCreditsValue({
       photographerName: 'Jane Doe',
       photographerProfileUrl: 'https://unsplash.com/@janedoe',

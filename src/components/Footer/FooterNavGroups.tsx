@@ -1,12 +1,12 @@
 import { CMSLink } from '@/components/Link'
-import type { LinkGroupEntry } from '@/fields/Link/lib/resolveLinkTarget'
+import type { NavEntry } from '@/fields/Link/lib/resolveLinkTarget'
 import { cn } from '@/lib/cn'
 
 interface FooterNavGroupsProps {
   navGroups: {
     isActive?: boolean | null
     title?: string | null
-    entries?: LinkGroupEntry[] | null
+    entries?: NavEntry[] | null
   }[]
   className?: string
 }
@@ -21,7 +21,7 @@ export const FooterNavGroups = ({ navGroups, className }: FooterNavGroupsProps) 
         >
           <h3 className="mb-2 font-mono font-medium text-lg xl:text-2xl text-primary">{title}</h3>
           <ul className="text-sm ml-1">
-            {entries.map(({ link, id }) => (
+            {entries?.map(({ id, ...link }) => (
               <li
                 key={id}
                 className="font-pp-frama font-medium xl:text-lg text-current/75 hover:text-current"

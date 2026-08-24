@@ -2,6 +2,9 @@
   padding: var(--base);
   max-height: 80vh;
   overflow-y: auto;
+  background: var(--theme-elevation-0);
+  border: 1px solid var(--theme-elevation-150);
+  box-shadow: 0 8px 24px -4px rgb(0 0 0 / 25%);
 }
 
 .unsplash-search-modal__input {

@@ -15,7 +15,7 @@ interface FeaturedTopicsProps {
 const fetchFeaturedTopics = async () => {
   'use cache'
   cacheLife('max')
-  cacheTag(CollectionSlug.BlogTopics)
+  cacheTag('featuredTopics')
 
   const payload = await getPayload({
     config,
@@ -32,12 +32,13 @@ const fetchFeaturedTopics = async () => {
     select: {
       slug: true,
       title: true,
+      relatedPosts: true,
     },
     sort: '_order',
-    depth: 0,
+    depth: 2,
   })
 
-  return topics
+  return topics.filter((topic) => topic.relatedPosts?.docs?.length > 0)
 }
 
 export const FeaturedTopics = async ({ currentSlug = '/' }: FeaturedTopicsProps) => {
@@ -47,13 +48,16 @@ export const FeaturedTopics = async ({ currentSlug = '/' }: FeaturedTopicsProps)
     {
       slug: '/',
       title: 'All Topics',
+      relatedPosts: {
+        docs: [],
+      },
     },
     ...topics,
   ]
 
   return (
     <div className="flex flex-col gap-1">
-      {allTopics.map(({ slug, title }) => (
+      {allTopics.map(({ slug, title, relatedPosts }) => (
         <Link
           href={generateContentPath(CollectionSlug.BlogTopics, slug)}
           key={slug}
@@ -63,6 +67,9 @@ export const FeaturedTopics = async ({ currentSlug = '/' }: FeaturedTopicsProps)
           ])}
         >
           {title}
+          {relatedPosts?.docs?.length > 0 && (
+            <span className="ml-1">({relatedPosts?.docs?.length})</span>
+          )}
         </Link>
       ))}
     </div>

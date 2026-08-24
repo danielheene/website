@@ -14,20 +14,28 @@ const isPlainObject = (value: unknown): value is Record<string, unknown> => {
 /**
  * Structural test for "this object is a link". Links appear under several
  * different keys — `link`, lexical's `fields`, array entries — so shape is
- * the only reliable signal.
+ * the only reliable signal. Matches both the pre-rename shape (`reference`)
+ * and the post-rename shape already carrying `doc`, so a document with a mix
+ * of the two (partially migrated, or a link with only `url` set and no
+ * relationship key at all) is still recognized.
  */
 const isLinkShaped = (value: Record<string, unknown>): boolean =>
-  'label' in value && ('reference' in value || 'url' in value || 'type' in value)
+  'linkType' in value && ('reference' in value || 'doc' in value || 'url' in value)
 
 /**
- * Rewrites every link-shaped object in a document to the post-unification
- * shape: `icon` becomes `iconBefore`, and the now-removed `type` discriminator
- * is dropped.
+ * Rewrites every link-shaped object in a document to `LinkField`'s renamed
+ * shape (see `src/fields/Link/index.ts`), which now matches lexical's own
+ * `LinkFeature` base-field naming instead of a bespoke one:
  *
- * Pure and idempotent — an object already carrying `iconBefore` and no `type`
- * is returned unchanged and not counted.
+ *   linkType: 'reference' -> 'internal'
+ *   linkType: 'url'       -> 'custom'
+ *   reference              -> doc
+ *
+ * Pure and idempotent — an object already carrying `linkType: 'internal' |
+ * 'custom'` and `doc` (no `reference` key) is returned unchanged and not
+ * counted.
  */
-export const migrateLinkFields = (
+export const migrateLinkFieldNaming = (
   input: unknown,
 ): {
   value: unknown
@@ -50,14 +58,17 @@ export const migrateLinkFields = (
 
     let touched = false
 
-    if ('type' in next) {
-      delete next.type
+    if (next.linkType === 'reference') {
+      next.linkType = 'internal'
+      touched = true
+    } else if (next.linkType === 'url') {
+      next.linkType = 'custom'
       touched = true
     }
 
-    if ('icon' in next) {
-      if (next.iconBefore === undefined) next.iconBefore = next.icon
-      delete next.icon
+    if ('reference' in next) {
+      if (next.doc === undefined) next.doc = next.reference
+      delete next.reference
       touched = true
     }
 

@@ -78,22 +78,20 @@ describe('heading', () => {
 })
 
 describe('link', () => {
-  it("builds this project's LinkField shape with reference set to null", () => {
+  it("builds lexical's stock link-field shape with doc set to null", () => {
     const node = link('Docs', 'https://example.com') as {
       fields: {
         linkType: string
         url: string
-        label: string
-        reference: null
+        doc: null
         newTab: boolean
       }
     }
     expect(node.fields).toEqual({
-      linkType: 'url',
-      reference: null,
+      linkType: 'custom',
+      doc: null,
       newTab: true,
       url: 'https://example.com',
-      label: 'Docs',
     })
   })
 })

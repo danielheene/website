@@ -6,7 +6,7 @@ import { FooterLegalLinks } from '@/components/Footer/FooterLegalLinks'
 import { FooterNavGroups } from '@/components/Footer/FooterNavGroups'
 import { Logo } from '@/components/Logo'
 import { ServiceStatus } from '@/components/ServiceStatus'
-import type { LinkFieldDataLean } from '@/fields/Link/lib/resolveLinkTarget'
+import type { LinkFieldDataLean, NavEntry } from '@/fields/Link/lib/resolveLinkTarget'
 import { cn } from '@/lib/cn'
 import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fetchers'
 
@@ -32,7 +32,7 @@ export const Footer = async () => {
     socialLinks.push({
       id: 'email',
       link: {
-        linkType: 'url',
+        linkType: 'custom',
         url: `mailto:${email}`,
         label: 'Email',
         iconBefore: 'mail',
@@ -46,7 +46,7 @@ export const Footer = async () => {
     socialLinks.push({
       id: 'telephone',
       link: {
-        linkType: 'url',
+        linkType: 'custom',
         url: parsePhoneNumber(telephone).getURI(),
         label: 'Telephone',
         iconBefore: 'phone',
@@ -60,7 +60,7 @@ export const Footer = async () => {
     socialLinks.push({
       id,
       link: {
-        linkType: 'url',
+        linkType: 'custom',
         url,
         label: name,
         iconBefore: icon,
@@ -70,11 +70,25 @@ export const Footer = async () => {
     })
   })
 
-  const navGroups = [
-    column1,
-    column2,
-    column3,
-  ].filter(({ isActive }) => isActive === true)
+  // `column1`/`column2`/`column3` come straight off `fetchSiteSettingsCached()`,
+  // typed against the generated (unnarrowed) `NavEntries` — `reference.value`
+  // there is `string | Page`, and `Page.content` recursively embeds more link
+  // fields, so it can't be assigned to `FooterNavGroups`' lean prop type
+  // without TypeScript trying (and failing) to unify two different expansions
+  // of that recursion. `resolveRelations` has already depth-limited the real
+  // data to what `NavEntry` describes; the cast just tells TypeScript that,
+  // same as the `LinkFieldDataLean` casts in `RichText/serialize.tsx`.
+  const navGroups = (
+    [
+      column1,
+      column2,
+      column3,
+    ] as {
+      isActive?: boolean | null
+      title?: string | null
+      entries?: NavEntry[] | null
+    }[]
+  ).filter(({ isActive }) => isActive === true)
 
   return (
     <footer
@@ -97,7 +111,13 @@ export const Footer = async () => {
           </div>
           <div className="mt-8 flex flex-col justify-between gap-4 border-t py-8 text-xs font-medium text-muted-foreground md:flex-row md:items-center md:text-left">
             <ServiceStatus className="mr-auto" />
-            <FooterLegalLinks legalPages={legalPages} />
+            <FooterLegalLinks
+              legalPages={
+                legalPages as {
+                  entries?: NavEntry[] | null
+                }
+              }
+            />
           </div>
         </div>
       </section>

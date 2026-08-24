@@ -260,7 +260,7 @@ export const FieldComponentClient = ({
             className={cn([
               baseIconStyles,
             ])}
-            // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: <sanitized via 'isomorphic-dompurify'>
             dangerouslySetInnerHTML={{
               __html: logoContent,
             }}

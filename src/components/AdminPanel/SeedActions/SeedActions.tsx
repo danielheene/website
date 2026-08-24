@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button, ConfirmationModal, Modal, toast, useModal } from '@payloadcms/ui'
+import { Button, ConfirmationModal, DrawerToggler, Modal, toast, useModal } from '@payloadcms/ui'
 
 import { useServerSentEvents } from '@/components/hooks/use-server-sent-events'
 import { enqueueSeedCollection } from '@/lib/actions/enqueueSeedCollection'
@@ -138,23 +138,24 @@ export const SeedActions = ({ collectionSlug, collectionLabel }: SeedActionsProp
 
   return (
     <>
-      <Button
-        type="button"
-        buttonStyle="pill"
-        size="small"
-        onClick={() => openModal(seedModalSlug)}
-      >
-        Seed…
-      </Button>
-      <Button
-        type="button"
-        buttonStyle="pill"
-        size="small"
-        onClick={() => openModal(cleanModalSlug)}
-      >
-        Clean
-      </Button>
-
+      <div className="popup-button-list__button">
+        <button
+          className="doc-drawer__toggler"
+          type="button"
+          onClick={() => openModal(seedModalSlug)}
+        >
+          Seed Dummy Data
+        </button>
+      </div>{' '}
+      <div className="popup-button-list__button">
+        <button
+          className="doc-drawer__toggler"
+          type="button"
+          onClick={() => openModal(cleanModalSlug)}
+        >
+          Clean Dummy Data
+        </button>
+      </div>
       <Modal slug={seedModalSlug} className="seed-actions-modal">
         <div className="seed-actions-modal__body">
           <h3>Seed {collectionLabel}</h3>
@@ -186,7 +187,6 @@ export const SeedActions = ({ collectionSlug, collectionLabel }: SeedActionsProp
           </div>
         </div>
       </Modal>
-
       <ConfirmationModal
         modalSlug={cleanModalSlug}
         heading={`Delete all seeded ${collectionLabel}?`}

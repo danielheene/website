@@ -85,8 +85,6 @@ export default async (phase, { defaultConfig }) => {
 
     process.env.SERVER_HOST = CLOUDFLARE_TUNNEL_HOST
     process.env.SERVER_URL = CLOUDFLARE_TUNNEL_URL
-    process.env.HOST = CLOUDFLARE_TUNNEL_HOST
-    process.env.PORT = String(443)
   }
 
   /* Environment validation */
@@ -123,16 +121,6 @@ export default async (phase, { defaultConfig }) => {
     productionBrowserSourceMaps: false,
     reactStrictMode: true,
     cacheComponents: true,
-    /*
-     * Redis-backed `use cache` storage.
-     *
-     * `cacheHandlers` (plural) is the Cache Components extension point; the
-     * singular `cacheHandler` this once used is the legacy ISR one and does not
-     * receive `'use cache'` entries. See `next.cache-handler.ts`.
-     */
-    cacheHandlers: {
-      default: require.resolve('./next.cache-handler.ts'),
-    },
 
     experimental: {
       appNewScrollHandler: true,

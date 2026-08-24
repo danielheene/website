@@ -13,23 +13,22 @@ import { generateContentURL } from '@/lib/generateContentURL'
  * import Vitest's default Node transform can't load. See `src/fields/Icon/
  * index.ts` for the same class of problem in a different module.
  *
- * `LinkFeature({ fields: [...LinkField().fields] })` (see
- * `src/fields/RichText/index.ts`) spreads `LinkField`'s *inner* fields
- * directly as the link node's schema — lexical's `transformExtraFields`
- * replaces its default `linkType`/`url`/`newTab` base fields with these,
- * rather than merging them under a nested key. So `node.fields` here is
- * already the flat `{ linkType, reference, url, newTab, iconBefore, label,
- * iconAfter, iconOnly }` shape `resolveLinkTarget` expects — not nested
- * under a `link` sub-key, and not `LinkJSXConverter`'s own `{ linkType,
- * url, doc }` shape either. Links are resolved through the same
- * `resolveLinkTarget` helper `CMSLink` uses, reading `node.fields` directly.
+ * `LinkFeature()` (see `src/fields/RichText/index.ts`) uses lexical's own
+ * stock link fields — `{ linkType: 'internal' | 'custom', doc, url, newTab }`
+ * — rather than swapping in `LinkField`'s fields. `LinkField` deliberately
+ * uses the same names/values (see its module doc comment), so `node.fields`
+ * here is resolved through the same `resolveLinkTarget` helper `CMSLink`
+ * uses for `LinkField`-backed data elsewhere, rather than a separate
+ * lexical-only code path.
  */
 export const linkConverter: JSXConverters<SerializedLinkNode>['link'] = ({ node, nodesToJSX }) => {
-  // `node.fields` is typed as lexical's own stock `LinkFields` shape
-  // (`{ linkType, url, doc, newTab }`), but at runtime — per the module doc
-  // comment above — it is actually `LinkField`'s replaced flat shape. The
-  // two types don't overlap enough for a direct `as`, hence the `unknown`
-  // hop.
+  // `node.fields` is lexical's own stock `LinkFields` shape. It has no
+  // `label`/`iconBefore`/`iconAfter`/`iconOnly` (those only exist on
+  // `LinkField`-backed data, where there's no selected editor text to derive
+  // a label from) and `doc.value` is untyped `JsonValue` rather than
+  // `resolveLinkTarget`'s narrower `LinkReferenceValue` — close enough in
+  // shape for `resolveLinkTarget` (which only reads `doc`/`url`), not close
+  // enough for a direct assignment, hence the `unknown` hop.
   const fields = node.fields as unknown as LinkFieldDataLean | undefined
   const children = nodesToJSX({
     nodes: node.children,

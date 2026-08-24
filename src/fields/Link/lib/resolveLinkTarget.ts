@@ -28,13 +28,13 @@ export type LinkReferenceDocument = {
 export type LinkReferenceValue = LinkReferenceDocument | string
 
 /**
- * {@link LinkFieldData} with `reference.value` narrowed to
- * {@link LinkReferenceValue} instead of the full generated document union.
- * Use this everywhere a `link` group's data is read — the payload shape is
- * identical, just typed leanly.
+ * {@link LinkFieldData} with `doc.value` narrowed to {@link
+ * LinkReferenceValue} instead of the full generated document union. Use this
+ * everywhere a `link` group's data is read — the payload shape is identical,
+ * just typed leanly.
  */
-export type LinkFieldDataLean = Omit<LinkFieldData, 'reference'> & {
-  reference?: LinkFieldData['reference'] extends infer R
+export type LinkFieldDataLean = Omit<LinkFieldData, 'doc'> & {
+  doc?: LinkFieldData['doc'] extends infer R
     ? R extends {
         relationTo: infer RelationTo
       }
@@ -47,15 +47,31 @@ export type LinkFieldDataLean = Omit<LinkFieldData, 'reference'> & {
 }
 
 /**
- * A `{ link, id }` entry as stored in a link-group array (the Footer nav
- * columns, legal links, `LinkGroupBlock`, and similar) — {@link
- * LinkFieldDataLean}'s recursion problem, one level up. Define this once and
- * reuse it rather than typing each call site off the generated global/block
- * interfaces (`FooterSettings['column1']`, etc.), which carry the same full
- * `Page`/`BlogPostData`/`Topic` documents `LinkFieldDataLean` exists to avoid.
+ * A `{ link, id }` entry as stored in a `LinkGroupField` array (`LinkGroupBlock`
+ * and similar) — {@link LinkFieldDataLean}'s recursion problem, one level up.
+ * `LinkGroupField`'s `entries` array nests a whole `LinkField()` group inside
+ * each row, so each entry carries its link data under a `link` key. Define
+ * this once and reuse it rather than typing each call site off the generated
+ * block interfaces, which carry the same full `Page`/`BlogPostData`/`Topic`
+ * documents `LinkFieldDataLean` exists to avoid.
  */
 export type LinkGroupEntry = {
   link: LinkFieldDataLean
+  id?: string | null
+}
+
+/**
+ * An entry as stored in a `NavEntries` array (`SiteSettings`'s Header nav and
+ * Footer nav/legal columns) — {@link LinkFieldDataLean}'s recursion problem,
+ * one level up, for the *other* shape.
+ *
+ * Unlike {@link LinkGroupEntry}, `NavEntries()` (see `SiteSettings/index.ts`)
+ * spreads `LinkField().fields` directly into the array row rather than
+ * nesting a `link` sub-group, so each entry's link fields (`linkType`, `doc`,
+ * `url`, `label`, …) sit flat alongside `id` — there is no nested `link` key
+ * to destructure.
+ */
+export type NavEntry = LinkFieldDataLean & {
   id?: string | null
 }
 
@@ -70,8 +86,8 @@ export type LinkTarget =
     }
 
 /**
- * Collapses a link's `reference` / `url` pair into the single union the rest
- * of the codebase consumes.
+ * Collapses a link's `doc` / `url` pair into the single union the rest of the
+ * codebase consumes.
  *
  * The pair is stored rather than the union because `customURL` is not a real
  * collection, and only a real polymorphic relationship gets Payload's
@@ -84,12 +100,12 @@ export type LinkTarget =
 export const resolveLinkTarget = (link?: Partial<LinkFieldDataLean> | null): LinkTarget | null => {
   if (!link) return null
 
-  const { reference, url } = link
+  const { doc, url } = link
 
-  if (reference?.relationTo && reference.value) {
+  if (doc?.relationTo && doc.value) {
     return {
-      relationTo: reference.relationTo,
-      value: reference.value,
+      relationTo: doc.relationTo,
+      value: doc.value,
     }
   }
 

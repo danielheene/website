@@ -48,7 +48,7 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
               name: 'portrait',
               label: 'Profile Picture',
               description: `
-                Upload your profile picture here.<br />
+                Upload your profile picture here.
                 You can choose between a regular and a duotone version.
                `,
               fields: [
@@ -59,7 +59,7 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                       name: 'regular',
                       type: 'upload',
                       relationTo: [
-                        CollectionSlug['MediaImages'],
+                        CollectionSlug.MediaImages,
                       ],
                       defaultValue: null,
                       admin: {
@@ -70,7 +70,7 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                       name: 'duotone',
                       type: 'upload',
                       relationTo: [
-                        CollectionSlug['MediaImages'],
+                        CollectionSlug.MediaImages,
                       ],
                       defaultValue: null,
                       admin: {
@@ -312,7 +312,7 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
               ],
             }),
             AddressField({
-              description: dedent`
+              description: `
                 This section describes your address information.
                 Those informations are also used on the legal-notice page.
               `,
@@ -329,7 +329,7 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                   },
                   type: 'array',
                   admin: {
-                    description: dedent`
+                    description: `
                       This section describes links to your profiles on other platforms, such as social media accounts or personal websites.
                       Those links are also used in the footer of the website in the same order.
                     `,

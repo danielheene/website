@@ -3,9 +3,9 @@ import { getPayload } from 'payload'
 
 import { CollectionSlug } from '@/types/collections'
 
-import { ChecksumValidatorClient } from './ChecksumValidator.client'
+import { ResumeChecksumValidatorClient } from './ResumeChecksumValidator.client'
 
-export const ChecksumValidator = async () => {
+export const ResumeChecksumValidator = async () => {
   const searchChecksum = async (checksum: string) => {
     'use server'
 
@@ -33,8 +33,8 @@ export const ChecksumValidator = async () => {
       },
     })
 
-    return doc
+    return doc || null
   }
 
-  return <ChecksumValidatorClient searchChecksum={searchChecksum} />
+  return <ResumeChecksumValidatorClient searchChecksum={searchChecksum} />
 }

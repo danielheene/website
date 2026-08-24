@@ -2,7 +2,7 @@ import { getPayload } from 'payload'
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { runResumeGenerationJobNow } from './runResumeGenerationJobNow'
+import { scheduledJobChannel } from '@/lib/sse/channels'
 
 vi.mock('@payload-config', () => ({
   default: {},
@@ -18,6 +18,13 @@ const findByID = vi.fn(async () => ({
 }))
 const runByID = vi.fn(async () => ({}))
 const logError = vi.fn()
+const publishMock = vi.fn()
+
+vi.mock('@/lib/RedisHandler', () => ({
+  publish: (...args: unknown[]) => publishMock(...args),
+}))
+
+const { runScheduledJobNow } = await import('./runScheduledJobNow')
 
 /**
  * `getPayload` is stubbed globally in vitest.setup.ts with a fixed shape;
@@ -32,7 +39,9 @@ beforeEach(() => {
     hasError: false,
   })
   runByID.mockClear()
+  runByID.mockResolvedValue({})
   logError.mockClear()
+  publishMock.mockClear()
 
   vi.mocked(getPayload).mockResolvedValue({
     findByID,
@@ -46,9 +55,9 @@ beforeEach(() => {
   } as never)
 })
 
-describe('runResumeGenerationJobNow', () => {
+describe('runScheduledJobNow', () => {
   it('runs a still-pending job immediately', async () => {
-    await runResumeGenerationJobNow(JOB_ID)
+    await runScheduledJobNow(JOB_ID)
 
     expect(runByID).toHaveBeenCalledTimes(1)
     expect(runByID).toHaveBeenCalledWith({
@@ -56,12 +65,22 @@ describe('runResumeGenerationJobNow', () => {
     })
   })
 
+  it('publishes a success message on the job channel once it finishes', async () => {
+    await runScheduledJobNow(JOB_ID)
+
+    expect(publishMock).toHaveBeenCalledTimes(1)
+    expect(publishMock).toHaveBeenCalledWith(scheduledJobChannel(JOB_ID), {
+      status: 'success',
+    })
+  })
+
   it('does nothing when the job no longer exists', async () => {
     findByID.mockResolvedValue(null)
 
-    await runResumeGenerationJobNow(JOB_ID)
+    await runScheduledJobNow(JOB_ID)
 
     expect(runByID).not.toHaveBeenCalled()
+    expect(publishMock).not.toHaveBeenCalled()
   })
 
   it('does nothing when the job is already processing', async () => {
@@ -72,7 +91,7 @@ describe('runResumeGenerationJobNow', () => {
       hasError: false,
     })
 
-    await runResumeGenerationJobNow(JOB_ID)
+    await runScheduledJobNow(JOB_ID)
 
     expect(runByID).not.toHaveBeenCalled()
   })
@@ -85,7 +104,7 @@ describe('runResumeGenerationJobNow', () => {
       hasError: false,
     })
 
-    await runResumeGenerationJobNow(JOB_ID)
+    await runScheduledJobNow(JOB_ID)
 
     expect(runByID).not.toHaveBeenCalled()
   })
@@ -98,7 +117,7 @@ describe('runResumeGenerationJobNow', () => {
       hasError: true,
     })
 
-    await runResumeGenerationJobNow(JOB_ID)
+    await runScheduledJobNow(JOB_ID)
 
     expect(runByID).not.toHaveBeenCalled()
   })
@@ -106,9 +125,21 @@ describe('runResumeGenerationJobNow', () => {
   it('logs rather than throws when runByID fails', async () => {
     runByID.mockRejectedValue(new Error('boom'))
 
-    await expect(runResumeGenerationJobNow(JOB_ID)).resolves.toBeUndefined()
+    await expect(runScheduledJobNow(JOB_ID)).resolves.toBeUndefined()
 
     expect(logError).toHaveBeenCalledTimes(1)
     expect(logError.mock.calls[0][0]).toContain('boom')
+  })
+
+  it('publishes an error message on the job channel when runByID fails', async () => {
+    runByID.mockRejectedValue(new Error('boom'))
+
+    await runScheduledJobNow(JOB_ID)
+
+    expect(publishMock).toHaveBeenCalledTimes(1)
+    expect(publishMock).toHaveBeenCalledWith(scheduledJobChannel(JOB_ID), {
+      status: 'error',
+      message: 'boom',
+    })
   })
 })

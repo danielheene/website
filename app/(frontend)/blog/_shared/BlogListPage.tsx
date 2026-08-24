@@ -6,9 +6,13 @@ import { getPayload } from 'payload'
 
 import { format } from 'date-fns'
 
+import { Button } from '@/components/Button'
+import { DuoTone } from '@/components/DuoTone'
 import { SHADER_PRESET_MAP } from '@/components/HeroMedia/shaderPresets'
+import { Icon } from '@/components/Icon'
 import { ImageMedia } from '@/components/ImageMedia'
 import { PageContainer } from '@/components/PageContainer'
+import { Pagination } from '@/components/Pagination'
 import { cn } from '@/lib/cn'
 import { CollectionSlug } from '@/types/collections'
 import type { BlogPostData, Topic } from '@/types/payload'
@@ -109,116 +113,61 @@ const PostCard = ({ post }: { post: BlogPostData }) => {
     <Link
       href={`/blog/post/${post.slug}`}
       className={cn([
-        'group relative isolate h-80 overflow-hidden rounded-lg bg-background',
+        'group relative isolate h-80 overflow-hidden bg-background',
       ])}
     >
+      <DuoTone>
+        {heroImage && typeof heroImage === 'object' && heroImage.url && (
+          <ImageMedia
+            url={heroImage.url}
+            alt={heroImage.alt || post.title}
+            blurDataURL={heroImage.blurDataURL}
+            fill
+            sizes="(min-width: 768px) 50vw, 100vw"
+            className="absolute inset-0 size-full object-cover"
+          />
+        )}
+        {shaderGradient && (
+          <div
+            className="absolute inset-0 size-full"
+            style={{
+              background: shaderGradient,
+            }}
+          />
+        )}
+      </DuoTone>
       <div
         className={cn([
-          'z-10 flex h-full flex-col justify-between p-6',
+          'absolute inset-0 size-full flex flex-col justify-between',
         ])}
       >
         <p
           className={cn([
-            'text-muted-foreground transition-colors duration-500 group-hover:text-background',
+            'text-background px-6 pt-2.5 pb-10 font-pp-supply-sans',
+            'dark:text-foreground text-right',
+            'bg-linear-to-b from-primary/95 to-primary/0',
           ])}
         >
           {format(post.createdAt, 'MMMM d, yyyy')}
         </p>
-        <h2
+        <header
           className={cn([
-            'line-clamp-2 text-xl font-medium transition-colors duration-500 group-hover:text-background',
+            'text-background px-6 pb-4 pt-16 font-pp-supply-sans',
+            'dark:text-foreground line-clamp-2 text-xl leading-normal  font-medium',
+            'bg-linear-to-b from-primary/0 to-primary/95',
           ])}
         >
-          {post.title}
-        </h2>
+          <h2
+            className={cn([
+              'text-background block font-pp-supply-sans font-medium',
+              'dark:text-foreground text-2xl leading-8 line-clamp-2 h-[calc(var(--tw-leading)*2)]',
+            ])}
+          >
+            {post.title}
+          </h2>
+        </header>
       </div>
-      {heroImage && typeof heroImage === 'object' && heroImage.url && (
-        <ImageMedia
-          url={heroImage.url}
-          alt={heroImage.alt || post.title}
-          blurDataURL={heroImage.blurDataURL}
-          fill
-          sizes="(min-width: 768px) 50vw, 100vw"
-          className={cn([
-            'absolute inset-0 -z-10 size-full rounded-lg object-cover brightness-50 transition-all duration-500 ease-[cubic-bezier(0.77,0,0.175,1)] [clip-path:inset(0_0_100%_0)] group-hover:[clip-path:inset(0_0_0%_0)]',
-          ])}
-        />
-      )}
-      {shaderGradient && (
-        <div
-          className="absolute inset-0 -z-10 size-full rounded-lg brightness-50"
-          style={{
-            background: shaderGradient,
-          }}
-        />
-      )}
     </Link>
-  )
-}
-
-const Pagination = ({
-  basePath,
-  page,
-  totalPages,
-}: {
-  basePath: string
-  page: number
-  totalPages: number
-}) => {
-  if (totalPages <= 1) return null
-
-  const pageHref = (target: number) => (target <= 1 ? basePath : `${basePath}/page/${target}`)
-
-  return (
-    <nav
-      aria-label="Pagination"
-      className={cn([
-        'col-span-full mt-8 flex items-center justify-center gap-2 font-mono',
-      ])}
-    >
-      {page > 1 && (
-        <Link
-          href={pageHref(page - 1)}
-          rel="prev"
-          className={cn([
-            'rounded-md border border-border px-3 py-1.5 text-sm transition-colors hover:bg-muted',
-          ])}
-        >
-          Previous
-        </Link>
-      )}
-      {Array.from(
-        {
-          length: totalPages,
-        },
-        (_, index) => index + 1,
-      ).map((target) => (
-        <Link
-          key={target}
-          href={pageHref(target)}
-          aria-current={target === page ? 'page' : undefined}
-          className={cn([
-            'rounded-md border px-3 py-1.5 text-sm transition-colors',
-            target === page
-              ? 'border-primary bg-primary text-primary-foreground'
-              : 'border-border hover:bg-muted',
-          ])}
-        >
-          {target}
-        </Link>
-      ))}
-      {page < totalPages && (
-        <Link
-          href={pageHref(page + 1)}
-          rel="next"
-          className={cn([
-            'rounded-md border border-border px-3 py-1.5 text-sm transition-colors hover:bg-muted',
-          ])}
-        >
-          Next
-        </Link>
-      )}
-    </nav>
   )
 }
 

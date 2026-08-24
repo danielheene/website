@@ -207,7 +207,7 @@ The one script that does talk to Doppler is `pnpm load-env`, which writes that f
 ```text
 .
 ├── app/                  # Next.js App Router
-│   ├── (frontend)/       # Public site routes, incl. api/ (preview, sse, heartbeat, service-status)
+│   ├── (frontend)/       # Public site routes, incl. api/ (preview, sse, heartbeat)
 │   └── (payload)/        # Payload admin panel routes
 ├── src/                  # Application Source
 │   ├── access/           # Payload Access Control functions

@@ -1,9 +1,10 @@
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { cacheLife, cacheTag } from 'next/cache'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
-import { ChecksumValidator } from '@/components/CheckumVallidatior/ChecksumValidator'
+import { ResumeChecksumValidator } from '@/components/ResumeCheckumValidatior/ResumeChecksumValidator'
 import { cn } from '@/lib/cn'
 import { placeholderParams } from '@/lib/placeholderParams'
 import { CollectionData, CollectionSlug } from '@/types/collections'
@@ -35,7 +36,9 @@ export default async function ResumeDocumentPage({ params }: PageProps<'/resume/
         </div>
       </section>
       <h1>{slug}</h1>
-      <ChecksumValidator />
+      <Suspense fallback={<div>Loading...</div>}>
+        <ResumeChecksumValidator />
+      </Suspense>
     </div>
   )
 }

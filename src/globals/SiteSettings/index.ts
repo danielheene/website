@@ -1,5 +1,7 @@
 import type { ArrayField, GlobalConfig } from 'payload'
 
+import { jsonSchema } from 'ai'
+
 import { authenticated } from '@/access/authenticated'
 import { LinkField } from '@/fields/Link'
 import { TemplateField } from '@/fields/Template'
@@ -22,8 +24,14 @@ const NavEntries = (): ArrayField => ({
       Label: false,
     },
   },
+  hooks: {
+    afterRead: [
+      async ({ value = [] }) => value,
+    ],
+  },
+  interfaceName: 'NavEntries',
   fields: [
-    LinkField(),
+    ...LinkField().fields,
   ],
 })
 
@@ -149,7 +157,7 @@ export const SiteSettings: GlobalConfig = {
                   name: 'image',
                   type: 'upload',
                   relationTo: [
-                    CollectionSlug['MediaImages'],
+                    CollectionSlug.MediaImages,
                   ],
                   filterOptions: {
                     mimeType: {

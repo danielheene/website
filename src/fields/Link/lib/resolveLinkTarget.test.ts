@@ -9,10 +9,10 @@ const page = {
 }
 
 describe('resolveLinkTarget', () => {
-  it('returns the reference branch for a populated reference', () => {
+  it('returns the doc branch for a populated doc', () => {
     expect(
       resolveLinkTarget({
-        reference: {
+        doc: {
           relationTo: 'pages',
           value: page,
         },
@@ -23,10 +23,10 @@ describe('resolveLinkTarget', () => {
     })
   })
 
-  it('returns the reference branch for an unpopulated id', () => {
+  it('returns the doc branch for an unpopulated id', () => {
     expect(
       resolveLinkTarget({
-        reference: {
+        doc: {
           relationTo: 'posts',
           value: 'post-1',
         },
@@ -59,10 +59,10 @@ describe('resolveLinkTarget', () => {
     })
   })
 
-  it('prefers the reference when both are somehow set', () => {
+  it('prefers the doc when both are somehow set', () => {
     expect(
       resolveLinkTarget({
-        reference: {
+        doc: {
           relationTo: 'pages',
           value: page,
         },
@@ -83,7 +83,7 @@ describe('resolveLinkTarget', () => {
     ).toBeNull()
     expect(
       resolveLinkTarget({
-        reference: null,
+        doc: null,
         url: null,
       } as never),
     ).toBeNull()

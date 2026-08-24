@@ -1,16 +1,18 @@
 /**
- *    Migrates stored links to the unified-target shape:
+ *    Migrates stored links to `LinkField`'s renamed shape (see
+ *    `src/fields/Link/index.ts`), which now matches lexical's own
+ *    `LinkFeature` base-field naming instead of a bespoke one:
  *
- *      icon  ->  iconBefore
- *      type  ->  (removed — the target select derives it from
- *                 reference/url instead)
+ *      linkType: 'reference'  ->  'internal'
+ *      linkType: 'url'        ->  'custom'
+ *      reference               ->  doc
  *
  *    Usage:
  *      pnpm links:migrate
  *
- *    Run this once, immediately after deploying the `LinkField` change (see
- *    `src/fields/Link/index.ts`) — the schema change and this script are one
- *    unit of work, not independently orderable.
+ *    Run this once, immediately after deploying the `LinkField` rename — the
+ *    schema change and this script are one unit of work, not independently
+ *    orderable.
  *
  *    Reads and writes the raw MongoDB collections directly
  *    (`payload.db.connection`), bypassing Payload's field-aware local API:
@@ -24,7 +26,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
-import { migrateLinkFields } from '@/lib/migrations/migrateLinkFields'
+import { migrateLinkFieldNaming } from '@/lib/migrations/migrateLinkFieldNaming'
 import { CollectionSlug } from '@/types/collections'
 
 const payload = await getPayload({
@@ -36,9 +38,12 @@ const payload = await getPayload({
  *
  * "Can contain a link" means a `RichTextField` whose `editorVariant` builds
  * on `captionFeatures` or `markdownFeatures` in `src/fields/RichText/index.ts`
- * — those are the only variants `LinkFeature` is spread into. The `inline`
- * variant (`ResumeJobs`, `ResumeSkills`) stops one layer short of that and
- * cannot hold a link node, so those collections are correctly absent here.
+ * — those are the only variants `LinkFeature` is spread into — plus any
+ * `LinkField`/`LinkGroupField` group or array field outside RichText (Footer
+ * nav, `LinkGroupBlock` entries, and similar, which live on `SiteSettings`
+ * under `globals`). The `inline` variant (`ResumeJobs`, `ResumeSkills`) stops
+ * one layer short of `LinkFeature` and cannot hold a link node, so those
+ * collections are correctly absent here.
  */
 const TARGET_COLLECTIONS = [
   CollectionSlug.Pages,
@@ -62,7 +67,7 @@ for (const collectionName of TARGET_COLLECTIONS) {
 
   for (const doc of docs) {
     const { _id, ...rest } = doc
-    const { value, changed } = migrateLinkFields(rest)
+    const { value, changed } = migrateLinkFieldNaming(rest)
 
     if (changed === 0) {
       skipped += 1

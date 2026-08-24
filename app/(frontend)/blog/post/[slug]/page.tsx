@@ -127,11 +127,7 @@ export default async function Page({ params: paramsPromise }: PageProps) {
   ])
 
   return (
-    <div
-      className="flex min-h-svh w-full flex-col bg-background text-foreground"
-      id="screenshot"
-      data-theme-scope="preview"
-    >
+    <div className="flex  w-full flex-col bg-background text-foreground">
       <div className="flex flex-1 items-center justify-center">
         <section className="pb-32 w-full">
           {/* A post carries at most one hero image, so this never becomes a carousel. */}
@@ -162,7 +158,7 @@ export default async function Page({ params: paramsPromise }: PageProps) {
                     )}
                   </ol>
                 </nav>
-                <div className="flex w-full max-w-[48rem] flex-col gap-5">
+                <div className="flex w-full max-w-5xl  flex-col gap-5">
                   <div className="flex items-center justify-center gap-2.5 font-mono text-sm text-foreground/60">
                     <time dateTime={createdAt}>{format(createdAt, 'MMMM d, yyyy')}</time>
                   </div>

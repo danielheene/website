@@ -24,6 +24,35 @@ export type SkillType =
   | 'methodologiesAndWorkingPractices';
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "NavEntries".
+ */
+export type NavEntries =
+  | {
+      linkType: 'internal' | 'custom';
+      newTab?: boolean | null;
+      iconOnly?: boolean | null;
+      doc?:
+        | ({
+            relationTo: 'pages';
+            value: string | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: string | BlogPostData;
+          } | null)
+        | ({
+            relationTo: 'topics';
+            value: string | Topic;
+          } | null);
+      url?: string | null;
+      iconBefore?: string | null;
+      label: string;
+      iconAfter?: string | null;
+      id?: string | null;
+    }[]
+  | null;
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "LanguageCode".
  */
 export type LanguageCode =
@@ -157,7 +186,7 @@ export interface Config {
   };
   locale: null;
   widgets: {
-    'scheduled-resume-generation-widget': ScheduledResumeGenerationWidgetWidget;
+    'scheduled-jobs-widget': ScheduledJobsWidgetWidget;
     'umami-widget': UmamiWidgetWidget;
     collections: CollectionsWidget;
   };
@@ -245,13 +274,10 @@ export interface LinkGroupBlock {
  * via the `definition` "LinkFieldData".
  */
 export interface LinkFieldData {
-  linkType: 'reference' | 'url';
+  linkType: 'internal' | 'custom';
   newTab?: boolean | null;
-  /**
-   * Hides the label visually and uses it as the accessible name instead.
-   */
   iconOnly?: boolean | null;
-  reference?:
+  doc?:
     | ({
         relationTo: 'pages';
         value: string | Page;
@@ -266,9 +292,6 @@ export interface LinkFieldData {
       } | null);
   url?: string | null;
   iconBefore?: string | null;
-  /**
-   * Also used as the accessible name when Icon only is checked.
-   */
   label: string;
   iconAfter?: string | null;
 }
@@ -772,12 +795,35 @@ export interface BlogPostData {
         value: string | Topic;
       }[]
     | null;
+  readingTime?: number | null;
+  links?:
+    | {
+        icon?: string | null;
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   relatedPosts?:
     | {
         relationTo: 'posts';
         value: string | BlogPostData;
       }[]
     | null;
+  excerpt?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   content?: {
     root: {
       type: string;
@@ -1705,7 +1751,16 @@ export interface PostsSelect<T extends boolean = true> {
             };
       };
   topics?: T;
+  readingTime?: T;
+  links?:
+    | T
+    | {
+        icon?: T;
+        url?: T;
+        id?: T;
+      };
   relatedPosts?: T;
+  excerpt?: T;
   content?: T;
   meta?:
     | T
@@ -2230,12 +2285,7 @@ export interface GeneralSettings {
  */
 export interface HeaderSettings {
   mainNavigation?: {
-    entries?:
-      | {
-          link: LinkFieldData;
-          id?: string | null;
-        }[]
-      | null;
+    entries?: NavEntries;
   };
 }
 /**
@@ -2246,40 +2296,20 @@ export interface FooterSettings {
   column1?: {
     isActive?: boolean | null;
     title?: string | null;
-    entries?:
-      | {
-          link: LinkFieldData;
-          id?: string | null;
-        }[]
-      | null;
+    entries?: NavEntries;
   };
   column2?: {
     isActive?: boolean | null;
     title?: string | null;
-    entries?:
-      | {
-          link: LinkFieldData;
-          id?: string | null;
-        }[]
-      | null;
+    entries?: NavEntries;
   };
   column3?: {
     isActive?: boolean | null;
     title?: string | null;
-    entries?:
-      | {
-          link: LinkFieldData;
-          id?: string | null;
-        }[]
-      | null;
+    entries?: NavEntries;
   };
   legalPages?: {
-    entries?:
-      | {
-          link: LinkFieldData;
-          id?: string | null;
-        }[]
-      | null;
+    entries?: NavEntries;
   };
 }
 /**
@@ -2289,18 +2319,18 @@ export interface FooterSettings {
 export interface PDFGeneratorSettings {
   id: string;
   /**
-   * The document name template for the documents collection.  
+   * The document name template for the documents collection.
    * The document contains all meta data, file references and the data which was used to generate the PDFs.
    */
-  documentTitleTemplate?: string | null;
+  documentTitleTemplate: string;
   /**
-   * The filename template for the generated PDF which must satisfy both locales and result in two different filenames.  
+   * The filename template for the generated PDF which must satisfy both locales and result in two different filenames.
    * To get an full overview of all available variables or filter functions use the info icon.
    */
-  filenameTemplate?: string | null;
+  filenameTemplate: string;
   generateThrottle?: number | null;
   timeoutBetweenJobs?: number | null;
-  maximumRetries?: number | null;
+  maximumRetries: number;
   skillSorting?: SkillSorting;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -2340,7 +2370,7 @@ export interface SkillEntrySortable {
 export interface GlobalUserSettings {
   id: string;
   /**
-   * Upload your profile picture here.<br />
+   * Upload your profile picture here.
    * You can choose between a regular and a duotone version.
    */
   portrait?: {
@@ -2384,8 +2414,10 @@ export interface GlobalUserSettings {
     de?: AddressData;
   };
   /**
-   * This section describes links to your profiles on other platforms, such as social media accounts or personal websites.
-   * Those links are also used in the footer of the website in the same order.
+   *
+   *                       This section describes links to your profiles on other platforms, such as social media accounts or personal websites.
+   *                       Those links are also used in the footer of the website in the same order.
+   *
    */
   sameAs?:
     | {
@@ -2481,27 +2513,23 @@ export interface HeaderSettingsSelect<T extends boolean = true> {
   mainNavigation?:
     | T
     | {
-        entries?:
-          | T
-          | {
-              link?: T | LinkFieldDataSelect<T>;
-              id?: T;
-            };
+        entries?: T | NavEntriesSelect<T>;
       };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "LinkFieldData_select".
+ * via the `definition` "NavEntries_select".
  */
-export interface LinkFieldDataSelect<T extends boolean = true> {
+export interface NavEntriesSelect<T extends boolean = true> {
   linkType?: T;
   newTab?: T;
   iconOnly?: T;
-  reference?: T;
+  doc?: T;
   url?: T;
   iconBefore?: T;
   label?: T;
   iconAfter?: T;
+  id?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2513,46 +2541,26 @@ export interface FooterSettingsSelect<T extends boolean = true> {
     | {
         isActive?: T;
         title?: T;
-        entries?:
-          | T
-          | {
-              link?: T | LinkFieldDataSelect<T>;
-              id?: T;
-            };
+        entries?: T | NavEntriesSelect<T>;
       };
   column2?:
     | T
     | {
         isActive?: T;
         title?: T;
-        entries?:
-          | T
-          | {
-              link?: T | LinkFieldDataSelect<T>;
-              id?: T;
-            };
+        entries?: T | NavEntriesSelect<T>;
       };
   column3?:
     | T
     | {
         isActive?: T;
         title?: T;
-        entries?:
-          | T
-          | {
-              link?: T | LinkFieldDataSelect<T>;
-              id?: T;
-            };
+        entries?: T | NavEntriesSelect<T>;
       };
   legalPages?:
     | T
     | {
-        entries?:
-          | T
-          | {
-              link?: T | LinkFieldDataSelect<T>;
-              id?: T;
-            };
+        entries?: T | NavEntriesSelect<T>;
       };
 }
 /**
@@ -2660,9 +2668,9 @@ export interface PayloadJobsStatsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "scheduled-resume-generation-widget_widget".
+ * via the `definition` "scheduled-jobs-widget_widget".
  */
-export interface ScheduledResumeGenerationWidgetWidget {
+export interface ScheduledJobsWidgetWidget {
   data?: {
     [k: string]: unknown;
   };

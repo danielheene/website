@@ -50,7 +50,7 @@ export const buttonStyles = tv({
     size: {
       default: [
         'h-10 gap-1.5 px-4',
-        'has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5',
+        'has:data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5',
       ],
       xs: [
         "h-7 gap-1 px-4 [&_svg:not([class*='size-'])]:size-3 text-sm",
@@ -97,6 +97,7 @@ export interface ButtonProps extends VariantProps<typeof buttonStyles> {
 }
 
 const ButtonSlot = Slot.createSlot<HTMLButtonElement, ButtonProps>('Button.Slot')
+const ButtonSlottable = Slot.createSlottable('Button.Slottable')
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps & ComponentProps<'button'>>(
   (

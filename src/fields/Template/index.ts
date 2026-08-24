@@ -1,5 +1,7 @@
 import { deepMerge, TextField } from 'payload'
 
+import dedent from 'dedent'
+
 import { BilingualLanguage } from '@/lib/i18n'
 
 import {
@@ -17,14 +19,8 @@ type TemplateFieldProps = {
   description?: string
   defaultValue?: string
   renderLocale?: BilingualLanguage[]
-
   data?: TemplateFieldData | TemplateFieldDataFunction
   anntotation?: TemplateFieldAnnotation | TemplateFieldAnnotationFunction
-  /**
-   * Escape hatch for call sites that need a different client component —
-   * the link label, for instance, sources `{title}` from live form state
-   * rather than from server props.
-   */
   overrides?: TemplateFieldOverrides
 }
 
@@ -47,7 +43,10 @@ export const TemplateField = ({
       label,
       defaultValue,
       admin: {
-        description,
+        description: dedent.withOptions({
+          alignValues: true,
+          escapeSpecialCharacters: true,
+        })(description),
         components: {
           Description: '@/fields/SectionGroup/components/DescriptionComponent',
           Field: {

@@ -2,9 +2,9 @@ import { CollectionConfig } from 'payload'
 
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
-import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { HeroBackgroundField } from '@/fields/HeroBackground'
+import { IconField } from '@/fields/Icon'
 import { MetaField } from '@/fields/Meta'
 import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
@@ -111,6 +111,28 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
       ],
     },
     {
+      name: 'readingTime',
+      type: 'number',
+      label: 'Estimated Reading Time (min)',
+      admin: {
+        position: 'sidebar',
+      },
+    },
+    {
+      name: 'links',
+      type: 'array',
+      fields: [
+        IconField({
+          name: 'icon',
+        }),
+        {
+          name: 'url',
+          label: false,
+          type: 'text',
+        },
+      ],
+    },
+    {
       name: 'relatedPosts',
       type: 'relationship',
       admin: {
@@ -136,8 +158,24 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
       type: 'tabs',
       tabs: [
         {
-          label: 'Main',
+          label: 'Content',
           fields: [
+            {
+              type: 'collapsible',
+              label: 'Excerpt',
+              admin: {
+                initCollapsed: true,
+              },
+              fields: [
+                RichTextField({
+                  name: 'excerpt',
+                  editorVariant: 'markdown',
+                  overrides: {
+                    label: false,
+                  },
+                }),
+              ],
+            },
             RichTextField({
               name: 'content',
               editorVariant: 'post',

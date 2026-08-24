@@ -10,15 +10,13 @@ import { describe, expect, it } from 'vitest'
 import { buildCreditsValue } from './buildCreditsValue'
 
 /**
- * A *render*-boundary test for the credits value, complementing the
- * validation-boundary test in `creditsLinkValidation.test.ts`.
+ * A *render*-boundary test for the credits value.
  *
- * Passing Payload's link validation and rendering as a visible hyperlink are
- * two independent contracts, and a link node can satisfy the first while
- * failing the second: `children: []` validates fine (validation only ever
- * inspects `node.fields`) but renders as an empty `<a href="…"></a>`, because
- * every Lexical -> JSX link converter builds the anchor body from
- * `nodesToJSX({ nodes: node.children })` and never from `fields.label`.
+ * A link node can validate fine while still rendering wrong: `children: []`
+ * would still validate (validation only ever inspects `node.fields`) but
+ * renders as an empty `<a href="…"></a>`, because every Lexical -> JSX link
+ * converter builds the anchor body from `nodesToJSX({ nodes: node.children
+ * })`, never from a `label` field.
  *
  * This drives Payload's own converter stack — `convertLexicalNodesToJSX` with
  * `defaultJSXConverters` + `LinkJSXConverter` — over the real output of
@@ -27,12 +25,11 @@ import { buildCreditsValue } from './buildCreditsValue'
  * Scope note: `src/components/RichText/index.tsx` uses its own `link`
  * converter (`src/components/RichText/linkConverter.tsx`, unit-tested in
  * `RichText/linkConverter.test.tsx`), not the bare `defaultJSXConverters` +
- * `LinkJSXConverter` stack this file drives. That override correctly reads
- * `node.fields` directly (the group's *inner* fields, flat — `LinkFeature`
- * is configured with `[...LinkField().fields]`), rather than the nested
- * `node.fields.link` shape an earlier version of it read by mistake. This
- * file is deliberately scoped to the generic Payload converter stack, not
- * this project's override, so it doesn't re-assert that fix here.
+ * `LinkJSXConverter` stack this file drives. Since `LinkFeature()` now uses
+ * lexical's own stock fields (no override), both converters read the same
+ * `{ linkType, doc, url, newTab }` shape — this file is deliberately scoped
+ * to the generic Payload converter stack, but the two are no longer
+ * expected to diverge.
  */
 
 // biome-ignore lint/suspicious/noExplicitAny: converter args are structurally typed against internal Lexical node unions

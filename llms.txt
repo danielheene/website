@@ -35,7 +35,7 @@ important file: read it first, every time.
 ## Source Layout
 
 - [app/](app): Next.js App Router — `(frontend)` for the public site and its API routes
-  (preview, sse, heartbeat, service-status), `(payload)` for the admin panel.
+  (preview, sse, heartbeat), `(payload)` for the admin panel.
 - [src/collections/](src/collections): Payload Collections (Media, Pages, BlogPosts, Resume*,
   Users, etc.).
 - [src/globals/](src/globals): Payload Globals (SiteSettings, PDFGeneratorSettings, etc.).
