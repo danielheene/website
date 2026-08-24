@@ -27,7 +27,7 @@ export const Header = async () => {
 
         {hasNavEntries && (
           <ul className="flex flex-row items-center gap-8 list-disc">
-            {mainNavigation.entries.map(({ id, link }) => (
+            {mainNavigation.entries.map(({ id, ...link }) => (
               <li key={id} className="h-10 flex items-center font-mono">
                 <CMSLink
                   {...link}

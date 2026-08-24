@@ -43,32 +43,22 @@ export default async function proxy(request: NextRequest) {
   const resumeDocumentLatestAPIPath = generateAPIPath(CollectionSlug.ResumeDocuments, 'latest')
 
   if (request.nextUrl.pathname.startsWith(resumeDocumentLatestContentPath)) {
-    const { slug } = await fetchLatestResumeDocumentCore()
-    const path = generateContentPath(CollectionSlug.ResumeDocuments, slug)
+    const latest = await fetchLatestResumeDocumentCore()
+    if (!latest)
+      return new NextResponse(null, {
+        status: 404,
+      })
+    const path = generateContentPath(CollectionSlug.ResumeDocuments, latest.slug)
     return NextResponse.rewrite(new URL(path, request.url))
   }
   if (request.nextUrl.pathname.startsWith(resumeDocumentLatestAPIPath)) {
-    const { id } = await fetchLatestResumeDocumentCore()
-    const path = generateAPIPath(CollectionSlug.ResumeDocuments, id)
+    const latest = await fetchLatestResumeDocumentCore()
+    if (!latest)
+      return new NextResponse(null, {
+        status: 404,
+      })
+    const path = generateAPIPath(CollectionSlug.ResumeDocuments, latest.id)
     return NextResponse.rewrite(new URL(path, request.url))
-  }
-
-  // pagination moved from ?page=<n> to a /page/<n> segment; redirect old links
-  // here rather than in the pages themselves, where reading searchParams would
-  // opt the routes out of prerendering under Cache Components.
-  const legacyPage = request.nextUrl.searchParams.get('page')
-  if (
-    legacyPage &&
-    /^\d+$/.test(legacyPage) &&
-    /^\/blog(\/[^/]+)?$/.test(request.nextUrl.pathname)
-  ) {
-    const target = new URL(request.url)
-    target.searchParams.delete('page')
-    target.pathname =
-      Number(legacyPage) > 1
-        ? `${request.nextUrl.pathname.replace(/\/$/, '')}/page/${legacyPage}`
-        : request.nextUrl.pathname
-    return NextResponse.redirect(target, 301)
   }
 
   const redirect = await lookupRedirect(request)

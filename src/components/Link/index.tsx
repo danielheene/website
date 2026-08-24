@@ -3,11 +3,11 @@ import Link from 'next/link'
 
 import { Button, ButtonProps } from '@/components/Button'
 import { Icon } from '@/components/Icon'
+import type { LinkFieldDataLean } from '@/fields/Link/lib/resolveLinkTarget'
 import { CUSTOM_URL_SLUG, resolveLinkTarget } from '@/fields/Link/lib/resolveLinkTarget'
 import { generateContentURL } from '@/lib/generateContentURL'
-import type { LinkFieldData } from '@/types/payload'
 
-type CMSLinkType = LinkFieldData & {
+type CMSLinkType = LinkFieldDataLean & {
   children?: React.ReactNode
   className?: string
   newTab?: boolean
@@ -24,7 +24,6 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     iconOnly,
     label,
     newTab,
-    resolvedLabel,
     size,
     variant = 'link',
   } = props
@@ -45,11 +44,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
 
   if (!href) return null
 
-  // `resolvedLabel` is the virtual, template-rendered label. Falling back to
-  // the raw `label` keeps a caller that queried with a narrow `select` from
-  // rendering nothing — it renders the unsubstituted template instead, which
-  // is visible enough to get reported.
-  const text = resolvedLabel || label
+  const text = label
 
   const newTabProps = newTab
     ? {

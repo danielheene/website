@@ -1,1 +1,0 @@
-export { MarkdownDescription } from './MarkdownDescription'

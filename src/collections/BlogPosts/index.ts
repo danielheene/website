@@ -2,8 +2,9 @@ import { CollectionConfig } from 'payload'
 
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
-import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
-import { MediaField } from '@/fields/Media'
+import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
+import { HeroBackgroundField } from '@/fields/HeroBackground'
+import { IconField } from '@/fields/Icon'
 import { MetaField } from '@/fields/Meta'
 import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
@@ -50,6 +51,17 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
     },
     preview: (data: Partial<BlogPostData>) =>
       generatePreviewPath(CollectionSlug.BlogPosts, data.slug),
+    components: {
+      listMenuItems: [
+        {
+          path: '@/components/AdminPanel/SeedActions#SeedActions',
+          clientProps: {
+            collectionSlug: CollectionSlug.BlogPosts,
+            collectionLabel: 'Posts',
+          },
+        },
+      ],
+    },
   },
   hooks: {
     afterChange: [
@@ -59,7 +71,7 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
   fields: [
     /* -------------- Main  Content -------------- */
     TitleField({
-      listViewThumbnailPath: 'heroImage',
+      listViewThumbnailPath: 'hero.background.media.value',
     }),
 
     /* -------------- Sidebar Content -------------- */
@@ -67,13 +79,23 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
     SlugField({
       fieldToUse: 'title',
     }),
-    MediaField({
-      name: 'heroImage',
-      relationTo: [
-        CollectionSlug.MediaImages,
+    {
+      name: 'hero',
+      type: 'group',
+      label: false,
+      admin: {
+        position: 'sidebar',
+        disableListColumn: true,
+        disableListFilter: true,
+        disableGroupBy: true,
+      },
+      fields: [
+        HeroBackgroundField({
+          name: 'background',
+          hasManyMedia: false,
+        }),
       ],
-      position: 'sidebar',
-    }),
+    },
     {
       name: 'topics',
       type: 'relationship',
@@ -86,6 +108,28 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
       hasMany: true,
       relationTo: [
         CollectionSlug.BlogTopics,
+      ],
+    },
+    {
+      name: 'readingTime',
+      type: 'number',
+      label: 'Estimated Reading Time (min)',
+      admin: {
+        position: 'sidebar',
+      },
+    },
+    {
+      name: 'links',
+      type: 'array',
+      fields: [
+        IconField({
+          name: 'icon',
+        }),
+        {
+          name: 'url',
+          label: false,
+          type: 'text',
+        },
       ],
     },
     {
@@ -114,8 +158,24 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
       type: 'tabs',
       tabs: [
         {
-          label: 'Main',
+          label: 'Content',
           fields: [
+            {
+              type: 'collapsible',
+              label: 'Excerpt',
+              admin: {
+                initCollapsed: true,
+              },
+              fields: [
+                RichTextField({
+                  name: 'excerpt',
+                  editorVariant: 'markdown',
+                  overrides: {
+                    label: false,
+                  },
+                }),
+              ],
+            },
             RichTextField({
               name: 'content',
               editorVariant: 'post',
@@ -133,6 +193,8 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
         },
       ],
     },
+
+    GeneratorFlagsField(),
   ],
   trash: true,
   versions: {

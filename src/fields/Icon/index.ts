@@ -42,7 +42,7 @@ export const IconField = ({
   prefix,
   showLabel,
   showInput,
-  overrides,
+  overrides = {},
 }: IconFieldProps = {}): TextField =>
   deepMerge<TextField, IconFieldOverrides>(
     {

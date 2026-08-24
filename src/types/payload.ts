@@ -24,6 +24,35 @@ export type SkillType =
   | 'methodologiesAndWorkingPractices';
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "NavEntries".
+ */
+export type NavEntries =
+  | {
+      linkType: 'internal' | 'custom';
+      newTab?: boolean | null;
+      iconOnly?: boolean | null;
+      doc?:
+        | ({
+            relationTo: 'pages';
+            value: string | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: string | BlogPostData;
+          } | null)
+        | ({
+            relationTo: 'topics';
+            value: string | Topic;
+          } | null);
+      url?: string | null;
+      iconBefore?: string | null;
+      label: string;
+      iconAfter?: string | null;
+      id?: string | null;
+    }[]
+  | null;
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "LanguageCode".
  */
 export type LanguageCode =
@@ -157,7 +186,7 @@ export interface Config {
   };
   locale: null;
   widgets: {
-    'scheduled-resume-generation-widget': ScheduledResumeGenerationWidgetWidget;
+    'scheduled-jobs-widget': ScheduledJobsWidgetWidget;
     'umami-widget': UmamiWidgetWidget;
     collections: CollectionsWidget;
   };
@@ -176,6 +205,7 @@ export interface Config {
       GenerateResumeDocumentSlug: TaskGenerateResumeDocumentSlug;
       CreateResumeDocument: TaskCreateResumeDocument;
       PingUptimeEndpoint: TaskPingUptimeEndpoint;
+      SeedCollection: TaskSeedCollection;
       createCollectionExport: TaskCreateCollectionExport;
       createCollectionImport: TaskCreateCollectionImport;
       schedulePublish: TaskSchedulePublish;
@@ -244,7 +274,10 @@ export interface LinkGroupBlock {
  * via the `definition` "LinkFieldData".
  */
 export interface LinkFieldData {
-  reference?:
+  linkType: 'internal' | 'custom';
+  newTab?: boolean | null;
+  iconOnly?: boolean | null;
+  doc?:
     | ({
         relationTo: 'pages';
         value: string | Page;
@@ -257,19 +290,10 @@ export interface LinkFieldData {
         relationTo: 'topics';
         value: string | Topic;
       } | null);
-  newTab?: boolean | null;
   url?: string | null;
   iconBefore?: string | null;
-  /**
-   * Defaults to the title of the linked document. Overwrite it with any text, or mix the two — `{title}` is substituted on render.
-   */
   label: string;
   iconAfter?: string | null;
-  resolvedLabel?: string | null;
-  /**
-   * Hides the label visually and uses it as the accessible name instead.
-   */
-  iconOnly?: boolean | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -282,21 +306,25 @@ export interface Page {
   slug: string;
   layout?: PageLayout;
   hero?: {
-    /**
-     * Fills the first screen. Two or more entries become a cross-fading carousel; a single entry renders on its own.
-     */
-    media?:
-      | (
-          | {
-              relationTo: 'images';
-              value: string | MediaImage;
-            }
-          | {
-              relationTo: 'videos';
-              value: string | MediaVideo;
-            }
-        )[]
-      | null;
+    background?: {
+      backgroundType?: ('media' | 'shader') | null;
+      /**
+       * Fills the first screen. Two or more entries become a cross-fading carousel; a single entry renders on its own.
+       */
+      media?:
+        | (
+            | {
+                relationTo: 'images';
+                value: string | MediaImage;
+              }
+            | {
+                relationTo: 'videos';
+                value: string | MediaVideo;
+              }
+          )[]
+        | null;
+      shader?: ('darkveil' | 'faulty-terminal' | 'gradient-blinds' | 'grainient') | null;
+    };
     contentType?: ('title' | 'custom') | null;
     content?: {
       root: {
@@ -339,6 +367,16 @@ export interface Page {
     title?: string | null;
     description?: string | null;
   };
+  generatorFlags?: (
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'unsplash-import'
+    | 'seeded-dummy'
+  )[];
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -369,7 +407,14 @@ export interface MediaImage {
   } | null;
   blurDataURL?: string | null;
   generatorFlags?: (
-    'resume-asset' | 'thumbnail' | 'document' | 'audio-thumbnail' | 'video-thumbnail' | 'document-thumbnail'
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'unsplash-import'
+    | 'seeded-dummy'
   )[];
   prefix?: string | null;
   updatedAt: string;
@@ -423,7 +468,14 @@ export interface MediaVideo {
       }[]
     | null;
   generatorFlags?: (
-    'resume-asset' | 'thumbnail' | 'document' | 'audio-thumbnail' | 'video-thumbnail' | 'document-thumbnail'
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'unsplash-import'
+    | 'seeded-dummy'
   )[];
   prefix?: string | null;
   updatedAt: string;
@@ -719,14 +771,36 @@ export interface BlogPostData {
   id: string;
   title: string;
   slug: string;
-  heroImage?: {
-    relationTo: 'images';
-    value: string | MediaImage;
-  } | null;
+  hero?: {
+    background?: {
+      backgroundType?: ('media' | 'shader') | null;
+      /**
+       * Fills the first screen.
+       */
+      media?:
+        | ({
+            relationTo: 'images';
+            value: string | MediaImage;
+          } | null)
+        | ({
+            relationTo: 'videos';
+            value: string | MediaVideo;
+          } | null);
+      shader?: ('darkveil' | 'faulty-terminal' | 'gradient-blinds' | 'grainient') | null;
+    };
+  };
   topics?:
     | {
         relationTo: 'topics';
         value: string | Topic;
+      }[]
+    | null;
+  readingTime?: number | null;
+  links?:
+    | {
+        icon?: string | null;
+        url?: string | null;
+        id?: string | null;
       }[]
     | null;
   relatedPosts?:
@@ -735,6 +809,21 @@ export interface BlogPostData {
         value: string | BlogPostData;
       }[]
     | null;
+  excerpt?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   content?: {
     root: {
       type: string;
@@ -758,6 +847,16 @@ export interface BlogPostData {
     title?: string | null;
     description?: string | null;
   };
+  generatorFlags?: (
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'unsplash-import'
+    | 'seeded-dummy'
+  )[];
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -805,6 +904,16 @@ export interface Topic {
     title?: string | null;
     description?: string | null;
   };
+  generatorFlags?: (
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'unsplash-import'
+    | 'seeded-dummy'
+  )[];
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -872,7 +981,14 @@ export interface MediaDocument {
       }[]
     | null;
   generatorFlags?: (
-    'resume-asset' | 'thumbnail' | 'document' | 'audio-thumbnail' | 'video-thumbnail' | 'document-thumbnail'
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'unsplash-import'
+    | 'seeded-dummy'
   )[];
   prefix?: string | null;
   updatedAt: string;
@@ -910,7 +1026,14 @@ export interface MediaAudio {
     [k: string]: unknown;
   } | null;
   generatorFlags?: (
-    'resume-asset' | 'thumbnail' | 'document' | 'audio-thumbnail' | 'video-thumbnail' | 'document-thumbnail'
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'unsplash-import'
+    | 'seeded-dummy'
   )[];
   prefix?: string | null;
   updatedAt: string;
@@ -935,6 +1058,16 @@ export interface ResumeCustomerData {
   title: string;
   slug: string;
   svg?: string | null;
+  generatorFlags?: (
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'unsplash-import'
+    | 'seeded-dummy'
+  )[];
   updatedAt: string;
   createdAt: string;
 }
@@ -989,6 +1122,16 @@ export interface ResumeDocumentData {
     | number
     | boolean
     | null;
+  generatorFlags?: (
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'unsplash-import'
+    | 'seeded-dummy'
+  )[];
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1056,6 +1199,7 @@ export interface PayloadJob {
           | 'GenerateResumeDocumentSlug'
           | 'CreateResumeDocument'
           | 'PingUptimeEndpoint'
+          | 'SeedCollection'
           | 'createCollectionExport'
           | 'createCollectionImport'
           | 'schedulePublish';
@@ -1107,6 +1251,7 @@ export interface PayloadJob {
         | 'GenerateResumeDocumentSlug'
         | 'CreateResumeDocument'
         | 'PingUptimeEndpoint'
+        | 'SeedCollection'
         | 'createCollectionExport'
         | 'createCollectionImport'
         | 'schedulePublish'
@@ -1185,6 +1330,16 @@ export interface ResumeJobData {
         value: string | ResumeSkillTagData;
       }[]
     | null;
+  generatorFlags?: (
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'unsplash-import'
+    | 'seeded-dummy'
+  )[];
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -1199,6 +1354,16 @@ export interface ResumeSkillTagData {
   title: string;
   slug: string;
   interval?: number | null;
+  generatorFlags?: (
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'unsplash-import'
+    | 'seeded-dummy'
+  )[];
   updatedAt: string;
   createdAt: string;
 }
@@ -1236,6 +1401,16 @@ export interface ResumeProjectData {
     relationTo: 'posts';
     value: string | BlogPostData;
   } | null;
+  generatorFlags?: (
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'unsplash-import'
+    | 'seeded-dummy'
+  )[];
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -1287,6 +1462,16 @@ export interface ResumeSkillData {
         value: string | ResumeSkillTagData;
       }[]
     | null;
+  generatorFlags?: (
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'unsplash-import'
+    | 'seeded-dummy'
+  )[];
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -1554,9 +1739,28 @@ export interface PayloadMigration {
 export interface PostsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
-  heroImage?: T;
+  hero?:
+    | T
+    | {
+        background?:
+          | T
+          | {
+              backgroundType?: T;
+              media?: T;
+              shader?: T;
+            };
+      };
   topics?: T;
+  readingTime?: T;
+  links?:
+    | T
+    | {
+        icon?: T;
+        url?: T;
+        id?: T;
+      };
   relatedPosts?: T;
+  excerpt?: T;
   content?: T;
   meta?:
     | T
@@ -1564,6 +1768,7 @@ export interface PostsSelect<T extends boolean = true> {
         title?: T;
         description?: T;
       };
+  generatorFlags?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -1587,6 +1792,7 @@ export interface TopicsSelect<T extends boolean = true> {
         title?: T;
         description?: T;
       };
+  generatorFlags?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -1603,7 +1809,13 @@ export interface PagesSelect<T extends boolean = true> {
   hero?:
     | T
     | {
-        media?: T;
+        background?:
+          | T
+          | {
+              backgroundType?: T;
+              media?: T;
+              shader?: T;
+            };
         contentType?: T;
         content?: T;
       };
@@ -1614,6 +1826,7 @@ export interface PagesSelect<T extends boolean = true> {
         title?: T;
         description?: T;
       };
+  generatorFlags?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -1755,6 +1968,7 @@ export interface ResumeCustomersSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   svg?: T;
+  generatorFlags?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1776,6 +1990,7 @@ export interface ResumeDocumentsSelect<T extends boolean = true> {
   thumbnails_de?: T;
   data_en?: T;
   data_de?: T;
+  generatorFlags?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1799,6 +2014,7 @@ export interface ResumeJobsSelect<T extends boolean = true> {
   endDate?: T;
   interval?: T;
   skillTags?: T;
+  generatorFlags?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -1814,6 +2030,7 @@ export interface ResumeProjectsSelect<T extends boolean = true> {
   description?: T;
   published?: T;
   relatedPost?: T;
+  generatorFlags?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -1833,6 +2050,7 @@ export interface ResumeSkillsSelect<T extends boolean = true> {
   published?: T;
   type?: T;
   skillTags?: T;
+  generatorFlags?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -1846,6 +2064,7 @@ export interface ResumeSkillTagsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   interval?: T;
+  generatorFlags?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2066,12 +2285,7 @@ export interface GeneralSettings {
  */
 export interface HeaderSettings {
   mainNavigation?: {
-    entries?:
-      | {
-          link: LinkFieldData;
-          id?: string | null;
-        }[]
-      | null;
+    entries?: NavEntries;
   };
 }
 /**
@@ -2082,40 +2296,20 @@ export interface FooterSettings {
   column1?: {
     isActive?: boolean | null;
     title?: string | null;
-    entries?:
-      | {
-          link: LinkFieldData;
-          id?: string | null;
-        }[]
-      | null;
+    entries?: NavEntries;
   };
   column2?: {
     isActive?: boolean | null;
     title?: string | null;
-    entries?:
-      | {
-          link: LinkFieldData;
-          id?: string | null;
-        }[]
-      | null;
+    entries?: NavEntries;
   };
   column3?: {
     isActive?: boolean | null;
     title?: string | null;
-    entries?:
-      | {
-          link: LinkFieldData;
-          id?: string | null;
-        }[]
-      | null;
+    entries?: NavEntries;
   };
   legalPages?: {
-    entries?:
-      | {
-          link: LinkFieldData;
-          id?: string | null;
-        }[]
-      | null;
+    entries?: NavEntries;
   };
 }
 /**
@@ -2125,18 +2319,18 @@ export interface FooterSettings {
 export interface PDFGeneratorSettings {
   id: string;
   /**
-   * The document name template for the documents collection.  
+   * The document name template for the documents collection.
    * The document contains all meta data, file references and the data which was used to generate the PDFs.
    */
-  documentTitleTemplate?: string | null;
+  documentTitleTemplate: string;
   /**
-   * The filename template for the generated PDF which must satisfy both locales and result in two different filenames.  
+   * The filename template for the generated PDF which must satisfy both locales and result in two different filenames.
    * To get an full overview of all available variables or filter functions use the info icon.
    */
-  filenameTemplate?: string | null;
+  filenameTemplate: string;
   generateThrottle?: number | null;
   timeoutBetweenJobs?: number | null;
-  maximumRetries?: number | null;
+  maximumRetries: number;
   skillSorting?: SkillSorting;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -2176,7 +2370,7 @@ export interface SkillEntrySortable {
 export interface GlobalUserSettings {
   id: string;
   /**
-   * Upload your profile picture here.<br />
+   * Upload your profile picture here.
    * You can choose between a regular and a duotone version.
    */
   portrait?: {
@@ -2220,8 +2414,10 @@ export interface GlobalUserSettings {
     de?: AddressData;
   };
   /**
-   * This section describes links to your profiles on other platforms, such as social media accounts or personal websites.
-   * Those links are also used in the footer of the website in the same order.
+   *
+   *                       This section describes links to your profiles on other platforms, such as social media accounts or personal websites.
+   *                       Those links are also used in the footer of the website in the same order.
+   *
    */
   sameAs?:
     | {
@@ -2317,27 +2513,23 @@ export interface HeaderSettingsSelect<T extends boolean = true> {
   mainNavigation?:
     | T
     | {
-        entries?:
-          | T
-          | {
-              link?: T | LinkFieldDataSelect<T>;
-              id?: T;
-            };
+        entries?: T | NavEntriesSelect<T>;
       };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "LinkFieldData_select".
+ * via the `definition` "NavEntries_select".
  */
-export interface LinkFieldDataSelect<T extends boolean = true> {
-  reference?: T;
+export interface NavEntriesSelect<T extends boolean = true> {
+  linkType?: T;
   newTab?: T;
+  iconOnly?: T;
+  doc?: T;
   url?: T;
   iconBefore?: T;
   label?: T;
   iconAfter?: T;
-  resolvedLabel?: T;
-  iconOnly?: T;
+  id?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2349,46 +2541,26 @@ export interface FooterSettingsSelect<T extends boolean = true> {
     | {
         isActive?: T;
         title?: T;
-        entries?:
-          | T
-          | {
-              link?: T | LinkFieldDataSelect<T>;
-              id?: T;
-            };
+        entries?: T | NavEntriesSelect<T>;
       };
   column2?:
     | T
     | {
         isActive?: T;
         title?: T;
-        entries?:
-          | T
-          | {
-              link?: T | LinkFieldDataSelect<T>;
-              id?: T;
-            };
+        entries?: T | NavEntriesSelect<T>;
       };
   column3?:
     | T
     | {
         isActive?: T;
         title?: T;
-        entries?:
-          | T
-          | {
-              link?: T | LinkFieldDataSelect<T>;
-              id?: T;
-            };
+        entries?: T | NavEntriesSelect<T>;
       };
   legalPages?:
     | T
     | {
-        entries?:
-          | T
-          | {
-              link?: T | LinkFieldDataSelect<T>;
-              id?: T;
-            };
+        entries?: T | NavEntriesSelect<T>;
       };
 }
 /**
@@ -2496,9 +2668,9 @@ export interface PayloadJobsStatsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "scheduled-resume-generation-widget_widget".
+ * via the `definition` "scheduled-jobs-widget_widget".
  */
-export interface ScheduledResumeGenerationWidgetWidget {
+export interface ScheduledJobsWidgetWidget {
   data?: {
     [k: string]: unknown;
   };
@@ -2744,6 +2916,18 @@ export interface TaskCreateResumeDocument {
  */
 export interface TaskPingUptimeEndpoint {
   input?: unknown;
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskSeedCollection".
+ */
+export interface TaskSeedCollection {
+  input: {
+    collection: string;
+    mode: string;
+    count?: number | null;
+  };
   output?: unknown;
 }
 /**

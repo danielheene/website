@@ -1,0 +1,83 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+import { SpecimenGallery, SpecimenItem } from './components/Specimen.tsx'
+
+<Meta title="Foundation/Effects" />
+
+# Effects
+
+Custom shadow, text-shadow, and aspect-ratio tokens from `_shadows.css`, `_text-shadows.css`, and
+`_aspects.css`. Tailwind's stock `shadow-*`/`drop-shadow-*` scale is left untouched and isn't
+repeated here.
+
+<div style={{ padding: '3rem 0' }}>
+  ## Inset Shadow
+
+  `--inset-shadow-vignette` is the one custom shadow token in `_shadows.css` — a double inset
+  shadow using `currentColor`, so it tints with whatever `text-*` color is set on the element.
+
+  <div style={{ paddingTop: '1rem' }}>
+    <SpecimenGallery>
+      <SpecimenItem title="vignette" subtitle="inset-shadow-vignette">
+        <div className="size-32 bg-muted text-foreground inset-shadow-vignette" />
+      </SpecimenItem>
+    </SpecimenGallery>
+  </div>
+</div>
+
+<div style={{ padding: '3rem 0' }}>
+  ## Text Shadows
+
+  <div style={{ paddingTop: '1rem' }}>
+    <SpecimenGallery>
+      <SpecimenItem title="sm" subtitle="0 0 2px black/10%">
+        <span className="font-mono text-lg font-bold text-shadow-sm">Aa</span>
+      </SpecimenItem>
+      <SpecimenItem title="md" subtitle="0 0 4px black/10%">
+        <span className="font-mono text-lg font-bold text-shadow-md">Aa</span>
+      </SpecimenItem>
+      <SpecimenItem title="lg" subtitle="0 0 0.3em black/25%">
+        <span className="font-mono text-lg font-bold text-shadow-lg">Aa</span>
+      </SpecimenItem>
+    </SpecimenGallery>
+  </div>
+</div>
+
+<div style={{ padding: '3rem 0' }}>
+  ## Aspect Ratios
+
+  `video`, `image`, and `square` are semantic aliases for `16/9`, `4/3`, and `1/1` respectively —
+  prefer them at call sites over the raw ratio where the intent matches.
+
+  <div style={{ paddingTop: '1rem' }}>
+    <SpecimenGallery>
+      <SpecimenItem title="square" subtitle="1 / 1 (alias)">
+        <div className="aspect-square w-24 bg-primary" />
+      </SpecimenItem>
+      <SpecimenItem title="video" subtitle="16 / 9 (alias)">
+        <div className="aspect-video w-36 bg-primary" />
+      </SpecimenItem>
+      <SpecimenItem title="image" subtitle="4 / 3 (alias)">
+        <div className="aspect-image w-32 bg-primary" />
+      </SpecimenItem>
+      <SpecimenItem title="3-2">
+        <div className="aspect-3-2 w-32 bg-secondary" />
+      </SpecimenItem>
+      <SpecimenItem title="2-3">
+        <div className="aspect-2-3 w-20 bg-secondary" />
+      </SpecimenItem>
+      <SpecimenItem title="16-10">
+        <div className="aspect-16-10 w-36 bg-secondary" />
+      </SpecimenItem>
+      <SpecimenItem title="10-16">
+        <div className="aspect-10-16 w-20 bg-secondary" />
+      </SpecimenItem>
+      <SpecimenItem title="21-9">
+        <div className="aspect-21-9 w-44 bg-secondary" />
+      </SpecimenItem>
+      <SpecimenItem title="9-21">
+        <div className="aspect-9-21 w-14 bg-secondary" />
+      </SpecimenItem>
+    </SpecimenGallery>
+  </div>
+</div>

@@ -48,9 +48,9 @@ export const config = buildConfig({
       ],
       widgets: [
         {
-          slug: 'scheduled-resume-generation-widget',
-          label: 'Scheduled Resume Generation',
-          Component: '@/widgets/ScheduledResumeGenerationWidget#ScheduledResumeGenerationWidget',
+          slug: 'scheduled-jobs-widget',
+          label: 'Scheduled Jobs',
+          Component: '@/widgets/ScheduledJobsWidget#ScheduledJobsWidget',
           minWidth: 'full',
           maxWidth: 'full',
         },

@@ -13,6 +13,7 @@ import { generateResumeFile } from './generateResumeFile'
 import { generateResumeFilename } from './generateResumeFilename'
 import { generateVideoThumbnails } from './generateVideoThumbnails'
 import { pingUptimeEndpoint } from './pingUptimeEndpoint'
+import { seedCollection } from './seedCollection'
 
 // Every task is wrapped in withJobObservability here, at the single point
 // where tasks are registered — a task added to this array cannot skip Sentry
@@ -31,6 +32,7 @@ export const TASKS = [
   generateResumeDocumentSlug,
   createResumeDocument,
   pingUptimeEndpoint,
+  seedCollection,
 ].map(withJobObservability)
 
 export const TASKS_SLUGS = TASKS.map(({ slug }) => slug) as TaskSlugValue[]

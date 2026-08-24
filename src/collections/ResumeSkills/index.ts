@@ -6,6 +6,7 @@ import { truncate } from 'lodash-es'
 
 import { authenticated } from '@/access/authenticated'
 import { BilingualRichTextField } from '@/fields/BilingualRichText'
+import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { generateResumeDocumentHook } from '@/lib/hooks/collection'
 import { translate } from '@/lib/i18n'
 import { AdminGroup } from '@/types/admin-panel'
@@ -206,6 +207,8 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
     //     ],
     //   },
     // },
+
+    GeneratorFlagsField(),
   ],
   trash: true,
   versions: false,

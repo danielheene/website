@@ -1,8 +1,10 @@
+import { Suspense } from 'react'
+import type { Metadata } from 'next'
 import { cacheLife, cacheTag } from 'next/cache'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
-import { ChecksumValidator } from '@/components/CheckumVallidatior/ChecksumValidator'
+import { ResumeChecksumValidator } from '@/components/ResumeCheckumValidatior/ResumeChecksumValidator'
 import { cn } from '@/lib/cn'
 import { placeholderParams } from '@/lib/placeholderParams'
 import { CollectionData, CollectionSlug } from '@/types/collections'
@@ -34,7 +36,9 @@ export default async function ResumeDocumentPage({ params }: PageProps<'/resume/
         </div>
       </section>
       <h1>{slug}</h1>
-      <ChecksumValidator />
+      <Suspense fallback={<div>Loading...</div>}>
+        <ResumeChecksumValidator />
+      </Suspense>
     </div>
   )
 }
@@ -62,7 +66,16 @@ export async function generateStaticParams() {
   }))
 }
 
-const queryResumeDocumentBySlug = async (slug: string) => {
+export async function generateMetadata({ params }: PageProps<'/resume/[slug]'>): Promise<Metadata> {
+  const { slug } = await params
+  const resume = await queryResumeDocumentBySlug(slug)
+
+  return {
+    title: resume?.title ?? 'Resume',
+  }
+}
+
+export const queryResumeDocumentBySlug = async (slug: string) => {
   'use cache'
   cacheLife('max')
   cacheTag(CollectionSlug.ResumeDocuments)

@@ -6,6 +6,7 @@ import { getTranslation } from '@payloadcms/translations'
 import {
   FieldDescription,
   FieldError,
+  FieldLabel,
   fieldBaseClass,
   RenderCustomComponent,
   useField,
@@ -15,6 +16,7 @@ import { mergeFieldStyles } from '@payloadcms/ui/shared'
 
 import * as Collapsible from '@radix-ui/react-collapsible'
 
+import { Button } from '@/components/Button'
 import { Icon } from '@/components/Icon'
 import { TemplateFieldAnnotation, TemplateFieldData } from '@/fields/Template/types'
 import { cn } from '@/lib/cn'
@@ -152,43 +154,55 @@ export const FieldComponentClient = ({
       <header
         className={cn([
           `${fieldBaseClass}__header`,
-          'mb-[calc(var(--base)/2)] flex flex-col gap-[calc(var(--base)/4)]',
+          'flex flex-col gap-[calc(var(--base)/4)]',
         ])}
       >
-        <h3 className="text-xl text-(--theme-text) leading-6 font-mono">{label}</h3>
-
-        <Collapsible.Root
-          className={cn(`${fieldBaseClass}__description`, 'flex flex-col')}
-          open={collapsibleOpen}
-          onOpenChange={setCollapsibleOpen}
-        >
-          <div
+        <Collapsible.Root open={collapsibleOpen} onOpenChange={setCollapsibleOpen}>
+          <header
             className={cn([
-              `${fieldBaseClass}__description-content`,
-              'grid grid-cols-[1fr_min-content] gap-4',
+              `${fieldBaseClass}__header`,
+              'relative flex flex-col gap-1 pr-10 mb-3.5',
+              '[&_.field-label]:text-xl [&_.field-label]:text-(--theme-text)',
+              '[&_.field-label]:font-mono [&_.field-label]:leading-relaxed',
+              '[&_.field-description]:m-0 [&_.field-description]:text-(--theme-elevation-400)',
             ])}
           >
             <RenderCustomComponent
-              CustomComponent={DescriptionComponent}
-              Fallback={<FieldDescription description={descriptionFromProps} path={path} />}
+              CustomComponent={LabelComponent}
+              Fallback={<FieldLabel label={label} path={path} as="h3" />}
             />
+
+            <RenderCustomComponent
+              CustomComponent={DescriptionComponent}
+              Fallback={
+                <FieldDescription
+                  description={descriptionFromProps}
+                  path={path}
+                  className={cn([
+                    'mb-0',
+                  ])}
+                />
+              }
+            />
+
             <Collapsible.Trigger asChild>
-              <button
-                type="button"
+              <Button
                 className={cn([
                   `${fieldBaseClass}__description-trigger`,
-                  'm-0 p-0 border-none rounded-full',
-                  'text-[40px] h-[1em] w-[1em]',
-                  'transition-all hover:drop-shadow-sm',
-                  collapsibleOpen
-                    ? 'bg-info text-background'
-                    : 'bg-background text-foreground hover:text-info',
+                  'absolute right-0 bottom-2.5',
                 ])}
+                type="button"
+                variant={collapsibleOpen ? 'ghost' : 'outline'}
+                size="icon-sm"
               >
-                <Icon name="material-symbols:info-outline" />
-              </button>
+                {collapsibleOpen ? (
+                  <Icon name="material-symbols:collapse-all" />
+                ) : (
+                  <Icon name="material-symbols:expand-all" />
+                )}
+              </Button>
             </Collapsible.Trigger>
-          </div>
+          </header>
 
           <Collapsible.Content
             className={cn([
@@ -199,6 +213,7 @@ export const FieldComponentClient = ({
           >
             <div
               className={cn([
+                'pb-2.5',
                 collapsibleOpen ? 'animate-slide-down' : 'animate-slide-up',
               ])}
             >

@@ -1,33 +1,40 @@
-import { deepMerge, type Field, type GroupField, type OptionObject } from 'payload'
+// src/fields/Link/index.ts
+import { deepMerge, FieldHookArgs, type GroupField } from 'payload'
+
+import { cn } from 'tailwind-variants'
 
 import { IconField } from '@/fields/Icon'
 import { isValidCustomURL } from '@/fields/Link/lib/isValidCustomURL'
-import { TemplateField } from '@/fields/Template'
+import { resolveLinkTypeMode } from '@/fields/Link/lib/resolveLinkTypeMode'
 import { CollectionSlug } from '@/types/collections'
-import type { LinkFieldData } from '@/types/payload'
-
-export const appearanceOptions: Record<string, OptionObject> = {
-  default: {
-    label: 'Default',
-    value: 'default',
-  },
-
-  outline: {
-    label: 'Outline',
-    value: 'outline',
-  },
-}
+import { LinkFieldData } from '@/types/payload'
 
 type LinkFieldOverrides = Partial<Omit<GroupField, 'name' | 'type' | 'fields'>>
 type LinkFieldConfig = {
-  withAppearanceSelect?: boolean
   overrides?: LinkFieldOverrides
 }
 
-export const LinkField = ({
-  withAppearanceSelect = false,
-  overrides = {},
-}: LinkFieldConfig = {}): GroupField =>
+/**
+ * A link: either a reference to a CMS document or a custom URL, with an
+ * optional leading/trailing icon and a required label.
+ *
+ * Three rows:
+ * 1. `linkType` (which mode is active, 50%), `newTab` (25%), `iconOnly` (25%)
+ * 2. `doc` (relationship dropdown) or `url` (text input) — only one is
+ *    ever visible, switched by `linkType`
+ * 3. `iconBefore`, `label`, `iconAfter` — `iconAfter` hides when `iconOnly`
+ *    is checked, since an icon-only link renders a single leading icon plus
+ *    an invisible `aria-label` (see `CMSLink`)
+ *
+ * `linkType` and `doc`'s names and values deliberately match lexical's own
+ * built-in `LinkFeature` base fields (`linkType: 'internal' | 'custom'`,
+ * `doc`) — this field exists for contexts `LinkFeature` doesn't cover
+ * (`LinkGroupBlock`, Footer nav, and similar group/array fields with no
+ * selected editor text to derive a label or icon from), but shares the same
+ * field names so `resolveLinkTarget`/`CMSLink`/the RichText `link` converter
+ * can read either shape with the same logic instead of two parallel ones.
+ */
+export const LinkField = ({ overrides = {} }: LinkFieldConfig = {}): GroupField =>
   deepMerge<GroupField, LinkFieldOverrides>(
     {
       name: 'link',
@@ -38,25 +45,95 @@ export const LinkField = ({
         className: 'link-field',
         hideGutter: true,
       },
+      hooks: {
+        beforeChange: [
+          async ({
+            value,
+          }: FieldHookArgs<
+            {
+              id: string
+            },
+            LinkFieldData
+          >) => {
+            if (value.linkType === 'internal') delete value.url
+            if (value.linkType === 'custom') delete value.doc
+            if (value.iconOnly) delete value.iconAfter
+            return value
+          },
+        ],
+      },
       fields: [
         {
           type: 'row',
           admin: {
-            className: 'link-field__options',
+            className: cn([
+              '[&_.field-type.checkbox]:justify-end',
+              String.raw`[&_.checkbox-input_.checkbox-input\_\_input]:h-10`,
+              String.raw`[&_.checkbox-input_.checkbox-input\_\_input]:w-10`,
+              String.raw`[&_.checkbox-input_.checkbox-input\_\_icon>.icon]:w-6`,
+              String.raw`[&_.checkbox-input_.checkbox-input\_\_icon>.icon]:h-6`,
+              String.raw`[&_.checkbox-input_.checkbox-input\_\_icon>.icon]:m-2`,
+            ]),
           },
           fields: [
             {
-              name: 'reference',
-              type: 'relationship',
+              name: 'linkType',
+              type: 'select',
+              defaultValue: 'internal',
+              label: 'Links to',
+              options: [
+                {
+                  label: 'Linked document',
+                  value: 'internal',
+                },
+                {
+                  label: 'Custom URL',
+                  value: 'custom',
+                },
+              ],
+              required: true,
+            },
+            {
+              name: 'newTab',
+              type: 'checkbox',
+              label: 'New Tab',
               admin: {
-                width: '75%',
-                components: {
-                  Field: {
-                    path: '@/fields/Link/components/TargetField',
-                  },
+                style: {
+                  flex: '0 1 auto',
+                  flexGrow: 0,
                 },
               },
-              label: 'Links to',
+            },
+            {
+              name: 'iconOnly',
+              type: 'checkbox',
+              label: 'Icon Only',
+              admin: {
+                style: {
+                  flex: '0 1 auto',
+                  flexGrow: 0,
+                },
+              },
+            },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'doc',
+              type: 'relationship',
+              admin: {
+                allowCreate: false,
+                condition: (_, siblingData) => resolveLinkTypeMode(siblingData) === 'internal',
+              },
+              hooks: {
+                beforeChange: [
+                  async ({ value, siblingData }) =>
+                    resolveLinkTypeMode(siblingData) === 'internal' ? value : null,
+                ],
+              },
+              label: 'Document',
               maxDepth: 1,
               relationTo: [
                 CollectionSlug.Pages,
@@ -68,121 +145,75 @@ export const LinkField = ({
                 {
                   siblingData,
                 }: {
-                  siblingData: LinkFieldData
+                  siblingData: Record<string, unknown>
                 },
-              ) => (value || siblingData?.url ? true : 'Select a document, or enter a custom URL.'),
+              ) =>
+                resolveLinkTypeMode(siblingData) !== 'internal' || value
+                  ? true
+                  : 'Select a document.',
             },
             {
-              name: 'newTab',
-              type: 'checkbox',
+              name: 'url',
+              type: 'text',
               admin: {
-                className: 'link-field__new-tab-option',
-                width: '25%',
+                condition: (_, siblingData) => resolveLinkTypeMode(siblingData) === 'custom',
               },
-              label: 'Open in new tab',
+              hooks: {
+                beforeChange: [
+                  async ({ value, siblingData }) =>
+                    resolveLinkTypeMode(siblingData) === 'custom' ? value : null,
+                ],
+              },
+              label: 'Custom URL',
+              validate: (
+                value: unknown,
+                {
+                  siblingData,
+                }: {
+                  siblingData: Record<string, unknown>
+                },
+              ) => {
+                if (resolveLinkTypeMode(siblingData) !== 'custom') return true
+                if (!value) return 'Enter a custom URL.'
+
+                return isValidCustomURL(value)
+                  ? true
+                  : 'Enter an absolute http(s) URL, a mailto:/tel: link, a path starting with “/”, or a “#” anchor.'
+              },
             },
           ],
-        },
-        {
-          // Written by the target select above, never rendered on its own. Still a
-          // real, validated field so that imports, seeds and API writes are checked.
-          name: 'url',
-          type: 'text',
-          admin: {
-            hidden: true,
-          },
-          label: 'Custom URL',
-          validate: (value: unknown) =>
-            !value || isValidCustomURL(value)
-              ? true
-              : 'Enter an absolute http(s) URL, a mailto:/tel: link, a path starting with “/”, or a “#” anchor.',
         },
         {
           type: 'row',
           fields: [
             IconField({
               name: 'iconBefore',
-              overrides: {
-                admin: {
-                  width: '15%',
-                },
-              },
             }),
-            TemplateField({
+            {
               name: 'label',
+              type: 'text',
               label: 'Label',
-              defaultValue: '{title}',
-              description:
-                'Defaults to the title of the linked document. Overwrite it with any text, or mix the two — `{title}` is substituted on render.',
-              overrides: {
-                required: true,
-                admin: {
-                  width: '70%',
-                  components: {
-                    Field: {
-                      path: '@/fields/Link/components/LabelField',
-                    },
-                  },
-                },
-              },
-            }),
+              required: true,
+            },
             IconField({
               name: 'iconAfter',
               overrides: {
                 admin: {
-                  width: '15%',
+                  condition: (_, siblingData) => !siblingData?.iconOnly,
+                },
+                hooks: {
+                  beforeChange: [
+                    async ({ value, siblingData }) => {
+                      if (!value || siblingData?.iconOnly) return null
+                      return value
+                    },
+                  ],
                 },
               },
             }),
           ],
         },
-        {
-          // Read-only projection of `label` with `{title}` substituted. Rendered by
-          // CMSLink, which is a client component and so cannot resolve it itself.
-          name: 'resolvedLabel',
-          type: 'text',
-          virtual: true,
-          admin: {
-            hidden: true,
-          },
-          hooks: {
-            afterRead: [
-              // Loaded on first read rather than imported at the top of this
-              // module, and that is load-bearing. `renderLinkLabel` reaches
-              // `renderTemplate.core`, which imports the Payload config — and
-              // the config imports this module back through the blocks barrel
-              // and the RichText field. A static import would therefore make
-              // `LinkField` a cycle participant that is only safe when the
-              // config happens to be the entry point; entering the graph from
-              // any other module (a field test, a route that pulls a field
-              // module directly) would leave `LinkField` uninitialised by the
-              // time `LinkGroupField` calls it. Deferring the import to call
-              // time keeps the config graph acyclic at module scope.
-              async (args) =>
-                (await import('@/fields/Link/hooks/renderLinkLabel')).renderLinkLabel(args),
-            ],
-          },
-        },
-        {
-          name: 'iconOnly',
-          type: 'checkbox',
-          label: 'Icon only',
-          admin: {
-            description: 'Hides the label visually and uses it as the accessible name instead.',
-          },
-        },
-        withAppearanceSelect
-          ? {
-              name: 'appearance',
-              type: 'select',
-              admin: {
-                description: 'Choose how the link should be rendered.',
-              },
-              defaultValue: 'default',
-              options: Object.values(appearanceOptions),
-            }
-          : false,
-      ].filter(Boolean) as Field[],
+      ],
     },
     overrides,
   )

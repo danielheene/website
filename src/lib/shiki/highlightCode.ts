@@ -9,6 +9,7 @@ import { createHighlighter } from 'shiki'
 export const SUPPORTED_LANGUAGES = [
   'bash',
   'css',
+  'diff',
   'docker',
   'go',
   'graphql',

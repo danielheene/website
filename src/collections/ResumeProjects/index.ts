@@ -1,6 +1,7 @@
 import { CollectionConfig } from 'payload'
 
 import { authenticated } from '@/access/authenticated'
+import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { RichTextField } from '@/fields/RichText'
 import { generateResumeDocumentHook } from '@/lib/hooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
@@ -78,6 +79,8 @@ export const ResumeProjects: CollectionConfig<CollectionSlug['ResumeProjects']> 
         position: 'sidebar',
       },
     },
+
+    GeneratorFlagsField(),
   ],
   trash: true,
   versions: false,

@@ -1,5 +1,6 @@
 import { CollectionConfig } from 'payload'
 
+import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
 import { generateResumeDocumentHook } from '@/lib/hooks/collection'
@@ -107,5 +108,7 @@ export const ResumeSkillTags: CollectionConfig<CollectionSlug['ResumeSkillTags']
     //   hasMany: true,
     //   on: 'skillTags',
     // },
+
+    GeneratorFlagsField(),
   ],
 }

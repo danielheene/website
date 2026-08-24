@@ -14,15 +14,16 @@ interface GenerateMetaArgs {
 
 export const generateMeta = async ({ doc }: GenerateMetaArgs): Promise<Metadata> => {
   const {
-    general: { description, category },
+    general: { description, category, siteName },
   } = await fetchSiteSettingsCached()
   const { name, url } = await fetchGlobalUserSettingsCached()
 
-  // const ogImage = getImageURL(doc?.meta?.image)
+  const title = doc?.meta?.title || doc?.title
+  const metaDescription = doc?.meta?.description || description
 
   return {
-    title: doc?.meta?.title || doc?.title,
-    description: doc?.meta?.description || description,
+    title,
+    description: metaDescription,
     category,
     creator: name,
     authors: [
@@ -31,10 +32,14 @@ export const generateMeta = async ({ doc }: GenerateMetaArgs): Promise<Metadata>
         url,
       },
     ],
-    // openGraph: {
-    //   type: 'website',
-    //   title: titleGenerator({ title: doc.title || '', siteName }),
-    //   description,
-    // },
+    // `images` is deliberately omitted: Next auto-discovers each route's
+    // sibling opengraph-image.tsx and infers its URL, so hand-computed image
+    // URLs here cannot drift out of sync with the generated images.
+    openGraph: {
+      type: 'website',
+      title,
+      description: metaDescription,
+      siteName: siteName ?? undefined,
+    },
   }
 }

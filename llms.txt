@@ -1,0 +1,53 @@
+# Daniel Heene's Personal Website
+
+> Source for [daniel.heene.io](https://daniel.heene.io): a personal website, blog, and resume
+> builder built on Next.js 16 (App Router, React 19) and Payload CMS 3.x, with MongoDB, Redis,
+> and S3-compatible storage.
+
+This is a code repository, not a documentation site — the files below are the entry points an
+AI coding agent should read before making changes, not end-user docs. `AGENTS.md` is the most
+important file: read it first, every time.
+
+## Start Here
+
+- [AGENTS.md](AGENTS.md): Required reading before any change — stack, code style, architecture
+  notes, and known security guardrails (public SSE channels remain unauthenticated by design,
+  unsanitized raw SVG rendering, unenforced `CRON_SECRET`).
+- [README.md](README.md): Setup and local development — Doppler-based env config, Docker
+  services, available scripts, project structure, testing, CI/deployment.
+
+## Configuration
+
+- [payload.config.ts](payload.config.ts): Payload CMS configuration (collections, globals,
+  plugins, S3 storage, KV cache) — repo root, not under `src/`.
+- [next.config.ts](next.config.ts): Next.js configuration, including the `env:` block that
+  inlines `SERVER_URL`, `STATUS_PAGE_URL`, and `SENTRY_DSN` at build time.
+- [src/types/environment.ts](src/types/environment.ts): Zod schema and source of truth for all
+  environment variables; validated at process start.
+- [docker-compose.yml](docker-compose.yml): Local infrastructure (MongoDB, Redis, S3-compatible
+  storage) — the app itself runs via `pnpm dev`, not as a compose service.
+- [biome.json](biome.json): Linting/formatting rules (Biome, not ESLint/Prettier).
+- [vitest.config.ts](vitest.config.ts) / [vitest.setup.ts](vitest.setup.ts): Unit test config
+  and shared mocks (`payload`, `next/cache`, `redis`).
+- [playwright.config.ts](playwright.config.ts): E2E test config (Chromium).
+- [commitlint.config.mjs](commitlint.config.mjs): Conventional Commits enforcement.
+
+## Source Layout
+
+- [app/](app): Next.js App Router — `(frontend)` for the public site and its API routes
+  (preview, sse, heartbeat), `(payload)` for the admin panel.
+- [src/collections/](src/collections): Payload Collections (Media, Pages, BlogPosts, Resume*,
+  Users, etc.).
+- [src/globals/](src/globals): Payload Globals (SiteSettings, PDFGeneratorSettings, etc.).
+- [src/blocks/](src/blocks): Reusable Payload Blocks (resume sections, content blocks).
+- [src/fields/](src/fields): Custom/reusable Payload field factories.
+- [src/access/](src/access): Access control functions — no role system; any authenticated
+  Payload user is fully trusted.
+- [src/components/](src/components): React components.
+- [src/lib/](src/lib): Framework-agnostic utilities, including `RedisHandler.ts` (cache +
+  pub/sub for SSE) and `lib/seed/` (shared seed/clean logic for fixture data, used by both
+  CLI scripts and the admin panel).
+- [src/emails/](src/emails): React Email templates and rendering (contact form notifications).
+- [src/pdf/](src/pdf): PDF generation (resume export).
+- [src/jobs-queue/](src/jobs-queue): Payload Jobs Queue tasks/workflows.
+- [e2e/](e2e): Playwright E2E specs — structural smoke tests, not content assertions.

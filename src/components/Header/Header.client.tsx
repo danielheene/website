@@ -44,7 +44,7 @@ export const HeaderClient = ({ mainNavigation }: HeaderClientProps) => {
         </Link>
 
         <ul className="flex flex-row md:gap-4 lg:gap-8 items-center">
-          {mainNavigation?.entries?.map(({ id, link }) => (
+          {mainNavigation?.entries?.map(({ id, ...link }) => (
             <li key={id}>
               <CMSLink {...link} className="text-foreground hover:text-current" />
             </li>

@@ -18,6 +18,7 @@
 
 @custom-variant light (&:where(.light, .light *, [data-theme="light"], [data-theme="light"] *));
 @custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
+@custom-variant primary (&:where(.primary, .primary *));
 
 @source inline("col-span-{1..12..1}");
 @source inline("col-start-{1..12..1}");

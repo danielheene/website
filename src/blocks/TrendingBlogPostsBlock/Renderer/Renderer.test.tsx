@@ -74,7 +74,7 @@ describe('TrendingBlogPostsBlockRenderer', () => {
     expect(screen.getByText('Trending Now')).toBeInTheDocument()
   })
 
-  it('does not render an image when heroImage.value.url is null', async () => {
+  it('does not render an image when hero.background.media.value.url is null', async () => {
     fetchTrendingBlogPostsMock.mockResolvedValue([
       {
         slug: 'no-hero-url',
@@ -83,12 +83,17 @@ describe('TrendingBlogPostsBlockRenderer', () => {
           id: 'no-hero-url',
           title: 'No Hero URL',
           slug: 'no-hero-url',
-          heroImage: {
-            relationTo: 'images',
-            value: {
-              id: 'media-1',
-              alt: 'Alt text',
-              url: null,
+          hero: {
+            background: {
+              backgroundType: 'media',
+              media: {
+                relationTo: 'images',
+                value: {
+                  id: 'media-1',
+                  alt: 'Alt text',
+                  url: null,
+                },
+              },
             },
           },
         } as unknown as TrendingBlogPost['post'],
@@ -102,7 +107,7 @@ describe('TrendingBlogPostsBlockRenderer', () => {
     expect(screen.queryByRole('img')).not.toBeInTheDocument()
   })
 
-  it('does not render an image when heroImage.value.url is an empty string', async () => {
+  it('does not render an image when hero.background.media.value.url is an empty string', async () => {
     fetchTrendingBlogPostsMock.mockResolvedValue([
       {
         slug: 'empty-hero-url',
@@ -111,12 +116,17 @@ describe('TrendingBlogPostsBlockRenderer', () => {
           id: 'empty-hero-url',
           title: 'Empty Hero URL',
           slug: 'empty-hero-url',
-          heroImage: {
-            relationTo: 'images',
-            value: {
-              id: 'media-2',
-              alt: 'Alt text',
-              url: '',
+          hero: {
+            background: {
+              backgroundType: 'media',
+              media: {
+                relationTo: 'images',
+                value: {
+                  id: 'media-2',
+                  alt: 'Alt text',
+                  url: '',
+                },
+              },
             },
           },
         } as unknown as TrendingBlogPost['post'],

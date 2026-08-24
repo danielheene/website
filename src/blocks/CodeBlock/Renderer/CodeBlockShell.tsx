@@ -34,7 +34,7 @@ export const CodeBlockShell = ({ className, code, html }: CodeBlockShellProps): 
 
     {html ? (
       <div
-        className="shiki-container overflow-x-auto text-sm"
+        className="shiki-container overflow-x-auto"
         // biome-ignore lint/security/noDangerouslySetInnerHtml: Shiki output is generated server-side from stored code, not user-supplied HTML
         dangerouslySetInnerHTML={{
           __html: html,

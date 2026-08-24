@@ -114,17 +114,19 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
 ## Security Guardrails (found during review — respect these when touching related code)
 
 - **SSE / Redis channels** (`app/(frontend)/api/sse/route.ts`): the `channel` query param is
-  currently accepted from the client with **no allowlist**. If you touch this route, add
-  validation against a known set of channel names before adding new `publish()` callers —
-  otherwise any client can open unlimited unauthenticated subscriptions.
-- **`queryPresets` access** (`payload.config.ts`): `read`/`create`/`update`/`delete` are all
-  `() => true` (fully public). Don't copy this pattern for new collections/globals; scope access
-  explicitly (e.g. `authenticated`).
-- **Raw SVG rendering**: `src/collections/ResumeCustomers` stores raw SVG markup that is later
-  rendered via `dangerouslySetInnerHTML` in `src/components/LogoCarousel/LogoCarousel.tsx`. The
-  only sanitization (`svgo`) currently runs client-side in the admin UI and is not a real security
-  boundary. Do not add other raw-HTML/SVG fields rendered this way without server-side
-  sanitization (e.g. a `beforeChange` hook stripping `<script>`/`on*`/`javascript:` URIs).
+  matched against an allowlist (`src/lib/sse/channels.ts`) before `subscribe()` ever sees it, and
+  per-job channels (`bilingual-translate:`, `seed-task:`) additionally require a signed-in
+  `payload.auth()` session. The public channels in `SSE_CHANNELS` (e.g. `service-status`) stay
+  unauthenticated by design. If you add a new channel that carries non-public data, add it to the
+  authenticated branch rather than `SSE_CHANNELS` — see the route's own comments for the exact
+  split.
+- **Raw SVG rendering**: `src/collections/ResumeCustomers` stores raw SVG markup rendered via
+  `dangerouslySetInnerHTML` in `src/components/LogoCarousel/LogoCarousel.tsx`. It is sanitized
+  server-side on write by a `beforeChange` hook (`src/lib/sanitizeSvg.ts`, DOMPurify with an
+  explicit tag/attribute deny-list) — the admin UI's client-side `svgo` pass is a bypassable
+  optimizer, not the security boundary. Route any other raw-HTML/SVG field through the same
+  `sanitizeSvg` helper (or an equivalent real, server-side sanitizer) before it's ever rendered
+  unescaped.
 - **`CRON_SECRET`** is declared in `src/types/environment.ts` but not enforced anywhere — there
   is no cron route yet. If you add one, validate this secret explicitly (ideally with
   `crypto.timingSafeEqual`, not `!==`).

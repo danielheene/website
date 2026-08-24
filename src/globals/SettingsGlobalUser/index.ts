@@ -48,7 +48,7 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
               name: 'portrait',
               label: 'Profile Picture',
               description: `
-                Upload your profile picture here.<br />
+                Upload your profile picture here.
                 You can choose between a regular and a duotone version.
                `,
               fields: [
@@ -59,7 +59,7 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                       name: 'regular',
                       type: 'upload',
                       relationTo: [
-                        CollectionSlug['MediaImages'],
+                        CollectionSlug.MediaImages,
                       ],
                       defaultValue: null,
                       admin: {
@@ -70,7 +70,7 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                       name: 'duotone',
                       type: 'upload',
                       relationTo: [
-                        CollectionSlug['MediaImages'],
+                        CollectionSlug.MediaImages,
                       ],
                       defaultValue: null,
                       admin: {
@@ -81,17 +81,12 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                 },
               ],
             }),
-            {
-              type: 'group',
+            SectionGroupField({
               label: 'Personal Information',
-              admin: {
-                description: dedent`
+              hideGutter: false,
+              description: `
                   This section describes personal information about you.
                 `,
-                components: {
-                  Description: '@/components/AdminPanel#MarkdownDescription',
-                },
-              },
               fields: [
                 {
                   name: 'url',
@@ -195,7 +190,7 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                   ],
                 },
               ],
-            },
+            }),
             {
               type: 'group',
               fields: [
@@ -242,18 +237,13 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                 },
               ],
             },
-            {
-              type: 'group',
+            SectionGroupField({
               label: 'Tax Information',
-              admin: {
-                description: dedent`
+              hideGutter: false,
+              description: `
                   This section describes your tax information, including your Tax ID, VAT ID and DUNS number.
                   Those informations are also used on the legal-notice page.
                 `,
-                components: {
-                  Description: '@/components/AdminPanel#MarkdownDescription',
-                },
-              },
               fields: [
                 {
                   type: 'row',
@@ -285,24 +275,19 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                   ],
                 },
               ],
-            },
+            }),
           ],
         },
         {
           label: 'Contact',
           fields: [
-            {
-              type: 'group',
+            SectionGroupField({
               label: 'Contact Information',
-              admin: {
-                description: dedent`
+              hideGutter: false,
+              description: `
                   This section describes your contact details, including your phone number and email address.
                   These details are used on the website like in the footer section, to generate structured data and to render the resume document.
                 `,
-                components: {
-                  Description: '@/components/AdminPanel#MarkdownDescription',
-                },
-              },
               fields: [
                 {
                   type: 'row',
@@ -325,9 +310,9 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                   ],
                 },
               ],
-            },
+            }),
             AddressField({
-              description: dedent`
+              description: `
                 This section describes your address information.
                 Those informations are also used on the legal-notice page.
               `,
@@ -344,12 +329,12 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                   },
                   type: 'array',
                   admin: {
-                    description: dedent`
+                    description: `
                       This section describes links to your profiles on other platforms, such as social media accounts or personal websites.
                       Those links are also used in the footer of the website in the same order.
                     `,
                     components: {
-                      Description: '@/components/AdminPanel#MarkdownDescription',
+                      Description: '@/fields/SectionGroup/components/DescriptionComponent',
                       RowLabel: '@/globals/SettingsGlobalUser/components/SameAsRowLabel',
                     },
                   },
@@ -390,18 +375,14 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
         {
           label: 'Works For',
           fields: [
-            {
+            SectionGroupField({
               name: 'worksFor',
-              type: 'group',
-              admin: {
-                description: dedent`
+              label: 'Works For',
+              hideGutter: false,
+              description: `
                  This section describes the organization you work for.
                  It can be used to generate structured data about your employment.
               `,
-                components: {
-                  Description: '@/components/AdminPanel#MarkdownDescription',
-                },
-              },
               fields: [
                 {
                   type: 'row',
@@ -425,7 +406,7 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                 },
                 AddressField(),
               ],
-            },
+            }),
           ],
         },
       ],

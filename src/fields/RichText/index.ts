@@ -12,7 +12,6 @@ import {
   HorizontalRuleFeature,
   IndentFeature,
   InlineCodeFeature,
-  InlineToolbarFeature,
   ItalicFeature,
   LexicalFieldAdminProps,
   LinkFeature,
@@ -27,7 +26,6 @@ import {
 } from '@payloadcms/richtext-lexical'
 
 import { IconPickerFeature } from '@/fields/Icon/lexical/feature.server'
-import { LinkField } from '@/fields/Link'
 import { cn } from '@/lib/cn'
 import { BlockSlug } from '@/types/blocks'
 
@@ -110,11 +108,18 @@ const inlineFeatures = [
 
 const captionFeatures = [
   ...inlineFeatures,
-  LinkFeature({
-    fields: [
-      ...LinkField().fields,
-    ],
-  }),
+  // Uses lexical's stock link fields (`linkType: 'internal' | 'custom'`,
+  // `doc`, `url`, `newTab`) rather than swapping in `LinkField`'s fields —
+  // the editor already has the link's visible text selected before opening
+  // the popup, so a separate `label` field would just duplicate it, and an
+  // icon belongs in the selection itself (an inline `IconNode` can be part
+  // of what gets linked) rather than a picker field. `LinkField` deliberately
+  // mirrors these same field names/values for the contexts that do need them
+  // (`LinkGroupBlock`, Footer nav, and other group/array fields with no
+  // selected editor text to derive a label from) — see its module doc
+  // comment — so `resolveLinkTarget`/`CMSLink`/the RichText `link` converter
+  // read both shapes through the same logic.
+  LinkFeature(),
 ]
 
 const markdownFeatures = [

@@ -4,6 +4,7 @@ import dedent from 'dedent'
 
 import { authenticated } from '@/access/authenticated'
 import { DurationField } from '@/fields/Duration'
+import { SectionGroupField } from '@/fields/SectionGroup'
 import { TemplateField } from '@/fields/Template'
 import { generateResumeDocumentHook } from '@/lib/hooks/global'
 import { translate } from '@/lib/i18n'
@@ -65,10 +66,19 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
         TemplateField({
           name: 'documentTitleTemplate',
           label: 'Document Title Template',
-          description: dedent`
-            The document name template for the documents collection.${'  '}
+          description: `
+            The document name template for the documents collection.
             The document contains all meta data, file references and the data which was used to generate the PDFs.
           `,
+          // Without a default, this is empty on a fresh database — every
+          // settings-global save enqueues a PDF-generation job
+          // (generateResumeDocumentHook) that feeds this straight into
+          // renderTemplate, so an empty template is a real, immediate
+          // failure mode rather than a rendering nicety.
+          defaultValue: 'Resume {nanoid7}',
+          overrides: {
+            required: true,
+          },
           data: {
             nanoid: sharedId,
           },
@@ -87,10 +97,18 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
         TemplateField({
           name: 'filenameTemplate',
           label: 'Filename Template',
-          description: dedent`
-            The filename template for the generated PDF which must satisfy both locales and result in two different filenames.${'  '}
+          description: `
+            The filename template for the generated PDF which must satisfy both locales and result in two different filenames.
             To get an full overview of all available variables or filter functions use the info icon.
           `,
+          // Without a default, this is empty on a fresh database — same
+          // failure mode as documentTitleTemplate above. Includes {locale}
+          // so the EN/DE outputs stay distinct, matching this field's own
+          // "must result in two different filenames" requirement.
+          defaultValue: 'resume-{locale}-{nanoid7}',
+          overrides: {
+            required: true,
+          },
           data: {
             nanoid: sharedId,
           },
@@ -101,20 +119,13 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
         }),
       ],
     },
-    {
-      type: 'group',
+    SectionGroupField({
       label: 'Queue Handling',
-      admin: {
-        hideGutter: true,
-        description: dedent`
+      description: `
           __Generate Throttle:__ Time to wait between the last change and the next scheduled PDF generation. This prevents multiple scheduled Jobs during a set of changes.${'  '}
           __Timeout Between Jobs:__ Time to wait between the last scheduled Job and the next scheduled Job. This prevents too many generated PDFs over the time of a day.${'  '}
           __Maximum Attempts:__ Number of attempts before a scheduled Job is marked as failed. To avoid hard failures due to flaky network connections or server issues.${'  '}
         `,
-        components: {
-          Description: '@/components/AdminPanel#MarkdownDescription',
-        },
-      },
       fields: [
         {
           type: 'row',
@@ -133,6 +144,13 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
               type: 'number',
               name: 'maximumRetries',
               label: 'Maximum Retries',
+              // Without a default this is `undefined` on a fresh database,
+              // which flows into the generation workflow's job-retry
+              // `attempts` count (see generateResumeDocument.tsx) — an
+              // explicit, sane default avoids handing the job queue an
+              // undefined retry count.
+              defaultValue: 3,
+              required: true,
             },
           ],
         },
@@ -141,20 +159,13 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
           fields: [],
         },
       ],
-    },
+    }),
 
-    {
-      type: 'group',
+    SectionGroupField({
       label: 'Skill Type Sorting',
-      admin: {
-        hideGutter: true,
-        description: dedent`
+      description: `
           Order the skill types in the generated document.
         `,
-        components: {
-          Description: '@/components/AdminPanel#MarkdownDescription',
-        },
-      },
       fields: [
         {
           name: 'skillSorting',
@@ -197,7 +208,7 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
           },
         },
       ],
-    },
+    }),
   ],
   versions: false,
 }

@@ -72,3 +72,78 @@ export type AutoTranslateBilingualFieldProgress =
       status: 'error'
       message: string
     }
+
+/**
+ *    Per-job progress channel for the seed/clean admin-panel action (see
+ *    `src/jobs-queue/tasks/seedCollection.ts`), one per queued job.
+ *
+ *    Requires an authenticated session, same as `bilingual-translate:` —
+ *    seed/clean is an admin-only write operation, not something an
+ *    anonymous caller has any reason to watch.
+ */
+const SEED_TASK_CHANNEL_PREFIX = 'seed-task:'
+
+export const seedTaskChannel = (jobId: string): string => `${SEED_TASK_CHANNEL_PREFIX}${jobId}`
+
+export const isSeedTaskChannel = (value: string | null): value is string =>
+  Boolean(value?.startsWith(SEED_TASK_CHANNEL_PREFIX)) &&
+  JOB_ID_PATTERN.test((value as string).slice(SEED_TASK_CHANNEL_PREFIX.length))
+
+export type SeedTaskProgress =
+  | {
+      status: 'queued'
+    }
+  | {
+      status: 'progress'
+      step: string
+      current: number
+      total: number
+    }
+  | {
+      status: 'success'
+      /**
+       * Human-readable label → count, e.g. `{ 'posts created': 5 }` or
+       * `{ 'pages deleted': 3, 'images deleted': 2, 'topics skipped': 1 }`.
+       * A bag rather than fixed fields (`created`/`deleted`/`skipped`/…) so
+       * each seedable collection's result shape — which varies (Pages
+       * seeds/deletes one document type plus media, Blog seeds/deletes two
+       * and can skip a topic still referenced elsewhere) — renders without
+       * `SeedActions` needing to special-case every collection.
+       */
+      counts: Record<string, number>
+    }
+  | {
+      status: 'error'
+      message: string
+    }
+
+/**
+ *    Per-job channel for manually-triggered scheduled-job actions — running a
+ *    job now (`runScheduledJobNow`) or cancelling it (`cancelScheduledJob`) —
+ *    one per job ID.
+ *
+ *    Requires an authenticated session, same as `bilingual-translate:` and
+ *    `seed-task:` — triggering a job on demand is an admin-only action from
+ *    the admin panel's scheduled-jobs widget, not something an anonymous
+ *    caller has any reason to watch.
+ */
+const SCHEDULED_JOB_CHANNEL_PREFIX = 'scheduled-job:'
+
+export const scheduledJobChannel = (jobId: string): string =>
+  `${SCHEDULED_JOB_CHANNEL_PREFIX}${jobId}`
+
+export const isScheduledJobChannel = (value: string | null): value is string =>
+  Boolean(value?.startsWith(SCHEDULED_JOB_CHANNEL_PREFIX)) &&
+  JOB_ID_PATTERN.test((value as string).slice(SCHEDULED_JOB_CHANNEL_PREFIX.length))
+
+export type ScheduledJobActionProgress =
+  | {
+      status: 'success'
+    }
+  | {
+      status: 'cancelled'
+    }
+  | {
+      status: 'error'
+      message: string
+    }

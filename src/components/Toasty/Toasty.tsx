@@ -557,7 +557,7 @@ export const Toasty = function Toasty(): React.JSX.Element {
    */
   React.useEffect(() => {
     if (audioBuffer && imageBlob && success) {
-      track('Toasty!!')
+      track('toasty')
 
       const audioBufferNode = audioContextRef.current.createBufferSource()
 
