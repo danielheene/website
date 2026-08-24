@@ -26,13 +26,10 @@ export default async function Image({ params }: Props) {
   const background = page.hero?.background
   const title = page.title ?? 'Page'
 
-  const backgroundStyle: React.CSSProperties =
+  const shaderThumbnailSrc =
     background?.backgroundType === 'shader' && background.shader
-      ? {
-          background:
-            SHADER_PRESET_MAP[background.shader as keyof typeof SHADER_PRESET_MAP]?.gradient,
-        }
-      : {}
+      ? SHADER_PRESET_MAP[background.shader as keyof typeof SHADER_PRESET_MAP]?.thumbnail.src
+      : undefined
 
   // Pages' `hero.background.media` is a `hasMany: true` polymorphic upload
   // field: it always resolves as an array of `{ relationTo, value }` wrapper
@@ -61,13 +58,24 @@ export default async function Image({ params }: Props) {
   return new ImageResponse(
     <div
       tw="relative flex h-full w-full flex-col items-start justify-end px-16 pb-20 text-neutral-100"
-      style={backgroundStyle}
     >
       {heroImageUrl && (
         // biome-ignore lint/performance/noImgElement: Takumi/OG image rendering requires a plain <img>, not next/image
         <img
           alt=""
           src={heroImageUrl}
+          tw="absolute inset-0 h-full w-full object-cover"
+          style={{
+            position: 'absolute',
+            zIndex: -1,
+          }}
+        />
+      )}
+      {shaderThumbnailSrc && (
+        // biome-ignore lint/performance/noImgElement: Takumi/OG image rendering requires a plain <img>, not next/image
+        <img
+          alt=""
+          src={shaderThumbnailSrc}
           tw="absolute inset-0 h-full w-full object-cover"
           style={{
             position: 'absolute',

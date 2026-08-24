@@ -2,6 +2,11 @@
 
 import dynamic from 'next/dynamic'
 
+import { defaultProps as darkVeilDefaults } from '@/components/Shaders/DarkVeil/config'
+import { defaultProps as faultyTerminalDefaults } from '@/components/Shaders/FaultyTerminal/config'
+import { defaultProps as gradientBlindsDefaults } from '@/components/Shaders/GradientBlinds/config'
+import { defaultProps as grainientDefaults } from '@/components/Shaders/Grainient/config'
+
 import type { ShaderPresetKey } from './shaderPresets'
 
 /**
@@ -25,54 +30,15 @@ const SHADER_COMPONENTS: Record<ShaderPresetKey, ReturnType<typeof dynamic>> = {
 }
 
 /**
- * The same curated per-preset prop bundles as the admin picker's
- * `SHADER_COMPONENTS` (`src/fields/HeroBackground/Components/shaderComponents.ts`)
- * — intentionally duplicated rather than shared, since that file lives on
- * the admin-only client bundle and this one lives on the public frontend
- * bundle; sharing it would pull admin-picker code into the public bundle
- * for no benefit. Keep the two in sync by hand if a preset's tuning changes.
+ * Per-preset prop bundles sourced from each shader's `config.ts`.
+ * The admin picker (`src/fields/HeroBackground/Components/shaderComponents.ts`)
+ * keeps its own preview-tuned bundles — these are the production/public values.
  */
-const SHADER_PROPS: Record<ShaderPresetKey, Record<string, unknown>> = {
-  darkveil: {
-    hueShift: 0,
-    noiseIntensity: 0.02,
-    scanlineIntensity: 0,
-    speed: 0.3,
-    warpAmount: 0.1,
-  },
-  'faulty-terminal': {
-    scale: 2.4,
-    digitSize: 0.5,
-    scanlineIntensity: 0.05,
-    glitchAmount: 1.6,
-    flickerAmount: 1.9,
-    noiseAmp: 0.5,
-    chromaticAberration: 0,
-    dither: 0.05,
-    curvature: 0.25,
-    tint: '#fff',
-    mouseReact: false,
-    mouseStrength: 0.65,
-    brightness: 1.1,
-    pageLoadAnimation: false,
-  },
-  'gradient-blinds': {
-    gradientColors: [
-      '#FF9FFC',
-      '#5227FF',
-    ],
-    angle: 15,
-    noise: 0.15,
-    blindCount: 12,
-    mouseDampening: 0.15,
-  },
-  grainient: {
-    color1: '#FF9FFC',
-    color2: '#5227FF',
-    color3: '#B497CF',
-    timeSpeed: 0.15,
-    grainAmount: 0.06,
-  },
+const SHADER_PROPS: Record<ShaderPresetKey, object> = {
+  darkveil: darkVeilDefaults,
+  'faulty-terminal': faultyTerminalDefaults,
+  'gradient-blinds': gradientBlindsDefaults,
+  grainient: grainientDefaults,
 }
 
 export interface ShaderHeroBackgroundProps {

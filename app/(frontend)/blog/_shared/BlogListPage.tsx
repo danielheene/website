@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import { cacheLife, cacheTag } from 'next/cache'
+import Image from 'next/image'
 import Link from 'next/link'
 import config from '@payload-config'
 import { getPayload } from 'payload'
@@ -103,10 +104,10 @@ const PostCard = ({ post }: { post: BlogPostData }) => {
   // guarded like the OG image routes: `shader` is typed as the preset-key
   // union but the value comes from the database, so a preset that has since
   // been renamed or removed resolves to undefined — degrade to no background
-  // div rather than throwing and taking down the whole server-rendered list
-  const shaderGradient =
+  // image rather than throwing and taking down the whole server-rendered list
+  const shaderThumbnail =
     background?.backgroundType === 'shader' && typeof background.shader === 'string'
-      ? SHADER_PRESET_MAP[background.shader]?.gradient
+      ? SHADER_PRESET_MAP[background.shader]?.thumbnail
       : undefined
 
   return (
@@ -127,12 +128,12 @@ const PostCard = ({ post }: { post: BlogPostData }) => {
             className="absolute inset-0 size-full object-cover"
           />
         )}
-        {shaderGradient && (
-          <div
-            className="absolute inset-0 size-full"
-            style={{
-              background: shaderGradient,
-            }}
+        {shaderThumbnail && (
+          <Image
+            src={shaderThumbnail}
+            alt=""
+            fill
+            className="absolute inset-0 size-full object-cover"
           />
         )}
       </DuoTone>

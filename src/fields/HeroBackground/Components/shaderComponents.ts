@@ -1,8 +1,8 @@
 import type { ShaderPresetKey } from '@/components/HeroMedia/shaderPresets'
-import DarkVeil, { type DarkVeilProps } from '@/components/Shaders/DarkVeil'
+import DarkVeil, { type DarkVeilProps, defaultProps as darkVeilDefaults } from '@/components/Shaders/DarkVeil'
 import FaultyTerminal, { type FaultyTerminalProps } from '@/components/Shaders/FaultyTerminal'
-import GradientBlinds, { type GradientBlindsProps } from '@/components/Shaders/GradientBlinds'
-import Grainient, { type GrainientProps } from '@/components/Shaders/Grainient'
+import GradientBlinds, { type GradientBlindsProps, defaultProps as gradientBlindsDefaults } from '@/components/Shaders/GradientBlinds'
+import Grainient, { type GrainientProps, defaultProps as grainientDefaults } from '@/components/Shaders/Grainient'
 
 export type ShaderComponentEntry =
   | {
@@ -28,24 +28,24 @@ export type ShaderComponentEntry =
 
 /**
  * One curated, fixed prop bundle per shader — no per-prop admin tuning.
- * Values chosen to look good as a full-bleed hero background at rest (slow
- * motion, low noise) rather than each shader's own demo/showcase defaults.
+ * DarkVeil, GradientBlinds, and Grainient share their bundles with the
+ * public hero via each shader's `config.ts`. FaultyTerminal uses a
+ * green-tinted preview bundle distinct from the white-tinted public hero.
  */
 export const SHADER_COMPONENTS: Record<ShaderPresetKey, ShaderComponentEntry> = {
   darkveil: {
     key: 'darkveil',
     Component: DarkVeil,
-    props: {
-      hueShift: 0,
-      noiseIntensity: 0.02,
-      scanlineIntensity: 0,
-      speed: 0.3,
-      warpAmount: 0.1,
-    },
+    props: darkVeilDefaults,
   },
   'faulty-terminal': {
     key: 'faulty-terminal',
     Component: FaultyTerminal,
+    /**
+     * Admin preview props — intentionally different from the public hero
+     * (see FaultyTerminal/config.ts). The green tint and reduced intensity
+     * read better at the small card size in the shader picker drawer.
+     */
     props: {
       tint: '#3dff8f',
       scanlineIntensity: 0.2,
@@ -59,26 +59,11 @@ export const SHADER_COMPONENTS: Record<ShaderPresetKey, ShaderComponentEntry> = 
   'gradient-blinds': {
     key: 'gradient-blinds',
     Component: GradientBlinds,
-    props: {
-      gradientColors: [
-        '#FF9FFC',
-        '#5227FF',
-      ],
-      angle: 15,
-      noise: 0.15,
-      blindCount: 12,
-      mouseDampening: 0.15,
-    },
+    props: gradientBlindsDefaults,
   },
   grainient: {
     key: 'grainient',
     Component: Grainient,
-    props: {
-      color1: '#FF9FFC',
-      color2: '#5227FF',
-      color3: '#B497CF',
-      timeSpeed: 0.15,
-      grainAmount: 0.06,
-    },
+    props: grainientDefaults,
   },
 }
