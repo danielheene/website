@@ -5,10 +5,12 @@ name: Release
 # the last tag, decides whether a release is warranted, bumps package.json,
 # commits it back with [skip ci], and pushes a vX.Y.Z tag.
 #
-# Dokploy picks up that commit on its own (it watches the repo, per
-# test.yml's comments) and builds from it — this workflow does not deploy
-# anything, it only produces the version number the build/Sentry wiring
-# reads.
+# This workflow does not build or deploy anything itself — it only produces
+# the version number. promote.yml watches for this workflow's completion on
+# main and, if a release was actually cut, retags the app/worker/storybook
+# images ci.yml already built and pushed for the merged PR as `latest` and
+# the new version, without rebuilding. Dokploy deploys from those pushed
+# images rather than building from source.
 on:
   push:
     branches:

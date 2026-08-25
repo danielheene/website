@@ -340,22 +340,38 @@ Note: `payload run` only forwards CLI arguments after a `--` separator — see t
 
 ## CI / Deployment
 
-Tests and the build run in different places because they need different things.
+A pull request against `main` or `develop` runs one pipelined quality gate
+(`.github/workflows/ci.yml`), each stage gating the next:
 
-- **GitHub Actions runs the tests** (`.github/workflows/test.yml`, plus commitlint in
-  `commitlint.yml`). The suite mocks `payload` and stubs its own environment in
-  `vitest.setup.ts`, so it needs no database, no tailnet and no secrets — a clean runner
-  is the right place for it, and keeping it there proves it stays self-contained. Running
-  on pull requests also catches a failure before merge.
-- **Dokploy runs the build** on the deployment server, via `pnpm ci`
-  (`payload migrate && next build`). The build cannot move to CI cheaply:
-  `generateStaticParams()` calls `payload.find()` in six routes, so it needs a reachable
-  database over the tailnet, which Dokploy already has.
-- Dokploy watches the repository and builds from source. CI publishes no artifact and
-  triggers nothing — there is no image registry in the loop.
-- Secrets and non-secret config reach both CI and the server from Doppler: the Doppler
-  GitHub App syncs into GitHub environments (`Production` for `main`, `Development`
-  otherwise), and Dokploy injects the environment at build and boot.
+1. **Commit Messages** — commitlint over the PR's commit range.
+2. **Unit Tests** — `vitest run --coverage` plus `deps:lint`. The suite mocks `payload`
+   and stubs its own environment in `vitest.setup.ts`, so it needs no database, no
+   tailnet and no secrets.
+3. **Build app + worker images** / **Build storybook image** (run in parallel once tests
+   pass) — builds all three images (`Dockerfile`'s `app`, `worker`, and `storybook`
+   targets) and pushes them to `ghcr.io` tagged `sha-<PR head SHA>`. The app/worker build
+   needs a reachable database, since `generateStaticParams()` calls `payload.find()` in
+   several routes — the runner joins the tailnet via `tailscale/github-action` for that
+   step. Storybook's build touches no database, so it skips Tailscale entirely.
+
+These four checks are required status checks on `main` — a PR cannot merge unless all
+four pass, so nothing gets built into an image (and nothing gets merged) unless it built
+and tested clean first.
+
+On merge (`.github/workflows/promote.yml`), the images already built and pushed for that
+PR's head SHA are **retagged**, not rebuilt — `docker buildx imagetools create` is a
+registry metadata operation:
+
+- Merge to `develop` → retagged `edge`.
+- Merge to `main` → once `.github/workflows/release.yml`'s semantic-release run computes
+  a new version, retagged `latest` and `vX.Y.Z`.
+
+Dokploy deploys from the resulting `ghcr.io` images rather than building from source.
+
+Secrets and non-secret config reach both CI and the server from Doppler: the Doppler
+GitHub App syncs into GitHub environments (`Production` for `main`, `Development`
+otherwise), and a PR's Docker build step uses whichever environment matches its base
+branch.
 
 ## Code Quality & Security Notes
 
