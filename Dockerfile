@@ -17,13 +17,19 @@
 # traced subset — bigger image, but avoids known standalone-tracing gaps with
 # the Payload/Next combination this app uses.
 
+# node:26-slim does not bundle corepack (dropped from the base image as of
+# Node 26), so pnpm is installed directly via npm instead — pinned to match
+# package.json's packageManager field.
 FROM node:26-slim AS base
-RUN corepack enable
+RUN npm install -g pnpm@11.18.0
 WORKDIR /app
 
 # ---- deps: install once, reused by every stage below ----------------------
 FROM base AS deps
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml* .npmrc* ./
+# pnpm-workspace.yaml's patchedDependencies points at this directory —
+# without it, `pnpm install` fails outright looking for the patch file.
+COPY patches ./patches
 RUN pnpm install --frozen-lockfile
 
 # ---- builder: pnpm run ci = migrate && build (needs DB over Tailscale) ----
@@ -61,7 +67,9 @@ RUN pnpm run build:storybook
 # ---- storybook: static output served via `serve` ---------------------------
 FROM base AS storybook
 ENV NODE_ENV=production
-RUN pnpm add -g serve
+# npm rather than `pnpm add -g`: pnpm's global bin dir isn't on PATH by
+# default in this image, and configuring it is unnecessary for one package.
+RUN npm install -g serve
 COPY --from=storybook-builder /app/dist ./dist
 EXPOSE 3000
 CMD ["serve", "-s", "dist", "-l", "3000"]
