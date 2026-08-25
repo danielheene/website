@@ -18,11 +18,47 @@ declare global {
 const isBrowser = () => typeof window !== 'undefined'
 
 /**
+ * Path prefix for the Payload admin panel (see `app/(payload)/`). Excluded
+ * from tracking unconditionally — regardless of `__UMAMI_SUPPRESSED__` state
+ * — since visits to `/admin` (including by anonymous visitors who just hit
+ * the login screen) should never show up in analytics. This matters because
+ * `instrumentation-client.ts` fires `trackPageview()` for every page load
+ * and every client-side route transition app-wide, not just within the
+ * `(frontend)` route group, so `/admin` needs its own explicit exclusion.
+ */
+const ADMIN_PATH_PREFIX = '/admin'
+
+const isAdminPath = (pathname: string): boolean =>
+  pathname === ADMIN_PATH_PREFIX || pathname.startsWith(`${ADMIN_PATH_PREFIX}/`)
+
+/**
+ * True when `url` (or, if omitted, the current `location.pathname`) targets
+ * the admin panel. Accepts both relative paths and absolute URLs.
+ */
+const isAdminUrl = (url?: string): boolean => {
+  const candidate = url ?? (isBrowser() ? location.pathname : undefined)
+
+  if (!candidate) {
+    return false
+  }
+
+  try {
+    return isAdminPath(
+      new URL(candidate, isBrowser() ? location.origin : 'http://localhost').pathname,
+    )
+  } catch {
+    return isAdminPath(candidate)
+  }
+}
+
+/**
  * Shared guard used by both `track()` and `trackPageview()`: true when the
  * current session was flagged suppressed (`window.__UMAMI_SUPPRESSED__`, set
- * by `UmamiSuppressionFlag` for authenticated Payload sessions).
+ * by `UmamiSuppressionFlag` for authenticated Payload sessions), or when the
+ * current/target URL falls under the Payload admin panel (`/admin`).
  */
-const shouldSuppressTracking = (): boolean => isBrowser() && window.__UMAMI_SUPPRESSED__ === true
+const shouldSuppressTracking = (url?: string): boolean =>
+  (isBrowser() && window.__UMAMI_SUPPRESSED__ === true) || isAdminUrl(url)
 
 /**
  * Populates the browser-derived fields (hostname/language/screen/title/
@@ -59,7 +95,7 @@ export const track: TrackFunction = (
     | ((data: Record<string, unknown>) => Record<string, unknown>),
   data?: Record<string, unknown>,
 ): void => {
-  if (shouldSuppressTracking()) {
+  if (shouldSuppressTracking(isBrowser() ? location.pathname : undefined)) {
     return
   }
 
@@ -115,7 +151,7 @@ export const track: TrackFunction = (
  * pageview behavior.
  */
 export const trackPageview = (url?: string): void => {
-  if (shouldSuppressTracking()) {
+  if (shouldSuppressTracking(url)) {
     return
   }
 
