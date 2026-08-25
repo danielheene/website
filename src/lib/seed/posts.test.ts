@@ -20,10 +20,29 @@ const makePayload = (): Payload =>
     },
   }) as unknown as Payload
 
+// createSeedImage() downloads a real placeholder from picsum.photos — this
+// stubs that fetch so media-backed posts don't make real network calls,
+// which is slow and flaky (timeouts, rate limiting) especially in CI.
+const fetchMock = vi.fn(
+  async () =>
+    new Response(
+      new Uint8Array([
+        1,
+        2,
+        3,
+      ]),
+      {
+        status: 200,
+      },
+    ),
+)
+
 beforeEach(() => {
   find.mockReset()
   create.mockReset()
   deleteFn.mockReset()
+  fetchMock.mockClear()
+  vi.stubGlobal('fetch', fetchMock)
 })
 
 describe('seedPosts', () => {
