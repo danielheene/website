@@ -1,6 +1,6 @@
 import type { Payload } from 'payload'
 
-import { SHADER_PRESETS } from '@/components/HeroMedia/shaderPresets'
+import { SHADER_PRESET_META } from '@/components/HeroMedia/shaderPresetMeta'
 import type { Random } from '@/lib/seed/lexical'
 import {
   chance,
@@ -309,7 +309,7 @@ export const seedPages = async (
     if (useShader) {
       background = {
         backgroundType: 'shader',
-        shader: pick(random, SHADER_PRESETS).key,
+        shader: pick(random, SHADER_PRESET_META).key,
       }
     } else {
       onProgress?.({

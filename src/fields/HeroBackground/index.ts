@@ -1,6 +1,6 @@
 import type { NamedGroupField } from 'payload'
 
-import { SHADER_PRESETS } from '@/components/HeroMedia/shaderPresets'
+import { SHADER_PRESET_META } from '@/components/HeroMedia/shaderPresetMeta'
 import { CollectionSlug } from '@/types/collections'
 
 type HeroBackgroundFieldOptions = {
@@ -80,7 +80,7 @@ export const HeroBackgroundField = ({
     {
       name: 'shader',
       type: 'select',
-      options: SHADER_PRESETS.map((preset) => ({
+      options: SHADER_PRESET_META.map((preset) => ({
         label: preset.label,
         value: preset.key,
       })),
