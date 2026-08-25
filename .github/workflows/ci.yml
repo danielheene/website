@@ -100,7 +100,9 @@ jobs:
   # is the documented, reliable form.
   docker-app-development:
     name: Build app + worker images (Development)
-    needs: test
+    # TEMPORARY: needs: test dropped while debugging Tailscale connectivity,
+    # so this job runs immediately without waiting on commitlint/tests.
+    # Restore before merging.
     if: github.event.pull_request.base.ref != 'main'
     runs-on: ubuntu-latest
     timeout-minutes: 30
