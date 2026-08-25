@@ -194,8 +194,10 @@ jobs:
           target: app
           push: true
           tags: ${{ env.IMAGE_BASE }}-app:sha-${{ github.event.pull_request.head.sha }}
-          cache-from: type=gha,scope=app
-          cache-to: type=gha,mode=max,scope=app
+          # TEMPORARY: cache disabled while debugging the DATABASE_URL
+          # secret-mount issue, to rule out a stale cached layer. Restore
+          # cache-from/cache-to once resolved.
+          no-cache: true
           secret-files: |
             build_env=/tmp/build_env
 
@@ -209,8 +211,10 @@ jobs:
           target: worker
           push: true
           tags: ${{ env.IMAGE_BASE }}-worker:sha-${{ github.event.pull_request.head.sha }}
-          cache-from: type=gha,scope=app
-          cache-to: type=gha,mode=max,scope=app
+          # TEMPORARY: cache disabled while debugging the DATABASE_URL
+          # secret-mount issue, to rule out a stale cached layer. Restore
+          # cache-from/cache-to once resolved.
+          no-cache: true
           secret-files: |
             build_env=/tmp/build_env
 
@@ -285,8 +289,10 @@ jobs:
           target: app
           push: true
           tags: ${{ env.IMAGE_BASE }}-app:sha-${{ github.event.pull_request.head.sha }}
-          cache-from: type=gha,scope=app
-          cache-to: type=gha,mode=max,scope=app
+          # TEMPORARY: cache disabled while debugging the DATABASE_URL
+          # secret-mount issue, to rule out a stale cached layer. Restore
+          # cache-from/cache-to once resolved.
+          no-cache: true
           secret-files: |
             build_env=/tmp/build_env
 
@@ -300,8 +306,10 @@ jobs:
           target: worker
           push: true
           tags: ${{ env.IMAGE_BASE }}-worker:sha-${{ github.event.pull_request.head.sha }}
-          cache-from: type=gha,scope=app
-          cache-to: type=gha,mode=max,scope=app
+          # TEMPORARY: cache disabled while debugging the DATABASE_URL
+          # secret-mount issue, to rule out a stale cached layer. Restore
+          # cache-from/cache-to once resolved.
+          no-cache: true
           secret-files: |
             build_env=/tmp/build_env
 
