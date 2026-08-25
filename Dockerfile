@@ -35,16 +35,33 @@ RUN pnpm install --frozen-lockfile
 # ---- builder: pnpm run ci = migrate && build (needs DB over Tailscale) ----
 FROM deps AS builder
 COPY . .
+ENV NODE_ENV=production
 # Build-time env (DATABASE_URL, REDIS_URL, S3_*, PAYLOAD_SECRET, etc.) arrives
-# as a single BuildKit secret file — see .github/workflows/ci.yml's
-# `secret-files` input — rather than as ARG/ENV, so none of these values are
-# cached into an image layer or visible via `docker history`. `pnpm run ci`
-# runs `payload migrate && next build`, matching what Dokploy ran directly on
-# the deployment server before this build moved into CI — every PR build
-# (including against develop) migrates that environment's real database, not
-# just the eventual deploy.
+# as a single BuildKit secret file in dotenv format — see
+# .github/workflows/ci.yml's `secret-files` input — rather than as ARG/ENV,
+# so none of these values are cached into an image layer or visible via
+# `docker history`.
+#
+# It is copied to .env.production and read by @next/env's loadEnvConfig
+# (which both `payload migrate` and `next build` call) rather than shell-
+# sourced: a value containing spaces or shell metacharacters — e.g.
+# USESEND_DEFAULT_FROM_NAME being "Mail Agent [daniel.heene.dev]" — breaks a
+# `. file` source under dash, which parses each line as a shell command
+# rather than a plain KEY=value assignment. dotenv's own parser has no such
+# restriction, which is the whole point of using the format Payload/Next
+# already expect instead of fighting it via shell semantics. The file is
+# removed immediately after use so its contents never land in a layer.
+#
+# `pnpm run ci` runs `payload migrate && next build`, matching what Dokploy
+# ran directly on the deployment server before this build moved into CI —
+# every PR build (including against develop) migrates that environment's
+# real database, not just the eventual deploy.
 RUN --mount=type=secret,id=build_env,required=true \
-    set -a && . /run/secrets/build_env && set +a && pnpm run ci
+    cp /run/secrets/build_env .env.production && \
+    pnpm run ci; \
+    status=$?; \
+    rm -f .env.production; \
+    exit $status
 
 # ---- app: Next.js server ----------------------------------------------------
 FROM base AS app

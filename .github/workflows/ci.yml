@@ -135,12 +135,15 @@ jobs:
 
       # Every build-time env var the Next.js build needs (per
       # src/types/environment.ts) is written to one gitignored-by-runner file
-      # and mounted into the builder stage as a single BuildKit secret — see
-      # the Dockerfile's `builder` stage. Nothing here is ARG/ENV, so no value
-      # is cached into an image layer or visible via `docker history`. Values
-      # come from whichever environment was selected above — some are Doppler
-      # secrets, some are plain Doppler-synced variables (vars.*); both land
-      # in the same file since the build doesn't need to distinguish them.
+      # in dotenv format and mounted into the builder stage as a single
+      # BuildKit secret — see the Dockerfile's `builder` stage, which copies
+      # it to .env.production and lets @next/env's own dotenv parser read it
+      # (not shell-sourced — see that stage's comment for why). Nothing here
+      # is ARG/ENV, so no value is cached into an image layer or visible via
+      # `docker history`. Values come from whichever environment was
+      # selected above — some are Doppler secrets, some are plain
+      # Doppler-synced variables (vars.*); both land in the same file since
+      # the build doesn't need to distinguish them.
       - name: Write build env secret file
         run: |
           umask 077
