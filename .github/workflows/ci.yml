@@ -12,9 +12,17 @@ name: CI
 # production rather than one job with a computed `environment:` — GitHub
 # accepts `environment: ${{ expression }}` syntactically but does not
 # reliably bind an environment from it (confirmed: the job ran with no
-# environment bound at all, so no Doppler-synced secrets/vars were
-# injected). Each variant is gated by `if:` on the PR's base branch and uses
-# a static, literal environment name instead.
+# environment bound at all, so no secrets were injected). Each variant is
+# gated by `if:` on the PR's base branch and uses a static, literal
+# environment name instead.
+#
+# The Docker build fetches its env live from Doppler (`doppler run`, inside
+# the Dockerfile's `builder` stage) rather than snapshotting Doppler-synced
+# GitHub Environment secrets/vars into a file — the only secret this
+# workflow itself handles is DOPPLER_TOKEN. This also sidesteps a real bug
+# an earlier version of this pipeline hit: a value containing a space
+# (USESEND_DEFAULT_FROM_NAME = "Mail Agent [daniel.heene.dev]") broke a
+# naive shell-source of a written env file.
 #
 # Images are tagged solely by the PR head SHA (`sha-<head_sha>`) and pushed to
 # ghcr.io. Nothing is retagged as a release version here: on merge,
@@ -95,16 +103,12 @@ jobs:
   # Split into two explicit jobs rather than one job with a computed
   # `environment: ${{ ... }}` expression: GitHub accepted that expression
   # syntactically but never actually bound any environment to the job (its
-  # API response showed `environment: null`), so no Doppler-synced
-  # secrets/vars were ever injected and the build failed on a missing
-  # DATABASE_URL. A static, literal environment name per job is the
-  # documented, reliable form.
+  # API response showed `environment: null`), so no environment-scoped
+  # secrets were ever injected. A static, literal environment name per job
+  # is the documented, reliable form.
   docker-app-development:
     name: Build app + worker images (Development)
-    # TEMPORARY: needs: test dropped while debugging the DATABASE_URL
-    # secret-mount issue, so this job runs immediately without waiting on
-    # commitlint/tests each iteration. Restore `needs: test` (and drop this
-    # comment) once the fix is confirmed working, before merging.
+    needs: test
     if: github.event.pull_request.base.ref != 'main'
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -133,62 +137,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Every build-time env var the Next.js build needs (per
-      # src/types/environment.ts) is written to one gitignored-by-runner file
-      # in dotenv format and mounted into the builder stage as a single
-      # BuildKit secret — see the Dockerfile's `builder` stage, which copies
-      # it to .env.production and lets @next/env's own dotenv parser read it
-      # (not shell-sourced — see that stage's comment for why). Nothing here
-      # is ARG/ENV, so no value is cached into an image layer or visible via
-      # `docker history`. Values come from whichever environment was
-      # selected above — some are Doppler secrets, some are plain
-      # Doppler-synced variables (vars.*); both land in the same file since
-      # the build doesn't need to distinguish them.
-      - name: Write build env secret file
+      # DOPPLER_TOKEN is the only secret this job hands the build — the
+      # Dockerfile's builder stage runs `doppler run --token=... -- pnpm run
+      # ci`, which injects the website/development config's full env live as
+      # real process env vars. Written to a file (not passed as a build ARG)
+      # so the token itself never lands in an image layer or `docker
+      # history`.
+      - name: Write Doppler token secret file
         run: |
           umask 077
-          cat > /tmp/build_env <<EOF
-          SERVER_HOST=${{ vars.SERVER_HOST }}
-          SERVER_URL=${{ vars.SERVER_URL }}
-          STATUS_PAGE_URL=${{ vars.STATUS_PAGE_URL }}
-          STATUS_PAGE_HEARTBEAT_URL=${{ vars.STATUS_PAGE_HEARTBEAT_URL }}
-          PAYLOAD_SECRET=${{ secrets.PAYLOAD_SECRET }}
-          PREVIEW_SECRET=${{ secrets.PREVIEW_SECRET }}
-          CRON_SECRET=${{ secrets.CRON_SECRET }}
-          DATABASE_URL=${{ secrets.DATABASE_URL }}
-          REDIS_URL=${{ secrets.REDIS_URL }}
-          S3_BUCKET=${{ vars.S3_BUCKET }}
-          S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}
-          S3_REGION=${{ vars.S3_REGION }}
-          S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}
-          S3_ENDPOINT=${{ vars.S3_ENDPOINT }}
-          UMAMI_USERNAME=${{ secrets.UMAMI_USERNAME }}
-          UMAMI_PASSWORD=${{ secrets.UMAMI_PASSWORD }}
-          NEXT_PUBLIC_UMAMI_URL=${{ vars.NEXT_PUBLIC_UMAMI_URL }}
-          NEXT_PUBLIC_UMAMI_SITE_ID=${{ vars.NEXT_PUBLIC_UMAMI_SITE_ID }}
-          USESEND_URL=${{ vars.USESEND_URL }}
-          USESEND_API_KEY=${{ secrets.USESEND_API_KEY }}
-          USESEND_DEFAULT_FROM_ADDRESS=${{ vars.USESEND_DEFAULT_FROM_ADDRESS }}
-          USESEND_DEFAULT_FROM_NAME=${{ vars.USESEND_DEFAULT_FROM_NAME }}
-          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
-          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
-          MAPBOX_API_KEY=${{ secrets.MAPBOX_API_KEY }}
-          EOF
-
-      # Temporary diagnostic: prove which keys actually got a non-empty
-      # value without ever printing a value itself. Remove once the
-      # DATABASE_URL mystery (missing MongoDB connection URL despite the
-      # secret existing in this environment) is resolved.
-      - name: Debug build env secret file (keys only, no values)
-        run: |
-          echo "line count: $(wc -l < /tmp/build_env)"
-          while IFS='=' read -r key value; do
-            if [ -z "$value" ]; then
-              echo "EMPTY: $key"
-            else
-              echo "set:   $key (${#value} chars)"
-            fi
-          done < /tmp/build_env
+          printf '%s' "${{ secrets.DOPPLER_TOKEN }}" > /tmp/doppler_token
 
       - name: Build & push app image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
@@ -197,12 +155,10 @@ jobs:
           target: app
           push: true
           tags: ${{ env.IMAGE_BASE }}-app:sha-${{ github.event.pull_request.head.sha }}
-          # TEMPORARY: cache disabled while debugging the DATABASE_URL
-          # secret-mount issue, to rule out a stale cached layer. Restore
-          # cache-from/cache-to once resolved.
-          no-cache: true
+          cache-from: type=gha,scope=app
+          cache-to: type=gha,mode=max,scope=app
           secret-files: |
-            build_env=/tmp/build_env
+            doppler_token=/tmp/doppler_token
 
       # The builder stage (with .next already built) is reused verbatim for
       # the worker target via Docker's layer cache — this does not re-run
@@ -214,12 +170,10 @@ jobs:
           target: worker
           push: true
           tags: ${{ env.IMAGE_BASE }}-worker:sha-${{ github.event.pull_request.head.sha }}
-          # TEMPORARY: cache disabled while debugging the DATABASE_URL
-          # secret-mount issue, to rule out a stale cached layer. Restore
-          # cache-from/cache-to once resolved.
-          no-cache: true
+          cache-from: type=gha,scope=app
+          cache-to: type=gha,mode=max,scope=app
           secret-files: |
-            build_env=/tmp/build_env
+            doppler_token=/tmp/doppler_token
 
   docker-app-production:
     name: Build app + worker images (Production)
@@ -252,38 +206,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # See docker-app-development's identical step for why this file
-      # exists and how it's consumed.
-      - name: Write build env secret file
+      # See docker-app-development's identical step for what this token is
+      # and how it's consumed.
+      - name: Write Doppler token secret file
         run: |
           umask 077
-          cat > /tmp/build_env <<EOF
-          SERVER_HOST=${{ vars.SERVER_HOST }}
-          SERVER_URL=${{ vars.SERVER_URL }}
-          STATUS_PAGE_URL=${{ vars.STATUS_PAGE_URL }}
-          STATUS_PAGE_HEARTBEAT_URL=${{ vars.STATUS_PAGE_HEARTBEAT_URL }}
-          PAYLOAD_SECRET=${{ secrets.PAYLOAD_SECRET }}
-          PREVIEW_SECRET=${{ secrets.PREVIEW_SECRET }}
-          CRON_SECRET=${{ secrets.CRON_SECRET }}
-          DATABASE_URL=${{ secrets.DATABASE_URL }}
-          REDIS_URL=${{ secrets.REDIS_URL }}
-          S3_BUCKET=${{ vars.S3_BUCKET }}
-          S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}
-          S3_REGION=${{ vars.S3_REGION }}
-          S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}
-          S3_ENDPOINT=${{ vars.S3_ENDPOINT }}
-          UMAMI_USERNAME=${{ secrets.UMAMI_USERNAME }}
-          UMAMI_PASSWORD=${{ secrets.UMAMI_PASSWORD }}
-          NEXT_PUBLIC_UMAMI_URL=${{ vars.NEXT_PUBLIC_UMAMI_URL }}
-          NEXT_PUBLIC_UMAMI_SITE_ID=${{ vars.NEXT_PUBLIC_UMAMI_SITE_ID }}
-          USESEND_URL=${{ vars.USESEND_URL }}
-          USESEND_API_KEY=${{ secrets.USESEND_API_KEY }}
-          USESEND_DEFAULT_FROM_ADDRESS=${{ vars.USESEND_DEFAULT_FROM_ADDRESS }}
-          USESEND_DEFAULT_FROM_NAME=${{ vars.USESEND_DEFAULT_FROM_NAME }}
-          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
-          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
-          MAPBOX_API_KEY=${{ secrets.MAPBOX_API_KEY }}
-          EOF
+          printf '%s' "${{ secrets.DOPPLER_TOKEN }}" > /tmp/doppler_token
 
       - name: Build & push app image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
@@ -292,12 +220,10 @@ jobs:
           target: app
           push: true
           tags: ${{ env.IMAGE_BASE }}-app:sha-${{ github.event.pull_request.head.sha }}
-          # TEMPORARY: cache disabled while debugging the DATABASE_URL
-          # secret-mount issue, to rule out a stale cached layer. Restore
-          # cache-from/cache-to once resolved.
-          no-cache: true
+          cache-from: type=gha,scope=app
+          cache-to: type=gha,mode=max,scope=app
           secret-files: |
-            build_env=/tmp/build_env
+            doppler_token=/tmp/doppler_token
 
       # The builder stage (with .next already built) is reused verbatim for
       # the worker target via Docker's layer cache — this does not re-run
@@ -309,12 +235,10 @@ jobs:
           target: worker
           push: true
           tags: ${{ env.IMAGE_BASE }}-worker:sha-${{ github.event.pull_request.head.sha }}
-          # TEMPORARY: cache disabled while debugging the DATABASE_URL
-          # secret-mount issue, to rule out a stale cached layer. Restore
-          # cache-from/cache-to once resolved.
-          no-cache: true
+          cache-from: type=gha,scope=app
+          cache-to: type=gha,mode=max,scope=app
           secret-files: |
-            build_env=/tmp/build_env
+            doppler_token=/tmp/doppler_token
 
   docker-storybook:
     name: Build storybook image
