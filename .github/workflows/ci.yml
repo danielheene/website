@@ -169,6 +169,21 @@ jobs:
           MAPBOX_API_KEY=${{ secrets.MAPBOX_API_KEY }}
           EOF
 
+      # Temporary diagnostic: prove which keys actually got a non-empty
+      # value without ever printing a value itself. Remove once the
+      # DATABASE_URL mystery (missing MongoDB connection URL despite the
+      # secret existing in this environment) is resolved.
+      - name: Debug build env secret file (keys only, no values)
+        run: |
+          echo "line count: $(wc -l < /tmp/build_env)"
+          while IFS='=' read -r key value; do
+            if [ -z "$value" ]; then
+              echo "EMPTY: $key"
+            else
+              echo "set:   $key (${#value} chars)"
+            fi
+          done < /tmp/build_env
+
       - name: Build & push app image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
