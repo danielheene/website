@@ -492,6 +492,7 @@ export const seedPosts = async (
       collection: CollectionSlug.BlogPosts,
       context: {
         skipRevalidate: true,
+        skipGenerateExcerpt: true,
       },
       data: {
         title,
