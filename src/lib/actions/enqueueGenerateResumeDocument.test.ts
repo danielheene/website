@@ -4,11 +4,22 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { WorkflowSlug } from '@/types/jobs-queue'
 
-import { enqueueGenerateResumeDocument } from './enqueueGenerateResumeDocument'
-
 vi.mock('@payload-config', () => ({
   default: {},
 }))
+
+const afterMock = vi.fn((task: () => Promise<void>) => task())
+
+vi.mock('next/server', () => ({
+  after: (...args: unknown[]) =>
+    afterMock(
+      ...(args as [
+        () => Promise<void>,
+      ]),
+    ),
+}))
+
+import { enqueueGenerateResumeDocument } from './enqueueGenerateResumeDocument'
 
 /** Distinct values so an argument swap in the call site cannot pass unnoticed. */
 const TIMEOUT_BETWEEN_JOBS = 10 * 60 * 1000
@@ -40,10 +51,13 @@ const find = vi.fn(async () => ({
   docs: [] as unknown[],
 }))
 const findGlobal = vi.fn(async () => SETTINGS)
+const runByID = vi.fn(async () => ({}))
+const loggerError = vi.fn()
 
 /**
  * `getPayload` is stubbed globally in vitest.setup.ts with a fixed shape; this
- * module needs `jobs.queue` and per-test control over `find`/`findGlobal`.
+ * module needs `jobs.queue`/`jobs.runByID` and per-test control over
+ * `find`/`findGlobal`.
  */
 beforeEach(() => {
   queue.mockClear()
@@ -53,16 +67,20 @@ beforeEach(() => {
   })
   findGlobal.mockClear()
   findGlobal.mockResolvedValue(SETTINGS)
+  runByID.mockClear()
+  loggerError.mockClear()
+  afterMock.mockClear()
 
   vi.mocked(getPayload).mockResolvedValue({
     find,
     findGlobal,
     jobs: {
       queue,
+      runByID,
     },
     logger: {
       info: vi.fn(),
-      error: vi.fn(),
+      error: loggerError,
     },
   } as never)
 })
@@ -83,6 +101,21 @@ describe('enqueueGenerateResumeDocument', () => {
         maximumRetries: MAXIMUM_RETRIES,
       },
     })
+  })
+
+  it('returns the queued job id', async () => {
+    const result = await enqueueGenerateResumeDocument()
+
+    expect(result).toEqual({
+      jobId: 'job-1',
+    })
+  })
+
+  it('does not force-run the job when forceNow is not set', async () => {
+    await enqueueGenerateResumeDocument()
+
+    expect(afterMock).not.toHaveBeenCalled()
+    expect(runByID).not.toHaveBeenCalled()
   })
 
   it('generates a fresh sharedId per call', async () => {
@@ -221,6 +254,31 @@ describe('enqueueGenerateResumeDocument', () => {
       })
 
       expect(queuedWaitUntil().toISOString()).toBe('2026-01-01T12:00:00.000Z')
+    })
+
+    it('runs the job immediately via after() rather than waiting for autoRun', async () => {
+      await enqueueGenerateResumeDocument({
+        forceNow: true,
+      })
+
+      expect(afterMock).toHaveBeenCalledTimes(1)
+      expect(runByID).toHaveBeenCalledWith({
+        id: 'job-1',
+      })
+    })
+
+    it('logs rather than throws when the forced run fails', async () => {
+      runByID.mockRejectedValueOnce(new Error('boom'))
+
+      await expect(
+        enqueueGenerateResumeDocument({
+          forceNow: true,
+        }),
+      ).resolves.toEqual({
+        jobId: 'job-1',
+      })
+
+      expect(loggerError).toHaveBeenCalledWith(expect.stringContaining('boom'))
     })
   })
 

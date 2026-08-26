@@ -147,3 +147,34 @@ export type ScheduledJobActionProgress =
       status: 'error'
       message: string
     }
+
+/**
+ *    Per-job progress channel for the `GenerateResumeDocument` workflow (see
+ *    `src/jobs-queue/workflows/generateResumeDocument.tsx`), one per job ID.
+ *
+ *    Requires an authenticated session, same as the other per-job channels
+ *    above — resume generation is an admin-only action triggered from
+ *    `PDFGeneratorSettings`' Generate button, not something an anonymous
+ *    caller has any reason to watch.
+ */
+const RESUME_GENERATE_CHANNEL_PREFIX = 'resume-generate:'
+
+export const resumeGenerateChannel = (jobId: string): string =>
+  `${RESUME_GENERATE_CHANNEL_PREFIX}${jobId}`
+
+export const isResumeGenerateChannel = (value: string | null): value is string =>
+  Boolean(value?.startsWith(RESUME_GENERATE_CHANNEL_PREFIX)) &&
+  JOB_ID_PATTERN.test((value as string).slice(RESUME_GENERATE_CHANNEL_PREFIX.length))
+
+export type ResumeGenerateProgress =
+  | {
+      status: 'progress'
+      step: string
+    }
+  | {
+      status: 'success'
+    }
+  | {
+      status: 'error'
+      message: string
+    }

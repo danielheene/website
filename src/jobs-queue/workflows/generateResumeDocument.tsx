@@ -3,6 +3,9 @@ import { WorkflowConfig } from 'payload'
 import { secondsToMilliseconds } from 'date-fns'
 
 import { getLocalISOString } from '@/lib/date'
+import { extractErrorMessage } from '@/lib/extractErrorMessage'
+import { publish } from '@/lib/RedisHandler'
+import { resumeGenerateChannel } from '@/lib/sse/channels'
 import { QueueSlug, TaskSlug, WorkflowSlug } from '@/types/jobs-queue'
 
 /**
@@ -78,80 +81,103 @@ export const generateResumeDocument: WorkflowConfig<WorkflowSlug['GenerateResume
       },
     }
 
+    const channel = resumeGenerateChannel(String(id))
+    const publishStep = (step: string) =>
+      publish(channel, {
+        status: 'progress',
+        step,
+      })
+
     payload.logger.info(`Workflow: ${WorkflowSlug.GenerateResumeDocument}:${sharedId} started`)
 
-    const { documentTitle } = await tasks.GenerateResumeDocumentTitle(
-      `GenerateDocumentTitle:${sharedId}`,
-      {
-        retries,
-        input: {
-          documentTitleTemplate,
-          sharedId,
+    try {
+      await publishStep('Generating document title…')
+      const { documentTitle } = await tasks.GenerateResumeDocumentTitle(
+        `GenerateDocumentTitle:${sharedId}`,
+        {
+          retries,
+          input: {
+            documentTitleTemplate,
+            sharedId,
+          },
         },
-      },
-    )
+      )
 
-    const { documentSlug } = await tasks.GenerateResumeDocumentSlug(
-      `GenerateDocumentSlug:${sharedId}`,
-      {
+      await publishStep('Generating document slug…')
+      const { documentSlug } = await tasks.GenerateResumeDocumentSlug(
+        `GenerateDocumentSlug:${sharedId}`,
+        {
+          retries,
+          input: {
+            documentTitle,
+          },
+        },
+      )
+
+      payload.logger.info('Processing LocalizedResumeDocument Tasks: EN')
+      await publishStep('Generating English resume…')
+      const en = await tasks.GenerateLocalizedResumeDocument(
+        `${TaskSlug.GenerateLocalizedResumeDocument}:${sharedId}:EN`,
+        {
+          retries,
+          input: {
+            locale: 'en',
+            documentSlug,
+            filenameTemplate,
+            sharedId,
+            createdAt,
+          },
+        },
+      )
+      payload.logger.info('Successfully processed LocalizedResumeDocument Tasks: EN')
+
+      payload.logger.info('Processing LocalizedResumeDocument Tasks: DE')
+      await publishStep('Generating German resume…')
+      const de = await tasks.GenerateLocalizedResumeDocument(
+        `${TaskSlug.GenerateLocalizedResumeDocument}:${sharedId}:DE`,
+        {
+          retries,
+          input: {
+            locale: 'de',
+            documentSlug,
+            filenameTemplate,
+            sharedId,
+            createdAt,
+          },
+        },
+      )
+      payload.logger.info('Successfully processed LocalizedResumeDocument Tasks: DE')
+
+      await publishStep('Saving resume document…')
+      await tasks.CreateResumeDocument(`CreateResumeDocument:${sharedId}`, {
         retries,
         input: {
           documentTitle,
-        },
-      },
-    )
-
-    payload.logger.info('Processing LocalizedResumeDocument Tasks: EN')
-    const en = await tasks.GenerateLocalizedResumeDocument(
-      `${TaskSlug.GenerateLocalizedResumeDocument}:${sharedId}:EN`,
-      {
-        retries,
-        input: {
-          locale: 'en',
           documentSlug,
-          filenameTemplate,
-          sharedId,
           createdAt,
+          jobId: String(id),
+          resumeFileIdEn: en.resumeFileId,
+          resumeFileChecksumEn: en.resumeFileChecksum,
+          resumeThumbnailIdsEn: en.resumeThumbnailIds,
+          resumeDocumentDataEn: en.resumeDocumentData,
+          resumeFileIdDe: de.resumeFileId,
+          resumeFileChecksumDe: de.resumeFileChecksum,
+          resumeThumbnailIdsDe: de.resumeThumbnailIds,
+          resumeDocumentDataDe: de.resumeDocumentData,
         },
-      },
-    )
-    payload.logger.info('Successfully processed LocalizedResumeDocument Tasks: EN')
+      })
 
-    payload.logger.info('Processing LocalizedResumeDocument Tasks: DE')
-    const de = await tasks.GenerateLocalizedResumeDocument(
-      `${TaskSlug.GenerateLocalizedResumeDocument}:${sharedId}:DE`,
-      {
-        retries,
-        input: {
-          locale: 'de',
-          documentSlug,
-          filenameTemplate,
-          sharedId,
-          createdAt,
-        },
-      },
-    )
-    payload.logger.info('Successfully processed LocalizedResumeDocument Tasks: DE')
-
-    await tasks.CreateResumeDocument(`CreateResumeDocument:${sharedId}`, {
-      retries,
-      input: {
-        documentTitle,
-        documentSlug,
-        createdAt,
-        jobId: String(id),
-        resumeFileIdEn: en.resumeFileId,
-        resumeFileChecksumEn: en.resumeFileChecksum,
-        resumeThumbnailIdsEn: en.resumeThumbnailIds,
-        resumeDocumentDataEn: en.resumeDocumentData,
-        resumeFileIdDe: de.resumeFileId,
-        resumeFileChecksumDe: de.resumeFileChecksum,
-        resumeThumbnailIdsDe: de.resumeThumbnailIds,
-        resumeDocumentDataDe: de.resumeDocumentData,
-      },
-    })
-
-    payload.logger.info('Finished generating localized resume documents')
+      payload.logger.info('Finished generating localized resume documents')
+      await publish(channel, {
+        status: 'success',
+      })
+    } catch (error) {
+      await publish(channel, {
+        status: 'error',
+        message: extractErrorMessage(error),
+      })
+      throw error
+    }
 
     return void 0
   },

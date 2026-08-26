@@ -3,9 +3,11 @@ import { describe, expect, it } from 'vitest'
 import {
   bilingualTranslateChannel,
   isBilingualTranslateChannel,
+  isResumeGenerateChannel,
   isScheduledJobChannel,
   isSeedTaskChannel,
   isSseChannel,
+  resumeGenerateChannel,
   SSE_CHANNELS,
   scheduledJobChannel,
   seedTaskChannel,
@@ -139,5 +141,36 @@ describe('isScheduledJobChannel', () => {
   it('rejects channels outside the scheduled-job prefix', () => {
     expect(isScheduledJobChannel('service-status')).toBe(false)
     expect(isScheduledJobChannel('other-prefix:job-1')).toBe(false)
+  })
+})
+
+describe('resumeGenerateChannel', () => {
+  it('prefixes the job id', () => {
+    expect(resumeGenerateChannel('68abc123')).toBe('resume-generate:68abc123')
+  })
+})
+
+describe('isResumeGenerateChannel', () => {
+  it('accepts a channel built by resumeGenerateChannel', () => {
+    expect(isResumeGenerateChannel(resumeGenerateChannel('68abc123'))).toBe(true)
+  })
+
+  it('rejects a missing channel', () => {
+    expect(isResumeGenerateChannel(null)).toBe(false)
+    expect(isResumeGenerateChannel('')).toBe(false)
+  })
+
+  it('rejects a channel with no job id', () => {
+    expect(isResumeGenerateChannel('resume-generate:')).toBe(false)
+  })
+
+  it('rejects a job id containing characters outside the allowed set', () => {
+    expect(isResumeGenerateChannel('resume-generate:../etc/passwd')).toBe(false)
+    expect(isResumeGenerateChannel('resume-generate:job 1')).toBe(false)
+  })
+
+  it('rejects channels outside the resume-generate prefix', () => {
+    expect(isResumeGenerateChannel('service-status')).toBe(false)
+    expect(isResumeGenerateChannel('other-prefix:job-1')).toBe(false)
   })
 })

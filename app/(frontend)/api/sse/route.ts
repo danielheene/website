@@ -4,6 +4,7 @@ import { getPayload, type PayloadRequest } from 'payload'
 import { type RedisListener, subscribe } from '@/lib/RedisHandler'
 import {
   isBilingualTranslateChannel,
+  isResumeGenerateChannel,
   isScheduledJobChannel,
   isSeedTaskChannel,
   isSseChannel,
@@ -41,13 +42,14 @@ export async function GET(request: Request): Promise<Response> {
   if (
     isBilingualTranslateChannel(channel) ||
     isSeedTaskChannel(channel) ||
-    isScheduledJobChannel(channel)
+    isScheduledJobChannel(channel) ||
+    isResumeGenerateChannel(channel)
   ) {
     /**
      *    Unlike the public channels in `SSE_CHANNELS`, these job channels
      *    carry admin-only data (translated CV content, seed results, manual
-     *    job-run outcomes), so they require a signed-in admin session rather
-     *    than being open to anonymous callers.
+     *    job-run outcomes, resume generation progress), so they require a
+     *    signed-in admin session rather than being open to anonymous callers.
      */
     const payload = await getPayload({
       config,
