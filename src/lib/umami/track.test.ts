@@ -207,6 +207,59 @@ describe('track', () => {
       expect(sendUmamiPayload).toHaveBeenCalledTimes(1)
     })
   })
+
+  describe('admin path exclusion', () => {
+    beforeEach(() => {
+      vi.stubGlobal('window', {})
+      vi.stubGlobal('navigator', {
+        language: 'en-US',
+      })
+      vi.stubGlobal('screen', {
+        width: 1920,
+        height: 1080,
+      })
+      vi.stubGlobal('document', {
+        title: 'Admin',
+        referrer: '',
+      })
+    })
+
+    it('does not send when the current location is /admin', () => {
+      vi.stubGlobal('location', {
+        pathname: '/admin',
+        search: '',
+        hostname: 'example.com',
+      })
+
+      track()
+
+      expect(sendUmamiPayload).not.toHaveBeenCalled()
+    })
+
+    it('does not send when the current location is nested under /admin', () => {
+      vi.stubGlobal('location', {
+        pathname: '/admin/collections/pages',
+        search: '',
+        hostname: 'example.com',
+      })
+
+      track()
+
+      expect(sendUmamiPayload).not.toHaveBeenCalled()
+    })
+
+    it('still sends for a path that merely starts with "/admin" as a different segment', () => {
+      vi.stubGlobal('location', {
+        pathname: '/administration',
+        search: '',
+        hostname: 'example.com',
+      })
+
+      track()
+
+      expect(sendUmamiPayload).toHaveBeenCalledTimes(1)
+    })
+  })
 })
 
 describe('trackPageview', () => {
@@ -318,6 +371,72 @@ describe('trackPageview', () => {
       trackPageview('/destination/path')
 
       expect(sendUmamiPayload).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('admin path exclusion', () => {
+    beforeEach(() => {
+      vi.stubGlobal('window', {})
+      vi.stubGlobal('navigator', {
+        language: 'en-US',
+      })
+      vi.stubGlobal('screen', {
+        width: 1920,
+        height: 1080,
+      })
+      vi.stubGlobal('document', {
+        title: 'Admin',
+        referrer: '',
+      })
+    })
+
+    it('does not send when the explicit url targets /admin', () => {
+      vi.stubGlobal('location', {
+        pathname: '/foo',
+        search: '',
+        hostname: 'example.com',
+      })
+
+      trackPageview('/admin')
+
+      expect(sendUmamiPayload).not.toHaveBeenCalled()
+    })
+
+    it('does not send when the explicit url targets a nested /admin path', () => {
+      vi.stubGlobal('location', {
+        pathname: '/foo',
+        search: '',
+        hostname: 'example.com',
+      })
+
+      trackPageview('/admin/collections/pages')
+
+      expect(sendUmamiPayload).not.toHaveBeenCalled()
+    })
+
+    it('does not send when called bare on the /admin location (first page load)', () => {
+      vi.stubGlobal('location', {
+        pathname: '/admin',
+        search: '',
+        hostname: 'example.com',
+      })
+
+      trackPageview()
+
+      expect(sendUmamiPayload).not.toHaveBeenCalled()
+    })
+
+    it('does not send when the explicit url is an absolute /admin URL', () => {
+      vi.stubGlobal('location', {
+        pathname: '/foo',
+        search: '',
+        hostname: 'example.com',
+        origin: 'https://example.com',
+      })
+
+      trackPageview('https://example.com/admin/login')
+
+      expect(sendUmamiPayload).not.toHaveBeenCalled()
     })
   })
 })
