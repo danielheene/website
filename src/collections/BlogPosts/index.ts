@@ -14,6 +14,7 @@ import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 import { BlogPostData } from '@/types/payload'
 
+import { generateExcerptAndReadingTime } from './hooks/generateExcerptAndReadingTime'
 import { revalidateBlogPost } from './hooks/revalidateBlogPost'
 
 export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
@@ -64,6 +65,9 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
     },
   },
   hooks: {
+    beforeChange: [
+      generateExcerptAndReadingTime,
+    ],
     afterChange: [
       revalidateBlogPost,
     ],
