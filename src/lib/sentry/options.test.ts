@@ -106,7 +106,13 @@ describe('tracesSampler', () => {
     ).toBe(0)
     expect(
       sharedSentryOptions.tracesSampler({
-        name: 'GET /api/heartbeat',
+        name: 'GET /api/health/app',
+        inheritOrSampleWith: inherit,
+      }),
+    ).toBe(0)
+    expect(
+      sharedSentryOptions.tracesSampler({
+        name: 'GET /api/health/jobs',
         inheritOrSampleWith: inherit,
       }),
     ).toBe(0)

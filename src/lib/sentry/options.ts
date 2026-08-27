@@ -64,7 +64,7 @@ export const sharedSentryOptions = {
       String(attributes?.['http.route'] ?? ''),
     ].join(' ')
 
-    if (target.includes('/api/sse') || target.includes('/api/heartbeat')) return 0
+    if (target.includes('/api/sse') || target.includes('/api/health')) return 0
     return inheritOrSampleWith(rate(process.env.SENTRY_TRACES_SAMPLE_RATE, isProduction ? 0.1 : 1))
   },
 } as const

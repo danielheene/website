@@ -70,12 +70,25 @@ FROM base AS app
 ENV NODE_ENV=production
 COPY --from=builder /app ./
 EXPOSE 3000
+# Trivial liveness probe (app/(frontend)/api/health/app) — confirms the
+# Next.js server itself responds, not job-queue state; see the `worker`
+# stage's HEALTHCHECK below for that. Probed with plain Node rather than
+# curl, which node:26-slim doesn't carry and isn't otherwise needed here.
+HEALTHCHECK --interval=60s --timeout=10s --retries=3 --start-period=30s \
+    CMD node -e "fetch('http://localhost:3000/api/health/app').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 CMD ["pnpm", "run", "start"]
 
 # ---- worker: Payload job runner, same build output as app -----------------
 FROM base AS worker
 ENV NODE_ENV=production
 COPY --from=builder /app ./
+EXPOSE 3001
+# `jobs:run` itself has no HTTP listener to probe — start-worker.mjs runs a
+# small health server (scripts/health-server.ts) alongside it for exactly
+# this. Probed with plain Node rather than curl, which node:26-slim doesn't
+# carry and isn't otherwise needed in this image.
+HEALTHCHECK --interval=60s --timeout=10s --retries=3 --start-period=30s \
+    CMD node -e "fetch('http://localhost:'+(process.env.JOB_RUNNER_HEALTH_PORT||3001)+'/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 CMD ["pnpm", "run", "start:job-runner"]
 
 # ---- storybook-builder: independent build, no DB/Tailscale needed ---------

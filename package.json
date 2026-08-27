@@ -43,7 +43,7 @@
     "seed:posts": "pnpm run payload run scripts/seed-posts.ts",
     "seed:posts:clean": "pnpm run payload run scripts/seed-posts.ts -- --clean",
     "start": "pnpm run next start",
-    "start:job-runner": "pnpm run payload jobs:run --cron \"* * * * *\" --all-queues --handle-schedules --limit 10",
+    "start:job-runner": "node scripts/start-worker.mjs",
     "storybook": "NODE_OPTIONS=\"--trace-deprecation --disable-warning=DeprecationWarning\" storybook",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",

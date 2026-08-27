@@ -38,6 +38,13 @@ export const envSchema = z.object({
     ])
     .default('false'),
 
+  /**
+   * Port the standalone worker health server (`scripts/health-server.ts`)
+   * listens on inside the `worker` container. Irrelevant to the `app`
+   * container, which reports job health via `/api/health/jobs` instead.
+   */
+  JOB_RUNNER_HEALTH_PORT: z.coerce.number().int().positive().default(3001),
+
   DATABASE_URL: z.string(),
   REDIS_URL: z.string(),
 

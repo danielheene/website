@@ -307,7 +307,7 @@ so local development is unaffected.
 
 Notes:
 
-- `/api/sse` and `/api/heartbeat` are excluded from tracing — they are polled or
+- `/api/sse` and `/api/health/*` are excluded from tracing — they are polled or
   long-lived and would dominate the quota.
 - Sentry requests are proxied through `/monitoring` so ad blockers cannot drop them.
 - Source maps are deleted after upload, so they are never served publicly.
