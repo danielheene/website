@@ -1,6 +1,6 @@
 import React, { JSX } from 'react'
 
-import { tv, VariantProps } from 'tailwind-variants'
+import { cn, tv, VariantProps } from 'tailwind-variants'
 
 import { Icon } from '../Icon'
 
@@ -14,20 +14,36 @@ export const BannerVariant = {
 export const BannerIconNameMap: Record<BannerProps['variant'], string> = {
   [BannerVariant.Info]: 'material-symbols:info',
   [BannerVariant.Warning]: 'material-symbols:warning',
-  [BannerVariant.Success]: 'material-symbols:check',
+  [BannerVariant.Success]: 'material-symbols:check-circle',
   [BannerVariant.Error]: 'material-symbols:error',
 } as const
 
 export const bannerStyles = tv({
-  base: 'border-2 p-4 flex items-start gap-4 rounded',
+  base: cn([
+    'p-4 flex items-start gap-4 border-2',
+
+    'border-(--badge-color)',
+    'bg-(--badge-color)',
+    'text-(--color-white)',
+  ]),
   variants: {
     variant: {
-      [BannerVariant.Info]: 'border-info/75 bg-info/20 text-info-900 dark:text-info-100',
-      [BannerVariant.Warning]:
-        'border-warning/50 bg-[color-mix(in_oklch,_var(--color-warning-400)_20%,_var(--color-background))] text-warning-700 dark:text-warning-100)  ',
-      [BannerVariant.Success]:
-        'border-success/75 bg-success/20 text-success-900 dark:text-success-100',
-      [BannerVariant.Error]: 'border-error/75 bg-error/20 text-error-900 dark:text-error-100',
+      [BannerVariant.Info]: cn([
+        '[--badge-color:var(--color-info-600)]',
+        'dark:[--badge-color:var(--color-info-400)]',
+      ]),
+      [BannerVariant.Warning]: cn([
+        '[--badge-color:var(--color-warning-600)]',
+        'dark:[--badge-color:var(--color-warning-500)]',
+      ]),
+      [BannerVariant.Success]: cn([
+        '[--badge-color:var(--color-success-600)]',
+        'dark:[--badge-color:var(--color-success-400)]',
+      ]),
+      [BannerVariant.Error]: cn([
+        '[--badge-color:var(--color-error-600)]',
+        'dark:[--badge-color:var(--color-error-400)]',
+      ]),
     },
   },
 })
@@ -44,7 +60,7 @@ export const Banner = ({ className, children, variant }: BannerProps): JSX.Eleme
       class: className,
     })}
   >
-    <Icon name={BannerIconNameMap[variant]} className="text-2xl" />
+    <Icon name={BannerIconNameMap[variant]} className="text-3xl grow-0 shrink-0" />
     <div>{children}</div>
   </div>
 )

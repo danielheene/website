@@ -1,45 +1,52 @@
 'use client'
 
 import { ChangeEvent, DragEvent, useCallback, useId, useRef, useState } from 'react'
+import Link from 'next/link'
 
 import { sha256 } from 'hash-wasm'
 import { cn } from 'tailwind-variants'
 
 import { Banner } from '@/components/Banner'
+import { Icon } from '@/components/Icon'
+import { track } from '@/lib/umami/track'
 import { ResumeDocumentData } from '@/types/payload'
 
+interface ChecksumSearchResult {
+  doc: ResumeDocumentData
+  newerVersions: number
+}
+
 interface ChecksumValidatorClientProps {
-  searchChecksum: (checksum: string) => Promise<ResumeDocumentData | null>
+  searchChecksum: (checksum: string) => Promise<ChecksumSearchResult | null>
 }
 
 type FormState =
   | {
       state: 'INITIAL'
-      doc: null
+      result: null
     }
   | {
       state: 'LOADING'
-      doc: null
+      result: null
     }
   | {
       state: 'LOADED'
-      doc: ResumeDocumentData | null
+      result: ChecksumSearchResult | null
     }
 
 export const ResumeChecksumValidatorClient = ({ searchChecksum }: ChecksumValidatorClientProps) => {
   const id = useId()
-  const inputRef = useRef(null)
-  const [{ state, doc }, setFormState] = useState<FormState>({
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [{ state, result }, setFormState] = useState<FormState>({
     state: 'INITIAL',
-    doc: null,
+    result: null,
   })
+  const [isDraggingOver, setIsDraggingOver] = useState(false)
+  const [fileName, setFileName] = useState<string | null>(null)
 
   const handleDragEnter = useCallback((event: DragEvent<HTMLLabelElement>) => {
     event.preventDefault()
-  }, [])
-
-  const handleDragStart = useCallback((event: DragEvent<HTMLLabelElement>) => {
-    event.preventDefault()
+    setIsDraggingOver(true)
   }, [])
 
   const handleDragOver = useCallback((event: DragEvent<HTMLLabelElement>) => {
@@ -48,28 +55,32 @@ export const ResumeChecksumValidatorClient = ({ searchChecksum }: ChecksumValida
 
   const handleDragLeave = useCallback((event: DragEvent<HTMLLabelElement>) => {
     event.preventDefault()
+    setIsDraggingOver(false)
   }, [])
 
   const validateProvidedFile = useCallback(
-    (file: File) => {
+    (file: File | undefined) => {
+      if (!file) return
+
       ;(async () => {
+        setFileName(file.name)
         setFormState({
           state: 'LOADING',
-          doc: null,
+          result: null,
         })
 
         const bytes = await file.bytes()
         const hash = await sha256(bytes)
-        const doc = await searchChecksum(hash)
+        const result = await searchChecksum(hash)
 
         setFormState({
           state: 'LOADED',
-          doc: doc,
+          result,
         })
-        if (!doc) return
-        if (doc && doc.newerVersions > 0) return
-
-        console.log(file)
+        track('resume-validate', {
+          checksum: hash,
+          newerVersion: result?.newerVersions,
+        })
       })()
     },
     [
@@ -80,9 +91,8 @@ export const ResumeChecksumValidatorClient = ({ searchChecksum }: ChecksumValida
   const handleDrop = useCallback(
     (event: DragEvent<HTMLLabelElement>) => {
       event.preventDefault()
-
-      const file = event.dataTransfer.files[0]
-      validateProvidedFile(file)
+      setIsDraggingOver(false)
+      validateProvidedFile(event.dataTransfer.files[0])
     },
     [
       validateProvidedFile,
@@ -90,73 +100,63 @@ export const ResumeChecksumValidatorClient = ({ searchChecksum }: ChecksumValida
   )
 
   const handleChange = useCallback(
-    async (event: ChangeEvent<HTMLInputElement>) => {
-      event.preventDefault()
-
-      const file = event.target.files[0]
-      validateProvidedFile(file)
+    (event: ChangeEvent<HTMLInputElement>) => {
+      validateProvidedFile(event.target.files?.[0])
     },
     [
       validateProvidedFile,
     ],
   )
 
-  //
-  // useEffect(() => {
-  //   window.addEventListener('dragover', (ev) => ev.preventDefault())
-  //   window.addEventListener('dragend', (ev) => ev.preventDefault())
-  //   window.addEventListener('drop', (ev) => ev.preventDefault())
-  // }, [
-  //   handleDragEnter,
-  // ])
+  const reset = useCallback(() => {
+    setFileName(null)
+    setFormState({
+      state: 'INITIAL',
+      result: null,
+    })
+    if (inputRef.current) inputRef.current.value = ''
+  }, [])
 
   return (
-    <div className="container grid grid-cols-12 gap-4">
-      <div
-        className={cn([
-          'col-start-1 col-end-5',
-        ])}
-      >
-        {state === 'INITIAL' && <p>Drag and drop a resume file here</p>}
-        {state === 'LOADING' && <p>Loading...</p>}
-        {state === 'LOADED' && doc && doc.newerVersions > 0 && (
-          <Banner variant="warning">
-            It's a valid document but there is a newer version available.
-          </Banner>
-        )}
-        {state === 'LOADED' && doc && doc.newerVersions === 0 && (
-          <Banner variant="success">
-            It's a valid document and it's the latest available version.
-          </Banner>
-        )}
-        {state === 'LOADED' && !doc && (
-          <Banner variant="error">
-            The provided document is no resume or it has been compromised.
-            <br />
-            This means, the version you provided is not known to the system.
-          </Banner>
-        )}
-      </div>
-      <div
-        className={cn([
-          'col-start-6 col-end-12',
-        ])}
-      >
+    <div className="flex flex-col gap-8 md:flex-row md:items-start md:gap-32">
+      <div className="md:w-1/2">
         <label
           htmlFor={id}
           className={cn([
-            'cursor-pointer',
-            'w-full h-30 block',
-            'bg-accent text-accent-foreground',
-            'border-2 inset-0.5 border-accent-foreground border-dashed',
+            'group relative flex h-56 cursor-pointer flex-col items-center justify-center gap-3 text-center',
+            'border-2 border-dashed transition-colors',
+            isDraggingOver
+              ? 'border-primary bg-primary/10'
+              : 'border-border bg-card hover:border-foreground/40',
           ])}
           onDragEnter={handleDragEnter}
-          onDragStart={handleDragStart}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
         >
-          Checksum
+          <Icon
+            name={
+              state === 'LOADING'
+                ? 'material-symbols:progress-activity'
+                : 'material-symbols:upload-file-outline'
+            }
+            className={cn([
+              'text-4xl text-muted-foreground transition-colors',
+              'group-hover:text-foreground',
+              isDraggingOver && 'text-primary',
+              state === 'LOADING' && 'animate-spin',
+            ])}
+          />
+          <div className="flex flex-col gap-1">
+            <span className="font-mono text-sm font-medium uppercase tracking-wide text-card-foreground">
+              {state === 'LOADING' ? 'Checking checksum…' : 'Drop a resume PDF here'}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              {state === 'LOADING'
+                ? fileName
+                : 'or click to browse — the file itself never leaves your browser'}
+            </span>
+          </div>
         </label>
         <input
           id={id}
@@ -164,8 +164,62 @@ export const ResumeChecksumValidatorClient = ({ searchChecksum }: ChecksumValida
           accept="application/pdf"
           ref={inputRef}
           onChange={handleChange}
-          hidden
+          className="sr-only"
         />
+      </div>
+
+      <div className="flex flex-col gap-4 md:w-1/2">
+        <p className="text-sm text-muted-foreground md:text-base">
+          Every generated PDF gets a SHA-256 checksum — think of it like a fingerprint. Drop a file
+          in to check whether its checksum matches one this site has generated.
+        </p>
+        {state === 'INITIAL' && (
+          <p className="text-sm text-muted-foreground md:text-base">
+            Your browser computes the file's SHA-256 checksum locally and compares it against every
+            resume this site has generated. Only that checksum is sent — never the document itself.
+            Full details in the{' '}
+            <Link href="/privacy-policy" className="underline underline-offset-4">
+              Privacy Policy
+            </Link>
+            .
+          </p>
+        )}
+        {state === 'LOADING' && (
+          <p className="font-mono text-sm text-muted-foreground md:text-base">
+            Hashing “{fileName}”…
+          </p>
+        )}
+        {state === 'LOADED' && result && result.newerVersions > 0 && (
+          <Banner variant="warning">
+            <span className="font-mono">{fileName}</span> is authentic, but a newer version has
+            since been generated.{' '}
+            <Link href="/resume/latest" className="underline underline-offset-4">
+              Get the latest version
+            </Link>
+            .
+          </Banner>
+        )}
+        {state === 'LOADED' && result && result.newerVersions === 0 && (
+          <Banner variant="success">
+            <span className="font-mono">{fileName}</span> is authentic and it's the latest available
+            version.
+          </Banner>
+        )}
+        {state === 'LOADED' && !result && (
+          <Banner variant="error">
+            <span className="font-mono">{fileName}</span> does not match any resume this site has
+            generated. Treat it as untrusted.
+          </Banner>
+        )}
+        {state === 'LOADED' && (
+          <button
+            type="button"
+            onClick={reset}
+            className="self-start text-xs uppercase tracking-wide text-muted-foreground underline underline-offset-4 hover:text-foreground"
+          >
+            Check another file
+          </button>
+        )}
       </div>
     </div>
   )

@@ -1,6 +1,11 @@
+'use client'
+
 import Link from 'next/link'
 
+import { cn } from 'tailwind-variants'
+
 import { Button } from '@/components/Button'
+import { track } from '@/lib/umami/track'
 
 export const ResumeDownloadButton = ({
   url,
@@ -8,24 +13,42 @@ export const ResumeDownloadButton = ({
   locale,
   label,
   subline,
+  slug,
+  className,
 }: {
   url: string
   fileName: string
   locale: string
   label: string
   subline: string
+  /** Resume-document slug, attached to the tracking event for context. */
+  slug?: string
+  className?: string
 }) => {
   return (
     <Button
-      variant="ghost"
-      className="uppercase bg-card text-card-foreground border-border font-mono px-4 py-2 h-auto"
+      variant="outline"
+      className={cn(
+        'w-full uppercase bg-card text-card-foreground border-border font-mono px-4 py-2 h-auto',
+        className,
+      )}
       asChild
     >
-      <Link href={url} download={fileName}>
-        <div className="flex items-center gap-6">
+      <Link
+        href={url}
+        download={fileName}
+        onClick={() =>
+          track('resume-download', {
+            locale,
+            slug,
+            fileName,
+          })
+        }
+      >
+        <div className="flex h-14 items-center justify-center gap-6">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-10 w-10 text-card-foreground/80"
+            className="h-10 w-auto shrink-0 text-card-foreground/80"
             viewBox="0 0 124 124"
           >
             {locale === 'en' && (
@@ -48,7 +71,7 @@ export const ResumeDownloadButton = ({
               d="m80.83 35.17-28-28A4 4 0 0 0 50 6H10a8 8 0 0 0-8 8v96a8 8 0 0 0 8 8h32v-8H10V14h32v24a8 8 0 0 0 8 8h24v16h8V38a4 4 0 0 0-1.17-2.83M50 15.66 72.34 38H50Z"
             />
           </svg>
-          <div className="flex flex-col items-center gap-1 text-card-foreground">
+          <div className="h-10 flex flex-col justify-between text-card-foreground">
             <span className="text-2xl leading-none font-medium tracking-tighter">{label}</span>
             <span className="text-xs leading-none  opacity-80">{subline}</span>
           </div>
