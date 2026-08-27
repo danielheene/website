@@ -21,6 +21,7 @@ name: CI
 # promote.yml retags this exact already-built image instead of rebuilding —
 # see that workflow for why.
 on:
+  workflow_dispatch: 
   pull_request:
     branches:
       - main
