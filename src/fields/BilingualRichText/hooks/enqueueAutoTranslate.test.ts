@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { QueueSlug } from '@/types/jobs-queue'
+
 import { enqueueAutoTranslate } from './enqueueAutoTranslate'
 
 const paragraph = (text: string) => ({
@@ -73,7 +75,7 @@ describe('enqueueAutoTranslate', () => {
     expect(queueMock).toHaveBeenCalledTimes(1)
     expect(queueMock).toHaveBeenCalledWith({
       task: 'AutoTranslateBilingualField',
-      queue: 'default',
+      queue: QueueSlug.Default,
       input: {
         mode: 'auto',
         collectionSlug: 'resume-jobs',

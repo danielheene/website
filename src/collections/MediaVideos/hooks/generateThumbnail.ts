@@ -1,6 +1,6 @@
 import type { CollectionAfterChangeHook } from 'payload'
 
-import { TaskSlug } from '@/types/jobs-queue'
+import { QueueSlug, TaskSlug } from '@/types/jobs-queue'
 import type { MediaVideo } from '@/types/payload'
 
 /**
@@ -23,7 +23,7 @@ export const generateThumbnail: CollectionAfterChangeHook<MediaVideo> = async ({
   ) {
     await req.payload.jobs.queue({
       task: TaskSlug.GenerateVideoThumbnails,
-      queue: 'default',
+      queue: QueueSlug.Default,
       input: {
         videoId: doc.id,
       },

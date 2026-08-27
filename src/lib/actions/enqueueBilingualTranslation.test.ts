@@ -17,6 +17,8 @@ vi.mock('next/server', () => ({
     ),
 }))
 
+import { QueueSlug } from '@/types/jobs-queue'
+
 import { enqueueBilingualTranslation } from './enqueueBilingualTranslation'
 
 const queueMock = vi.fn(async () => ({
@@ -64,7 +66,7 @@ describe('enqueueBilingualTranslation', () => {
     })
     expect(queueMock).toHaveBeenCalledWith({
       task: 'AutoTranslateBilingualField',
-      queue: 'default',
+      queue: QueueSlug.Default,
       input: {
         mode: 'manual',
         collectionSlug: baseArgs.collectionSlug,
