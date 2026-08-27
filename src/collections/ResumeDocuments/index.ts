@@ -6,7 +6,6 @@ import { authenticated } from '@/access/authenticated'
 import { forbidden } from '@/access/forbidden'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { SectionGroupField } from '@/fields/SectionGroup'
-import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
 import { generateContentURL } from '@/lib/generateContentURL'
 import { AdminGroup } from '@/types/admin-panel'
@@ -97,9 +96,15 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
     TitleField({
       listViewThumbnailPath: 'thumbnails_en.0.value',
     }),
-    SlugField({
-      fieldToUse: 'title',
-    }),
+    {
+      type: 'text',
+      name: 'slug',
+      label: 'Slug',
+      admin: {
+        position: 'sidebar',
+        readOnly: true,
+      },
+    },
     {
       type: 'date',
       name: 'createdAt',
@@ -116,7 +121,9 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
     {
       type: 'relationship',
       name: 'jobId',
+      label: 'Job ID',
       relationTo: CollectionSlug.PayloadJobs,
+      maxDepth: 0,
       admin: {
         ...adminDefaults,
         position: 'sidebar',
