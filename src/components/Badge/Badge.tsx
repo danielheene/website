@@ -1,19 +1,7 @@
-import type { ReactNode } from 'react'
+import { ComponentProps, forwardRef, ReactNode } from 'react'
 
+import * as Slot from '@radix-ui/react-slot'
 import { cn, tv, VariantProps } from 'tailwind-variants'
-
-const variants = {
-  color: {
-    primary: 'bg-primary text-primary-foreground',
-    gray: 'bg-muted text-muted-foreground',
-  },
-  style: {},
-  hashtag: {
-    true: `before:inline before:content-['#'] before:mr-0.5`,
-    false: 'before:content-none',
-  },
-  size: {},
-}
 
 export const badgeStyles = tv({
   base: cn([
@@ -56,8 +44,8 @@ export const badgeStyles = tv({
       ]),
       light: cn([
         'border-(--badge-color)',
-        'bg-[color-mix(in_oklab,var(--badge-color)_25%,var(--color-white)_75%)]',
-        'text-[color-mix(in_oklab,var(--badge-color)_75%,var(--color-black)_25%)]',
+        'bg-[color-mix(in_oklab,var(--badge-color)_15%,var(--color-background)_85%)]',
+        'text-[color-mix(in_oklab,var(--badge-color)_75%,var(--color-foreground)_25%)]',
       ]),
       outline: cn([
         'border-(--badge-color)',
@@ -81,19 +69,34 @@ export const badgeStyles = tv({
 export interface BadgeProps extends VariantProps<typeof badgeStyles> {
   children?: ReactNode
   className?: string
+  /**
+   * Renders the Badge's styles onto its single child (via Radix Slot)
+   * instead of a `<span>` — e.g. ServiceStatus renders a `<Link>` badge,
+   * which needs `href`/anchor semantics the Badge itself doesn't have.
+   * Mirrors Button's `asChild`.
+   */
+  asChild?: boolean
 }
 
-export const Badge = ({ color, style, size, children, className }: BadgeProps) => {
-  return (
-    <span
-      className={badgeStyles({
-        color,
-        style,
-        size,
-        class: className,
-      })}
-    >
-      {children}
-    </span>
-  )
-}
+const BadgeSlot = Slot.createSlot<HTMLSpanElement, BadgeProps>('Badge.Slot')
+
+export const Badge = forwardRef<HTMLSpanElement, BadgeProps & ComponentProps<'span'>>(
+  ({ color, style, size, children, className, asChild, ...props }, ref) => {
+    const Component = asChild ? BadgeSlot : 'span'
+
+    return (
+      <Component
+        ref={ref}
+        className={badgeStyles({
+          color,
+          style,
+          size,
+          class: className,
+        })}
+        {...props}
+      >
+        {children}
+      </Component>
+    )
+  },
+)
