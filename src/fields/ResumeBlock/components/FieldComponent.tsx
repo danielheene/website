@@ -1,0 +1,91 @@
+'use client'
+
+import { Fragment, memo, useState } from 'react'
+import { GroupFieldClientProps } from 'payload'
+import { RenderFields } from '@payloadcms/ui'
+
+import { cn } from 'tailwind-variants'
+
+export interface FieldComponentProps extends GroupFieldClientProps {
+  imageSrc: string
+  variant: 'primary' | 'default'
+}
+
+export const FieldComponent = memo(
+  ({
+    imageSrc,
+    variant = 'default',
+    field,
+    indexPath,
+    path,
+    schemaPath,
+    permissions,
+    readOnly,
+    forceRender,
+  }: FieldComponentProps) => {
+    const [imageReady, setImageReady] = useState<boolean>(false)
+    const [showFields, setShowFields] = useState<boolean>(false)
+
+    return (
+      <div
+        className={cn([
+          'relative -m-(--base)',
+          variant === 'default' && 'bg-white text-black',
+          variant === 'primary' && 'bg-primary text-primary-foreground',
+        ])}
+      >
+        <div
+          className={cn([
+            'relative flex justify-center align-center mx-auto',
+            !showFields && 'aspect-16-9 max-h-[500px] overflow-hidden',
+            showFields && 'overflow-y-scroll min-h-[500px]',
+          ])}
+        >
+          {showFields ? (
+            <div className="flex min-h-full min-w-full flex-col items-center justify-center my-10 p-10 opacity-0 animate-fade-in">
+              <RenderFields
+                className="w-full text-foreground"
+                fields={field.fields}
+                parentIndexPath={indexPath}
+                parentPath={path}
+                parentSchemaPath={schemaPath}
+                permissions={permissions}
+                forceRender={forceRender}
+                readOnly={readOnly}
+              />
+            </div>
+          ) : (
+            <Fragment>
+              {/** biome-ignore lint/performance/noImgElement: <used for payload blocks> */}
+              <img
+                className={cn([
+                  'absolute w-full h-full object-contain opacity-0',
+                  imageReady && 'animate-fade-in',
+                ])}
+                onLoad={() => setImageReady(true)}
+                src={imageSrc}
+                alt=""
+              />
+              <button
+                type="button"
+                className={cn([
+                  'absolute bottom-4 left-1/2 -translate-x-1/2',
+                  'm-0 py-2 px-4 font-mono text-inherit leading-none',
+                  'border-none rounded-md',
+                  variant === 'default' &&
+                    'bg-primary hover:bg-primary-accent text-primary-foreground',
+                  variant === 'primary' && 'bg-white hover:bg-neutral-300 text-primary',
+                ])}
+                onClick={() => setShowFields(true)}
+              >
+                Show Section Fields
+              </button>
+            </Fragment>
+          )}
+        </div>
+      </div>
+    )
+  },
+)
+
+export default FieldComponent

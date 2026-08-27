@@ -1,0 +1,20 @@
+@reference "#payload.css";
+
+@layer components {
+  .nav-group {
+    @apply flex flex-col gap-2 w-full p-1;
+  }
+
+  .nav-group__label {
+    @apply block bg-transparent ml-2 max-h-20 opacity-100 transition-all duration-100 ease-in-out;
+    @apply text-neutral-400 text-sm font-mono font-medium leading-none tracking-wider uppercase;
+  }
+
+  .nav:not(.nav--open) .nav-group__label {
+    @apply overflow-hidden md:opacity-0;
+  }
+
+  .nav-group__items {
+    @apply flex flex-col p-0 m-0 gap-0.5;
+  }
+}

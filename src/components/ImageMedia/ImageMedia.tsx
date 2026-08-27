@@ -1,42 +1,43 @@
+/** biome-ignore-all lint/performance/noImgElement: <explanation> */
 'use client'
 
+import { type SyntheticEvent, useCallback, useMemo, useState } from 'react'
 import type { ImageProps } from 'next/image'
 import NextImage from 'next/image'
 
-import { screens } from '@tailwind-config'
+import { type ClassValue, cn } from 'tailwind-variants'
 
-import { cn } from '@/utilities/cn'
-import React, { CSSProperties, SyntheticEvent, useCallback, useState } from 'react'
-import { Media } from '@payload-types'
+import type { MediaImage } from '@/types/payload'
 
 export interface ImageMediaProps
   extends Omit<
       ImageProps,
       'className' | 'alt' | 'src' | 'blurDataURL' | 'placeholder' | 'width' | 'height' | 'onLoad'
     >,
-    Pick<Media, 'blurDataURL' | 'url'> {
-  duoTone?: boolean
-  className?: string
-  loadedClassName?: string
-  imgClassName?: string
-  imgLoadedClassName?: string
-  alt: string
-  width: number
-  height: number
+    Pick<MediaImage, 'blurDataURL' | 'url'> {
+  // duoTone?: boolean
+  className?: ClassValue
+  loadedClassName?: ClassValue
+  imgClassName?: ClassValue
+
+  imgLoadedClassName?: ClassValue
+  alt?: string
+  width?: number
+  height?: number
   // onClick?: (event: SyntheticEvent<HTMLImageElement>) => void
   onLoadAction?: (event: SyntheticEvent<HTMLImageElement>) => void
   // priority?: boolean
   // size?: string
   // src?: StaticImport | string
-  // resource?: Media
+  // resource?: MediaImage
 }
 
 export const ImageMedia = ({
-  duoTone,
   className,
-  loadedClassName = '',
-  imgClassName = '',
-  imgLoadedClassName = '',
+  loadedClassName,
+  imgClassName,
+  imgLoadedClassName,
+
   alt = '',
   url: src,
   sizes: sizesFromProps,
@@ -48,49 +49,46 @@ export const ImageMedia = ({
   ...otherProps
 }: ImageMediaProps) => {
   const [loaded, setLoaded] = useState<boolean>(false)
+  const [revealed, setRevealed] = useState<boolean>(false)
 
-  const handleOnLoad = useCallback((_event: SyntheticEvent<HTMLImageElement>) => {
-    setLoaded(true)
-    onLoadAction(_event)
-  }, [])
+  const fixedSrc = src ? new URL(src).pathname : undefined
+
+  const handleOnLoad = useCallback(
+    (_event: SyntheticEvent<HTMLImageElement>) => {
+      setLoaded(true)
+      onLoadAction(_event)
+    },
+    [
+      onLoadAction,
+    ],
+  )
+
+  const aspectRatio = useMemo(() => {
+    if (fill) return 'auto'
+    return `${Math.round(width / height)}`
+  }, [
+    width,
+    height,
+    fill,
+  ])
 
   // NOTE: this is used by the browser to determine which image to download at different screen sizes
   const sizes = sizesFromProps
     ? sizesFromProps
-    : Object.entries(screens)
-        .map(([, value]) => `(max-width: ${value}) ${value}`)
-        .join(', ')
+    : [
+        '(max-width: 768px) 100vw',
+        '(max-width: 1200px) 50vw',
+        '33vw',
+      ].join(', ')
 
   return (
     <div
-      style={
-        duoTone
-          ? ({
-              '--fg-color': 'rgb(var(--color-primary) / 100%)',
-              '--bg-color': 'rgb(var(--color-white) / 100%)',
-              '--bg-blend': 'multiply',
-              '--fg-blend': 'lighten',
-            } as CSSProperties)
-          : {}
-      }
+      style={{
+        aspectRatio,
+      }}
       className={cn([
-        'flex flex-grow flex-shrink-0 basis-full',
-        'h-full overflow-hidden p-0 relative',
-
-        duoTone && [
-          'bg-[var(--bg-color)]',
-          'before:absolute',
-          'before:z-10',
-          'before:left-0',
-          'before:top-0',
-          'before:right-0',
-          'before:bottom-0',
-          'before:w-full',
-          'before:h-full',
-          'before:bg-[var(--fg-color)]',
-          'before:[mix-blend-mode:var(--fg-blend)]',
-        ],
-
+        'contents',
+        !fill && 'relative',
         className,
         loaded && loadedClassName,
       ])}
@@ -98,30 +96,52 @@ export const ImageMedia = ({
       <NextImage
         alt={alt}
         className={cn([
-          'flex-grow flex-shrink-0 basis-full relative',
-          'h-full w-full max-w-full object-contain',
-          'transition-all duration-500 ease-in-out',
-
-          duoTone && 'grayscale contrast-100 blur-0 [mix-blend-mode:var(--bg-blend)]',
-          fill && 'object-cover',
-
-          // loaded ? 'opacity-100' : 'opacity-0',
-
+          !fill && 'flex grow shrink basis-full',
+          fill && 'block absolute inset-0 h-full w-full object-cover',
           imgClassName,
           loaded && imgLoadedClassName,
         ])}
         fill={fill}
         height={!fill ? height : undefined}
         width={!fill ? width : undefined}
-        // onClick={onClick}
         onLoad={handleOnLoad}
-        blurDataURL={blurDataURL}
-        placeholder={blurDataURL ? 'blur' : 'empty'}
+        placeholder="empty"
         // priority={priority}
         sizes={sizes}
-        src={src}
+        src={fixedSrc}
         {...otherProps}
       />
+
+      {!revealed && (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className={cn([
+            'absolute inset-0 w-full h-full animation-duration-[2s]',
+            loaded && 'animate-fade-out',
+          ])}
+          tabIndex={-1}
+          aria-hidden="true"
+          onAnimationEnd={() => setRevealed(true)}
+        >
+          <filter id="blur" colorInterpolationFilters="sRGB">
+            <feGaussianBlur stdDeviation="20" />
+            <feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 100 -1" result="s" />
+            <feFlood x="0" y="0" width="100%" height="100%" />
+            <feComposite operator="out" in="s" />
+            <feComposite in2="SourceGraphic" />
+            <feGaussianBlur stdDeviation="20" />
+          </filter>
+          <image
+            width="100%"
+            height="100%"
+            x="0"
+            y="0"
+            preserveAspectRatio="none"
+            filter="url(#blur)"
+            href={blurDataURL}
+          />
+        </svg>
+      )}
     </div>
   )
 }

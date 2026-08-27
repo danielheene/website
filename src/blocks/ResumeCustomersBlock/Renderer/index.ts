@@ -1,0 +1,1 @@
+export { ResumeCustomersBlockRenderer } from './Renderer'

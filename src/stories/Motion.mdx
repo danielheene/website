@@ -1,0 +1,70 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+import { SpecimenGallery, SpecimenItem } from './components/Specimen.tsx'
+
+<Meta title="Foundation/Motion" />
+
+# Motion
+
+Custom `animate-*` utilities from `_animations.css`, each backed by its own `@keyframes` block.
+Tailwind's stock `animate-spin`/`animate-ping`/`animate-pulse` are untouched and not repeated
+here. Hover a tile to replay it — `animation-play-state` is toggled on `:hover` for the ones that
+run once instead of looping.
+
+<div style={{ padding: '3rem 0' }}>
+  <div style={{ paddingTop: '1rem' }}>
+    <SpecimenGallery>
+      <SpecimenItem title="fade-in" subtitle="275ms ease-in, once">
+        <div className="group flex size-24 items-center justify-center">
+          <div className="size-14 rounded-full bg-primary opacity-0 [animation-play-state:paused] group-hover:animate-fade-in" />
+        </div>
+      </SpecimenItem>
+      <SpecimenItem title="fade-out" subtitle="275ms ease-out, once">
+        <div className="group flex size-24 items-center justify-center">
+          <div className="size-14 rounded-full bg-primary opacity-100 [animation-play-state:paused] group-hover:animate-fade-out" />
+        </div>
+      </SpecimenItem>
+      <SpecimenItem title="blink" subtitle="1s step-end, loop">
+        <div className="size-14 rounded-full bg-primary animate-blink" />
+      </SpecimenItem>
+      <SpecimenItem title="shimmer" subtitle="1.5s linear, loop">
+        <div className="relative size-24 overflow-hidden rounded-md bg-muted">
+          <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+        </div>
+      </SpecimenItem>
+      <SpecimenItem title="flip" subtitle="300ms, once">
+        <div className="group flex size-24 items-center justify-center overflow-hidden">
+          <div className="size-14 rounded-md bg-primary [animation-play-state:paused] group-hover:animate-flip" />
+        </div>
+      </SpecimenItem>
+    </SpecimenGallery>
+  </div>
+</div>
+
+<div style={{ padding: '3rem 0' }}>
+  ## Height-driven (slide-up / slide-down)
+
+  `slide-up`/`slide-down` animate `max-height` against a `--slide-height` custom property
+  (`1000px` unless overridden) rather than a transform — built for collapsible sections whose
+  open height isn't known ahead of time. `max-height` alone won't show a difference against this
+  page's fixed-height tile, so these two aren't included as tiles above.
+
+  <div style={{ paddingTop: '1rem' }}>
+    <SpecimenGallery>
+      <SpecimenItem title="slide-down" subtitle="275ms ease-out, once">
+        <div className="group w-full max-w-40 [--slide-height:2.5rem]">
+          <div className="max-h-0 overflow-hidden rounded-md bg-primary/20 group-hover:animate-slide-down">
+            <div className="p-2 text-center text-xs">Revealed content</div>
+          </div>
+        </div>
+      </SpecimenItem>
+      <SpecimenItem title="slide-up" subtitle="275ms ease-out, once">
+        <div className="group w-full max-w-40 [--slide-height:2.5rem]">
+          <div className="max-h-10 overflow-hidden rounded-md bg-primary/20 group-hover:animate-slide-up">
+            <div className="p-2 text-center text-xs">Collapsing content</div>
+          </div>
+        </div>
+      </SpecimenItem>
+    </SpecimenGallery>
+  </div>
+</div>

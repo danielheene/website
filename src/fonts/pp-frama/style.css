@@ -1,0 +1,129 @@
+@font-face {
+  font-family: "PP Frama";
+  font-style: normal;
+  font-weight: 100;
+  src: url("./files/pp-frama-100-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-style: italic;
+  font-weight: 100;
+  src: url("./files/pp-frama-100-italic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-style: normal;
+  font-weight: 200;
+  src: url("./files/pp-frama-200-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-style: italic;
+  font-weight: 200;
+  src: url("./files/pp-frama-200-italic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-style: normal;
+  font-weight: 300;
+  src: url("./files/pp-frama-300-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-style: italic;
+  font-weight: 300;
+  src: url("./files/pp-frama-300-italic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-style: normal;
+  font-weight: 400;
+  src: url("./files/pp-frama-400-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-style: italic;
+  font-weight: 400;
+  src: url("./files/pp-frama-400-italic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-style: normal;
+  font-weight: 500;
+  src: url("./files/pp-frama-500-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-style: italic;
+  font-weight: 500;
+  src: url("./files/pp-frama-500-italic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-style: normal;
+  font-weight: 600;
+  src: url("./files/pp-frama-500-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-style: italic;
+  font-weight: 600;
+  src: url("./files/pp-frama-500-italic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-style: normal;
+  font-weight: 700;
+  src: url("./files/pp-frama-700-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-style: italic;
+  font-weight: 700;
+  src: url("./files/pp-frama-700-italic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-style: normal;
+  font-weight: 800;
+  src: url("./files/pp-frama-700-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-style: italic;
+  font-weight: 800;
+  src: url("./files/pp-frama-700-italic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-style: normal;
+  font-weight: 900;
+  src: url("./files/pp-frama-900-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-style: italic;
+  font-weight: 900;
+  src: url("./files/pp-frama-900-italic.woff2") format("woff2");
+}
+
+:root {
+  --font-pp-frama: "PP Frama";
+}

@@ -1,37 +1,41 @@
-import { Fragment, JSX, useMemo } from 'react'
-import useEmblaCarousel from 'embla-carousel-react'
-import Autoplay from 'embla-carousel-autoplay'
-import { cn } from '@/utilities/cn'
+import { type JSX, useMemo } from 'react'
 
-export type LogoCarouselEntry = {
-  id: string
-  logo: string
-  title: string
-}
+import Autoplay from 'embla-carousel-autoplay'
+import useEmblaCarousel from 'embla-carousel-react'
+import { cn } from 'tailwind-variants'
+
+import { ResumeCustomerData } from '@/types/payload'
+
+type LogoCarouselRow = [
+  Pick<ResumeCustomerData, 'id' | 'svg' | 'title'>,
+  Pick<ResumeCustomerData, 'id' | 'svg' | 'title'>,
+]
 
 export interface LogoCarouselProps {
-  entries: LogoCarouselEntry[]
+  entries: Pick<ResumeCustomerData, 'id' | 'svg' | 'title'>[]
   className?: string
 }
 
-export const LogoCarousel = ({ entries, className }: LogoCarouselProps) => {
+export const LogoCarousel = ({ className, entries }: LogoCarouselProps) => {
   const [emblaRef] = useEmblaCarousel(
     {
       loop: true,
       axis: 'y',
       startIndex: 1,
     },
-    [Autoplay()],
+    [
+      Autoplay(),
+    ],
   )
 
-  const getRowKey = (entries: LogoCarouselEntry[]): string => {
+  const getRowKey = (entries: LogoCarouselProps['entries']): string => {
     return entries.reduce((prev, curr, index) => {
       return index === 1 ? curr.id : `${prev}-${curr.id}`
     }, '')
   }
 
   const rows = useMemo(
-    (): LogoCarouselEntry[][] =>
+    (): LogoCarouselRow[] =>
       entries
         .reduce((previousValue, currentValue, index) => {
           const rowIndex = Math.floor(index / 2)
@@ -42,7 +46,9 @@ export const LogoCarousel = ({ entries, className }: LogoCarouselProps) => {
           return previousValue
         }, [])
         .filter((row) => row.length === 2),
-    [entries],
+    [
+      entries,
+    ],
   )
 
   return (
@@ -63,7 +69,11 @@ export const LogoCarousel = ({ entries, className }: LogoCarouselProps) => {
       ])}
       ref={emblaRef}
     >
-      <div className={cn(['flex flex-col w-full shrink-0 grow-0 direction-reverse'])}>
+      <div
+        className={cn([
+          'flex flex-col w-full shrink-0 grow-0 direction-reverse',
+        ])}
+      >
         {rows.filter(Boolean).map((row) => (
           <LogoCarouselRow key={getRowKey(row)} entries={row} />
         ))}
@@ -72,9 +82,13 @@ export const LogoCarousel = ({ entries, className }: LogoCarouselProps) => {
   )
 }
 
-export function LogoCarouselRow({ entries }: { entries: LogoCarouselEntry[] }) {
+export function LogoCarouselRow({ entries }: { entries: LogoCarouselProps['entries'] }) {
   return (
-    <div className={cn(['flex flex-row shrink-0 grow-0 my-3 gap-6'])}>
+    <div
+      className={cn([
+        'flex flex-row shrink-0 grow-0 my-3 gap-6',
+      ])}
+    >
       {entries.map((item) => (
         <LogoCarouselTile key={item.id} {...item} />
       ))}
@@ -82,19 +96,25 @@ export function LogoCarouselRow({ entries }: { entries: LogoCarouselEntry[] }) {
   )
 }
 
-export function LogoCarouselTile({ id, title, logo }: LogoCarouselEntry): JSX.Element {
+export function LogoCarouselTile({
+  id,
+  svg,
+  title,
+}: LogoCarouselProps['entries'][number]): JSX.Element {
   return (
-    <Fragment>
-      <div
-        key={id}
-        aria-label={title}
-        className={cn(
-          'aspect-4/3 w-full p-3 rounded',
-          'fill-primary bg-white',
-          '*:w-full *:h-full *:object-contain *:object-center',
-        )}
-        dangerouslySetInnerHTML={{ __html: Buffer.from(logo, 'base64').toString('utf-8') }}
-      />
-    </Fragment>
+    // biome-ignore lint/a11y/useAriaPropsSupportedByRole: <TODO>
+    <div
+      key={id}
+      aria-label={title}
+      className={cn(
+        'aspect-4/3 w-full p-3 rounded',
+        'fill-primary bg-white',
+        '*:w-full *:h-full *:object-contain *:object-center',
+      )}
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: <sanitized server-side by sanitizeSvg — on write via the ResumeCustomers beforeChange hook, and again in ResumeCustomersBlock/Renderer before reaching this component>
+      dangerouslySetInnerHTML={{
+        __html: svg,
+      }}
+    />
   )
 }

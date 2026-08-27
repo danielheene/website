@@ -1,7 +1,12 @@
-import React, { Fragment, JSX } from 'react'
-import { CMSLink } from '../Link'
-import { DefaultNodeTypes } from '@payloadcms/richtext-lexical'
+// biome-ignore-all lint: <external code>
 
+import React, { Fragment, type JSX } from 'react'
+import type { DefaultNodeTypes, SerializedBlockNode } from '@payloadcms/richtext-lexical'
+
+import type { LinkFieldDataLean } from '@/fields/Link/lib/resolveLinkTarget'
+import type { ResumeAboutMeBlock } from '@/types/payload'
+
+import { CMSLink } from '../Link'
 import {
   IS_BOLD,
   IS_CODE,
@@ -12,7 +17,7 @@ import {
   IS_UNDERLINE,
 } from './nodeFormat'
 
-export type NodeTypes = DefaultNodeTypes
+export type NodeTypes = DefaultNodeTypes | SerializedBlockNode<ResumeAboutMeBlock>
 
 type Props = {
   nodes: NodeTypes[]
@@ -36,14 +41,24 @@ export function serializeLexical({ nodes }: Props): JSX.Element {
           }
           if (node.format & IS_STRIKETHROUGH) {
             text = (
-              <span key={index} style={{ textDecoration: 'line-through' }}>
+              <span
+                key={index}
+                style={{
+                  textDecoration: 'line-through',
+                }}
+              >
                 {text}
               </span>
             )
           }
           if (node.format & IS_UNDERLINE) {
             text = (
-              <span key={index} style={{ textDecoration: 'underline' }}>
+              <span
+                key={index}
+                style={{
+                  textDecoration: 'underline',
+                }}
+              >
                 {text}
               </span>
             )
@@ -65,7 +80,8 @@ export function serializeLexical({ nodes }: Props): JSX.Element {
         // https://github.com/facebook/lexical/blob/d10c4e6e55261b2fdd7d1845aed46151d0f06a8c/packages/lexical-list/src/LexicalListItemNode.ts#L133
         // which does not return checked: false (only true - i.e. there is no prop for false)
         const serializedChildrenFn = (node: NodeTypes): JSX.Element | null => {
-          if (node.children == null) {
+          // @ts-expect-error
+          if (node?.children === null) {
             return null
           } else {
             if (node?.type === 'list' && node?.listType === 'check') {
@@ -77,7 +93,10 @@ export function serializeLexical({ nodes }: Props): JSX.Element {
                 }
               }
             }
-            return serializeLexical({ nodes: node.children as NodeTypes[] })
+            return serializeLexical({
+              // @ts-expect-error
+              nodes: node.children as NodeTypes[],
+            })
           }
         }
 
@@ -137,7 +156,6 @@ export function serializeLexical({ nodes }: Props): JSX.Element {
                   aria-checked={node.checked ? 'true' : 'false'}
                   className={` ${node.checked ? '' : ''}`}
                   key={index}
-                  role="checkbox"
                   tabIndex={-1}
                   value={node?.value}
                 >
@@ -160,17 +178,10 @@ export function serializeLexical({ nodes }: Props): JSX.Element {
             )
           }
           case 'link': {
-            const fields = node.fields
+            const fields = node.fields as unknown as LinkFieldDataLean
 
             return (
-              <CMSLink
-                key={index}
-                newTab={Boolean(fields?.newTab)}
-                // eslint-disable-next-line
-                reference={fields.doc as unknown as any}
-                type={fields.linkType === 'internal' ? 'reference' : 'custom'}
-                url={fields.url}
-              >
+              <CMSLink key={index} {...fields}>
                 {serializedChildren}
               </CMSLink>
             )
