@@ -36,6 +36,17 @@ const lookupRedirect = async (request: NextRequest) => {
 }
 
 export default async function proxy(request: NextRequest) {
+  const domainRe = /^https?:\/\/resume.heene\.(io|dev|review|nexus|local)/
+  if (domainRe.test(request.nextUrl.href)) {
+    return NextResponse.redirect(
+      new URL(
+        `/resume/${request.nextUrl.pathname ?? 'latest'}`,
+        request.nextUrl.href.replace('resume', 'daniel'),
+      ),
+      301,
+    )
+  }
+
   const resumeDocumentLatestContentPath = generateContentPath(
     CollectionSlug.ResumeDocuments,
     'latest',

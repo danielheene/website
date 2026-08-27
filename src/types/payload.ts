@@ -1078,7 +1078,7 @@ export interface ResumeCustomerData {
 export interface ResumeDocumentData {
   id: string;
   title: string;
-  slug: string;
+  slug?: string | null;
   createdAt?: string | null;
   jobId?: (string | null) | PayloadJob;
   checksum_en?: string | null;
