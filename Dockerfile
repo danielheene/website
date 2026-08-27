@@ -2,7 +2,7 @@
 
 # Produces three images from one build context:
 #   - target `app`       — the Next.js server (`pnpm run start`)
-#   - target `worker`     — the Payload job runner (`pnpm run start:job-runner`)
+#   - target `worker`     — the Payload job runner (`pnpm run start:worker`)
 #   - target `storybook`  — the built Storybook, served statically
 #
 # `app` and `worker` share the same `builder` stage: `pnpm run build` (via
@@ -16,6 +16,12 @@
 # runtime stages carry the full pnpm-installed node_modules rather than a
 # traced subset — bigger image, but avoids known standalone-tracing gaps with
 # the Payload/Next combination this app uses.
+
+# Defaults to production; docker-app-development in ci.yml overrides this to
+# `development` for PRs against develop via --build-arg. Declared before the
+# first FROM so it's visible everywhere, but per Docker's ARG scoping rules
+# it must be redeclared (bare `ARG NODE_ENV`) inside any stage that reads it.
+ARG NODE_ENV=production
 
 # node:26-slim does not bundle corepack (dropped from the base image as of
 # Node 26), so pnpm is installed directly via npm instead — pinned to match
@@ -34,8 +40,9 @@ RUN pnpm install --frozen-lockfile
 
 # ---- builder: next build only (needs DB over Tailscale) -------------------
 FROM deps AS builder
+ARG NODE_ENV
 COPY . .
-ENV NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
 # Build-time env (DATABASE_URL, REDIS_URL, S3_*, PAYLOAD_SECRET, etc.) arrives
 # as a single BuildKit secret file in dotenv format — see
 # .github/workflows/ci.yml's `secret-files` input — rather than as ARG/ENV,
@@ -67,7 +74,8 @@ RUN --mount=type=secret,id=build_env,required=true \
 
 # ---- app: Next.js server ----------------------------------------------------
 FROM base AS app
-ENV NODE_ENV=production
+ARG NODE_ENV
+ENV NODE_ENV=${NODE_ENV}
 COPY --from=builder /app ./
 EXPOSE 3000
 # Trivial liveness probe (app/(frontend)/api/health/app) — confirms the
@@ -80,7 +88,8 @@ CMD ["pnpm", "run", "start"]
 
 # ---- worker: Payload job runner, same build output as app -----------------
 FROM base AS worker
-ENV NODE_ENV=production
+ARG NODE_ENV
+ENV NODE_ENV=${NODE_ENV}
 COPY --from=builder /app ./
 EXPOSE 3001
 # `jobs:run` itself has no HTTP listener to probe — start-worker.mjs runs a
@@ -89,7 +98,7 @@ EXPOSE 3001
 # carry and isn't otherwise needed in this image.
 HEALTHCHECK --interval=60s --timeout=10s --retries=3 --start-period=30s \
     CMD node -e "fetch('http://localhost:'+(process.env.JOB_RUNNER_HEALTH_PORT||3001)+'/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
-CMD ["pnpm", "run", "start:job-runner"]
+CMD ["pnpm", "run", "start:worker"]
 
 # ---- storybook-builder: independent build, no DB/Tailscale needed ---------
 FROM deps AS storybook-builder
@@ -104,4 +113,11 @@ ENV NODE_ENV=production
 RUN npm install -g serve
 COPY --from=storybook-builder /app/dist ./dist
 EXPOSE 3000
+# Runs the `serve` binary directly rather than `pnpm run serve:storybook`:
+# this stage has no node_modules/lockfile (only `dist` is copied in), so
+# `pnpm run` would try to resolve/install the whole workspace at container
+# startup — confirmed by testing this locally, it pulls 1000+ packages over
+# the network before ever serving a request. `serve:storybook` still exists
+# in package.json as the documented definition of this command; it's just
+# not how this particular stage invokes it.
 CMD ["serve", "-s", "dist", "-l", "3000"]

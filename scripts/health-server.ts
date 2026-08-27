@@ -4,7 +4,7 @@
  *    Usage:
  *      pnpm run payload run scripts/health-server.ts
  *
- *    `payload jobs:run` (see `start:job-runner`) is a CLI loop with no HTTP
+ *    `payload jobs:run` (see `start:worker`) is a CLI loop with no HTTP
  *    listener of its own, so a container `HEALTHCHECK` has nothing to curl
  *    locally. This starts a tiny server alongside it, in the same container,
  *    reporting the same `checkJobsHealth` truth the Next.js app exposes at
