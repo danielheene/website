@@ -6,13 +6,15 @@ import '@/fonts/pp-supply-sans/style.css'
 
 import * as addonA11yPreview from '@storybook/addon-a11y/preview'
 import * as addonDocsPreview from '@storybook/addon-docs/preview'
-import { withThemeByDataAttribute } from '@storybook/addon-themes'
+import { withThemeByClassName, withThemeByDataAttribute } from '@storybook/addon-themes'
+import * as addonThemesPreview from '@storybook/addon-themes/preview'
 import { definePreview } from '@storybook/nextjs'
 
 export default definePreview({
   addons: [
     addonA11yPreview,
     addonDocsPreview,
+    addonThemesPreview,
   ],
   parameters: {
     nextjs: {
@@ -41,17 +43,17 @@ export default definePreview({
      * default white canvas.
      */
     (Story) => (
-      <div className="bg-background text-foreground p-8">
+      <div className="bg-background text-foreground p-10">
         <Story />
       </div>
     ),
-    withThemeByDataAttribute({
+    withThemeByClassName({
       defaultTheme: 'light',
       themes: {
         light: 'light',
         dark: 'dark',
+        primary: 'primary',
       },
-      attributeName: 'data-theme',
     }),
   ],
 })
