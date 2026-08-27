@@ -27,8 +27,9 @@ export type WorkflowSlugKey = keyof WorkflowSlug & string
 export type WorkflowSlugValue = WorkflowSlug[WorkflowSlugKey] & string
 
 export const QueueSlug = {
-  Default: 'default',
-  ResumeGeneration: 'resume-generation',
+  Default: 'DefaultQueue',
+  ResumeGeneration: 'ResumeGenerationQueue',
+  Heartbeat: 'HeartbeatQueue',
 } as const
 
 export type QueueSlug = typeof QueueSlug

@@ -8,7 +8,7 @@ export const pingUptimeEndpoint: TaskConfig<TaskSlug['PingUptimeEndpoint']> = {
   schedule: [
     {
       cron: '* * * * *',
-      queue: QueueSlug.Default,
+      queue: QueueSlug.Heartbeat,
     },
   ],
   handler: async ({ req: { payload } }) => {
