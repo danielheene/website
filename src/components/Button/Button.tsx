@@ -1,0 +1,138 @@
+'use client'
+
+import { ComponentProps, forwardRef, ReactNode } from 'react'
+
+import * as Slot from '@radix-ui/react-slot'
+import { tv, VariantProps } from 'tailwind-variants'
+
+import { Icon } from '@/components/Icon'
+
+export const buttonStyles = tv({
+  base: [
+    'group/button inline-flex shrink-0 items-center justify-center rounded-none',
+    'border border-transparent bg-clip-padding cursor-pointer',
+    'text-md font-mono font-medium whitespace-nowrap uppercase',
+    'transition-all outline-none select-none',
+    'focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30',
+    'active:not-aria-[haspopup]:translate-y-px',
+    'disabled:pointer-events-none disabled:opacity-50',
+    'aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20',
+    'dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
+    "[&>svg]:pointer-events-none [&>svg]:shrink-0 [&>svg:not([class*='size-'])]:size-4.5",
+  ],
+  variants: {
+    variant: {
+      default: [
+        'bg-primary text-primary-foreground hover:bg-primary/80',
+      ],
+      outline: [
+        'border-border bg-transparent hover:bg-muted hover:text-foreground',
+        'aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-input/30',
+      ],
+      secondary: [
+        'bg-secondary text-secondary-foreground',
+        'hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)]',
+        'aria-expanded:bg-secondary aria-expanded:text-secondary-foreground',
+      ],
+      ghost: [
+        'hover:bg-muted hover:text-foreground',
+        'aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50',
+      ],
+      destructive: [
+        'bg-destructive/10 text-destructive hover:bg-destructive/20',
+        'focus-visible:border-destructive/40 focus-visible:ring-destructive/20',
+        'dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40',
+      ],
+      link: [
+        'text-foreground normal-case underline underline-offset-4 hover:underline px-0!',
+      ],
+    },
+    size: {
+      default: [
+        'h-10 gap-1.5 px-4',
+        'has:data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5',
+      ],
+      xs: [
+        "h-7 gap-1 px-4 [&>svg:not([class*='size-'])]:size-3 text-sm",
+        'has-data-[icon=inline-end]:pr-1 has-data-[icon=inline-start]:pl-1',
+      ],
+      sm: [
+        'h-9 gap-1 px-2.5',
+        'has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5',
+      ],
+      lg: [
+        'h-11 gap-1.5 px-4',
+        'has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2',
+      ],
+      icon: [
+        'size-10',
+      ],
+      'icon-xs': [
+        "size-7 [&>svg:not([class*='size-'])]:size-3.5",
+      ],
+      'icon-sm': [
+        'size-9',
+      ],
+      'icon-lg': [
+        'size-11',
+      ],
+    },
+    fullWidth: {
+      false: 'inline-flex',
+      true: 'flex',
+    },
+  },
+  defaultVariants: {
+    variant: 'default',
+    size: 'default',
+    fullWidth: false,
+  },
+})
+
+export interface ButtonProps extends VariantProps<typeof buttonStyles> {
+  children?: ReactNode
+  startIcon?: string
+  endIcon?: string
+  asChild?: boolean
+}
+
+const ButtonSlot = Slot.createSlot<HTMLButtonElement, ButtonProps>('Button.Slot')
+const ButtonSlottable = Slot.createSlottable('Button.Slottable')
+
+export const Button = forwardRef<HTMLButtonElement, ButtonProps & ComponentProps<'button'>>(
+  (
+    { variant, size, fullWidth, startIcon, endIcon, className, asChild, children, ...props },
+    ref,
+  ) => {
+    const Component = asChild ? ButtonSlot : 'button'
+
+    return (
+      <Component
+        ref={ref}
+        className={buttonStyles({
+          variant,
+          size,
+          fullWidth,
+          class: className,
+        })}
+        {...props}
+      >
+        {asChild ? (
+          // Radix's Slot requires exactly one element child to merge props
+          // onto — start/end icons would make this two-or-three children,
+          // so `asChild` callers own their own icon (see e.g.
+          // ResumeDownloadButton, which renders its icon inside the `<Link>`
+          // that becomes the Slot's child) and this component leaves
+          // `children` alone.
+          children
+        ) : (
+          <>
+            {startIcon && <Icon name={startIcon} data-icon="inline-start" />}
+            {children}
+            {endIcon && <Icon name={endIcon} data-icon="inline-end" />}
+          </>
+        )}
+      </Component>
+    )
+  },
+)

@@ -1,0 +1,211 @@
+import { CollectionConfig } from 'payload'
+
+import { anyone } from '@/access/anyone'
+import { authenticated } from '@/access/authenticated'
+import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
+import { HeroBackgroundField } from '@/fields/HeroBackground'
+import { IconField } from '@/fields/Icon'
+import { MetaField } from '@/fields/Meta'
+import { RichTextField } from '@/fields/RichText'
+import { SlugField } from '@/fields/Slug'
+import { TitleField } from '@/fields/Title'
+import { generatePreviewPath } from '@/lib/generatePreviewPath'
+import { AdminGroup } from '@/types/admin-panel'
+import { CollectionSlug } from '@/types/collections'
+import { BlogPostData } from '@/types/payload'
+
+import { generateExcerptAndReadingTime } from './hooks/generateExcerptAndReadingTime'
+import { revalidateBlogPost } from './hooks/revalidateBlogPost'
+
+export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
+  slug: CollectionSlug.BlogPosts,
+  typescript: {
+    interface: `BlogPostData`,
+  },
+  labels: {
+    singular: 'Post',
+    plural: 'Posts',
+  },
+  defaultPopulate: {
+    title: true,
+    slug: true,
+  },
+  disableDuplicate: true,
+  access: {
+    create: authenticated,
+    delete: authenticated,
+    read: anyone,
+    update: authenticated,
+  },
+  admin: {
+    group: AdminGroup.Blog,
+    useAsTitle: 'title',
+    defaultColumns: [
+      'title',
+      'slug',
+      'updatedAt',
+      'status',
+    ],
+    disableCopyToLocale: true,
+    livePreview: {
+      url: ({ data }) => generatePreviewPath(CollectionSlug.BlogPosts, data.slug),
+    },
+    preview: (data: Partial<BlogPostData>) =>
+      generatePreviewPath(CollectionSlug.BlogPosts, data.slug),
+    components: {
+      listMenuItems: [
+        {
+          path: '@/components/AdminPanel/SeedActions#SeedActions',
+          clientProps: {
+            collectionSlug: CollectionSlug.BlogPosts,
+            collectionLabel: 'Posts',
+          },
+        },
+      ],
+    },
+  },
+  hooks: {
+    beforeChange: [
+      generateExcerptAndReadingTime,
+    ],
+    afterChange: [
+      revalidateBlogPost,
+    ],
+  },
+  fields: [
+    /* -------------- Main  Content -------------- */
+    TitleField({
+      listViewThumbnailPath: 'hero.background.media.value',
+    }),
+
+    /* -------------- Sidebar Content -------------- */
+
+    SlugField({
+      fieldToUse: 'title',
+    }),
+    {
+      name: 'hero',
+      type: 'group',
+      label: false,
+      admin: {
+        position: 'sidebar',
+        disableListColumn: true,
+        disableListFilter: true,
+        disableGroupBy: true,
+      },
+      fields: [
+        HeroBackgroundField({
+          name: 'background',
+          hasManyMedia: false,
+        }),
+      ],
+    },
+    {
+      name: 'topics',
+      type: 'relationship',
+      admin: {
+        position: 'sidebar',
+        appearance: 'drawer',
+        allowCreate: true,
+        allowEdit: true,
+      },
+      hasMany: true,
+      relationTo: [
+        CollectionSlug.BlogTopics,
+      ],
+    },
+    {
+      name: 'readingTime',
+      type: 'number',
+      label: 'Estimated Reading Time (min)',
+      admin: {
+        position: 'sidebar',
+      },
+    },
+    {
+      name: 'links',
+      type: 'array',
+      fields: [
+        IconField({
+          name: 'icon',
+        }),
+        {
+          name: 'url',
+          label: false,
+          type: 'text',
+        },
+      ],
+    },
+    {
+      name: 'relatedPosts',
+      type: 'relationship',
+      admin: {
+        position: 'sidebar',
+      },
+      filterOptions: ({ id }) => {
+        return {
+          id: {
+            not_in: [
+              id,
+            ],
+          },
+        }
+      },
+      hasMany: true,
+      relationTo: [
+        CollectionSlug.BlogPosts,
+      ],
+    },
+
+    /* -------------- Content -------------- */
+    {
+      type: 'tabs',
+      tabs: [
+        {
+          label: 'Content',
+          fields: [
+            {
+              type: 'collapsible',
+              label: 'Excerpt',
+              admin: {
+                initCollapsed: true,
+              },
+              fields: [
+                RichTextField({
+                  name: 'excerpt',
+                  editorVariant: 'markdown',
+                  overrides: {
+                    label: false,
+                  },
+                }),
+              ],
+            },
+            RichTextField({
+              name: 'content',
+              editorVariant: 'post',
+              overrides: {
+                label: false,
+              },
+            }),
+          ],
+        },
+        {
+          label: 'SEO',
+          fields: [
+            MetaField(),
+          ],
+        },
+      ],
+    },
+
+    GeneratorFlagsField(),
+  ],
+  trash: true,
+  versions: {
+    drafts: {
+      autosave: false,
+      schedulePublish: true,
+    },
+    maxPerDoc: 50,
+  },
+}

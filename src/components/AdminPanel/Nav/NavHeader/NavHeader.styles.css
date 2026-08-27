@@ -1,0 +1,13 @@
+@reference "#payload.css";
+
+@layer components {
+  .nav-header {
+    @apply relative h-(--app-header-height);
+    @apply flex items-center justify-center;
+    @apply shrink-0 grow-0;
+  }
+
+  .nav-header__logo {
+    @apply h-auto w-9/12;
+  }
+}

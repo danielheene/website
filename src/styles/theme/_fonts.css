@@ -1,0 +1,11 @@
+@theme inline {
+  --font-inherit: inherit;
+
+  --font-pp-frama: var(--pp-frama);
+  --font-pp-frama-text: var(--pp-frama-text);
+  --font-pp-supply-sans: var(--pp-supply-sans);
+  --font-pp-supply-mono: var(--pp-supply-mono);
+
+  --font-sans: var(--font-pp-frama-text);
+  --font-mono: var(--font-pp-supply-mono);
+}

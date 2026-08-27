@@ -1,48 +1,105 @@
+x-healthcheck-props: &healthcheck-props
+  interval: 5s
+  timeout: 20s
+  retries: 10
+
+
+
 services:
-  postgres:
-    image: postgres:alpine
-    hostname: postgres
-    container_name: postgres
-    restart: on-failure
-    environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_DB: ${POSTGRES_DATABASE}
+  mongo:
+    image: mongo:8
+    restart: always
     ports:
-      - "5432:5432"
+      - "27017:27017"
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - "mongo-data:/data/db"
+    command: --storageEngine=wiredTiger
+    healthcheck:
+      <<: *healthcheck-props
+      test: [ "CMD-SHELL", "echo 'db.runCommand(\"ping\").ok' | mongosh 127.0.0.1:27017/productiondb --quiet | grep -q 1" ]
 
-  pgweb:
-    image: sosedoff/pgweb
-    hostname: pgweb
-    container_name: pgweb  # optional
-    restart: on-failure
-    environment:
-      PGWEB_DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DATABASE}?sslmode=disable
+  redis:
+    image: redis:8-alpine
+    restart: always
     ports:
-      - "8081:8081"
-    links:
-      - postgres:postgres  # my database container is called postgres, not db
-    depends_on:
-      - postgres  # my database container is called postgres, not db
+      - "6379:6379"
+    volumes:
+      - "redis-data:/data"
+    # `notify-keyspace-events Exe` is required by the Next cache handler
+    # (@trieb.work/nextjs-turbo-redis-cache): it subscribes to key-event
+    # notifications to keep its tag manifest in sync across instances, and
+    # refuses to start when they are disabled.
+    command: redis-server --maxmemory-policy noeviction --notify-keyspace-events Exe
+    healthcheck:
+      <<: *healthcheck-props
+      test: [ "CMD-SHELL", "redis-cli PING" ]
 
-  pgadmin:
-    image: dpage/pgadmin4
-    hostname: pgadmin
-    container_name: pgadmin
-    restart: on-failure
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${POSTGRES_USER}@example.com
-      PGADMIN_DEFAULT_PASSWORD: ${POSTGRES_USER}
-      PGADMIN_CONFIG_SERVER_MODE: "False"
-      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+  storage:
+    image: rustfs/rustfs:latest
+    restart: always
     ports:
-      - "8080:80"
-    links:
-      - postgres:postgres
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      RUSTFS_ACCESS_KEY: ${S3_ACCESS_KEY}
+      RUSTFS_SECRET_KEY: ${S3_SECRET_KEY}
+    volumes:
+      - "storage-data:/data"
+    healthcheck:
+      <<: *healthcheck-props
+      test: [ "CMD-SHELL", "curl -f http://127.0.0.1:9000/health" ]
+
+  create-bucket:
+    image: minio/mc:RELEASE.2025-08-13T08-35-41Z
+    restart: "no"
     depends_on:
-      - postgres
+      storage:
+        condition: service_healthy
+    environment:
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
+      S3_BUCKET: ${S3_BUCKET}
+    configs:
+      - source: cors.json
+        target: /tmp/cors.json
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        set -e
+
+        until mc alias set storage http://storage:9000 $${S3_ACCESS_KEY} $${S3_SECRET_KEY}; do
+          echo 'storage is not ready yet, retrying in 2 seconds...'
+          sleep 2
+        done
+
+        echo 'create bucket if not exists'
+        mc mb storage/$${S3_BUCKET} --ignore-existing
+
+        echo 'set policy PUBLIC (download only) for bucket'
+        mc anonymous set download storage/$${S3_BUCKET}
+
+        echo 'set cors rules'
+        mc cors set storage/$${S3_BUCKET} /tmp/cors.json
+
+configs:
+  cors.json:
+    content: |
+      <CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2020-10-22/">
+        <CORSRule>
+          <AllowedOrigin>http://localhost:3000</AllowedOrigin>
+          <AllowedOrigin>https://daniel.heene.io</AllowedOrigin>
+          <AllowedOrigin>https://daniel.heene.dev</AllowedOrigin>
+          <AllowedOrigin>https://daniel.heene.nexus</AllowedOrigin>
+          <AllowedMethod>GET</AllowedMethod>
+          <AllowedMethod>PUT</AllowedMethod>
+          <AllowedMethod>POST</AllowedMethod>
+          <AllowedMethod>HEAD</AllowedMethod>
+          <AllowedHeader>*</AllowedHeader>
+        </CORSRule>
+      </CORSConfiguration>
 
 volumes:
-  postgres:
+  mongo-data:
+  redis-data:
+  storage-data:

@@ -1,43 +1,73 @@
-import type { StorybookConfig } from '@storybook/nextjs'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const config: StorybookConfig = {
+import { defineMain } from '@storybook/nextjs/node'
+import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin'
+
+const dirName = dirname(fileURLToPath(import.meta.url))
+
+export default defineMain({
   framework: {
     name: '@storybook/nextjs',
     options: {
+      nextConfigPath: '../next.config.ts',
       builder: {
         useSWC: true,
       },
     },
   },
-
-  stories: [
-    {
-      directory: '../src/stories',
-      files: '*.mdx',
-      titlePrefix: 'Foundation',
-    },
-    '../src/**/*.mdx',
-    '../src/**/*.stories.@(js|jsx|mjs|ts|tsx|mdx)',
-  ],
-
   core: {
     disableTelemetry: true,
     disableWhatsNewNotifications: true,
   },
-
-  addons: [
-    '@storybook/addon-onboarding',
-    '@storybook/addon-links',
-    '@storybook/addon-essentials',
-    '@storybook/addon-interactions',
+  stories: [
+    // Presentational components and their stories all live under src/ now that
+    // the repo is a single package.
+    '../src/**/*.mdx',
+    '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
   ],
-
-  staticDirs: ['../public'],
-
-  docs: {},
-
+  staticDirs: [
+    '../public',
+    {
+      from: '../src/fonts/pp-frama/files',
+      to: '/src/fonts/pp-frama/files',
+    },
+    {
+      from: '../src/fonts/pp-frama-text/files',
+      to: '/src/fonts/pp-frama-text/files',
+    },
+    {
+      from: '../src/fonts/pp-supply-sans/files',
+      to: '/src/fonts/pp-supply-sans/files',
+    },
+    {
+      from: '../src/fonts/pp-supply-mono/files',
+      to: '/src/fonts/pp-supply-mono/files',
+    },
+  ],
+  addons: [
+    '@storybook/addon-a11y',
+    '@storybook/addon-docs',
+    '@storybook/addon-onboarding',
+    '@storybook/addon-themes',
+    '@storybook/addon-webpack5-compiler-swc',
+  ],
   typescript: {
     reactDocgen: 'react-docgen-typescript',
+    reactDocgenTypescriptOptions: {
+      shouldExtractLiteralValuesFromEnum: true,
+      propFilter: (prop) => !!prop.parent?.fileName?.includes('node_modules'),
+    },
   },
-}
-export default config
+  webpackFinal: async (config) => {
+    config.resolve = config.resolve ?? {}
+    config.resolve.plugins = [
+      ...(config.resolve.plugins ?? []),
+      new TsconfigPathsPlugin({
+        configFile: resolve(dirName, '../tsconfig.json'),
+      }),
+    ]
+
+    return config
+  },
+})

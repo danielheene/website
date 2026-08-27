@@ -1,0 +1,123 @@
+# syntax=docker/dockerfile:1
+
+# Produces three images from one build context:
+#   - target `app`       — the Next.js server (`pnpm run start`)
+#   - target `worker`     — the Payload job runner (`pnpm run start:worker`)
+#   - target `storybook`  — the built Storybook, served statically
+#
+# `app` and `worker` share the same `builder` stage: `pnpm run build` (via
+# next.config.ts / generateStaticParams) reaches the database over Tailscale
+# during static generation, so the CI job building this image must run with
+# Tailscale connectivity and the full application env — see
+# .github/workflows/ci.yml. The worker never re-runs the build; it reuses the
+# same .next output and just boots a different process against it.
+#
+# There is deliberately no `output: 'standalone'` in next.config.ts, so the
+# runtime stages carry the full pnpm-installed node_modules rather than a
+# traced subset — bigger image, but avoids known standalone-tracing gaps with
+# the Payload/Next combination this app uses.
+
+# Defaults to production; docker-app-development in ci.yml overrides this to
+# `development` for PRs against develop via --build-arg. Declared before the
+# first FROM so it's visible everywhere, but per Docker's ARG scoping rules
+# it must be redeclared (bare `ARG NODE_ENV`) inside any stage that reads it.
+ARG NODE_ENV=production
+
+# node:26-slim does not bundle corepack (dropped from the base image as of
+# Node 26), so pnpm is installed directly via npm instead — pinned to match
+# package.json's packageManager field.
+FROM node:26-slim AS base
+RUN npm install -g pnpm@11.18.0
+WORKDIR /app
+
+# ---- deps: install once, reused by every stage below ----------------------
+FROM base AS deps
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml* .npmrc* ./
+# pnpm-workspace.yaml's patchedDependencies points at this directory —
+# without it, `pnpm install` fails outright looking for the patch file.
+COPY patches ./patches
+RUN pnpm install --frozen-lockfile
+
+# ---- builder: next build only (needs DB over Tailscale) -------------------
+FROM deps AS builder
+ARG NODE_ENV
+COPY . .
+ENV NODE_ENV=${NODE_ENV}
+# Build-time env (DATABASE_URL, REDIS_URL, S3_*, PAYLOAD_SECRET, etc.) arrives
+# as a single BuildKit secret file in dotenv format — see
+# .github/workflows/ci.yml's `secret-files` input — rather than as ARG/ENV,
+# so none of these values are cached into an image layer or visible via
+# `docker history`.
+#
+# It is copied to .env.production and read by @next/env's loadEnvConfig
+# (which `next build` calls) rather than shell-sourced: a value containing
+# spaces or shell metacharacters — e.g. USESEND_DEFAULT_FROM_NAME being
+# "Mail Agent [daniel.heene.dev]" — breaks a `. file` source under dash,
+# which parses each line as a shell command rather than a plain KEY=value
+# assignment. dotenv's own parser has no such restriction, which is the
+# whole point of using the format Payload/Next already expect instead of
+# fighting it via shell semantics. The file is removed immediately after use
+# so its contents never land in a layer.
+#
+# TEMPORARY: `payload migrate` is skipped here (plain `pnpm run build`
+# instead of `pnpm run ci`) to isolate whether `next build` itself works
+# cleanly in this container from whatever payload migrate's own CLI does
+# differently. Restore `pnpm run ci` (migrate && build) once this is
+# confirmed, so real future migrations actually run as part of the image
+# build again.
+RUN --mount=type=secret,id=build_env,required=true \
+    cp /run/secrets/build_env .env.production && \
+    pnpm run build; \
+    status=$?; \
+    rm -f .env.production; \
+    exit $status
+
+# ---- app: Next.js server ----------------------------------------------------
+FROM base AS app
+ARG NODE_ENV
+ENV NODE_ENV=${NODE_ENV}
+COPY --from=builder /app ./
+EXPOSE 3000
+# Trivial liveness probe (app/(frontend)/api/health/app) — confirms the
+# Next.js server itself responds, not job-queue state; see the `worker`
+# stage's HEALTHCHECK below for that. Probed with plain Node rather than
+# curl, which node:26-slim doesn't carry and isn't otherwise needed here.
+HEALTHCHECK --interval=60s --timeout=10s --retries=3 --start-period=30s \
+    CMD node -e "fetch('http://localhost:3000/api/health/app').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+CMD ["pnpm", "run", "start"]
+
+# ---- worker: Payload job runner, same build output as app -----------------
+FROM base AS worker
+ARG NODE_ENV
+ENV NODE_ENV=${NODE_ENV}
+COPY --from=builder /app ./
+EXPOSE 3001
+# `jobs:run` itself has no HTTP listener to probe — start-worker.mjs runs a
+# small health server (scripts/health-server.ts) alongside it for exactly
+# this. Probed with plain Node rather than curl, which node:26-slim doesn't
+# carry and isn't otherwise needed in this image.
+HEALTHCHECK --interval=60s --timeout=10s --retries=3 --start-period=30s \
+    CMD node -e "fetch('http://localhost:'+(process.env.JOB_RUNNER_HEALTH_PORT||3001)+'/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+CMD ["pnpm", "run", "start:worker"]
+
+# ---- storybook-builder: independent build, no DB/Tailscale needed ---------
+FROM deps AS storybook-builder
+COPY . .
+RUN pnpm run build:storybook
+
+# ---- storybook: static output served via `serve` ---------------------------
+FROM base AS storybook
+ENV NODE_ENV=production
+# npm rather than `pnpm add -g`: pnpm's global bin dir isn't on PATH by
+# default in this image, and configuring it is unnecessary for one package.
+RUN npm install -g serve
+COPY --from=storybook-builder /app/dist ./dist
+EXPOSE 3000
+# Runs the `serve` binary directly rather than `pnpm run serve:storybook`:
+# this stage has no node_modules/lockfile (only `dist` is copied in), so
+# `pnpm run` would try to resolve/install the whole workspace at container
+# startup — confirmed by testing this locally, it pulls 1000+ packages over
+# the network before ever serving a request. `serve:storybook` still exists
+# in package.json as the documented definition of this command; it's just
+# not how this particular stage invokes it.
+CMD ["serve", "-s", "dist", "-l", "3000"]

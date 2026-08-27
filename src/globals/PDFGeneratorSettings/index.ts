@@ -1,0 +1,214 @@
+import type { GlobalConfig } from 'payload'
+
+import dedent from 'dedent'
+
+import { authenticated } from '@/access/authenticated'
+import { DurationField } from '@/fields/Duration'
+import { SectionGroupField } from '@/fields/SectionGroup'
+import { TemplateField } from '@/fields/Template'
+import { generateResumeDocumentHook } from '@/lib/hooks/global'
+import { translate } from '@/lib/i18n'
+import { nanoid } from '@/lib/nanoid'
+import { AdminGroup } from '@/types/admin-panel'
+import { GlobalSlug } from '@/types/globals'
+import { SkillSorting, SkillType, SkillTypeSortable } from '@/types/payload'
+import { SKILL_TYPE } from '@/types/select-options'
+
+import { revalidateDocument } from './hooks/revalidateDocument'
+import { sanitizeSkillSorting } from './hooks/sanitizeSkillSorting'
+
+const sharedId = nanoid(32)
+
+export const skillSortingKeys: (keyof SkillSorting & string)[] = [
+  'skillTypeSortable',
+  ...(Object.values(SKILL_TYPE) as SkillType[]),
+]
+
+export const skillTypeSortables = Object.values(SKILL_TYPE).map((skillType) => ({
+  id: skillType,
+  label: translate('en', `skill.type.${skillType}`),
+})) as SkillTypeSortable[]
+
+export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings']> = {
+  slug: GlobalSlug.PDFGeneratorSettings,
+  label: 'PDF Builder',
+  access: {
+    read: authenticated,
+    readVersions: authenticated,
+    update: authenticated,
+  },
+  hooks: {
+    afterChange: [
+      revalidateDocument,
+      generateResumeDocumentHook,
+    ],
+  },
+  admin: {
+    group: AdminGroup.Settings,
+    components: {
+      elements: {
+        beforeDocumentControls: [
+          '@/globals/PDFGeneratorSettings/components/GenerateButton',
+        ],
+      },
+    },
+  },
+  typescript: {
+    interface: 'PDFGeneratorSettings',
+  },
+  fields: [
+    {
+      type: 'group',
+      admin: {
+        hideGutter: true,
+      },
+      fields: [
+        TemplateField({
+          name: 'documentTitleTemplate',
+          label: 'Document Title Template',
+          description: `
+            The document name template for the documents collection.
+            The document contains all meta data, file references and the data which was used to generate the PDFs.
+          `,
+          // Without a default, this is empty on a fresh database — every
+          // settings-global save enqueues a PDF-generation job
+          // (generateResumeDocumentHook) that feeds this straight into
+          // renderTemplate, so an empty template is a real, immediate
+          // failure mode rather than a rendering nicety.
+          defaultValue: 'Resume {nanoid7}',
+          overrides: {
+            required: true,
+          },
+          data: {
+            nanoid: sharedId,
+          },
+          renderLocale: [
+            'en',
+          ],
+        }),
+      ],
+    },
+    {
+      type: 'group',
+      admin: {
+        hideGutter: true,
+      },
+      fields: [
+        TemplateField({
+          name: 'filenameTemplate',
+          label: 'Filename Template',
+          description: `
+            The filename template for the generated PDF which must satisfy both locales and result in two different filenames.
+            To get an full overview of all available variables or filter functions use the info icon.
+          `,
+          // Without a default, this is empty on a fresh database — same
+          // failure mode as documentTitleTemplate above. Includes {locale}
+          // so the EN/DE outputs stay distinct, matching this field's own
+          // "must result in two different filenames" requirement.
+          defaultValue: 'resume-{locale}-{nanoid7}',
+          overrides: {
+            required: true,
+          },
+          data: {
+            nanoid: sharedId,
+          },
+          renderLocale: [
+            'en',
+            'de',
+          ],
+        }),
+      ],
+    },
+    SectionGroupField({
+      label: 'Queue Handling',
+      description: `
+          __Generate Throttle:__ Time to wait between the last change and the next scheduled PDF generation. This prevents multiple scheduled Jobs during a set of changes.${'  '}
+          __Timeout Between Jobs:__ Time to wait between the last scheduled Job and the next scheduled Job. This prevents too many generated PDFs over the time of a day.${'  '}
+          __Maximum Attempts:__ Number of attempts before a scheduled Job is marked as failed. To avoid hard failures due to flaky network connections or server issues.${'  '}
+        `,
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            DurationField({
+              name: 'generateThrottle',
+              label: 'Generate Throttle',
+              width: '33.3%',
+            }),
+            DurationField({
+              name: 'timeoutBetweenJobs',
+              label: 'Timeout Between Jobs',
+              width: '33.3%',
+            }),
+            {
+              type: 'number',
+              name: 'maximumRetries',
+              label: 'Maximum Retries',
+              // Without a default this is `undefined` on a fresh database,
+              // which flows into the generation workflow's job-retry
+              // `attempts` count (see generateResumeDocument.tsx) — an
+              // explicit, sane default avoids handing the job queue an
+              // undefined retry count.
+              defaultValue: 3,
+              required: true,
+            },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [],
+        },
+      ],
+    }),
+
+    SectionGroupField({
+      label: 'Skill Type Sorting',
+      description: `
+          Order the skill types in the generated document.
+        `,
+      fields: [
+        {
+          name: 'skillSorting',
+
+          label: false,
+          type: 'json',
+
+          typescriptSchema: [
+            () => ({
+              title: 'SkillSorting',
+              type: 'object',
+              properties: {
+                ...skillSortingKeys.reduce((acc, key) => {
+                  acc[key] = {
+                    type: 'array',
+                    items: {
+                      $ref:
+                        key === 'skillTypeSortable'
+                          ? '#/definitions/SkillTypeSortable'
+                          : '#/definitions/SkillEntrySortable',
+                    },
+                  }
+
+                  return acc
+                }, {}),
+              },
+              additionalProperties: false,
+              required: skillSortingKeys,
+            }),
+          ],
+          hooks: {
+            afterRead: [
+              sanitizeSkillSorting,
+            ],
+          },
+          admin: {
+            components: {
+              Field: '@/globals/PDFGeneratorSettings/components/SkillSortingField',
+            },
+          },
+        },
+      ],
+    }),
+  ],
+  versions: false,
+}

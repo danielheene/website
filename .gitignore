@@ -1,18 +1,43 @@
 build
-dist/media
+dist
 node_modules
 .DS_Store
 .next
 .vercel
 
 # Payload default media upload directory
-public/media/
+**/public/media/
+
+# turborepo local cache
+.turbo
+
+# incremental typecheck cache (tsconfig has `incremental: true`, so
+# `tsc --noEmit` still writes this)
+*.tsbuildinfo
 
 *.db
 
 *storybook.log
 storybook-static/
 
+# react-email dev server cache (pnpm email:dev)
+.react-email
+
 .env
 .env.*
 !.env.example
+!.env.test
+
+# test artifacts
+coverage
+playwright-report
+test-results
+docs
+plan
+
+certificates
+
+
+.claude
+.junie
+.worktrees

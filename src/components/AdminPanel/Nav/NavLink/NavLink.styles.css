@@ -1,0 +1,38 @@
+@reference "#payload.css";
+
+@layer components {
+  .nav-link {
+    @apply flex flex-row flex-nowrap w-full text-nowrap py-1.5 px-2 mb-0;
+    @apply no-underline text-lg font-mono leading-none;
+    @apply transition-colors duration-100 ease-in-out bg-transparent;
+  }
+
+  .nav-link:hover {
+    @apply bg-sidebar-accent rounded-sm;
+  }
+  .nav-link--active {
+    @apply bg-sidebar-accent/80 rounded-sm;
+  }
+
+  .nav-link--open {
+    @apply md:m-0 md:w-full md:justify-start md:items-center;
+  }
+
+  .nav-link__label {
+    @apply block bg-transparent ml-2 max-h-20;
+    @apply text-sm font-mono font-medium leading-none tracking-wider;
+    @apply max-w-(--nav-label-width) opacity-0;
+  }
+
+  .nav-link--open .nav-link__label {
+    @apply opacity-100 transition-opacity delay-150 duration-100 ease-in-out;
+  }
+
+  .nav-link__icon {
+    @apply shrink-0 grow-0 w-[20px] h-[20px] ml-0.5 mr-0;
+  }
+
+  .nav-link--open .nav-link__icon {
+    @apply md:mr-2;
+  }
+}

@@ -1,298 +1,386 @@
-# website
+# Personal Website - Daniel Heene
 
-```css
+This repository contains the source code for my personal website: [daniel.heene.io](https://daniel.heene.io).
 
-[theme="dark"] {
-  --background: hsl(0 0% 0%);
-  --foreground: hsl(210 40% 98%);
+> **For AI coding agents**: see [`AGENTS.md`](./AGENTS.md) for coding conventions, architecture
+> notes, and known security/style guardrails before making changes.
 
-  --card: hsl(240 6% 10%);
-  --card-foreground: hsl(210 40% 98%);
+## Tech Stack
 
-  --popover: hsl(222.2 84% 4.9%);
-  --popover-foreground: hsl(210 40% 98%);
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router, React 19)
+- **CMS**: [Payload CMS 3.x](https://payloadcms.com/)
+- **Database**: [MongoDB](https://www.mongodb.com/) (via Mongoose)
+- **Cache/KV**: [Redis](https://redis.io/)
+- **Storage**: S3-compatible storage (local Minio in development)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
+- **Analytics**: [Umami](https://umami.is/) (Optional)
+- **Email**: [UseSend](https://usesend.com/) (Optional)
 
-  --primary: hsl(210 40% 98%);
-  --primary-foreground: hsl(222.2 47.4% 11.2%);
+## Requirements
 
-  --secondary: hsl(217.2 32.6% 17.5%);
-  --secondary-foreground: hsl(210 40% 98%);
+- **Node.js**: `^26.0.0`
+- **pnpm**: `^11.0.0`
+- **Docker**: For running local database, cache, and storage services.
 
-  --muted: hsl(217.2 32.6% 17.5%);
-  --muted-foreground: hsl(215 20.2% 65.1%);
+## Setup & Local Development
 
-  --accent: hsl(217.2 32.6% 17.5%);
-  --accent-foreground: hsl(210 40% 98%);
+### 1. Environment Configuration
 
-  --destructive: hsl(0 62.8% 30.6%);
-  --destructive-foreground: hsl(210 40% 98%);
+Configuration and secrets are managed in [Doppler](https://doppler.com). Install the CLI,
+link this directory to the project, then write the config out to `.env.local`:
 
-  --border: hsl(240 4% 16%);
-  --input: hsl(217.2 32.6% 17.5%);
-  --ring: hsl(212.7 26.8% 83.9%);
-
-  --radius: 0.2rem;
-
-  --success: hsl(196 100% 14%);
-  --warning: hsl(34 51% 25%);
-  --error: hsl(10 39% 43%);
-}
-
-[theme="light"] {
-  --background: hsl(0 0% 100%);
-  --foreground: hsl(222.2 84% 4.9%);
-
-  --card: hsl(240 5% 96%);
-  --card-foreground: hsl(222.2 84% 4.9%);
-
-  --popover: hsl(0 0% 100%);
-  --popover-foreground: hsl(222.2 84% 4.9%);
-
-  --primary: hsl(222.2 47.4% 11.2%);
-  --primary-foreground: hsl(210 40% 98%);
-
-  --secondary: hsl(210 40% 96.1%);
-  --secondary-foreground: hsl(222.2 47.4% 11.2%);
-
-  --muted: hsl(210 40% 96.1%);
-  --muted-foreground: hsl(215.4 16.3% 46.9%);
-
-  --accent: hsl(210 40% 96.1%);
-  --accent-foreground: hsl(222.2 47.4% 11.2%);
-
-  --destructive: hsl(0 84.2% 60.2%);
-  --destructive-foreground: hsl(210 40% 98%);
-
-  --border: hsl(240 6% 90%);
-  --input: hsl(214.3 31.8% 91.4%);
-  --ring: hsl(222.2 84% 4.9%);
-
-  --radius: 0.2rem;
-
-  --success: hsl(196 52% 74%);
-  --warning: hsl(34 89% 85%);
-  --error: hsl(10 100% 86%);
-}
+```bash
+brew install dopplerhq/cli/doppler   # see docs.doppler.com/docs/install-cli for other platforms
+doppler login
+doppler setup --project website --config <your-config>
+pnpm load-env                        # writes .env.local from the active config
 ```
 
-This is the official [Payload Website Template](https://github.com/payloadcms/payload/blob/main/templates/website). Use it to power websites, blogs, or portfolios from small to enterprise. This repo includes a fully-working backend, enterprise-grade admin panel, and a beautifully designed, production-ready website.
+`doppler setup` stores the project and config against this directory in `~/.doppler`, so
+it is a one-time step per clone. There is no checked-in default: configs differ per
+developer (`development_personal` and the like), and pinning one in the repo made it easy
+to build against the wrong database without noticing. `doppler configure` shows what the
+current directory resolves to.
 
-This template is right for you if you are working on:
+`pnpm load-env` is the only thing that talks to Doppler. Next loads `.env.local`
+automatically, so no package script wraps `doppler run` — `pnpm dev`, `pnpm payload` and
+the rest just work. **Re-run it after changing anything in Doppler, or after switching
+configs** with `doppler setup --config <name>`; nothing detects drift on its own.
 
-- A personal or enterprise-grade website, blog, or portfolio
-- A content publishing platform with a fully featured publication workflow
-- A lead generation website with premium content gated behind authentication
+- `pnpm load-env --check` reports whether `.env.local` is current and exits non-zero if
+  not, without writing.
+- The file is gitignored and written owner-only (`0600`) — it holds every secret the
+  project uses. It is never generated as a side effect of another script.
+- To inspect what will be written without touching the filesystem, run `doppler secrets`.
 
-Core features:
+### 2. Start Services
 
-- [Pre-configured Payload Config](#how-it-works)
-- [Authentication](#users-authentication)
-- [Access Control](#access-control)
-- [Layout Builder](#layout-builder)
-- [Draft Preview](#draft-preview)
-- [Live Preview](#live-preview)
-- [Redirects](#redirects)
-- [SEO](#seo)
-- [Website](#website)
+Launch the infrastructure (MongoDB, Redis, and Minio) using Docker Compose:
 
-## Quick Start
+```bash
+docker compose up -d
+```
 
-To spin up this example locally, follow these steps:
+### 3. Install Dependencies
 
-### Clone
+```bash
+pnpm install
+```
 
-If you have not done so already, you need to have standalone copy of this repo on your machine. If you've already cloned this repo, skip to [Development](#development).
+### 4. Generate Payload Artifacts
 
-#### Method 1 (recommended)
+Payload requires generated TypeScript types and an import map for the admin panel:
 
-Go to Payload Cloud and [clone this template](https://payloadcms.com/new/clone/website). This will create a new repository on your GitHub account with this template's code which you can then clone to your own machine.
+```bash
+pnpm generate
+```
 
-#### Method 2
+### 5. Run the Application
 
-Use the `create-payload-app` CLI to clone this template directly to your machine:
+Start the development server:
 
-    npx create-payload-app@beta my-project -t website
+```bash
+pnpm dev
+```
 
-#### Method 3
+- **Frontend**: [http://localhost:3000](http://localhost:3000)
+- **Admin Panel**: [http://localhost:3000/admin](http://localhost:3000/admin)
 
-Use the `git` CLI to clone this template directly to your machine:
+## Environment Variables
 
-    git clone -n --depth=1 --filter=tree:0 https://github.com/payloadcms/payload my-project && cd my-project && git sparse-checkout set --no-cone templates/website && git checkout && rm -rf .git && git init && git add . && git mv -f templates/website/{.,}* . && git add . && git commit -m "Initial commit"
+`apps/web/src/types/environment.ts` is the source of truth: it declares a Zod schema that
+`next.config.ts` validates at load time, so the process exits immediately if anything
+required is missing or malformed. Doppler stores the values; the list below explains them.
 
-### Development
-
-1. First [clone the repo](#clone) if you have not done so already
-1. `cd my-project && cp .env.example .env` to copy the example environment variables
-1. `pnpm install && pnpm dev` to install dependencies and start the dev server
-1. open `http://localhost:3000` to open the app in your browser
-
-That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
-
-## How it works
-
-The Payload config is tailored specifically to the needs of most websites. It is pre-configured in the following ways:
-
-### Collections
-
-See the [Collections](https://payloadcms.com/docs/beta/configuration/collections) docs for details on how to extend this functionality.
-
-- #### Users (Authentication)
-
-  Users are auth-enabled collections that have access to the admin panel and unpublished content. See [Access Control](#access-control) for more details.
-
-  For additional help, see the official [Auth Example](https://github.com/payloadcms/payload/tree/beta/examples/auth) or the [Authentication](https://payloadcms.com/docs/beta/authentication/overview#authentication-overview) docs.
-
-- #### Posts
-
-  Posts are used to generated blog posts, news articles, or any other type of content that is published over time. All posts are layout builder enabled so you can generate unique layouts for each post using layout-building blocks, see [Layout Builder](#layout-builder) for more details. Posts are also draft-enabled so you can preview them before publishing them to your website, see [Draft Preview](#draft-preview) for more details.
-
-- #### Pages
-
-  All pages are layout builder enabled so you can generate unique layouts for each page using layout-building blocks, see [Layout Builder](#layout-builder) for more details. Pages are also draft-enabled so you can preview them before publishing them to your website, see [Draft Preview](#draft-preview) for more details.
-
-- #### Media
-
-  This is the uploads enabled collection used by pages, posts, and projects to contain media like images, videos, downloads, and other assets.
-
-- #### Categories
-
-  A taxonomy used to group posts together. Categories can be nested inside of one another, for example "News > Technology". See the official [Payload Nested Docs Plugin](https://payloadcms.com/docs/beta/plugins/nested-docs) for more details.
-
-### Globals
-
-See the [Globals](https://payloadcms.com/docs/configuration/globals) docs for details on how to extend this functionality.
-
-- `Header`
-
-  The data required by the header on your front-end like nav links.
-
-- `Footer`
-
-  Same as above but for the footer of your site.
-
-## Access control
-
-Basic access control is setup to limit access to various content based based on publishing status.
-
-- `users`: Users can access the admin panel and create or edit content.
-- `posts`: Everyone can access published posts, but only users can create, update, or delete them.
-- `pages`: Everyone can access published pages, but only users can create, update, or delete them.
-
-For more details on how to extend this functionality, see the [Payload Access Control](https://payloadcms.com/docs/beta/access-control/overview#access-control) docs.
-
-## Layout Builder
-
-Create unique page layouts for any type of content using a powerful layout builder. This template comes pre-configured with the following layout building blocks:
-
-- Hero
-- Content
-- Media
-- Call To Action
-- Archive
-
-Each block is fully designed and built into the front-end website that comes with this template. See [Website](#website) for more details.
-
-## Lexical editor
-
-A deep editorial experience that allows complete freedom to focus just on writing content without breaking out of the flow with support for Payload blocks, media, links and other features provided out of the box. See [Lexical](https://payloadcms.com/docs/beta/lexical/overview) docs.
-
-## Draft Preview
-
-All posts and pages are draft-enabled so you can preview them before publishing them to your website. To do this, these collections use [Versions](https://payloadcms.com/docs/beta/configuration/collections#versions) with `drafts` set to `true`. This means that when you create a new post, project, or page, it will be saved as a draft and will not be visible on your website until you publish it. This also means that you can preview your draft before publishing it to your website. To do this, we automatically format a custom URL which redirects to your front-end to securely fetch the draft version of your content.
-
-Since the front-end of this template is statically generated, this also means that pages, posts, and projects will need to be regenerated as changes are made to published documents. To do this, we use an `afterChange` hook to regenerate the front-end when a document has changed and its `_status` is `published`.
-
-For more details on how to extend this functionality, see the official [Draft Preview Example](https://github.com/payloadcms/payload/tree/beta/examples/draft-preview).
-
-## Live preview
-
-In addition to draft previews you can also enable live preview to view your end resulting page as you're editing content with full support for SSR rendering. See [Live preview docs](https://payloadcms.com/docs/beta/live-preview/overview) for more details.
-
-## SEO
-
-This template comes pre-configured with the official [Payload SEO Plugin](https://payloadcms.com/docs/beta/plugins/seo) for complete SEO control from the admin panel. All SEO data is fully integrated into the front-end website that comes with this template. See [Website](#website) for more details.
-
-## Redirects
-
-If you are migrating an existing site or moving content to a new URL, you can use the `redirects` collection to create a proper redirect from old URLs to new ones. This will ensure that proper request status codes are returned to search engines and that your users are not left with a broken link. This template comes pre-configured with the official [Payload Redirects Plugin](https://payloadcms.com/docs/beta/plugins/redirects) for complete redirect control from the admin panel. All redirects are fully integrated into the front-end website that comes with this template. See [Website](#website) for more details.
-
-## Website
-
-This template includes a beautifully designed, production-ready front-end built with the [Next.js App Router](https://nextjs.org), served right alongside your Payload app in a instance. This makes it so that you can deploy both your backend and website where you need it.
-
-Core features:
-
-- [Next.js App Router](https://nextjs.org)
-- [TypeScript](https://www.typescriptlang.org)
-- [React Hook Form](https://react-hook-form.com)
-- [Payload Admin Bar](https://github.com/payloadcms/payload-admin-bar)
-- [TailwindCSS styling](https://tailwindcss.com/)
-- [shadcn/ui components](https://ui.shadcn.com/)
-- Authentication
-- Fully featured blog
-- Publication workflow
-- User accounts
-- Dark mode
-- Pre-made layout building blocks
-- SEO
-- Redirects
-- Live preview
-
-### Cache
-
-Although Next.js includes a robust set of caching strategies out of the box, Payload Cloud proxies and caches all files through Cloudflare using the [Official Cloud Plugin](https://github.com/payloadcms/plugin-cloud). This means that Next.js caching is not needed and is disabled by default. If you are hosting your app outside of Payload Cloud, you can easily reenable the Next.js caching mechanisms by removing the `no-store` directive from all fetch requests in `./src/app/_api` and then removing all instances of `export const dynamic = 'force-dynamic'` from pages files, such as `./src/app/(pages)/[slug]/page.tsx`. For more details, see the official [Next.js Caching Docs](https://nextjs.org/docs/app/building-your-application/caching).
-
-## Development
-
-To spin up this example locally, follow the [Quick Start](#quick-start). Then [Seed](#seed) the database with a few pages, posts, and projects.
-
-### Docker
-
-Alternatively, you can use [Docker](https://www.docker.com) to spin up this template locally. To do so, follow these steps:
-
-1. Follow [steps 1 and 2 from above](#development), the docker-compose file will automatically use the `.env` file in your project root
-1. Next run `docker-compose up`
-1. Follow [steps 4 and 5 from above](#development) to login and create your first admin user
-
-That's it! The Docker instance will help you get up and running quickly while also standardizing the development environment across your teams.
-
-### Seed
-
-To seed the database with a few pages, posts, and projects you can click the 'seed database' link from the admin panel.
-
-The seed script will also create a demo user for demonstration purposes only:
-
-- Demo Author
-  - Email: `demo-author@payloadcms.com`
-  - Password: `password`
-
-> NOTICE: seeding the database is destructive because it drops your current database to populate a fresh one from the seed template. Only run this command if you are starting a new project or can afford to lose your current data.
-
-## Production
-
-To run Payload in production, you need to build and start the Admin panel. To do so, follow these steps:
-
-1. Invoke the `next build` script by running `pnpm build` or `npm run build` in your project root. This creates a `.next` directory with a production-ready admin bundle.
-1. Finally run `pnpm start` or `npm run start` to run Node in production and serve Payload from the `.build` directory.
-1. When you're ready to go live, see [Deployment](#deployment) for more details.
-
-### Deploying to Payload Cloud
-
-The easiest way to deploy your project is to use [Payload Cloud](https://payloadcms.com/new/import), a one-click hosting solution to deploy production-ready instances of your Payload apps directly from your GitHub repo.
-
-### Deploying to Vercel
-
-Coming soon.
-
-### Self-hosting
-
-Before deploying your app, you need to:
-
-1. Ensure your app builds and serves in production. See [Production](#production) for more details.
-2. Serve it from a
-
-You can also deploy your app manually, check out the [deployment documentation](https://payloadcms.com/docs/beta/production/deployment) for full details.
-
-## Questions
-
-If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
+Everything is **required** unless marked optional.
+
+### Core
+
+| Variable | Purpose |
+| --- | --- |
+| `DATABASE_URL` | MongoDB connection string. |
+| `REDIS_URL` | Redis connection URL (KV adapter and cache handler). |
+| `SERVER_URL` | Public URL of the server. Inlined into the client bundle. |
+| `SERVER_HOST` | Host/port used for server-side URL construction. |
+| `PAYLOAD_SECRET` | Encrypts Payload JWT tokens. |
+| `PREVIEW_SECRET` | Authenticates Next.js/Payload draft previews. |
+| `CRON_SECRET` | Reserved for cron tasks. Declared but not yet enforced by any route (see `AGENTS.md`). |
+
+### Status page
+
+| Variable | Purpose |
+| --- | --- |
+| `STATUS_PAGE_URL` | Status page link. Inlined into the client bundle. |
+| `STATUS_PAGE_HEARTBEAT_URL` | Heartbeat endpoint pinged server-side. |
+
+### Storage (Minio in local dev)
+
+`S3_BUCKET`, `S3_REGION`, `S3_ENDPOINT`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`.
+
+### Analytics, email, and third-party APIs
+
+| Variable | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_UMAMI_URL`, `NEXT_PUBLIC_UMAMI_SITE_ID` | Umami rewrite target and site ID (a UUID). |
+| `UMAMI_USERNAME`, `UMAMI_PASSWORD` | Credentials for the server-side Umami stats query. |
+| `USESEND_URL`, `USESEND_API_KEY`, `USESEND_DEFAULT_FROM_ADDRESS`, `USESEND_DEFAULT_FROM_NAME` | UseSend email provider. |
+| `OPENAI_API_KEY`, `ANTHROPIC_API_KEY` | Generated alt text and meta descriptions. |
+| `MAPBOX_API_KEY` | Address and coordinate lookups. |
+| `UNSPLASH_ACCESS_KEY` | Stock photo search & import in the media library admin. Optional — the feature is hidden if unset. |
+
+### Sentry (all optional)
+
+With no DSN the SDK is never initialised and the app runs unchanged. `SENTRY_DSN` is public
+by design and is inlined into the client bundle. `SENTRY_ENVIRONMENT`, `SENTRY_RELEASE` and
+`SENTRY_TRACES_SAMPLE_RATE` tune reporting; `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` and
+`SENTRY_PROJECT` are only needed to upload source maps during a build;
+`NEXT_PUBLIC_SENTRY_REPLAY_RATE` and `NEXT_PUBLIC_SENTRY_REPLAY_ERROR_RATE` control replay
+sampling.
+
+### Cloudflare tunnel (all optional)
+
+`CLOUDFLARE_TUNNEL_HOST`, `CLOUDFLARE_TUNNEL_URL` and `CLOUDFLARE_TUNNEL_TOKEN` are only
+read when starting the dev server with `--tunnel`.
+
+> **Fixed at build time.** `SERVER_URL`, `STATUS_PAGE_URL` and `SENTRY_DSN` are listed in
+> `next.config.ts`'s `env:` block, which inlines them into the compiled bundle. On top of
+> that, `cacheComponents: true` gives nearly every route a shell rendered at build time,
+> so a server-side `process.env` read is captured into that shell and served from cache —
+> moving the read further up the tree does not change this. All three must therefore be
+> correct when the app is built, which makes a build specific to one environment. All
+> three are public values, so nothing secret is baked in.
+
+## Production Build
+
+Dokploy builds the app from source on the deployment server; there is no image to
+build or push. The build needs a reachable database because `generateStaticParams()`
+calls `payload.find()`, and a Redis URL because the KV adapter is constructed while
+`payload.config.ts` loads.
+
+To reproduce a production build locally:
+
+```bash
+pnpm build
+pnpm start
+```
+
+Notes:
+
+- **Three values are inlined at build time.** `SERVER_URL`, `STATUS_PAGE_URL` and
+  `SENTRY_DSN` are baked into the client bundle and captured in the prerendered shell
+  (`cacheComponents: true` gives nearly every route a build-time shell), so passing them
+  at run time only satisfies the schema check — it does not change what is served. Build
+  with the config you intend to run. Every secret and all server-only config *is*
+  runtime, so a deployment can be repointed at a different database, cache, bucket or
+  mail provider without rebuilding.
+- **A production build validates only the build-time subset** of the schema; the full
+  schema is validated at boot, so a missing runtime variable still fails fast — at the
+  point where it can be supplied.
+- **Private hosts need Tailscale.** The `development` config points `DATABASE_URL` and
+  `REDIS_URL` at hosts on the tailnet, so the build only resolves them from a machine
+  already on the tailnet.
+- **`docker compose up -d` is only the local infrastructure** (Mongo, Redis, rustfs).
+  The app is not a compose service — it runs via `pnpm dev`.
+
+## Available Scripts
+
+No script wraps `doppler run`. Locally the environment comes from `.env.local`, which
+Next loads on its own — see [Environment Configuration](#1-environment-configuration) for
+how to generate it. On the deployment server Dokploy supplies the environment directly.
+The one script that does talk to Doppler is `pnpm load-env`, which writes that file.
+
+- `pnpm load-env`: Writes `.env.local` from the active Doppler config (`--check` to
+  report drift without writing).
+- `pnpm dev`: Starts the Next.js development server (and Storybook, in parallel).
+- `pnpm build`: Builds the application for production.
+- `pnpm start`: Starts the production server.
+- `pnpm generate`: Runs `generate:types` and `generate:importmap` in parallel.
+- `pnpm payload`: Wrapper for Payload CLI.
+- `pnpm migrate`: Runs database migrations.
+- `pnpm ci`: Sequence for CI/CD (migration + build).
+- `pnpm lint`: Runs `biome check` (lint + format check) for code quality.
+- `pnpm format`: Runs `biome format --write` to auto-fix formatting.
+- `pnpm storybook` / `pnpm dev:storybook`: Runs Storybook for isolated component development.
+
+## Project Structure
+
+```text
+.
+├── app/                  # Next.js App Router
+│   ├── (frontend)/       # Public site routes, incl. api/ (preview, sse, heartbeat)
+│   └── (payload)/        # Payload admin panel routes
+├── src/                  # Application Source
+│   ├── access/           # Payload Access Control functions
+│   ├── blocks/           # Reusable Payload Blocks (resume sections, content blocks)
+│   ├── collections/      # Payload Collections (Media, Pages, BlogPosts, Resume*, Users, etc.)
+│   ├── components/       # React Components
+│   ├── contexts/         # React Context providers
+│   ├── fields/           # Custom/reusable Payload Field factories
+│   ├── globals/          # Payload Globals (SiteSettings, PDFGeneratorSettings, etc.)
+│   ├── hooks/            # React hooks
+│   ├── jobs-queue/       # Payload Jobs Queue tasks/workflows
+│   ├── lib/              # Framework-agnostic utilities (Redis handler, caching, etc.)
+│   ├── pdf/              # PDF generation (resume export)
+│   ├── styles/           # CSS and Tailwind styles
+│   ├── types/            # Shared/generated TypeScript types (incl. generated payload.ts)
+│   └── widgets/          # Payload admin dashboard widgets
+├── public/               # Static Assets
+├── scripts/              # Standalone Node scripts (e.g. dev tunnel)
+├── payload.config.ts     # Payload CMS configuration (root-level, not under src/)
+├── docker-compose.yml    # Local Infrastructure
+└── next.config.ts        # Next.js Configuration
+```
+
+## Entrypoints
+
+- Next.js App Router under `app/` (served via `pnpm dev` / `pnpm start`).
+- Payload CMS is configured in `payload.config.ts` (repo root) and integrated via `withPayload` in `next.config.ts`.
+- File uploads are handled by Payload collections with the S3 storage plugin configured in `payload.config.ts`.
+
+## Testing
+
+Unit tests run with **Vitest**, end-to-end tests with **Playwright** (Chromium).
+
+- **Unit tests**: `pnpm test` (watch mode: `pnpm test:watch`, coverage: `pnpm test:coverage`)
+- **E2E tests**: `pnpm test:e2e` (interactive UI: `pnpm test:e2e:ui`)
+- **E2E in Docker Chromium**: `pnpm test:e2e:docker`
+
+Conventions:
+
+- Unit tests are co-located as `*.test.ts` next to the code under test (config: `vitest.config.ts`,
+  shared mocks and `TZ=UTC` in `vitest.setup.ts`).
+- E2E specs live in `e2e/*.spec.ts` (config: `playwright.config.ts`). They are smoke tests only —
+  the site is CMS-driven, so they assert structural health, not content.
+
+E2E prerequisites:
+
+- `docker compose up -d` (MongoDB, Redis and S3 storage must be reachable).
+- `.env.test` is committed with dummy, format-valid values so the app can boot. Flows backed by
+  real external services do **not** work with it: AI generation (OpenAI/Anthropic), Mapbox
+  geocoding, email (UseSend), Umami analytics and the status-page heartbeat.
+- `pnpm test:e2e` starts (or reuses) the dev server automatically. The Docker flow
+  (`scripts/e2e-docker.sh`) expects the dev server already running on the host and uses the
+  `mcr.microsoft.com/playwright` image — its tag must always match the `@playwright/test` version
+  in `package.json`; bump them together.
+
+## Commits & Git Hooks
+
+Hooks are installed by Husky via the `prepare` script, so `pnpm install` sets
+them up automatically.
+
+| Hook | Runs |
+| --- | --- |
+| `pre-commit` | `lint-staged` → `biome check --write` on staged files only |
+| `commit-msg` | `commitlint` against Conventional Commits |
+
+Formatting fixes are re-staged automatically, so a commit that only needed
+formatting still goes through. Only staged files are touched — pre-existing
+issues elsewhere never block an unrelated commit.
+
+Commit messages follow [Conventional Commits](https://www.conventionalcommits.org):
+
+```text
+feat(admin): add Iconify icon picker field
+fix: repair the Docker build for the flat repo layout
+chore!: drop Node 20 support        # `!` marks a breaking change
+```
+
+Scopes are deliberately unrestricted — see `commitlint.config.mjs`.
+
+Both hooks can be skipped with `git commit --no-verify` for genuine
+emergencies; the same commitlint check runs on pull requests in CI, so a
+bypassed message still has to be fixed before merge.
+
+## Error Tracking (Sentry)
+
+Sentry is wired for errors, Web Vitals, logs and traces, but stays **completely
+inert until `SENTRY_DSN` is set** — no DSN means `Sentry.init` is never called,
+so local development is unaffected.
+
+| Variable | Purpose |
+| --- | --- |
+| `SENTRY_DSN` | Enables the SDK. Everything below is ignored without it. |
+| `SENTRY_TRACES_SAMPLE_RATE` | Trace sampling, `0`–`1`. Defaults to `1` in dev, `0.1` in production. |
+| `SENTRY_ENVIRONMENT` / `SENTRY_RELEASE` | Override the reported environment and release. |
+| `SENTRY_AUTH_TOKEN` + `SENTRY_ORG` + `SENTRY_PROJECT` | Source-map upload during build. All three required; skipped otherwise. |
+| `NEXT_PUBLIC_SENTRY_REPLAY_RATE` / `..._ERROR_RATE` | Session replay, off by default. |
+
+Notes:
+
+- `/api/sse` and `/api/health/*` are excluded from tracing — they are polled or
+  long-lived and would dominate the quota.
+- Sentry requests are proxied through `/monitoring` so ad blockers cannot drop them.
+- Source maps are deleted after upload, so they are never served publicly.
+
+## Features
+
+- **Media Optimization**: Images are stored in S3 and automatically generate `alt` text and `blurDataURL` on upload using `sharp`.
+- **SVG Optimization**: Optimize SVGs for logos using `svgo` in the admin UI. Note: this is a client-side editor convenience only, not a server-side sanitization boundary — see `AGENTS.md` for the related security note.
+- **Localization**: Full support for English (`en`) and German (`de`) with localized admin panel and content.
+- **Modern Styling**: Powered by Tailwind CSS v4.
+- **Live Preview & Server-Sent Events**: Draft/live preview via `app/(frontend)/api/preview`, and a Redis pub/sub-backed SSE endpoint (`app/(frontend)/api/sse`) for real-time status updates.
+
+### Data Seeding
+
+Seed blog topics and posts for local testing (idempotent, matched by slug):
+
+```bash
+pnpm seed:blog          # create 6 topics + 30 posts (with downloaded images)
+pnpm seed:blog:clean    # remove them again
+```
+
+Article structure and prose are randomized per post title with a seeded PRNG, so
+reruns produce identical output while each post differs. Images are downloaded
+from `picsum.photos` (keyless) and uploaded into the images collection; the AI
+alt-text hook is skipped during seeding.
+
+Note: `payload run` only forwards CLI arguments after a `--` separator — see the
+`seed:blog:clean` script.
+- TODO: If seeding is needed, add a dedicated script or route and document usage here.
+
+## CI / Deployment
+
+A pull request against `main` or `develop` runs one pipelined quality gate
+(`.github/workflows/ci.yml`), each stage gating the next:
+
+1. **Commit Messages** — commitlint over the PR's commit range.
+2. **Unit Tests** — `vitest run --coverage` plus `deps:lint`. The suite mocks `payload`
+   and stubs its own environment in `vitest.setup.ts`, so it needs no database, no
+   tailnet and no secrets.
+3. **Build app + worker images** / **Build storybook image** (run in parallel once tests
+   pass) — builds all three images (`Dockerfile`'s `app`, `worker`, and `storybook`
+   targets) and pushes them to `ghcr.io` tagged `sha-<PR head SHA>`. The app/worker build
+   needs a reachable database, since `generateStaticParams()` calls `payload.find()` in
+   several routes — the runner joins the tailnet via `tailscale/github-action` for that
+   step. Storybook's build touches no database, so it skips Tailscale entirely.
+
+These four checks are required status checks on `main` — a PR cannot merge unless all
+four pass, so nothing gets built into an image (and nothing gets merged) unless it built
+and tested clean first.
+
+On merge (`.github/workflows/promote.yml`), the images already built and pushed for that
+PR's head SHA are **retagged**, not rebuilt — `docker buildx imagetools create` is a
+registry metadata operation:
+
+- Merge to `develop` → retagged `edge`.
+- Merge to `main` → once `.github/workflows/release.yml`'s semantic-release run computes
+  a new version, retagged `latest` and `vX.Y.Z`.
+
+Dokploy deploys from the resulting `ghcr.io` images rather than building from source.
+
+Secrets and non-secret config reach both CI and the server from Doppler: the Doppler
+GitHub App syncs into GitHub environments (`Production` for `main`, `Development`
+otherwise), and a PR's Docker build step uses whichever environment matches its base
+branch.
+
+## Code Quality & Security Notes
+
+- Linting/formatting is enforced by [Biome](https://biomejs.dev/) (`biome.json`), not ESLint/Prettier — see `AGENTS.md` for the full style conventions.
+- `pnpm lint` does not currently pass cleanly on `main` (pre-existing formatting and lint diagnostics); avoid introducing new issues when touching a file.
+- See [`AGENTS.md`](./AGENTS.md) for a summary of known security guardrails (open `queryPresets` access, unauthenticated SSE channel subscription, unsanitized raw SVG rendering, unused `CRON_SECRET`) to keep in mind when working in related areas.
+
+---
+
+#### Legacy Code
+
+The following code of my previous websites is no longer maintained, but a dump of their code bases can still be found under the following tags: [website-v2](https://github.com/danielheene/website/tree/homepage-v2) | [website-v1](https://github.com/danielheene/website/tree/homepage-v1).

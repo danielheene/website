@@ -1,0 +1,46 @@
+@reference "#payload.css";
+
+@layer components {
+  .seed-actions-modal {
+    @apply fixed inset-0 z-50 flex items-center justify-center;
+    @apply bg-black/50;
+
+    .seed-actions-modal__body {
+      @apply flex flex-col gap-4;
+      @apply w-full max-w-[420px];
+      @apply p-6;
+      @apply rounded-(--style-radius-m);
+      background: var(--theme-elevation-0);
+      border: 1px solid var(--theme-elevation-150);
+      box-shadow: 0 8px 24px -4px rgb(0 0 0 / 25%);
+
+      h3 {
+        @apply m-0;
+      }
+
+      label {
+        @apply text-sm font-medium;
+        color: var(--theme-elevation-800);
+      }
+
+      input {
+        @apply w-full;
+        padding: calc(var(--base) / 4) calc(var(--base) / 2);
+        border: 1px solid var(--theme-elevation-150);
+        border-radius: var(--style-radius-s);
+        background: var(--theme-input-bg);
+        color: var(--theme-elevation-800);
+
+        &:focus {
+          border-color: var(--theme-elevation-400);
+          outline: none;
+        }
+      }
+    }
+
+    .seed-actions-modal__footer {
+      @apply flex flex-row items-center justify-end gap-2;
+      @apply mt-2;
+    }
+  }
+}

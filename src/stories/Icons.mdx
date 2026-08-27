@@ -1,7 +1,8 @@
-import { IconGallery, IconItem, Meta } from '@storybook/blocks'
-import { BRAND_ICONS, Icon, UI_ICONS } from '../app/components/Icon'
+import { IconGallery, Meta } from '@storybook/addon-docs/blocks'
+import { BRAND_ICON, Icon, UI_ICON } from '@/components/Icon'
+import { IconItem } from './components/IconGallery'
 
-<Meta title="Icons" />
+<Meta title="Foundation/Icons" />
 
 # Icons
 
@@ -10,7 +11,7 @@ import { BRAND_ICONS, Icon, UI_ICONS } from '../app/components/Icon'
 
   <div style={{ paddingTop: '1rem' }}>
     <IconGallery>
-      {Object.values(UI_ICONS).map(icon => (
+      {Object.values(UI_ICON).map(icon => (
         <IconItem name={icon}>
           <Icon name={icon} />
         </IconItem>
@@ -24,8 +25,8 @@ import { BRAND_ICONS, Icon, UI_ICONS } from '../app/components/Icon'
 
   <div style={{ paddingTop: '1rem' }}>
     <IconGallery>
-      {Object.values(BRAND_ICONS).map(icon => (
-        <IconItem name={icon}>
+      {Object.values(BRAND_ICON).map(icon => (
+        <IconItem key={icon} name={icon}>
           <Icon name={icon} />
         </IconItem>
       ))}
