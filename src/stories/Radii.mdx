@@ -1,0 +1,69 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+import { SpecimenGallery, SpecimenItem } from './components/Specimen.tsx'
+
+<Meta title="Foundation/Radii" />
+
+# Radii
+
+`_radii.css` derives every step from one `--radius` base, scaled by a fixed multiplier per step —
+so tuning `--radius` re-tunes every step at once.
+
+**Note:** `_colors.css` also declares `--radius: 0` (its shadcn-derived block, alongside a second
+`calc(var(--radius) * N)` scale for `sm`/`md`/`lg`/`xl`/`2xl`/`3xl`/`4xl`). Because it's imported
+*before* `_radii.css`, its `--radius-*` steps are fully overridden by the ones below wherever both
+define the same name — except `2xl`/`3xl`/`4xl`, which `_radii.css` never redefines, so those
+three fall through to Tailwind's stock defaults (`1rem`/`1.5rem`/`2rem`) shown in the second
+section, unrelated to `--radius` entirely.
+
+<div style={{ padding: '3rem 0' }}>
+  <div style={{ paddingTop: '1rem' }}>
+    <SpecimenGallery>
+      <SpecimenItem title="none" subtitle="0">
+        <div className="size-24 rounded-none bg-primary" />
+      </SpecimenItem>
+      <SpecimenItem title="xs" subtitle="radius × 0.25">
+        <div className="size-24 rounded-xs bg-primary" />
+      </SpecimenItem>
+      <SpecimenItem title="sm" subtitle="radius × 0.5">
+        <div className="size-24 rounded-sm bg-primary" />
+      </SpecimenItem>
+      <SpecimenItem title="DEFAULT" subtitle="--radius (0.375rem)">
+        <div className="size-24 rounded bg-primary" />
+      </SpecimenItem>
+      <SpecimenItem title="md" subtitle="radius × 1.5">
+        <div className="size-24 rounded-md bg-primary" />
+      </SpecimenItem>
+      <SpecimenItem title="lg" subtitle="radius × 1.75">
+        <div className="size-24 rounded-lg bg-primary" />
+      </SpecimenItem>
+      <SpecimenItem title="xl" subtitle="radius × 2.25">
+        <div className="size-24 rounded-xl bg-primary" />
+      </SpecimenItem>
+      <SpecimenItem title="full" subtitle="9999px">
+        <div className="size-24 rounded-full bg-primary" />
+      </SpecimenItem>
+    </SpecimenGallery>
+  </div>
+</div>
+
+<div style={{ padding: '3rem 0' }}>
+  ## Stock steps (2xl / 3xl / 4xl)
+
+  Not redefined in `_radii.css`, so these three come straight from Tailwind's built-in scale — a
+  fixed rem value, not derived from `--radius`.
+
+  <div style={{ paddingTop: '1rem' }}>
+    <SpecimenGallery>
+      <SpecimenItem title="2xl" subtitle="1rem">
+        <div className="size-24 rounded-2xl bg-secondary" />
+      </SpecimenItem>
+      <SpecimenItem title="3xl" subtitle="1.5rem">
+        <div className="size-24 rounded-3xl bg-secondary" />
+      </SpecimenItem>
+      <SpecimenItem title="4xl" subtitle="2rem">
+        <div className="size-24 rounded-4xl bg-secondary" />
+      </SpecimenItem>
+    </SpecimenGallery>
+  </div>
+</div>

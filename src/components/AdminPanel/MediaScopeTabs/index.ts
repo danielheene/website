@@ -1,0 +1,1 @@
+export { MediaScopeTabs } from './MediaScopeTabs'

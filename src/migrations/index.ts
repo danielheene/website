@@ -1,9 +1,9 @@
-import * as migration_20250505_000746 from './20250505_000746';
+import * as migration_00000001_initialize_site_settings from './00000001_initialize_site_settings'
 
 export const migrations = [
   {
-    up: migration_20250505_000746.up,
-    down: migration_20250505_000746.down,
-    name: '20250505_000746'
+    up: migration_00000001_initialize_site_settings.up,
+    down: migration_00000001_initialize_site_settings.down,
+    name: '00000001_initialize_site_settings',
   },
-];
+]

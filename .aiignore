@@ -1,0 +1,14 @@
+.DS_Store
+*.log
+*.tmp
+
+.idea/
+.vscode/
+
+.next/
+dist/
+build/
+out/
+node_modules/
+
+

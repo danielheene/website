@@ -1,47 +1,44 @@
-import React from 'react'
-
-import { cn } from '@/utilities/cn'
 import Link from 'next/link'
-import { Logo } from '@/components/Logo'
-import { Icon, IconName } from '@/components/Icon'
 
-export async function Header() {
-  const platformLinks: Array<{ icon: IconName; link: string }> = [
-    {
-      icon: 'mail',
-      link: 'mailto:daniel@heene.io',
-    },
-    {
-      icon: 'github',
-      link: 'https://github.com/danielheene',
-    },
-    {
-      icon: 'linkedin',
-      link: 'https://www.linkedin.com/in/danielheene',
-    },
-  ]
+import { cn } from 'tailwind-variants'
+
+import { CMSLink } from '@/components/Link'
+import { Logo } from '@/components/Logo'
+import { fetchSiteSettingsCached } from '@/lib/fetchers'
+
+export const Header = async () => {
+  const {
+    header: { mainNavigation },
+  } = await fetchSiteSettingsCached()
+
+  const hasNavEntries = Array.isArray(mainNavigation.entries) && mainNavigation.entries.length > 0
 
   return (
-    <header className="pointer-events-none relative z-50 h-32 bg-gradient-to-b from-white">
-      <div
+    <header id="header" className="h-20 absolute top-0 z-50 w-full">
+      <nav
         className={cn([
-          'container h-12 md:h-16 lg:h-20',
-          'flex items-center justify-between gap-6',
-          'pointer-events-auto',
+          'h-16 mt-4 container',
+          'flex flex-row justify-between items-center',
         ])}
       >
-        <Link href="/" className="flex items-center py-1">
-          <Logo variant="singleline" color="primary" className="h-6 md:h-7 lg:h-8" />
+        <Link href="/" className="h-10 flex items-center" aria-label="Home">
+          <Logo variant="inline" className="text-2xl text-foreground hidden md:block" />
+          <Logo variant="square" className="text-2xl text-foreground block md:hidden" />
         </Link>
 
-        <nav className="flex gap-0 md:gap-4 lg:gap-8 items-center text-2xl md:text-3xl lg:text-4xl text-primary">
-          {platformLinks.map(({ icon, link }, i) => (
-            <Link key={i} href={link} className="p-1" target="_blank" rel="noopener noreferrer">
-              <Icon name={icon} />
-            </Link>
-          ))}
-        </nav>
-      </div>
+        {hasNavEntries && (
+          <ul className="flex flex-row items-center gap-8 list-disc">
+            {mainNavigation.entries.map(({ id, ...link }) => (
+              <li key={id} className="h-10 flex items-center font-mono">
+                <CMSLink
+                  {...link}
+                  className="text-2xl leading-none text-foreground hover:text-current tracking-tighter"
+                />
+              </li>
+            ))}
+          </ul>
+        )}
+      </nav>
     </header>
   )
 }

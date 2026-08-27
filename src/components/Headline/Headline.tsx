@@ -1,5 +1,7 @@
-import React, { memo, ReactNode, useMemo } from 'react'
-import { cn } from '@/utilities/cn'
+import type React from 'react'
+import { memo, type ReactNode, useMemo } from 'react'
+
+import { cn } from 'tailwind-variants'
 
 interface HeadlineProps extends React.HTMLAttributes<HTMLHeadingElement> {
   children: ReactNode
@@ -20,16 +22,19 @@ export const Headline = memo(function Headline({
     if (variant === 'section') return as ?? 'h2'
     if (variant === 'subline') return as ?? 'h3'
     return 'h3'
-  }, [as, variant])
+  }, [
+    as,
+    variant,
+  ])
 
   return (
     <Comp
       className={cn([
-        variant === 'default' && 'font-mono',
-        variant === 'page-title' &&
-          'container text-6xl leading-tight text-primary font-pp-supply-mono',
-        variant === 'section' && 'text-5xl text-inherit font-pp-supply-mono',
-        variant === 'subline' && 'text-3xl text-inherit font-mono',
+        'font-mono text-inherit',
+        variant === 'page-title' && 'text-6xl leading-tight',
+        variant === 'section' && 'text-5xl',
+        variant === 'subline' && 'text-3xl',
+        variant === 'default' && 'text-xl',
         className,
       ])}
       {...otherProps}

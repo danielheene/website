@@ -1,0 +1,1 @@
+export { ResumeAboutMeBlockRenderer } from './Renderer'

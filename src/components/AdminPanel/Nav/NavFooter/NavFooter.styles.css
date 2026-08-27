@@ -1,0 +1,86 @@
+@reference "#payload.css";
+
+@layer components {
+  .nav-footer {
+    @apply p-1;
+  }
+
+  .nav-footer__trigger-wrapper {
+    @apply block relative w-full;
+  }
+
+  .nav-footer__trigger {
+    @apply w-full m-0 p-1.5 flex flex-row items-center gap-3;
+    @apply cursor-pointer rounded-md overflow-hidden border-none;
+    @apply bg-neutral-100/10 hover:bg-neutral-100/20 text-neutral-50;
+  }
+
+  .nav-footer__trigger--active {
+    @apply bg-neutral-100/20;
+  }
+
+  .nav:not(.nav--open) .nav-footer__trigger {
+    @apply p-0 w-10;
+  }
+
+  .nav-footer__avatar {
+    @apply size-10 rounded-md object-cover;
+  }
+
+  .nav-footer__avatar-fallback {
+    @apply flex justify-center items-center shrink-0;
+    @apply size-10 text-primary-foreground font-medium;
+    @apply bg-linear-to-r/oklch from-primary-500 to-cyan-500;
+  }
+
+  .nav-footer__identity {
+    @apply min-w-0 flex flex-col flex-1 grow text-left text-sm leading-tight;
+  }
+
+  .nav-footer__name {
+    @apply block truncate font-pp-supply-sans font-semibold;
+  }
+
+  .nav-footer__email {
+    @apply block truncate text-xs font-mono text-muted-foreground;
+  }
+
+  .nav-footer__chevron {
+    @apply ml-auto size-4 text-muted-foreground;
+  }
+
+  .nav-footer__dropdown {
+    @apply fixed z-50;
+    @apply w-[calc(var(--nav-width-open)-var(--nav-spacing))];
+    @apply m-0 p-1.5 -translate-y-[calc(100%+1rem)];
+    @apply flex flex-col gap-2 overflow-hidden rounded-md;
+    @apply bg-neutral-50/90 dark:bg-neutral-950/90 backdrop-blur-xs;
+  }
+
+  .nav-footer__dropdown-header {
+    @apply flex flex-row items-center gap-4 p-2;
+  }
+
+  .nav-footer__separator {
+    @apply block w-[90%] h-px border-b border-b-border opacity-40;
+  }
+
+  .nav-footer__item {
+    @apply relative w-full h-8 p-1.5 pl-10;
+    @apply flex flex-row justify-between items-center;
+    @apply no-underline cursor-pointer leading-0 font-mono rounded-md border-none;
+    @apply bg-neutral/0 hover:bg-neutral-800/10 dark:hover:bg-neutral-200/10;
+    @apply text-neutral-950 dark:text-neutral-50;
+    @apply [&>svg]:absolute [&>svg]:left-5 [&>svg]:top-4;
+    @apply [&>svg]:-translate-x-1/2 [&>svg]:-translate-y-1/2;
+    @apply [&>svg]:transition-opacity;
+  }
+
+  .nav-footer__item-icon--hidden {
+    @apply opacity-0;
+  }
+
+  .nav-footer__item-icon--visible {
+    @apply opacity-100;
+  }
+}

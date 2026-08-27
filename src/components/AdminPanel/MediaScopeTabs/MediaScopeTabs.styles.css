@@ -1,0 +1,30 @@
+@reference "#payload.css";
+
+@layer components {
+  /**
+   * Payload's list header stacks: `__content` and `__after-header-content` are
+   * both `width: 100%`, so the description lands on its own line below the
+   * title. `:has()` scopes the override to headers that actually contain this
+   * switcher, leaving every other collection's header untouched.
+   */
+  .list-header:has(.media-scope-tabs) {
+    @apply items-end gap-4;
+
+    .list-header__content {
+      @apply w-auto grow;
+    }
+
+    .list-header__after-header-content {
+      @apply w-auto;
+      @apply mb-1;
+    }
+  }
+
+  .media-scope-tabs {
+    @apply flex flex-row gap-2 items-center;
+  }
+
+  .doc-header__after-header {
+    @apply empty:hidden;
+  }
+}

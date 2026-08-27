@@ -1,0 +1,50 @@
+@reference "../../styles/frontend.css";
+
+/**
+ * Brand duotone.
+ *
+ * The media is desaturated *first*, then a single brand-coloured layer is
+ * blended over it. Order matters: `lighten` and `darken` compare per channel,
+ * so a colour laid over a still-saturated image clamps only the channels where
+ * the brand colour is strong. `--primary` is ≈rgb(29 39 242) — almost no red —
+ * so warm highlights kept their red and the result skewed magenta/red.
+ * Greyscaling first equalises the channels, which is what makes the blend read
+ * as a tint rather than a colour cast.
+ *
+ * `display: contents` by default — the blend layer sizes itself against the
+ * caller's own positioned ancestor, and siblings of the wrapper can be lifted
+ * above it with a z-index. `app/(frontend)/not-found.tsx` relies on that.
+ */
+.duo-tone {
+  @apply contents bg-background;
+
+  /* Desaturate the media itself rather than filtering the backdrop, so the
+   * blend below receives neutral pixels. `:where()` keeps specificity at 0 so
+   * callers can still override per element. */
+  & :where(img, video, picture, canvas, svg) {
+    @apply grayscale;
+  }
+
+  @apply after:absolute after:inset-0 after:z-0;
+  @apply after:bg-primary after:mix-blend-lighten;
+  @apply dark:after:mix-blend-darken;
+  @apply after:pointer-events-none;
+}
+
+/**
+ * Makes the wrapper a real box that clips and sizes its own blend layer,
+ * instead of leaking it to the nearest positioned ancestor.
+ *
+ * The hero carousel needs this: its slides are absolutely positioned within the
+ * wrapper, so the duotone has to establish the containing block itself.
+ * `isolate` keeps the mix-blend layer from compositing against the page behind
+ * the hero.
+ */
+.duo-tone--contained {
+  @apply relative isolate overflow-hidden;
+}
+
+.duo-tone__vignette {
+  @apply absolute inset-0 z-20;
+  @apply pointer-events-none inset-shadow-vignette text-black;
+}

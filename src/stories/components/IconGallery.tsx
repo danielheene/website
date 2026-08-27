@@ -1,81 +1,46 @@
-import type { FunctionComponent } from 'react'
-import React from 'react'
+import type { FunctionComponent, ReactNode } from 'react'
 
-import { ResetWrapper } from '@storybook//components'
-import { styled } from '@storybook/theming'
-
-import { getBlockBackgroundStyle } from './_shared'
-
-const ItemLabel = styled.div(({ theme }) => ({
-  fontFamily: theme.typography.fonts.mono,
-  fontSize: theme.typography.size.s2,
-  fontWeight: theme.typography.weight.bold,
-  color: theme.color.defaultText,
-  marginTop: '1em',
-  lineHeight: 1.2,
-  textAlign: 'center',
-}))
-
-const ItemSpecimen = styled.div(({ theme }) => ({
-  ...getBlockBackgroundStyle(theme),
-  overflow: 'hidden',
-  fontSize: '3rem',
-  height: '2em',
-  width: '2em',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  flex: 'none',
-
-  '> img, > svg': {
-    width: '1em',
-    height: '1em',
-  },
-}))
-
-const Item = styled.div({
-  display: 'inline-flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  flex: '0 1 calc(20% - 50px)',
-  minWidth: 120,
-
-  margin: '15px',
-})
-
-const List = styled.div({
-  display: 'flex',
-  flexFlow: 'row wrap',
-})
+import { ResetWrapper } from 'storybook/internal/components'
+import { cn } from 'tailwind-variants'
 
 interface IconItemProps {
   name: string
-  children?: React.ReactNode
+  children?: ReactNode
 }
 
 /** An individual icon with a caption and an example (passed as `children`). */
 export const IconItem: FunctionComponent<IconItemProps> = ({ name, children }) => (
-  <Item>
-    <ItemSpecimen
+  <div className="inline-flex flex-col items-center flex-[0_1_calc(20%-50px)] min-w-30 m-3.75">
+    {/* a button rather than a div with onClick: the tile is click-to-copy, so it
+        needs to be keyboard-reachable and announced as an action */}
+    <button
+      type="button"
+      aria-label={`Copy icon name "${name}" to clipboard`}
+      className={cn(
+        'rounded-md border border-border bg-card shadow-[0_1px_3px_rgba(0,0,0,0.10)] dark:shadow-[0_2px_5px_rgba(0,0,0,0.20)]',
+        'overflow-hidden text-[3rem] h-[2em] w-[2em] flex items-center justify-center flex-none [&>img]:w-[1em] [&>img]:h-[1em] [&>svg]:w-[1em] [&>svg]:h-[1em]',
+      )}
       onClick={async () => {
         if (navigator) await navigator.clipboard.writeText(name)
       }}
     >
       {children}
-    </ItemSpecimen>
-    <ItemLabel>{name}</ItemLabel>
-  </Item>
+    </button>
+    <div className="font-mono text-sm font-bold text-foreground mt-[1em] leading-[1.2] text-center">
+      {name}
+    </div>
+  </div>
 )
 
 interface IconGalleryProps {
-  children?: React.ReactNode
+  children?: ReactNode
 }
 
 /** Show a grid of icons, as specified by `IconItem`. */
 export const IconGallery: FunctionComponent<IconGalleryProps> = ({ children, ...props }) => (
   <ResetWrapper>
-    <List {...props} className="docblock-icongallery sb-unstyled">
+    <div {...props} className="docblock-icongallery sb-unstyled flex flex-row flex-wrap">
       {children}
-    </List>
+    </div>
   </ResetWrapper>
 )

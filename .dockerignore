@@ -1,0 +1,14 @@
+node_modules
+.next
+dist
+.git
+.github
+.storybook-static
+coverage
+playwright-report
+test-results
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store

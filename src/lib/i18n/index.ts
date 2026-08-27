@@ -1,0 +1,9 @@
+// `reduceDataToBilingualLanguage` and the shared locale types moved to @/lib;
+// they are re-exported here so '@/lib/i18n' stays the single import site for
+// the app. `translate` and `generateExperienceInterval` stay: both take
+// Payload types.
+export * from '@/lib/i18n/reduceDataToBilingualLanguage'
+export * from '@/lib/i18n/shared'
+
+export * from './generateExperienceInterval'
+export * from './translate'
