@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-import { cn } from '@/lib/cn'
+import { cn } from 'tailwind-variants'
 
 interface MetricsTableData {
   className?: string

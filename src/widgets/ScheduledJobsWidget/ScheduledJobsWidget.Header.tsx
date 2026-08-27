@@ -2,10 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react'
 
+import { cn } from 'tailwind-variants'
+
 import { Button } from '@/components/Button'
 import { ButtonGroup, ButtonGroupSeparator } from '@/components/ButtonGroup'
 import { Icon } from '@/components/Icon'
-import { cn } from '@/lib/cn'
 
 interface HeaderProps {
   queues: string[]

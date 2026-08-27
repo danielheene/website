@@ -1,7 +1,8 @@
 import type { JSX } from 'react'
 
+import { cn } from 'tailwind-variants'
+
 import RichText from '@/components/RichText'
-import { cn } from '@/lib/cn'
 import { highlightRichText } from '@/lib/shiki/highlightRichText'
 import type { OneColumnContentBlock } from '@/types/payload'
 

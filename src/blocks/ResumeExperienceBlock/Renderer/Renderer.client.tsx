@@ -2,10 +2,11 @@
 
 import type { JSX } from 'react'
 
+import { cn } from 'tailwind-variants'
+
 import { Headline } from '@/components/Headline'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
-import { cn } from '@/lib/cn'
 import { generateExperienceInterval, ReducedToBilingualLanguage } from '@/lib/i18n'
 import { ResolvedRelations } from '@/lib/resolveRelation'
 import { ResumeExperienceBlock, ResumeJobData, ResumeSkillTagData } from '@/types/payload'

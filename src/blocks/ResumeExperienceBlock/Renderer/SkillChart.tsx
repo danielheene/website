@@ -2,9 +2,9 @@
 
 import { memo, useCallback, useMemo, useState } from 'react'
 
+import { cn } from 'tailwind-variants'
 import { useIntersectionObserver } from 'usehooks-ts'
 
-import { cn } from '@/lib/cn'
 import { ResumeSkillTagData } from '@/types/payload'
 
 interface ResumeExperienceSectionSkillChartProps {

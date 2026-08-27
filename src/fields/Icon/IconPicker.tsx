@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Button } from '@payloadcms/ui'
 
-import { cn } from '@/lib/cn'
+import { cn } from 'tailwind-variants'
 
 import {
   FAVORITE_COLLECTIONS,

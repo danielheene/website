@@ -2,9 +2,10 @@
 
 import { useActionState, useEffect, useId, useRef } from 'react'
 
+import { cn } from 'tailwind-variants'
+
 import { Button } from '@/components/Button'
 import { type ContactFormState, submitContactForm } from '@/lib/actions/submitContactForm'
-import { cn } from '@/lib/cn'
 
 const initialState: ContactFormState = {
   status: 'idle',

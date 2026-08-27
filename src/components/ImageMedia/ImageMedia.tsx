@@ -5,7 +5,8 @@ import { type SyntheticEvent, useCallback, useMemo, useState } from 'react'
 import type { ImageProps } from 'next/image'
 import NextImage from 'next/image'
 
-import { type ClassValue, cn } from '@/lib/cn'
+import { type ClassValue, cn } from 'tailwind-variants'
+
 import type { MediaImage } from '@/types/payload'
 
 export interface ImageMediaProps

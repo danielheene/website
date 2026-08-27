@@ -12,11 +12,12 @@ import {
   useModal,
 } from '@payloadcms/ui'
 
+import { cn } from 'tailwind-variants'
+
 import { Button } from '@/components/Button'
 import { useServerSentEvents } from '@/components/hooks/use-server-sent-events'
 import { Icon } from '@/components/Icon'
 import { enqueueBilingualTranslation } from '@/lib/actions/enqueueBilingualTranslation'
-import { cn } from '@/lib/cn'
 import { extractErrorMessage } from '@/lib/extractErrorMessage'
 import { isEmptyValue } from '@/lib/lexical/isEmptyValue'
 import type { AutoTranslateBilingualFieldProgress } from '@/lib/sse/channels'

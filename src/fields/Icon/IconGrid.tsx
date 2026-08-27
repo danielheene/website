@@ -2,8 +2,9 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
+import { cn } from 'tailwind-variants'
+
 import { Icon, type IconName } from '@/components/Icon'
-import { cn } from '@/lib/cn'
 
 import { IconTooltip } from './IconTooltip'
 

@@ -3,7 +3,7 @@
 import { type MouseEvent, useCallback } from 'react'
 import ReactDOM from 'react-dom'
 
-import { cn } from '@/lib/cn'
+import { cn } from 'tailwind-variants'
 
 import { useCreatePortalHost } from '../hooks/useCreatePortalHost'
 import type {

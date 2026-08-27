@@ -1,13 +1,13 @@
 import Link from 'next/link'
 
 import parsePhoneNumber from 'libphonenumber-js'
+import { cn } from 'tailwind-variants'
 
 import { FooterLegalLinks } from '@/components/Footer/FooterLegalLinks'
 import { FooterNavGroups } from '@/components/Footer/FooterNavGroups'
 import { Logo } from '@/components/Logo'
 import { ServiceStatus } from '@/components/ServiceStatus'
 import type { LinkFieldDataLean, NavEntry } from '@/fields/Link/lib/resolveLinkTarget'
-import { cn } from '@/lib/cn'
 import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fetchers'
 
 import { FooterSocialLinks } from './FooterSocialLinks'

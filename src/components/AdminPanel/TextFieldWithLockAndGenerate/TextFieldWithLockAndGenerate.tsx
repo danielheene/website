@@ -8,8 +8,9 @@ import './TextFieldWithLockAndGenerate.styles.css'
 
 import { FieldLabel, TextInput, useField } from '@payloadcms/ui'
 
+import { cn } from 'tailwind-variants'
+
 import { Icon } from '@/components/Icon'
-import { cn } from '@/lib/cn'
 
 export type TextFieldGenerateFunction = () => string | Promise<string>
 

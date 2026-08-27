@@ -9,8 +9,8 @@ import {
   type VideoHTMLAttributes,
 } from 'react'
 
-import type { ClassValue } from '@/lib/cn'
-import { cn } from '@/lib/cn'
+import type { ClassValue } from 'tailwind-variants'
+import { cn } from 'tailwind-variants'
 
 export interface VideoMediaProps
   extends Omit<VideoHTMLAttributes<HTMLVideoElement>, 'className' | 'poster' | 'src' | 'onLoad'> {

@@ -3,6 +3,8 @@ import '#frontend.css'
 import { JSX, ReactNode, Suspense } from 'react'
 import type { Metadata, Viewport } from 'next'
 
+import { cn } from 'tailwind-variants'
+
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { DraftModeListener } from '@/components/LivePreviewListener'
@@ -14,7 +16,6 @@ import PPFrama from '@/fonts/pp-frama/next'
 import PPFramaText from '@/fonts/pp-frama-text/next'
 import PPSupplyMono from '@/fonts/pp-supply-mono/next'
 import PPSupplySans from '@/fonts/pp-supply-sans/next'
-import { cn } from '@/lib/cn'
 import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fetchers'
 import { generatePersonSchema, generateWebSiteSchema, JsonLd } from '@/lib/jsonLd'
 

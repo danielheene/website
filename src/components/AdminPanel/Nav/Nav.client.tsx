@@ -3,8 +3,8 @@
 import { useNav } from '@payloadcms/ui'
 
 import { get } from 'lodash-es'
+import { cn } from 'tailwind-variants'
 
-import { cn } from '@/lib/cn'
 import { ResolvedRelations } from '@/lib/resolveRelation'
 import { AdminNavigationGroup } from '@/types/admin-panel'
 import { User } from '@/types/payload'

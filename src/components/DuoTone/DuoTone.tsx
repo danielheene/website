@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 
-import { type ClassValue, cn } from '@/lib/cn'
+import { type ClassValue, cn } from 'tailwind-variants'
 
 import './DuoTone.style.css'
 

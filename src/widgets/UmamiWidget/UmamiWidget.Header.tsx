@@ -3,12 +3,12 @@
 import Link from 'next/link'
 
 import { formatDate } from 'date-fns'
+import { cn } from 'tailwind-variants'
 
 import { Button } from '@/components/Button'
 import { ButtonGroup, ButtonGroupSeparator } from '@/components/ButtonGroup'
 import { Icon } from '@/components/Icon'
 import { Skeleton } from '@/components/Skeleton'
-import { cn } from '@/lib/cn'
 
 interface HeaderProps {
   domain: string | null

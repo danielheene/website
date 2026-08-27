@@ -3,9 +3,8 @@
 import { type ReactNode, useEffect } from 'react'
 
 import slugify from '@sindresorhus/slugify'
+import { cn } from 'tailwind-variants'
 import { useIntersectionObserver } from 'usehooks-ts'
-
-import { cn } from '@/lib/cn'
 
 import { useSectionNavigation } from '../SectionNavigation'
 

@@ -1,6 +1,6 @@
+import { cn } from 'tailwind-variants'
 import { ImageResponse } from 'takumi-js/response'
 
-import { cn } from '@/lib/cn'
 import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fetchers'
 
 export const alt = 'Website'

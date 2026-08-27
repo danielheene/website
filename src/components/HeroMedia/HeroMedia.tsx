@@ -1,6 +1,7 @@
+import { cn } from 'tailwind-variants'
+
 import { DuoTone } from '@/components/DuoTone'
 import { ImageMedia } from '@/components/ImageMedia'
-import { cn } from '@/lib/cn'
 import { CollectionSlug } from '@/types/collections'
 import type { MediaImage, MediaVideo } from '@/types/payload'
 

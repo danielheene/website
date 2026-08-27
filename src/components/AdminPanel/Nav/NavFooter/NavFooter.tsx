@@ -6,9 +6,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useTheme } from '@payloadcms/ui'
 
+import { cn } from 'tailwind-variants'
+
 import { Icon } from '@/components/Icon'
 import { Switch } from '@/components/Switch'
-import { cn } from '@/lib/cn'
 
 import './NavFooter.styles.css'
 

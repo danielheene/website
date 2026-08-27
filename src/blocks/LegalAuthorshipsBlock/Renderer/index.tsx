@@ -1,7 +1,8 @@
 import type { JSX } from 'react'
 
+import { cn } from 'tailwind-variants'
+
 import RichText from '@/components/RichText'
-import { cn } from '@/lib/cn'
 import { collectMediaCredits } from '@/lib/collectMediaCredits'
 
 /**

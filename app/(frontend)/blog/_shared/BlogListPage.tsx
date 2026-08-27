@@ -6,15 +6,13 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 
 import { format } from 'date-fns'
+import { cn } from 'tailwind-variants'
 
-import { Button } from '@/components/Button'
 import { DuoTone } from '@/components/DuoTone'
 import { SHADER_PRESET_MAP } from '@/components/HeroMedia/shaderPresets'
-import { Icon } from '@/components/Icon'
 import { ImageMedia } from '@/components/ImageMedia'
 import { PageContainer } from '@/components/PageContainer'
 import { Pagination } from '@/components/Pagination'
-import { cn } from '@/lib/cn'
 import { CollectionSlug } from '@/types/collections'
 import type { BlogPostData, Topic } from '@/types/payload'
 

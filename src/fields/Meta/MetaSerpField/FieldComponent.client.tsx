@@ -4,7 +4,7 @@ import type { CSSProperties } from 'react'
 import type { UIFieldClientProps } from 'payload'
 import { useField } from '@payloadcms/ui'
 
-import { cn } from '@/lib/cn'
+import { cn } from 'tailwind-variants'
 
 type FieldComponentClientProps = {
   pageUrl?: string

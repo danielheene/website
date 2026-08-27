@@ -18,7 +18,7 @@ export const buttonStyles = tv({
     'disabled:pointer-events-none disabled:opacity-50',
     'aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20',
     'dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
-    "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4.5",
+    "[&>svg]:pointer-events-none [&>svg]:shrink-0 [&>svg:not([class*='size-'])]:size-4.5",
   ],
   variants: {
     variant: {
@@ -53,7 +53,7 @@ export const buttonStyles = tv({
         'has:data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5',
       ],
       xs: [
-        "h-7 gap-1 px-4 [&_svg:not([class*='size-'])]:size-3 text-sm",
+        "h-7 gap-1 px-4 [&>svg:not([class*='size-'])]:size-3 text-sm",
         'has-data-[icon=inline-end]:pr-1 has-data-[icon=inline-start]:pl-1',
       ],
       sm: [
@@ -68,7 +68,7 @@ export const buttonStyles = tv({
         'size-10',
       ],
       'icon-xs': [
-        "size-7 [&_svg:not([class*='size-'])]:size-3.5",
+        "size-7 [&>svg:not([class*='size-'])]:size-3.5",
       ],
       'icon-sm': [
         'size-9',

@@ -15,11 +15,11 @@ import {
 import { mergeFieldStyles } from '@payloadcms/ui/shared'
 
 import * as Collapsible from '@radix-ui/react-collapsible'
+import { cn } from 'tailwind-variants'
 
 import { Button } from '@/components/Button'
 import { Icon } from '@/components/Icon'
 import { TemplateFieldAnnotation, TemplateFieldData } from '@/fields/Template/types'
-import { cn } from '@/lib/cn'
 import { BilingualLanguage } from '@/lib/i18n'
 import { renderTemplate } from '@/lib/renderTemplate'
 

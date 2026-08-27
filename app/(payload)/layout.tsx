@@ -7,11 +7,12 @@ import type React from 'react'
 import type { ServerFunctionClient } from 'payload'
 import { handleServerFunctions, RootLayout } from '@payloadcms/next/layouts'
 
+import { cn } from 'tailwind-variants'
+
 import PPFrama from '@/fonts/pp-frama/next'
 import PPFramaText from '@/fonts/pp-frama-text/next'
 import PPSupplyMono from '@/fonts/pp-supply-mono/next'
 import PPSupplySans from '@/fonts/pp-supply-sans/next'
-import { cn } from '@/lib/cn'
 
 import { importMap } from './admin/importMap.js'
 

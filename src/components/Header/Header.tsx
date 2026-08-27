@@ -1,8 +1,9 @@
 import Link from 'next/link'
 
+import { cn } from 'tailwind-variants'
+
 import { CMSLink } from '@/components/Link'
 import { Logo } from '@/components/Logo'
-import { cn } from '@/lib/cn'
 import { fetchSiteSettingsCached } from '@/lib/fetchers'
 
 export const Header = async () => {

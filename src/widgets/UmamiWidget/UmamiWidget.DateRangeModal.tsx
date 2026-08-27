@@ -2,8 +2,9 @@
 
 import { DatePicker } from '@payloadcms/ui'
 
+import { cn } from 'tailwind-variants'
+
 import { Button } from '@/components/Button'
-import { cn } from '@/lib/cn'
 import { Interval } from '@/lib/date'
 
 const QUICK_SELECT_CONFIG: {

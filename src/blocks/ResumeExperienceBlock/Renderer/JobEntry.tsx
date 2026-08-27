@@ -1,6 +1,7 @@
 import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintext'
 
-import { cn } from '@/lib/cn'
+import { cn } from 'tailwind-variants'
+
 import type { ReducedToBilingualLanguage } from '@/lib/i18n'
 import { generateExperienceInterval } from '@/lib/i18n'
 import type { ResumeJobData } from '@/types/payload'

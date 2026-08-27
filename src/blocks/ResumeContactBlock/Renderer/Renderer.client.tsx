@@ -1,9 +1,10 @@
 'use client'
 
+import { cn } from 'tailwind-variants'
+
 import { Headline } from '@/components/Headline'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
-import { cn } from '@/lib/cn'
 import { ResumeContactBlock } from '@/types/payload'
 
 import { ContactForm } from './ContactForm.client'

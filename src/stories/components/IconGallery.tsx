@@ -1,8 +1,7 @@
 import type { FunctionComponent, ReactNode } from 'react'
 
 import { ResetWrapper } from 'storybook/internal/components'
-
-import { cn } from '@/lib/cn'
+import { cn } from 'tailwind-variants'
 
 interface IconItemProps {
   name: string

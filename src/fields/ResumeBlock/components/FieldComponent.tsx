@@ -4,7 +4,7 @@ import { Fragment, memo, useState } from 'react'
 import { GroupFieldClientProps } from 'payload'
 import { RenderFields } from '@payloadcms/ui'
 
-import { cn } from '@/lib/cn'
+import { cn } from 'tailwind-variants'
 
 export interface FieldComponentProps extends GroupFieldClientProps {
   imageSrc: string

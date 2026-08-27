@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 
-import { cn } from '@/lib/cn'
+import { cn } from 'tailwind-variants'
+
 import type { ExtractedHeading } from '@/lib/extractHeadings'
 
 export interface TableOfContentsProps {

@@ -25,8 +25,9 @@ import {
   UploadFeature,
 } from '@payloadcms/richtext-lexical'
 
+import { cn } from 'tailwind-variants'
+
 import { IconPickerFeature } from '@/fields/Icon/lexical/feature.server'
-import { cn } from '@/lib/cn'
 import { BlockSlug } from '@/types/blocks'
 
 const defaultAdminConfig: LexicalFieldAdminProps = {

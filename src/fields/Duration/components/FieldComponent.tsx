@@ -18,9 +18,9 @@ import { mergeFieldStyles } from '@payloadcms/ui/shared'
 
 import isNumber from 'lodash-es/isNumber'
 import prettyMs from 'pretty-ms'
+import { cn } from 'tailwind-variants'
 import timestring from 'timestring'
 
-import { cn } from '@/lib/cn'
 import { extractErrorMessage } from '@/lib/extractErrorMessage'
 
 export const FieldComponent: NumberFieldClientComponent = ({

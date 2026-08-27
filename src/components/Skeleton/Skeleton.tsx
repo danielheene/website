@@ -1,6 +1,6 @@
 import type React from 'react'
 
-import { type ClassValue, cn } from '@/lib/cn'
+import { type ClassValue, cn } from 'tailwind-variants'
 
 export interface SkeletonProps extends Omit<React.HTMLProps<HTMLDivElement>, 'className'> {
   ref?: React.Ref<HTMLDivElement>

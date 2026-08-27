@@ -4,8 +4,9 @@ import { useCallback, useRef, useState } from 'react'
 import type { JSONFieldClientComponent, JSONFieldClientProps } from 'payload'
 import { DraggableSortable, DraggableSortableItem, fieldBaseClass, useField } from '@payloadcms/ui'
 
+import { ClassValue, cn } from 'tailwind-variants'
+
 import { Button } from '@/components/Button'
-import { ClassValue, cn } from '@/lib/cn'
 import { SkillEntrySortable, SkillSorting, SkillTypeSortable } from '@/types/payload'
 
 export const SkillSortingField: JSONFieldClientComponent = ({ path }: JSONFieldClientProps) => {

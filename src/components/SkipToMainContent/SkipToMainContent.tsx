@@ -3,7 +3,7 @@
 import { JSX, useCallback } from 'react'
 import Link from 'next/link'
 
-import { cn } from '@/lib/cn'
+import { cn } from 'tailwind-variants'
 
 interface SkipToMainContentProps {
   targetId: string

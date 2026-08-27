@@ -1,6 +1,7 @@
 import type { JSX, ReactNode } from 'react'
 
-import { cn } from '@/lib/cn'
+import { cn } from 'tailwind-variants'
+
 import type { ExtractedHeading } from '@/lib/extractHeadings'
 
 import { TableOfContents } from './TableOfContents'

@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 
+import { cn } from 'tailwind-variants'
+
 import { ImageMedia } from '@/components/ImageMedia'
-import { cn } from '@/lib/cn'
 import type { MediaImage } from '@/types/payload'
 
 export const HeroClient = ({

@@ -1,8 +1,9 @@
 import { memo } from 'react'
 
+import { cn } from 'tailwind-variants'
+
 import { Headline } from '@/components/Headline'
 import RichText from '@/components/RichText'
-import { cn } from '@/lib/cn'
 import { CollectionData, CollectionSlug } from '@/types/collections'
 
 import { Image } from './Image'

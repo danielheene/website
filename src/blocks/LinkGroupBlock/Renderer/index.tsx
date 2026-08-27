@@ -1,7 +1,8 @@
 import type { JSX } from 'react'
 
+import { cn } from 'tailwind-variants'
+
 import { CMSLink } from '@/components/Link'
-import { cn } from '@/lib/cn'
 import { BlockData, BlockSlug } from '@/types/blocks'
 
 type LinkGroupBlockRendererProps = {

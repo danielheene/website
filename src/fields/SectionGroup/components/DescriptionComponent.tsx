@@ -2,8 +2,7 @@ import { Fragment } from 'react'
 import { FieldDescriptionServerComponent } from 'payload'
 
 import { get } from 'lodash-es'
-
-import { cn } from '@/lib/cn'
+import { cn } from 'tailwind-variants'
 
 /**
  * Splits a string by newlines and joins the lines with `<br />` tags, so

@@ -20,6 +20,7 @@ export const AllProviders = ({ children }: { children: React.ReactNode }) => {
       disableTransitionOnChange
       enableColorScheme
       enableSystem
+      defaultTheme={'system'}
       scriptProps={scriptProps}
     >
       {children}

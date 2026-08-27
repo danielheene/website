@@ -4,8 +4,9 @@ import React, { type JSX } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
+import { cn } from 'tailwind-variants'
+
 import { Icon } from '@/components/Icon'
-import { cn } from '@/lib/cn'
 
 import './NavLink.styles.css'
 

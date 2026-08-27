@@ -1,10 +1,11 @@
 import type { NamedGroupField, UIField } from 'payload'
 import { deepMerge } from 'payload'
 
+import { cn } from 'tailwind-variants'
+
 import { enqueueAutoTranslate } from '@/fields/BilingualRichText/hooks/enqueueAutoTranslate'
 import type { RichTextEditorVariant, RichTextFieldOverrides } from '@/fields/RichText'
 import { RichTextField } from '@/fields/RichText'
-import { cn } from '@/lib/cn'
 
 type BilingualRichTextFieldOverrides = {
   en?: RichTextFieldOverrides

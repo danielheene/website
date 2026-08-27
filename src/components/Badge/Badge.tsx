@@ -1,8 +1,6 @@
 import type { ReactNode } from 'react'
 
-import { tv, VariantProps } from 'tailwind-variants'
-
-import { cn } from '@/lib/cn'
+import { cn, tv, VariantProps } from 'tailwind-variants'
 
 const variants = {
   color: {

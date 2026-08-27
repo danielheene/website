@@ -1,11 +1,11 @@
 import type { Field, GroupField } from 'payload'
 
 import { startCase } from 'lodash-es'
+import { cn } from 'tailwind-variants'
 
 import { resolveAddressData } from '@/fields/Address/hooks/resolveAddressData'
 import { syncAddressDataBetweenBilingualLanguage } from '@/fields/Address/hooks/syncAddressDataBetweenBilingualLanguage'
 import { SectionGroupField } from '@/fields/SectionGroup'
-import { cn } from '@/lib/cn'
 
 const fields: Field[] = [
   {

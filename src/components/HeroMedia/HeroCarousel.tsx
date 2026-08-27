@@ -5,8 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import Autoplay from 'embla-carousel-autoplay'
 import Fade from 'embla-carousel-fade'
 import useEmblaCarousel from 'embla-carousel-react'
-
-import { cn } from '@/lib/cn'
+import { cn } from 'tailwind-variants'
 
 import { type HeroMediaItem, HeroSlide } from './HeroSlide'
 

@@ -4,8 +4,8 @@ import { type JSX, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 
 import { secondsToMilliseconds } from 'date-fns'
+import { cn } from 'tailwind-variants'
 
-import { cn } from '@/lib/cn'
 import { type OverallStatus, OverallStatusCode } from '@/lib/uptime-kuma'
 
 interface ServiceStatusProps {

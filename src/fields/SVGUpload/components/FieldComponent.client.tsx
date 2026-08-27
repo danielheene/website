@@ -5,8 +5,8 @@ import { UIFieldClientProps } from 'payload'
 import { toast, useField } from '@payloadcms/ui'
 
 import { optimize } from 'svgo/browser'
+import { cn } from 'tailwind-variants'
 
-import { cn } from '@/lib/cn'
 import { extractErrorMessage } from '@/lib/extractErrorMessage'
 
 interface FieldComponentClientProps extends UIFieldClientProps {

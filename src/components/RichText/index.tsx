@@ -15,6 +15,8 @@ import {
   LinkJSXConverter,
 } from '@payloadcms/richtext-lexical/react'
 
+import { cn } from 'tailwind-variants'
+
 // import { CodeBlock, CodeBlockProps } from '@/blocks/Code/Component'
 // import type { BannerBlock as BannerBlockProps, CallToActionBlock as CTABlockProps, MediaBlock as MediaBlockProps } from '@/payload-types'
 // import { BannerBlock } from '@/blocks/Banner/Component'
@@ -24,7 +26,6 @@ import { Columns } from '@/blocks/TwoColumnContentBlock/Renderer/Columns'
 import { Icon } from '@/components/Icon'
 import { ImageMedia } from '@/components/ImageMedia'
 import { VideoMedia } from '@/components/VideoMedia'
-import { cn } from '@/lib/cn'
 import { generateContentURL } from '@/lib/generateContentURL'
 import { generateSlug } from '@/lib/generateSlug'
 import { codeBlockKey, type HighlightedCodeMap } from '@/lib/shiki/codeBlockKey'

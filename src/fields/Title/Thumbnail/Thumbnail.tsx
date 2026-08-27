@@ -4,7 +4,7 @@
 
 import { type JSX, useEffect, useState } from 'react'
 
-import { cn } from '@/lib/cn'
+import { cn } from 'tailwind-variants'
 
 interface ThumbnailProps {
   thumbnailURL: string

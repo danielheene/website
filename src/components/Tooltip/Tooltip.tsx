@@ -2,8 +2,7 @@ import React, { JSX } from 'react'
 
 import * as TooltipPrimitive from '@radix-ui/react-tooltip'
 import { TooltipContentProps } from '@radix-ui/react-tooltip'
-
-import { cn } from '@/lib/cn'
+import { cn } from 'tailwind-variants'
 
 interface TooltipProps extends TooltipContentProps {
   children: React.ReactNode
