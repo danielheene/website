@@ -89,7 +89,12 @@ jobs:
   test:
     name: Unit Tests
     needs: commitlint
-    if: github.event.inputs.skip_tests != 'true'
+    # needs: commitlint alone would skip this job whenever commitlint is
+    # skipped (its default on workflow_dispatch) — a skipped dependency
+    # fails needs's implicit success() check just like a failed one. always()
+    # plus an explicit failure()/cancelled() check is what actually lets this
+    # job run when commitlint was intentionally skipped rather than failed.
+    if: always() && !contains(needs.commitlint.result, 'failure') && !contains(needs.commitlint.result, 'cancelled') && github.event.inputs.skip_tests != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -123,7 +128,12 @@ jobs:
   docker-app-development:
     name: Build app + worker images (Development)
     needs: test
-    if: github.event.pull_request.base.ref != 'main' || github.event.inputs.environment == 'development'
+    # Same needs-vs-skip issue as test's own if: above — test being skipped
+    # (skip_tests default on workflow_dispatch) must not cascade into
+    # skipping the build too, only an actual test failure/cancellation should.
+    if: |
+      always() && !contains(needs.test.result, 'failure') && !contains(needs.test.result, 'cancelled') &&
+      (github.event.pull_request.base.ref != 'main' || github.event.inputs.environment == 'development')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: Development
@@ -238,7 +248,10 @@ jobs:
   docker-app-production:
     name: Build app + worker images (Production)
     needs: test
-    if: github.event.pull_request.base.ref == 'main' || github.event.inputs.environment == 'production'
+    # Same needs-vs-skip issue as docker-app-development's if: above.
+    if: |
+      always() && !contains(needs.test.result, 'failure') && !contains(needs.test.result, 'cancelled') &&
+      (github.event.pull_request.base.ref == 'main' || github.event.inputs.environment == 'production')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: Production
@@ -337,6 +350,8 @@ jobs:
   docker-storybook:
     name: Build storybook image
     needs: test
+    # Same needs-vs-skip issue as docker-app-development's if: above.
+    if: always() && !contains(needs.test.result, 'failure') && !contains(needs.test.result, 'cancelled')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
