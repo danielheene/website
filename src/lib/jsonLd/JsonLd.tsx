@@ -5,12 +5,20 @@ export interface JsonLdProps {
 }
 
 /**
+ * Serializes JSON for safe embedding inside an inline <script> tag.
+ * Escapes HTML-significant characters and JS line-separator code points.
+ */
+const toSafeJsonLd = (value: WithContext<Thing>): string =>
+  JSON.stringify(value)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029')
+
+/**
  * Component to render JSON-LD structured data
  * Can accept a single schema or an array of schemas
- *
- * Note: JSON.stringify() does NOT escape HTML sequences like </script>.
- * We replace </ with <\/ so the HTML parser cannot prematurely close the
- * script tag. The result is still valid JSON — parsers treat <\/ identically.
  */
 export function JsonLd({ data }: JsonLdProps) {
   const schemas = Array.isArray(data)
@@ -25,9 +33,9 @@ export function JsonLd({ data }: JsonLdProps) {
         <script
           key={index}
           type="application/ld+json"
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: </ is escaped as <\/ to prevent </script> injection>
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD is serialized with script-safe escaping.
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(schema).replace(/<\//g, '<\\/'),
+            __html: toSafeJsonLd(schema),
           }}
         />
       ))}
