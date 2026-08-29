@@ -9,6 +9,27 @@ import { type ClassValue, cn } from 'tailwind-variants'
 
 import type { MediaImage } from '@/types/payload'
 
+const sanitizeBlurDataURL = (value: string | null | undefined): string | undefined => {
+  if (!value) return undefined
+
+  const trimmed = value.trim()
+
+  // Preferred/expected format for blur placeholders.
+  if (/^data:image\/[a-zA-Z0-9.+-]+;base64,[a-zA-Z0-9+/=\s]+$/.test(trimmed)) {
+    return trimmed
+  }
+
+  // Allow relative or same-origin absolute URLs only.
+  try {
+    const parsed = new URL(trimmed, window.location.origin)
+    if (parsed.origin === window.location.origin) return parsed.href
+  } catch {
+    return undefined
+  }
+
+  return undefined
+}
+
 export interface ImageMediaProps
   extends Omit<
       ImageProps,
@@ -52,6 +73,7 @@ export const ImageMedia = ({
   const [revealed, setRevealed] = useState<boolean>(false)
 
   const fixedSrc = src ? new URL(src).pathname : undefined
+  const safeBlurDataURL = sanitizeBlurDataURL(blurDataURL)
 
   const handleOnLoad = useCallback(
     (_event: SyntheticEvent<HTMLImageElement>) => {
@@ -138,7 +160,7 @@ export const ImageMedia = ({
             y="0"
             preserveAspectRatio="none"
             filter="url(#blur)"
-            href={blurDataURL}
+            href={safeBlurDataURL}
           />
         </svg>
       )}
