@@ -49,10 +49,16 @@ on:
 permissions:
   contents: read
   packages: write
+  # dispatch-release needs this to trigger release.yml via `gh workflow run`.
+  actions: write
 
 env:
   REGISTRY: ghcr.io
   IMAGE_BASE: ghcr.io/${{ github.repository }}
+  # github.event.pull_request.head.sha only exists on the pull_request
+  # trigger — it's unset on workflow_dispatch, where github.sha (the
+  # selected branch's tip) is the actual commit being built instead.
+  BUILD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
 jobs:
   commitlint:
@@ -220,7 +226,7 @@ jobs:
           context: .
           target: app
           push: true
-          tags: ${{ env.IMAGE_BASE }}-app:sha-${{ github.event.pull_request.head.sha }}
+          tags: ${{ env.IMAGE_BASE }}-app:sha-${{ env.BUILD_SHA }}
           build-args: |
             NODE_ENV=development
           cache-from: type=gha,scope=app
@@ -237,7 +243,7 @@ jobs:
           context: .
           target: worker
           push: true
-          tags: ${{ env.IMAGE_BASE }}-worker:sha-${{ github.event.pull_request.head.sha }}
+          tags: ${{ env.IMAGE_BASE }}-worker:sha-${{ env.BUILD_SHA }}
           build-args: |
             NODE_ENV=development
           cache-from: type=gha,scope=app
@@ -326,7 +332,7 @@ jobs:
           context: .
           target: app
           push: true
-          tags: ${{ env.IMAGE_BASE }}-app:sha-${{ github.event.pull_request.head.sha }}
+          tags: ${{ env.IMAGE_BASE }}-app:sha-${{ env.BUILD_SHA }}
           cache-from: type=gha,scope=app
           cache-to: type=gha,mode=max,scope=app
           secret-files: |
@@ -341,7 +347,7 @@ jobs:
           context: .
           target: worker
           push: true
-          tags: ${{ env.IMAGE_BASE }}-worker:sha-${{ github.event.pull_request.head.sha }}
+          tags: ${{ env.IMAGE_BASE }}-worker:sha-${{ env.BUILD_SHA }}
           cache-from: type=gha,scope=app
           cache-to: type=gha,mode=max,scope=app
           secret-files: |
@@ -374,6 +380,40 @@ jobs:
           context: .
           target: storybook
           push: true
-          tags: ${{ env.IMAGE_BASE }}-storybook:sha-${{ github.event.pull_request.head.sha }}
+          tags: ${{ env.IMAGE_BASE }}-storybook:sha-${{ env.BUILD_SHA }}
           cache-from: type=gha,scope=storybook
           cache-to: type=gha,mode=max,scope=storybook
+
+  # Manual dispatches build images but never promote/deploy them on their
+  # own (unlike pull_request, which gets promoted downstream via merge +
+  # release.yml). This closes that gap by dispatching release.yml's own
+  # workflow_dispatch right after a manual ci.yml run finishes, on the same
+  # branch and commit that were just built — release.yml's promote-main/
+  # promote-develop jobs then retag+redeploy that exact image, deciding
+  # which one applies from the branch (github.ref_name) same as any other
+  # manual promotion.
+  dispatch-release:
+    name: Dispatch release workflow
+    needs: [docker-app-development, docker-app-production, docker-storybook]
+    # Only one of docker-app-development/docker-app-production actually runs
+    # per invocation (mutually exclusive by environment input) — the other
+    # is skipped by design, not failed, so this can't require both to
+    # succeed. always() plus explicit failure()/cancelled() checks on each
+    # is what lets this evaluate correctly instead of the cascade-skip
+    # pattern seen elsewhere in this file.
+    if: |
+      always() && github.event_name == 'workflow_dispatch' &&
+      !contains(needs.docker-app-development.result, 'failure') && !contains(needs.docker-app-development.result, 'cancelled') &&
+      !contains(needs.docker-app-production.result, 'failure') && !contains(needs.docker-app-production.result, 'cancelled') &&
+      !contains(needs.docker-storybook.result, 'failure') && !contains(needs.docker-storybook.result, 'cancelled')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Dispatch release.yml
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run release.yml \
+            --repo "${{ github.repository }}" \
+            --ref "${{ github.ref_name }}" \
+            -f source_sha="${{ env.BUILD_SHA }}"
