@@ -133,7 +133,7 @@ jobs:
     # skipping the build too, only an actual test failure/cancellation should.
     if: |
       always() && !contains(needs.test.result, 'failure') && !contains(needs.test.result, 'cancelled') &&
-      (github.event.pull_request.base.ref != 'main' || github.event.inputs.environment == 'development')
+      (github.event.pull_request.base.ref == 'develop' || github.event.inputs.environment == 'development')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: Development
