@@ -54,6 +54,7 @@ describe('importPhoto', () => {
     ])
 
     fetchMock.mockImplementation(async (url: string) => {
+      const parsedUrl = new URL(String(url))
       if (String(url).includes('/photos/abc123') && !String(url).includes('download')) {
         return {
           ok: true,
@@ -70,7 +71,7 @@ describe('importPhoto', () => {
           }),
         }
       }
-      if (String(url).includes('images.unsplash.com')) {
+      if (parsedUrl.hostname === 'images.unsplash.com') {
         return {
           ok: true,
           status: 200,
