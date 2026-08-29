@@ -22,13 +22,22 @@ const unsplashHeaders = (accessKey: string) => ({
   'Accept-Version': 'v1',
 })
 
+const sanitizeUnsplashPhotoId = (photoId: string): string => {
+  const trimmed = photoId.trim()
+  if (!/^[A-Za-z0-9_-]{1,64}$/.test(trimmed)) {
+    throw new Error('Invalid Unsplash photo id.')
+  }
+  return trimmed
+}
+
 /**
  * Fetches full photo detail (needed for `links.download_location`, which
  * search results also carry, but this keeps `importPhoto` independent of
  * exactly what `searchPhotos` passed through).
  */
 const fetchPhotoDetail = async (photoId: string, accessKey: string): Promise<UnsplashApiPhoto> => {
-  const response = await fetch(`${UNSPLASH_API_BASE}/photos/${photoId}`, {
+  const safePhotoId = sanitizeUnsplashPhotoId(photoId)
+  const response = await fetch(`${UNSPLASH_API_BASE}/photos/${encodeURIComponent(safePhotoId)}`, {
     headers: unsplashHeaders(accessKey),
   })
   const body = await response.json()
@@ -98,7 +107,8 @@ export const importPhoto = async ({
     throw new Error('UNSPLASH_ACCESS_KEY is not configured.')
   }
 
-  const photo = await fetchPhotoDetail(photoId, accessKey)
+  const safePhotoId = sanitizeUnsplashPhotoId(photoId)
+  const photo = await fetchPhotoDetail(safePhotoId, accessKey)
   await triggerDownloadTracking(photo.links.download_location, accessKey)
   const { data, mimetype } = await downloadImageBytes(photo.urls.full)
 
