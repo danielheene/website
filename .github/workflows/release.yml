@@ -1,36 +1,51 @@
-name: Release
+name: Release & Promote
 
-# Runs the version half of Sentry release tracking (see release.config.mjs):
-# on every push to main, semantic-release reads Conventional Commits since
-# the last tag, decides whether a release is warranted, bumps package.json,
-# commits it back with [skip ci], and pushes a vX.Y.Z tag.
+# Combines what were two separate workflows (release.yml + promote.yml) into
+# one, since promote's main-branch job only ever ran to consume release's
+# output — same trigger, same commit, just chained via workflow_run before.
+# Doing it as needs: within one workflow_run instead means promote-main reads
+# the version straight from the release job's own output rather than
+# re-checking-out main and re-deriving it, and drops the PR-lookup dance that
+# used to recover the merge's head SHA from the GitHub API.
 #
-# This workflow does not build or deploy anything itself — it only produces
-# the version number. promote.yml watches for this workflow's completion on
-# main and, if a release was actually cut, retags the app/worker/storybook
-# images ci.yml already built and pushed for the merged PR as `latest` and
-# the new version, without rebuilding. Dokploy deploys from those pushed
-# images rather than building from source.
+#   push to main -> release (semantic-release bumps + tags, maybe) ->
+#                   promote-main (retag ci.yml's images as latest + version)
+#
+#   PR merged into develop -> promote-develop (retag ci.yml's images as edge)
+#
+# promote-develop is unrelated to the release/version flow (develop never
+# gets a semver tag), so it stays keyed off pull_request: closed exactly as
+# it was in promote.yml, just living in this same file now.
 on:
   push:
     branches:
       - main
+  pull_request:
+    types: [closed]
+    branches:
+      - develop
 
-# semantic-release needs to push a commit and a tag, and @semantic-release/github
-# needs to create a GitHub release.
+# release needs to push a commit/tag and create a GitHub release;
+# promote-main/promote-develop only retag existing ghcr.io images.
 permissions:
   contents: write
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_BASE: ghcr.io/${{ github.repository }}
 
 jobs:
   release:
     name: Release
+    if: >-
+      github.event_name == 'push' &&
+      !contains(github.event.head_commit.message, '[skip ci]')
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # The commit semantic-release itself pushes carries [skip ci] in its
-    # subject, but that only suppresses workflows that check for it — this
-    # guard is the actual backstop against the release job re-triggering
-    # itself in a loop.
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    outputs:
+      released: ${{ steps.release.outputs.released }}
+      version: ${{ steps.release.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -53,6 +68,102 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Release
-        run: pnpm exec semantic-release
+        id: release
+        run: |
+          pnpm exec semantic-release
+          # Nothing to promote if this push didn't actually cut a release
+          # (e.g. a docs/chore-only push that semantic-release skipped) —
+          # semantic-release's own commit (if any) is HEAD after it runs,
+          # so an exact tag match there means a release was just cut.
+          if git describe --tags --exact-match HEAD >/dev/null 2>&1; then
+            echo "released=true" >> "$GITHUB_OUTPUT"
+            echo "version=v$(node -p 'require("./package.json").version')" >> "$GITHUB_OUTPUT"
+          else
+            echo "released=false" >> "$GITHUB_OUTPUT"
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  promote-main:
+    name: Promote images to latest + release version
+    needs: release
+    # needs: release alone would skip this job whenever release is skipped
+    # ([skip ci] pushes, e.g. semantic-release's own commit re-triggering
+    # this workflow) — a skipped dependency fails needs's implicit success()
+    # check just like a failed one. always() plus an explicit
+    # failure()/cancelled() check is what actually lets this job evaluate
+    # released == 'true' instead of never running at all.
+    if: >-
+      always() && !contains(needs.release.result, 'failure') && !contains(needs.release.result, 'cancelled') &&
+      needs.release.outputs.released == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      # The push commit on main is not the SHA ci.yml built for this PR (see
+      # this workflow's own release job: semantic-release pushes its own
+      # commit on top) — the merged PR is looked up to recover the head SHA
+      # the images were actually tagged with.
+      - name: Find source PR head SHA
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          merge_sha="${{ github.sha }}"
+          head_sha=$(gh pr list --repo "${{ github.repository }}" --state merged \
+            --search "$merge_sha" --json headRefOid --jq '.[0].headRefOid')
+          if [ -z "$head_sha" ] || [ "$head_sha" = "null" ]; then
+            echo "Could not resolve the source PR's head SHA for $merge_sha" >&2
+            exit 1
+          fi
+          echo "head_sha=$head_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Retag app/worker/storybook as latest + version
+        env:
+          HEAD_SHA: ${{ steps.pr.outputs.head_sha }}
+          VERSION: ${{ needs.release.outputs.version }}
+        run: |
+          for image in app worker storybook; do
+            docker buildx imagetools create \
+              --tag "${IMAGE_BASE}-${image}:latest" \
+              --tag "${IMAGE_BASE}-${image}:${VERSION}" \
+              "${IMAGE_BASE}-${image}:sha-${HEAD_SHA}"
+          done
+
+  promote-develop:
+    name: Promote images to edge
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'develop'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Retag app/worker/storybook as edge
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          for image in app worker storybook; do
+            docker buildx imagetools create \
+              --tag "${IMAGE_BASE}-${image}:edge" \
+              "${IMAGE_BASE}-${image}:sha-${HEAD_SHA}"
+          done
