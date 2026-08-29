@@ -23,6 +23,12 @@ name: Release & Promote
 # a webhook that failed partway. source_sha is the ghcr.io sha-<sha> tag to
 # promote from; it skips release entirely, so there's no version to read —
 # a manual promote-main run only retags :latest, never :vX.Y.Z.
+#
+# Which environment gets promoted is decided by the branch the dispatch is
+# run from (GitHub's own "Use workflow from" picker) rather than a separate
+# input — github.ref_name == 'main' -> promote-main, == 'develop' ->
+# promote-develop. There's no third choice to offer, so the branch already
+# says everything a target input would.
 on:
   push:
     branches:
@@ -33,13 +39,6 @@ on:
       - develop
   workflow_dispatch:
     inputs:
-      target:
-        description: 'Environment to promote'
-        required: true
-        type: choice
-        options:
-          - production
-          - development
       source_sha:
         description: 'Commit SHA of the already-built ghcr.io images to promote (sha-<this> tag)'
         required: true
@@ -119,12 +118,12 @@ jobs:
     #
     # Two independent ways in:
     #   - push (the normal path): only once release actually cut a release.
-    #   - workflow_dispatch targeting production: a standalone re-promote of
-    #     an already-built image, no release involved at all.
+    #   - workflow_dispatch run from main: a standalone re-promote of an
+    #     already-built image, no release involved at all.
     if: >-
       always() && !contains(needs.release.result, 'failure') && !contains(needs.release.result, 'cancelled') &&
       ((github.event_name == 'push' && needs.release.outputs.released == 'true') ||
-       (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'production'))
+       (github.event_name == 'workflow_dispatch' && github.ref_name == 'main'))
     runs-on: ubuntu-latest
     timeout-minutes: 10
     # Scopes DEPLOY_WEBHOOK_URL to this environment's own secret, same
@@ -193,13 +192,13 @@ jobs:
   promote-develop:
     name: Promote images to edge
     # Two independent ways in: the normal PR-merge path, or workflow_dispatch
-    # targeting development — a standalone re-promote of an already-built
-    # image, e.g. a rollback, no merge required.
+    # run from develop — a standalone re-promote of an already-built image,
+    # e.g. a rollback, no merge required.
     if: >-
       (github.event_name == 'pull_request' &&
        github.event.pull_request.merged == true &&
        github.event.pull_request.base.ref == 'develop') ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'development')
+      (github.event_name == 'workflow_dispatch' && github.ref_name == 'develop')
     runs-on: ubuntu-latest
     timeout-minutes: 10
     # Scopes DEPLOY_WEBHOOK_URL to this environment's own secret, same
