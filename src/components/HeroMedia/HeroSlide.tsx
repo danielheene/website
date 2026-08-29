@@ -4,6 +4,19 @@ import { useEffect, useRef } from 'react'
 
 import { ImageMedia } from '@/components/ImageMedia'
 
+const toSafeMediaUrl = (value: string): string | undefined => {
+  try {
+    const parsed = new URL(value, window.location.origin)
+    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+      return parsed.toString()
+    }
+  } catch {
+    return undefined
+  }
+
+  return undefined
+}
+
 export type HeroMediaItem =
   | {
       kind: 'image'
@@ -115,18 +128,22 @@ export const HeroSlide = ({
     onHandoff,
   ])
 
+  const safeUrl = toSafeMediaUrl(item.url)
+
   return (
     <div aria-hidden={!isActive} className="relative h-full w-full shrink-0 grow-0 basis-full">
       {item.kind === 'image' ? (
-        <ImageMedia
-          alt={item.alt}
-          blurDataURL={item.blurDataURL}
-          className="object-cover"
-          fill
-          priority={priority}
-          sizes="100vw"
-          url={item.url}
-        />
+        safeUrl ? (
+          <ImageMedia
+            alt={item.alt}
+            blurDataURL={item.blurDataURL}
+            className="object-cover"
+            fill
+            priority={priority}
+            sizes="100vw"
+            url={safeUrl}
+          />
+        ) : null
       ) : (
         <video
           className="h-full w-full object-cover"
@@ -137,7 +154,7 @@ export const HeroSlide = ({
           poster={item.poster ?? undefined}
           preload={priority ? 'auto' : 'metadata'}
           ref={videoRef}
-          src={item.url}
+          src={safeUrl}
         />
       )}
     </div>
