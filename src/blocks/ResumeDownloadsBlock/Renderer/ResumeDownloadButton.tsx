@@ -7,8 +7,15 @@ import { cn } from 'tailwind-variants'
 import { Button } from '@/components/Button'
 import { track } from '@/lib/umami/track'
 
-const toSafeHref = (value: string): string => {
-  if (value.startsWith('/')) return value
+const toSafeLink = (
+  value: string,
+): {
+  href: string
+  allowDownloadName: boolean
+} => {
+  if (value.startsWith('/')) {
+    return { href: value, allowDownloadName: true }
+  }
 
   try {
     const parsed = new URL(value)
@@ -16,13 +23,16 @@ const toSafeHref = (value: string): string => {
     const isSameOrigin = parsed.origin === window.location.origin
 
     if (isHttp && isSameOrigin) {
-      return parsed.pathname + parsed.search + parsed.hash
+      return {
+        href: parsed.pathname + parsed.search + parsed.hash,
+        allowDownloadName: true,
+      }
     }
   } catch {
     // fall through to safe fallback
   }
 
-  return '#'
+  return { href: '#', allowDownloadName: false }
 }
 
 const toSafeDownloadFileName = (value: string): string => {
@@ -56,8 +66,8 @@ export const ResumeDownloadButton = ({
   slug?: string
   className?: string
 }) => {
-  const safeHref = toSafeHref(url)
-  const safeFileName = toSafeDownloadFileName(fileName)
+  const { href: safeHref, allowDownloadName } = toSafeLink(url)
+  const safeFileName = allowDownloadName ? toSafeDownloadFileName(fileName) : undefined
 
   return (
     <Button
