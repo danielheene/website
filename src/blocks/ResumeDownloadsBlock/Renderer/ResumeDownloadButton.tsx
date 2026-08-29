@@ -12,8 +12,11 @@ const toSafeHref = (value: string): string => {
 
   try {
     const parsed = new URL(value)
-    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
-      return value
+    const isHttp = parsed.protocol === 'http:' || parsed.protocol === 'https:'
+    const isSameOrigin = parsed.origin === window.location.origin
+
+    if (isHttp && isSameOrigin) {
+      return parsed.pathname + parsed.search + parsed.hash
     }
   } catch {
     // fall through to safe fallback
