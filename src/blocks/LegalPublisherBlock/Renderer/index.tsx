@@ -16,7 +16,14 @@ export const LegalPublisherBlockRenderer = async () => {
   const telephone = parsePhoneNumber(telephoneRaw)
   const normalizedEmail = email.trim()
   const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)
-  const safeMailtoHref = isValidEmail ? `mailto:${encodeURIComponent(normalizedEmail)}` : '#'
+  let safeMailtoHref = '#'
+  if (isValidEmail) {
+    const mailtoUrl = new URL('mailto:')
+    mailtoUrl.pathname = normalizedEmail
+    if (mailtoUrl.protocol === 'mailto:') {
+      safeMailtoHref = mailtoUrl.toString()
+    }
+  }
 
   return (
     <section>
