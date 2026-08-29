@@ -7,6 +7,21 @@ import { cn } from 'tailwind-variants'
 import { Button } from '@/components/Button'
 import { track } from '@/lib/umami/track'
 
+const toSafeHref = (value: string): string => {
+  if (value.startsWith('/')) return value
+
+  try {
+    const parsed = new URL(value)
+    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+      return value
+    }
+  } catch {
+    // fall through to safe fallback
+  }
+
+  return '#'
+}
+
 export const ResumeDownloadButton = ({
   url,
   fileName,
@@ -25,6 +40,8 @@ export const ResumeDownloadButton = ({
   slug?: string
   className?: string
 }) => {
+  const safeHref = toSafeHref(url)
+
   return (
     <Button
       variant="outline"
@@ -35,7 +52,7 @@ export const ResumeDownloadButton = ({
       asChild
     >
       <Link
-        href={url}
+        href={safeHref}
         download={fileName}
         onClick={() =>
           track('resume-download', {
