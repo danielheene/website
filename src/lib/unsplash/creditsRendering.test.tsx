@@ -52,6 +52,11 @@ const renderCredits = (value: ReturnType<typeof buildCreditsValue>): string =>
     } as ConverterArgs) as ConverterArgs,
   )
 
+const extractVisibleText = (html: string): string => {
+  const doc = new DOMParser().parseFromString(html, 'text/html')
+  return doc.body.textContent ?? ''
+}
+
 describe('credits value rendering', () => {
   it('renders both credits as anchors with visible text and the UTM-tagged hrefs', () => {
     const html = renderCredits(
@@ -70,7 +75,7 @@ describe('credits value rendering', () => {
 
     // No empty anchors: the exact failure mode `children: []` produced.
     expect(html).not.toMatch(/<a\b[^>]*><\/a>/)
-    expect(html.replace(/<[^>]+>/g, '')).toBe('Photo by Jane Doe on Unsplash')
+    expect(extractVisibleText(html)).toBe('Photo by Jane Doe on Unsplash')
   })
 
   it('is a real render boundary: emptying the link children produces empty anchors', () => {
@@ -92,6 +97,6 @@ describe('credits value rendering', () => {
       if (node.type === 'link') node.children = []
     }
 
-    expect(renderCredits(value).replace(/<[^>]+>/g, '')).toBe('Photo by  on ')
+    expect(extractVisibleText(renderCredits(value))).toBe('Photo by  on ')
   })
 })
