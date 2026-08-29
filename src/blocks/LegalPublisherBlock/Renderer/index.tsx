@@ -14,6 +14,9 @@ export const LegalPublisherBlockRenderer = async () => {
     vatID,
   } = await fetchGlobalUserSettingsCached('en')
   const telephone = parsePhoneNumber(telephoneRaw)
+  const normalizedEmail = email.trim()
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)
+  const safeMailtoHref = isValidEmail ? `mailto:${encodeURIComponent(normalizedEmail)}` : '#'
 
   return (
     <section>
@@ -36,8 +39,8 @@ export const LegalPublisherBlockRenderer = async () => {
         </p>
         <p>
           <Button variant="link" asChild className="no-underline h-auto">
-            <a href={`mailto:${email}`}>
-              <Icon name="mail" data-icon="inline-start" /> {email}
+            <a href={safeMailtoHref}>
+              <Icon name="mail" data-icon="inline-start" /> {isValidEmail ? normalizedEmail : email}
             </a>
           </Button>
           <br />
