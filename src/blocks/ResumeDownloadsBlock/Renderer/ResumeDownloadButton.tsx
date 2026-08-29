@@ -25,6 +25,19 @@ const toSafeHref = (value: string): string => {
   return '#'
 }
 
+const toSafeDownloadFileName = (value: string): string => {
+  const fallback = 'download'
+  if (!value) return fallback
+
+  const baseName = value.split(/[\\/]/).pop() ?? fallback
+  const cleaned = baseName
+    .replace(/[\u0000-\u001F\u007F]/g, '')
+    .replace(/[^a-zA-Z0-9._ -]/g, '')
+    .trim()
+
+  return cleaned || fallback
+}
+
 export const ResumeDownloadButton = ({
   url,
   fileName,
@@ -44,6 +57,7 @@ export const ResumeDownloadButton = ({
   className?: string
 }) => {
   const safeHref = toSafeHref(url)
+  const safeFileName = toSafeDownloadFileName(fileName)
 
   return (
     <Button
@@ -56,12 +70,12 @@ export const ResumeDownloadButton = ({
     >
       <Link
         href={safeHref}
-        download={fileName}
+        download={safeFileName}
         onClick={() =>
           track('resume-download', {
             locale,
             slug,
-            fileName,
+            fileName: safeFileName,
           })
         }
       >
