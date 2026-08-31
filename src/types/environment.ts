@@ -43,7 +43,7 @@ export const envSchema = z.object({
    * listens on inside the `worker` container. Irrelevant to the `app`
    * container, which reports job health via `/api/health/jobs` instead.
    */
-  JOB_RUNNER_HEALTH_PORT: z.coerce.number().int().positive().default(3001),
+  JOB_RUNNER_HEALTH_PORT: z.coerce.number().int().positive().default(3010),
 
   DATABASE_URL: z.string(),
   REDIS_URL: z.string(),

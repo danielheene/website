@@ -28,7 +28,7 @@ import { getPayload } from 'payload'
 
 import { checkJobsHealth } from '@/jobs-queue/lib/checkJobsHealth'
 
-const port = Number(process.env.JOB_RUNNER_HEALTH_PORT ?? 3001)
+const port = Number(process.env.JOB_RUNNER_HEALTH_PORT ?? 3010)
 
 const payload = await getPayload({
   config,

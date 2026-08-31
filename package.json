@@ -180,7 +180,7 @@
     "seed:posts:clean": "pnpm run payload run scripts/seed-posts.ts -- --clean",
     "seed:topics": "pnpm run payload run scripts/seed-topics.ts",
     "seed:topics:clean": "pnpm run payload run scripts/seed-topics.ts -- --clean",
-    "serve:storybook": "serve -s dist -l 3000",
+    "serve:storybook": "serve -s dist -l 3020",
     "start": "pnpm run next start",
     "start:worker": "node scripts/start-worker.mjs",
     "storybook": "NODE_OPTIONS=\"--trace-deprecation --disable-warning=DeprecationWarning\" storybook",
