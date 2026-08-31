@@ -87,9 +87,9 @@ FROM base AS worker
 ARG NODE_ENV
 ENV NODE_ENV=${NODE_ENV}
 COPY --from=builder /app ./
-EXPOSE 3001
+EXPOSE 3010
 HEALTHCHECK --interval=60s --timeout=10s --retries=3 --start-period=30s \
-    CMD node -e "fetch('http://localhost:3001/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+    CMD node -e "fetch('http://localhost:3010/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 CMD ["pnpm", "run", "start:worker"]
 
 # ---- storybook-builder: independent build, no DB/Tailscale needed ---------
@@ -104,7 +104,7 @@ ENV NODE_ENV=production
 # default in this image, and configuring it is unnecessary for one package.
 RUN npm install -g serve
 COPY --from=storybook-builder /app/dist ./dist
-EXPOSE 3000
+EXPOSE 3020
 # Runs the `serve` binary directly rather than `pnpm run serve:storybook`:
 # this stage has no node_modules/lockfile (only `dist` is copied in), so
 # `pnpm run` would try to resolve/install the whole workspace at container
@@ -112,4 +112,4 @@ EXPOSE 3000
 # the network before ever serving a request. `serve:storybook` still exists
 # in package.json as the documented definition of this command; it's just
 # not how this particular stage invokes it.
-CMD ["serve", "-s", "dist", "-l", "3000"]
+CMD ["serve", "-s", "dist", "-l", "3020"]
