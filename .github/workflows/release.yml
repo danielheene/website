@@ -68,6 +68,21 @@ jobs:
       released: ${{ steps.release.outputs.released }}
       version: ${{ steps.release.outputs.version }}
     steps:
+      # main is protected by a ruleset requiring PRs + signed commits, with
+      # no bypass for a plain secrets.GITHUB_TOKEN push — @semantic-release/
+      # git's direct push to main was being rejected outright (GH006:
+      # "Commits must have verified signatures" + "Changes must be made
+      # through a pull request"). A GitHub App installation token is this
+      # ruleset's configured bypass actor, and GitHub auto-verifies commits
+      # authored via an App token, so this satisfies both rules with no GPG
+      # key to generate or rotate.
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@67018539274d69449ef7c02e8e71183d1719ab42 # v2.1.4
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -75,6 +90,18 @@ jobs:
           # history since the last tag — a shallow clone would see nothing.
           fetch-depth: 0
           persist-credentials: true
+          token: ${{ steps.app-token.outputs.token }}
+
+      # @semantic-release/git doesn't infer a commit identity from the
+      # checkout token — without this it'd fall back to the runner's
+      # default git config, and the resulting commit would carry the
+      # App's auth but a mismatched author, defeating the point. This is
+      # GitHub's documented convention for App-authored commits:
+      # <app-slug>[bot] / <app-id>+<app-slug>[bot]@users.noreply.github.com.
+      - name: Configure git identity as the App
+        run: |
+          git config user.name "danielheene-website-release[bot]"
+          git config user.email "${{ secrets.RELEASE_APP_ID }}+danielheene-website-release[bot]@users.noreply.github.com"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
@@ -103,7 +130,11 @@ jobs:
             echo "released=false" >> "$GITHUB_OUTPUT"
           fi
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # @semantic-release/git's push and @semantic-release/github's
+          # release creation both need to run as the App identity — the
+          # App token is what's actually allowed through main's ruleset,
+          # secrets.GITHUB_TOKEN is not.
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
   promote-main:
     name: Promote images to latest + release version
