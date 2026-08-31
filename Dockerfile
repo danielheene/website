@@ -89,7 +89,7 @@ ENV NODE_ENV=${NODE_ENV}
 COPY --from=builder /app ./
 EXPOSE 3001
 HEALTHCHECK --interval=60s --timeout=10s --retries=3 --start-period=30s \
-    CMD node -e "fetch('http://localhost:3000/api/health/worker').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+    CMD node -e "fetch('http://localhost:3001/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 CMD ["pnpm", "run", "start:worker"]
 
 # ---- storybook-builder: independent build, no DB/Tailscale needed ---------
