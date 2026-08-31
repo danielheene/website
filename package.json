@@ -13,7 +13,7 @@
     "build": "SENTRY_RELEASE=\"${SENTRY_RELEASE:-website@$(node -p 'require(\"./package.json\").version')}\" pnpm run next build",
     "build:storybook": "storybook build -o dist",
     "chore:reinstall": "pnpm --shell-mode exec rm -rf node_modules && pnpm --shell-mode exec rm pnpm-lock.yaml && pnpm install",
-    "chore:sort": "sort-package-json",
+    "chore:sort": "syncpack format",
     "ci": "pnpm run migrate && pnpm run build",
     "deps:fix": "syncpack fix --dependency-types prod,dev,peer",
     "deps:lint": "syncpack lint --dependency-types prod,dev,peer",
@@ -56,7 +56,7 @@
   },
   "lint-staged": {
     "package.json": [
-      "sort-package-json",
+      "syncpack format --source",
       "syncpack fix --dependency-types prod,dev,peer --source"
     ],
     "*.{ts,tsx,js,jsx,mjs,cjs,json,jsonc,css}": [
@@ -178,7 +178,6 @@
     "react-docgen-typescript": "^2.4.0",
     "react-dom": "^19.2.7",
     "semantic-release": "^25.0.9",
-    "sort-package-json": "^4.0.0",
     "storybook": "^10.5.5",
     "styled-jsx": "^5.1.7",
     "syncpack": "^15.3.2",
