@@ -217,6 +217,15 @@ jobs:
           MAPBOX_API_KEY=${{ secrets.MAPBOX_API_KEY }}
           EOF
 
+      # Read once per job and reused by both build-args blocks below — the
+      # package.json version at this checkout, for the org.opencontainers.
+      # image.version label the Dockerfile applies. Meaningful once
+      # release.yml has bumped+retagged as :vX.Y.Z; an ordinary PR build
+      # just carries whatever main's version was at checkout time.
+      - name: Read package.json version
+        id: version
+        run: echo "value=$(node -p 'require("./package.json").version')" >> "$GITHUB_OUTPUT"
+
       # NODE_ENV=development here (Dockerfile defaults to production
       # otherwise) — this job only builds for PRs against develop, so its
       # images should reflect a development environment.
@@ -229,6 +238,8 @@ jobs:
           tags: ${{ env.IMAGE_BASE }}-app:sha-${{ env.BUILD_SHA }}
           build-args: |
             NODE_ENV=development
+            VERSION=${{ steps.version.outputs.value }}
+            REVISION=${{ env.BUILD_SHA }}
           cache-from: type=gha,scope=app
           cache-to: type=gha,mode=max,scope=app
           secret-files: |
@@ -246,6 +257,8 @@ jobs:
           tags: ${{ env.IMAGE_BASE }}-worker:sha-${{ env.BUILD_SHA }}
           build-args: |
             NODE_ENV=development
+            VERSION=${{ steps.version.outputs.value }}
+            REVISION=${{ env.BUILD_SHA }}
           cache-from: type=gha,scope=app
           cache-to: type=gha,mode=max,scope=app
           secret-files: |
@@ -326,6 +339,11 @@ jobs:
           MAPBOX_API_KEY=${{ secrets.MAPBOX_API_KEY }}
           EOF
 
+      # See docker-app-development's identical step for why this exists.
+      - name: Read package.json version
+        id: version
+        run: echo "value=$(node -p 'require("./package.json").version')" >> "$GITHUB_OUTPUT"
+
       - name: Build & push app image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
@@ -333,6 +351,9 @@ jobs:
           target: app
           push: true
           tags: ${{ env.IMAGE_BASE }}-app:sha-${{ env.BUILD_SHA }}
+          build-args: |
+            VERSION=${{ steps.version.outputs.value }}
+            REVISION=${{ env.BUILD_SHA }}
           cache-from: type=gha,scope=app
           cache-to: type=gha,mode=max,scope=app
           secret-files: |
@@ -348,6 +369,9 @@ jobs:
           target: worker
           push: true
           tags: ${{ env.IMAGE_BASE }}-worker:sha-${{ env.BUILD_SHA }}
+          build-args: |
+            VERSION=${{ steps.version.outputs.value }}
+            REVISION=${{ env.BUILD_SHA }}
           cache-from: type=gha,scope=app
           cache-to: type=gha,mode=max,scope=app
           secret-files: |
@@ -374,6 +398,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # See docker-app-development's identical step for why this exists.
+      - name: Read package.json version
+        id: version
+        run: echo "value=$(node -p 'require("./package.json").version')" >> "$GITHUB_OUTPUT"
+
       - name: Build & push storybook image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
@@ -381,6 +410,9 @@ jobs:
           target: storybook
           push: true
           tags: ${{ env.IMAGE_BASE }}-storybook:sha-${{ env.BUILD_SHA }}
+          build-args: |
+            VERSION=${{ steps.version.outputs.value }}
+            REVISION=${{ env.BUILD_SHA }}
           cache-from: type=gha,scope=storybook
           cache-to: type=gha,mode=max,scope=storybook
 
