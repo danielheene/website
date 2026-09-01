@@ -20,6 +20,18 @@ name: CI
 # ghcr.io. Nothing is retagged as a release version here: on merge,
 # promote.yml retags this exact already-built image instead of rebuilding —
 # see that workflow for why.
+#
+# Each image is built for both linux/amd64 and linux/arm64 on native runners
+# (ubuntu-24.04 / ubuntu-24.04-arm) rather than via QEMU emulation — the
+# app/worker build runs `next build` against a real database over Tailscale
+# during generateStaticParams, and emulating that leg would be slow and
+# flaky. Each arch leg of a `docker-app-*`/`docker-storybook` matrix job
+# pushes its own `sha-<sha>-amd64`/`sha-<sha>-arm64` tag (two parallel jobs
+# can't safely push the same tag), and the matching `*-merge` job combines
+# them into the real `sha-<sha>` multi-arch manifest list via
+# `docker buildx imagetools create` once both legs succeed. Everything
+# downstream (release.yml's promote jobs) only ever reads that merged
+# `sha-<sha>` tag, so it needs no changes to stay multi-arch-aware.
 on:
   workflow_dispatch:
     inputs:
@@ -64,7 +76,7 @@ jobs:
   commitlint:
     name: Commit Messages
     if: github.event.inputs.skip_commitlint != 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -101,7 +113,7 @@ jobs:
     # plus an explicit failure()/cancelled() check is what actually lets this
     # job run when commitlint was intentionally skipped rather than failed.
     if: always() && !contains(needs.commitlint.result, 'failure') && !contains(needs.commitlint.result, 'cancelled') && github.event.inputs.skip_tests != 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - name: Checkout
@@ -140,9 +152,16 @@ jobs:
     if: |
       always() && !contains(needs.test.result, 'failure') && !contains(needs.test.result, 'cancelled') &&
       (github.event.pull_request.base.ref == 'develop' || github.event.inputs.environment == 'development')
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 30
     environment: Development
+    strategy:
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -220,17 +239,30 @@ jobs:
       # NODE_ENV=development here (Dockerfile defaults to production
       # otherwise) — this job only builds for PRs against develop, so its
       # images should reflect a development environment.
+      #
+      # Each arch in the matrix pushes its own arch-suffixed tag rather than
+      # a shared one — two parallel jobs pushing the same tag would race and
+      # clobber each other. The merge job below combines
+      # sha-<sha>-amd64/-arm64 into the real sha-<sha> multi-arch manifest
+      # list once both legs finish.
       - name: Build & push app image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
           context: .
           target: app
           push: true
-          tags: ${{ env.IMAGE_BASE }}-app:sha-${{ env.BUILD_SHA }}
+          tags: ${{ env.IMAGE_BASE }}-app:sha-${{ env.BUILD_SHA }}-${{ matrix.arch }}
           build-args: |
             NODE_ENV=development
-          cache-from: type=gha,scope=app
-          cache-to: type=gha,mode=max,scope=app
+          # Scoped per environment as well as arch — development and
+          # production builds set different build-args (NODE_ENV) and were
+          # previously sharing one `app` scope, which meant they fought over
+          # the same cache entries and each mode=max write could evict the
+          # other's layers. type=gha's cache budget is shared per repo, so
+          # keeping unrelated build variants in separate scopes is what
+          # actually lets each one hit cache reliably instead of thrashing.
+          cache-from: type=gha,scope=app-development-${{ matrix.arch }}
+          cache-to: type=gha,mode=max,scope=app-development-${{ matrix.arch }}
           secret-files: |
             build_env=/tmp/build_env
 
@@ -243,13 +275,44 @@ jobs:
           context: .
           target: worker
           push: true
-          tags: ${{ env.IMAGE_BASE }}-worker:sha-${{ env.BUILD_SHA }}
+          tags: ${{ env.IMAGE_BASE }}-worker:sha-${{ env.BUILD_SHA }}-${{ matrix.arch }}
           build-args: |
             NODE_ENV=development
-          cache-from: type=gha,scope=app
-          cache-to: type=gha,mode=max,scope=app
+          # Same scope as the app build above (not a separate worker-* scope)
+          # — worker reuses the builder stage's layers from the app build
+          # that just ran in this job, so it needs to read the cache that
+          # build just wrote.
+          cache-from: type=gha,scope=app-development-${{ matrix.arch }}
+          cache-to: type=gha,mode=max,scope=app-development-${{ matrix.arch }}
           secret-files: |
             build_env=/tmp/build_env
+
+  docker-app-development-merge:
+    name: Merge app + worker images (Development)
+    needs: docker-app-development
+    if: always() && needs.docker-app-development.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: Development
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create multi-arch manifest lists
+        run: |
+          for image in app worker; do
+            docker buildx imagetools create \
+              --tag "${IMAGE_BASE}-${image}:sha-${BUILD_SHA}" \
+              "${IMAGE_BASE}-${image}:sha-${BUILD_SHA}-amd64" \
+              "${IMAGE_BASE}-${image}:sha-${BUILD_SHA}-arm64"
+          done
 
   docker-app-production:
     name: Build app + worker images (Production)
@@ -258,9 +321,16 @@ jobs:
     if: |
       always() && !contains(needs.test.result, 'failure') && !contains(needs.test.result, 'cancelled') &&
       (github.event.pull_request.base.ref == 'main' || github.event.inputs.environment == 'production')
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 30
     environment: Production
+    strategy:
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -326,15 +396,19 @@ jobs:
           MAPBOX_API_KEY=${{ secrets.MAPBOX_API_KEY }}
           EOF
 
+      # See docker-app-development's identical step for why each arch pushes
+      # its own tag rather than a shared one.
       - name: Build & push app image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
           context: .
           target: app
           push: true
-          tags: ${{ env.IMAGE_BASE }}-app:sha-${{ env.BUILD_SHA }}
-          cache-from: type=gha,scope=app
-          cache-to: type=gha,mode=max,scope=app
+          tags: ${{ env.IMAGE_BASE }}-app:sha-${{ env.BUILD_SHA }}-${{ matrix.arch }}
+          # See docker-app-development's identical step for why this is
+          # scoped per environment, not just per arch.
+          cache-from: type=gha,scope=app-production-${{ matrix.arch }}
+          cache-to: type=gha,mode=max,scope=app-production-${{ matrix.arch }}
           secret-files: |
             build_env=/tmp/build_env
 
@@ -347,19 +421,53 @@ jobs:
           context: .
           target: worker
           push: true
-          tags: ${{ env.IMAGE_BASE }}-worker:sha-${{ env.BUILD_SHA }}
-          cache-from: type=gha,scope=app
-          cache-to: type=gha,mode=max,scope=app
+          tags: ${{ env.IMAGE_BASE }}-worker:sha-${{ env.BUILD_SHA }}-${{ matrix.arch }}
+          cache-from: type=gha,scope=app-production-${{ matrix.arch }}
+          cache-to: type=gha,mode=max,scope=app-production-${{ matrix.arch }}
           secret-files: |
             build_env=/tmp/build_env
+
+  docker-app-production-merge:
+    name: Merge app + worker images (Production)
+    needs: docker-app-production
+    if: always() && needs.docker-app-production.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: Production
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create multi-arch manifest lists
+        run: |
+          for image in app worker; do
+            docker buildx imagetools create \
+              --tag "${IMAGE_BASE}-${image}:sha-${BUILD_SHA}" \
+              "${IMAGE_BASE}-${image}:sha-${BUILD_SHA}-amd64" \
+              "${IMAGE_BASE}-${image}:sha-${BUILD_SHA}-arm64"
+          done
 
   docker-storybook:
     name: Build storybook image
     needs: test
     # Same needs-vs-skip issue as docker-app-development's if: above.
     if: always() && !contains(needs.test.result, 'failure') && !contains(needs.test.result, 'cancelled')
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 20
+    strategy:
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -374,15 +482,41 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # See docker-app-development's identical step for why each arch pushes
+      # its own tag rather than a shared one.
       - name: Build & push storybook image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
           context: .
           target: storybook
           push: true
-          tags: ${{ env.IMAGE_BASE }}-storybook:sha-${{ env.BUILD_SHA }}
-          cache-from: type=gha,scope=storybook
-          cache-to: type=gha,mode=max,scope=storybook
+          tags: ${{ env.IMAGE_BASE }}-storybook:sha-${{ env.BUILD_SHA }}-${{ matrix.arch }}
+          cache-from: type=gha,scope=storybook-${{ matrix.arch }}
+          cache-to: type=gha,mode=max,scope=storybook-${{ matrix.arch }}
+
+  docker-storybook-merge:
+    name: Merge storybook image
+    needs: docker-storybook
+    if: always() && needs.docker-storybook.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create multi-arch manifest list
+        run: |
+          docker buildx imagetools create \
+            --tag "${IMAGE_BASE}-storybook:sha-${BUILD_SHA}" \
+            "${IMAGE_BASE}-storybook:sha-${BUILD_SHA}-amd64" \
+            "${IMAGE_BASE}-storybook:sha-${BUILD_SHA}-arm64"
 
   # Manual dispatches build images but never promote/deploy them on their
   # own (unlike pull_request, which gets promoted downstream via merge +
@@ -394,7 +528,10 @@ jobs:
   # manual promotion.
   dispatch-release:
     name: Dispatch release workflow
-    needs: [docker-app-development, docker-app-production, docker-storybook]
+    # Depends on the *-merge jobs, not the raw matrix builds directly — those
+    # merge jobs are what actually produce the final sha-<sha> multi-arch
+    # tag that release.yml's promote jobs retag from.
+    needs: [docker-app-development-merge, docker-app-production-merge, docker-storybook-merge]
     # Only one of docker-app-development/docker-app-production actually runs
     # per invocation (mutually exclusive by environment input) — the other
     # is skipped by design, not failed, so this can't require both to
@@ -403,10 +540,10 @@ jobs:
     # pattern seen elsewhere in this file.
     if: |
       always() && github.event_name == 'workflow_dispatch' &&
-      !contains(needs.docker-app-development.result, 'failure') && !contains(needs.docker-app-development.result, 'cancelled') &&
-      !contains(needs.docker-app-production.result, 'failure') && !contains(needs.docker-app-production.result, 'cancelled') &&
-      !contains(needs.docker-storybook.result, 'failure') && !contains(needs.docker-storybook.result, 'cancelled')
-    runs-on: ubuntu-latest
+      !contains(needs.docker-app-development-merge.result, 'failure') && !contains(needs.docker-app-development-merge.result, 'cancelled') &&
+      !contains(needs.docker-app-production-merge.result, 'failure') && !contains(needs.docker-app-production-merge.result, 'cancelled') &&
+      !contains(needs.docker-storybook-merge.result, 'failure') && !contains(needs.docker-storybook-merge.result, 'cancelled')
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: Dispatch release.yml

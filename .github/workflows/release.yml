@@ -62,7 +62,7 @@ jobs:
     if: >-
       github.event_name == 'push' &&
       !contains(github.event.head_commit.message, '[skip ci]')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     outputs:
       released: ${{ steps.release.outputs.released }}
@@ -155,7 +155,7 @@ jobs:
       always() && !contains(needs.release.result, 'failure') && !contains(needs.release.result, 'cancelled') &&
       ((github.event_name == 'push' && needs.release.outputs.released == 'true') ||
        (github.event_name == 'workflow_dispatch' && github.ref_name == 'main'))
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     # Scopes DEPLOY_WEBHOOK_URL to this environment's own secret, same
     # pattern ci.yml's docker-app-production job uses for its secrets.
@@ -230,7 +230,7 @@ jobs:
        github.event.pull_request.merged == true &&
        github.event.pull_request.base.ref == 'develop') ||
       (github.event_name == 'workflow_dispatch' && github.ref_name == 'develop')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     # Scopes DEPLOY_WEBHOOK_URL to this environment's own secret, same
     # pattern ci.yml's docker-app-development job uses for its secrets.
