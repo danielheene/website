@@ -236,6 +236,15 @@ jobs:
           MAPBOX_API_KEY=${{ secrets.MAPBOX_API_KEY }}
           EOF
 
+      # Read once per job and reused by both build-args blocks below — the
+      # package.json version at this checkout, for the org.opencontainers.
+      # image.version label the Dockerfile applies. Meaningful once
+      # release.yml has bumped+retagged as :vX.Y.Z; an ordinary PR build
+      # just carries whatever main's version was at checkout time.
+      - name: Read package.json version
+        id: version
+        run: echo "value=$(node -p 'require("./package.json").version')" >> "$GITHUB_OUTPUT"
+
       # NODE_ENV=development here (Dockerfile defaults to production
       # otherwise) — this job only builds for PRs against develop, so its
       # images should reflect a development environment.

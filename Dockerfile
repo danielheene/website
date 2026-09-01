@@ -23,6 +23,18 @@
 # it must be redeclared (bare `ARG NODE_ENV`) inside any stage that reads it.
 ARG NODE_ENV=production
 
+# Version-tag build args, applied as OCI labels on each runtime stage below.
+# ci.yml passes these in explicitly — the Dockerfile itself has no git or CI
+# context of its own. REVISION is always the commit ci.yml built from
+# (accurate on every build); VERSION defaults to package.json's own version
+# field (bumped by semantic-release on main, so it's meaningful once
+# release.yml has actually retagged an image as :vX.Y.Z — an ordinary PR
+# build predates that bump and just carries whatever main's version was at
+# checkout time). Both are empty by default so a plain `docker build` with
+# no --build-arg still succeeds, just with blank label values.
+ARG VERSION=""
+ARG REVISION=""
+
 # node:26-slim does not bundle corepack (dropped from the base image as of
 # Node 26), so pnpm is installed directly via npm instead — pinned to match
 # package.json's packageManager field.
@@ -75,7 +87,13 @@ RUN --mount=type=secret,id=build_env,required=true \
 # ---- app: Next.js server ----------------------------------------------------
 FROM base AS app
 ARG NODE_ENV
+ARG VERSION
+ARG REVISION
 ENV NODE_ENV=${NODE_ENV}
+LABEL org.opencontainers.image.title="website-app" \
+      org.opencontainers.image.version="${VERSION}" \
+      org.opencontainers.image.revision="${REVISION}" \
+      org.opencontainers.image.source="https://github.com/danielheene/website"
 COPY --from=builder /app ./
 EXPOSE 3000
 HEALTHCHECK --interval=60s --timeout=10s --retries=3 --start-period=30s \
@@ -85,7 +103,13 @@ CMD ["pnpm", "run", "start"]
 # ---- worker: Payload job runner, same build output as app -----------------
 FROM base AS worker
 ARG NODE_ENV
+ARG VERSION
+ARG REVISION
 ENV NODE_ENV=${NODE_ENV}
+LABEL org.opencontainers.image.title="website-worker" \
+      org.opencontainers.image.version="${VERSION}" \
+      org.opencontainers.image.revision="${REVISION}" \
+      org.opencontainers.image.source="https://github.com/danielheene/website"
 COPY --from=builder /app ./
 EXPOSE 3010
 HEALTHCHECK --interval=60s --timeout=10s --retries=3 --start-period=30s \
@@ -99,7 +123,13 @@ RUN pnpm run build:storybook
 
 # ---- storybook: static output served via `serve` ---------------------------
 FROM base AS storybook
+ARG VERSION
+ARG REVISION
 ENV NODE_ENV=production
+LABEL org.opencontainers.image.title="website-storybook" \
+      org.opencontainers.image.version="${VERSION}" \
+      org.opencontainers.image.revision="${REVISION}" \
+      org.opencontainers.image.source="https://github.com/danielheene/website"
 # npm rather than `pnpm add -g`: pnpm's global bin dir isn't on PATH by
 # default in this image, and configuring it is unnecessary for one package.
 RUN npm install -g serve
