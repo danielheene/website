@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/danielheene/website/compare/v1.0.1...v1.1.0) (2026-09-01)
+
+
+### Features
+
+* **ci:** build docker images for amd64 and arm64 ([#59](https://github.com/danielheene/website/issues/59)) ([f3e5317](https://github.com/danielheene/website/commit/f3e5317baffbe542eb14660c70ca08aa3f95b725))
+
 ## [1.0.1](https://github.com/danielheene/website/compare/v1.0.0...v1.0.1) (2026-09-01)
 
 
