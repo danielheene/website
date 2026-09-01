@@ -1,3 +1,11 @@
+## [1.0.1](https://github.com/danielheene/website/compare/v1.0.0...v1.0.1) (2026-09-01)
+
+
+### Bug Fixes
+
+* **docker:** point worker's HEALTHCHECK at its own health server ([#56](https://github.com/danielheene/website/issues/56)) ([7a64734](https://github.com/danielheene/website/commit/7a647340a433c64fca1828be62bb5149be4cdcba))
+* **husky:** pass syncpack a real subcommand + --source in the pre-commit hook ([#58](https://github.com/danielheene/website/issues/58)) ([b9ae018](https://github.com/danielheene/website/commit/b9ae018cd3752ce5790d554cafd5e331deb0d6e1))
+
 # 1.0.0 (2026-08-31)
 
 
