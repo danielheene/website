@@ -22,7 +22,7 @@ name: CI
 # see that workflow for why.
 #
 # Each image is built for both linux/amd64 and linux/arm64 on native runners
-# (ubuntu-latest / ubuntu-24.04-arm) rather than via QEMU emulation — the
+# (ubuntu-24.04 / ubuntu-24.04-arm) rather than via QEMU emulation — the
 # app/worker build runs `next build` against a real database over Tailscale
 # during generateStaticParams, and emulating that leg would be slow and
 # flaky. Each arch leg of a `docker-app-*`/`docker-storybook` matrix job
@@ -76,7 +76,7 @@ jobs:
   commitlint:
     name: Commit Messages
     if: github.event.inputs.skip_commitlint != 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -113,7 +113,7 @@ jobs:
     # plus an explicit failure()/cancelled() check is what actually lets this
     # job run when commitlint was intentionally skipped rather than failed.
     if: always() && !contains(needs.commitlint.result, 'failure') && !contains(needs.commitlint.result, 'cancelled') && github.event.inputs.skip_tests != 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - name: Checkout
@@ -159,7 +159,7 @@ jobs:
       matrix:
         include:
           - arch: amd64
-            runner: ubuntu-latest
+            runner: ubuntu-24.04
           - arch: arm64
             runner: ubuntu-24.04-arm
     steps:
@@ -291,7 +291,7 @@ jobs:
     name: Merge app + worker images (Development)
     needs: docker-app-development
     if: always() && needs.docker-app-development.result == 'success'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     environment: Development
     steps:
@@ -328,7 +328,7 @@ jobs:
       matrix:
         include:
           - arch: amd64
-            runner: ubuntu-latest
+            runner: ubuntu-24.04
           - arch: arm64
             runner: ubuntu-24.04-arm
     steps:
@@ -431,7 +431,7 @@ jobs:
     name: Merge app + worker images (Production)
     needs: docker-app-production
     if: always() && needs.docker-app-production.result == 'success'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     environment: Production
     steps:
@@ -465,7 +465,7 @@ jobs:
       matrix:
         include:
           - arch: amd64
-            runner: ubuntu-latest
+            runner: ubuntu-24.04
           - arch: arm64
             runner: ubuntu-24.04-arm
     steps:
@@ -498,7 +498,7 @@ jobs:
     name: Merge storybook image
     needs: docker-storybook
     if: always() && needs.docker-storybook.result == 'success'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Set up Docker Buildx
@@ -543,7 +543,7 @@ jobs:
       !contains(needs.docker-app-development-merge.result, 'failure') && !contains(needs.docker-app-development-merge.result, 'cancelled') &&
       !contains(needs.docker-app-production-merge.result, 'failure') && !contains(needs.docker-app-production-merge.result, 'cancelled') &&
       !contains(needs.docker-storybook-merge.result, 'failure') && !contains(needs.docker-storybook-merge.result, 'cancelled')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: Dispatch release.yml
