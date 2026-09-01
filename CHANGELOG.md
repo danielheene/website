@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/danielheene/website/compare/v1.1.0...v1.2.0) (2026-09-01)
+
+
+### Features
+
+* **docker:** add OCI version/revision labels to app/worker/storybook images ([#57](https://github.com/danielheene/website/issues/57)) ([c5743f9](https://github.com/danielheene/website/commit/c5743f9bf794d54b9a8a186f7878d10efde77c0d))
+
 # [1.1.0](https://github.com/danielheene/website/compare/v1.0.1...v1.1.0) (2026-09-01)
 
 
