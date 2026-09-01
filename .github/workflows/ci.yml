@@ -254,8 +254,15 @@ jobs:
           tags: ${{ env.IMAGE_BASE }}-app:sha-${{ env.BUILD_SHA }}-${{ matrix.arch }}
           build-args: |
             NODE_ENV=development
-          cache-from: type=gha,scope=app-${{ matrix.arch }}
-          cache-to: type=gha,mode=max,scope=app-${{ matrix.arch }}
+          # Scoped per environment as well as arch — development and
+          # production builds set different build-args (NODE_ENV) and were
+          # previously sharing one `app` scope, which meant they fought over
+          # the same cache entries and each mode=max write could evict the
+          # other's layers. type=gha's cache budget is shared per repo, so
+          # keeping unrelated build variants in separate scopes is what
+          # actually lets each one hit cache reliably instead of thrashing.
+          cache-from: type=gha,scope=app-development-${{ matrix.arch }}
+          cache-to: type=gha,mode=max,scope=app-development-${{ matrix.arch }}
           secret-files: |
             build_env=/tmp/build_env
 
@@ -271,8 +278,12 @@ jobs:
           tags: ${{ env.IMAGE_BASE }}-worker:sha-${{ env.BUILD_SHA }}-${{ matrix.arch }}
           build-args: |
             NODE_ENV=development
-          cache-from: type=gha,scope=app-${{ matrix.arch }}
-          cache-to: type=gha,mode=max,scope=app-${{ matrix.arch }}
+          # Same scope as the app build above (not a separate worker-* scope)
+          # — worker reuses the builder stage's layers from the app build
+          # that just ran in this job, so it needs to read the cache that
+          # build just wrote.
+          cache-from: type=gha,scope=app-development-${{ matrix.arch }}
+          cache-to: type=gha,mode=max,scope=app-development-${{ matrix.arch }}
           secret-files: |
             build_env=/tmp/build_env
 
@@ -394,8 +405,10 @@ jobs:
           target: app
           push: true
           tags: ${{ env.IMAGE_BASE }}-app:sha-${{ env.BUILD_SHA }}-${{ matrix.arch }}
-          cache-from: type=gha,scope=app-${{ matrix.arch }}
-          cache-to: type=gha,mode=max,scope=app-${{ matrix.arch }}
+          # See docker-app-development's identical step for why this is
+          # scoped per environment, not just per arch.
+          cache-from: type=gha,scope=app-production-${{ matrix.arch }}
+          cache-to: type=gha,mode=max,scope=app-production-${{ matrix.arch }}
           secret-files: |
             build_env=/tmp/build_env
 
@@ -409,8 +422,8 @@ jobs:
           target: worker
           push: true
           tags: ${{ env.IMAGE_BASE }}-worker:sha-${{ env.BUILD_SHA }}-${{ matrix.arch }}
-          cache-from: type=gha,scope=app-${{ matrix.arch }}
-          cache-to: type=gha,mode=max,scope=app-${{ matrix.arch }}
+          cache-from: type=gha,scope=app-production-${{ matrix.arch }}
+          cache-to: type=gha,mode=max,scope=app-production-${{ matrix.arch }}
           secret-files: |
             build_env=/tmp/build_env
 
