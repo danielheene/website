@@ -1,13 +1,73 @@
 {
   "name": "website",
-  "version": "1.0.0",
-  "license": "MIT",
+  "version": "1.1.0",
   "private": true,
   "description": "",
+  "license": "MIT",
   "type": "module",
   "imports": {
     "#payload.css": "./src/styles/payload.css",
     "#frontend.css": "./src/styles/frontend.css"
+  },
+  "scripts": {
+    "build": "SENTRY_RELEASE=\"${SENTRY_RELEASE:-website@$(node -p 'require(\"./package.json\").version')}\" pnpm run next build",
+    "build:storybook": "storybook build -o dist",
+    "chore:reinstall": "pnpm --shell-mode exec rm -rf node_modules && pnpm --shell-mode exec rm pnpm-lock.yaml && pnpm install",
+    "chore:sort": "syncpack format",
+    "ci": "pnpm run migrate && pnpm run build",
+    "deps:fix": "syncpack fix --dependency-types prod,dev,peer",
+    "deps:lint": "syncpack lint --dependency-types prod,dev,peer",
+    "deps:update": "syncpack update",
+    "dev": "NODE_OPTIONS=\"--trace-deprecation --disable-warning=DeprecationWarning\" node scripts/dev.mjs",
+    "dev:app": "pnpm run next dev",
+    "dev:storybook": "pnpm run storybook dev -p 6006",
+    "email:dev": "email dev --dir src/emails --port 3005",
+    "format": "biome format --write",
+    "generate": "pnpm run generate:types && pnpm run generate:importmap",
+    "generate:importmap": "pnpm run payload generate:importmap",
+    "generate:types": "pnpm run payload generate:types",
+    "links:migrate": "pnpm run payload run scripts/migrate-link-field-naming.ts",
+    "lint": "biome check",
+    "load-env": "node scripts/load-env.mjs",
+    "migrate": "pnpm run payload migrate",
+    "next": "NODE_OPTIONS=\"--trace-deprecation --disable-warning=DeprecationWarning\" next",
+    "payload": "NODE_OPTIONS=\"--trace-deprecation --disable-warning=DeprecationWarning\" payload",
+    "prepare": "husky",
+    "refs:backfill": "pnpm run payload run scripts/backfill-references.ts",
+    "release": "semantic-release",
+    "release:dry-run": "semantic-release --dry-run --no-ci",
+    "seed:pages": "pnpm run payload run scripts/seed-pages.ts",
+    "seed:pages:clean": "pnpm run payload run scripts/seed-pages.ts -- --clean",
+    "seed:posts": "pnpm run payload run scripts/seed-posts.ts",
+    "seed:posts:clean": "pnpm run payload run scripts/seed-posts.ts -- --clean",
+    "seed:topics": "pnpm run payload run scripts/seed-topics.ts",
+    "seed:topics:clean": "pnpm run payload run scripts/seed-topics.ts -- --clean",
+    "serve:storybook": "serve -s dist -l 3020",
+    "start": "pnpm run next start",
+    "start:worker": "node scripts/start-worker.mjs",
+    "storybook": "NODE_OPTIONS=\"--trace-deprecation --disable-warning=DeprecationWarning\" storybook",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "node --env-file=.env.test node_modules/@playwright/test/cli.js test",
+    "test:e2e:docker": "./scripts/e2e-docker.sh",
+    "test:e2e:ui": "node --env-file=.env.test node_modules/@playwright/test/cli.js test --ui",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "lint-staged": {
+    "package.json": [
+      "syncpack format --source",
+      "syncpack fix --dependency-types prod,dev,peer --source"
+    ],
+    "*.{ts,tsx,js,jsx,mjs,cjs,json,jsonc,css}": [
+      "biome check --write --no-errors-on-unmatched"
+    ]
+  },
+  "resolutions": {
+    "pdfjs-dist": "5.4.296",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "redis": "4.7.0"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.26",
@@ -118,7 +178,6 @@
     "react-docgen-typescript": "^2.4.0",
     "react-dom": "^19.2.7",
     "semantic-release": "^25.0.9",
-    "sort-package-json": "^4.0.0",
     "storybook": "^10.5.5",
     "styled-jsx": "^5.1.7",
     "syncpack": "^15.3.2",
@@ -127,69 +186,9 @@
     "vitest": "^4.1.10",
     "wrangler": "^4.118.0"
   },
+  "packageManager": "pnpm@11.18.0",
   "engines": {
     "node": "^26.0.0",
     "pnpm": "^11.0.0"
-  },
-  "lint-staged": {
-    "package.json": [
-      "sort-package-json",
-      "syncpack"
-    ],
-    "*.{ts,tsx,js,jsx,mjs,cjs,json,jsonc,css}": [
-      "biome check --write --no-errors-on-unmatched"
-    ]
-  },
-  "packageManager": "pnpm@11.18.0",
-  "resolutions": {
-    "pdfjs-dist": "5.4.296",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
-    "redis": "4.7.0"
-  },
-  "scripts": {
-    "build": "SENTRY_RELEASE=\"${SENTRY_RELEASE:-website@$(node -p 'require(\"./package.json\").version')}\" pnpm run next build",
-    "build:storybook": "storybook build -o dist",
-    "chore:reinstall": "pnpm --shell-mode exec rm -rf node_modules && pnpm --shell-mode exec rm pnpm-lock.yaml && pnpm install",
-    "chore:sort": "sort-package-json",
-    "ci": "pnpm run migrate && pnpm run build",
-    "deps:fix": "syncpack fix --dependency-types prod,dev,peer",
-    "deps:lint": "syncpack lint --dependency-types prod,dev,peer",
-    "deps:update": "syncpack update",
-    "dev": "NODE_OPTIONS=\"--trace-deprecation --disable-warning=DeprecationWarning\" node scripts/dev.mjs",
-    "dev:app": "pnpm run next dev",
-    "dev:storybook": "pnpm run storybook dev -p 6006",
-    "email:dev": "email dev --dir src/emails --port 3005",
-    "format": "biome format --write",
-    "generate": "pnpm run generate:types && pnpm run generate:importmap",
-    "generate:importmap": "pnpm run payload generate:importmap",
-    "generate:types": "pnpm run payload generate:types",
-    "links:migrate": "pnpm run payload run scripts/migrate-link-field-naming.ts",
-    "lint": "biome check",
-    "load-env": "node scripts/load-env.mjs",
-    "migrate": "pnpm run payload migrate",
-    "next": "NODE_OPTIONS=\"--trace-deprecation --disable-warning=DeprecationWarning\" next",
-    "payload": "NODE_OPTIONS=\"--trace-deprecation --disable-warning=DeprecationWarning\" payload",
-    "prepare": "husky",
-    "refs:backfill": "pnpm run payload run scripts/backfill-references.ts",
-    "release": "semantic-release",
-    "release:dry-run": "semantic-release --dry-run --no-ci",
-    "seed:pages": "pnpm run payload run scripts/seed-pages.ts",
-    "seed:pages:clean": "pnpm run payload run scripts/seed-pages.ts -- --clean",
-    "seed:posts": "pnpm run payload run scripts/seed-posts.ts",
-    "seed:posts:clean": "pnpm run payload run scripts/seed-posts.ts -- --clean",
-    "seed:topics": "pnpm run payload run scripts/seed-topics.ts",
-    "seed:topics:clean": "pnpm run payload run scripts/seed-topics.ts -- --clean",
-    "serve:storybook": "serve -s dist -l 3020",
-    "start": "pnpm run next start",
-    "start:worker": "node scripts/start-worker.mjs",
-    "storybook": "NODE_OPTIONS=\"--trace-deprecation --disable-warning=DeprecationWarning\" storybook",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "test:e2e": "node --env-file=.env.test node_modules/@playwright/test/cli.js test",
-    "test:e2e:docker": "./scripts/e2e-docker.sh",
-    "test:e2e:ui": "node --env-file=.env.test node_modules/@playwright/test/cli.js test --ui",
-    "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
   }
 }
