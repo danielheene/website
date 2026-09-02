@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/danielheene/website/compare/v1.2.0...v1.2.1) (2026-09-02)
+
+
+### Bug Fixes
+
+* **ci:** wait for ci.yml's images before promoting on push/PR-merge ([#60](https://github.com/danielheene/website/issues/60)) ([397c08f](https://github.com/danielheene/website/commit/397c08fa7ea325d1694d1cf73c91093cccd9c784)), closes [#57](https://github.com/danielheene/website/issues/57)
+
 # [1.2.0](https://github.com/danielheene/website/compare/v1.1.0...v1.2.0) (2026-09-01)
 
 
