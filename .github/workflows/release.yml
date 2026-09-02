@@ -156,7 +156,9 @@ jobs:
       ((github.event_name == 'push' && needs.release.outputs.released == 'true') ||
        (github.event_name == 'workflow_dispatch' && github.ref_name == 'main'))
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    # Raised from the default 10 to cover the "Wait for source images to
+    # exist" step's worst case — see that step's own comment for the math.
+    timeout-minutes: 35
     # Scopes DEPLOY_WEBHOOK_URL to this environment's own secret, same
     # pattern ci.yml's docker-app-production job uses for its secrets.
     environment: Production
@@ -190,6 +192,48 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      # push-triggered promote-main races ci.yml's own PR-time build: the
+      # merge lands on main (firing this workflow) independently of whether
+      # ci.yml's docker-app-production job for that same PR has actually
+      # finished pushing images yet — confirmed in practice, retagging
+      # failed with "sha-<sha>: not found" because the merge happened before
+      # its own PR's build completed. Polling for the tag to exist before
+      # retagging handles that ordering without coupling the two workflows
+      # together. Not needed on workflow_dispatch, which is only ever run
+      # after ci.yml has already finished (its source_sha is provided by
+      # hand, or by ci.yml's own dispatch-release step which only fires once
+      # its docker jobs succeeded).
+      #
+      # ci.yml's docker-app-production and docker-storybook jobs build in
+      # parallel and have taken up to ~12 minutes end to end in practice —
+      # 40 attempts * 15s gives a 10-minute budget per image, so all three
+      # loop iterations together can take up to ~30 minutes in the worst
+      # case (one image's build straggling well behind the others). This
+      # job's own timeout-minutes is raised accordingly, below. The common
+      # case — the merge landing after ci.yml already finished — resolves
+      # near-instantly, since every image's tag already exists on the first
+      # check.
+      - name: Wait for source images to exist
+        if: github.event_name == 'push'
+        env:
+          HEAD_SHA: ${{ steps.pr.outputs.head_sha }}
+        run: |
+          for image in app worker storybook; do
+            tag="${IMAGE_BASE}-${image}:sha-${HEAD_SHA}"
+            for attempt in $(seq 1 40); do
+              if docker buildx imagetools inspect "$tag" >/dev/null 2>&1; then
+                echo "Found $tag"
+                break
+              fi
+              if [ "$attempt" -eq 40 ]; then
+                echo "Timed out waiting for $tag to exist" >&2
+                exit 1
+              fi
+              echo "Waiting for $tag (attempt $attempt/40)..."
+              sleep 15
+            done
+          done
 
       # On workflow_dispatch there's no release, so no version to tag with —
       # only :latest is applied; the normal push path still gets :vX.Y.Z too.
@@ -231,7 +275,10 @@ jobs:
        github.event.pull_request.base.ref == 'develop') ||
       (github.event_name == 'workflow_dispatch' && github.ref_name == 'develop')
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    # Raised from the default 10 to cover the "Wait for source images to
+    # exist" step's worst case — see promote-main's identical step for why
+    # this exists and the math behind the number.
+    timeout-minutes: 35
     # Scopes DEPLOY_WEBHOOK_URL to this environment's own secret, same
     # pattern ci.yml's docker-app-development job uses for its secrets.
     environment: Development
@@ -245,6 +292,32 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      # This job's pull_request:closed trigger fires the instant the PR is
+      # merged — independently of ci.yml's own docker-app-development job
+      # for that same PR, which can still be mid-build at that moment. See
+      # promote-main's identical step (there it's provably happened once)
+      # for why this waits rather than assuming the image already exists.
+      - name: Wait for source images to exist
+        if: github.event_name == 'pull_request'
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          for image in app worker storybook; do
+            tag="${IMAGE_BASE}-${image}:sha-${HEAD_SHA}"
+            for attempt in $(seq 1 40); do
+              if docker buildx imagetools inspect "$tag" >/dev/null 2>&1; then
+                echo "Found $tag"
+                break
+              fi
+              if [ "$attempt" -eq 40 ]; then
+                echo "Timed out waiting for $tag to exist" >&2
+                exit 1
+              fi
+              echo "Waiting for $tag (attempt $attempt/40)..."
+              sleep 15
+            done
+          done
 
       - name: Retag app/worker/storybook as edge
         env:
