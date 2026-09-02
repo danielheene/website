@@ -1,7 +1,6 @@
 'use server'
 
-import { anthropic } from '@ai-sdk/anthropic'
-import * as Sentry from '@sentry/nextjs'
+import { createAnthropic } from '@ai-sdk/anthropic'
 import { generateText } from 'ai'
 import dedent from 'dedent'
 
@@ -9,16 +8,22 @@ import dedent from 'dedent'
  * Generates a meta-description based on the URL
  * @param url
  */
-export const fetchAnthropicMetaDescription = async (url: string): Promise<string> =>
-  Sentry.startSpan(
-    {
-      name: 'fetchAnthropicMetaDescription',
-      op: 'gen_ai.invoke_agent',
+export const fetchAnthropicMetaDescription = async (url: string): Promise<string> => {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    throw new Error('ANTHROPIC_API_KEY is not configured.')
+  }
+
+  const anthropic = createAnthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY,
+  })
+
+  const { text } = await generateText({
+    model: anthropic('claude-haiku-4-5'),
+    telemetry: {
+      isEnabled: true,
+      functionId: 'fetchAnthropicMetaDescription',
     },
-    async () => {
-      const { text } = await generateText({
-        model: anthropic('claude-haiku-4-5'),
-        system: dedent`
+    system: dedent`
       Create a meta-description text for the following URL, focusing on optimization for Google and other major search engines. A meta-description is a short text that appears in search engine results below the page title.
       If you are looking for an in-depth context, such as the website operator's full name, information about their job, a categorization of the website and its intended purpose, as well as many other details, check out the JSON-LD objects embedded in the source code.
       The provided JSON-LD objects are also designed to define the section of the website, e.g. "homepage", "resume", "blog", "blog post".
@@ -48,12 +53,11 @@ export const fetchAnthropicMetaDescription = async (url: string): Promise<string
       - No markdown formatting of any kind (no **bold**, no #headings, no code fences, no checkmarks)
       - No surrounding quotation marks
     `,
-        prompt: url,
-      })
+    prompt: url,
+  })
 
-      return text
-        .replace(/^\s*```(?:\w+)?\s*\n?/, '')
-        .replace(/\n?\s*```\s*$/, '')
-        .trim()
-    },
-  )
+  return text
+    .replace(/^\s*```(?:\w+)?\s*\n?/, '')
+    .replace(/\n?\s*```\s*$/, '')
+    .trim()
+}

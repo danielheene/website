@@ -1,7 +1,6 @@
 'use server'
 
-import { anthropic } from '@ai-sdk/anthropic'
-import * as Sentry from '@sentry/nextjs'
+import { createAnthropic } from '@ai-sdk/anthropic'
 import { generateText } from 'ai'
 import dedent from 'dedent'
 import sharp, { type SharpInput } from 'sharp'
@@ -10,28 +9,34 @@ import sharp, { type SharpInput } from 'sharp'
  * Generates an image alternative text based on the image
  * @param input
  */
-export const fetchAnthropicImageAltText = async (input: SharpInput): Promise<string> =>
-  Sentry.startSpan(
-    {
-      name: 'fetchAnthropicImageAltText',
-      op: 'gen_ai.invoke_agent',
-    },
-    async () => {
-      const resizedImageBuffer = await sharp(input)
-        .autoOrient()
-        .resize({
-          width: 512,
-          height: 512,
-          fit: 'inside',
-        })
-        .jpeg({
-          quality: 75,
-        })
-        .toBuffer()
+export const fetchAnthropicImageAltText = async (input: SharpInput): Promise<string> => {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    throw new Error('ANTHROPIC_API_KEY is not configured.')
+  }
 
-      const { text } = await generateText({
-        model: anthropic('claude-haiku-4-5'),
-        system: dedent`
+  const anthropic = createAnthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY,
+  })
+
+  const resizedImageBuffer = await sharp(input)
+    .autoOrient()
+    .resize({
+      width: 512,
+      height: 512,
+      fit: 'inside',
+    })
+    .jpeg({
+      quality: 75,
+    })
+    .toBuffer()
+
+  const { text } = await generateText({
+    model: anthropic('claude-haiku-4-5'),
+    telemetry: {
+      isEnabled: true,
+      functionId: 'fetchAnthropicImageAltText',
+    },
+    system: dedent`
       Write a short but meaningful sentence that explains the attached image and helps improve its accessibility by describing the content of the image, adapted for visually impaired people or users of screen readers.
 
       Your alt text should follow these guidelines:
@@ -43,19 +48,18 @@ export const fetchAnthropicImageAltText = async (input: SharpInput): Promise<str
         - If there is text in the image that is important to understanding it, include that text in your description
         - Avoid subjective interpretations unless the mood/tone is clearly the main point of the image
     `,
-        messages: [
+    messages: [
+      {
+        role: 'user',
+        content: [
           {
-            role: 'user',
-            content: [
-              {
-                type: 'image',
-                image: resizedImageBuffer,
-              },
-            ],
+            type: 'image',
+            image: resizedImageBuffer,
           },
         ],
-      })
+      },
+    ],
+  })
 
-      return text
-    },
-  )
+  return text
+}

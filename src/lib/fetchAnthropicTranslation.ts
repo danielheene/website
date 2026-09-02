@@ -34,7 +34,7 @@ export const fetchAnthropicTranslation = async ({
   if (!html.trim()) return null
 
   if (!process.env.ANTHROPIC_API_KEY) {
-    throw new Error('Translation is unavailable — ANTHROPIC_API_KEY is not configured.')
+    throw new Error('ANTHROPIC_API_KEY is not configured.')
   }
 
   const anthropic = createAnthropic({
@@ -43,6 +43,10 @@ export const fetchAnthropicTranslation = async ({
 
   const { text: translatedHtml } = await generateText({
     model: anthropic('claude-haiku-4-5'),
+    telemetry: {
+      isEnabled: true,
+      functionId: 'fetchAnthropicTranslation',
+    },
     system: dedent`
       Translate the following ${BilingualLanguageLabel[sourceLanguage]} HTML fragment
       into ${BilingualLanguageLabel[targetLanguage]}. Preserve the HTML tags and

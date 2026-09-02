@@ -24,7 +24,10 @@ export const register = async () => {
         Sentry.redisIntegration(),
         Sentry.mongooseIntegration(),
         Sentry.zodErrorsIntegration(),
-        Sentry.vercelAIIntegration(),
+        Sentry.vercelAIIntegration({
+          force: true,
+          enableTruncation: false,
+        }),
         // captures console.* as structured logs alongside errors
         Sentry.consoleLoggingIntegration({
           levels: [

@@ -26,7 +26,7 @@ export const fetchAnthropicExcerpt = async (
   if (!html.trim()) return null
 
   if (!process.env.ANTHROPIC_API_KEY) {
-    throw new Error('Excerpt generation is unavailable — ANTHROPIC_API_KEY is not configured.')
+    throw new Error('ANTHROPIC_API_KEY is not configured.')
   }
 
   const anthropic = createAnthropic({
@@ -35,6 +35,10 @@ export const fetchAnthropicExcerpt = async (
 
   const { text: excerptHtml } = await generateText({
     model: anthropic('claude-haiku-4-5'),
+    telemetry: {
+      isEnabled: true,
+      functionId: 'fetchAnthropicExcerpt',
+    },
     system: dedent`
       Write a concise, engaging excerpt (2-3 sentences) summarizing the
       following blog post HTML, suitable for a preview card and meta

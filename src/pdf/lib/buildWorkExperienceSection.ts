@@ -12,7 +12,7 @@ import { DocumentSectionType, WorkExperienceSection } from '@/pdf/types'
 export const buildWorkExperienceSection = async (
   locale: BilingualLanguage,
 ): Promise<WorkExperienceSection> => {
-  const data = await fetchResumeJobs()
+  const data = await fetchResumeJobs(locale)
   const jobs = reduceDataToBilingualLanguage(data)
 
   return {
