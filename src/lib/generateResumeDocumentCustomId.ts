@@ -1,13 +1,10 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
-import { customAlphabet } from 'nanoid'
-
+import { generateResumeDocumentUnsafeCustomId } from '@/lib/generateResumeDocumentUnsafeCustomId'
 import { CollectionSlug } from '@/types/collections'
 
-export const generateResumeDocumentUnsafeCustomId = () => {
-  return customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ')(10)
-}
+export { generateResumeDocumentUnsafeCustomId } from '@/lib/generateResumeDocumentUnsafeCustomId'
 
 export const generateResumeDocumentCustomId = async () => {
   'use server'
