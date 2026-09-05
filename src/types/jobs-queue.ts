@@ -9,7 +9,7 @@ export const TaskSlug = {
   GenerateResumeDocumentTitle: 'GenerateResumeDocumentTitle',
   GenerateResumeDocumentSlug: 'GenerateResumeDocumentSlug',
   CreateResumeDocument: 'CreateResumeDocument',
-  PingUptimeEndpoint: 'PingUptimeEndpoint',
+  HeartbeatPing: 'HeartbeatPing',
   AutoTranslateBilingualField: 'AutoTranslateBilingualField',
   SeedCollection: 'SeedCollection',
 } as const

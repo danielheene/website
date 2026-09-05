@@ -11,7 +11,11 @@ import { Header } from './ScheduledJobsWidget.Header'
 // Every known queue, not just the ones with jobs pending right now — so a
 // queue that's currently empty (e.g. resume-generation between runs) still
 // shows up as a selectable option instead of only appearing once it has work.
-const ALL_QUEUES: string[] = Object.values(QueueSlug).sort()
+// `HeartbeatQueue` is excluded: its jobs never reach `jobs` (filtered out
+// upstream in `fetchScheduledJobs`), so it would only ever show up empty.
+const ALL_QUEUES: string[] = Object.values(QueueSlug)
+  .filter((queue) => queue !== QueueSlug.Heartbeat)
+  .sort()
 
 interface ScheduledJobsWidgetListProps {
   jobs: PayloadJob[]

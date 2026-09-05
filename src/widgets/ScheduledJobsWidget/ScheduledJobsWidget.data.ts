@@ -4,7 +4,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 
 import { CollectionSlug } from '@/types/collections'
-import { WorkflowSlug } from '@/types/jobs-queue'
+import { QueueSlug, WorkflowSlug } from '@/types/jobs-queue'
 import { PayloadJob } from '@/types/payload'
 
 /**
@@ -14,6 +14,9 @@ import { PayloadJob } from '@/types/payload'
  *
  * `GenerateResumeDocument` jobs are surfaced first since they're the most
  * common thing an admin checks in on; the rest sort soonest-due first.
+ *
+ * `HeartbeatQueue` jobs are excluded — they're an internal liveness signal,
+ * not work an admin needs to review.
  */
 export const fetchScheduledJobs = async (): Promise<PayloadJob[] | null> => {
   const payload = await getPayload({
@@ -34,6 +37,11 @@ export const fetchScheduledJobs = async (): Promise<PayloadJob[] | null> => {
         {
           hasError: {
             not_equals: true,
+          },
+        },
+        {
+          queue: {
+            not_equals: QueueSlug.Heartbeat,
           },
         },
       ],
