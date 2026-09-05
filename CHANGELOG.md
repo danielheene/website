@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/danielheene/website/compare/v1.2.1...v1.2.2) (2026-09-05)
+
+
+### Bug Fixes
+
+* **deps:** resolve 13 of 23 open Dependabot alerts ([#61](https://github.com/danielheene/website/issues/61)) ([f61a732](https://github.com/danielheene/website/commit/f61a732a7ff2b8ef85cb6e99e4f427aa26d58401))
+
 ## [1.2.1](https://github.com/danielheene/website/compare/v1.2.0...v1.2.1) (2026-09-02)
 
 
