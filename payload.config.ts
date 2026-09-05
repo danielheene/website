@@ -171,6 +171,11 @@ export const config = buildConfig({
         queue: QueueSlug.ResumeGeneration,
         limit: 10,
       },
+      {
+        cron: '* * * * *',
+        queue: QueueSlug.Heartbeat,
+        limit: 10,
+      },
     ],
     jobsCollectionOverrides: ({ defaultJobsCollection }) => ({
       ...defaultJobsCollection,

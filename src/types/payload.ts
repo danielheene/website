@@ -204,7 +204,7 @@ export interface Config {
       GenerateResumeDocumentTitle: TaskGenerateResumeDocumentTitle;
       GenerateResumeDocumentSlug: TaskGenerateResumeDocumentSlug;
       CreateResumeDocument: TaskCreateResumeDocument;
-      PingUptimeEndpoint: TaskPingUptimeEndpoint;
+      HeartbeatPing: TaskHeartbeatPing;
       SeedCollection: TaskSeedCollection;
       createCollectionExport: TaskCreateCollectionExport;
       createCollectionImport: TaskCreateCollectionImport;
@@ -1197,7 +1197,7 @@ export interface PayloadJob {
           | 'GenerateResumeDocumentTitle'
           | 'GenerateResumeDocumentSlug'
           | 'CreateResumeDocument'
-          | 'PingUptimeEndpoint'
+          | 'HeartbeatPing'
           | 'SeedCollection'
           | 'createCollectionExport'
           | 'createCollectionImport'
@@ -1249,7 +1249,7 @@ export interface PayloadJob {
         | 'GenerateResumeDocumentTitle'
         | 'GenerateResumeDocumentSlug'
         | 'CreateResumeDocument'
-        | 'PingUptimeEndpoint'
+        | 'HeartbeatPing'
         | 'SeedCollection'
         | 'createCollectionExport'
         | 'createCollectionImport'
@@ -2910,9 +2910,9 @@ export interface TaskCreateResumeDocument {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TaskPingUptimeEndpoint".
+ * via the `definition` "TaskHeartbeatPing".
  */
-export interface TaskPingUptimeEndpoint {
+export interface TaskHeartbeatPing {
   input?: unknown;
   output?: unknown;
 }

@@ -12,7 +12,7 @@ import { generateResumeDocumentTitle } from './generateResumeDocumentTitle'
 import { generateResumeFile } from './generateResumeFile'
 import { generateResumeFilename } from './generateResumeFilename'
 import { generateVideoThumbnails } from './generateVideoThumbnails'
-import { pingUptimeEndpoint } from './pingUptimeEndpoint'
+import { heartbeatPing } from './heartbeatPing'
 import { seedCollection } from './seedCollection'
 
 // Every task is wrapped in withJobObservability here, at the single point
@@ -31,7 +31,7 @@ export const TASKS = [
   generateResumeDocumentTitle,
   generateResumeDocumentSlug,
   createResumeDocument,
-  pingUptimeEndpoint,
+  heartbeatPing,
   seedCollection,
 ].map(withJobObservability)
 
