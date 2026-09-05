@@ -17,6 +17,12 @@ overrides:
   '@emnapi/runtime': ^2.0.0-alpha
   react: ^19.2.7
   react-dom: ^19.2.7
+  # @payloadcms/ui hard-pins monaco-editor@0.56.0, which hard-pins
+  # dompurify@3.4.8 (several known CVEs, all patched by 3.4.9+) — no newer
+  # @monaco-editor/react is available to pick up a fix upstream, and
+  # dompurify's sanitization API is stable across these patch versions, so
+  # forcing the patched version here is low-risk.
+  dompurify: 3.4.14
 
 allowBuilds:
   '@sentry/cli': true
