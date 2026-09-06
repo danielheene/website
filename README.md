@@ -363,12 +363,12 @@ Both are required status checks — a PR cannot merge unless they pass.
    ruleset requires signed, PR-originated commits, which a plain `GITHUB_TOKEN` push
    can't satisfy). `develop` skips this job entirely; it never gets a semver bump.
 2. **Build & push images** — builds all three images (`Dockerfile`'s `app`, `worker`, and
-   `storybook` targets) for `linux/amd64` only and pushes them to `ghcr.io`, then triggers
-   Dokploy to redeploy each app. The app/worker build needs a reachable database, since
-   `generateStaticParams()` calls `payload.find()` in several routes — the runner joins
-   the tailnet via `tailscale/github-action` for that step. Tags are branch-literal, not
-   SHA-based:
-   - `main` → `:main` (+ `:vX.Y.Z` if the version job just cut a release)
+   `storybook` targets) for `linux/amd64` only and pushes them to `ghcr.io/danielheene/
+   website/{app,worker,storybook}`, then triggers Dokploy to redeploy each app. The
+   app/worker build needs a reachable database, since `generateStaticParams()` calls
+   `payload.find()` in several routes — the runner joins the tailnet via
+   `tailscale/github-action` for that step. Tags are branch-literal, not SHA-based:
+   - `main` → `:latest` (+ `:vX.Y.Z` if the version job just cut a release)
    - `develop` → `:edge`
 
 `main` and `develop` are the only branches this workflow runs on, so `environment:`
