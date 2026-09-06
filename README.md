@@ -340,38 +340,41 @@ Note: `payload run` only forwards CLI arguments after a `--` separator — see t
 
 ## CI / Deployment
 
-A pull request against `main` or `develop` runs one pipelined quality gate
-(`.github/workflows/ci.yml`), each stage gating the next:
+One workflow, `.github/workflows/ci-release.yml`, covers both pull requests and merges —
+which jobs run depends only on the trigger and, for pushes, which branch.
 
-1. **Commit Messages** — commitlint over the PR's commit range.
-2. **Unit Tests** — `vitest run --coverage` plus `deps:lint`. The suite mocks `payload`
-   and stubs its own environment in `vitest.setup.ts`, so it needs no database, no
-   tailnet and no secrets.
-3. **Build app + worker images** / **Build storybook image** (run in parallel once tests
-   pass) — builds all three images (`Dockerfile`'s `app`, `worker`, and `storybook`
-   targets) and pushes them to `ghcr.io` tagged `sha-<PR head SHA>`. The app/worker build
-   needs a reachable database, since `generateStaticParams()` calls `payload.find()` in
-   several routes — the runner joins the tailnet via `tailscale/github-action` for that
-   step. Storybook's build touches no database, so it skips Tailscale entirely.
+**Pull request against `main` or `develop`** — lint and test only, nothing is built or
+pushed:
 
-These four checks are required status checks on `main` — a PR cannot merge unless all
-four pass, so nothing gets built into an image (and nothing gets merged) unless it built
-and tested clean first.
+1. **Lint** — commitlint over the PR's commit range, `biome check`, `tsc --noEmit`, and
+   `deps:lint`.
+2. **Unit Tests** — `vitest run --coverage`. The suite mocks `payload` and stubs its own
+   environment in `vitest.setup.ts`, so it needs no database, no tailnet and no secrets.
 
-On merge (`.github/workflows/promote.yml`), the images already built and pushed for that
-PR's head SHA are **retagged**, not rebuilt — `docker buildx imagetools create` is a
-registry metadata operation:
+Both are required status checks — a PR cannot merge unless they pass.
 
-- Merge to `develop` → retagged `edge`.
-- Merge to `main` → once `.github/workflows/release.yml`'s semantic-release run computes
-  a new version, retagged `latest` and `vX.Y.Z`.
+**Push to `main` or `develop`** — build and deploy, no separate promote/retag step:
 
-Dokploy deploys from the resulting `ghcr.io` images rather than building from source.
+1. **Bump version** (`main` only) — `semantic-release` computes the next version from
+   commit history and pushes the release commit + tag as a GitHub App identity (main's
+   ruleset requires signed, PR-originated commits, which a plain `GITHUB_TOKEN` push
+   can't satisfy). `develop` skips this job entirely; it never gets a semver bump.
+2. **Build & push images** — builds all three images (`Dockerfile`'s `app`, `worker`, and
+   `storybook` targets) for `linux/amd64` only and pushes them to `ghcr.io`, then triggers
+   Dokploy to redeploy each app. The app/worker build needs a reachable database, since
+   `generateStaticParams()` calls `payload.find()` in several routes — the runner joins
+   the tailnet via `tailscale/github-action` for that step. Tags are branch-literal, not
+   SHA-based:
+   - `main` → `:main` (+ `:vX.Y.Z` if the version job just cut a release)
+   - `develop` → `:edge`
+
+`main` and `develop` are the only branches this workflow runs on, so `environment:`
+(`Production` for `main`, `Development` for `develop`) is a static, literal binding per
+branch — there's exactly one deployment chain per branch and no conditional environment
+logic to reason about.
 
 Secrets and non-secret config reach both CI and the server from Doppler: the Doppler
-GitHub App syncs into GitHub environments (`Production` for `main`, `Development`
-otherwise), and a PR's Docker build step uses whichever environment matches its base
-branch.
+GitHub App syncs into the same two GitHub environments the build job binds to.
 
 ## Code Quality & Security Notes
 
