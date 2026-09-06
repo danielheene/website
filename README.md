@@ -346,8 +346,11 @@ which jobs run depends only on the trigger and, for pushes, which branch.
 **Pull request against `main` or `develop`** — lint and test only, nothing is built or
 pushed:
 
-1. **Lint** — commitlint over the PR's commit range, `biome check`, `tsc --noEmit`, and
-   `deps:lint`.
+1. **Lint** — commitlint over the PR's commit range, `biome check`, and `deps:lint`.
+   No `tsc --noEmit` here: it needs the ambient `PageProps`/`LayoutProps` types Next.js
+   generates from the app directory's routes, which in turn needs the full build-time env
+   (per `src/types/environment.ts`) that's only wired into the `build` job's environment
+   secrets — not worth duplicating into the PR gate for now.
 2. **Unit Tests** — `vitest run --coverage`. The suite mocks `payload` and stubs its own
    environment in `vitest.setup.ts`, so it needs no database, no tailnet and no secrets.
 

@@ -70,17 +70,6 @@ jobs:
       - name: Lint
         run: pnpm run lint
 
-      # tsc needs the ambient PageProps/LayoutProps types Next.js generates
-      # into .next/types/ from the app directory's routes — a fresh checkout
-      # has no .next/ at all, so typecheck fails with "Cannot find name
-      # 'PageProps'" without this. `next typegen` generates just those route
-      # types without running a full build.
-      - name: Generate Next.js route types
-        run: pnpm exec next typegen
-
-      - name: Typecheck
-        run: pnpm run typecheck
-
       - name: Check dependency version groups
         run: pnpm run deps:lint
 
