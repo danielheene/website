@@ -61,15 +61,20 @@ ENV NODE_ENV=${NODE_ENV}
 # so none of these values are cached into an image layer or visible via
 # `docker history`.
 #
-# It is copied to .env.production and read by @next/env's loadEnvConfig
-# (which `next build` calls) rather than shell-sourced: a value containing
-# spaces or shell metacharacters — e.g. USESEND_DEFAULT_FROM_NAME being
-# "Mail Agent [daniel.heene.dev]" — breaks a `. file` source under dash,
+# It is copied to .env (not .env.production) and read by @next/env's
+# loadEnvConfig (which `next build` calls) rather than shell-sourced: a value
+# containing spaces or shell metacharacters — e.g. USESEND_DEFAULT_FROM_NAME
+# being "Mail Agent [daniel.heene.dev]" — breaks a `. file` source under dash,
 # which parses each line as a shell command rather than a plain KEY=value
-# assignment. dotenv's own parser has no such restriction, which is the
-# whole point of using the format Payload/Next already expect instead of
-# fighting it via shell semantics. The file is removed immediately after use
-# so its contents never land in a layer.
+# assignment. dotenv's own parser has no such restriction, which is the whole
+# point of using the format Payload/Next already expect instead of fighting
+# it via shell semantics. `.env` is the mode-independent fallback in
+# loadEnvConfig's search order (`.env.<mode>.local`, `.env.local`,
+# `.env.<mode>`, `.env`) and is always read regardless of which mode a
+# particular loadEnvConfig call resolves — unlike `.env.production`, it isn't
+# tied to `next build` specifically always resolving mode "production"
+# internally. The file is removed immediately after use so its contents never
+# land in a layer.
 #
 # TEMPORARY: `payload migrate` is skipped here (plain `pnpm run build`
 # instead of `pnpm run ci`) to isolate whether `next build` itself works
@@ -78,10 +83,10 @@ ENV NODE_ENV=${NODE_ENV}
 # confirmed, so real future migrations actually run as part of the image
 # build again.
 RUN --mount=type=secret,id=build_env,required=true \
-    cp /run/secrets/build_env .env.production && \
+    cp /run/secrets/build_env .env && \
     pnpm run build; \
     status=$?; \
-    rm -f .env.production; \
+    rm -f .env; \
     exit $status
 
 # ---- app: Next.js server ----------------------------------------------------
