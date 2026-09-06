@@ -38,8 +38,10 @@ export type ShaderComponentEntry =
 /**
  * One curated, fixed prop bundle per shader — no per-prop admin tuning.
  * DarkVeil, GradientBlinds, and Grainient share their bundles with the
- * public hero via each shader's `config.ts`. FaultyTerminal uses a
- * green-tinted preview bundle distinct from the white-tinted public hero.
+ * public hero via each shader's `config.ts`. FaultyTerminal uses its
+ * `WhiteTint` story preset — reactbits.dev's own demo defaults with the
+ * `tint`/`brightness` swap that story applies — rather than either the
+ * demo's green tint or the hero's own tuned bundle.
  */
 export const SHADER_COMPONENTS: Record<ShaderPresetKey, ShaderComponentEntry> = {
   darkveil: {
@@ -51,18 +53,31 @@ export const SHADER_COMPONENTS: Record<ShaderPresetKey, ShaderComponentEntry> = 
     key: 'faulty-terminal',
     Component: FaultyTerminal,
     /**
-     * Admin preview props — intentionally different from the public hero
-     * (see FaultyTerminal/config.ts). The green tint and reduced intensity
-     * read better at the small card size in the shader picker drawer.
+     * Matches FaultyTerminal.stories.tsx's WhiteTint story: reactbits.dev's
+     * demo defaults (see that file's meta.args) with tint/brightness
+     * swapped to white — see that story for why.
      */
     props: {
-      tint: '#3dff8f',
-      scanlineIntensity: 0.2,
-      glitchAmount: 0.5,
-      flickerAmount: 0.3,
-      brightness: 0.6,
-      mouseReact: false,
-      pageLoadAnimation: false,
+      scale: 1.5,
+      gridMul: [
+        2,
+        1,
+      ],
+      digitSize: 1.2,
+      timeScale: 0.5,
+      pause: false,
+      scanlineIntensity: 0.5,
+      glitchAmount: 1,
+      flickerAmount: 1,
+      noiseAmp: 1,
+      chromaticAberration: 0,
+      dither: 0,
+      curvature: 0.1,
+      tint: '#ffffff',
+      mouseReact: true,
+      mouseStrength: 0.5,
+      pageLoadAnimation: true,
+      brightness: 1,
     },
   },
   'gradient-blinds': {
