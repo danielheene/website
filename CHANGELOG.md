@@ -1,3 +1,10 @@
+## [1.2.4](https://github.com/danielheene/website/compare/v1.2.3...v1.2.4) (2026-09-06)
+
+
+### Bug Fixes
+
+* **docker:** pin builder stage to NODE_ENV=production ([#67](https://github.com/danielheene/website/issues/67)) ([2f43050](https://github.com/danielheene/website/commit/2f430508a7004894e86c394cf9e0bfc5609e8532))
+
 ## [1.2.3](https://github.com/danielheene/website/compare/v1.2.2...v1.2.3) (2026-09-06)
 
 
