@@ -1,0 +1,370 @@
+name: CI & Release
+
+# Two triggers, two jobs of work — no overlap, no conditional environment
+# logic:
+#
+#   pull_request (main/develop) -> lint + test only. Nothing is built or
+#     pushed; this is just the merge gate.
+#
+#   push (main/develop)         -> bump version (main only) -> build & tag &
+#     deploy. main and develop are the only two branches this workflow ever
+#     runs on, so `environment:` and image tags are static literals per job,
+#     never computed from a branch-name expression.
+#
+# Images are tagged `main` (production) or `edge` (development) — one tag per
+# branch, no per-SHA intermediate tags and no separate promote/retag step:
+# each push builds and pushes the final tag directly.
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+  push:
+    branches:
+      - main
+      - develop
+
+permissions:
+  contents: write
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_BASE: ghcr.io/${{ github.repository }}
+
+jobs:
+  # ---------------------------------------------------------------------
+  # Pull request gate: lint + test only. Never builds or pushes anything.
+  # ---------------------------------------------------------------------
+  lint:
+    name: Lint
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # commitlint needs the range between base and head
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 26
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate commit messages
+        run: >-
+          pnpm exec commitlint
+          --from ${{ github.event.pull_request.base.sha }}
+          --to ${{ github.event.pull_request.head.sha }}
+          --verbose
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Check dependency version groups
+        run: pnpm run deps:lint
+
+  test:
+    name: Unit Tests
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 26
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run unit tests with coverage
+        run: pnpm run test:coverage
+
+  # ---------------------------------------------------------------------
+  # Merge pipeline: runs only on push to main/develop. main bumps the
+  # version first; develop skips straight to build.
+  # ---------------------------------------------------------------------
+  version:
+    name: Bump version
+    # Only main cuts a release; develop never gets a semver bump.
+    if: >-
+      github.event_name == 'push' && github.ref == 'refs/heads/main' &&
+      !contains(github.event.head_commit.message, '[skip ci]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      released: ${{ steps.release.outputs.released }}
+      version: ${{ steps.release.outputs.version }}
+    steps:
+      # main is protected by a ruleset requiring PRs + signed commits, with
+      # no bypass for a plain secrets.GITHUB_TOKEN push — @semantic-release/
+      # git's direct push to main was being rejected outright (GH006:
+      # "Commits must have verified signatures" + "Changes must be made
+      # through a pull request"). A GitHub App installation token is this
+      # ruleset's configured bypass actor, and GitHub auto-verifies commits
+      # authored via an App token, so this satisfies both rules with no GPG
+      # key to generate or rotate.
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@67018539274d69449ef7c02e8e71183d1719ab42 # v2.1.4
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # semantic-release computes the next version from the full commit
+          # history since the last tag — a shallow clone would see nothing.
+          fetch-depth: 0
+          persist-credentials: true
+          token: ${{ steps.app-token.outputs.token }}
+
+      # @semantic-release/git doesn't infer a commit identity from the
+      # checkout token — without this it'd fall back to the runner's
+      # default git config, and the resulting commit would carry the
+      # App's auth but a mismatched author, defeating the point. This is
+      # GitHub's documented convention for App-authored commits:
+      # <app-slug>[bot] / <app-id>+<app-slug>[bot]@users.noreply.github.com.
+      - name: Configure git identity as the App
+        run: |
+          git config user.name "danielheene-website-release[bot]"
+          git config user.email "${{ secrets.RELEASE_APP_ID }}+danielheene-website-release[bot]@users.noreply.github.com"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 26
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Release
+        id: release
+        run: |
+          pnpm exec semantic-release
+          # Nothing further to do if this push didn't actually cut a release
+          # (e.g. a docs/chore-only push that semantic-release skipped) —
+          # semantic-release's own commit (if any) is HEAD after it runs,
+          # so an exact tag match there means a release was just cut.
+          if git describe --tags --exact-match HEAD >/dev/null 2>&1; then
+            echo "released=true" >> "$GITHUB_OUTPUT"
+            echo "version=v$(node -p 'require("./package.json").version')" >> "$GITHUB_OUTPUT"
+          else
+            echo "released=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          # @semantic-release/git's push and @semantic-release/github's
+          # release creation both need to run as the App identity — the
+          # App token is what's actually allowed through main's ruleset,
+          # secrets.GITHUB_TOKEN is not.
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+  build:
+    name: Build & push images
+    needs: version
+    # develop has no version job to depend on (skipped entirely, not
+    # failed/cancelled) — always() plus explicit failure()/cancelled() checks
+    # is what lets this job run on develop pushes as well as on main pushes
+    # that didn't cut a release (a docs/chore-only push, or a [skip ci]
+    # commit re-triggering this workflow).
+    if: |
+      always() && github.event_name == 'push' &&
+      !contains(needs.version.result, 'failure') && !contains(needs.version.result, 'cancelled')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    # One literal environment per branch — main and develop are the only
+    # branches this workflow runs on, so there is exactly one deployment
+    # chain per branch and no computed `environment: ${{ expression }}`
+    # (GitHub accepts that syntactically but never actually binds an
+    # environment from it, so no environment-scoped secrets get injected).
+    environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
+    steps:
+      - name: Checkout
+        # On main, check out the release commit semantic-release just pushed
+        # (not the pre-bump commit this push event was fired for) so the
+        # image actually contains the bumped package.json version.
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.ref }}
+
+      # Reaches the same database over Tailscale that Dokploy currently does,
+      # so `pnpm run build`'s generateStaticParams() calls resolve exactly as
+      # they do on the deployment server today. DATABASE_URL/REDIS_URL use a
+      # MagicDNS hostname (dokploy.robin-marlin.ts.net) rather than a raw
+      # tailnet IP, so this node needs to actually accept the tailnet's DNS
+      # config — --accept-dns=true is `tailscale up`'s own default, but is
+      # made explicit here since a prior run hit `getaddrinfo ENOTFOUND` for
+      # that hostname despite the tailnet join itself succeeding. If this
+      # alone doesn't resolve it, MagicDNS itself may need enabling tailnet-
+      # wide in the Tailscale admin console's DNS settings.
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@780049a30b6ff5c378a9e7b389d15ece7a204888 # v4.1.3
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+          args: --accept-dns=true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Every build-time env var the Next.js build needs (per
+      # src/types/environment.ts) is written to one gitignored-by-runner file
+      # in dotenv format and mounted into the builder stage as a single
+      # BuildKit secret — see the Dockerfile's `builder` stage, which copies
+      # it to .env.production and lets @next/env's own dotenv parser read it
+      # (not shell-sourced — see that stage's comment for why). Nothing here
+      # is ARG/ENV, so no value is cached into an image layer or visible via
+      # `docker history`. Values come from whichever environment this job is
+      # bound to above.
+      - name: Write build env secret file
+        run: |
+          umask 077
+          cat > /tmp/build_env <<EOF
+          SERVER_HOST=${{ vars.SERVER_HOST }}
+          SERVER_URL=${{ vars.SERVER_URL }}
+          STATUS_PAGE_URL=${{ vars.STATUS_PAGE_URL }}
+          STATUS_PAGE_HEARTBEAT_URL=${{ vars.STATUS_PAGE_HEARTBEAT_URL }}
+          PAYLOAD_SECRET=${{ secrets.PAYLOAD_SECRET }}
+          PREVIEW_SECRET=${{ secrets.PREVIEW_SECRET }}
+          CRON_SECRET=${{ secrets.CRON_SECRET }}
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          REDIS_URL=${{ secrets.REDIS_URL }}
+          S3_BUCKET=${{ vars.S3_BUCKET }}
+          S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}
+          S3_REGION=${{ vars.S3_REGION }}
+          S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}
+          S3_ENDPOINT=${{ vars.S3_ENDPOINT }}
+          UMAMI_USERNAME=${{ secrets.UMAMI_USERNAME }}
+          UMAMI_PASSWORD=${{ secrets.UMAMI_PASSWORD }}
+          NEXT_PUBLIC_UMAMI_URL=${{ vars.NEXT_PUBLIC_UMAMI_URL }}
+          NEXT_PUBLIC_UMAMI_SITE_ID=${{ vars.NEXT_PUBLIC_UMAMI_SITE_ID }}
+          USESEND_URL=${{ vars.USESEND_URL }}
+          USESEND_API_KEY=${{ secrets.USESEND_API_KEY }}
+          USESEND_DEFAULT_FROM_ADDRESS=${{ vars.USESEND_DEFAULT_FROM_ADDRESS }}
+          USESEND_DEFAULT_FROM_NAME=${{ vars.USESEND_DEFAULT_FROM_NAME }}
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
+          MAPBOX_API_KEY=${{ secrets.MAPBOX_API_KEY }}
+          EOF
+
+      # main -> :main (+ :vX.Y.Z if this push cut a release), develop -> :edge.
+      # One literal tag set per branch, no arch suffix and no separate merge
+      # job — amd64 is the only platform built, so the build-push-action's
+      # own tag already is the final tag. Each image name's tags are written
+      # as a step output (one per line) so the three build steps below can
+      # just interpolate them into their own `tags:` block.
+      - name: Compute image tags
+        id: tags
+        env:
+          RELEASE_VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            names="main"
+            if [ -n "$RELEASE_VERSION" ]; then
+              names="$(printf '%s\n%s' "$names" "$RELEASE_VERSION")"
+            fi
+          else
+            names="edge"
+          fi
+          {
+            echo "app<<EOF"
+            echo "$names" | sed "s#^#${IMAGE_BASE}-app:#"
+            echo "EOF"
+            echo "worker<<EOF"
+            echo "$names" | sed "s#^#${IMAGE_BASE}-worker:#"
+            echo "EOF"
+            echo "storybook<<EOF"
+            echo "$names" | sed "s#^#${IMAGE_BASE}-storybook:#"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      # NODE_ENV mirrors the environment this job is bound to (development
+      # for develop/edge, production for main) — the Dockerfile defaults to
+      # production otherwise.
+      - name: Build & push app image
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        with:
+          context: .
+          target: app
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.tags.outputs.app }}
+          build-args: |
+            NODE_ENV=${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+          cache-from: type=gha,scope=app-${{ github.ref_name }}
+          cache-to: type=gha,mode=max,scope=app-${{ github.ref_name }}
+          secret-files: |
+            build_env=/tmp/build_env
+
+      # The builder stage (with .next already built) is reused verbatim for
+      # the worker target via Docker's layer cache — this does not re-run
+      # `pnpm run build`.
+      - name: Build & push worker image
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        with:
+          context: .
+          target: worker
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.tags.outputs.worker }}
+          build-args: |
+            NODE_ENV=${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+          cache-from: type=gha,scope=app-${{ github.ref_name }}
+          cache-to: type=gha,mode=max,scope=app-${{ github.ref_name }}
+          secret-files: |
+            build_env=/tmp/build_env
+
+      - name: Build & push storybook image
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        with:
+          context: .
+          target: storybook
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.tags.outputs.storybook }}
+          cache-from: type=gha,scope=storybook-${{ github.ref_name }}
+          cache-to: type=gha,mode=max,scope=storybook-${{ github.ref_name }}
+
+      # Tells Dokploy to actually redeploy each app now that its image is
+      # pushed — pushing to ghcr.io alone doesn't make Dokploy pull it. Each
+      # URL already embeds its own auth (Dokploy's refreshToken as a query
+      # param), so these are just bare trigger calls, one per app.
+      - name: Trigger Dokploy deployments
+        run: |
+          for url in "$DOKPLOY_UPDATE_URL_APP" "$DOKPLOY_UPDATE_URL_WORKER" "$DOKPLOY_UPDATE_URL_STORYBOOK"; do
+            curl --fail --silent --show-error --request POST "$url"
+          done
+        env:
+          DOKPLOY_UPDATE_URL_APP: ${{ secrets.DOKPLOY_UPDATE_URL_APP }}
+          DOKPLOY_UPDATE_URL_WORKER: ${{ secrets.DOKPLOY_UPDATE_URL_WORKER }}
+          DOKPLOY_UPDATE_URL_STORYBOOK: ${{ secrets.DOKPLOY_UPDATE_URL_STORYBOOK }}
