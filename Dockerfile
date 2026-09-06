@@ -17,10 +17,12 @@
 # traced subset — bigger image, but avoids known standalone-tracing gaps with
 # the Payload/Next combination this app uses.
 
-# Defaults to production; docker-app-development in ci.yml overrides this to
-# `development` for PRs against develop via --build-arg. Declared before the
-# first FROM so it's visible everywhere, but per Docker's ARG scoping rules
-# it must be redeclared (bare `ARG NODE_ENV`) inside any stage that reads it.
+# Defaults to production; ci-release.yml's build job overrides this to
+# `development` for the develop/edge branch via --build-arg. Only the app/
+# worker runtime stages actually read this ARG (see below for why the
+# builder stage does not) — declared before the first FROM so it's visible
+# everywhere, but per Docker's ARG scoping rules it must be redeclared (bare
+# `ARG NODE_ENV`) inside any stage that reads it.
 ARG NODE_ENV=production
 
 # Version-tag build args, applied as OCI labels on each runtime stage below.
@@ -52,9 +54,19 @@ RUN pnpm install --frozen-lockfile
 
 # ---- builder: next build only (needs DB over Tailscale) -------------------
 FROM deps AS builder
-ARG NODE_ENV
 COPY . .
-ENV NODE_ENV=${NODE_ENV}
+# Always production here, regardless of which NODE_ENV the runtime stages
+# below are given — `next build` calls @next/env's loadEnvConfig(dir, false,
+# ...), which always resolves mode "production" internally no matter what
+# NODE_ENV is set to, so it always reads .env (see below) as if in
+# production. Setting NODE_ENV=development for this stage doesn't change
+# that; it only makes React itself load its development bundle while
+# executing a prerender/static-export path Next's own tooling assumes runs
+# under production semantics — confirmed to cause
+# "TypeError: Cannot read properties of null (reading 'useContext')" while
+# prerendering /_global-error, and Next.js's own build output warns
+# "non-standard NODE_ENV value" as soon as it isn't "production" here.
+ENV NODE_ENV=production
 # Build-time env (DATABASE_URL, REDIS_URL, S3_*, PAYLOAD_SECRET, etc.) arrives
 # as a single BuildKit secret file in dotenv format — see
 # .github/workflows/ci.yml's `secret-files` input — rather than as ARG/ENV,

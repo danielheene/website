@@ -42,12 +42,18 @@ export const Footer = async () => {
     })
   }
 
-  if (telephone) {
+  // parsePhoneNumber returns undefined rather than throwing when it can't
+  // parse the input — a malformed or incomplete number stored in settings
+  // should just drop the telephone link, not crash the page render (and
+  // with it, the build's prerender step).
+  const parsedTelephone = telephone ? parsePhoneNumber(telephone) : undefined
+
+  if (parsedTelephone) {
     socialLinks.push({
       id: 'telephone',
       link: {
         linkType: 'custom',
-        url: parsePhoneNumber(telephone).getURI(),
+        url: parsedTelephone.getURI(),
         label: 'Telephone',
         iconBefore: 'phone',
         newTab: true,
