@@ -1,3 +1,5 @@
+import { EventEmitter } from 'node:events'
+
 import * as Sentry from '@sentry/nextjs'
 
 /**
@@ -7,6 +9,14 @@ import * as Sentry from '@sentry/nextjs'
  * what lets Sentry instrument Payload, the jobs queue and route handlers.
  */
 export const register = async () => {
+  if (process.env.NEXT_RUNTIME === 'nodejs') {
+    // Next's own dev-server instrumentation and Sentry's OTel `http`
+    // instrumentation each attach a `close` listener to every
+    // `ServerResponse`, and legitimately so — neither is leaking. Their
+    // combined count now exceeds Node's default cap of 10 per emitter
+    EventEmitter.defaultMaxListeners = 20
+  }
+
   const { SENTRY_ENABLED, sharedSentryOptions } = await import('@/lib/sentry/options')
 
   if (!SENTRY_ENABLED) return

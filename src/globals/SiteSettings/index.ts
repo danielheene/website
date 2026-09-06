@@ -8,7 +8,7 @@ import { TemplateField } from '@/fields/Template'
 import { generateResumeDocumentHook } from '@/lib/hooks/global'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
-import { GlobalSlug } from '@/types/globals'
+import { GlobalData, GlobalSlug } from '@/types/globals'
 
 import { revalidateDocument } from './hooks/revalidateDocument'
 
@@ -34,6 +34,16 @@ const NavEntries = (): ArrayField => ({
     ...LinkField().fields,
   ],
 })
+
+export const SiteSettingsDefaults: Pick<GlobalData<GlobalSlug['SiteSettings']>, 'general'> = {
+  general: {
+    siteName: process.env.SERVER_HOST,
+    category: 'website',
+    siteHost: process.env.SERVER_HOST,
+    siteURL: process.env.SERVER_URL,
+    titleTemplate: '{{title}} | {{siteName}}',
+  },
+}
 
 export const SiteSettings: GlobalConfig = {
   slug: GlobalSlug.SiteSettings,
@@ -71,8 +81,7 @@ export const SiteSettings: GlobalConfig = {
               interfaceName: 'GeneralSettings',
               required: true,
               defaultValue: {
-                siteName: process.env.SERVER_HOST,
-                titleTemplate: '{{title}} | {{siteName}}',
+                ...SiteSettingsDefaults.general,
               },
               fields: [
                 {
@@ -81,7 +90,7 @@ export const SiteSettings: GlobalConfig = {
                     {
                       name: 'siteName',
                       label: 'Site Name',
-                      defaultValue: process.env.SERVER_HOST,
+                      defaultValue: SiteSettingsDefaults.general.siteName,
                       type: 'text',
                       admin: {
                         width: '50%',
@@ -91,7 +100,7 @@ export const SiteSettings: GlobalConfig = {
                     {
                       name: 'category',
                       type: 'text',
-                      defaultValue: 'website',
+                      defaultValue: SiteSettingsDefaults.general.category,
                       admin: {
                         width: '50%',
                         description: 'This category is used for generating website metadata.',
@@ -106,8 +115,7 @@ export const SiteSettings: GlobalConfig = {
                       name: 'siteHost',
                       label: 'Site Host',
                       type: 'text',
-                      virtual: true,
-                      defaultValue: process.env.SERVER_HOST,
+                      defaultValue: SiteSettingsDefaults.general.siteHost,
                       admin: {
                         readOnly: true,
                         width: '50%',
@@ -118,8 +126,7 @@ export const SiteSettings: GlobalConfig = {
                       name: 'siteURL',
                       label: 'Site URL',
                       type: 'text',
-                      virtual: true,
-                      defaultValue: process.env.SERVER_URL,
+                      defaultValue: SiteSettingsDefaults.general.siteURL,
                       admin: {
                         readOnly: true,
                         width: '50%',
@@ -141,7 +148,7 @@ export const SiteSettings: GlobalConfig = {
                   data: {
                     title: 'Lorem ipsum dolor sit amet',
                   },
-                  defaultValue: '{{title}} | {{siteName}}',
+                  defaultValue: SiteSettingsDefaults.general.titleTemplate,
                 }),
 
                 {
