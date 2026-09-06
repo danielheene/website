@@ -11,9 +11,9 @@ name: CI & Release
 #     runs on, so `environment:` and image tags are static literals per job,
 #     never computed from a branch-name expression.
 #
-# Images are tagged `main` (production) or `edge` (development) — one tag per
-# branch, no per-SHA intermediate tags and no separate promote/retag step:
-# each push builds and pushes the final tag directly.
+# Images are tagged `latest` (production) or `edge` (development) — one tag
+# per branch, no per-SHA intermediate tags and no separate promote/retag
+# step: each push builds and pushes the final tag directly.
 on:
   pull_request:
     branches:
@@ -277,7 +277,7 @@ jobs:
           MAPBOX_API_KEY=${{ secrets.MAPBOX_API_KEY }}
           EOF
 
-      # main -> :main (+ :vX.Y.Z if this push cut a release), develop -> :edge.
+      # main -> :latest (+ :vX.Y.Z if this push cut a release), develop -> :edge.
       # One literal tag set per branch, no arch suffix and no separate merge
       # job — amd64 is the only platform built, so the build-push-action's
       # own tag already is the final tag. Each image name's tags are written
@@ -289,7 +289,7 @@ jobs:
           RELEASE_VERSION: ${{ needs.version.outputs.version }}
         run: |
           if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            names="main"
+            names="latest"
             if [ -n "$RELEASE_VERSION" ]; then
               names="$(printf '%s\n%s' "$names" "$RELEASE_VERSION")"
             fi
@@ -298,19 +298,28 @@ jobs:
           fi
           {
             echo "app<<EOF"
-            echo "$names" | sed "s#^#${IMAGE_BASE}-app:#"
+            echo "$names" | sed "s#^#${IMAGE_BASE}/app:#"
             echo "EOF"
             echo "worker<<EOF"
-            echo "$names" | sed "s#^#${IMAGE_BASE}-worker:#"
+            echo "$names" | sed "s#^#${IMAGE_BASE}/worker:#"
             echo "EOF"
             echo "storybook<<EOF"
-            echo "$names" | sed "s#^#${IMAGE_BASE}-storybook:#"
+            echo "$names" | sed "s#^#${IMAGE_BASE}/storybook:#"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
       # NODE_ENV mirrors the environment this job is bound to (development
       # for develop/edge, production for main) — the Dockerfile defaults to
       # production otherwise.
+      #
+      # provenance/sbom: false on all three builds below — build-push-action
+      # defaults provenance to true, which pushes every tag as an OCI image
+      # index (a manifest list) wrapping the actual single-platform image
+      # manifest plus a provenance attestation manifest, both untagged. That
+      # reads as "3 versions" on GHCR's package page for what is actually one
+      # image with one tag. Since this is a single-platform (amd64-only)
+      # build with no multi-arch manifest list to justify an index, disabling
+      # both makes each push a single plain manifest.
       - name: Build & push app image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
@@ -318,6 +327,8 @@ jobs:
           target: app
           platforms: linux/amd64
           push: true
+          provenance: false
+          sbom: false
           tags: ${{ steps.tags.outputs.app }}
           build-args: |
             NODE_ENV=${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
@@ -336,6 +347,8 @@ jobs:
           target: worker
           platforms: linux/amd64
           push: true
+          provenance: false
+          sbom: false
           tags: ${{ steps.tags.outputs.worker }}
           build-args: |
             NODE_ENV=${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
@@ -351,6 +364,8 @@ jobs:
           target: storybook
           platforms: linux/amd64
           push: true
+          provenance: false
+          sbom: false
           tags: ${{ steps.tags.outputs.storybook }}
           cache-from: type=gha,scope=storybook-${{ github.ref_name }}
           cache-to: type=gha,mode=max,scope=storybook-${{ github.ref_name }}
