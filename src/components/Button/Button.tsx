@@ -2,7 +2,7 @@
 
 import { ComponentProps, forwardRef, ReactNode } from 'react'
 
-import * as Slot from '@radix-ui/react-slot'
+import { createSlot, createSlottable } from '@radix-ui/react-slot'
 import { tv, VariantProps } from 'tailwind-variants'
 
 import { Icon } from '@/components/Icon'
@@ -64,21 +64,26 @@ export const buttonStyles = tv({
         'h-11 gap-1.5 px-4',
         'has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2',
       ],
-      icon: [
-        'size-10',
-      ],
+
       'icon-xs': [
-        "size-7 [&>svg:not([class*='size-'])]:size-3.5",
+        'size-7',
+        "[&>svg:not([class*='size-'])]:size-3.5",
       ],
       'icon-sm': [
         'size-9',
+        "[&>svg:not([class*='size-'])]:size-4.5",
+      ],
+      icon: [
+        'size-10',
+        "[&>svg:not([class*='size-'])]:size-5",
       ],
       'icon-lg': [
         'size-11',
+        "[&>svg:not([class*='size-'])]:size-5.5",
       ],
     },
     fullWidth: {
-      false: 'inline-flex',
+      false: '',
       true: 'flex',
     },
   },
@@ -96,8 +101,8 @@ export interface ButtonProps extends VariantProps<typeof buttonStyles> {
   asChild?: boolean
 }
 
-const ButtonSlot = Slot.createSlot<HTMLButtonElement, ButtonProps>('Button.Slot')
-const ButtonSlottable = Slot.createSlottable('Button.Slottable')
+const ButtonSlot = createSlot<HTMLButtonElement, ButtonProps>('Button.Slot')
+const ButtonSlottable = createSlottable('Button.Slottable')
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps & ComponentProps<'button'>>(
   (
@@ -117,21 +122,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps & ComponentProps
         })}
         {...props}
       >
-        {asChild ? (
-          // Radix's Slot requires exactly one element child to merge props
-          // onto — start/end icons would make this two-or-three children,
-          // so `asChild` callers own their own icon (see e.g.
-          // ResumeDownloadButton, which renders its icon inside the `<Link>`
-          // that becomes the Slot's child) and this component leaves
-          // `children` alone.
-          children
-        ) : (
-          <>
-            {startIcon && <Icon name={startIcon} data-icon="inline-start" />}
-            {children}
-            {endIcon && <Icon name={endIcon} data-icon="inline-end" />}
-          </>
-        )}
+        {startIcon && <Icon name={startIcon} data-icon="inline-start" />}
+        {asChild ? <ButtonSlottable>{children}</ButtonSlottable> : children}
+        {endIcon && <Icon name={endIcon} data-icon="inline-end" />}
       </Component>
     )
   },

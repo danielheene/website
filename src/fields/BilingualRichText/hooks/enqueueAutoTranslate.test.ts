@@ -23,6 +23,8 @@ const paragraph = (text: string) => ({
 })
 
 const queueMock = vi.fn()
+const runByIDMock = vi.fn()
+const loggerErrorMock = vi.fn()
 
 const baseArgs = {
   data: {
@@ -32,6 +34,10 @@ const baseArgs = {
     payload: {
       jobs: {
         queue: queueMock,
+        runByID: runByIDMock,
+      },
+      logger: {
+        error: loggerErrorMock,
       },
     },
     routeParams: {},
@@ -53,6 +59,9 @@ beforeEach(() => {
   queueMock.mockResolvedValue({
     id: 'job-1',
   })
+  runByIDMock.mockReset()
+  runByIDMock.mockResolvedValue(undefined)
+  loggerErrorMock.mockReset()
 })
 
 // biome-ignore lint/suspicious/noExplicitAny: loose call into the hook for tests
@@ -85,6 +94,53 @@ describe('enqueueAutoTranslate', () => {
         targetLanguage: 'de',
         sourceValue: paragraph('Hello'),
       },
+    })
+  })
+
+  it('triggers the queued job to run immediately rather than waiting for the next autoRun poll', async () => {
+    await runHook({
+      ...baseArgs,
+      value: {
+        en: paragraph('Hello'),
+        de: paragraph(''),
+      },
+      previousValue: {
+        en: paragraph(''),
+        de: paragraph(''),
+      },
+    })
+
+    // The hook's own `await` only covers `queue()` — `runByID` is fired via
+    // an un-awaited `.then()` so it doesn't block the save response. Give
+    // that microtask a tick to run before asserting on it.
+    await vi.waitFor(() => {
+      expect(runByIDMock).toHaveBeenCalledWith({
+        id: 'job-1',
+      })
+    })
+  })
+
+  it('logs (and does not throw) when the immediate run fails', async () => {
+    runByIDMock.mockRejectedValueOnce(new Error('worker unavailable'))
+
+    await expect(
+      runHook({
+        ...baseArgs,
+        value: {
+          en: paragraph('Hello'),
+          de: paragraph(''),
+        },
+        previousValue: {
+          en: paragraph(''),
+          de: paragraph(''),
+        },
+      }),
+    ).resolves.toBeDefined()
+
+    await vi.waitFor(() => {
+      expect(loggerErrorMock).toHaveBeenCalledWith(
+        expect.stringContaining('Failed running auto-translate job job-1'),
+      )
     })
   })
 

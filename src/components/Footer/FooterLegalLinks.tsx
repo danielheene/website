@@ -4,13 +4,11 @@ import { CMSLink } from '@/components/Link'
 import type { NavEntry } from '@/fields/Link/lib/resolveLinkTarget'
 
 interface FooterLegalLinksProps {
-  legalPages?: {
-    entries?: NavEntry[] | null
-  }
+  entries?: NavEntry[] | null
   className?: string
 }
 
-export const FooterLegalLinks = ({ legalPages: { entries }, className }: FooterLegalLinksProps) => {
+export const FooterLegalLinks = ({ entries, className }: FooterLegalLinksProps) => {
   return (
     <nav className={cn('order-1 flex flex-col gap-2 md:order-2 md:flex-row', className)}>
       {entries?.map(({ id, ...link }) => (

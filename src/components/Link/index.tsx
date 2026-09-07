@@ -8,6 +8,12 @@ import { CUSTOM_URL_SLUG, resolveLinkTarget } from '@/fields/Link/lib/resolveLin
 import { generateContentURL } from '@/lib/generateContentURL'
 
 type CMSLinkType = LinkFieldDataLean & {
+  /**
+   * Rendered inline content for the link — used by the RichText `link`
+   * converter (`serialize.tsx`) to pass through the selection's actual
+   * serialized Lexical children (which may carry bold/italic/etc., not just
+   * plain text) instead of the field's own `text` label.
+   */
   children?: React.ReactNode
   className?: string
   newTab?: boolean
@@ -52,13 +58,15 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     : {}
 
   const hasIcon = Boolean(iconBefore || iconAfter)
-  const showText = !(hasIcon && iconOnly)
+  const content = children ?? text
 
   return (
     <Button
       className={className}
       size={size}
       variant={variant}
+      startIcon={!iconOnly && iconBefore ? iconBefore : undefined}
+      endIcon={!iconOnly && iconAfter ? iconAfter : undefined}
       {...(hasIcon && iconOnly
         ? {
             'aria-label': text,
@@ -67,10 +75,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
       asChild
     >
       <Link href={href} {...newTabProps}>
-        {iconBefore && <Icon name={iconBefore} />}
-        {showText && text && <span>{text}</span>}
-        {showText && children}
-        {iconAfter && <Icon name={iconAfter} />}
+        {iconOnly ? iconBefore && <Icon name={iconBefore} /> : content}
       </Link>
     </Button>
   )

@@ -1,6 +1,7 @@
 import type { FieldHook } from 'payload'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 
+import { extractErrorMessage } from '@/lib/extractErrorMessage'
 import { isEmptyValue } from '@/lib/lexical/isEmptyValue'
 import type { BilingualLanguageValue } from '@/types/bilingualLanguage'
 import { BilingualLanguage } from '@/types/bilingualLanguage'
@@ -51,25 +52,44 @@ export const enqueueAutoTranslate: FieldHook<AnyDocWithID, BilingualValue> = asy
     isEmptyValue(value?.[target]) &&
     isEmptyValue(previousValue?.[target])
 
+  // Queued, then triggered to run immediately instead of waiting for the
+  // next `autoRun` poll on `QueueSlug.HookHandler` (up to a minute away) —
+  // `TranslateControls` finds this job and subscribes to its SSE progress
+  // right after the save that queues it, so a slow poll would sit there
+  // looking idle for no reason. Not awaited: this hook already has its own
+  // `value` to return, and letting the run block the save response would
+  // turn a background translation into a synchronous one.
   const enqueue = (source: BilingualLanguageValue, target: BilingualLanguageValue) =>
-    req.payload.jobs.queue({
-      task: TaskSlug.AutoTranslateBilingualField,
-      queue: QueueSlug.HookHandler,
-      input: {
-        mode: 'auto',
-        collectionSlug: collection.slug,
-        docId: String(docId),
-        path: path.join('.'),
-        sourceLanguage: source,
-        targetLanguage: target,
-        // The task's `sourceValue` input is a generic `json` field (see
-        // autoTranslateBilingualField.ts), typed as a loose JSON union —
-        // it doesn't structurally match SerializedEditorState's specific
-        // shape, so this bridges through `unknown` rather than lying about
-        // literal type compatibility.
-        sourceValue: value?.[source] as unknown as Record<string, unknown>,
-      },
-    })
+    req.payload.jobs
+      .queue({
+        task: TaskSlug.AutoTranslateBilingualField,
+        queue: QueueSlug.HookHandler,
+        input: {
+          mode: 'auto',
+          collectionSlug: collection.slug,
+          docId: String(docId),
+          path: path.join('.'),
+          sourceLanguage: source,
+          targetLanguage: target,
+          // The task's `sourceValue` input is a generic `json` field (see
+          // autoTranslateBilingualField.ts), typed as a loose JSON union —
+          // it doesn't structurally match SerializedEditorState's specific
+          // shape, so this bridges through `unknown` rather than lying
+          // about literal type compatibility.
+          sourceValue: value?.[source] as unknown as Record<string, unknown>,
+        },
+      })
+      .then((job) => {
+        void req.payload.jobs
+          .runByID({
+            id: job.id,
+          })
+          .catch((error) => {
+            req.payload.logger.error(
+              `Failed running auto-translate job ${job.id}: ${extractErrorMessage(error)}`,
+            )
+          })
+      })
 
   const jobs: Promise<unknown>[] = []
   if (shouldFill(BilingualLanguage.English, BilingualLanguage.German)) {

@@ -30,4 +30,30 @@ describe('CMSLink', () => {
       }),
     ).toBeInTheDocument()
   })
+
+  it('renders exactly one anchor when icons are set, with no separate wrapper element', () => {
+    // Regression guard for the Button/CMSLink split: iconBefore/iconAfter
+    // used to be rendered by CMSLink itself, inside the <Link>'s children.
+    // They now pass through to Button's startIcon/endIcon and rely on
+    // Slot/Slottable to end up as children of the same anchor — asserting
+    // there is still exactly one link element (not the icon's element
+    // sitting outside it) catches a regression to that merge without
+    // depending on Iconify's async icon data loading in tests.
+    render(
+      <CMSLink
+        iconBefore="arrow-left"
+        iconAfter="arrow-right"
+        text="Visit example"
+        linkType="custom"
+        doc={null}
+        url="https://example.com"
+      />,
+    )
+
+    expect(
+      screen.getAllByRole('link', {
+        name: 'Visit example',
+      }),
+    ).toHaveLength(1)
+  })
 })

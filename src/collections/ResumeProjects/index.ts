@@ -40,20 +40,23 @@ export const ResumeProjects: CollectionConfig<CollectionSlug['ResumeProjects']> 
   fields: [
     /* -------------- Main  Content -------------- */
     {
-      type: 'text',
-      name: 'scope',
-    },
-    {
-      type: 'text',
-      name: 'title',
-    },
-    {
-      type: 'upload',
-      name: 'images',
-      relationTo: [
-        CollectionSlug.MediaImages,
+      type: 'row',
+      fields: [
+        {
+          type: 'text',
+          name: 'scope',
+          admin: {
+            width: '33%',
+          },
+        },
+        {
+          type: 'text',
+          name: 'title',
+          admin: {
+            width: '66%',
+          },
+        },
       ],
-      hasMany: true,
     },
     RichTextField({
       name: 'description',
@@ -61,13 +64,6 @@ export const ResumeProjects: CollectionConfig<CollectionSlug['ResumeProjects']> 
     }),
 
     /* -------------- Sidebar Content -------------- */
-    {
-      type: 'checkbox',
-      name: 'published',
-      admin: {
-        position: 'sidebar',
-      },
-    },
     {
       type: 'relationship',
       name: 'relatedPost',
@@ -80,8 +76,27 @@ export const ResumeProjects: CollectionConfig<CollectionSlug['ResumeProjects']> 
       },
     },
 
+    {
+      type: 'upload',
+      name: 'images',
+      relationTo: [
+        CollectionSlug.MediaImages,
+      ],
+      hasMany: true,
+      admin: {
+        position: 'sidebar',
+        isSortable: true,
+      },
+    },
+
     GeneratorFlagsField(),
   ],
   trash: true,
-  versions: false,
+  versions: {
+    drafts: {
+      autosave: false,
+      schedulePublish: true,
+    },
+    maxPerDoc: 50,
+  },
 }

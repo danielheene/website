@@ -1312,8 +1312,8 @@ export interface ResumeJobData {
   title: string;
   tasks?:
     | {
-        task: {
-          en: {
+        task?: {
+          en?: {
             root: {
               type: string;
               children: {
@@ -1327,8 +1327,8 @@ export interface ResumeJobData {
               version: number;
             };
             [k: string]: unknown;
-          };
-          de: {
+          } | null;
+          de?: {
             root: {
               type: string;
               children: {
@@ -1342,7 +1342,7 @@ export interface ResumeJobData {
               version: number;
             };
             [k: string]: unknown;
-          };
+          } | null;
         };
         id?: string | null;
       }[]
@@ -1401,12 +1401,6 @@ export interface ResumeProjectData {
   id: string;
   scope?: string | null;
   title?: string | null;
-  images?:
-    | {
-        relationTo: 'images';
-        value: string | MediaImage;
-      }[]
-    | null;
   description?: {
     root: {
       type: string;
@@ -1422,11 +1416,16 @@ export interface ResumeProjectData {
     };
     [k: string]: unknown;
   } | null;
-  published?: boolean | null;
   relatedPost?: {
     relationTo: 'posts';
     value: string | BlogPostData;
   } | null;
+  images?:
+    | {
+        relationTo: 'images';
+        value: string | MediaImage;
+      }[]
+    | null;
   generatorFlags?: (
     | 'resume-asset'
     | 'thumbnail'
@@ -1440,6 +1439,7 @@ export interface ResumeProjectData {
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1447,8 +1447,8 @@ export interface ResumeProjectData {
  */
 export interface ResumeSkillData {
   id: string;
-  content: {
-    en: {
+  content?: {
+    en?: {
       root: {
         type: string;
         children: {
@@ -1462,8 +1462,8 @@ export interface ResumeSkillData {
         version: number;
       };
       [k: string]: unknown;
-    };
-    de: {
+    } | null;
+    de?: {
       root: {
         type: string;
         children: {
@@ -1477,7 +1477,7 @@ export interface ResumeSkillData {
         version: number;
       };
       [k: string]: unknown;
-    };
+    } | null;
   };
   title?: string | null;
   published?: boolean | null;
@@ -2051,14 +2051,14 @@ export interface ResumeJobsSelect<T extends boolean = true> {
 export interface ResumeProjectsSelect<T extends boolean = true> {
   scope?: T;
   title?: T;
-  images?: T;
   description?: T;
-  published?: T;
   relatedPost?: T;
+  images?: T;
   generatorFlags?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3027,6 +3027,10 @@ export interface TaskSchedulePublish {
       | ({
           relationTo: 'pages';
           value: string | Page;
+        } | null)
+      | ({
+          relationTo: 'resume-projects';
+          value: string | ResumeProjectData;
         } | null);
     global?: string | null;
     user?: (string | null) | User;

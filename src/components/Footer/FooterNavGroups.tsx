@@ -20,14 +20,16 @@ export const FooterNavGroups = ({ navGroups, className }: FooterNavGroupsProps) 
           key={groupKey}
           className="col-span-1 lg:nth-last-[1]:-col-end-1 lg:nth-last-[2]:-col-end-2 lg:nth-last-[3]:-col-end-3"
         >
-          <h3 className="mb-2 font-mono font-medium text-lg xl:text-2xl text-primary">{title}</h3>
+          <h3 className="h-(--footer-header-height) mb-(--footer-header-gap) font-mono font-medium text-lg xl:text-2xl text-primary">
+            {title}
+          </h3>
           <ul className="text-sm ml-1">
             {entries?.map(({ id, ...link }) => (
               <li
                 key={id}
                 className="font-pp-frama font-medium xl:text-lg text-current/75 hover:text-current"
               >
-                <CMSLink {...link} />
+                <CMSLink {...link} variant="link" size="default" />
               </li>
             ))}
           </ul>

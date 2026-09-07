@@ -93,32 +93,34 @@ export const Footer = async () => {
   return (
     <footer
       className={cn([
-        'transition-constants',
-        'bg-background text-foreground',
+        'transition-constants bg-background text-foreground',
+        '[--footer-header-height:24px] md:[--footer-header-height:30px] lg:[--footer-header-height:36px]',
+        '[--footer-header-gap:12px] md:[--footer-header-gap:16px] lg:[--footer-header-gap:20px]',
       ])}
     >
-      <section className="container">
-        <div className="w-full pt-20 mt-20 border-t border-foreground/50">
-          <div className="flex w-full flex-row justify-between items-center mb-4">
+      <section className="container before:block before:my-20 before:h-px before:bg-foreground/50">
+        <div className="flex w-full flex-row justify-between relative">
+          <div className="flex flex-col gap-8 col-span-12 md:col-span-6 xl:col-span-3">
             <Link href="/">
-              <Logo variant="inline" className="h-5 md:h-6 xl:h-7" blink />
+              <Logo
+                variant="inline"
+                className="h-(--footer-header-height) mb-(--footer-header-gap)"
+                blink
+              />
             </Link>
-            <FooterThemeSwitcher />
+            <FooterSocialLinks socialLinks={socialLinks} />
           </div>
           <div className="flex w-full flex-col justify-between gap-10 lg:flex-row lg:items-start lg:text-left">
-            <FooterSocialLinks socialLinks={socialLinks} className="w-full" />
             <FooterNavGroups navGroups={navGroups} className="w-full" />
           </div>
-          <div className="mt-8 flex flex-col justify-between gap-4 border-t py-8 text-xs font-medium text-muted-foreground md:flex-row md:items-center md:text-left">
-            <ServiceStatus className="mr-auto" />
-            <FooterLegalLinks
-              legalPages={
-                legalPages as {
-                  entries?: NavEntry[] | null
-                }
-              }
-            />
+          <div className="absolute top-0 right-0">
+            <FooterThemeSwitcher />
           </div>
+        </div>
+
+        <div className="mt-8 flex flex-col justify-between gap-4 border-t py-8 text-xs font-medium text-muted-foreground md:flex-row md:items-center md:text-left">
+          <ServiceStatus className="mr-auto" />
+          <FooterLegalLinks entries={legalPages.entries} />
         </div>
       </section>
     </footer>
