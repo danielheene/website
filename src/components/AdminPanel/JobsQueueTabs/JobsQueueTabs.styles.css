@@ -1,0 +1,44 @@
+@reference "#payload.css";
+
+@layer components {
+  /**
+   * Same reasoning as `MediaScopeTabs`: Payload's list header stacks
+   * `__content` and `__after-header-content` at full width, so the two
+   * filters land on their own line below the title unless we override that.
+   */
+  .list-header:has(.jobs-queue-tabs) {
+    @apply items-end gap-4;
+
+    .list-header__content {
+      @apply w-auto grow;
+    }
+
+    .list-header__after-header-content {
+      @apply w-auto;
+      @apply mb-1;
+    }
+  }
+
+  .jobs-queue-tabs {
+    @apply flex flex-row flex-wrap gap-4 items-center;
+  }
+
+  /* `<fieldset>` only for the a11y grouping semantics — its default border,
+   * padding and margin aren't wanted here. */
+  .rotating-filter {
+    @apply flex flex-row gap-1 items-center;
+    @apply border-0 p-0 m-0;
+  }
+
+  .rotating-filter__dropdown {
+    @apply relative;
+  }
+
+  /* Same classes as `ScheduledJobsWidget.Header`'s listbox popup. */
+  .rotating-filter__listbox {
+    @apply absolute right-0 top-full mt-1 z-10;
+    @apply flex flex-col gap-1;
+    @apply bg-background border border-border p-2;
+    @apply min-w-full;
+  }
+}

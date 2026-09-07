@@ -52,6 +52,7 @@ import { ExportPreview as ExportPreview_cdf7e044479f899a31f804427d568b36 } from 
 import { ExportSaveButton as ExportSaveButton_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
 import { ImportPreview as ImportPreview_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
 import { ImportSaveButton as ImportSaveButton_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
+import { JobsQueueTabs as JobsQueueTabs_507e78068112f224b6312ac61b483f9c } from '@/components/AdminPanel/JobsQueueTabs'
 import { default as default_eab0cf681484e45124c7c61673362c49 } from '@/fields/Template/Components/FieldComponent'
 import { default as default_184096423d48b3396fdb451647a008e7 } from '@/fields/Duration/components/FieldComponent'
 import { default as default_d04b05675537c5553065b881d10ad13c } from '@/globals/PDFGeneratorSettings/components/SkillSortingField'
@@ -129,6 +130,7 @@ export const importMap = {
   "@payloadcms/plugin-import-export/rsc#ExportSaveButton": ExportSaveButton_cdf7e044479f899a31f804427d568b36,
   "@payloadcms/plugin-import-export/rsc#ImportPreview": ImportPreview_cdf7e044479f899a31f804427d568b36,
   "@payloadcms/plugin-import-export/rsc#ImportSaveButton": ImportSaveButton_cdf7e044479f899a31f804427d568b36,
+  "@/components/AdminPanel/JobsQueueTabs#JobsQueueTabs": JobsQueueTabs_507e78068112f224b6312ac61b483f9c,
   "@/fields/Template/Components/FieldComponent#default": default_eab0cf681484e45124c7c61673362c49,
   "@/fields/Duration/components/FieldComponent#default": default_184096423d48b3396fdb451647a008e7,
   "@/globals/PDFGeneratorSettings/components/SkillSortingField#default": default_d04b05675537c5553065b881d10ad13c,

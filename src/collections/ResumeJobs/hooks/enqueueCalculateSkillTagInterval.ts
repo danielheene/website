@@ -51,7 +51,7 @@ export const enqueueCalculateSkillTagInterval: CollectionAfterChangeHook<ResumeJ
       input: {
         skillTagId: changedTag,
       },
-      queue: QueueSlug.Default,
+      queue: QueueSlug.HookHandler,
     })
   }
 }

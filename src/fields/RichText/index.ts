@@ -28,7 +28,7 @@ import {
 import { cn } from 'tailwind-variants'
 
 import { IconPickerFeature } from '@/fields/Icon/lexical/feature.server'
-import { LinkField } from '@/fields/Link'
+import { linkFeatureFields } from '@/fields/Link'
 import { BlockSlug } from '@/types/blocks'
 
 const defaultAdminConfig: LexicalFieldAdminProps = {
@@ -110,22 +110,18 @@ const inlineFeatures = [
 
 const captionFeatures = [
   ...inlineFeatures,
-  // Uses lexical's stock link fields (`linkType: 'internal' | 'custom'`,
-  // `doc`, `url`, `newTab`) rather than swapping in `LinkField`'s fields —
-  // the editor already has the link's visible text selected before opening
-  // the popup, so a separate `label` field would just duplicate it, and an
-  // icon belongs in the selection itself (an inline `IconNode` can be part
-  // of what gets linked) rather than a picker field. `LinkField` deliberately
-  // mirrors these same field names/values for the contexts that do need them
-  // (`LinkGroupBlock`, Footer nav, and other group/array fields with no
-  // selected editor text to derive a label from) — see its module doc
-  // comment — so `resolveLinkTarget`/`CMSLink`/the RichText `link` converter
-  // read both shapes through the same logic.
+  // `linkFeatureFields` mirrors `LinkField`'s own rows (`linkType`/`newTab`,
+  // `doc`/`url`, a `text` label) minus the icon fields — an inline `IconNode`
+  // already covers icons inside the editor's own selected text, so
+  // `iconBefore`/`iconAfter`/`iconOnly` would just be dead controls here.
+  // Sharing the row-building logic keeps this drawer looking like the same
+  // control as a standalone `LinkField` (`LinkGroupBlock`, Footer nav, and
+  // other group/array fields with no selected editor text) rather than two
+  // link editors that quietly drift apart — see `fields/Link/index.ts`'s
+  // module doc comment — and lets `resolveLinkTarget`/`CMSLink`/the RichText
+  // `link` converter read both shapes through the same logic.
   LinkFeature({
-    fields: ({ config, defaultFields }) => {
-      console.log('defaultFields', defaultFields)
-      return LinkField().fields
-    },
+    fields: () => linkFeatureFields,
   }),
 ]
 

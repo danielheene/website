@@ -15,7 +15,7 @@ import { PayloadJob } from '@/types/payload'
  * `GenerateResumeDocument` jobs are surfaced first since they're the most
  * common thing an admin checks in on; the rest sort soonest-due first.
  *
- * `HeartbeatQueue` jobs are excluded — they're an internal liveness signal,
+ * `QueueSlug.Heartbeat` jobs are excluded — they're an internal liveness signal,
  * not work an admin needs to review.
  */
 export const fetchScheduledJobs = async (): Promise<PayloadJob[] | null> => {

@@ -27,21 +27,21 @@ describe('generateLocalizedResumeDocument', () => {
     const payload = makePayloadStub()
 
     const tasks = {
-      GenerateResumeFilename: vi.fn(async () => ({
+      generateResumeFilename: vi.fn(async () => ({
         filename: 'resume-en',
       })),
-      BuildLocalizedResumeData: vi.fn(async () => ({
+      buildLocalizedResumeData: vi.fn(async () => ({
         resumeDocumentData: {
           document: {
             title: 'Resume',
           },
         },
       })),
-      GenerateResumeFile: vi.fn(async () => ({
+      generateResumeFile: vi.fn(async () => ({
         resumeFileId: 'file-1',
         resumeFileChecksum: 'checksum-1',
       })),
-      GenerateDocumentThumbnails: vi.fn(async () => ({
+      generateDocumentThumbnails: vi.fn(async () => ({
         thumbnailIDs: [
           'thumb-1',
           'thumb-2',
@@ -60,7 +60,7 @@ describe('generateLocalizedResumeDocument', () => {
       // biome-ignore lint/suspicious/noExplicitAny: mocked subset of Payload's TaskHandlerArgs
     } as any)
 
-    expect(tasks.GenerateResumeFilename).toHaveBeenCalledWith(
+    expect(tasks.generateResumeFilename).toHaveBeenCalledWith(
       'GenerateFilename:en',
       expect.objectContaining({
         input: expect.objectContaining({
@@ -70,7 +70,7 @@ describe('generateLocalizedResumeDocument', () => {
         }),
       }),
     )
-    expect(tasks.BuildLocalizedResumeData).toHaveBeenCalledWith(
+    expect(tasks.buildLocalizedResumeData).toHaveBeenCalledWith(
       'BuildResumeData:en',
       expect.objectContaining({
         input: expect.objectContaining({
@@ -80,7 +80,7 @@ describe('generateLocalizedResumeDocument', () => {
         }),
       }),
     )
-    expect(tasks.GenerateResumeFile).toHaveBeenCalledWith(
+    expect(tasks.generateResumeFile).toHaveBeenCalledWith(
       'BuildResumeFile:en',
       expect.objectContaining({
         input: expect.objectContaining({
@@ -93,7 +93,7 @@ describe('generateLocalizedResumeDocument', () => {
         }),
       }),
     )
-    expect(tasks.GenerateDocumentThumbnails).toHaveBeenCalledWith(
+    expect(tasks.generateDocumentThumbnails).toHaveBeenCalledWith(
       'BuildResumeThumbnails:en',
       expect.objectContaining({
         input: expect.objectContaining({
@@ -124,12 +124,12 @@ describe('generateLocalizedResumeDocument', () => {
     const failure = new Error('boom')
 
     const tasks = {
-      GenerateResumeFilename: vi.fn(async () => {
+      generateResumeFilename: vi.fn(async () => {
         throw failure
       }),
-      BuildLocalizedResumeData: vi.fn(),
-      GenerateResumeFile: vi.fn(),
-      GenerateDocumentThumbnails: vi.fn(),
+      buildLocalizedResumeData: vi.fn(),
+      generateResumeFile: vi.fn(),
+      generateDocumentThumbnails: vi.fn(),
     }
 
     await expect(
@@ -145,8 +145,8 @@ describe('generateLocalizedResumeDocument', () => {
       } as any),
     ).rejects.toThrow('boom')
 
-    expect(tasks.BuildLocalizedResumeData).not.toHaveBeenCalled()
-    expect(tasks.GenerateResumeFile).not.toHaveBeenCalled()
-    expect(tasks.GenerateDocumentThumbnails).not.toHaveBeenCalled()
+    expect(tasks.buildLocalizedResumeData).not.toHaveBeenCalled()
+    expect(tasks.generateResumeFile).not.toHaveBeenCalled()
+    expect(tasks.generateDocumentThumbnails).not.toHaveBeenCalled()
   })
 })

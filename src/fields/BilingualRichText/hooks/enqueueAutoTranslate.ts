@@ -54,7 +54,7 @@ export const enqueueAutoTranslate: FieldHook<AnyDocWithID, BilingualValue> = asy
   const enqueue = (source: BilingualLanguageValue, target: BilingualLanguageValue) =>
     req.payload.jobs.queue({
       task: TaskSlug.AutoTranslateBilingualField,
-      queue: QueueSlug.Default,
+      queue: QueueSlug.HookHandler,
       input: {
         mode: 'auto',
         collectionSlug: collection.slug,

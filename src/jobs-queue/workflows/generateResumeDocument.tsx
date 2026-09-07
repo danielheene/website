@@ -96,7 +96,7 @@ export const generateResumeDocument: WorkflowConfig<WorkflowSlug['GenerateResume
 
     try {
       await publishStep('Generating document title…')
-      const { documentTitle } = await tasks.GenerateResumeDocumentTitle(
+      const { documentTitle } = await tasks.generateResumeDocumentTitle(
         `GenerateDocumentTitle:${customId}`,
         {
           retries,
@@ -109,7 +109,7 @@ export const generateResumeDocument: WorkflowConfig<WorkflowSlug['GenerateResume
 
       payload.logger.info('Processing LocalizedResumeDocument Tasks: EN')
       await publishStep('Generating English resume…')
-      const en = await tasks.GenerateLocalizedResumeDocument(
+      const en = await tasks.generateLocalizedResumeDocument(
         `${TaskSlug.GenerateLocalizedResumeDocument}:${customId}:EN`,
         {
           retries,
@@ -126,7 +126,7 @@ export const generateResumeDocument: WorkflowConfig<WorkflowSlug['GenerateResume
 
       payload.logger.info('Processing LocalizedResumeDocument Tasks: DE')
       await publishStep('Generating German resume…')
-      const de = await tasks.GenerateLocalizedResumeDocument(
+      const de = await tasks.generateLocalizedResumeDocument(
         `${TaskSlug.GenerateLocalizedResumeDocument}:${customId}:DE`,
         {
           retries,
@@ -142,7 +142,7 @@ export const generateResumeDocument: WorkflowConfig<WorkflowSlug['GenerateResume
       payload.logger.info('Successfully processed LocalizedResumeDocument Tasks: DE')
 
       await publishStep('Saving resume document…')
-      await tasks.CreateResumeDocument(`CreateResumeDocument:${customId}`, {
+      await tasks.createResumeDocument(`CreateResumeDocument:${customId}`, {
         retries,
         input: {
           documentTitle,

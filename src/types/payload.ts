@@ -193,18 +193,18 @@ export interface Config {
   user: User;
   jobs: {
     tasks: {
-      GenerateDocumentThumbnails: TaskGenerateDocumentThumbnails;
-      GenerateVideoThumbnails: TaskGenerateVideoThumbnails;
-      CalculateSkillTagInterval: TaskCalculateSkillTagInterval;
-      GenerateLocalizedResumeDocument: TaskGenerateLocalizedResumeDocument;
-      GenerateResumeFilename: TaskGenerateResumeFilename;
-      BuildLocalizedResumeData: TaskBuildLocalizedResumeData;
-      GenerateResumeFile: TaskGenerateResumeFile;
-      AutoTranslateBilingualField: TaskAutoTranslateBilingualField;
-      GenerateResumeDocumentTitle: TaskGenerateResumeDocumentTitle;
-      CreateResumeDocument: TaskCreateResumeDocument;
-      HeartbeatPing: TaskHeartbeatPing;
-      SeedCollection: TaskSeedCollection;
+      generateDocumentThumbnails: TaskGenerateDocumentThumbnails;
+      generateVideoThumbnails: TaskGenerateVideoThumbnails;
+      calculateSkillTagInterval: TaskCalculateSkillTagInterval;
+      generateLocalizedResumeDocument: TaskGenerateLocalizedResumeDocument;
+      generateResumeFilename: TaskGenerateResumeFilename;
+      buildLocalizedResumeData: TaskBuildLocalizedResumeData;
+      generateResumeFile: TaskGenerateResumeFile;
+      autoTranslateBilingualField: TaskAutoTranslateBilingualField;
+      generateResumeDocumentTitle: TaskGenerateResumeDocumentTitle;
+      createResumeDocument: TaskCreateResumeDocument;
+      heartbeatPing: TaskHeartbeatPing;
+      seedCollection: TaskSeedCollection;
       createCollectionExport: TaskCreateCollectionExport;
       createCollectionImport: TaskCreateCollectionImport;
       schedulePublish: TaskSchedulePublish;
@@ -214,7 +214,7 @@ export interface Config {
       };
     };
     workflows: {
-      GenerateResumeDocument: WorkflowGenerateResumeDocument;
+      generateResumeDocument: WorkflowGenerateResumeDocument;
     };
   };
 }
@@ -1215,18 +1215,18 @@ export interface PayloadJob {
         completedAt: string;
         taskSlug:
           | 'inline'
-          | 'GenerateDocumentThumbnails'
-          | 'GenerateVideoThumbnails'
-          | 'CalculateSkillTagInterval'
-          | 'GenerateLocalizedResumeDocument'
-          | 'GenerateResumeFilename'
-          | 'BuildLocalizedResumeData'
-          | 'GenerateResumeFile'
-          | 'AutoTranslateBilingualField'
-          | 'GenerateResumeDocumentTitle'
-          | 'CreateResumeDocument'
-          | 'HeartbeatPing'
-          | 'SeedCollection'
+          | 'generateDocumentThumbnails'
+          | 'generateVideoThumbnails'
+          | 'calculateSkillTagInterval'
+          | 'generateLocalizedResumeDocument'
+          | 'generateResumeFilename'
+          | 'buildLocalizedResumeData'
+          | 'generateResumeFile'
+          | 'autoTranslateBilingualField'
+          | 'generateResumeDocumentTitle'
+          | 'createResumeDocument'
+          | 'heartbeatPing'
+          | 'seedCollection'
           | 'createCollectionExport'
           | 'createCollectionImport'
           | 'schedulePublish';
@@ -1262,22 +1262,22 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  workflowSlug?: 'GenerateResumeDocument' | null;
+  workflowSlug?: 'generateResumeDocument' | null;
   taskSlug?:
     | (
         | 'inline'
-        | 'GenerateDocumentThumbnails'
-        | 'GenerateVideoThumbnails'
-        | 'CalculateSkillTagInterval'
-        | 'GenerateLocalizedResumeDocument'
-        | 'GenerateResumeFilename'
-        | 'BuildLocalizedResumeData'
-        | 'GenerateResumeFile'
-        | 'AutoTranslateBilingualField'
-        | 'GenerateResumeDocumentTitle'
-        | 'CreateResumeDocument'
-        | 'HeartbeatPing'
-        | 'SeedCollection'
+        | 'generateDocumentThumbnails'
+        | 'generateVideoThumbnails'
+        | 'calculateSkillTagInterval'
+        | 'generateLocalizedResumeDocument'
+        | 'generateResumeFilename'
+        | 'buildLocalizedResumeData'
+        | 'generateResumeFile'
+        | 'autoTranslateBilingualField'
+        | 'generateResumeDocumentTitle'
+        | 'createResumeDocument'
+        | 'heartbeatPing'
+        | 'seedCollection'
         | 'createCollectionExport'
         | 'createCollectionImport'
         | 'schedulePublish'

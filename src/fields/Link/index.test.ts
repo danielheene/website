@@ -3,7 +3,7 @@ import type { Field } from 'payload'
 
 import { describe, expect, it } from 'vitest'
 
-import { LinkField } from './index'
+import { LinkField, linkFeatureFields } from './index'
 
 const flatten = (fields: Field[]): Field[] =>
   fields.flatMap((field) =>
@@ -233,5 +233,26 @@ describe('LinkField', () => {
       }),
     ).toBe(true)
     expect(condition(null, {})).toBe(true)
+  })
+})
+
+describe('linkFeatureFields', () => {
+  const namedInFeature = (name: string) =>
+    flatten(linkFeatureFields).find((field) => 'name' in field && field.name === name)
+
+  it('drops the icon fields and iconOnly, keeping everything else LinkField has', () => {
+    expect(namedInFeature('iconBefore')).toBeUndefined()
+    expect(namedInFeature('iconAfter')).toBeUndefined()
+    expect(namedInFeature('iconOnly')).toBeUndefined()
+
+    expect(namedInFeature('linkType')).toBeDefined()
+    expect(namedInFeature('newTab')).toBeDefined()
+    expect(namedInFeature('doc')).toBeDefined()
+    expect(namedInFeature('url')).toBeDefined()
+    expect(namedInFeature('text')).toBeDefined()
+  })
+
+  it('is not wrapped in a group, unlike LinkField', () => {
+    expect(linkFeatureFields.every((field) => field.type === 'row')).toBe(true)
   })
 })

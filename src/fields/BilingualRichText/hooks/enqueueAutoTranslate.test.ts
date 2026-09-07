@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { QueueSlug } from '@/types/jobs-queue'
+import { QueueSlug, TaskSlug } from '@/types/jobs-queue'
 
 import { enqueueAutoTranslate } from './enqueueAutoTranslate'
 
@@ -74,8 +74,8 @@ describe('enqueueAutoTranslate', () => {
 
     expect(queueMock).toHaveBeenCalledTimes(1)
     expect(queueMock).toHaveBeenCalledWith({
-      task: 'AutoTranslateBilingualField',
-      queue: QueueSlug.Default,
+      task: TaskSlug.AutoTranslateBilingualField,
+      queue: QueueSlug.HookHandler,
       input: {
         mode: 'auto',
         collectionSlug: 'resume-jobs',

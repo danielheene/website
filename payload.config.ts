@@ -16,6 +16,7 @@ import sharp from 'sharp'
 import { BLOCKS } from '@/blocks'
 import { COLLECTIONS } from '@/collections'
 import { GLOBALS } from '@/globals'
+import { scopeJobsList } from '@/jobs-queue/lib/jobsListFilter'
 import { TASKS } from '@/jobs-queue/tasks'
 import { WORKFLOWS } from '@/jobs-queue/workflows'
 import { SENTRY_ENABLED } from '@/lib/sentry/options'
@@ -168,6 +169,11 @@ export const config = buildConfig({
       },
       {
         cron: '* * * * *',
+        queue: QueueSlug.HookHandler,
+        limit: 10,
+      },
+      {
+        cron: '* * * * *',
         queue: QueueSlug.ResumeGeneration,
         limit: 10,
       },
@@ -182,6 +188,11 @@ export const config = buildConfig({
       admin: {
         ...defaultJobsCollection.admin,
         hidden: false,
+        baseFilter: scopeJobsList,
+        components: {
+          ...defaultJobsCollection.admin?.components,
+          Description: '@/components/AdminPanel/JobsQueueTabs#JobsQueueTabs',
+        },
       },
     }),
   },
