@@ -326,10 +326,10 @@ export default async (phase, { defaultConfig }) => {
     async rewrites() {
       const rewrites = []
 
-      if (process.env['NEXT_PUBLIC_UMAMI_URL']) {
+      if (process.env.NEXT_PUBLIC_UMAMI_URL) {
         rewrites.push({
           source: '/stats/:match*',
-          destination: `${process.env['NEXT_PUBLIC_UMAMI_URL']}/:match*`,
+          destination: `${process.env.NEXT_PUBLIC_UMAMI_URL}/:match*`,
         })
       }
 

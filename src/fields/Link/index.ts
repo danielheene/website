@@ -22,17 +22,18 @@ type LinkFieldConfig = {
  * 1. `linkType` (which mode is active, 50%), `newTab` (25%), `iconOnly` (25%)
  * 2. `doc` (relationship dropdown) or `url` (text input) — only one is
  *    ever visible, switched by `linkType`
- * 3. `iconBefore`, `label`, `iconAfter` — `iconAfter` hides when `iconOnly`
+ * 3. `iconBefore`, `text`, `iconAfter` — `iconAfter` hides when `iconOnly`
  *    is checked, since an icon-only link renders a single leading icon plus
  *    an invisible `aria-label` (see `CMSLink`)
  *
  * `linkType` and `doc`'s names and values deliberately match lexical's own
  * built-in `LinkFeature` base fields (`linkType: 'internal' | 'custom'`,
- * `doc`) — this field exists for contexts `LinkFeature` doesn't cover
- * (`LinkGroupBlock`, Footer nav, and similar group/array fields with no
- * selected editor text to derive a label or icon from), but shares the same
- * field names so `resolveLinkTarget`/`CMSLink`/the RichText `link` converter
- * can read either shape with the same logic instead of two parallel ones.
+ * `doc`) — `LinkFeature()` (see `fields/RichText/index.ts`) swaps this whole
+ * field set in directly rather than lexical's stock link fields, so a link
+ * built from selected editor text and a `LinkField` in `LinkGroupBlock`/
+ * Footer nav/similar group or array fields both save the exact same shape,
+ * and `resolveLinkTarget`/`CMSLink`/the RichText `link` converter can read
+ * either with the same logic instead of two parallel ones.
  */
 export const LinkField = ({ overrides = {} }: LinkFieldConfig = {}): GroupField =>
   deepMerge<GroupField, LinkFieldOverrides>(
@@ -190,7 +191,7 @@ export const LinkField = ({ overrides = {} }: LinkFieldConfig = {}): GroupField 
               name: 'iconBefore',
             }),
             {
-              name: 'label',
+              name: 'text',
               type: 'text',
               label: 'Label',
               required: true,

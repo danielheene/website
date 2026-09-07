@@ -126,13 +126,21 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
       name: 'links',
       type: 'array',
       fields: [
-        IconField({
-          name: 'icon',
-        }),
         {
-          name: 'url',
-          label: false,
-          type: 'text',
+          type: 'row',
+          fields: [
+            IconField({
+              name: 'icon',
+            }),
+            {
+              name: 'url',
+              label: false,
+              type: 'text',
+              admin: {
+                placeholder: 'URL',
+              },
+            },
+          ],
         },
       ],
     },

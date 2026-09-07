@@ -11,7 +11,7 @@ import { generateContentURL } from '@/lib/generateContentURL'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 
-import { storeLatestResumeDocumentSlug } from './hooks/storeLatestResumeDocumentSlug'
+import { revalidateLatestResumeDocument } from './hooks/revalidateLatestResumeDocument'
 
 const adminDefaults = {
   allowCreate: false,
@@ -63,7 +63,7 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
   },
   hooks: {
     afterChange: [
-      storeLatestResumeDocumentSlug,
+      revalidateLatestResumeDocument,
     ],
   },
   admin: {
@@ -100,6 +100,9 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
       type: 'text',
       name: 'slug',
       label: 'Slug',
+      index: true,
+      required: true,
+      unique: true,
       admin: {
         position: 'sidebar',
         readOnly: true,

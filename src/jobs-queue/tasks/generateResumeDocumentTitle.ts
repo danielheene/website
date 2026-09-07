@@ -15,7 +15,7 @@ export const generateResumeDocumentTitle: TaskConfig<TaskSlug['GenerateResumeDoc
     },
     {
       type: 'text',
-      name: 'sharedId',
+      name: 'customId',
       required: true,
     },
   ],
@@ -29,14 +29,14 @@ export const generateResumeDocumentTitle: TaskConfig<TaskSlug['GenerateResumeDoc
   handler: async ({ input, req: { payload } }) => {
     'use server'
 
-    const { documentTitleTemplate, sharedId } = input
+    const { documentTitleTemplate, customId } = input
 
     payload.logger.info('Generating document title')
 
     const { result, error } = await renderTemplate({
       template: documentTitleTemplate,
       data: {
-        nanoid: sharedId,
+        customId,
       },
       locale: 'en',
     })

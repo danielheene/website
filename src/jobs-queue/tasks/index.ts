@@ -7,7 +7,6 @@ import { calculateSkillTagInterval } from './calculateSkillTagInterval'
 import { createResumeDocument } from './createResumeDocument'
 import { generateDocumentThumbnails } from './generateDocumentThumbnails'
 import { generateLocalizedResumeDocument } from './generateLocalizedResumeDocument'
-import { generateResumeDocumentSlug } from './generateResumeDocumentSlug'
 import { generateResumeDocumentTitle } from './generateResumeDocumentTitle'
 import { generateResumeFile } from './generateResumeFile'
 import { generateResumeFilename } from './generateResumeFilename'
@@ -29,7 +28,6 @@ export const TASKS = [
   generateResumeFile,
   autoTranslateBilingualField,
   generateResumeDocumentTitle,
-  generateResumeDocumentSlug,
   createResumeDocument,
   heartbeatPing,
   seedCollection,

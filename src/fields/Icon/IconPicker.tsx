@@ -149,7 +149,7 @@ export const IconPicker = ({
   return (
     <div
       className={cn([
-        'flex w-full flex-col gap-3',
+        'flex h-full w-full flex-col gap-3',
         className,
       ])}
     >
@@ -178,7 +178,7 @@ export const IconPicker = ({
           onChange={(event) => setQuery(event.target.value)}
           placeholder={activeCollection ? `Search ${activeCollection.label}…` : 'Search icons…'}
           aria-label="Search icons"
-          className="w-full rounded-md border border-input bg-background px-3 py-2 text-xs outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring"
+          className="payload-form-input w-full"
         />
         {value && onClearAction && (
           <Button buttonStyle="secondary" margin={false} onClick={onClearAction}>
@@ -197,7 +197,7 @@ export const IconPicker = ({
           value={category}
           onChange={(event) => setCategory(event.target.value)}
           aria-label="Filter by category"
-          className="w-full cursor-pointer rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring"
+          className="payload-form-input w-full cursor-pointer"
         >
           <option value={ALL_CATEGORIES}>
             All categories ({collectionIcons.length.toLocaleString()})
@@ -262,12 +262,8 @@ const TabButton = ({
     aria-selected={active}
     onClick={onClick}
     className={cn([
-      'cursor-pointer font-pp-supply-sans rounded-md border px-2 py-1 text-xs transition-colors',
-      'focus-visible:ring-2 focus-visible:ring-ring',
-      // active tab is marked by its border only, matching the grid's selection
-      active
-        ? 'border-primary text-foreground'
-        : 'border-transparent text-muted-foreground hover:bg-accent hover:text-accent-foreground',
+      'payload-pill',
+      active && 'payload-pill--active',
     ])}
   >
     {label}

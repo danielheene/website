@@ -5,7 +5,7 @@ import { cn, tv, VariantProps } from 'tailwind-variants'
 
 export const badgeStyles = tv({
   base: cn([
-    'inline-flex items-center rounded-sm px-2 py-1',
+    'inline-flex items-center px-2 py-1',
     'font-medium font-mono select-none',
     'border ',
   ]),
@@ -13,27 +13,27 @@ export const badgeStyles = tv({
     color: {
       neutral: cn([
         '[--badge-color:var(--color-neutral-600)]',
-        'dark:[--badge-color:var(--color-neutral-400)]',
+        // 'dark:[--badge-color:var(--color-neutral-400)]',
       ]),
       primary: cn([
         '[--badge-color:var(--color-primary-600)]',
-        'dark:[--badge-color:var(--color-primary-400)]',
+        // 'dark:[--badge-color:var(--color-primary-400)]',
       ]),
       info: cn([
         '[--badge-color:var(--color-info-600)]',
-        'dark:[--badge-color:var(--color-info-400)]',
+        // 'dark:[--badge-color:var(--color-info-400)]',
       ]),
       success: cn([
-        '[--badge-color:var(--color-success-600)]',
-        'dark:[--badge-color:var(--color-success-400)]',
+        '[--badge-color:var(--color-success-700)]',
+        // 'dark:[--badge-color:var(--color-success-400)]',
       ]),
       warning: cn([
-        '[--badge-color:var(--color-warning-600)]',
-        'dark:[--badge-color:var(--color-warning-400)]',
+        '[--badge-color:var(--color-warning-700)]',
+        // 'dark:[--badge-color:var(--color-warning-400)]',
       ]),
       error: cn([
-        '[--badge-color:var(--color-error-600)]',
-        'dark:[--badge-color:var(--color-error-400)]',
+        '[--badge-color:var(--color-error-700)]',
+        // 'dark:[--badge-color:var(--color-error-400)]',
       ]),
     },
     style: {
@@ -45,12 +45,12 @@ export const badgeStyles = tv({
       light: cn([
         'border-(--badge-color)',
         'bg-[color-mix(in_oklab,var(--badge-color)_15%,var(--color-background)_85%)]',
-        'text-[color-mix(in_oklab,var(--badge-color)_75%,var(--color-foreground)_25%)]',
+        'text-[color-mix(in_oklab,var(--badge-color)_33%,var(--color-foreground)_64%)]',
       ]),
       outline: cn([
         'border-(--badge-color)',
         'bg-transparent',
-        'text-(--badge-color)',
+        'text-[color-mix(in_oklab,var(--badge-color)_33%,var(--color-foreground)_64%)]',
       ]),
     },
     size: {

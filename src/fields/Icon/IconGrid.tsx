@@ -99,7 +99,7 @@ export const IconGrid = ({ icons, isSelected, onSelectAction, describe }: IconGr
     <div
       ref={scrollRef}
       onScroll={(event) => setScrollTop(event.currentTarget.scrollTop)}
-      className="max-h-64 overflow-y-auto scrollbar-none"
+      className="min-h-0 flex-1 overflow-y-auto scrollbar-none"
     >
       {/* full-height spacer keeps the scrollbar honest about the whole set */}
       <div

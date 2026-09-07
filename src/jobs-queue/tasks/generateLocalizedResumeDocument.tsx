@@ -20,7 +20,7 @@ export const generateLocalizedResumeDocument: TaskConfig<
   retries: 3,
   concurrency: {
     key: ({ input }) =>
-      `${TaskSlug.GenerateLocalizedResumeDocument}:${input.sharedId}:${input.locale}`,
+      `${TaskSlug.GenerateLocalizedResumeDocument}:${input.customId}:${input.locale}`,
     exclusive: true,
   },
   inputSchema: [
@@ -41,7 +41,7 @@ export const generateLocalizedResumeDocument: TaskConfig<
     },
     {
       type: 'text',
-      name: 'sharedId',
+      name: 'customId',
       required: true,
     },
     {
@@ -86,7 +86,7 @@ export const generateLocalizedResumeDocument: TaskConfig<
   handler: async ({ tasks, input, req: { payload } }) => {
     'use server'
 
-    const { locale, sharedId, filenameTemplate, createdAt, documentSlug } = input
+    const { locale, customId, filenameTemplate, createdAt, documentSlug } = input
 
     payload.logger.info(`Generating resume document for locale: ${locale}`)
 
@@ -97,7 +97,7 @@ export const generateLocalizedResumeDocument: TaskConfig<
     const { filename } = await tasks.GenerateResumeFilename(`GenerateFilename:${locale}`, {
       input: {
         filenameTemplate,
-        sharedId,
+        customId,
         locale,
       },
     })

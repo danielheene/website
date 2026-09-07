@@ -7,7 +7,6 @@ export const TaskSlug = {
   BuildLocalizedResumeData: 'BuildLocalizedResumeData',
   GenerateResumeFile: 'GenerateResumeFile',
   GenerateResumeDocumentTitle: 'GenerateResumeDocumentTitle',
-  GenerateResumeDocumentSlug: 'GenerateResumeDocumentSlug',
   CreateResumeDocument: 'CreateResumeDocument',
   HeartbeatPing: 'HeartbeatPing',
   AutoTranslateBilingualField: 'AutoTranslateBilingualField',

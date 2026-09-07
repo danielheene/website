@@ -38,7 +38,7 @@ type QueueArgs = {
   workflow: string
   waitUntil: Date
   input: {
-    sharedId: string
+    customId: string
     maximumRetries: number
   }
 }
@@ -118,13 +118,13 @@ describe('enqueueGenerateResumeDocument', () => {
     expect(runByID).not.toHaveBeenCalled()
   })
 
-  it('generates a fresh sharedId per call', async () => {
+  it('generates a fresh customId per call', async () => {
     await enqueueGenerateResumeDocument()
     await enqueueGenerateResumeDocument()
 
-    const [first, second] = queue.mock.calls.map((call) => call[0].input.sharedId)
+    const [first, second] = queue.mock.calls.map((call) => call[0].input.customId)
 
-    expect(first).toHaveLength(32)
+    expect(first).toHaveLength(8)
     expect(second).not.toBe(first)
   })
 

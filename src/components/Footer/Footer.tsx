@@ -34,7 +34,7 @@ export const Footer = async () => {
       link: {
         linkType: 'custom',
         url: `mailto:${email}`,
-        label: 'Email',
+        text: 'Email',
         iconBefore: 'mail',
         iconOnly: true,
         newTab: true,
@@ -48,7 +48,7 @@ export const Footer = async () => {
       link: {
         linkType: 'custom',
         url: parsePhoneNumber(telephone).getURI(),
-        label: 'Telephone',
+        text: 'Telephone',
         iconBefore: 'phone',
         newTab: true,
         iconOnly: true,
@@ -62,7 +62,7 @@ export const Footer = async () => {
       link: {
         linkType: 'custom',
         url,
-        label: name,
+        text: name,
         iconBefore: icon,
         iconOnly: true,
         newTab: true,

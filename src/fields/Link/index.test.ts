@@ -46,15 +46,15 @@ describe('LinkField', () => {
     })
   })
 
-  it('label is a plain required text field with no default value', () => {
-    const label = named('label')
+  it('text is a plain required text field with no default value', () => {
+    const text = named('text')
 
-    expect(label).toMatchObject({
+    expect(text).toMatchObject({
       type: 'text',
       required: true,
     })
-    expect(label).not.toHaveProperty('defaultValue')
-    expect(label?.admin?.components).toBeUndefined()
+    expect(text).not.toHaveProperty('defaultValue')
+    expect(text?.admin?.components).toBeUndefined()
   })
 
   it('doc is shown only when linkType resolves to internal', () => {

@@ -16,7 +16,7 @@ const makePayloadStub = () => ({
 
 const makeInput = () => ({
   locale: 'en' as const,
-  sharedId: 'nanoid-1',
+  customId: 'CUSTOMID1',
   filenameTemplate: 'resume-{nanoid}',
   createdAt: '2026-01-01T00:00:00.000Z',
   documentSlug: 'resume-slug',
@@ -65,7 +65,7 @@ describe('generateLocalizedResumeDocument', () => {
       expect.objectContaining({
         input: expect.objectContaining({
           filenameTemplate: 'resume-{nanoid}',
-          sharedId: 'nanoid-1',
+          customId: 'CUSTOMID1',
           locale: 'en',
         }),
       }),

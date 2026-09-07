@@ -11,9 +11,9 @@ type RenderedCollection =
   | CollectionSlug['BlogTopics']
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const pages = await getCollectionSitemapEntries(CollectionSlug['Pages'])
-  const posts = await getCollectionSitemapEntries(CollectionSlug['BlogPosts'], true)
-  const tags = await getCollectionSitemapEntries(CollectionSlug['BlogTopics'], true)
+  const pages = await getCollectionSitemapEntries(CollectionSlug.Pages)
+  const posts = await getCollectionSitemapEntries(CollectionSlug.BlogPosts, true)
+  const tags = await getCollectionSitemapEntries(CollectionSlug.BlogTopics, true)
 
   return [
     ...pages,
@@ -38,7 +38,7 @@ async function getCollectionData(collection: RenderedCollection): Promise<
     pagination: false,
     // BlogTopics has no drafts/versions system, so `draft` is not a valid
     // query option for it (see src/collections/BlogTopics/index.ts).
-    ...(collection === CollectionSlug['BlogTopics']
+    ...(collection === CollectionSlug.BlogTopics
       ? {}
       : {
           draft: false,

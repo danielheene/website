@@ -8,7 +8,7 @@ import { CollectionSlug } from '@/types/collections'
 import { loginAfterCreate } from './hooks/loginAfterCreate'
 
 export const Users: CollectionConfig = {
-  slug: CollectionSlug['Users'],
+  slug: CollectionSlug.Users,
 
   admin: {
     custom: {
@@ -26,7 +26,7 @@ export const Users: CollectionConfig = {
       type: 'upload',
       name: 'avatar',
       relationTo: [
-        CollectionSlug['MediaImages'],
+        CollectionSlug.MediaImages,
       ],
     },
     {

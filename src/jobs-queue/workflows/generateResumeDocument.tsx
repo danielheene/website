@@ -12,7 +12,7 @@ import { QueueSlug, TaskSlug, WorkflowSlug } from '@/types/jobs-queue'
  * Workflow configuration for generating a complete resume document with localized versions.
  *
  * This workflow orchestrates the entire resume document generation process, including:
- * - Generating document title and slug from templates
+ * - Generating a document title from a template
  * - Creating localized versions (English and German) of the resume document
  * - Generating thumbnails for each localized version
  * - Creating and persisting the final resume document record with all associated files
@@ -30,7 +30,10 @@ import { QueueSlug, TaskSlug, WorkflowSlug } from '@/types/jobs-queue'
  * Required input parameters:
  * - documentTitleTemplate: Template string for generating the document title
  * - filenameTemplate: Template string for generating output filenames
- * - sharedId: Unique identifier used for tracking and coordinating subtasks
+ * - customId: Eight-character id (see `@/lib/nanoid`'s `customId` generator)
+ *   used for tracking and coordinating subtasks, and directly as the
+ *   document's slug — no separate title-to-slug step needed, since the two
+ *   are otherwise unrelated values.
  *
  * The workflow produces a ResumeDocument containing:
  * - Localized PDF documents for EN and DE
@@ -59,7 +62,7 @@ export const generateResumeDocument: WorkflowConfig<WorkflowSlug['GenerateResume
     },
     {
       type: 'text',
-      name: 'sharedId',
+      name: 'customId',
       required: true,
     },
     {
@@ -71,7 +74,8 @@ export const generateResumeDocument: WorkflowConfig<WorkflowSlug['GenerateResume
   handler: async ({ job: { id, input }, req: { payload }, tasks }) => {
     'use server'
 
-    const { documentTitleTemplate, filenameTemplate, sharedId, maximumRetries } = input
+    const { documentTitleTemplate, filenameTemplate, customId, maximumRetries } = input
+    const documentSlug = customId
     const createdAt = getLocalISOString('Europe/Berlin', new Date())
     const retries = {
       attempts: maximumRetries,
@@ -88,28 +92,17 @@ export const generateResumeDocument: WorkflowConfig<WorkflowSlug['GenerateResume
         step,
       })
 
-    payload.logger.info(`Workflow: ${WorkflowSlug.GenerateResumeDocument}:${sharedId} started`)
+    payload.logger.info(`Workflow: ${WorkflowSlug.GenerateResumeDocument}:${customId} started`)
 
     try {
       await publishStep('Generating document title…')
       const { documentTitle } = await tasks.GenerateResumeDocumentTitle(
-        `GenerateDocumentTitle:${sharedId}`,
+        `GenerateDocumentTitle:${customId}`,
         {
           retries,
           input: {
             documentTitleTemplate,
-            sharedId,
-          },
-        },
-      )
-
-      await publishStep('Generating document slug…')
-      const { documentSlug } = await tasks.GenerateResumeDocumentSlug(
-        `GenerateDocumentSlug:${sharedId}`,
-        {
-          retries,
-          input: {
-            documentTitle,
+            customId,
           },
         },
       )
@@ -117,14 +110,14 @@ export const generateResumeDocument: WorkflowConfig<WorkflowSlug['GenerateResume
       payload.logger.info('Processing LocalizedResumeDocument Tasks: EN')
       await publishStep('Generating English resume…')
       const en = await tasks.GenerateLocalizedResumeDocument(
-        `${TaskSlug.GenerateLocalizedResumeDocument}:${sharedId}:EN`,
+        `${TaskSlug.GenerateLocalizedResumeDocument}:${customId}:EN`,
         {
           retries,
           input: {
             locale: 'en',
             documentSlug,
             filenameTemplate,
-            sharedId,
+            customId,
             createdAt,
           },
         },
@@ -134,14 +127,14 @@ export const generateResumeDocument: WorkflowConfig<WorkflowSlug['GenerateResume
       payload.logger.info('Processing LocalizedResumeDocument Tasks: DE')
       await publishStep('Generating German resume…')
       const de = await tasks.GenerateLocalizedResumeDocument(
-        `${TaskSlug.GenerateLocalizedResumeDocument}:${sharedId}:DE`,
+        `${TaskSlug.GenerateLocalizedResumeDocument}:${customId}:DE`,
         {
           retries,
           input: {
             locale: 'de',
             documentSlug,
             filenameTemplate,
-            sharedId,
+            customId,
             createdAt,
           },
         },
@@ -149,7 +142,7 @@ export const generateResumeDocument: WorkflowConfig<WorkflowSlug['GenerateResume
       payload.logger.info('Successfully processed LocalizedResumeDocument Tasks: DE')
 
       await publishStep('Saving resume document…')
-      await tasks.CreateResumeDocument(`CreateResumeDocument:${sharedId}`, {
+      await tasks.CreateResumeDocument(`CreateResumeDocument:${customId}`, {
         retries,
         input: {
           documentTitle,

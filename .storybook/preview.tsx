@@ -6,7 +6,7 @@ import '@/fonts/pp-supply-sans/style.css'
 
 import * as addonA11yPreview from '@storybook/addon-a11y/preview'
 import * as addonDocsPreview from '@storybook/addon-docs/preview'
-import { withThemeByClassName, withThemeByDataAttribute } from '@storybook/addon-themes'
+import { withThemeByClassName } from '@storybook/addon-themes'
 import * as addonThemesPreview from '@storybook/addon-themes/preview'
 import { definePreview } from '@storybook/nextjs'
 

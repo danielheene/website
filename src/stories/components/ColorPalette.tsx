@@ -79,7 +79,7 @@ function renderSwatchSpecimen(colors: Colors) {
 
   let primarySwatch = <Fragment />
   if ('DEFAULT' in colors) {
-    const primaryColor = colors['DEFAULT']
+    const primaryColor = colors.DEFAULT
     const primaryLabelColor = `rgb(from ${primaryColor} r g b / 0.1)`
 
     primarySwatch = (

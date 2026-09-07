@@ -60,9 +60,9 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
       'updatedAt',
     ],
     livePreview: {
-      url: ({ data }) => generatePreviewPath(CollectionSlug['Pages'], data.slug),
+      url: ({ data }) => generatePreviewPath(CollectionSlug.Pages, data.slug),
     },
-    preview: (data: Partial<Page>) => generatePreviewPath(CollectionSlug['Pages'], data.slug),
+    preview: (data: Partial<Page>) => generatePreviewPath(CollectionSlug.Pages, data.slug),
     components: {
       listMenuItems: [
         {

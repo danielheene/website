@@ -196,22 +196,7 @@ export const config = buildConfig({
     importExportPlugin({
       collections: undefined,
       defaultVersionStatus: 'published',
-      overrideImportCollection: ({ collection }) => ({
-        ...collection,
-        slug: CollectionSlug.PayloadImports,
-        admin: {
-          ...collection.admin,
-          hidden: false,
-        },
-      }),
-      overrideExportCollection: ({ collection }) => ({
-        ...collection,
-        slug: CollectionSlug.PayloadExports,
-        admin: {
-          ...collection.admin,
-          hidden: false,
-        },
-      }),
+      batchSize: 250,
     }),
     // nestedDocsPlugin({
     //   collections: [CollectionSlug['ResumeSkills']],

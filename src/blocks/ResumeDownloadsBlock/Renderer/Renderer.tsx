@@ -1,6 +1,6 @@
 'use server'
 
-import { fetchLatestResumeDocumentCore } from '@/lib/fetchers/fetchLatestResumeDocumentCore'
+import { fetchLatestResumeDocument } from '@/lib/fetchers/fetchLatestResumeDocument'
 import { ResumeDownloadsBlock } from '@/types/payload'
 
 import { ResumeDownloadsBlockClientRenderer } from './Renderer.client'
@@ -10,7 +10,7 @@ export const ResumeDownloadsBlockRenderer = async ({
   blockType,
   caption,
 }: ResumeDownloadsBlock) => {
-  const latest = await fetchLatestResumeDocumentCore()
+  const latest = await fetchLatestResumeDocument()
   if (!latest) return null
 
   const { document_en, document_de, thumbnails_en, thumbnails_de } = latest

@@ -5,6 +5,7 @@ interface DurationFieldProps {
   label?: string
   description?: string
   width?: string
+  defaultValue?: number
   overrides?: Partial<Omit<NumberFieldClientProps, 'type' | 'name' | 'label' | 'description'>>
 }
 
@@ -13,6 +14,7 @@ export const DurationField = ({
   label,
   description,
   width,
+  defaultValue = 0,
   overrides,
 }: DurationFieldProps): NumberField => {
   return deepMerge<NumberField, Partial<NumberField>>(
@@ -20,7 +22,7 @@ export const DurationField = ({
       type: 'number',
       name,
       label,
-      defaultValue: 0,
+      defaultValue,
       admin: {
         description,
         step: 1000,

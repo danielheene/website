@@ -11,7 +11,7 @@
   },
   "scripts": {
     "build": "SENTRY_RELEASE=\"${SENTRY_RELEASE:-website@$(node -p 'require(\"./package.json\").version')}\" pnpm run next build",
-    "build:storybook": "storybook build -o dist",
+    "build:storybook": "storybook build --docs --output-dir dist",
     "chore:reinstall": "pnpm --shell-mode exec rm -rf node_modules && pnpm --shell-mode exec rm pnpm-lock.yaml && pnpm install",
     "chore:sort": "syncpack format",
     "ci": "pnpm run migrate && pnpm run build",

@@ -1,5 +1,6 @@
 import type { GlobalConfig } from 'payload'
 
+import { hoursToMilliseconds, minutesToMilliseconds } from 'date-fns'
 import dedent from 'dedent'
 
 import { authenticated } from '@/access/authenticated'
@@ -17,7 +18,7 @@ import { SKILL_TYPE } from '@/types/select-options'
 import { revalidateDocument } from './hooks/revalidateDocument'
 import { sanitizeSkillSorting } from './hooks/sanitizeSkillSorting'
 
-const sharedId = nanoid(32)
+const previewCustomId = nanoid(8)
 
 export const skillSortingKeys: (keyof SkillSorting & string)[] = [
   'skillTypeSortable',
@@ -75,12 +76,19 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
           // (generateResumeDocumentHook) that feeds this straight into
           // renderTemplate, so an empty template is a real, immediate
           // failure mode rather than a rendering nicety.
-          defaultValue: 'Resume {nanoid7}',
+          defaultValue: 'Resume {customId}',
           overrides: {
             required: true,
           },
           data: {
-            nanoid: sharedId,
+            customId: previewCustomId,
+          },
+          anntotation: {
+            label: 'Custom Data',
+            entries: {
+              '{customId}':
+                'Eight uppercase alphanumeric characters which also serve as a unique identifier for the document.',
+            },
           },
           renderLocale: [
             'en',
@@ -105,12 +113,20 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
           // failure mode as documentTitleTemplate above. Includes {locale}
           // so the EN/DE outputs stay distinct, matching this field's own
           // "must result in two different filenames" requirement.
-          defaultValue: 'resume-{locale}-{nanoid7}',
+          defaultValue:
+            '{firstName}{lastName}_Resume_{locale | uppercase}_{date | yyyy}{date | MM}{date | dd}_{customId}',
           overrides: {
             required: true,
           },
           data: {
-            nanoid: sharedId,
+            customId: previewCustomId,
+          },
+          anntotation: {
+            label: 'Custom Data',
+            entries: {
+              '{customId}':
+                'Eight uppercase alphanumeric characters which also serve as a unique identifier for the document.',
+            },
           },
           renderLocale: [
             'en',
@@ -122,9 +138,7 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
     SectionGroupField({
       label: 'Queue Handling',
       description: `
-          __Generate Throttle:__ Time to wait between the last change and the next scheduled PDF generation. This prevents multiple scheduled Jobs during a set of changes.${'  '}
-          __Timeout Between Jobs:__ Time to wait between the last scheduled Job and the next scheduled Job. This prevents too many generated PDFs over the time of a day.${'  '}
-          __Maximum Attempts:__ Number of attempts before a scheduled Job is marked as failed. To avoid hard failures due to flaky network connections or server issues.${'  '}
+        Defines the behavior of the PDF generation queue. How long throttling new jobs to avoid enqueueing too many builds at once, while editing. How long to wait between the last generated PDF and the next scheduled job or the attempts to prevent hard failures due to flaky network connections or server issues.
         `,
       fields: [
         {
@@ -134,29 +148,22 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
               name: 'generateThrottle',
               label: 'Generate Throttle',
               width: '33.3%',
+              defaultValue: minutesToMilliseconds(15),
             }),
             DurationField({
               name: 'timeoutBetweenJobs',
               label: 'Timeout Between Jobs',
               width: '33.3%',
+              defaultValue: hoursToMilliseconds(4),
             }),
             {
               type: 'number',
               name: 'maximumRetries',
               label: 'Maximum Retries',
-              // Without a default this is `undefined` on a fresh database,
-              // which flows into the generation workflow's job-retry
-              // `attempts` count (see generateResumeDocument.tsx) — an
-              // explicit, sane default avoids handing the job queue an
-              // undefined retry count.
               defaultValue: 3,
               required: true,
             },
           ],
-        },
-        {
-          type: 'row',
-          fields: [],
         },
       ],
     }),

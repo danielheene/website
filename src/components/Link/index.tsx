@@ -22,7 +22,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     iconAfter,
     iconBefore,
     iconOnly,
-    label,
+    text,
     newTab,
     size,
     variant = 'link',
@@ -43,8 +43,6 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
         : null
 
   if (!href) return null
-
-  const text = label
 
   const newTabProps = newTab
     ? {

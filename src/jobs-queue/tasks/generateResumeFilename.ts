@@ -15,7 +15,7 @@ export const generateResumeFilename: TaskConfig<TaskSlug['GenerateResumeFilename
     },
     {
       type: 'text',
-      name: 'sharedId',
+      name: 'customId',
       required: true,
     },
     {
@@ -44,14 +44,14 @@ export const generateResumeFilename: TaskConfig<TaskSlug['GenerateResumeFilename
   handler: async ({ input, req: { payload } }) => {
     'use server'
 
-    const { filenameTemplate, sharedId, locale } = input
+    const { filenameTemplate, customId, locale } = input
 
     payload.logger.info(`Generating resume filename for locale: ${locale}`)
 
     const { result, error } = await renderTemplate({
       template: filenameTemplate,
       data: {
-        nanoid: sharedId,
+        customId,
       },
       locale,
     })

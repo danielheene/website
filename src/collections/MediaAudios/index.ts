@@ -12,7 +12,7 @@ import { CollectionSlug } from '@/types/collections'
 import { generateThumbnail } from './hooks/generateThumbnail'
 
 export const MediaAudios: CollectionConfig<CollectionSlug['MediaAudios']> = {
-  slug: CollectionSlug['MediaAudios'],
+  slug: CollectionSlug.MediaAudios,
   typescript: {
     interface: 'MediaAudio',
   },

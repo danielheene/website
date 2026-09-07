@@ -46,7 +46,7 @@ export type NavEntries =
           } | null);
       url?: string | null;
       iconBefore?: string | null;
-      label: string;
+      text: string;
       iconAfter?: string | null;
       id?: string | null;
     }[]
@@ -132,8 +132,8 @@ export interface Config {
     'resume-skill-tags': ResumeSkillTagData;
     'document-references': DocumentReference;
     redirects: Redirect;
-    'payload-exports': PayloadExport;
-    'payload-imports': PayloadImport;
+    exports: Export;
+    imports: Import;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -161,8 +161,8 @@ export interface Config {
     'resume-skill-tags': ResumeSkillTagsSelect<false> | ResumeSkillTagsSelect<true>;
     'document-references': DocumentReferencesSelect<false> | DocumentReferencesSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
-    'payload-exports': PayloadExportsSelect<false> | PayloadExportsSelect<true>;
-    'payload-imports': PayloadImportsSelect<false> | PayloadImportsSelect<true>;
+    exports: ExportsSelect<false> | ExportsSelect<true>;
+    imports: ImportsSelect<false> | ImportsSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -202,7 +202,6 @@ export interface Config {
       GenerateResumeFile: TaskGenerateResumeFile;
       AutoTranslateBilingualField: TaskAutoTranslateBilingualField;
       GenerateResumeDocumentTitle: TaskGenerateResumeDocumentTitle;
-      GenerateResumeDocumentSlug: TaskGenerateResumeDocumentSlug;
       CreateResumeDocument: TaskCreateResumeDocument;
       HeartbeatPing: TaskHeartbeatPing;
       SeedCollection: TaskSeedCollection;
@@ -242,7 +241,37 @@ export interface UserAuthOperations {
  * via the `definition` "CodeBlock".
  */
 export interface CodeBlock {
-  language?: ('typescript' | 'javascript' | 'css') | null;
+  language?:
+    | (
+        | 'bash'
+        | 'css'
+        | 'diff'
+        | 'docker'
+        | 'go'
+        | 'graphql'
+        | 'html'
+        | 'http'
+        | 'ini'
+        | 'javascript'
+        | 'json'
+        | 'json5'
+        | 'jsonl'
+        | 'jsx'
+        | 'markdown'
+        | 'mdx'
+        | 'nginx'
+        | 'shellscript'
+        | 'shellsession'
+        | 'sql'
+        | 'ssh-config'
+        | 'systemd'
+        | 'toml'
+        | 'tsx'
+        | 'typescript'
+        | 'xml'
+        | 'yaml'
+      )
+    | null;
   code: string;
   id?: string | null;
   blockName?: string | null;
@@ -292,7 +321,7 @@ export interface LinkFieldData {
       } | null);
   url?: string | null;
   iconBefore?: string | null;
-  label: string;
+  text: string;
   iconAfter?: string | null;
 }
 /**
@@ -1078,7 +1107,7 @@ export interface ResumeCustomerData {
 export interface ResumeDocumentData {
   id: string;
   title: string;
-  slug?: string | null;
+  slug: string;
   createdAt?: string | null;
   jobId?: (string | null) | PayloadJob;
   checksum_en?: string | null;
@@ -1195,7 +1224,6 @@ export interface PayloadJob {
           | 'GenerateResumeFile'
           | 'AutoTranslateBilingualField'
           | 'GenerateResumeDocumentTitle'
-          | 'GenerateResumeDocumentSlug'
           | 'CreateResumeDocument'
           | 'HeartbeatPing'
           | 'SeedCollection'
@@ -1247,7 +1275,6 @@ export interface PayloadJob {
         | 'GenerateResumeFile'
         | 'AutoTranslateBilingualField'
         | 'GenerateResumeDocumentTitle'
-        | 'GenerateResumeDocumentSlug'
         | 'CreateResumeDocument'
         | 'HeartbeatPing'
         | 'SeedCollection'
@@ -1554,9 +1581,9 @@ export interface Redirect {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-exports".
+ * via the `definition` "exports".
  */
-export interface PayloadExport {
+export interface Export {
   id: string;
   name?: string | null;
   format: 'csv' | 'json';
@@ -1591,9 +1618,9 @@ export interface PayloadExport {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-imports".
+ * via the `definition` "imports".
  */
-export interface PayloadImport {
+export interface Import {
   id: string;
   collectionSlug: string;
   importMode?: ('create' | 'update' | 'upsert') | null;
@@ -2097,9 +2124,9 @@ export interface RedirectsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-exports_select".
+ * via the `definition` "exports_select".
  */
-export interface PayloadExportsSelect<T extends boolean = true> {
+export interface ExportsSelect<T extends boolean = true> {
   name?: T;
   format?: T;
   limit?: T;
@@ -2125,9 +2152,9 @@ export interface PayloadExportsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-imports_select".
+ * via the `definition` "imports_select".
  */
-export interface PayloadImportsSelect<T extends boolean = true> {
+export interface ImportsSelect<T extends boolean = true> {
   collectionSlug?: T;
   importMode?: T;
   matchField?: T;
@@ -2525,7 +2552,7 @@ export interface NavEntriesSelect<T extends boolean = true> {
   doc?: T;
   url?: T;
   iconBefore?: T;
-  label?: T;
+  text?: T;
   iconAfter?: T;
   id?: T;
 }
@@ -2739,7 +2766,7 @@ export interface TaskCalculateSkillTagInterval {
 export interface TaskGenerateLocalizedResumeDocument {
   input: {
     locale: 'en' | 'de';
-    sharedId: string;
+    customId: string;
     filenameTemplate: string;
     createdAt: string;
     documentSlug: string;
@@ -2766,7 +2793,7 @@ export interface TaskGenerateLocalizedResumeDocument {
 export interface TaskGenerateResumeFilename {
   input: {
     filenameTemplate: string;
-    sharedId: string;
+    customId: string;
     locale: 'en' | 'de';
   };
   output: {
@@ -2851,22 +2878,10 @@ export interface TaskAutoTranslateBilingualField {
 export interface TaskGenerateResumeDocumentTitle {
   input: {
     documentTitleTemplate: string;
-    sharedId: string;
+    customId: string;
   };
   output: {
     documentTitle: string;
-  };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TaskGenerateResumeDocumentSlug".
- */
-export interface TaskGenerateResumeDocumentSlug {
-  input: {
-    documentTitle: string;
-  };
-  output: {
-    documentSlug: string;
   };
 }
 /**
@@ -2954,8 +2969,8 @@ export interface TaskCreateCollectionExport {
       | 'resume-skill-tags'
       | 'document-references'
       | 'redirects'
-      | 'payload-exports'
-      | 'payload-imports';
+      | 'exports'
+      | 'imports';
     drafts?: ('yes' | 'no') | null;
     exportCollection: string;
     fields?: string[] | null;
@@ -3026,7 +3041,7 @@ export interface WorkflowGenerateResumeDocument {
   input: {
     documentTitleTemplate: string;
     filenameTemplate: string;
-    sharedId: string;
+    customId: string;
     maximumRetries: number;
   };
 }

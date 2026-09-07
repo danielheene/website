@@ -60,7 +60,7 @@ export const enqueueGenerateResumeDocument = async (
     draft: false,
   })
 
-  const sharedId = nanoid(32)
+  const customId = nanoid(8)
   const timeoutBetweenJobs = timeoutBetweenJobsFromProps ?? timeoutBetweenJobsFromSettings
   const generateThrottle = generateThrottleFromProps ?? generateThrottleFromSettings
   const maximumRetries = maximumRetriesFromProps ?? maximumRetriesFromSettings
@@ -74,7 +74,7 @@ export const enqueueGenerateResumeDocument = async (
     queue: QueueSlug.ResumeGeneration,
     waitUntil,
     input: {
-      sharedId,
+      customId,
       documentTitleTemplate,
       filenameTemplate,
       maximumRetries,

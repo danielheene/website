@@ -344,25 +344,19 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                       fields: [
                         IconField({
                           overrides: {
-                            admin: {
-                              width: '20%',
-                            },
+                            admin: {},
                           },
                         }),
                         {
                           name: 'name',
                           type: 'text',
-                          admin: {
-                            width: '40%',
-                          },
+                          admin: {},
                         },
                         {
                           name: 'url',
                           label: 'URL',
                           type: 'text',
-                          admin: {
-                            width: '40%',
-                          },
+                          admin: {},
                         },
                       ],
                     },
