@@ -10,7 +10,7 @@ status: "draft"
 
 > **Key Takeaways**
 > - The site runs Next.js 16 (App Router, React 19, Cache Components enabled) with Payload CMS 3 as an embedded, code-first CMS — one Next.js app, no separate backend.
-> - MongoDB holds content, Redis does double duty as Payload's KV cache and the Next.js cache handler, and a Redis pub/sub channel powers Server-Sent Events for live status updates.
+> - MongoDB holds content, Redis backs Payload's KV cache and jobs queue, and a Redis pub/sub channel powers Server-Sent Events for live status updates — there is no Next.js cache handler on Redis.
 > - A resume-builder feature generates localized, checksum-versioned PDF documents through a background job worker (`@react-pdf/renderer` + a dedicated Payload jobs queue), decoupled from the web process.
 > - Deployment is self-hosted: GitHub Actions builds three Docker images (app, worker, Storybook) and hands them to Dokploy, with Doppler distributing secrets to both CI and the server.
 > - Sentry, Umami analytics, and a public status page round out observability — all optional and inert until their environment variables are set.
@@ -41,12 +41,11 @@ Data modeling follows Payload's usual shape: collections (`BlogPosts`, `Pages`, 
 
 Three storage systems do distinct jobs:
 
-**MongoDB** (via Mongoose, `@payloadcms/db-mongodb`) is the primary datastore — every collection, every localized field, every draft version.
+**MongoDB** (via Mongoose, `@payloadcms/db-mongodb`) is the primary datastore — every collection and every draft version. Payload's own document-level localization (`localization` in `payload.config.ts`) is deliberately turned **off**; the site handles bilingual content its own way (more on that below).
 
-**Redis** is doing more than caching. It's wired in three separate roles:
-1. Payload's own KV adapter (`@payloadcms/kv-redis`), used for session/cache state.
-2. The Next.js cache handler (`@trieb.work/nextjs-turbo-redis-cache`), which requires Redis keyspace notifications (`notify-keyspace-events Exe`) to be enabled — it subscribes to key-event notifications to keep its tag-based cache manifest in sync across instances. Skip that config flag and the cache handler refuses to start.
-3. A custom pub/sub layer (`src/lib/RedisHandler.ts`) that backs a Server-Sent Events endpoint (`app/(frontend)/api/sse`) for real-time status updates — things like a scheduled-jobs admin widget that shows pending work and lets an operator trigger a run or cancel it live, without polling.
+**Redis** isn't a Next.js cache layer here — there's no cache handler wired into `next.config.ts`. Its job is entirely on the Payload side, in two roles:
+1. Payload's own KV adapter (`@payloadcms/kv-redis`), backing session state and the Payload **jobs queue** (the same queue the resume pipeline below runs on).
+2. A custom pub/sub layer (`src/lib/RedisHandler.ts`) that backs a Server-Sent Events endpoint (`app/(frontend)/api/sse`) for real-time status updates — things like a scheduled-jobs admin widget that shows pending work and lets an operator trigger a run or cancel it live, without polling, and live progress for the AI-translate buttons described below.
 
 **S3-compatible object storage** holds media. Locally that's a self-hosted RustFS/Minio container; in production it's Hetzner Object Storage, addressed through three regional endpoints (`fsn1`, `nbg1`, `hel1`). Every image uploaded through the media library automatically gets alt text and a `blurDataURL` placeholder generated with `sharp` — so editors never have to hand-write alt text for accessibility, and pages get an instant blurred preview before the full image loads.
 
@@ -89,9 +88,18 @@ Why bother separating this into a worker at all, rather than generating the PDF 
 
 An admin-panel widget (`ScheduledJobsWidget`) surfaces every pending job — run-now and cancel actions wired live over the same SSE channel described above, so an operator watches a resume regenerate in real time instead of refreshing a queue table.
 
-## Localization as a First-Class Concern
+## Bilingual Content Without Payload Localization
 
-The site fully supports English and German — not just on the public pages, but inside the Payload admin panel itself, so a non-English-speaking editor gets a localized editing experience too. Resume data generation is explicitly per-language (`buildLocalizedResumeData` takes a locale), and translation utilities (`src/lib/i18n/translate.ts`) sit alongside AI-assisted content helpers — the `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` environment variables listed in the project's README exist specifically to generate alt text and meta descriptions, not to write article copy.
+Payload's built-in per-document localization is switched off (`localization: false` in `payload.config.ts`) — this isn't a site where every collection has an `en`/`de` copy negotiated by locale. Blog posts, for instance, aren't localized at all.
+
+Where bilingual content genuinely matters — resume content, mainly — the site uses its own pattern instead: a **`BilingualRichTextField`**, a reusable Payload group field that renders English and German rich-text editors side by side in the same document, with two AI-translate buttons between them. Translation round-trips through HTML via **Claude** (`fetchAnthropicTranslation`), triggered two ways:
+
+- **Auto mode** — a background job (`autoTranslateBilingualField`, run on the same Payload jobs queue as the resume PDF pipeline) fires after a save where one side is newly populated and the other is still empty, and patches the document directly once translation finishes.
+- **Manual mode** — a user clicks a translate button while the admin tab is open; progress and the final value stream back over the same Redis-backed SSE channel used elsewhere in the admin, and the client applies the result to the unsaved form via `setValue` rather than touching the document, so it can't clobber whatever else the user is mid-typing.
+
+The docstring on that field is refreshingly upfront about where this breaks: blocks and tables from the richer editor variants can degrade to plain-text paragraphs on the round trip, and **links are not preserved by translation in any variant** — the custom fields this codebase's link nodes carry can't be reconstructed from a plain HTML `<a>` by the parser, so linked content has to be translated by hand.
+
+Resume PDF generation is separately per-language (`buildLocalizedResumeData` takes a locale), which is what actually produces an English or German PDF — a distinct concern from the bilingual-field editing pattern above. Every one of the site's AI content helpers — this translation feature, generated image alt text, excerpts, and meta descriptions — runs on **Claude** via the AI SDK's Anthropic provider (`@ai-sdk/anthropic`), not on article copy.
 
 ## Observability: Sentry, Umami, and a Public Status Page
 
@@ -178,7 +186,7 @@ Testing is split cleanly by speed and scope: **Vitest** for unit tests (mocking 
 
 <rect x="315" y="150" width="270" height="90" class="box"/>
 <text x="330" y="172" class="lbl">Redis</text>
-<text x="330" y="190" class="sub">KV cache · Next cache handler</text>
+<text x="330" y="190" class="sub">KV cache · jobs queue</text>
 <text x="330" y="206" class="sub">pub/sub → SSE endpoint</text>
 
 <rect x="610" y="150" width="270" height="90" class="box"/>
@@ -250,9 +258,9 @@ Running Payload inside the same Next.js process as the public frontend avoids a 
 
 PDF rendering with `@react-pdf/renderer` is CPU-bound and comparatively slow next to a typical page request. Queuing it as a Payload job and letting a separate worker container process it keeps the web-serving tier fast and stateless, and lets the worker scale or restart independently of the pages visitors are actually browsing.
 
-### Why does Redis need keyspace notifications enabled?
+### Does the site use Payload's built-in localization?
 
-The Next.js cache handler in use (`@trieb.work/nextjs-turbo-redis-cache`) keeps a tag-based cache manifest in sync across multiple app instances by subscribing to Redis key-event notifications. Without `notify-keyspace-events Exe` enabled on the Redis server, the cache handler refuses to start at all.
+No — `localization` is set to `false` in `payload.config.ts`. Blog posts aren't localized at all. Where bilingual editing genuinely matters (resume content), the site uses a custom `BilingualRichTextField` instead: English and German editors side by side in one document, with Claude-powered auto- and manual-translate buttons rather than Payload's native locale system.
 
 ## Conclusion
 
