@@ -17,6 +17,7 @@ export const TaskSlug = {
   HeartbeatPing: 'heartbeatPing',
   AutoTranslateBilingualField: 'autoTranslateBilingualField',
   SeedCollection: 'seedCollection',
+  SyncSkillSorting: 'syncSkillSorting',
 } as const
 
 export type TaskSlug = typeof TaskSlug
