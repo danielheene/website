@@ -24,7 +24,7 @@ export const badgeStyles = tv({
         // 'dark:[--badge-color:var(--color-info-400)]',
       ]),
       success: cn([
-        '[--badge-color:var(--color-success-700)]',
+        '[--badge-color:var(--color-success-600)]',
         // 'dark:[--badge-color:var(--color-success-400)]',
       ]),
       warning: cn([
@@ -44,13 +44,13 @@ export const badgeStyles = tv({
       ]),
       light: cn([
         'border-(--badge-color)',
-        'bg-[color-mix(in_oklab,var(--badge-color)_15%,var(--color-background)_85%)]',
-        'text-[color-mix(in_oklab,var(--badge-color)_33%,var(--color-foreground)_64%)]',
+        'bg-[color-mix(in_oklab,var(--badge-color)_10%,var(--color-background)_90%)]',
+        'text-[color-mix(in_oklab,var(--badge-color)_75%,var(--color-foreground)_25%)]',
       ]),
       outline: cn([
         'border-(--badge-color)',
         'bg-transparent',
-        'text-[color-mix(in_oklab,var(--badge-color)_33%,var(--color-foreground)_64%)]',
+        'text-[color-mix(in_oklab,var(--badge-color)_75%,var(--color-foreground)_25%)]',
       ]),
     },
     size: {

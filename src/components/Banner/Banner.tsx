@@ -88,8 +88,6 @@ export const Banner = ({
         rotateIcon && 'animate-spin',
       ])}
     />
-    <div className="flex items-center min-h-[2rem] py-1 font-semibold font-mono -tracking-tight">
-      {children}
-    </div>
+    <div className="py-1 font-semibold font-mono -tracking-tight">{children}</div>
   </div>
 )

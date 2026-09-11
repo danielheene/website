@@ -5,19 +5,17 @@ import { DocumentFooter } from '@/pdf/types'
 
 type BuildDocumentFooterDataArgs = {
   locale: BilingualLanguage
-  fileName: string
-  fileUrl: string
+  documentUrl: string
 }
 
 export const buildDocumentFooter = async ({
   locale,
-  fileName,
-  fileUrl,
+  documentUrl,
 }: BuildDocumentFooterDataArgs): Promise<DocumentFooter> => ({
   generatedNotice: translate(locale, 'document.footer.generatedNotice', {
-    fileName,
+    documentUrl,
   }),
-  generatedNoticeUrl: fileUrl,
+  documentUrl,
   renderPagination: (pageNumber: string, totalPages: string) =>
     translate(locale, 'document.footer.pagination', {
       pageNumber,

@@ -3,9 +3,9 @@
 }
 
 .btn,
-.list-header__title-actions > [type="button"] {
+.list-header__title-actions > .btn[type="button"] {
   @apply inline-flex justify-center items-center;
-  @apply m-0 min-h-8 no-underline transition-all duration-150;
+  @apply m-0 min-h-10 no-underline transition-all duration-150;
 
   &.btn--style-primary,
   &.list-header__create-new-button,

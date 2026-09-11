@@ -5,9 +5,13 @@ import { CollectionSlug } from '@/types/collections'
 import { GlobalSlug } from '@/types/globals'
 
 export async function up({ payload, req: _req, session: _session }: MigrateUpArgs): Promise<void> {
-  // Migration code
-  const homePage = await payload.create({
+  const dic = await payload.db.upsert({
     collection: CollectionSlug.Pages,
+    where: {
+      slug: {
+        equals: 'home',
+      },
+    },
     data: {
       title: 'Home',
       slug: 'home',
@@ -15,7 +19,6 @@ export async function up({ payload, req: _req, session: _session }: MigrateUpArg
       layout: 'home',
       _status: 'published',
     },
-    draft: false,
   })
 
   const aboutMePage = await payload.create({

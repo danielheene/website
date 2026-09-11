@@ -23,6 +23,9 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: '50%',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
   },
 })
 
@@ -34,14 +37,14 @@ export const BulletPoint = ({ children }: BulletPointProps) => {
   return (
     <View style={styles.container}>
       <View style={styles.bullet} />
-      <Text
+      <View
         style={[
           styles.text,
-          textStyles.bulletPoint,
+          // textStyles.bulletPoint,
         ]}
       >
-        {children}
-      </Text>
+        <Text style={textStyles.bulletPoint}>{children}</Text>
+      </View>
     </View>
   )
 }

@@ -164,6 +164,8 @@ export default async (phase, { defaultConfig }) => {
      *                          metadataBase, both of which are prerendered.
      *      - STATUS_PAGE_URL → reaches ServiceStatus through the Footer, which
      *                          renders inside the prerendered shell.
+     *      - RESUME_REDIRECT_URL_BASE → read by generateResumeDocumentRedirectURL
+     *                          to generate a redirect URL for a resume document.
      *
      *    With `cacheComponents: true` nearly every route has a shell rendered
      *    at build time, so a process.env read on the server is captured into
@@ -179,6 +181,7 @@ export default async (phase, { defaultConfig }) => {
     env: {
       SERVER_URL: process.env.SERVER_URL,
       STATUS_PAGE_URL: process.env.STATUS_PAGE_URL,
+      RESUME_REDIRECT_URL_BASE: process.env.RESUME_REDIRECT_URL_BASE,
       SENTRY_DSN: process.env.SENTRY_DSN,
       SENTRY_RELEASE: process.env.SENTRY_RELEASE,
     },

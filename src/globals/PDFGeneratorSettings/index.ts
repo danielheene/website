@@ -7,6 +7,7 @@ import { authenticated } from '@/access/authenticated'
 import { DurationField } from '@/fields/Duration'
 import { SectionGroupField } from '@/fields/SectionGroup'
 import { TemplateField } from '@/fields/Template'
+import { generateResumeDocumentUnsafeCustomId } from '@/lib/generateResumeDocumentCustomId'
 import { generateResumeDocumentHook } from '@/lib/hooks/global'
 import { translate } from '@/lib/i18n'
 import { nanoid } from '@/lib/nanoid'
@@ -18,7 +19,7 @@ import { SKILL_TYPE } from '@/types/select-options'
 import { revalidateDocument } from './hooks/revalidateDocument'
 import { sanitizeSkillSorting } from './hooks/sanitizeSkillSorting'
 
-const previewCustomId = nanoid(8)
+const previewCustomId = generateResumeDocumentUnsafeCustomId()
 
 export const skillSortingKeys: (keyof SkillSorting & string)[] = [
   'skillTypeSortable',

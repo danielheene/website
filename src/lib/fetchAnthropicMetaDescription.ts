@@ -1,6 +1,7 @@
 'use server'
 
-import { createAnthropic } from '@ai-sdk/anthropic'
+import { anthropic } from '@ai-sdk/anthropic'
+import * as Sentry from '@sentry/nextjs'
 import { generateText } from 'ai'
 import dedent from 'dedent'
 
@@ -8,14 +9,16 @@ import dedent from 'dedent'
  * Generates a meta-description based on the URL
  * @param url
  */
-export const fetchAnthropicMetaDescription = async (url: string): Promise<string> => {
-  const anthropic = createAnthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
-  })
-
-  const { text } = await generateText({
-    model: anthropic('claude-haiku-4-5'),
-    system: dedent`
+export const fetchAnthropicMetaDescription = async (url: string): Promise<string> =>
+  Sentry.startSpan(
+    {
+      name: 'fetchAnthropicMetaDescription',
+      op: 'gen_ai.invoke_agent',
+    },
+    async () => {
+      const { text } = await generateText({
+        model: anthropic('claude-haiku-4-5'),
+        system: dedent`
       Create a meta-description text for the following URL, focusing on optimization for Google and other major search engines. A meta-description is a short text that appears in search engine results below the page title.
       If you are looking for an in-depth context, such as the website operator's full name, information about their job, a categorization of the website and its intended purpose, as well as many other details, check out the JSON-LD objects embedded in the source code.
       The provided JSON-LD objects are also designed to define the section of the website, e.g. "homepage", "resume", "blog", "blog post".
@@ -37,9 +40,20 @@ export const fetchAnthropicMetaDescription = async (url: string): Promise<string
       - Mention key offerings
       - Create urgency or value proposition to encourage clicks
       - Use first person tone
-    `,
-    prompt: url,
-  })
 
-  return text
-}
+      OUTPUT FORMAT:
+      - Respond with the meta-description text ONLY - your entire response must be that one sentence or two, nothing else
+      - Do not add a title, headings, bullet points, or a "why this works" style explanation
+      - Do not offer multiple alternatives or label anything "Option 1" / "Recommended" - return exactly one meta-description, no picking between variants
+      - No markdown formatting of any kind (no **bold**, no #headings, no code fences, no checkmarks)
+      - No surrounding quotation marks
+    `,
+        prompt: url,
+      })
+
+      return text
+        .replace(/^\s*```(?:\w+)?\s*\n?/, '')
+        .replace(/\n?\s*```\s*$/, '')
+        .trim()
+    },
+  )

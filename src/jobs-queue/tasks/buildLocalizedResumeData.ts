@@ -2,7 +2,7 @@ import { TaskConfig } from 'payload'
 
 import z from 'zod'
 
-import { generateContentURL } from '@/lib/generateContentURL'
+import { generateResumeDocumentRedirectURL } from '@/lib/generateResumeDocumentRedirectURL'
 import { buildResumeDocumentData } from '@/pdf/lib/buildResumeDocumentData'
 import { TaskSlug } from '@/types/jobs-queue'
 
@@ -52,17 +52,14 @@ export const buildLocalizedResumeData: TaskConfig<TaskSlug['BuildLocalizedResume
   handler: async ({ input, req: { payload } }) => {
     'use server'
 
-    const { locale, filename, createdAt, documentSlug } = input
+    const { locale, createdAt, documentSlug } = input
 
     payload.logger.info(`Building resume document data for locale: ${locale}`)
 
     const { data, success, error } = await buildResumeDocumentData({
       locale,
       creationDate: new Date(createdAt),
-      fileName: filename,
-      fileUrl: generateContentURL({
-        path: `/resume/${documentSlug}`,
-      }),
+      documentUrl: generateResumeDocumentRedirectURL(documentSlug),
     })
 
     if (!success) {

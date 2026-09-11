@@ -10,10 +10,6 @@ import * as Sentry from '@sentry/nextjs'
  */
 export const register = async () => {
   if (process.env.NEXT_RUNTIME === 'nodejs') {
-    // Next's own dev-server instrumentation and Sentry's OTel `http`
-    // instrumentation each attach a `close` listener to every
-    // `ServerResponse`, and legitimately so — neither is leaking. Their
-    // combined count now exceeds Node's default cap of 10 per emitter
     EventEmitter.defaultMaxListeners = 20
   }
 
@@ -28,6 +24,7 @@ export const register = async () => {
         Sentry.redisIntegration(),
         Sentry.mongooseIntegration(),
         Sentry.zodErrorsIntegration(),
+        Sentry.vercelAIIntegration(),
         // captures console.* as structured logs alongside errors
         Sentry.consoleLoggingIntegration({
           levels: [

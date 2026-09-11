@@ -87,7 +87,7 @@ export type LanguageCode =
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "LanguageProficiency".
  */
-export type LanguageProficiency = ('a1' | 'a2' | 'b1' | 'b2' | 'c1' | 'c2') | null;
+export type LanguageProficiency = ('a1' | 'a2' | 'b1' | 'b2' | 'c1' | 'c2' | 'native') | null;
 /**
  * Supported timezones in IANA format.
  *
@@ -205,6 +205,7 @@ export interface Config {
       createResumeDocument: TaskCreateResumeDocument;
       heartbeatPing: TaskHeartbeatPing;
       seedCollection: TaskSeedCollection;
+      syncSkillSorting: TaskSyncSkillSorting;
       createCollectionExport: TaskCreateCollectionExport;
       createCollectionImport: TaskCreateCollectionImport;
       schedulePublish: TaskSchedulePublish;
@@ -1227,6 +1228,7 @@ export interface PayloadJob {
           | 'createResumeDocument'
           | 'heartbeatPing'
           | 'seedCollection'
+          | 'syncSkillSorting'
           | 'createCollectionExport'
           | 'createCollectionImport'
           | 'schedulePublish';
@@ -1278,6 +1280,7 @@ export interface PayloadJob {
         | 'createResumeDocument'
         | 'heartbeatPing'
         | 'seedCollection'
+        | 'syncSkillSorting'
         | 'createCollectionExport'
         | 'createCollectionImport'
         | 'schedulePublish'
@@ -2941,6 +2944,14 @@ export interface TaskSeedCollection {
     mode: string;
     count?: number | null;
   };
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskSyncSkillSorting".
+ */
+export interface TaskSyncSkillSorting {
+  input?: unknown;
   output?: unknown;
 }
 /**

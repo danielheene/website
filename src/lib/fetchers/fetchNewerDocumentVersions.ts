@@ -15,16 +15,14 @@ export const fetchNewerDocumentVersions = async (createdAt: ResumeDocumentData['
     config,
   })
 
-  const { docs } = await payload.find({
+  const { totalDocs } = await payload.count({
     collection: CollectionSlug.ResumeDocuments,
-    pagination: false,
-    // limit: 0,
     where: {
       createdAt: {
-        greater_than_equal: createdAt,
+        greater_than: createdAt,
       },
     },
   })
 
-  return Array.isArray(docs) ? docs.length - 1 : 0
+  return totalDocs
 }

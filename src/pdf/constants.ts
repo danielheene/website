@@ -101,7 +101,7 @@ export const textStyles = {
     return {
       color: colors.textJobTitle,
       fontFamily: PPSupplySans,
-      fontSize: 14,
+      fontSize: 15,
       fontWeight: 500,
       letterSpacing: 0.3,
     } as Styles[string]
@@ -109,12 +109,14 @@ export const textStyles = {
   get bulletPoint() {
     return {
       ...this.__body,
+
+      lineHeight: 1.25,
     } as Styles[string]
   },
   get footerNote() {
     return {
       color: colors.textFooterNote,
-      fontFamily: PPSupplyMono,
+      fontFamily: PPSupplySans,
       fontSize: 8,
       fontWeight: 400,
     } as Styles[string]
@@ -125,6 +127,15 @@ export const textStyles = {
       fontFamily: PPSupplyMono,
       fontSize: 8,
       fontWeight: 500,
+    } as Styles[string]
+  },
+  get debugText() {
+    return {
+      fontSize: 178,
+      fontFamily: PPSupplyMono,
+      fontWeight: '700',
+      textTransform: 'uppercase',
+      color: 'rgb(255, 0, 0, 0.1)',
     } as Styles[string]
   },
 }

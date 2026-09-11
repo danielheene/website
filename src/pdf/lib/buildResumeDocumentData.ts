@@ -15,15 +15,14 @@ import { DocumentData } from '@/pdf/types'
 
 interface GenerateResumeDocumentArgs {
   locale: BilingualLanguage
-  fileName: string
-  fileUrl: string
+  documentUrl: string
   creationDate: Date
 }
 
 export const buildResumeDocumentData = async (
   args: GenerateResumeDocumentArgs,
 ): Promise<ZodSafeParseResult<DocumentData>> => {
-  const { fileName, fileUrl, creationDate } = args
+  const { documentUrl, creationDate } = args
   const locale: BilingualLanguage = args?.locale === 'de' ? 'de' : 'en'
   const language = locale === 'en' ? 'en_EN' : 'de_DE'
 
@@ -44,8 +43,7 @@ export const buildResumeDocumentData = async (
     header: await buildDocumentHeader(locale),
     footer: await buildDocumentFooter({
       locale,
-      fileName,
-      fileUrl,
+      documentUrl,
     }),
     sections: [
       await buildIntroductionSection(locale),

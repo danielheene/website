@@ -52,7 +52,7 @@ export const documentHeaderSchema = z.strictObject({
 
 export const documentFooterSchema = z.strictObject({
   generatedNotice: z.string(),
-  generatedNoticeUrl: z.url(),
+  documentUrl: z.url(),
   renderPagination: z.function({
     input: z.tuple([
       z.string(),
@@ -74,7 +74,7 @@ export const languageSectionSchema = z.strictObject({
   type: z.literal(DocumentSectionType.Language),
   data: z.strictObject({
     headline: z.string(),
-    entries: z.array(z.string()),
+    entries: z.array(serializedEditorStateSchema),
   }),
 })
 
@@ -98,7 +98,11 @@ export const workExperienceSectionSchema = z.strictObject({
       z.object({
         title: z.string(),
         interval: z.string(),
-        tasks: z.nullable(z.array(z.string())),
+        tasks: z.array(
+          z.object({
+            task: serializedEditorStateSchema,
+          }),
+        ),
       }),
     ),
   }),

@@ -48,7 +48,7 @@ const ALIGN_TO_TEXT_ALIGN: Partial<Record<ElementFormatType, Style['textAlign']>
 const textNodeStyle = (format: number): Style => {
   const style: Style = {}
 
-  if (format & IS_BOLD) style.fontWeight = 'bold'
+  if (format & IS_BOLD) style.fontWeight = '500'
   if (format & IS_ITALIC) style.fontStyle = 'italic'
 
   const underline = Boolean(format & IS_UNDERLINE)

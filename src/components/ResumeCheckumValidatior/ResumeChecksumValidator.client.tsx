@@ -41,27 +41,28 @@ export const ResumeChecksumValidatorClient = ({ searchChecksum }: ChecksumValida
     state: 'INITIAL',
     result: null,
   })
-  const [isDraggingOver, setIsDraggingOver] = useState(false)
+  const [hoverActive, setHoverActive] = useState(false)
+  const [dragActive, setDragActive] = useState(false)
   const [fileName, setFileName] = useState<string | null>(null)
 
   const handleDragEnter = useCallback((event: DragEvent<HTMLLabelElement>) => {
     event.preventDefault()
-    setIsDraggingOver(true)
+    setDragActive(true)
   }, [])
 
   const handleDragOver = useCallback((event: DragEvent<HTMLLabelElement>) => {
     event.preventDefault()
+    setDragActive(true)
   }, [])
 
   const handleDragLeave = useCallback((event: DragEvent<HTMLLabelElement>) => {
     event.preventDefault()
-    setIsDraggingOver(false)
+    setDragActive(false)
   }, [])
 
   const validateProvidedFile = useCallback(
     (file: File | undefined) => {
       if (!file) return
-
       ;(async () => {
         setFileName(file.name)
         setFormState({
@@ -91,7 +92,7 @@ export const ResumeChecksumValidatorClient = ({ searchChecksum }: ChecksumValida
   const handleDrop = useCallback(
     (event: DragEvent<HTMLLabelElement>) => {
       event.preventDefault()
-      setIsDraggingOver(false)
+      setDragActive(false)
       validateProvidedFile(event.dataTransfer.files[0])
     },
     [
@@ -123,12 +124,27 @@ export const ResumeChecksumValidatorClient = ({ searchChecksum }: ChecksumValida
         <label
           htmlFor={id}
           className={cn([
-            'group relative flex h-56 cursor-pointer flex-col items-center justify-center gap-3 text-center',
-            'border-2 border-dashed transition-colors',
-            isDraggingOver
-              ? 'border-primary bg-primary/10'
-              : 'border-border bg-card hover:border-foreground/40',
+            '[--dropzone-border-color:var(--color-border)]',
+            '[--dropzone-text-color:var(--color-foreground)]',
+            '[--dropzone-background-color:var(--color-background)]',
+            hoverActive && [
+              '[--dropzone-border-color:var(--color-foreground)]',
+              '[--dropzone-text-color:var(--color-foreground)]',
+              '[--dropzone-background-color:color-mix(in_oklch,var(--color-card),var(--color-foreground)_2%)]',
+            ],
+            dragActive && [
+              '[--dropzone-border-color:var(--color-primary)]',
+              '[--dropzone-text-color:var(--color-primary)]',
+              '[--dropzone-background-color:color-mix(in_oklch,var(--color-background),var(--color-primary)_15%)]',
+            ],
+            'border-(--dropzone-border-color) text-(--dropzone-text-color) bg-(--dropzone-background-color)',
+            'group relative flex flex-col items-center justify-center gap-3 text-center',
+            'aspect-21-9 border-2 border-dashed transition-colors cursor-pointer',
           ])}
+          onPointerEnter={() => setHoverActive(true)}
+          onPointerOver={() => setHoverActive(true)}
+          onPointerLeave={() => setHoverActive(false)}
+          onPointerOut={() => setHoverActive(false)}
           onDragEnter={handleDragEnter}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -142,8 +158,8 @@ export const ResumeChecksumValidatorClient = ({ searchChecksum }: ChecksumValida
             }
             className={cn([
               'text-4xl text-muted-foreground transition-colors',
-              'group-hover:text-foreground',
-              isDraggingOver && 'text-primary',
+              hoverActive && 'text-foreground',
+              dragActive && 'text-primary',
               state === 'LOADING' && 'animate-spin',
             ])}
           />
