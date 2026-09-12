@@ -74,7 +74,8 @@ export const HeroCarousel = ({ items, className }: HeroCarouselProps) => {
 
   /**
    * A video slide owns its own timing, so the fixed-delay autoplay is paused
-   * while one is on screen and resumed when a still image comes back around.
+   * while one is on screen and resumed when a still image or shader comes
+   * back around — both dwell for the same fixed delay as an image.
    */
   useEffect(() => {
     if (!emblaApi) return

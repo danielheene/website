@@ -7,7 +7,7 @@ import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { BLOCK_SLUGS } from '@/blocks'
 import { revalidatePage } from '@/collections/Pages/hooks/revalidatePage'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
-import { HeroBackgroundField } from '@/fields/HeroBackground'
+import { HeroSlidesField } from '@/fields/HeroSlides'
 import { MetaField } from '@/fields/Meta'
 import { ProtectedField } from '@/fields/Protected'
 import { RichTextField } from '@/fields/RichText'
@@ -78,7 +78,7 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
   fields: [
     /* -------------- Main  Content -------------- */
     TitleField({
-      listViewThumbnailPath: 'hero.background.media.0.value',
+      listViewThumbnailPath: 'hero.slides.0.media.value',
     }),
 
     /* -------------- Sidebar Content -------------- */
@@ -125,8 +125,8 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
           label: 'Hero',
           name: 'hero',
           fields: [
-            HeroBackgroundField({
-              name: 'background',
+            HeroSlidesField({
+              name: 'slides',
             }),
             {
               name: 'contentType',

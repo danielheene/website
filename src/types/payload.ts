@@ -336,25 +336,25 @@ export interface Page {
   slug: string;
   layout?: PageLayout;
   hero?: {
-    background?: {
-      backgroundType?: ('media' | 'shader') | null;
-      /**
-       * Fills the first screen. Two or more entries become a cross-fading carousel; a single entry renders on its own.
-       */
-      media?:
-        | (
-            | {
+    slides?:
+      | {
+          slideType?: ('image' | 'video' | 'shader') | null;
+          /**
+           * Fills the first screen.
+           */
+          media?:
+            | ({
                 relationTo: 'images';
                 value: string | MediaImage;
-              }
-            | {
+              } | null)
+            | ({
                 relationTo: 'videos';
                 value: string | MediaVideo;
-              }
-          )[]
-        | null;
-      shader?: ('darkveil' | 'faulty-terminal' | 'gradient-blinds' | 'grainient') | null;
-    };
+              } | null);
+          shader?: ('darkveil' | 'faulty-terminal' | 'gradient-blinds' | 'grainient') | null;
+          id?: string | null;
+        }[]
+      | null;
     contentType?: ('title' | 'custom') | null;
     content?: {
       root: {
@@ -802,22 +802,25 @@ export interface BlogPostData {
   title: string;
   slug: string;
   hero?: {
-    background?: {
-      backgroundType?: ('media' | 'shader') | null;
-      /**
-       * Fills the first screen.
-       */
-      media?:
-        | ({
-            relationTo: 'images';
-            value: string | MediaImage;
-          } | null)
-        | ({
-            relationTo: 'videos';
-            value: string | MediaVideo;
-          } | null);
-      shader?: ('darkveil' | 'faulty-terminal' | 'gradient-blinds' | 'grainient') | null;
-    };
+    slides?:
+      | {
+          slideType?: ('image' | 'video' | 'shader') | null;
+          /**
+           * Fills the first screen.
+           */
+          media?:
+            | ({
+                relationTo: 'images';
+                value: string | MediaImage;
+              } | null)
+            | ({
+                relationTo: 'videos';
+                value: string | MediaVideo;
+              } | null);
+          shader?: ('darkveil' | 'faulty-terminal' | 'gradient-blinds' | 'grainient') | null;
+          id?: string | null;
+        }[]
+      | null;
   };
   topics?:
     | {
@@ -902,10 +905,27 @@ export interface Topic {
   title: string;
   featured?: boolean | null;
   slug: string;
-  heroImage?: {
-    relationTo: 'images';
-    value: string | MediaImage;
-  } | null;
+  hero?: {
+    slides?:
+      | {
+          slideType?: ('image' | 'video' | 'shader') | null;
+          /**
+           * Fills the first screen.
+           */
+          media?:
+            | ({
+                relationTo: 'images';
+                value: string | MediaImage;
+              } | null)
+            | ({
+                relationTo: 'videos';
+                value: string | MediaVideo;
+              } | null);
+          shader?: ('darkveil' | 'faulty-terminal' | 'gradient-blinds' | 'grainient') | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
   content?: {
     root: {
       type: string;
@@ -1771,12 +1791,13 @@ export interface PostsSelect<T extends boolean = true> {
   hero?:
     | T
     | {
-        background?:
+        slides?:
           | T
           | {
-              backgroundType?: T;
+              slideType?: T;
               media?: T;
               shader?: T;
+              id?: T;
             };
       };
   topics?: T;
@@ -1812,7 +1833,18 @@ export interface TopicsSelect<T extends boolean = true> {
   title?: T;
   featured?: T;
   slug?: T;
-  heroImage?: T;
+  hero?:
+    | T
+    | {
+        slides?:
+          | T
+          | {
+              slideType?: T;
+              media?: T;
+              shader?: T;
+              id?: T;
+            };
+      };
   content?: T;
   relatedPosts?: T;
   meta?:
@@ -1838,12 +1870,13 @@ export interface PagesSelect<T extends boolean = true> {
   hero?:
     | T
     | {
-        background?:
+        slides?:
           | T
           | {
-              backgroundType?: T;
+              slideType?: T;
               media?: T;
               shader?: T;
+              id?: T;
             };
         contentType?: T;
         content?: T;
@@ -2295,16 +2328,23 @@ export interface GeneralSettings {
     value: string | MediaImage;
   } | null;
   errorHero?:
-    | (
-        | {
-            relationTo: 'videos';
-            value: string | MediaVideo;
-          }
-        | {
-            relationTo: 'images';
-            value: string | MediaImage;
-          }
-      )[]
+    | {
+        slideType?: ('image' | 'video' | 'shader') | null;
+        /**
+         * Fills the first screen.
+         */
+        media?:
+          | ({
+              relationTo: 'images';
+              value: string | MediaImage;
+            } | null)
+          | ({
+              relationTo: 'videos';
+              value: string | MediaVideo;
+            } | null);
+        shader?: ('darkveil' | 'faulty-terminal' | 'gradient-blinds' | 'grainient') | null;
+        id?: string | null;
+      }[]
     | null;
 }
 /**
@@ -2531,7 +2571,14 @@ export interface GeneralSettingsSelect<T extends boolean = true> {
   titleTemplate?: T;
   description?: T;
   image?: T;
-  errorHero?: T;
+  errorHero?:
+    | T
+    | {
+        slideType?: T;
+        media?: T;
+        shader?: T;
+        id?: T;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

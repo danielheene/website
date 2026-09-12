@@ -449,12 +449,14 @@ export const seedPosts = async (
     const useShader = chance(random, 0.25)
 
     let imageId: string | undefined
-    let background: BlogPostData['hero']['background']
+    let slides: BlogPostData['hero']['slides']
     if (useShader) {
-      background = {
-        backgroundType: 'shader',
-        shader: pick(random, SHADER_PRESET_META).key,
-      }
+      slides = [
+        {
+          slideType: 'shader',
+          shader: pick(random, SHADER_PRESET_META).key,
+        },
+      ]
     } else {
       onProgress?.({
         step: `Creating hero image for ${slug}`,
@@ -464,13 +466,15 @@ export const seedPosts = async (
 
       imageId = await createSeedImage(payload, index)
 
-      background = {
-        backgroundType: 'media',
-        media: {
-          relationTo: 'images',
-          value: imageId,
+      slides = [
+        {
+          slideType: 'image',
+          media: {
+            relationTo: 'images',
+            value: imageId,
+          },
         },
-      }
+      ]
     }
 
     const topicCount = Math.min(1 + (index % 3 === 0 ? 1 : 0), availableTopicIds.length)
@@ -498,7 +502,7 @@ export const seedPosts = async (
         title,
         slug,
         hero: {
-          background,
+          slides,
         },
         topics: topicIds.map((id) => ({
           relationTo: 'topics' as const,
@@ -557,10 +561,11 @@ export const cleanPosts = async (
 
   const mediaIds = new Set<string>()
   for (const post of posts) {
-    const media = post.hero?.background?.media
-    if (media && typeof media === 'object' && media.relationTo === 'images') {
-      const { value } = media
-      mediaIds.add(typeof value === 'string' ? value : String(value.id))
+    for (const slide of post.hero?.slides ?? []) {
+      if (slide.media?.relationTo === 'images') {
+        const { value } = slide.media
+        mediaIds.add(typeof value === 'string' ? value : String(value.id))
+      }
     }
   }
 

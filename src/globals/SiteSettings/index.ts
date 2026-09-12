@@ -3,6 +3,7 @@ import type { ArrayField, GlobalConfig } from 'payload'
 import { jsonSchema } from 'ai'
 
 import { authenticated } from '@/access/authenticated'
+import { HeroSlidesField } from '@/fields/HeroSlides'
 import { LinkField } from '@/fields/Link'
 import { TemplateField } from '@/fields/Template'
 import { generateResumeDocumentHook } from '@/lib/hooks/global'
@@ -172,17 +173,10 @@ export const SiteSettings: GlobalConfig = {
                     },
                   },
                 },
-                {
+                HeroSlidesField({
                   name: 'errorHero',
-                  type: 'upload',
-                  hasMany: true,
-                  minRows: 1,
                   maxRows: 1,
-                  relationTo: [
-                    CollectionSlug.MediaVideos,
-                    CollectionSlug.MediaImages,
-                  ],
-                },
+                }),
               ],
             },
           ],

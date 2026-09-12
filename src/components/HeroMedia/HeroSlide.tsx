@@ -4,6 +4,9 @@ import { useEffect, useRef } from 'react'
 
 import { ImageMedia } from '@/components/ImageMedia'
 
+import { ShaderHeroBackground } from './ShaderHeroBackground'
+import type { ShaderPresetKey } from './shaderPresets'
+
 export type HeroMediaItem =
   | {
       kind: 'image'
@@ -18,6 +21,11 @@ export type HeroMediaItem =
       url: string
       alt: string
       poster?: string | null
+    }
+  | {
+      kind: 'shader'
+      id: string
+      presetKey: ShaderPresetKey
     }
 
 export interface HeroSlideProps {
@@ -127,7 +135,7 @@ export const HeroSlide = ({
           sizes="100vw"
           url={item.url}
         />
-      ) : (
+      ) : item.kind === 'video' ? (
         <video
           className="h-full w-full object-cover"
           controls={false}
@@ -139,6 +147,8 @@ export const HeroSlide = ({
           ref={videoRef}
           src={item.url}
         />
+      ) : (
+        <ShaderHeroBackground className="h-full w-full" presetKey={item.presetKey} />
       )}
     </div>
   )

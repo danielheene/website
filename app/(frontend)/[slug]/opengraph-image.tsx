@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { ImageResponse } from 'takumi-js/response'
 
 import { SHADER_PRESET_MAP } from '@/components/HeroMedia/shaderPresets'
+import { toSlideItems } from '@/components/HeroMedia/toSlideItems'
 
 import { queryPageBySlug } from './page'
 
@@ -23,36 +24,18 @@ export default async function Image({ params }: Props) {
   const page = await queryPageBySlug(slug)
   if (!page) notFound()
 
-  const background = page.hero?.background
   const title = page.title ?? 'Page'
 
+  // Only the first slide represents the OG image — a static export can't
+  // depict a carousel. Guarded like `HeroMedia`'s own rendering: a preset
+  // renamed/removed since the slide was saved resolves to no thumbnail
+  // rather than throwing and taking down the image route.
+  const [firstSlide] = toSlideItems(page.hero?.slides, title)
+
+  const heroImageUrl = firstSlide?.kind === 'image' ? firstSlide.url : undefined
   const shaderThumbnailSrc =
-    background?.backgroundType === 'shader' && background.shader
-      ? SHADER_PRESET_MAP[background.shader as keyof typeof SHADER_PRESET_MAP]?.thumbnail.src
-      : undefined
-
-  // Pages' `hero.background.media` is a `hasMany: true` polymorphic upload
-  // field: it always resolves as an array of `{ relationTo, value }` wrapper
-  // objects, never a bare media object. `value` only holds the populated
-  // media document (with `.url`) once the relation has been resolved by the
-  // query this route reuses (`queryPageBySlug`, shared with `[slug]/page.tsx`).
-  // Mirrors the `isPopulated`/`toItems` pattern in `HeroMedia.tsx`.
-  const firstImageEntry = Array.isArray(background?.media)
-    ? background.media.find(
-        (entry) =>
-          typeof entry === 'object' &&
-          entry !== null &&
-          entry.relationTo === 'images' &&
-          typeof entry.value === 'object' &&
-          entry.value !== null,
-      )
-    : undefined
-
-  const heroImageUrl =
-    background?.backgroundType === 'media' &&
-    firstImageEntry &&
-    typeof firstImageEntry.value === 'object'
-      ? (firstImageEntry.value?.url ?? undefined)
+    firstSlide?.kind === 'shader'
+      ? SHADER_PRESET_MAP[firstSlide.presetKey]?.thumbnail.src
       : undefined
 
   return new ImageResponse(

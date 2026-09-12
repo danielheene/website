@@ -3,10 +3,10 @@
 import Link from 'next/link'
 
 import { Headline } from '@/components/Headline'
+import { toSlideItems } from '@/components/HeroMedia/toSlideItems'
 import { ImageMedia } from '@/components/ImageMedia'
 import { fetchTrendingBlogPosts } from '@/lib/fetchers/fetchTrendingBlogPosts'
 import { reduceDataToBilingualLanguage } from '@/lib/i18n'
-import { isRenderableImage } from '@/lib/typeGuards'
 
 const TRENDING_WINDOW_DAYS = 7
 
@@ -41,11 +41,18 @@ export const TrendingBlogPostsBlockRenderer = async ({
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {posts.map(({ slug, post }) => {
-          const backgroundMedia =
-            post.hero?.background?.backgroundType === 'media'
-              ? post.hero.background.media
-              : undefined
-          const heroImage = isRenderableImage(backgroundMedia?.value) ? backgroundMedia.value : null
+          // Only the first slide represents this card — a video's poster
+          // stands in for its thumbnail, same as the blog list's PostCard.
+          const [firstSlide] = toSlideItems(post.hero?.slides, post.title)
+          const heroImageUrl =
+            firstSlide?.kind === 'image'
+              ? firstSlide.url
+              : firstSlide?.kind === 'video'
+                ? firstSlide.poster
+                : undefined
+          const heroImageAlt = firstSlide?.kind === 'image' ? firstSlide.alt : post.title
+          const heroImageBlurDataURL =
+            firstSlide?.kind === 'image' ? firstSlide.blurDataURL : undefined
 
           return (
             <Link
@@ -53,12 +60,12 @@ export const TrendingBlogPostsBlockRenderer = async ({
               href={`/blog/post/${slug}`}
               className="group flex flex-col gap-4 rounded-sm border-4 border-primary bg-card overflow-hidden transition-colors hover:border-primary-800"
             >
-              {heroImage && (
+              {heroImageUrl && (
                 <div className="relative aspect-video w-full overflow-hidden">
                   <ImageMedia
-                    url={heroImage.url}
-                    alt={heroImage.alt ?? post.title}
-                    blurDataURL={heroImage.blurDataURL}
+                    url={heroImageUrl}
+                    alt={heroImageAlt ?? post.title}
+                    blurDataURL={heroImageBlurDataURL}
                     fill
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                     imgClassName="transition-transform duration-300 ease-in-out group-hover:scale-105"

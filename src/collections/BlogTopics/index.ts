@@ -3,6 +3,7 @@ import type { AccessArgs, CollectionConfig } from 'payload'
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
+import { HeroSlidesField } from '@/fields/HeroSlides'
 import { MetaField } from '@/fields/Meta'
 import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
@@ -104,7 +105,7 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
       type: 'row',
       fields: [
         TitleField({
-          listViewThumbnailPath: 'heroImage',
+          listViewThumbnailPath: 'hero.slides.0.media.value',
         }),
         ToggleField({
           name: 'featured',
@@ -130,22 +131,20 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
     }),
 
     {
-      name: 'heroImage',
-      type: 'upload',
-      relationTo: [
-        CollectionSlug.MediaImages,
-      ],
-      filterOptions: {
-        mimeType: {
-          contains: 'image',
-        },
-      },
+      name: 'hero',
+      type: 'group',
+      label: false,
       admin: {
         position: 'sidebar',
-        disableGroupBy: true,
         disableListColumn: true,
         disableListFilter: true,
+        disableGroupBy: true,
       },
+      fields: [
+        HeroSlidesField({
+          name: 'slides',
+        }),
+      ],
     },
 
     /* -------------- Content -------------- */

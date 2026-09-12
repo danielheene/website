@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { ImageResponse } from 'takumi-js/response'
 
 import { SHADER_PRESET_MAP } from '@/components/HeroMedia/shaderPresets'
+import { toSlideItems } from '@/components/HeroMedia/toSlideItems'
 
 import { queryPostBySlug } from './page'
 
@@ -25,27 +26,18 @@ export default async function Image({ params }: Props) {
   })
   if (!post) notFound()
 
-  const background = post.hero?.background
   const title = post.title ?? 'Blog post'
 
-  const shaderThumbnailSrc =
-    background?.backgroundType === 'shader' && background.shader
-      ? SHADER_PRESET_MAP[background.shader as keyof typeof SHADER_PRESET_MAP]?.thumbnail.src
-      : undefined
+  // Only the first slide represents the OG image — a static export can't
+  // depict a carousel. Guarded like `HeroMedia`'s own rendering: a preset
+  // renamed/removed since the slide was saved resolves to no thumbnail
+  // rather than throwing and taking down the image route.
+  const [firstSlide] = toSlideItems(post.hero?.slides, title)
 
-  // BlogPosts' `hero.background.media` is a `hasMany: false` polymorphic
-  // upload field: it resolves as a single `{ relationTo, value }` wrapper
-  // object (never an array), where `value` holds the populated media
-  // document (with `.url`) once resolved by `queryPostBySlug`. Mirrors the
-  // `isPopulated` discriminator in `HeroMedia.tsx`, minus the array step.
-  const heroImageUrl =
-    background?.backgroundType === 'media' &&
-    background.media &&
-    typeof background.media === 'object' &&
-    'relationTo' in background.media &&
-    background.media.relationTo === 'images' &&
-    typeof background.media.value === 'object'
-      ? (background.media.value?.url ?? undefined)
+  const heroImageUrl = firstSlide?.kind === 'image' ? firstSlide.url : undefined
+  const shaderThumbnailSrc =
+    firstSlide?.kind === 'shader'
+      ? SHADER_PRESET_MAP[firstSlide.presetKey]?.thumbnail.src
       : undefined
 
   return new ImageResponse(
