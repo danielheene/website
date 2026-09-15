@@ -143,6 +143,7 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
       fields: [
         HeroSlidesField({
           name: 'slides',
+          editorVariant: 'sidebar',
         }),
       ],
     },
