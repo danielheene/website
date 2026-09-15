@@ -29,7 +29,7 @@ export const FooterNavGroups = ({ navGroups, className }: FooterNavGroupsProps) 
                 key={id}
                 className="font-pp-frama font-medium xl:text-lg text-current/75 hover:text-current"
               >
-                <CMSLink {...link} variant="link" size="default" />
+                <CMSLink {...link} className="text-2xl leading-none no-underline" />
               </li>
             ))}
           </ul>
