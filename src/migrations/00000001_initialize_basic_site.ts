@@ -5,7 +5,7 @@ import { CollectionSlug } from '@/types/collections'
 import { GlobalSlug } from '@/types/globals'
 
 export async function up({ payload, req: _req, session: _session }: MigrateUpArgs): Promise<void> {
-  const dic = await payload.db.upsert({
+  const homePage = await payload.db.upsert({
     collection: CollectionSlug.Pages,
     where: {
       slug: {
@@ -21,8 +21,13 @@ export async function up({ payload, req: _req, session: _session }: MigrateUpArg
     },
   })
 
-  const aboutMePage = await payload.create({
+  const aboutMePage = await payload.db.upsert({
     collection: CollectionSlug.Pages,
+    where: {
+      slug: {
+        equals: 'about-me',
+      },
+    },
     data: {
       title: 'About Me',
       slug: 'about-me',
@@ -30,11 +35,15 @@ export async function up({ payload, req: _req, session: _session }: MigrateUpArg
       layout: 'default',
       _status: 'published',
     },
-    draft: false,
   })
 
-  const resumePage = await payload.create({
+  const resumePage = await payload.db.upsert({
     collection: CollectionSlug.Pages,
+    where: {
+      slug: {
+        equals: 'resume',
+      },
+    },
     data: {
       title: 'Resume',
       slug: 'resume',
@@ -42,11 +51,15 @@ export async function up({ payload, req: _req, session: _session }: MigrateUpArg
       layout: 'resume',
       _status: 'published',
     },
-    draft: false,
   })
 
-  const legalNoticePage = await payload.create({
+  const legalNoticePage = await payload.db.upsert({
     collection: CollectionSlug.Pages,
+    where: {
+      slug: {
+        equals: 'legal-notice',
+      },
+    },
     data: {
       title: 'Legal Notice',
       slug: 'legal-notice',
@@ -54,11 +67,15 @@ export async function up({ payload, req: _req, session: _session }: MigrateUpArg
       layout: 'legal',
       _status: 'published',
     },
-    draft: false,
   })
 
-  const privacyPolicyPage = await payload.create({
+  const privacyPolicyPage = await payload.db.upsert({
     collection: CollectionSlug.Pages,
+    where: {
+      slug: {
+        equals: 'privacy-policy',
+      },
+    },
     data: {
       title: 'Privacy Policy',
       slug: 'privacy-policy',
@@ -66,10 +83,9 @@ export async function up({ payload, req: _req, session: _session }: MigrateUpArg
       layout: 'resume',
       _status: 'published',
     },
-    draft: false,
   })
 
-  await payload.updateGlobal({
+  await payload.db.updateGlobal({
     slug: GlobalSlug.SiteSettings,
     data: {
       general: {
