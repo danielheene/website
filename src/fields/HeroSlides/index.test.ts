@@ -20,6 +20,22 @@ describe('HeroSlidesField', () => {
     expect(field.minRows).toBe(1)
   })
 
+  /**
+   * Payload's server-side form-state builder reads
+   * `fieldConfig.labels.singular` unconditionally when adding a new array
+   * row (no optional chaining on its end) — an array field with no `labels`
+   * at all crashes the admin UI with "Cannot read properties of undefined
+   * (reading 'singular')" the moment a user tries to add the first row.
+   */
+  it('sets labels so a new row can be added without crashing the admin form-state builder', () => {
+    const field = HeroSlidesField({
+      name: 'slides',
+    })
+
+    expect(field.labels?.singular).toBeTruthy()
+    expect(field.labels?.plural).toBeTruthy()
+  })
+
   it('is unbounded by default', () => {
     const field = HeroSlidesField({
       name: 'slides',

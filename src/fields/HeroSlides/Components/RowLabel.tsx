@@ -3,29 +3,12 @@
 import dynamic from 'next/dynamic'
 import { useRowLabel } from '@payloadcms/ui'
 
-import { SHADER_PRESET_MAP, type ShaderPresetKey } from '@/components/HeroMedia/shaderPresets'
-
+import { resolveSlideThumbnail, type SlideRowData } from './resolveSlideThumbnail'
 import { SHADER_COMPONENTS } from './shaderComponents'
 
 const ShaderPreviewCanvas = dynamic(() => import('./ShaderPreviewCanvas'), {
   ssr: false,
 })
-
-type SlideRowData = {
-  slideType?: 'image' | 'video' | 'shader'
-  media?: {
-    relationTo?: string
-    value?: {
-      url?: string
-      thumbnails?: {
-        value?: {
-          url?: string
-        }
-      }[]
-    }
-  }
-  shader?: ShaderPresetKey
-}
 
 /**
  * Collapsed-row label for `HeroSlidesField`: a small live thumbnail — the
@@ -40,38 +23,24 @@ export const RowLabel = () => {
 
   const slideType = data?.slideType ?? 'image'
   const number = (rowNumber ?? 0) + 1
-
-  const imageUrl =
-    slideType !== 'shader' && typeof data?.media?.value === 'object'
-      ? data.media.value?.url
-      : undefined
-
-  const posterUrl =
-    slideType === 'video'
-      ? data?.media?.value?.thumbnails?.find((thumbnail) => thumbnail?.value?.url)?.value?.url
-      : undefined
-
-  const shaderPreset =
-    slideType === 'shader' && data?.shader ? SHADER_PRESET_MAP[data.shader] : undefined
-
-  const thumbnailSrc = imageUrl ?? posterUrl
+  const thumbnail = resolveSlideThumbnail(data)
 
   return (
     <div className="flex items-center gap-3">
       <div className="h-10 w-16 shrink-0 overflow-hidden rounded-sm border border-input bg-black/5">
-        {shaderPreset ? (
+        {thumbnail.kind === 'shader' ? (
           <ShaderPreviewCanvas
             className="h-full w-full"
-            entry={SHADER_COMPONENTS[shaderPreset.key]}
+            entry={SHADER_COMPONENTS[thumbnail.presetKey]}
           />
-        ) : thumbnailSrc ? (
+        ) : thumbnail.kind === 'image-url' ? (
           // biome-ignore lint/performance/noImgElement: a tiny admin-only preview thumbnail, not a page asset
-          <img alt="" className="h-full w-full object-cover" src={thumbnailSrc} />
+          <img alt="" className="h-full w-full object-cover" src={thumbnail.url} />
         ) : null}
       </div>
       <span className="text-sm">
         Slide {number}
-        {slideType === 'shader' && shaderPreset ? ` — ${shaderPreset.label}` : ''}
+        {thumbnail.kind === 'shader' ? ` — ${thumbnail.label}` : ''}
         {slideType === 'video' ? ' — Video' : ''}
       </span>
     </div>

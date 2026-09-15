@@ -11,15 +11,36 @@ type HeroSlidesFieldOptions = {
    * (e.g. SiteSettings' error hero, if it should stay non-carousel).
    */
   maxRows?: number
+  /**
+   * Which admin editor renders this array's rows:
+   * - `'filmstrip'` (default) — a row of small thumbnails in a wide
+   *   main-content tab. Use where the Hero tab carries more than just
+   *   background media (Pages' hero also has a content-type toggle and a
+   *   RichText field), which is why it needs a tab of its own.
+   * - `'sidebar'` — a single large 16:9 preview with prev/next + dots,
+   *   compact enough for the document sidebar. Use where hero is *only*
+   *   background media selection (Posts/Topics).
+   */
+  editorVariant?: 'filmstrip' | 'sidebar'
+}
+
+const EDITOR_COMPONENT_PATH: Record<
+  NonNullable<HeroSlidesFieldOptions['editorVariant']>,
+  string
+> = {
+  filmstrip: '@/fields/HeroSlides/Components/FilmstripEditor',
+  sidebar: '@/fields/HeroSlides/Components/HeroSlidesSidebarEditor',
 }
 
 /**
  * One hero slide: an image, a video, or a curated WebGL shader preset,
  * selected per-row via `slideType`.
  *
- * Row admin UX is a custom `RowLabel` (see `./Components/RowLabel`) showing a
- * small live preview of the row's current asset/shader instead of Payload's
- * default "Slide 01" text.
+ * Row admin UX is `FilmstripEditor` or `HeroSlidesSidebarEditor` (see
+ * `editorVariant`) — both replace Payload's default expand/collapse row list
+ * entirely with a "+ Add Hero BG" menu and per-slide remove/replace.
+ * `RowLabel` (the row list's collapsed label) is unused by either but kept
+ * as a fallback.
  *
  * This field-config module must never import client components directly
  * (only their path strings, via `admin.components.*`) — `payload
@@ -27,10 +48,18 @@ type HeroSlidesFieldOptions = {
  * import fails there on bundler-only `.css` imports. See
  * `src/fields/Icon/index.ts` for the identical established pattern.
  */
-export const HeroSlidesField = ({ name, maxRows }: HeroSlidesFieldOptions): ArrayField => ({
+export const HeroSlidesField = ({
+  name,
+  maxRows,
+  editorVariant = 'filmstrip',
+}: HeroSlidesFieldOptions): ArrayField => ({
   name,
   type: 'array',
   label: false,
+  labels: {
+    singular: 'Slide',
+    plural: 'Slides',
+  },
   minRows: 1,
   maxRows,
   admin: {
@@ -38,6 +67,9 @@ export const HeroSlidesField = ({ name, maxRows }: HeroSlidesFieldOptions): Arra
     components: {
       RowLabel: {
         path: '@/fields/HeroSlides/Components/RowLabel',
+      },
+      Field: {
+        path: EDITOR_COMPONENT_PATH[editorVariant],
       },
     },
   },
