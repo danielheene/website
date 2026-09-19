@@ -50,7 +50,7 @@ const isSlideRow = (row: unknown): row is SlideRow => typeof row === 'object' &&
  * for that sink (mirroring how ImageMedia goes through next/image's own
  * remotePatterns allowlist instead of rendering `url` directly).
  */
-const isSafeMediaUrl = (url: string): boolean => {
+export const isSafeMediaUrl = (url: string): boolean => {
   try {
     return [
       'http:',
