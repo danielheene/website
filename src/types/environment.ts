@@ -88,8 +88,6 @@ export const envSchema = z.object({
   SENTRY_AUTH_TOKEN: emptyAsUndefined(z.string()),
   SENTRY_ORG: emptyAsUndefined(z.string()),
   SENTRY_PROJECT: emptyAsUndefined(z.string()),
-  NEXT_PUBLIC_SENTRY_REPLAY_RATE: emptyAsUndefined(z.string()),
-  NEXT_PUBLIC_SENTRY_REPLAY_ERROR_RATE: emptyAsUndefined(z.string()),
 
   /**
    * Cloudflare Tunnel is used to expose the app to the internet on local development
