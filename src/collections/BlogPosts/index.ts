@@ -3,7 +3,7 @@ import { CollectionConfig } from 'payload'
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
-import { HeroBackgroundField } from '@/fields/HeroBackground'
+import { HeroSlidesField } from '@/fields/HeroSlides'
 import { IconField } from '@/fields/Icon'
 import { MetaField } from '@/fields/Meta'
 import { RichTextField } from '@/fields/RichText'
@@ -75,7 +75,7 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
   fields: [
     /* -------------- Main  Content -------------- */
     TitleField({
-      listViewThumbnailPath: 'hero.background.media.value',
+      listViewThumbnailPath: 'hero.slides.0.media.value',
     }),
 
     /* -------------- Sidebar Content -------------- */
@@ -94,9 +94,9 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
         disableGroupBy: true,
       },
       fields: [
-        HeroBackgroundField({
-          name: 'background',
-          hasManyMedia: false,
+        HeroSlidesField({
+          name: 'slides',
+          editorVariant: 'sidebar',
         }),
       ],
     },
@@ -126,13 +126,21 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
       name: 'links',
       type: 'array',
       fields: [
-        IconField({
-          name: 'icon',
-        }),
         {
-          name: 'url',
-          label: false,
-          type: 'text',
+          type: 'row',
+          fields: [
+            IconField({
+              name: 'icon',
+            }),
+            {
+              name: 'url',
+              label: false,
+              type: 'text',
+              admin: {
+                placeholder: 'URL',
+              },
+            },
+          ],
         },
       ],
     },

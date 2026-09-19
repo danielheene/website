@@ -2,7 +2,7 @@
 
 import { ComponentProps, forwardRef, ReactNode } from 'react'
 
-import * as Slot from '@radix-ui/react-slot'
+import { createSlot, createSlottable } from '@radix-ui/react-slot'
 import { tv, VariantProps } from 'tailwind-variants'
 
 import { Icon } from '@/components/Icon'
@@ -10,10 +10,11 @@ import { Icon } from '@/components/Icon'
 export const buttonStyles = tv({
   base: [
     'group/button inline-flex shrink-0 items-center justify-center rounded-none',
-    'border border-transparent bg-clip-padding cursor-pointer',
-    'text-md font-mono font-medium whitespace-nowrap uppercase',
-    'transition-all outline-none select-none',
-    'focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30',
+    'text-(--button-text-color) text-md font-mono font-medium whitespace-nowrap uppercase',
+    'bg-(--button-background-color) bg-clip-padding',
+    'border-(--button-border-color) border',
+    'transition-all outline-none select-none cursor-pointer',
+    'focus-visible:ring-2 focus-visible:ring-ring/30',
     'active:not-aria-[haspopup]:translate-y-px',
     'disabled:pointer-events-none disabled:opacity-50',
     'aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20',
@@ -23,28 +24,36 @@ export const buttonStyles = tv({
   variants: {
     variant: {
       default: [
-        'bg-primary text-primary-foreground hover:bg-primary/80',
+        '[--button-text-color:var(--color-primary-foreground)] hover:[--button-text-color:var(--color-primary-foreground)]',
+        '[--button-background-color:var(--color-primary)] hover:[--button-background-color:color-mix(in_oklch,var(--color-primary),var(--color-transparent)_20%)]',
+        '[--button-border-color:var(--color-primary)] hover:[--button-border-color:color-mix(in_oklch,var(--color-primary),var(--color-transparent)_20%)]',
       ],
       outline: [
-        'border-border bg-transparent hover:bg-muted hover:text-foreground',
-        'aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-input/30',
+        '[--button-text-color:var(--color-foreground)] hover:[--button-text-color:var(--color-foreground)]',
+        '[--button-background-color:var(--color-transparent)] hover:[--button-background-color:var(--color-muted)]',
+        '[--button-border-color:var(--color-border)] hover:[--button-border-color:var(--color-border)]',
       ],
       secondary: [
-        'bg-secondary text-secondary-foreground',
-        'hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)]',
-        'aria-expanded:bg-secondary aria-expanded:text-secondary-foreground',
+        '[--button-text-color:var(--color-secondary-foreground)] hover:[--button-text-color:var(--color-secondary-foreground)]',
+        '[--button-background-color:var(--color-secondary)] hover:[--button-background-color:color-mix(in_oklch,var(--color-secondary),var(--color-foreground)_5%)]',
+        '[--button-border-color:var(--color-secondary)] hover:[--button-border-color:color-mix(in_oklch,var(--color-secondary),var(--color-foreground)_5%)]',
       ],
       ghost: [
-        'hover:bg-muted hover:text-foreground',
-        'aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50',
+        '[--button-text-color:var(--color-foreground)] hover:[--button-text-color:var(--color-foreground)]',
+        '[--button-background-color:var(--color-transparent)] hover:[--button-background-color:var(--color-muted)]',
+        '[--button-border-color:var(--color-border)] hover:[--button-border-color:var(--color-border)]',
       ],
       destructive: [
-        'bg-destructive/10 text-destructive hover:bg-destructive/20',
-        'focus-visible:border-destructive/40 focus-visible:ring-destructive/20',
-        'dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40',
+        '[--button-text-color:var(--color-destructive)] hover:[--button-text-color:var(--color-destructive)]',
+        '[--button-background-color:color-mix(in_oklch,var(--color-destructive)_10%,var(--color-foreground)_90%)] hover:[--button-background-color:color-mix(in_oklch,var(--color-destructive)_20%,var(--color-foreground)_80%)]',
+        '[--button-border-color:color-mix(in_oklch,var(--color-destructive)_40%,var(--color-foreground)_60%)] hover:[--button-border-color:color-mix(in_oklch,var(--color-destructive)_60%,var(--color-foreground)_40%)]',
+        'focus-visible:ring-destructive/20',
       ],
       link: [
-        'text-foreground normal-case underline underline-offset-4 hover:underline px-0!',
+        '[--button-text-color:var(--color-foreground)] hover:[--button-text-color:var(--color-foreground)]',
+        '[--button-background-color:var(--color-transparent)] hover:[--button-background-color:var(--color-transparent)]',
+        '[--button-border-color:var(--color-transparent)] hover:[--button-border-color:var(--color-transparent)] border-none',
+        'normal-case underline underline-offset-4 hover:underline px-0!',
       ],
     },
     size: {
@@ -64,21 +73,26 @@ export const buttonStyles = tv({
         'h-11 gap-1.5 px-4',
         'has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2',
       ],
-      icon: [
-        'size-10',
-      ],
+
       'icon-xs': [
-        "size-7 [&>svg:not([class*='size-'])]:size-3.5",
+        'size-7',
+        "[&>svg:not([class*='size-'])]:size-3.5",
       ],
       'icon-sm': [
         'size-9',
+        "[&>svg:not([class*='size-'])]:size-4.5",
+      ],
+      icon: [
+        'size-10',
+        "[&>svg:not([class*='size-'])]:size-5",
       ],
       'icon-lg': [
         'size-11',
+        "[&>svg:not([class*='size-'])]:size-5.5",
       ],
     },
     fullWidth: {
-      false: 'inline-flex',
+      false: '',
       true: 'flex',
     },
   },
@@ -96,8 +110,8 @@ export interface ButtonProps extends VariantProps<typeof buttonStyles> {
   asChild?: boolean
 }
 
-const ButtonSlot = Slot.createSlot<HTMLButtonElement, ButtonProps>('Button.Slot')
-const ButtonSlottable = Slot.createSlottable('Button.Slottable')
+const ButtonSlot = createSlot<HTMLButtonElement, ButtonProps>('Button.Slot')
+const ButtonSlottable = createSlottable('Button.Slottable')
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps & ComponentProps<'button'>>(
   (
@@ -117,21 +131,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps & ComponentProps
         })}
         {...props}
       >
-        {asChild ? (
-          // Radix's Slot requires exactly one element child to merge props
-          // onto — start/end icons would make this two-or-three children,
-          // so `asChild` callers own their own icon (see e.g.
-          // ResumeDownloadButton, which renders its icon inside the `<Link>`
-          // that becomes the Slot's child) and this component leaves
-          // `children` alone.
-          children
-        ) : (
-          <>
-            {startIcon && <Icon name={startIcon} data-icon="inline-start" />}
-            {children}
-            {endIcon && <Icon name={endIcon} data-icon="inline-end" />}
-          </>
-        )}
+        {startIcon && <Icon name={startIcon} data-icon="inline-start" />}
+        {asChild ? <ButtonSlottable>{children}</ButtonSlottable> : children}
+        {endIcon && <Icon name={endIcon} data-icon="inline-end" />}
       </Component>
     )
   },

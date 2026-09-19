@@ -13,6 +13,8 @@ import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 import { SKILL_TYPE } from '@/types/select-options'
 
+import { enqueueSyncSkillSorting } from './hooks/enqueueSyncSkillSorting'
+
 export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
   slug: CollectionSlug.ResumeSkills,
   labels: {
@@ -32,6 +34,7 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
     afterChange: [],
     afterOperation: [
       generateResumeDocumentHook,
+      enqueueSyncSkillSorting,
     ],
   },
   admin: {

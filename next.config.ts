@@ -164,6 +164,8 @@ export default async (phase, { defaultConfig }) => {
      *                          metadataBase, both of which are prerendered.
      *      - STATUS_PAGE_URL → reaches ServiceStatus through the Footer, which
      *                          renders inside the prerendered shell.
+     *      - RESUME_REDIRECT_URL_BASE → read by generateResumeDocumentRedirectURL
+     *                          to generate a redirect URL for a resume document.
      *
      *    With `cacheComponents: true` nearly every route has a shell rendered
      *    at build time, so a process.env read on the server is captured into
@@ -179,8 +181,9 @@ export default async (phase, { defaultConfig }) => {
     env: {
       SERVER_URL: process.env.SERVER_URL,
       STATUS_PAGE_URL: process.env.STATUS_PAGE_URL,
+      RESUME_REDIRECT_URL_BASE: process.env.RESUME_REDIRECT_URL_BASE,
       SENTRY_DSN: process.env.SENTRY_DSN,
-      SENTRY_RELEASE: process.env.SENTRY_RELEASE,
+      SENTRY_RELEASE: `${process.env.SENTRY_PROJECT}@${process.env.npm_package_version}-${process.env.SENTRY_ENVIRONMENT || process.env.NODE_ENV || 'production'}`,
     },
 
     /**
@@ -326,10 +329,10 @@ export default async (phase, { defaultConfig }) => {
     async rewrites() {
       const rewrites = []
 
-      if (process.env['NEXT_PUBLIC_UMAMI_URL']) {
+      if (process.env.NEXT_PUBLIC_UMAMI_URL) {
         rewrites.push({
           source: '/stats/:match*',
-          destination: `${process.env['NEXT_PUBLIC_UMAMI_URL']}/:match*`,
+          destination: `${process.env.NEXT_PUBLIC_UMAMI_URL}/:match*`,
         })
       }
 
@@ -358,39 +361,11 @@ export default async (phase, { defaultConfig }) => {
     silent: !process.env.CI,
     sourcemaps: {
       disable: !uploadSourceMaps,
-      // uploaded maps are deleted afterwards so they are never served publicly
       deleteSourcemapsAfterUpload: true,
     },
 
-    /**
-     * Pins the release this build creates/finalizes in Sentry to the exact
-     * same string every runtime tags its events with (SENTRY_RELEASE, read
-     * above into the `env` block for the client bundle and directly by
-     * instrumentation.ts for server/edge). Without an explicit name here the
-     * plugin falls back to the git HEAD SHA, which drifts from
-     * SENTRY_RELEASE the moment that's set to anything else — two releases
-     * result: one with commits and no events, one with events and no
-     * commits. semantic-release (.github/workflows/release.yml) sets
-     * SENTRY_RELEASE to `website@<version>` before this build runs.
-     *
-     * `deploy.env` records this build under an environment so the release's
-     * Deploys tab isn't permanently empty — see SENTRY_ENVIRONMENT in
-     * src/lib/sentry/options.ts for the same value used at runtime.
-     */
     release: {
       name: process.env.SENTRY_RELEASE,
-      deploy: process.env.SENTRY_RELEASE
-        ? {
-            env: process.env.SENTRY_ENVIRONMENT || process.env.NODE_ENV || 'production',
-          }
-        : undefined,
     },
-
-    // proxies Sentry requests through the app so ad blockers cannot drop them
-    tunnelRoute: '/monitoring',
-
-    // `disableLogger` and `automaticVercelMonitors` are deliberately omitted:
-    // both are deprecated and webpack-only, and this project builds with
-    // Turbopack, so setting them only emits warnings.
   })
 }

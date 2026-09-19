@@ -74,7 +74,45 @@ describe('TrendingBlogPostsBlockRenderer', () => {
     expect(screen.getByText('Trending Now')).toBeInTheDocument()
   })
 
-  it('does not render an image when hero.background.media.value.url is null', async () => {
+  it("renders an image from the post's first hero slide", async () => {
+    fetchTrendingBlogPostsMock.mockResolvedValue([
+      {
+        slug: 'with-hero-image',
+        views: 10,
+        post: {
+          id: 'with-hero-image',
+          title: 'With Hero Image',
+          slug: 'with-hero-image',
+          hero: {
+            slides: [
+              {
+                slideType: 'image',
+                media: {
+                  relationTo: 'images',
+                  value: {
+                    id: 'media-3',
+                    alt: 'Alt text',
+                    url: 'https://example.com/hero.webp',
+                  },
+                },
+              },
+            ],
+          },
+        } as unknown as TrendingBlogPost['post'],
+      },
+    ])
+
+    const element = await TrendingBlogPostsBlockRenderer({})
+    render(element)
+
+    expect(
+      screen.getByRole('img', {
+        name: 'Alt text',
+      }),
+    ).toBeInTheDocument()
+  })
+
+  it('does not render an image when hero.slides.0.media.value.url is null', async () => {
     fetchTrendingBlogPostsMock.mockResolvedValue([
       {
         slug: 'no-hero-url',
@@ -84,17 +122,19 @@ describe('TrendingBlogPostsBlockRenderer', () => {
           title: 'No Hero URL',
           slug: 'no-hero-url',
           hero: {
-            background: {
-              backgroundType: 'media',
-              media: {
-                relationTo: 'images',
-                value: {
-                  id: 'media-1',
-                  alt: 'Alt text',
-                  url: null,
+            slides: [
+              {
+                slideType: 'image',
+                media: {
+                  relationTo: 'images',
+                  value: {
+                    id: 'media-1',
+                    alt: 'Alt text',
+                    url: null,
+                  },
                 },
               },
-            },
+            ],
           },
         } as unknown as TrendingBlogPost['post'],
       },
@@ -107,7 +147,7 @@ describe('TrendingBlogPostsBlockRenderer', () => {
     expect(screen.queryByRole('img')).not.toBeInTheDocument()
   })
 
-  it('does not render an image when hero.background.media.value.url is an empty string', async () => {
+  it('does not render an image when hero.slides.0.media.value.url is an empty string', async () => {
     fetchTrendingBlogPostsMock.mockResolvedValue([
       {
         slug: 'empty-hero-url',
@@ -117,17 +157,19 @@ describe('TrendingBlogPostsBlockRenderer', () => {
           title: 'Empty Hero URL',
           slug: 'empty-hero-url',
           hero: {
-            background: {
-              backgroundType: 'media',
-              media: {
-                relationTo: 'images',
-                value: {
-                  id: 'media-2',
-                  alt: 'Alt text',
-                  url: '',
+            slides: [
+              {
+                slideType: 'image',
+                media: {
+                  relationTo: 'images',
+                  value: {
+                    id: 'media-2',
+                    alt: 'Alt text',
+                    url: '',
+                  },
                 },
               },
-            },
+            ],
           },
         } as unknown as TrendingBlogPost['post'],
       },

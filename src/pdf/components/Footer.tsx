@@ -20,7 +20,7 @@ type DocumentFooterProps = {
 export const Footer = ({
   renderPagination,
   generatedNotice,
-  generatedNoticeUrl,
+  documentUrl,
   fixed,
   style: styleFromProp = {},
 }: DocumentFooterProps): JSX.Element => (
@@ -31,7 +31,7 @@ export const Footer = ({
     ]}
     fixed={fixed}
   >
-    <Link style={textStyles.footerNote} src={generatedNoticeUrl}>
+    <Link style={textStyles.footerNote} src={documentUrl}>
       {generatedNotice}
     </Link>
     <Text

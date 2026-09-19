@@ -1,11 +1,13 @@
-import type { NamedGroupField, UIField } from 'payload'
+import type { NamedGroupField, RichTextFieldValidation, UIField } from 'payload'
 import { deepMerge } from 'payload'
+import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 
 import { cn } from 'tailwind-variants'
 
 import { enqueueAutoTranslate } from '@/fields/BilingualRichText/hooks/enqueueAutoTranslate'
 import type { RichTextEditorVariant, RichTextFieldOverrides } from '@/fields/RichText'
 import { RichTextField } from '@/fields/RichText'
+import { isEmptyValue } from '@/lib/lexical/isEmptyValue'
 
 type BilingualRichTextFieldOverrides = {
   en?: RichTextFieldOverrides
@@ -20,6 +22,27 @@ type BilingualRichTextFieldProps = {
   required?: boolean
   overrides?: BilingualRichTextFieldOverrides
 }
+
+/**
+ * At least one side must be filled in, but never both individually — a
+ * one-sided save is exactly what `enqueueAutoTranslate` (this field's
+ * `afterChange` hook) exists to backfill, so rejecting it here would defeat
+ * that feature. `otherFieldName` is the sibling in the same `en`/`de` row:
+ * `siblingData` at this nesting level is the group's other language field.
+ */
+const requireEitherLanguage =
+  (otherFieldName: 'en' | 'de'): RichTextFieldValidation =>
+  (value, { siblingData }) => {
+    const otherValue = (siblingData as Record<string, SerializedEditorState | undefined>)[
+      otherFieldName
+    ]
+
+    if (!isEmptyValue(value as SerializedEditorState | undefined) || !isEmptyValue(otherValue)) {
+      return true
+    }
+
+    return 'Enter English or German content — the other language can be filled in automatically.'
+  }
 
 /**
  * A reusable Payload group field with side-by-side English and German
@@ -39,6 +62,11 @@ type BilingualRichTextFieldProps = {
  *   `src/fields/Link/index.ts`) that the headless parser cannot recreate
  *   from an HTML `<a>` alone. If your content contains links, translate
  *   manually rather than through this button.
+ *
+ * `required` means *at least one* language must have content, not both —
+ * see `requireEitherLanguage`. A one-sided save is exactly the case
+ * `enqueueAutoTranslate` exists to backfill, so this deliberately does not
+ * reject it.
  */
 export const BilingualRichTextField = ({
   name,
@@ -48,16 +76,23 @@ export const BilingualRichTextField = ({
   required = false,
   overrides = {},
 }: BilingualRichTextFieldProps): NamedGroupField => {
-  const baseOverrides = (language: 'English' | 'German'): RichTextFieldOverrides => ({
+  const baseOverrides = (
+    language: 'English' | 'German',
+    otherFieldName: 'en' | 'de',
+  ): RichTextFieldOverrides => ({
     label: language,
-    required,
+    ...(required
+      ? {
+          validate: requireEitherLanguage(otherFieldName),
+        }
+      : {}),
   })
 
   const enField = RichTextField({
     name: 'en',
     editorVariant,
     overrides: deepMerge<RichTextFieldOverrides, RichTextFieldOverrides>(
-      baseOverrides('English'),
+      baseOverrides('English', 'de'),
       overrides.en ?? {},
     ),
   })
@@ -66,7 +101,7 @@ export const BilingualRichTextField = ({
     name: 'de',
     editorVariant,
     overrides: deepMerge<RichTextFieldOverrides, RichTextFieldOverrides>(
-      baseOverrides('German'),
+      baseOverrides('German', 'en'),
       overrides.de ?? {},
     ),
   })

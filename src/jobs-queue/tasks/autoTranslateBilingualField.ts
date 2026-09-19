@@ -45,6 +45,12 @@ export const autoTranslateBilingualField: TaskConfig<TaskSlug['AutoTranslateBili
   concurrency: {
     // Per-target-cell key: a newer save/click on the same field supersedes
     // an in-flight job for it, so only the latest translation wins.
+    // Deliberately excludes `input.mode` — a save can queue an 'auto' job
+    // for a cell (enqueueAutoTranslate's afterChange hook) at roughly the
+    // same moment `TranslateControls` notices the same empty cell and
+    // queues a 'manual' one client-side; without a shared key those two
+    // would race as independent jobs instead of the second one superseding
+    // the first.
     // exclusive: true matches every other task in this repo (see
     // generateDocumentThumbnails.ts, generateVideoThumbnails.ts,
     // generateLocalizedResumeDocument.tsx) — without it, two jobs sharing
@@ -54,7 +60,6 @@ export const autoTranslateBilingualField: TaskConfig<TaskSlug['AutoTranslateBili
     key: ({ input }) =>
       [
         TaskSlug.AutoTranslateBilingualField,
-        input.mode,
         input.collectionSlug,
         input.docId ?? 'unsaved',
         input.path,

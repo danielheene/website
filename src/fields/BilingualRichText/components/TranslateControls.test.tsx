@@ -8,7 +8,6 @@ const state: Record<
   string,
   {
     value: unknown
-    setValue: ReturnType<typeof vi.fn>
   }
 > = {}
 
@@ -17,9 +16,11 @@ const toastSuccessMock = vi.fn()
 const toastErrorMock = vi.fn()
 const openModalMock = vi.fn()
 const enqueueBilingualTranslationMock = vi.fn()
+const resetMock = vi.fn()
 const documentInfoMock = vi.fn(() => ({
   id: undefined as string | undefined,
   collectionSlug: undefined as string | undefined,
+  lastUpdateTime: undefined as number | undefined,
 }))
 
 type SseCall = {
@@ -40,6 +41,18 @@ vi.mock('@payloadcms/ui', () => ({
   useDocumentInfo: () => documentInfoMock(),
   useModal: () => ({
     openModal: openModalMock,
+  }),
+  useForm: () => ({
+    // Builds `{ task: { en, de } }` from the same `state` the `useField`
+    // mock reads, so `applyTranslation`'s `lodash.set(getData(), path, …)`
+    // patches into a realistic document shape.
+    getData: () => ({
+      task: {
+        en: state['task.en']?.value,
+        de: state['task.de']?.value,
+      },
+    }),
+    reset: (...args: unknown[]) => resetMock(...args),
   }),
   ConfirmationModal: ({
     modalSlug,
@@ -110,7 +123,6 @@ const paragraph = (text: string) => ({
 const setField = (path: string, value: unknown) => {
   state[path] = {
     value,
-    setValue: vi.fn(),
   }
 }
 
@@ -149,10 +161,12 @@ beforeEach(() => {
   toastErrorMock.mockReset()
   openModalMock.mockReset()
   enqueueBilingualTranslationMock.mockReset()
+  resetMock.mockReset()
   documentInfoMock.mockReset()
   documentInfoMock.mockReturnValue({
     id: undefined,
     collectionSlug: undefined,
+    lastUpdateTime: undefined,
   })
   sseCalls.length = 0
 
@@ -188,6 +202,7 @@ describe('TranslateControls', () => {
     documentInfoMock.mockReturnValue({
       id: 'doc-1',
       collectionSlug: 'resume-jobs',
+      lastUpdateTime: undefined,
     })
     enqueueBilingualTranslationMock.mockResolvedValue({
       jobId: 'job-1',
@@ -264,7 +279,15 @@ describe('TranslateControls', () => {
       translated: paragraph('Hallo'),
     })
 
-    expect(state['task.de'].setValue).toHaveBeenCalledWith(paragraph('Hallo'))
+    await waitFor(() => {
+      expect(resetMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          task: expect.objectContaining({
+            de: paragraph('Hallo'),
+          }),
+        }),
+      )
+    })
     expect(toastSuccessMock).toHaveBeenCalledWith(
       'Translated to German',
       expect.objectContaining({
@@ -316,7 +339,7 @@ describe('TranslateControls', () => {
         id: 'job-1',
       }),
     )
-    expect(state['task.de'].setValue).not.toHaveBeenCalled()
+    expect(resetMock).not.toHaveBeenCalled()
   })
 
   it('surfaces a friendly toast and leaves the field untouched when the job reports an empty translation', async () => {
@@ -339,7 +362,7 @@ describe('TranslateControls', () => {
         id: 'job-1',
       }),
     )
-    expect(state['task.de'].setValue).not.toHaveBeenCalled()
+    expect(resetMock).not.toHaveBeenCalled()
   })
 
   it('surfaces a toast and leaves the field untouched when enqueueing itself fails', async () => {
@@ -351,9 +374,122 @@ describe('TranslateControls', () => {
     await waitFor(() => {
       expect(toastErrorMock).toHaveBeenCalledWith('queue unavailable')
     })
-    expect(state['task.de'].setValue).not.toHaveBeenCalled()
+    expect(resetMock).not.toHaveBeenCalled()
     await waitFor(() => {
       expect(screen.getByLabelText('Translate English to German')).not.toBeDisabled()
+    })
+  })
+
+  describe('auto-translating after a save leaves one side empty', () => {
+    it('translates the empty side automatically when lastUpdateTime changes (a save just completed)', async () => {
+      setField('task.en', paragraph('Hello'))
+      setField('task.de', paragraph(''))
+      documentInfoMock.mockReturnValue({
+        id: 'doc-1',
+        collectionSlug: 'resume-jobs',
+        lastUpdateTime: 1000,
+      })
+      enqueueBilingualTranslationMock.mockResolvedValue({
+        jobId: 'job-auto-1',
+      })
+      renderControls()
+
+      await waitFor(() => {
+        expect(enqueueBilingualTranslationMock).toHaveBeenCalledWith({
+          collectionSlug: 'resume-jobs',
+          docId: 'doc-1',
+          path: 'task',
+          sourceLanguage: 'en',
+          targetLanguage: 'de',
+          sourceValue: paragraph('Hello'),
+        })
+      })
+
+      const onMessage = await onMessageFor('job-auto-1')
+      onMessage({
+        status: 'success',
+        translated: paragraph('Hallo'),
+      })
+
+      await waitFor(() => {
+        expect(resetMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            task: expect.objectContaining({
+              de: paragraph('Hallo'),
+            }),
+          }),
+        )
+      })
+      expect(toastSuccessMock).toHaveBeenCalledWith(
+        'Translated to German',
+        expect.objectContaining({
+          id: 'job-auto-1',
+        }),
+      )
+    })
+
+    it('does not translate when both sides already have content', async () => {
+      setField('task.en', paragraph('Hello'))
+      setField('task.de', paragraph('Hallo'))
+      documentInfoMock.mockReturnValue({
+        id: 'doc-1',
+        collectionSlug: 'resume-jobs',
+        lastUpdateTime: 1000,
+      })
+      renderControls()
+
+      // Give the effect a tick to (not) fire before asserting the negative.
+      await waitFor(() => {
+        expect(screen.getByLabelText('Translate English to German')).toBeInTheDocument()
+      })
+      expect(enqueueBilingualTranslationMock).not.toHaveBeenCalled()
+    })
+
+    it('does not translate when both sides are empty', async () => {
+      setField('task.en', paragraph(''))
+      setField('task.de', paragraph(''))
+      documentInfoMock.mockReturnValue({
+        id: 'doc-1',
+        collectionSlug: 'resume-jobs',
+        lastUpdateTime: 1000,
+      })
+      renderControls()
+
+      await waitFor(() => {
+        expect(screen.getByLabelText('Translate English to German')).toBeInTheDocument()
+      })
+      expect(enqueueBilingualTranslationMock).not.toHaveBeenCalled()
+    })
+
+    it('does not repeat on a re-render that leaves lastUpdateTime unchanged', async () => {
+      setField('task.en', paragraph('Hello'))
+      setField('task.de', paragraph(''))
+      documentInfoMock.mockReturnValue({
+        id: 'doc-1',
+        collectionSlug: 'resume-jobs',
+        lastUpdateTime: 1000,
+      })
+      enqueueBilingualTranslationMock.mockResolvedValue({
+        jobId: 'job-auto-1',
+      })
+      const { rerender } = renderControls()
+
+      await waitFor(() => {
+        expect(enqueueBilingualTranslationMock).toHaveBeenCalledTimes(1)
+      })
+
+      rerender(
+        <TranslateControls
+          {...({
+            path: 'task.translateControls',
+          } as Props)}
+        />,
+      )
+
+      await waitFor(() => {
+        expect(screen.getByLabelText('Translate English to German')).toBeInTheDocument()
+      })
+      expect(enqueueBilingualTranslationMock).toHaveBeenCalledTimes(1)
     })
   })
 })

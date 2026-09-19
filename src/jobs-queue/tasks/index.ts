@@ -7,13 +7,13 @@ import { calculateSkillTagInterval } from './calculateSkillTagInterval'
 import { createResumeDocument } from './createResumeDocument'
 import { generateDocumentThumbnails } from './generateDocumentThumbnails'
 import { generateLocalizedResumeDocument } from './generateLocalizedResumeDocument'
-import { generateResumeDocumentSlug } from './generateResumeDocumentSlug'
 import { generateResumeDocumentTitle } from './generateResumeDocumentTitle'
 import { generateResumeFile } from './generateResumeFile'
 import { generateResumeFilename } from './generateResumeFilename'
 import { generateVideoThumbnails } from './generateVideoThumbnails'
 import { heartbeatPing } from './heartbeatPing'
 import { seedCollection } from './seedCollection'
+import { syncSkillSorting } from './syncSkillSorting'
 
 // Every task is wrapped in withJobObservability here, at the single point
 // where tasks are registered — a task added to this array cannot skip Sentry
@@ -29,10 +29,10 @@ export const TASKS = [
   generateResumeFile,
   autoTranslateBilingualField,
   generateResumeDocumentTitle,
-  generateResumeDocumentSlug,
   createResumeDocument,
   heartbeatPing,
   seedCollection,
+  syncSkillSorting,
 ].map(withJobObservability)
 
 export const TASKS_SLUGS = TASKS.map(({ slug }) => slug) as TaskSlugValue[]

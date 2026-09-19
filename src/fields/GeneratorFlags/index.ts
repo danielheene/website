@@ -12,10 +12,12 @@ import { normalizeIncomingFlags } from './hooks/normalizeIncomingFlags'
  * touching real content.
  *
  * `unsplash-import` marks a `MediaImages` document created via the in-admin
- * Unsplash search, so imported stock photos can be filtered or audited later.
- *
- * A non-empty list *is* the "this was generated" marker — hand-uploaded assets
- * carry none — so the flags describe only what kind of artefact it is.
+ * Unsplash search, so imported stock photos can be audited later — but unlike
+ * the other flags it does *not* mean "generated" for scoping purposes: an
+ * Unsplash import is conceptually a normal upload (the user picked it, same
+ * as a hand-uploaded file), so it belongs in the default "Uploaded" media
+ * list rather than being grouped with auto-generated thumbnails/documents.
+ * See `GENERATED_ASSET_FLAGS`.
  *
  * Flags are stored as plain names. An earlier version accepted `+flag`/`-flag`
  * operators so a caller could add or remove one without reading the document
@@ -37,6 +39,13 @@ export const GENERATOR_FLAGS = [
 ] as const
 
 export type GeneratorFlag = (typeof GENERATOR_FLAGS)[number]
+
+/**
+ * The subset of `GENERATOR_FLAGS` that means "this asset was machine-
+ * generated" for `scopeMediaAssets`' "Uploaded" vs. "Generated" split —
+ * everything except `unsplash-import` (see its doc comment above).
+ */
+export const GENERATED_ASSET_FLAGS = GENERATOR_FLAGS.filter((flag) => flag !== 'unsplash-import')
 
 export const GeneratorFlagsField = (): TextField => ({
   name: 'generatorFlags',

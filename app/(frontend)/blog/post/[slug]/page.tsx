@@ -130,8 +130,7 @@ export default async function Page({ params: paramsPromise }: PageProps) {
     <div className="flex  w-full flex-col bg-background text-foreground">
       <div className="flex flex-1 items-center justify-center">
         <section className="pb-32 w-full">
-          {/* A post carries at most one hero image, so this never becomes a carousel. */}
-          <HeroMedia fallbackAlt={title} background={hero?.background}>
+          <HeroMedia fallbackAlt={title} slides={hero?.slides}>
             <div className="pt-40 pb-16">
               <div className="container flex flex-col items-center gap-8 text-center">
                 <nav aria-label="breadcrumb">

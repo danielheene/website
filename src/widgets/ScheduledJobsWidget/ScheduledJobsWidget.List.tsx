@@ -2,6 +2,9 @@
 
 import { useState } from 'react'
 
+import { cn } from 'tailwind-variants'
+
+import { Icon } from '@/components/Icon'
 import { QueueSlug } from '@/types/jobs-queue'
 import type { PayloadJob } from '@/types/payload'
 
@@ -11,7 +14,7 @@ import { Header } from './ScheduledJobsWidget.Header'
 // Every known queue, not just the ones with jobs pending right now — so a
 // queue that's currently empty (e.g. resume-generation between runs) still
 // shows up as a selectable option instead of only appearing once it has work.
-// `HeartbeatQueue` is excluded: its jobs never reach `jobs` (filtered out
+// `QueueSlug.Heartbeat` is excluded: its jobs never reach `jobs` (filtered out
 // upstream in `fetchScheduledJobs`), so it would only ever show up empty.
 const ALL_QUEUES: string[] = Object.values(QueueSlug)
   .filter((queue) => queue !== QueueSlug.Heartbeat)
@@ -66,8 +69,15 @@ export const ScheduledJobsWidgetList = ({ jobs }: ScheduledJobsWidgetListProps) 
       {visibleJobs.length > 0 ? (
         visibleJobs.map((job) => <ScheduledJobsWidgetClient key={job.id} {...job} />)
       ) : (
-        <div className="px-4 pb-6 font-mono text-sm opacity-60">
-          {selectedQueue ? `No scheduled jobs in "${selectedQueue}"` : 'No scheduled jobs'}
+        <div
+          className={cn([
+            'bg-card border-border border flex items-center gap-4 p-4 opacity-60',
+          ])}
+        >
+          <Icon name="success" className="size-8 text-[32px]" />
+          <span className="text-lg font-mono">
+            {selectedQueue ? `No scheduled jobs in "${selectedQueue}"` : 'No scheduled jobs'}
+          </span>
         </div>
       )}
     </div>

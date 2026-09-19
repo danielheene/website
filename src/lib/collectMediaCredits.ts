@@ -15,6 +15,12 @@ const MEDIA_COLLECTIONS: MediaCollectionSlug[] = [
 export interface MediaCreditUsage {
   /** Slug of the collection (or global) the asset is used in. */
   collection: string
+  /**
+   * Human-readable name of the collection (or global) the asset is used in,
+   * e.g. "Job" or "Blog Post" — a document's own title alone (e.g. "Resume")
+   * doesn't say what kind of content it is.
+   */
+  collectionLabel: string
   /** Human-readable title of the referencing document. */
   label: string
 }
@@ -24,6 +30,13 @@ export interface MediaCredit {
   collection: MediaCollectionSlug
   filename: string
   credits: DefaultTypedEditorState
+  /**
+   * A small preview image for the asset, when one is available: the image's
+   * own thumbnail size for `MediaImages`, or the related cover image for
+   * `MediaVideos`/`MediaDocuments`. `MediaAudios` has no thumbnail generation
+   * yet, so this is `null` there.
+   */
+  thumbnailUrl: string | null
   /** Every place the asset is referenced, de-duplicated and sorted by label. */
   usages: MediaCreditUsage[]
 }
@@ -56,25 +69,39 @@ const hasCreditsContent = (credits: unknown): credits is DefaultTypedEditorState
   return root.children.some((child) => collectText(child).trim() !== '')
 }
 
+interface SourceLabel {
+  /** Human-readable name of the collection/global itself, e.g. "Job", "Blog Post", "Site Settings". */
+  collectionLabel: string
+  /** Human-readable title of the referencing document. `null` for globals, which have no per-doc title. */
+  docLabel: string | null
+}
+
 /**
- * Resolves the display title of a referencing document, honouring each
- * collection's own `useAsTitle` rather than assuming every collection uses
- * `title` (resume jobs use `employer`, skills use `name_label`, and so on).
+ * Resolves the display info of a referencing document: the collection's own
+ * label (so "Job" or "Blog Post" is visible, not just the slug) plus the
+ * document's title, honouring each collection's own `useAsTitle` rather than
+ * assuming every collection uses `title` (resume jobs use `employer`, skills
+ * use `name_label`, and so on). A doc's title alone can be ambiguous — e.g. a
+ * `ResumeDocuments` entry titled "Resume" — so callers should show both.
  */
 const resolveSourceLabel = async (
   payload: Payload,
   sourceCollection: string,
   sourceId: string,
   sourceType: string,
-): Promise<string | null> => {
+): Promise<SourceLabel | null> => {
   if (sourceType === 'global') {
     const global = payload.config.globals.find(({ slug }) => slug === sourceCollection)
-    return (global?.label as string) || sourceCollection
+    return {
+      collectionLabel: (global?.label as string) || sourceCollection,
+      docLabel: null,
+    }
   }
 
   const collection = payload.config.collections.find(({ slug }) => slug === sourceCollection)
   if (!collection) return null
 
+  const collectionLabel = (collection.labels?.singular as string) || sourceCollection
   const titleField = collection.admin?.useAsTitle || 'id'
 
   try {
@@ -87,13 +114,64 @@ const resolveSourceLabel = async (
       } as never,
     })
 
-    const label = (doc as Record<string, unknown>)?.[titleField]
-    return typeof label === 'string' && label.trim() !== '' ? label : null
+    const title = (doc as Record<string, unknown>)?.[titleField]
+    return {
+      collectionLabel,
+      docLabel: typeof title === 'string' && title.trim() !== '' ? title : null,
+    }
   } catch {
     // The source document may have been deleted before its reference rows were
     // cleaned up; skip it rather than failing the whole credits list.
     return null
   }
+}
+
+/**
+ * Resolves a small preview image URL for a media doc: the doc's own
+ * `thumbnail` image size for `MediaImages`, or the first related cover image
+ * (populated at depth 1) for `MediaVideos`/`MediaDocuments`. Falls back to the
+ * full-size `url` when no dedicated thumbnail exists, and to `null` for
+ * collections without any image representation (`MediaAudios`).
+ */
+const resolveThumbnailUrl = (
+  collection: MediaCollectionSlug,
+  doc: Record<string, unknown>,
+): string | null => {
+  if (collection === CollectionSlug.MediaImages) {
+    const sizes = doc.sizes as
+      | {
+          thumbnail?: {
+            url?: string | null
+          }
+        }
+      | undefined
+    return sizes?.thumbnail?.url || (doc.url as string | null) || null
+  }
+
+  if (collection === CollectionSlug.MediaVideos || collection === CollectionSlug.MediaDocuments) {
+    const thumbnails = doc.thumbnails as
+      | {
+          value?:
+            | {
+                url?: string | null
+                sizes?: {
+                  thumbnail?: {
+                    url?: string | null
+                  }
+                }
+              }
+            | string
+        }[]
+      | undefined
+
+    const cover = thumbnails?.find((thumbnail) => typeof thumbnail.value === 'object')?.value
+    if (cover && typeof cover === 'object') {
+      return cover.sizes?.thumbnail?.url || cover.url || null
+    }
+    return null
+  }
+
+  return null
 }
 
 /**
@@ -150,7 +228,7 @@ export const collectMediaCredits = async (): Promise<MediaCredit[]> => {
 
   // Resolve each distinct source document once, not once per reference row.
   const sourceKey = (collection: string, id: string) => `${collection}:${id}`
-  const sourceLabels = new Map<string, string | null>()
+  const sourceLabels = new Map<string, SourceLabel | null>()
 
   await Promise.all(
     [
@@ -177,6 +255,9 @@ export const collectMediaCredits = async (): Promise<MediaCredit[]> => {
     [
       ...idsByCollection.entries(),
     ].map(async ([collection, ids]) => {
+      const needsThumbnailRelation =
+        collection === CollectionSlug.MediaVideos || collection === CollectionSlug.MediaDocuments
+
       const { docs } = await payload.find({
         collection,
         where: {
@@ -189,8 +270,15 @@ export const collectMediaCredits = async (): Promise<MediaCredit[]> => {
         select: {
           filename: true,
           credits: true,
+          url: true,
+          sizes: true,
+          ...(needsThumbnailRelation
+            ? {
+                thumbnails: true,
+              }
+            : {}),
         },
-        depth: 0,
+        depth: needsThumbnailRelation ? 1 : 0,
         limit: 0,
         pagination: false,
       })
@@ -203,11 +291,19 @@ export const collectMediaCredits = async (): Promise<MediaCredit[]> => {
           if (reference.targetCollection !== collection) continue
           if (reference.targetId !== String(doc.id)) continue
 
-          const label = sourceLabels.get(sourceKey(reference.sourceCollection, reference.sourceId))
-          if (!label) continue
+          const source = sourceLabels.get(sourceKey(reference.sourceCollection, reference.sourceId))
+          if (!source) continue
 
-          usages.set(label, {
+          // Globals have no per-doc title; collection docs show both their
+          // type and title since the title alone can be ambiguous (e.g. a
+          // Resume Document entry titled "Resume").
+          const label = source.docLabel
+            ? `${source.collectionLabel}: ${source.docLabel}`
+            : source.collectionLabel
+
+          usages.set(`${reference.sourceCollection}:${label}`, {
             collection: reference.sourceCollection,
+            collectionLabel: source.collectionLabel,
             label,
           })
         }
@@ -217,6 +313,7 @@ export const collectMediaCredits = async (): Promise<MediaCredit[]> => {
           collection,
           filename: doc.filename ?? '',
           credits: doc.credits as DefaultTypedEditorState,
+          thumbnailUrl: resolveThumbnailUrl(collection, doc),
           usages: [
             ...usages.values(),
           ].sort((a, b) => a.label.localeCompare(b.label)),

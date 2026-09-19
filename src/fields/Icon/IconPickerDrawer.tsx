@@ -31,10 +31,9 @@ export const IconPickerDrawer = ({
   const { closeModal } = useModal()
 
   return (
-    <Drawer slug={slug} title={title}>
+    <Drawer slug={slug} title={title} className="icon-picker-drawer">
       <IconPicker
         {...pickerProps}
-        className="max-w-[400px]"
         onSelectAction={(icon) => {
           onSelectAction(icon)
           closeModal(slug)

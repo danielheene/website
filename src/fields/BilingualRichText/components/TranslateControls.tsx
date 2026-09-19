@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { UIFieldClientComponent, UIFieldClientProps } from 'payload'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 import {
@@ -9,9 +9,11 @@ import {
   toast,
   useDocumentInfo,
   useField,
+  useForm,
   useModal,
 } from '@payloadcms/ui'
 
+import { set } from 'lodash-es'
 import { cn } from 'tailwind-variants'
 
 import { Button } from '@/components/Button'
@@ -63,15 +65,16 @@ export const TranslateControls: UIFieldClientComponent = ({
   path,
   layout,
 }: TranslateControlsProps) => {
-  const { value: enValue, setValue: setEnValue } = useField<SerializedEditorState>({
+  const { value: enValue } = useField<SerializedEditorState>({
     path: siblingPath(path, 'en'),
   })
-  const { value: deValue, setValue: setDeValue } = useField<SerializedEditorState>({
+  const { value: deValue } = useField<SerializedEditorState>({
     path: siblingPath(path, 'de'),
   })
 
-  const { id: docId, collectionSlug } = useDocumentInfo()
+  const { id: docId, collectionSlug, lastUpdateTime } = useDocumentInfo()
   const { openModal } = useModal()
+  const { getData, reset } = useForm()
 
   const [isTranslatingToDe, setIsTranslatingToDe] = useState(false)
   const [isTranslatingToEn, setIsTranslatingToEn] = useState(false)
@@ -145,13 +148,44 @@ export const TranslateControls: UIFieldClientComponent = ({
     ],
   )
 
+  /**
+   * Writes the translated value into the target field and re-syncs the
+   * mounted Lexical editor with it.
+   *
+   * `useField`'s `setValue` alone is not enough here: `RichTextField` only
+   * re-initializes its Lexical editor instance when `initialValue` changes
+   * (see `@payloadcms/richtext-lexical`'s `Field.js`), and `setValue` only
+   * ever changes the live `value`, not `initialValue` — so a plain
+   * `setValue` call would update Payload's form state invisibly while the
+   * on-screen editor kept showing its old (empty) content. `reset(data)`
+   * round-trips through `getFormState` and dispatches `REPLACE_STATE`,
+   * which *does* land as a fresh `initialValue`, so the editor actually
+   * re-renders with the new content.
+   */
+  const applyTranslation = useCallback(
+    async (targetFieldPath: string, translated: SerializedEditorState) => {
+      const nextData = set(
+        {
+          ...getData(),
+        },
+        targetFieldPath,
+        translated,
+      )
+      await reset(nextData)
+    },
+    [
+      getData,
+      reset,
+    ],
+  )
+
   /** Builds the SSE `onMessage` handler for one direction: keeps the toast
    * (matched by job id) live as progress comes in, applies the result on
    * success, and releases the translating/job-id state on every outcome. */
   const handleProgress = useCallback(
     (
       target: BilingualLanguageValue,
-      setTargetValue: (value: SerializedEditorState) => void,
+      targetFieldPath: string,
       setIsTranslating: (value: boolean) => void,
       setJobId: (value: string | null) => void,
       jobId: string,
@@ -165,7 +199,7 @@ export const TranslateControls: UIFieldClientComponent = ({
             })
             return
           case 'success':
-            setTargetValue(data.translated)
+            void applyTranslation(targetFieldPath, data.translated)
             toast.success(`Translated to ${BilingualLanguageLabel[target]}`, {
               id: jobId,
             })
@@ -187,8 +221,58 @@ export const TranslateControls: UIFieldClientComponent = ({
             setJobId(null)
         }
       },
-    [],
+    [
+      applyTranslation,
+    ],
   )
+
+  /**
+   * `lastUpdateTime` changes exactly when a save completes. If that save
+   * left one side populated and the other still empty, translate it right
+   * away — the same `runTranslate` a manual button click uses — instead of
+   * only finding out on the next page load that `enqueueAutoTranslate` (the
+   * group field's own `afterChange` hook, which stays in place as a
+   * fallback for saves made outside this component, e.g. the API or a
+   * migration) backfilled it server-side. Both paths queue the same task
+   * under the same concurrency key (see `autoTranslateBilingualField.ts`),
+   * so if the hook's job is still in flight when this fires, this one
+   * supersedes it rather than the two racing independently.
+   */
+  const lastCheckedUpdateTime = useRef<number | null>(null)
+
+  useEffect(() => {
+    if (lastUpdateTime === lastCheckedUpdateTime.current) return
+    lastCheckedUpdateTime.current = lastUpdateTime
+
+    if (isEmptyValue(enValue) && !isEmptyValue(deValue) && !isTranslatingToEn && !jobIdToEn) {
+      void runTranslate(
+        BilingualLanguage.German,
+        BilingualLanguage.English,
+        deValue,
+        setIsTranslatingToEn,
+        setJobIdToEn,
+      )
+    }
+
+    if (isEmptyValue(deValue) && !isEmptyValue(enValue) && !isTranslatingToDe && !jobIdToDe) {
+      void runTranslate(
+        BilingualLanguage.English,
+        BilingualLanguage.German,
+        enValue,
+        setIsTranslatingToDe,
+        setJobIdToDe,
+      )
+    }
+  }, [
+    lastUpdateTime,
+    deValue,
+    enValue,
+    isTranslatingToDe,
+    isTranslatingToEn,
+    jobIdToDe,
+    jobIdToEn,
+    runTranslate,
+  ])
 
   useServerSentEvents<AutoTranslateBilingualFieldProgress>({
     channel: jobIdToDe ? bilingualTranslateChannel(jobIdToDe) : '',
@@ -196,7 +280,7 @@ export const TranslateControls: UIFieldClientComponent = ({
     onMessage: jobIdToDe
       ? handleProgress(
           BilingualLanguage.German,
-          setDeValue,
+          siblingPath(path, 'de'),
           setIsTranslatingToDe,
           setJobIdToDe,
           jobIdToDe,
@@ -210,7 +294,7 @@ export const TranslateControls: UIFieldClientComponent = ({
     onMessage: jobIdToEn
       ? handleProgress(
           BilingualLanguage.English,
-          setEnValue,
+          siblingPath(path, 'en'),
           setIsTranslatingToEn,
           setJobIdToEn,
           jobIdToEn,

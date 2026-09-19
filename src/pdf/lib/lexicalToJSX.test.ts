@@ -82,7 +82,7 @@ describe('lexicalToJSX', () => {
     ])
   })
 
-  it('wraps a bold run in a nested Text with fontWeight bold', () => {
+  it('wraps a bold run in a nested Text with fontWeight 500', () => {
     const [paragraph] = lexicalToJSX(
       asValue(
         doc([
@@ -96,7 +96,7 @@ describe('lexicalToJSX', () => {
     const [run] = paragraph.props.children as unknown as TextEl[]
     expect(run.type).toBe('TEXT')
     expect(run.props.style).toEqual({
-      fontWeight: 'bold',
+      fontWeight: '500',
     })
     expect(run.props.children).toBe('bold')
   })
@@ -131,7 +131,7 @@ describe('lexicalToJSX', () => {
 
     const [run] = paragraph.props.children as unknown as TextEl[]
     expect(run.props.style).toEqual({
-      fontWeight: 'bold',
+      fontWeight: '500',
       fontStyle: 'italic',
     })
   })

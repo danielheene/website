@@ -5,6 +5,7 @@ import {
   LinkJSXConverter,
 } from '@payloadcms/richtext-lexical/react'
 
+import { JSDOM } from 'jsdom'
 import { describe, expect, it } from 'vitest'
 
 import { buildCreditsValue } from './buildCreditsValue'
@@ -25,11 +26,13 @@ import { buildCreditsValue } from './buildCreditsValue'
  * Scope note: `src/components/RichText/index.tsx` uses its own `link`
  * converter (`src/components/RichText/linkConverter.tsx`, unit-tested in
  * `RichText/linkConverter.test.tsx`), not the bare `defaultJSXConverters` +
- * `LinkJSXConverter` stack this file drives. Since `LinkFeature()` now uses
- * lexical's own stock fields (no override), both converters read the same
- * `{ linkType, doc, url, newTab }` shape — this file is deliberately scoped
- * to the generic Payload converter stack, but the two are no longer
- * expected to diverge.
+ * `LinkJSXConverter` stack this file drives. `LinkFeature()` validates link
+ * nodes against `linkFeatureFields` (`src/fields/Link/index.ts`), an
+ * explicit override of lexical's stock fields — but both converters render
+ * the anchor body from `node.children`, never from `fields`, so they read
+ * `buildCreditsValue`'s output identically regardless of which `fields`
+ * schema validated it. This file is deliberately scoped to the generic
+ * Payload converter stack; the two are not expected to diverge.
  */
 
 // biome-ignore lint/suspicious/noExplicitAny: converter args are structurally typed against internal Lexical node unions
@@ -52,6 +55,14 @@ const renderCredits = (value: ReturnType<typeof buildCreditsValue>): string =>
     } as ConverterArgs) as ConverterArgs,
   )
 
+/**
+ * Real HTML parsing rather than a `replace(/<[^>]+>/g, '')` regex — a regex
+ * can't correctly account for every HTML construct (nested/malformed tags,
+ * `>` inside an attribute value, ...), so it's an unreliable way to assert
+ * on visible text even in a test with fully controlled input.
+ */
+const visibleText = (html: string): string => new JSDOM(html).window.document.body.textContent
+
 describe('credits value rendering', () => {
   it('renders both credits as anchors with visible text and the UTM-tagged hrefs', () => {
     const html = renderCredits(
@@ -70,7 +81,7 @@ describe('credits value rendering', () => {
 
     // No empty anchors: the exact failure mode `children: []` produced.
     expect(html).not.toMatch(/<a\b[^>]*><\/a>/)
-    expect(html.replace(/<[^>]+>/g, '')).toBe('Photo by Jane Doe on Unsplash')
+    expect(visibleText(html)).toBe('Jane Doe [Unsplash]')
   })
 
   it('is a real render boundary: emptying the link children produces empty anchors', () => {
@@ -92,6 +103,6 @@ describe('credits value rendering', () => {
       if (node.type === 'link') node.children = []
     }
 
-    expect(renderCredits(value).replace(/<[^>]+>/g, '')).toBe('Photo by  on ')
+    expect(visibleText(renderCredits(value))).toBe(' []')
   })
 })

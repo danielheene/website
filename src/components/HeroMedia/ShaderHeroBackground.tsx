@@ -31,7 +31,7 @@ const SHADER_COMPONENTS: Record<ShaderPresetKey, ReturnType<typeof dynamic>> = {
 
 /**
  * Per-preset prop bundles sourced from each shader's `config.ts`.
- * The admin picker (`src/fields/HeroBackground/Components/shaderComponents.ts`)
+ * The admin picker (`src/fields/HeroSlides/Components/shaderComponents.ts`)
  * keeps its own preview-tuned bundles — these are the production/public values.
  */
 const SHADER_PROPS: Record<ShaderPresetKey, object> = {

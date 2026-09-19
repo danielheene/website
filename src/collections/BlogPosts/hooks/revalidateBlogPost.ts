@@ -14,7 +14,7 @@ export const revalidateBlogPost: CollectionAfterChangeHook<BlogPostData> = ({
   if (context.skipRevalidate) return doc
 
   if (doc._status === 'published') {
-    const path = generateContentPath(CollectionSlug['BlogPosts'], doc.slug)
+    const path = generateContentPath(CollectionSlug.BlogPosts, doc.slug)
 
     payload.logger.info(`Revalidating post at path: ${path}`)
 
@@ -25,7 +25,7 @@ export const revalidateBlogPost: CollectionAfterChangeHook<BlogPostData> = ({
   const setNewSlug = previousDoc.slug !== doc.slug
 
   if (setNewSlug || setUnpublished) {
-    const oldPath = generateContentPath(CollectionSlug['BlogPosts'], previousDoc.slug)
+    const oldPath = generateContentPath(CollectionSlug.BlogPosts, previousDoc.slug)
 
     payload.logger.info(`Revalidating old post at path: ${oldPath}`)
 

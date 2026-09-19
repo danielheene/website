@@ -1,6 +1,8 @@
 import { default as default_60b9f65365606d3c11eae014a9a986c5 } from '@/fields/Title/CellWithThumbnail'
 import { default as default_f4e2381ac6c67e8deed93345830aa6f3 } from '@/fields/Slug/components/FieldComponent'
-import { default as default_66655c4d62aab79adfa093c97fdff25e } from '@/fields/HeroBackground/Components/FieldComponent'
+import { default as default_0cf866006ed14d81e264cb203fecfc4b } from '@/fields/HeroSlides/Components/ShaderSlideField'
+import { default as default_7b7a2751ecf7195298a7498f756c9c1c } from '@/fields/HeroSlides/Components/HeroSlidesSidebarEditor'
+import { default as default_8289f9b491a8c4e2741708332826c2c7 } from '@/fields/HeroSlides/Components/RowLabel'
 import { default as default_9b6261ce8a0d1158d29e3a547520dffd } from '@/fields/Icon/Field'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -35,6 +37,7 @@ import { ExportListMenuItem as ExportListMenuItem_cdf7e044479f899a31f804427d568b
 import { ImportListMenuItem as ImportListMenuItem_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
 import { default as default_739727f92d93200cec032c1e61a6cb15 } from '@/fields/Toggle/components/FieldComponent'
 import { default as default_22b4891c4f5fa760ee9f626882377967 } from '@/fields/Protected/components/FieldComponent'
+import { default as default_3eebcce1355034e6e200a781f1871c37 } from '@/fields/HeroSlides/Components/FilmstripEditor'
 import { AltField as AltField_24f51e17ebe211ea3e1b6c287f79c7cc } from '@/collections/MediaImages/components'
 import { UnsplashSearch as UnsplashSearch_5e5cb6c43e4b5799bbd5217d983bc5d0 } from '@/components/AdminPanel/UnsplashSearch'
 import { MediaScopeTabs as MediaScopeTabs_4629bc42a060e6d23d7d57d776e5da7b } from '@/components/AdminPanel/MediaScopeTabs'
@@ -52,6 +55,7 @@ import { ExportPreview as ExportPreview_cdf7e044479f899a31f804427d568b36 } from 
 import { ExportSaveButton as ExportSaveButton_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
 import { ImportPreview as ImportPreview_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
 import { ImportSaveButton as ImportSaveButton_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
+import { JobsQueueTabs as JobsQueueTabs_507e78068112f224b6312ac61b483f9c } from '@/components/AdminPanel/JobsQueueTabs'
 import { default as default_eab0cf681484e45124c7c61673362c49 } from '@/fields/Template/Components/FieldComponent'
 import { default as default_184096423d48b3396fdb451647a008e7 } from '@/fields/Duration/components/FieldComponent'
 import { default as default_d04b05675537c5553065b881d10ad13c } from '@/globals/PDFGeneratorSettings/components/SkillSortingField'
@@ -77,7 +81,9 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 export const importMap = {
   "@/fields/Title/CellWithThumbnail#default": default_60b9f65365606d3c11eae014a9a986c5,
   "@/fields/Slug/components/FieldComponent#default": default_f4e2381ac6c67e8deed93345830aa6f3,
-  "@/fields/HeroBackground/Components/FieldComponent#default": default_66655c4d62aab79adfa093c97fdff25e,
+  "@/fields/HeroSlides/Components/ShaderSlideField#default": default_0cf866006ed14d81e264cb203fecfc4b,
+  "@/fields/HeroSlides/Components/HeroSlidesSidebarEditor#default": default_7b7a2751ecf7195298a7498f756c9c1c,
+  "@/fields/HeroSlides/Components/RowLabel#default": default_8289f9b491a8c4e2741708332826c2c7,
   "@/fields/Icon/Field#default": default_9b6261ce8a0d1158d29e3a547520dffd,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -112,6 +118,7 @@ export const importMap = {
   "@payloadcms/plugin-import-export/rsc#ImportListMenuItem": ImportListMenuItem_cdf7e044479f899a31f804427d568b36,
   "@/fields/Toggle/components/FieldComponent#default": default_739727f92d93200cec032c1e61a6cb15,
   "@/fields/Protected/components/FieldComponent#default": default_22b4891c4f5fa760ee9f626882377967,
+  "@/fields/HeroSlides/Components/FilmstripEditor#default": default_3eebcce1355034e6e200a781f1871c37,
   "@/collections/MediaImages/components#AltField": AltField_24f51e17ebe211ea3e1b6c287f79c7cc,
   "@/components/AdminPanel/UnsplashSearch#UnsplashSearch": UnsplashSearch_5e5cb6c43e4b5799bbd5217d983bc5d0,
   "@/components/AdminPanel/MediaScopeTabs#MediaScopeTabs": MediaScopeTabs_4629bc42a060e6d23d7d57d776e5da7b,
@@ -129,6 +136,7 @@ export const importMap = {
   "@payloadcms/plugin-import-export/rsc#ExportSaveButton": ExportSaveButton_cdf7e044479f899a31f804427d568b36,
   "@payloadcms/plugin-import-export/rsc#ImportPreview": ImportPreview_cdf7e044479f899a31f804427d568b36,
   "@payloadcms/plugin-import-export/rsc#ImportSaveButton": ImportSaveButton_cdf7e044479f899a31f804427d568b36,
+  "@/components/AdminPanel/JobsQueueTabs#JobsQueueTabs": JobsQueueTabs_507e78068112f224b6312ac61b483f9c,
   "@/fields/Template/Components/FieldComponent#default": default_eab0cf681484e45124c7c61673362c49,
   "@/fields/Duration/components/FieldComponent#default": default_184096423d48b3396fdb451647a008e7,
   "@/globals/PDFGeneratorSettings/components/SkillSortingField#default": default_d04b05675537c5553065b881d10ad13c,

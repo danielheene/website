@@ -172,7 +172,7 @@ const buildJsxConverters =
         // Shiki is server-only, so highlighting is resolved ahead of render by
         // `highlightRichText` and looked up here. A miss (a caller that did not
         // pre-highlight) degrades to plain code rather than breaking the block.
-        [BlockSlug['Code']]: ({ node }) => {
+        [BlockSlug.Code]: ({ node }) => {
           const code = node.fields.code ?? ''
           return (
             <CodeBlockShell
@@ -185,7 +185,7 @@ const buildJsxConverters =
         // this converter runs on the client. Its columns use the `markdown`
         // editor variant, which has no BlocksFeature and so cannot contain
         // code blocks; nothing needs pre-highlighting here.
-        [BlockSlug['TwoColumnContent']]: ({ node }) => <Columns {...node.fields} />,
+        [BlockSlug.TwoColumnContent]: ({ node }) => <Columns {...node.fields} />,
         // banner: ({ node }) => <BannerBlock className="col-start-2 mb-4" {...node.fields} />,
         // mediaBlock: ({ node }) => (
         //   <MediaBlock

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 
+import { startCase } from 'lodash-es'
 import { cn } from 'tailwind-variants'
 
 import { Button } from '@/components/Button'
@@ -53,7 +54,7 @@ export const Header = ({ queues, selectedQueue, onSelectQueue, onMoveQueue }: He
           Scheduled Jobs Controls:
         </div>
         <span className="text-md md:text-lg lg:text-xl font-medium leading-none">
-          {selectedQueue ?? ALL_QUEUES_LABEL}
+          {selectedQueue ? startCase(selectedQueue) : ALL_QUEUES_LABEL}
         </span>
       </div>
 
@@ -91,7 +92,7 @@ export const Header = ({ queues, selectedQueue, onSelectQueue, onMoveQueue }: He
             aria-haspopup="listbox"
             aria-expanded={isPopupOpen}
           >
-            {selectedQueue ?? ALL_QUEUES_LABEL}
+            {selectedQueue ? startCase(selectedQueue) : ALL_QUEUES_LABEL}
           </Button>
 
           {isPopupOpen && (
@@ -124,7 +125,7 @@ export const Header = ({ queues, selectedQueue, onSelectQueue, onMoveQueue }: He
                   aria-selected={selectedQueue === queue}
                   onClick={() => handleSelect(queue)}
                 >
-                  {queue}
+                  {startCase(queue)}
                 </Button>
               ))}
             </div>

@@ -30,10 +30,7 @@ export const Header = async () => {
           <ul className="flex flex-row items-center gap-8 list-disc">
             {mainNavigation.entries.map(({ id, ...link }) => (
               <li key={id} className="h-10 flex items-center font-mono">
-                <CMSLink
-                  {...link}
-                  className="text-2xl leading-none text-foreground hover:text-current tracking-tighter"
-                />
+                <CMSLink {...link} className="text-3xl leading-none no-underline" />
               </li>
             ))}
           </ul>

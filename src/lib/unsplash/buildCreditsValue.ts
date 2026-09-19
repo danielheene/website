@@ -20,22 +20,22 @@ const textNode = (text: string) => ({
 /**
  * A link node for the `caption` editor variant.
  *
- * ## `fields` is lexical's own stock shape (validation layer)
+ * ## `fields` matches `linkFeatureFields`, not lexical's stock shape
  *
- * `LinkFeature()` (see `src/fields/RichText/index.ts`) no longer swaps in
- * `LinkField`'s fields, so the validated schema for a link node's `fields`
- * object is lexical's own: `linkType`, `doc`, `url`, `newTab` — no `label`,
- * no icon fields. `linkType` here is always `'custom'`, since every credits
- * link is a custom URL, never a CMS document reference. `doc` is set
- * explicitly to `null` so the key exists, mirroring what the editor itself
- * writes for a custom-URL link.
+ * `LinkFeature()` (see `src/fields/RichText/index.ts`) swaps in
+ * `linkFeatureFields` (from `src/fields/Link/index.ts`) as this node's
+ * validated `fields` schema — the same rows a standalone `LinkField` uses,
+ * minus the icon fields. That schema requires `text` (the row-3 "Label"
+ * field, `required: true`) alongside `linkType`/`doc`/`url`/`newTab`; a link
+ * node missing `text` fails Payload's own field validation the moment it is
+ * saved. `linkType` here is always `'custom'`, since every credits link is a
+ * custom URL, never a CMS document reference. `doc` is set explicitly to
+ * `null` so the key exists, mirroring what the editor itself writes for a
+ * custom-URL link.
  *
- * This is also what a human-authored link produces: the floating link
- * editor's `handleDrawerSubmit`
- * (`.../features/link/client/plugins/floatingLinkEditor/LinkEditor/index.js:301-331`)
- * passes the drawer form's reduced values straight through as
- * `$createLinkNode({ fields })` / `TOGGLE_LINK_COMMAND { fields }`, and those
- * values are keyed by this same stock schema.
+ * `fields.text` is validation-only — nothing renders it (see `children`
+ * below) — so it is set to the same visible text as a real editor-authored
+ * link would carry, and never diverges from it.
  *
  * ## `children` carries the visible text (render layer)
  *
@@ -43,9 +43,8 @@ const textNode = (text: string) => ({
  * (`.../converters/lexicalToJSX/converter/converters/link.js`) and this
  * repo's override in `src/components/RichText/linkConverter.tsx` — renders
  * the anchor's text from `nodesToJSX({ nodes: node.children })`, never from
- * a `label` field (which doesn't exist on this shape). `children: []` would
- * produce an empty `<a href="…"></a>`; a text child produces
- * `<a href="…">Jane Doe</a>`.
+ * `fields.text`. `children: []` would produce an empty `<a href="…"></a>`; a
+ * text child produces `<a href="…">Jane Doe</a>`.
  */
 const linkNode = (text: string, url: string) => ({
   type: 'link',
@@ -58,6 +57,7 @@ const linkNode = (text: string, url: string) => ({
     doc: null,
     url,
     newTab: true,
+    text,
   },
   children: [
     textNode(text),
@@ -66,8 +66,9 @@ const linkNode = (text: string, url: string) => ({
 
 /**
  * Builds the Lexical value for a `MediaImages.credits` field crediting an
- * imported Unsplash photo: "Photo by {photographer} on Unsplash", with both
- * names linking out per Unsplash's attribution requirements.
+ * imported Unsplash photo: "{photographer} [Unsplash]", both the
+ * photographer's name and "Unsplash" linking out per Unsplash's attribution
+ * requirements. Deliberately terse — no "Photo by … on …" connective text.
  */
 export const buildCreditsValue = ({
   photographerName,
@@ -91,10 +92,10 @@ export const buildCreditsValue = ({
           indent: 0,
           direction: 'ltr',
           children: [
-            textNode('Photo by '),
             linkNode(photographerName, `${photographerProfileUrl}?${UTM_PARAMS}`),
-            textNode(' on '),
+            textNode(' ['),
             linkNode('Unsplash', `https://unsplash.com/?${UTM_PARAMS}`),
+            textNode(']'),
           ],
         },
       ],

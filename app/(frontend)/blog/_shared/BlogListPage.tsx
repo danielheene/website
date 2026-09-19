@@ -9,7 +9,10 @@ import { format } from 'date-fns'
 import { cn } from 'tailwind-variants'
 
 import { DuoTone } from '@/components/DuoTone'
+import { Headline } from '@/components/Headline'
+import { HeroMedia } from '@/components/HeroMedia'
 import { SHADER_PRESET_MAP } from '@/components/HeroMedia/shaderPresets'
+import { toSlideItems } from '@/components/HeroMedia/toSlideItems'
 import { ImageMedia } from '@/components/ImageMedia'
 import { PageContainer } from '@/components/PageContainer'
 import { Pagination } from '@/components/Pagination'
@@ -88,25 +91,24 @@ const queryPublishedPosts = async ({ topicId, page }: { topicId?: string; page: 
 }
 
 const PostCard = ({ post }: { post: BlogPostData }) => {
-  // populated upload values omit mimeType, so isMediaImage() can't be used —
-  // the relation's target collection is the reliable discriminator
-  const background = post.hero?.background
-  const heroImage =
-    background?.backgroundType === 'media' &&
-    typeof background.media === 'object' &&
-    background.media !== null &&
-    'relationTo' in background.media &&
-    background.media.relationTo === CollectionSlug.MediaImages
-      ? background.media.value
-      : undefined
-  // guarded like the OG image routes: `shader` is typed as the preset-key
-  // union but the value comes from the database, so a preset that has since
-  // been renamed or removed resolves to undefined — degrade to no background
-  // image rather than throwing and taking down the whole server-rendered list
+  // Only the card's first slide is shown — a fixed-size card can't depict a
+  // carousel. A video slide's poster stands in for its thumbnail, same as
+  // HeroSlide does for the real hero. Guarded like the OG image routes:
+  // `shader` is typed as the preset-key union but the value comes from the
+  // database, so a preset that has since been renamed or removed resolves to
+  // no background image rather than throwing and taking down the list.
+  const [firstSlide] = toSlideItems(post.hero?.slides, post.title)
+
+  const heroImageUrl =
+    firstSlide?.kind === 'image'
+      ? firstSlide.url
+      : firstSlide?.kind === 'video'
+        ? firstSlide.poster
+        : undefined
+  const heroImageAlt = firstSlide?.kind === 'image' ? firstSlide.alt : post.title
+  const heroImageBlurDataURL = firstSlide?.kind === 'image' ? firstSlide.blurDataURL : undefined
   const shaderThumbnail =
-    background?.backgroundType === 'shader' && typeof background.shader === 'string'
-      ? SHADER_PRESET_MAP[background.shader]?.thumbnail
-      : undefined
+    firstSlide?.kind === 'shader' ? SHADER_PRESET_MAP[firstSlide.presetKey]?.thumbnail : undefined
 
   return (
     <Link
@@ -116,11 +118,11 @@ const PostCard = ({ post }: { post: BlogPostData }) => {
       ])}
     >
       <DuoTone>
-        {heroImage && typeof heroImage === 'object' && heroImage.url && (
+        {heroImageUrl && (
           <ImageMedia
-            url={heroImage.url}
-            alt={heroImage.alt || post.title}
-            blurDataURL={heroImage.blurDataURL}
+            url={heroImageUrl}
+            alt={heroImageAlt || post.title}
+            blurDataURL={heroImageBlurDataURL}
             fill
             sizes="(min-width: 768px) 50vw, 100vw"
             className="absolute inset-0 size-full object-cover"
@@ -255,9 +257,28 @@ export interface BlogListPageProps {
  */
 export const BlogListPage = async ({ topic, page }: BlogListPageProps) => {
   const basePath = topic ? `/blog/${topic.slug}` : '/blog'
+  const hasTopicHero = toSlideItems(topic?.hero?.slides, topic?.title ?? '').length > 0
 
   return (
     <PageContainer>
+      {hasTopicHero && (
+        <HeroMedia
+          className="border-b-2 border-b-primary"
+          fallbackAlt={topic?.title}
+          slides={topic?.hero?.slides}
+        >
+          <div className="pt-40 pb-20">
+            <div className="container">
+              <Headline
+                variant="page-title"
+                className="text-balance text-foreground textshadow-lg shadow-primary/75"
+              >
+                {topic?.title}
+              </Headline>
+            </div>
+          </div>
+        </HeroMedia>
+      )}
       <section
         className={cn([
           'py-32 w-full',

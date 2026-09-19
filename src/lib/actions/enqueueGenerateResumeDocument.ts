@@ -14,6 +14,10 @@ import {
 } from 'date-fns'
 
 import { extractErrorMessage } from '@/lib/extractErrorMessage'
+import {
+  generateResumeDocumentCustomId,
+  generateResumeDocumentUnsafeCustomId,
+} from '@/lib/generateResumeDocumentCustomId'
 import { nanoid } from '@/lib/nanoid'
 import { CollectionSlug } from '@/types/collections'
 import { GlobalSlug } from '@/types/globals'
@@ -60,7 +64,7 @@ export const enqueueGenerateResumeDocument = async (
     draft: false,
   })
 
-  const sharedId = nanoid(32)
+  const customId = await generateResumeDocumentCustomId()
   const timeoutBetweenJobs = timeoutBetweenJobsFromProps ?? timeoutBetweenJobsFromSettings
   const generateThrottle = generateThrottleFromProps ?? generateThrottleFromSettings
   const maximumRetries = maximumRetriesFromProps ?? maximumRetriesFromSettings
@@ -74,7 +78,7 @@ export const enqueueGenerateResumeDocument = async (
     queue: QueueSlug.ResumeGeneration,
     waitUntil,
     input: {
-      sharedId,
+      customId,
       documentTitleTemplate,
       filenameTemplate,
       maximumRetries,

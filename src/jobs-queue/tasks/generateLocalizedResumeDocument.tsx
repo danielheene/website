@@ -20,7 +20,7 @@ export const generateLocalizedResumeDocument: TaskConfig<
   retries: 3,
   concurrency: {
     key: ({ input }) =>
-      `${TaskSlug.GenerateLocalizedResumeDocument}:${input.sharedId}:${input.locale}`,
+      `${TaskSlug.GenerateLocalizedResumeDocument}:${input.customId}:${input.locale}`,
     exclusive: true,
   },
   inputSchema: [
@@ -41,7 +41,7 @@ export const generateLocalizedResumeDocument: TaskConfig<
     },
     {
       type: 'text',
-      name: 'sharedId',
+      name: 'customId',
       required: true,
     },
     {
@@ -86,7 +86,7 @@ export const generateLocalizedResumeDocument: TaskConfig<
   handler: async ({ tasks, input, req: { payload } }) => {
     'use server'
 
-    const { locale, sharedId, filenameTemplate, createdAt, documentSlug } = input
+    const { locale, customId, filenameTemplate, createdAt, documentSlug } = input
 
     payload.logger.info(`Generating resume document for locale: ${locale}`)
 
@@ -94,15 +94,15 @@ export const generateLocalizedResumeDocument: TaskConfig<
     // once, to every entry in TASKS) — a failure inside any of these is
     // captured to Sentry with the task's own span/slug/job-id context, so
     // no per-step try/catch is needed here.
-    const { filename } = await tasks.GenerateResumeFilename(`GenerateFilename:${locale}`, {
+    const { filename } = await tasks.generateResumeFilename(`GenerateFilename:${locale}`, {
       input: {
         filenameTemplate,
-        sharedId,
+        customId,
         locale,
       },
     })
 
-    const { resumeDocumentData } = await tasks.BuildLocalizedResumeData(
+    const { resumeDocumentData } = await tasks.buildLocalizedResumeData(
       `BuildResumeData:${locale}`,
       {
         input: {
@@ -114,7 +114,7 @@ export const generateLocalizedResumeDocument: TaskConfig<
       },
     )
 
-    const { resumeFileId, resumeFileChecksum } = await tasks.GenerateResumeFile(
+    const { resumeFileId, resumeFileChecksum } = await tasks.generateResumeFile(
       `BuildResumeFile:${locale}`,
       {
         input: {
@@ -128,7 +128,7 @@ export const generateLocalizedResumeDocument: TaskConfig<
 
     payload.logger.info('Uploading resume thumbnails')
 
-    const { thumbnailIDs: resumeThumbnailIds } = await tasks.GenerateDocumentThumbnails(
+    const { thumbnailIDs: resumeThumbnailIds } = await tasks.generateDocumentThumbnails(
       `BuildResumeThumbnails:${locale}`,
       {
         input: {

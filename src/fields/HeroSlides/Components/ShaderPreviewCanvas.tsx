@@ -14,7 +14,7 @@ export type ShaderPreviewCanvasProps = {
  *
  * The shader components read `window` at default-parameter-evaluation time,
  * not just inside effects — this file must only ever be reached through a
- * `next/dynamic(..., { ssr: false })` boundary (see FieldComponent.tsx),
+ * `next/dynamic(..., { ssr: false })` boundary (see ShaderSlideField.tsx),
  * never imported statically into anything that could render on the server.
  */
 export const ShaderPreviewCanvas = ({ entry, className }: ShaderPreviewCanvasProps) => {

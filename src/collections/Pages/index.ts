@@ -7,10 +7,11 @@ import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { BLOCK_SLUGS } from '@/blocks'
 import { revalidatePage } from '@/collections/Pages/hooks/revalidatePage'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
-import { HeroBackgroundField } from '@/fields/HeroBackground'
+import { HeroSlidesField } from '@/fields/HeroSlides'
 import { MetaField } from '@/fields/Meta'
 import { ProtectedField } from '@/fields/Protected'
 import { RichTextField } from '@/fields/RichText'
+import { SectionGroupField } from '@/fields/SectionGroup'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
 import { generatePreviewPath } from '@/lib/generatePreviewPath'
@@ -60,9 +61,9 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
       'updatedAt',
     ],
     livePreview: {
-      url: ({ data }) => generatePreviewPath(CollectionSlug['Pages'], data.slug),
+      url: ({ data }) => generatePreviewPath(CollectionSlug.Pages, data.slug),
     },
-    preview: (data: Partial<Page>) => generatePreviewPath(CollectionSlug['Pages'], data.slug),
+    preview: (data: Partial<Page>) => generatePreviewPath(CollectionSlug.Pages, data.slug),
     components: {
       listMenuItems: [
         {
@@ -78,7 +79,7 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
   fields: [
     /* -------------- Main  Content -------------- */
     TitleField({
-      listViewThumbnailPath: 'hero.background.media.0.value',
+      listViewThumbnailPath: 'hero.slides.0.media.value',
     }),
 
     /* -------------- Sidebar Content -------------- */
@@ -125,8 +126,15 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
           label: 'Hero',
           name: 'hero',
           fields: [
-            HeroBackgroundField({
-              name: 'background',
+            SectionGroupField({
+              label: 'Background',
+              description:
+                'The hero background strip. Add one or more slides, then reorder or replace them.',
+              fields: [
+                HeroSlidesField({
+                  name: 'slides',
+                }),
+              ],
             }),
             {
               name: 'contentType',

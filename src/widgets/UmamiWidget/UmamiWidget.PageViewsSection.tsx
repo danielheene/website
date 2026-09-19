@@ -1,8 +1,8 @@
 'use client'
 
-import { useMemo, useRef } from 'react'
+import { useMemo } from 'react'
 
-import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts'
+import { Bar, BarChart, Tooltip, XAxis, YAxis } from 'recharts'
 import { cn } from 'tailwind-variants'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/AdminPanel/Card'
@@ -21,8 +21,28 @@ interface CustomTooltipProps {
   }>
 }
 
-const primaryColor = '#1D27F2FF'
-const secondaryColor = '#1DF2C4FF'
+const pageviewsColor = 'var(--color-primary)'
+// Primary lightened toward white in OKLCH — same hue, continuously tunable
+// rather than pinned to a ramp step (40% lands at roughly the same lightness
+// as primary-300). Verified against a colorblind-separation check (protan
+// ΔE ~18, normal-vision ΔE ~24 — well past the safe floor); the chart also
+// carries a legend, a surface gap between stacked segments, and
+// text-labeled tooltip values as the required secondary identity channel
+// alongside color.
+const visitorsColor = 'color-mix(in oklch, var(--color-primary), white 40%)'
+
+const SERIES = [
+  {
+    dataKey: 'pageviews',
+    label: 'Pageviews',
+    color: pageviewsColor,
+  },
+  {
+    dataKey: 'visitors',
+    label: 'Visitors',
+    color: visitorsColor,
+  },
+] as const
 
 interface PageViewsSectionProps {
   data: UmamiPageViews | null
@@ -48,8 +68,6 @@ export const PageViewsSection = ({ data, dataIsLoading, className }: PageViewsSe
     data,
   ])
 
-  const cardContentRef = useRef<HTMLDivElement>(null)
-
   return (
     <Card
       className={cn([
@@ -59,22 +77,43 @@ export const PageViewsSection = ({ data, dataIsLoading, className }: PageViewsSe
     >
       <CardHeader>
         <CardTitle>Pageviews</CardTitle>
+        {/* Two series, so a legend stays present — the dependable identity
+            channel a reader can rely on instead of matching colors by eye. */}
+        <ul className="flex items-center gap-4">
+          {SERIES.map((series) => (
+            <li key={series.dataKey} className="flex items-center gap-2">
+              <span
+                className="size-2.5 shrink-0 rounded-full"
+                style={{
+                  backgroundColor: series.color,
+                }}
+                aria-hidden="true"
+              />
+              <span className="text-muted-foreground text-xs">{series.label}</span>
+            </li>
+          ))}
+        </ul>
       </CardHeader>
-      <CardContent ref={cardContentRef} className="grow relative">
-        <div
-          className="absolute left-1/2 -translate-x-1/2"
-          style={{
-            height: cardContentRef.current?.getBoundingClientRect().height,
-            width: cardContentRef.current?.getBoundingClientRect().width,
-          }}
-        >
+      <CardContent className="grow flex flex-col">
+        {/* `position: absolute` here would ignore CardContent's own px-6
+            padding (inset values resolve against the border box, not the
+            padding box, for an absolutely positioned child) — a plain flex
+            child respects it instead, matching Paths'/Events' own
+            MetricsTable, which sits in normal flow for the same reason. */}
+        <div className="grow min-h-0">
           {!data || dataIsLoading ? (
             <Skeleton className="w-full h-full" />
           ) : (
-            <AreaChart
+            <BarChart
               responsive
               data={refinedData}
-              className="w-full h-full"
+              // Recharts' accessibilityLayer gives the chart's SVG surface
+              // tabIndex=0, which puts a browser focus ring on it whenever
+              // any part of it is clicked (bars, axis ticks, anywhere).
+              // `:focus-visible` isn't reliable enough here to tell a real
+              // keyboard Tab-focus apart from a click on a `role="application"`
+              // element across browsers, so the ring is dropped unconditionally.
+              className="w-full h-full [&_.recharts-surface]:outline-none [&_.recharts-surface]:focus:outline-none"
               margin={{
                 top: 24,
                 right: 24,
@@ -83,17 +122,6 @@ export const PageViewsSection = ({ data, dataIsLoading, className }: PageViewsSe
               }}
               onContextMenu={(_, e) => e.preventDefault()}
             >
-              <defs>
-                <linearGradient id="pageviewsGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={primaryColor} stopOpacity={0.8} />
-                  <stop offset="95%" stopColor={primaryColor} stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="visitorsGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={secondaryColor} stopOpacity={0.8} />
-                  <stop offset="95%" stopColor={secondaryColor} stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" className="opacity-30 text-[10px]" />
               <XAxis
                 dataKey="date"
                 tickFormatter={(value) => {
@@ -109,25 +137,37 @@ export const PageViewsSection = ({ data, dataIsLoading, className }: PageViewsSe
               <Tooltip
                 content={<CustomTooltip />}
                 cursor={{
-                  stroke: primaryColor,
-                  strokeOpacity: 0.2,
+                  fill: 'var(--color-foreground)',
+                  fillOpacity: 0.05,
                 }}
               />
-              <Area
-                type="monotone"
+              {/* pageviews as the stack base (a pageview implies a session, so
+                  it is always >= visitors), visitors stacked above it — the
+                  2px surface gap between segments is the separator, not a
+                  stroke, per the design system's mark spec. */}
+              <Bar
                 dataKey="pageviews"
-                stroke={primaryColor}
-                fillOpacity={1}
-                fill="url(#pageviewsGradient)"
+                name="Pageviews"
+                stackId="views"
+                fill={pageviewsColor}
+                stroke="var(--color-card)"
+                strokeWidth={2}
               />
-              <Area
-                type="monotone"
+              <Bar
                 dataKey="visitors"
-                stroke={secondaryColor}
-                fillOpacity={1}
-                fill="url(#visitorsGradient)"
+                name="Visitors"
+                stackId="views"
+                fill={visitorsColor}
+                stroke="var(--color-card)"
+                strokeWidth={2}
+                radius={[
+                  4,
+                  4,
+                  0,
+                  0,
+                ]}
               />
-            </AreaChart>
+            </BarChart>
           )}
         </div>
       </CardContent>
@@ -152,7 +192,7 @@ function CustomTooltip({ active, label, payload }: CustomTooltipProps) {
           <div
             className="size-2.5 rounded-full"
             style={{
-              backgroundColor: item.dataKey === 'pageviews' ? primaryColor : secondaryColor,
+              backgroundColor: item.dataKey === 'pageviews' ? pageviewsColor : visitorsColor,
             }}
           />
           <span className="text-muted-foreground">

@@ -1,4 +1,5 @@
 import { format } from 'date-fns'
+import dedent from 'dedent'
 import { get } from 'lodash-es'
 import pupa from 'pupa'
 
@@ -20,7 +21,10 @@ const translations = {
     document: {
       title: 'Resume of {name}',
       footer: {
-        generatedNotice: 'This document was automatically generated as\n{fileName}',
+        generatedNotice: dedent`
+          This document was auto-generated. For the English version, update
+          info, and an integrity validator, visit: {documentUrl}
+        `,
         pagination: 'Page {pageNumber} of {totalPages}',
       },
       workExperience: {
@@ -69,6 +73,7 @@ const translations = {
         b2: 'B2: Upper-Intermediate',
         c1: 'C1: Advanced',
         c2: 'C2: Proficient',
+        native: 'Native',
       } as Record<LanguageProficiency, string>,
     },
     skill: {
@@ -99,7 +104,10 @@ const translations = {
     document: {
       title: 'Lebenslauf von {name}',
       footer: {
-        generatedNotice: 'Diese Datei wurde automatisch generiert als\n{fileName}',
+        generatedNotice: dedent`
+          Dieses Dokument wurde automatisch generiert. Die englische Version, Update-
+          Informationen und ein Integritäts-Validator finden Sie unter: {documentUrl}
+        `,
         pagination: 'Seite {pageNumber} von {totalPages}',
       },
       workExperience: {
@@ -144,10 +152,11 @@ const translations = {
       proficiency: {
         a1: 'A1: Anfänger',
         a2: 'A2: Grundkenntnisse',
-        b1: 'B1: Gute Kenntnisse',
+        b1: 'B1: Fortgeschritten',
         b2: 'B2: Fließend',
         c1: 'C1: Verhandlungssicher',
-        c2: 'C2: Muttersprache',
+        c2: 'C2: Nahezu muttersprachlich',
+        native: 'Muttersprache',
       } as Record<LanguageProficiency, string>,
     },
     skill: {

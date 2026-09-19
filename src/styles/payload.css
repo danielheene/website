@@ -76,6 +76,135 @@
     @apply font-mono;
   }
 
+  /* Matches the Payload admin form-input look (see the formInput mixin in
+   * @payloadcms/ui/dist/scss/vars.scss) for plain inputs and selects that
+   * live outside a Payload field wrapper, such as the icon picker search
+   * box and category filter, so they read as native admin controls rather
+   * than a one-off Tailwind style.
+   */
+  .payload-form-input {
+    box-shadow: inset 0 0 0 1px transparent;
+    font-family: var(--font-body);
+    border: 1px solid var(--theme-elevation-150);
+    border-radius: var(--style-radius-s);
+    background: var(--theme-input-bg);
+    color: var(--theme-elevation-800);
+    font-size: 1rem;
+    height: 40px;
+    line-height: 20px;
+    padding: 8px 15px;
+    appearance: none;
+    transition-property: border, box-shadow, background-color;
+    transition-duration: 100ms, 100ms, 500ms;
+    transition-timing-function: cubic-bezier(0, 0.2, 0.2, 1);
+
+    &::placeholder {
+      color: var(--theme-elevation-400);
+      font-weight: normal;
+      font-size: 1rem;
+    }
+
+    &:hover {
+      border-color: var(--theme-elevation-250);
+    }
+
+    &:focus,
+    &:focus-within,
+    &:active {
+      border-color: var(--theme-elevation-400);
+      outline: 0;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
+
+  /* Matches the Payload admin Pill component (see @payloadcms/ui Pill and
+   * DefaultListViewTabs), medium size, for the icon picker collection
+   * selectors — Favorites plus one tab per favorite collection — so they
+   * read as the same tab pattern Payload itself uses for switching between
+   * collections in the list view.
+   */
+  .payload-pill {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    white-space: nowrap;
+    border: 0;
+    border-radius: var(--style-radius-s);
+    background: var(--theme-elevation-150);
+    color: var(--theme-elevation-800);
+    font-size: 0.8125rem;
+    line-height: 24px;
+    padding: 4px 12px;
+    transition: background-color 100ms cubic-bezier(0, 0.2, 0.2, 1);
+
+    &:hover {
+      background: var(--theme-elevation-100);
+    }
+
+    &:focus-visible {
+      outline: var(--accessibility-outline);
+      outline-offset: var(--accessibility-outline-offset);
+    }
+  }
+
+  .payload-pill--active {
+    background: var(--theme-elevation-800);
+    color: var(--theme-elevation-0);
+
+    &:hover {
+      background: var(--theme-elevation-750);
+    }
+  }
+
+  /* The icon picker is a search+grid, not a form needing the usual drawer
+   * near-full-width panel — narrowed to a third of the viewport so it reads
+   * as a docked panel rather than covering the page, while still scaling
+   * with the window. min-width keeps the icon grid and collection tabs from
+   * getting cramped once the viewport is narrow enough that a third of it
+   * is no longer enough room. The important flag is required because the
+   * Payload Drawer sets this width as an inline style (see the
+   * @payloadcms/ui Drawer component), which no plain stylesheet rule
+   * (cascade layers included) can outrank on its own.
+   */
+  .icon-picker-drawer .drawer__content {
+    width: 33% !important;
+    min-width: 475px !important;
+  }
+
+  /* The Payload drawer content wrapper (.drawer__content-children, a
+   * Gutter) is a plain padded div with no height or flex behavior of its
+   * own — the IconPicker h-full/flex-1 chain has nothing to resolve against
+   * without this, so its icon grid still falls back to a small intrinsic
+   * height instead of filling the drawer. Scoped to this drawer only, since
+   * other drawers keep a plain form that should grow with its fields rather
+   * than being pinned to the drawer height.
+   */
+  .icon-picker-drawer .drawer__content-children {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    > div:not(.drawer__header) {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+    }
+  }
+
+  /* Balances the drawer header, which reserves 50px above the content
+   * (.drawer__header margin-top: base(2.5) in @payloadcms/ui) — the same
+   * 50px is reserved below so the icon grid does not run flush to the
+   * drawer edge.
+   */
+  .icon-picker-drawer .drawer__content-children > div:not(.drawer__header) {
+    padding-bottom: 50px;
+  }
+
   @media (min-width: 768px) {
     .tabs-field--vertical {
       display: flex;

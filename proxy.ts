@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { fetchLatestResumeDocumentCore } from '@/lib/fetchers/fetchLatestResumeDocumentCore'
-import { generateAPIPath } from '@/lib/generateAPIPath'
-import { generateContentPath } from '@/lib/generateContentPath'
 import { fetchRedirect } from '@/lib/redirects/redirectCache'
-import { CollectionSlug } from '@/types/collections'
 
 /** Paths that must never be redirected, regardless of stored rows. */
 const REDIRECT_EXEMPT = [
@@ -36,42 +32,6 @@ const lookupRedirect = async (request: NextRequest) => {
 }
 
 export default async function proxy(request: NextRequest) {
-  const domainRe = /^https?:\/\/resume.heene\.(io|dev|review|nexus|local)/
-  if (domainRe.test(request.nextUrl.href)) {
-    return NextResponse.redirect(
-      new URL(
-        `/resume/${request.nextUrl.pathname ?? 'latest'}`,
-        request.nextUrl.href.replace('resume', 'daniel'),
-      ),
-      301,
-    )
-  }
-
-  const resumeDocumentLatestContentPath = generateContentPath(
-    CollectionSlug.ResumeDocuments,
-    'latest',
-  )
-  const resumeDocumentLatestAPIPath = generateAPIPath(CollectionSlug.ResumeDocuments, 'latest')
-
-  if (request.nextUrl.pathname.startsWith(resumeDocumentLatestContentPath)) {
-    const latest = await fetchLatestResumeDocumentCore()
-    if (!latest)
-      return new NextResponse(null, {
-        status: 404,
-      })
-    const path = generateContentPath(CollectionSlug.ResumeDocuments, latest.slug)
-    return NextResponse.rewrite(new URL(path, request.url))
-  }
-  if (request.nextUrl.pathname.startsWith(resumeDocumentLatestAPIPath)) {
-    const latest = await fetchLatestResumeDocumentCore()
-    if (!latest)
-      return new NextResponse(null, {
-        status: 404,
-      })
-    const path = generateAPIPath(CollectionSlug.ResumeDocuments, latest.id)
-    return NextResponse.rewrite(new URL(path, request.url))
-  }
-
   const redirect = await lookupRedirect(request)
   if (redirect) {
     const destination = new URL(redirect.destination, request.url)

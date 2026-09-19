@@ -1,3 +1,5 @@
+import { EventEmitter } from 'node:events'
+
 import * as Sentry from '@sentry/nextjs'
 
 /**
@@ -7,6 +9,10 @@ import * as Sentry from '@sentry/nextjs'
  * what lets Sentry instrument Payload, the jobs queue and route handlers.
  */
 export const register = async () => {
+  if (process.env.NEXT_RUNTIME === 'nodejs') {
+    EventEmitter.defaultMaxListeners = 20
+  }
+
   const { SENTRY_ENABLED, sharedSentryOptions } = await import('@/lib/sentry/options')
 
   if (!SENTRY_ENABLED) return
@@ -18,6 +24,10 @@ export const register = async () => {
         Sentry.redisIntegration(),
         Sentry.mongooseIntegration(),
         Sentry.zodErrorsIntegration(),
+        Sentry.vercelAIIntegration({
+          force: true,
+          enableTruncation: false,
+        }),
         // captures console.* as structured logs alongside errors
         Sentry.consoleLoggingIntegration({
           levels: [

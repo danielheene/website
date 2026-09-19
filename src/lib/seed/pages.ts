@@ -305,12 +305,14 @@ export const seedPages = async (
     const random = createRandom(slug)
     const useShader = chance(random, 0.25)
 
-    let background: Page['hero']['background']
+    let slides: Page['hero']['slides']
     if (useShader) {
-      background = {
-        backgroundType: 'shader',
-        shader: pick(random, SHADER_PRESET_META).key,
-      }
+      slides = [
+        {
+          slideType: 'shader',
+          shader: pick(random, SHADER_PRESET_META).key,
+        },
+      ]
     } else {
       onProgress?.({
         step: `Creating hero image for ${slug}`,
@@ -320,15 +322,15 @@ export const seedPages = async (
 
       const imageId = await createSeedImage(payload, index)
 
-      background = {
-        backgroundType: 'media',
-        media: [
-          {
+      slides = [
+        {
+          slideType: 'image',
+          media: {
             relationTo: 'images',
             value: imageId,
           },
-        ],
-      }
+        },
+      ]
     }
 
     onProgress?.({
@@ -352,7 +354,7 @@ export const seedPages = async (
         ],
         hero: {
           contentType: 'title',
-          background,
+          slides,
         },
         content: pageBlocks(slug),
       },
@@ -399,9 +401,10 @@ export const cleanPages = async (
 
   const mediaIds = new Set<string>()
   for (const page of pages) {
-    for (const entry of page.hero?.background?.media ?? []) {
-      if (entry.relationTo === 'images') {
-        mediaIds.add(typeof entry.value === 'string' ? entry.value : String(entry.value.id))
+    for (const slide of page.hero?.slides ?? []) {
+      if (slide.media?.relationTo === 'images') {
+        const { value } = slide.media
+        mediaIds.add(typeof value === 'string' ? value : String(value.id))
       }
     }
   }

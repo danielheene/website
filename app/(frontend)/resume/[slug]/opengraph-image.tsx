@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 
 import { ImageResponse } from 'takumi-js/response'
 
-import { queryResumeDocumentBySlug } from './page'
+import { resolveResumeDocument } from './page'
 
 export const alt = 'Resume'
 export const size = {
@@ -18,7 +18,7 @@ type Props = {
 
 export default async function Image({ params }: Props) {
   const { slug } = await params
-  const resume = await queryResumeDocumentBySlug(slug)
+  const resume = await resolveResumeDocument(slug)
   if (!resume) notFound()
 
   return new ImageResponse(

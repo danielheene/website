@@ -11,7 +11,7 @@
  * imports — importing `shaderPresets.ts` from a field config file fails
  * there with `ERR_UNKNOWN_FILE_EXTENSION` on the first `.png`. Same
  * established pattern as this field's component path, documented in
- * `src/fields/HeroBackground/index.ts`.
+ * `src/fields/HeroSlides/index.ts`.
  */
 
 export type ShaderPresetKey = 'darkveil' | 'faulty-terminal' | 'gradient-blinds' | 'grainient'

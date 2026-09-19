@@ -24,7 +24,7 @@ import { BilingualLanguage } from '@/lib/i18n'
 import { renderTemplate } from '@/lib/renderTemplate'
 
 type FieldComponentClientProps = TextFieldClientProps & {
-  annotations?: TemplateFieldAnnotation[]
+  annotations?: TemplateFieldAnnotation[][]
   data?: TemplateFieldData
   renderLocale?: BilingualLanguage[]
 }
@@ -217,30 +217,37 @@ export const FieldComponentClient = ({
                 collapsibleOpen ? 'animate-slide-down' : 'animate-slide-up',
               ])}
             >
-              <div className="block columns-2 gap-12">
-                {annotations.map(({ label, entries }, index) => (
-                  <div key={index} className="inline-grid grid-cols-[min-content_auto] w-full py-2">
-                    <header className="col-span-2">
-                      <span
-                        className={cn([
-                          'block pb-0.5 mb-2 border-b border-primary/50',
-                          'text-sm text-left text-primary font-mono font-medium',
-                        ])}
-                      >
-                        {label}
-                      </span>
-                    </header>
-
-                    {Object.entries(entries).map(([key, value], index) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                {annotations.map((annotationCol, key) => (
+                  <div key={key}>
+                    {annotationCol.map(({ label, entries }, index) => (
                       <div
                         key={index}
-                        className={cn([
-                          'col-span-2 grid grid-cols-subgrid gap-6',
-                          'text-xs py-0.5',
-                        ])}
+                        className="inline-grid grid-cols-[min-content_auto] w-full py-2"
                       >
-                        <div className="font-medium tracking-tighter font-mono">{key}</div>
-                        <div>{value}</div>
+                        <header className="col-span-2">
+                          <span
+                            className={cn([
+                              'block pb-0.5 mb-2 border-b border-primary/50',
+                              'text-sm text-left text-primary font-mono font-medium',
+                            ])}
+                          >
+                            {label}
+                          </span>
+                        </header>
+
+                        {Object.entries(entries).map(([key, value], index) => (
+                          <div
+                            key={index}
+                            className={cn([
+                              'col-span-2 grid grid-cols-subgrid gap-6',
+                              'text-xs py-0.5',
+                            ])}
+                          >
+                            <div className="font-medium tracking-tighter font-mono">{key}</div>
+                            <div>{value}</div>
+                          </div>
+                        ))}
                       </div>
                     ))}
                   </div>

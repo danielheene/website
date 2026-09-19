@@ -38,8 +38,8 @@ describe('buildCreditsValue', () => {
 
     // The visible text is the plain text nodes plus each link's *children* —
     // every Lexical -> JSX link converter renders the anchor body from
-    // `node.children`, not from a `label` field (which doesn't exist on this
-    // shape). See the render-layer test in `creditsRendering.test.tsx`.
+    // `node.children`, not from `fields.text`. See the render-layer test in
+    // `creditsRendering.test.tsx`.
     const flatText = children
       .map((node) =>
         node.type === 'link'
@@ -47,7 +47,7 @@ describe('buildCreditsValue', () => {
           : (node.text ?? ''),
       )
       .join('')
-    expect(flatText).toBe('Photo by Jane Doe on Unsplash')
+    expect(flatText).toBe('Jane Doe [Unsplash]')
 
     const links = children.filter((node) => node.type === 'link')
     expect(links).toHaveLength(2)
@@ -57,6 +57,7 @@ describe('buildCreditsValue', () => {
       linkType: 'custom',
       url: 'https://unsplash.com/@janedoe?utm_source=heene_io&utm_medium=referral',
       newTab: true,
+      text: 'Jane Doe',
     })
 
     expect(links[1]?.fields).toEqual({
@@ -64,6 +65,7 @@ describe('buildCreditsValue', () => {
       linkType: 'custom',
       url: 'https://unsplash.com/?utm_source=heene_io&utm_medium=referral',
       newTab: true,
+      text: 'Unsplash',
     })
   })
 
@@ -78,7 +80,7 @@ describe('buildCreditsValue', () => {
     }
   })
 
-  it('carries the link text as a real text child, not only as `fields.label`', () => {
+  it('carries the link text as a real text child, not only as `fields.text`', () => {
     // Regression guard for the render layer: `children: []` still validates and
     // still passes every `fields`-only assertion above, but renders as an empty
     // `<a href="…"></a>`.
@@ -95,9 +97,30 @@ describe('buildCreditsValue', () => {
     ])
   })
 
+  it("sets `fields.text` on every link — required by `linkFeatureFields`' validation schema", () => {
+    // Regression guard for the actual reported bug: `LinkFeature()` (see
+    // `src/fields/RichText/index.ts`) validates link nodes against
+    // `linkFeatureFields` (`src/fields/Link/index.ts`), whose row-3 `text`
+    // field is `required: true` — not lexical's stock `{linkType, doc, url,
+    // newTab}` shape. A link node missing `fields.text` fails validation the
+    // moment it is saved, which is exactly what broke selecting an Unsplash
+    // import: the credits value built here had no `text` at all.
+    const value = buildCreditsValue({
+      photographerName: 'Jane Doe',
+      photographerProfileUrl: 'https://unsplash.com/@janedoe',
+    })
+
+    for (const node of paragraphChildren(value).filter((child) => child.type === 'link')) {
+      expect(node.fields).toHaveProperty('text')
+      expect(typeof node.fields?.text).toBe('string')
+      expect(node.fields?.text).not.toBe('')
+    }
+  })
+
   it('keeps the link fields flat — no `link` sub-key', () => {
     // Lexical's stock `LinkFeature` fields are flat (`linkType`, `doc`, `url`,
-    // `newTab`) — there is no nested `link` sub-key.
+    // `newTab`) and `linkFeatureFields` keeps them flat too (no nested `link`
+    // sub-key) — only `LinkField` itself wraps its rows in a `link` group.
     const value = buildCreditsValue({
       photographerName: 'Jane Doe',
       photographerProfileUrl: 'https://unsplash.com/@janedoe',

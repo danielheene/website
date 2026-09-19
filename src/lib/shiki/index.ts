@@ -1,4 +1,5 @@
 export {
+  FALLBACK_LANGUAGE,
   type HighlightCodeOptions,
   highlightCode,
   SUPPORTED_LANGUAGES,

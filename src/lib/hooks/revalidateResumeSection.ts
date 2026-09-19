@@ -40,7 +40,7 @@ const revalidateResumeSection = async ({
   try {
     console.info(`Fetching pages that are using the Resume layout: ${slug}`)
     const { docs } = await payload.find({
-      collection: CollectionSlug['Pages'],
+      collection: CollectionSlug.Pages,
       draft: false,
       limit: 9999,
       where: {
@@ -57,7 +57,7 @@ const revalidateResumeSection = async ({
 
     docs.forEach(({ slug }) => {
       console.info(`Revalidating Page: ${slug}`)
-      const path = generateContentPath(CollectionSlug['Pages'], slug)
+      const path = generateContentPath(CollectionSlug.Pages, slug)
       revalidatePath(path)
     })
   } catch (error) {

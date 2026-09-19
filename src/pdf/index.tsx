@@ -1,4 +1,4 @@
-import { Document, Font, Page, StyleSheet, View } from '@react-pdf/renderer'
+import { Document, Font, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 
 import createHyphenator, { type HyphenationFunctionSync, type PatternsDefinition } from 'hyphen'
 import dePattern from 'hyphen/patterns/de-1996'
@@ -12,7 +12,8 @@ import { Introduction } from '@/pdf/components/Introduction'
 import { Section } from '@/pdf/components/Section'
 import { SkillEntry } from '@/pdf/components/SkillEntry'
 import { WorkExperience } from '@/pdf/components/WorkExperience'
-import { sizes } from '@/pdf/constants'
+import { sizes, textStyles } from '@/pdf/constants'
+import { lexicalToJSX } from '@/pdf/lib/lexicalToJSX'
 import { DocumentFooter, DocumentHeader, DocumentSection, DocumentSectionType } from '@/pdf/types'
 
 const hyphenateEN = createHyphenator(enPattern as unknown as PatternsDefinition, {
@@ -48,6 +49,16 @@ const styles = StyleSheet.create({
     flexGrow: 0,
     flexShrink: 0,
     ...sizes.footer,
+  },
+  debug: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    transform: 'rotate(-60deg)',
   },
 })
 
@@ -87,6 +98,11 @@ export const ResumeDocument = ({
         orientation="portrait"
         bookmark={document.title}
       >
+        {process.env.SERVER_HOST !== 'daniel.heene.io' && (
+          <View style={styles.debug} fixed>
+            <Text style={textStyles.debugText}>DEBUG</Text>
+          </View>
+        )}
         <Header {...header} style={styles.header} fixed />
         <View style={styles.body}>
           {sections.map(({ type, data }, sectionIndex) => {
@@ -111,10 +127,15 @@ export const ResumeDocument = ({
             if (type === DocumentSectionType.WorkExperience) {
               const { headline, entries } = data
               return (
-                <Section.Container key={sectionIndex} wrap={false}>
+                <Section.Container key={sectionIndex} wrap={true}>
                   <Section.Headline bookmark={headline}>{headline}</Section.Headline>
                   {entries.map(({ title, interval, tasks }, entryIndex) => (
-                    <WorkExperience.Entry key={entryIndex}>
+                    <WorkExperience.Entry
+                      key={entryIndex}
+                      style={{
+                        paddingBottom: entryIndex < entries.length - 1 ? 8 : 0,
+                      }}
+                    >
                       <WorkExperience.Header
                         title={title}
                         interval={interval}
@@ -151,7 +172,7 @@ export const ResumeDocument = ({
                 <Section.Container key={sectionIndex} wrap={false}>
                   <Section.Headline bookmark={headline}>{headline}</Section.Headline>
                   {entries.map((language, entryIndex) => (
-                    <BulletPoint key={entryIndex}>{language}</BulletPoint>
+                    <BulletPoint key={entryIndex}>{lexicalToJSX(language)}</BulletPoint>
                   ))}
                 </Section.Container>
               )

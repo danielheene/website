@@ -23,7 +23,7 @@ export const generateThumbnail: CollectionAfterChangeHook<MediaVideo> = async ({
   ) {
     await req.payload.jobs.queue({
       task: TaskSlug.GenerateVideoThumbnails,
-      queue: QueueSlug.Default,
+      queue: QueueSlug.HookHandler,
       input: {
         videoId: doc.id,
       },

@@ -65,6 +65,7 @@ export const BRAND_ICON = {
 } as const
 
 export const UI_ICON = {
+  loading: 'material-symbols:progress-activity',
   error: 'material-symbols:error',
   warning: 'material-symbols:warning',
   info: 'material-symbols:info',

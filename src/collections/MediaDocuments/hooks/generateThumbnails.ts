@@ -15,7 +15,7 @@ export const generateThumbnails: CollectionAfterChangeHook<MediaDocument> = asyn
   if ((operation === 'create' || operation === 'update') && doc.checksum !== previousDoc.checksum) {
     await req.payload.jobs.queue({
       task: TaskSlug.GenerateDocumentThumbnails,
-      queue: QueueSlug.Default,
+      queue: QueueSlug.HookHandler,
       input: {
         documentId: doc.id,
       },

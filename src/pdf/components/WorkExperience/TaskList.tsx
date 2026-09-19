@@ -1,7 +1,12 @@
 import { StyleSheet, View } from '@react-pdf/renderer'
+import type {
+  SerializedEditorState,
+  SerializedLexicalNode,
+} from '@payloadcms/richtext-lexical/lexical'
 
 import { BulletPoint } from '@/pdf/components/BulletPoint'
 import { sizes } from '@/pdf/constants'
+import { lexicalToJSX } from '@/pdf/lib/lexicalToJSX'
 
 const styles = StyleSheet.create({
   container: {
@@ -12,10 +17,16 @@ const styles = StyleSheet.create({
   },
 })
 
-export const TaskList = ({ tasks }: { tasks: string[] }) => (
+export const TaskList = ({
+  tasks,
+}: {
+  tasks: {
+    task: SerializedEditorState<SerializedLexicalNode>
+  }[]
+}) => (
   <View style={styles.container}>
-    {tasks.map((task, i) => (
-      <BulletPoint key={i}>{task}</BulletPoint>
+    {tasks.map(({ task }, i) => (
+      <BulletPoint key={i}>{lexicalToJSX(task)}</BulletPoint>
     ))}
   </View>
 )

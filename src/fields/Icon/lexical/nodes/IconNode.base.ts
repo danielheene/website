@@ -84,6 +84,20 @@ export abstract class BaseIconNode<TDecorated> extends DecoratorNode<TDecorated>
     return true
   }
 
+  /**
+   * A decorator node has no text of its own, so Lexical's default
+   * `getTextContent()` returns an empty string — a selection spanning an
+   * icon then serializes as if the icon were not there at all. That silently
+   * breaks anything deriving text from the selection, most visibly Payload's
+   * own link toolbar, which prefills "Text to display" from
+   * `selection.getTextContent()`: with an icon collapsing to nothing, the
+   * prefilled label is left corrupted (words run together, or the icon is
+   * dropped) instead of surfacing a clear gap the editor can see and fix.
+   */
+  getTextContent(): string {
+    return `[${this.__iconName}]`
+  }
+
   getIconName(): string {
     return this.__iconName
   }

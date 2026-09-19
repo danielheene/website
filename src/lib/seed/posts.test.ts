@@ -46,7 +46,7 @@ beforeEach(() => {
 })
 
 describe('seedPosts', () => {
-  it('creates the requested number of posts, each tagged and with a hero background', async () => {
+  it('creates the requested number of posts, each tagged and with a hero slide', async () => {
     find.mockResolvedValue({
       docs: [],
     })
@@ -75,39 +75,39 @@ describe('seedPosts', () => {
 
     expect(result.created).toBe(2)
     for (const hero of heroes) {
-      const background = (
+      const [slide] = (
         hero as {
-          background: {
-            backgroundType: string
-          }
+          slides: {
+            slideType: string
+          }[]
         }
-      ).background
+      ).slides
       expect([
-        'media',
+        'image',
         'shader',
-      ]).toContain(background.backgroundType)
-      if (background.backgroundType === 'media') {
-        expect(background).toEqual({
-          backgroundType: 'media',
+      ]).toContain(slide.slideType)
+      if (slide.slideType === 'image') {
+        expect(slide).toEqual({
+          slideType: 'image',
           media: {
             relationTo: 'images',
             value: 'image-1',
           },
         })
       } else {
-        expect(background).toEqual({
-          backgroundType: 'shader',
+        expect(slide).toEqual({
+          slideType: 'shader',
           shader: expect.any(String),
         })
       }
     }
   })
 
-  it('gives a shader-backed hero the correct background shape and skips image creation for it, while lexicalArticle still receives an empty imageIds', async () => {
+  it('gives a shader-backed hero the correct slides shape and skips image creation for it, while lexicalArticle still receives an empty imageIds', async () => {
     find.mockResolvedValue({
       docs: [],
     })
-    const heroBackgrounds: unknown[] = []
+    const heroSlides: unknown[][] = []
     create.mockImplementation(async ({ collection, data }) => {
       if (collection === 'images') {
         return {
@@ -119,7 +119,7 @@ describe('seedPosts', () => {
           id: 'topic-1',
         }
       }
-      heroBackgrounds.push(data.hero.background)
+      heroSlides.push(data.hero.slides)
       return {
         id: 'post-1',
       }
@@ -130,45 +130,49 @@ describe('seedPosts', () => {
     // branch, without mocking the randomness source directly.
     await seedPosts(makePayload(), 20)
 
-    const shaderBackgrounds = heroBackgrounds.filter(
-      (background) =>
+    const shaderSlides = heroSlides.filter(
+      ([slide]) =>
         (
-          background as {
-            backgroundType: string
+          slide as {
+            slideType: string
           }
-        ).backgroundType === 'shader',
+        ).slideType === 'shader',
     )
-    const mediaBackgrounds = heroBackgrounds.filter(
-      (background) =>
+    const imageSlides = heroSlides.filter(
+      ([slide]) =>
         (
-          background as {
-            backgroundType: string
+          slide as {
+            slideType: string
           }
-        ).backgroundType === 'media',
+        ).slideType === 'image',
     )
 
-    expect(shaderBackgrounds.length).toBeGreaterThan(0)
-    expect(mediaBackgrounds.length).toBeGreaterThan(0)
+    expect(shaderSlides.length).toBeGreaterThan(0)
+    expect(imageSlides.length).toBeGreaterThan(0)
 
-    for (const background of shaderBackgrounds) {
-      expect(background).toEqual({
-        backgroundType: 'shader',
-        shader: expect.any(String),
-      })
-    }
-    for (const background of mediaBackgrounds) {
-      expect(background).toEqual({
-        backgroundType: 'media',
-        media: {
-          relationTo: 'images',
-          value: 'image-1',
+    for (const slides of shaderSlides) {
+      expect(slides).toEqual([
+        {
+          slideType: 'shader',
+          shader: expect.any(String),
         },
-      })
+      ])
+    }
+    for (const slides of imageSlides) {
+      expect(slides).toEqual([
+        {
+          slideType: 'image',
+          media: {
+            relationTo: 'images',
+            value: 'image-1',
+          },
+        },
+      ])
     }
 
     // Image creation is skipped entirely for shader-backed posts.
     const imageCreates = create.mock.calls.filter(([args]) => args.collection === 'images')
-    expect(imageCreates).toHaveLength(mediaBackgrounds.length)
+    expect(imageCreates).toHaveLength(imageSlides.length)
   })
 
   it('skips a slug that already exists instead of creating a duplicate', async () => {
@@ -439,13 +443,15 @@ describe('cleanPosts', () => {
             {
               id: 'post-1',
               hero: {
-                background: {
-                  backgroundType: 'media',
-                  media: {
-                    relationTo: 'images',
-                    value: 'image-1',
+                slides: [
+                  {
+                    slideType: 'image',
+                    media: {
+                      relationTo: 'images',
+                      value: 'image-1',
+                    },
                   },
-                },
+                ],
               },
             },
           ],
@@ -494,13 +500,15 @@ describe('cleanPosts', () => {
             {
               id: 'post-1',
               hero: {
-                background: {
-                  backgroundType: 'media',
-                  media: {
-                    relationTo: 'images',
-                    value: 'image-1',
+                slides: [
+                  {
+                    slideType: 'image',
+                    media: {
+                      relationTo: 'images',
+                      value: 'image-1',
+                    },
                   },
-                },
+                ],
               },
             },
           ],

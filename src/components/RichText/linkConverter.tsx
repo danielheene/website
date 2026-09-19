@@ -13,22 +13,19 @@ import { generateContentURL } from '@/lib/generateContentURL'
  * import Vitest's default Node transform can't load. See `src/fields/Icon/
  * index.ts` for the same class of problem in a different module.
  *
- * `LinkFeature()` (see `src/fields/RichText/index.ts`) uses lexical's own
- * stock link fields — `{ linkType: 'internal' | 'custom', doc, url, newTab }`
- * — rather than swapping in `LinkField`'s fields. `LinkField` deliberately
- * uses the same names/values (see its module doc comment), so `node.fields`
- * here is resolved through the same `resolveLinkTarget` helper `CMSLink`
- * uses for `LinkField`-backed data elsewhere, rather than a separate
- * lexical-only code path.
+ * `LinkFeature()` (see `src/fields/RichText/index.ts`) swaps in
+ * `LinkField().fields`, so `node.fields` here carries the same
+ * `text`/`iconBefore`/`iconAfter`/`iconOnly` shape a standalone `LinkField`
+ * does — `node.fields` here is resolved through the same `resolveLinkTarget`
+ * helper `CMSLink` uses for `LinkField`-backed data elsewhere, rather than a
+ * separate lexical-only code path.
  */
 export const linkConverter: JSXConverters<SerializedLinkNode>['link'] = ({ node, nodesToJSX }) => {
-  // `node.fields` is lexical's own stock `LinkFields` shape. It has no
-  // `label`/`iconBefore`/`iconAfter`/`iconOnly` (those only exist on
-  // `LinkField`-backed data, where there's no selected editor text to derive
-  // a label from) and `doc.value` is untyped `JsonValue` rather than
-  // `resolveLinkTarget`'s narrower `LinkReferenceValue` — close enough in
-  // shape for `resolveLinkTarget` (which only reads `doc`/`url`), not close
-  // enough for a direct assignment, hence the `unknown` hop.
+  // `node.fields` matches `LinkFieldDataLean` (see above), except `doc.value`
+  // is untyped `JsonValue` rather than `resolveLinkTarget`'s narrower
+  // `LinkReferenceValue` — close enough in shape for `resolveLinkTarget`
+  // (which only reads `doc`/`url`), not close enough for a direct
+  // assignment, hence the `unknown` hop.
   const fields = node.fields as unknown as LinkFieldDataLean | undefined
   const children = nodesToJSX({
     nodes: node.children,

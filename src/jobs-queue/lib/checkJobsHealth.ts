@@ -8,8 +8,12 @@ import { TaskSlug } from '@/types/jobs-queue'
  * queue counts as stalled. Generous relative to the app/worker's autoRun cron
  * (`* * * * *`, i.e. every minute): a couple of missed ticks in a row is a
  * real problem, one slow tick is normal jitter.
+ *
+ * Exported for {@link scopeJobsList}'s "stale" filter, which uses the same
+ * threshold so a job the admin list calls stale is the same one this health
+ * check would count in `stalledCount`.
  */
-const STALLED_AFTER_MS = 5 * 60 * 1000
+export const STALLED_AFTER_MS = 5 * 60 * 1000
 
 /** Recent-failure window: failures older than this don't affect current health. */
 const RECENT_FAILURE_WINDOW_MS = 60 * 60 * 1000
@@ -39,7 +43,7 @@ export interface JobsHealth {
  * record is used here as a second, independent signal: a worker can have no
  * stalled jobs simply because nothing has been enqueued, so the absence of a
  * recent heartbeat is the only way to tell "queue is idle" apart from "queue
- * runner stopped." Shared between the Next.js `/api/health/jobs` route and
+ * runner stopped." Shared between the Next.js `/api/health/worker` route and
  * the standalone worker health server (`scripts/health-server.ts`) so both
  * report identical numbers from the same DB-backed truth.
  */

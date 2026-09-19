@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
-import { cacheLife, cacheTag } from 'next/cache'
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
@@ -9,19 +9,38 @@ import { format } from 'date-fns'
 import { cn } from 'tailwind-variants'
 
 import { ResumeDownloadButton } from '@/blocks/ResumeDownloadsBlock/Renderer/ResumeDownloadButton'
-import { Banner } from '@/components/Banner'
 import type { HeroMediaItem } from '@/components/HeroMedia/HeroSlide'
 import { ResumeChecksumValidator } from '@/components/ResumeCheckumValidatior/ResumeChecksumValidator'
+import { ResumeNewerVersionsChecker } from '@/components/ResumeNewerVersionsChecker'
 import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fetchers'
+import { fetchLatestResumeDocument } from '@/lib/fetchers/fetchLatestResumeDocument'
+import { fetchResumeDocumentBySlug } from '@/lib/fetchers/fetchResumeDocumentBySlug'
 import { placeholderParams } from '@/lib/placeholderParams'
-import { CollectionData, CollectionSlug } from '@/types/collections'
-import { MediaImage, ResumeDocumentData } from '@/types/payload'
+import { CollectionSlug } from '@/types/collections'
+import { MediaImage } from '@/types/payload'
 
 import { ChecksumEntry, ChecksumRow } from './components/ChecksumFootnote.client'
 import { ResumePreviewCarousel } from './components/ResumePreviewCarousel'
 
 /** Anchor id for the checksum-validation section, linked from the caption above the fold. */
 const validateAnchorId = 'validate'
+
+/**
+ * Reserved slug value that resolves to whichever document is actually
+ * newest, rather than one fixed row — see `resolveResumeDocument`.
+ */
+const LATEST_RESUME_SLUG = 'latest'
+
+/**
+ * Resolves the `[slug]` param to a document: `fetchLatestResumeDocument()`
+ * for the reserved `latest` value (a single KV-cached lookup, no query
+ * against a stale slug), `fetchResumeDocumentBySlug()` for every other
+ * value. `proxy.ts` used to rewrite `/resume/latest` to the real slug before
+ * this route ever ran; that rewrite is gone, so `latest` now reaches here
+ * directly and is handled the same way `opengraph-image.tsx` needs it to be.
+ */
+export const resolveResumeDocument = async (slug: string) =>
+  slug === LATEST_RESUME_SLUG ? fetchLatestResumeDocument() : fetchResumeDocumentBySlug(slug)
 
 /** First populated thumbnail for a locale, or `null` if that set is empty/unpopulated. */
 const firstThumbnail = (
@@ -37,11 +56,12 @@ const firstThumbnail = (
 export default async function ResumeDocumentPage({ params }: PageProps<'/resume/[slug]'>) {
   const { slug } = await params
 
-  const resume = await queryResumeDocumentBySlug(slug)
-  const newerVersions = await fetchNewerDocumentVersions(resume)
+  const isLatestSlug = slug === LATEST_RESUME_SLUG
+  const resume = await resolveResumeDocument(slug)
+  if (!resume) return notFound()
 
-  const thumbnailEn = firstThumbnail(resume?.thumbnails_en)
-  const thumbnailDe = firstThumbnail(resume?.thumbnails_de)
+  const thumbnailEn = firstThumbnail(resume.thumbnails_en)
+  const thumbnailDe = firstThumbnail(resume.thumbnails_de)
 
   // Cross-fades between both locales' previews when both exist; falls back
   // to whichever single one is populated, or nothing (the white placeholder
@@ -70,25 +90,21 @@ export default async function ResumeDocumentPage({ params }: PageProps<'/resume/
     (item): item is HeroMediaItem => item !== null,
   )
 
-  const documentEn =
-    typeof resume?.document_en?.value === 'object' ? resume.document_en.value : null
-  const documentDe =
-    typeof resume?.document_de?.value === 'object' ? resume.document_de.value : null
+  const documentEn = typeof resume.document_en?.value === 'object' ? resume.document_en.value : null
+  const documentDe = typeof resume.document_de?.value === 'object' ? resume.document_de.value : null
 
   const checksumEntries: ChecksumEntry[] = [
-    resume?.checksum_en && {
+    resume.checksum_en && {
       locale: 'en',
       label: 'EN',
       checksum: resume.checksum_en,
     },
-    resume?.checksum_de && {
+    resume.checksum_de && {
       locale: 'de',
       label: 'DE',
       checksum: resume.checksum_de,
     },
   ].filter((entry): entry is ChecksumEntry => Boolean(entry))
-
-  const isLatest = (newerVersions ?? 0) === 0
 
   return (
     <div>
@@ -105,23 +121,16 @@ export default async function ResumeDocumentPage({ params }: PageProps<'/resume/
               <h1 className="font-mono text-3xl font-medium tracking-tight md:text-4xl">
                 Resume Document
               </h1>
-              {resume?.createdAt && (
+              {resume.createdAt && (
                 <h2 className="font-mono text-lg font-normal opacity-80">
                   {format(new Date(resume.createdAt), 'PP')}
                 </h2>
               )}
             </div>
 
-            {resume &&
-              (isLatest ? (
-                <Banner variant="success">
-                  The document version you came from is still the latest version.
-                </Banner>
-              ) : (
-                <Banner variant="warning">
-                  There have been newer versions since you downloaded this PDF.
-                </Banner>
-              ))}
+            {/* `latest` is by definition already the newest version — the
+                "is this still current" check is meaningless there. */}
+            {!isLatestSlug && <ResumeNewerVersionsChecker createdAt={resume.createdAt} />}
 
             <div className="flex flex-col gap-4 sm:flex-row">
               {documentEn && (
@@ -219,14 +228,24 @@ export async function generateStaticParams() {
     return placeholderParams('/resume/[slug]')
   }
 
-  return docs.map(({ slug }) => ({
-    slug,
-  }))
+  // `latest` used to be handled entirely by proxy.ts rewriting it to the
+  // real slug before this route ever ran; that rewrite is gone, so it needs
+  // its own static param now — resolveResumeDocument gives it real content
+  // via fetchLatestResumeDocument rather than a document literally slugged
+  // 'latest'.
+  return [
+    {
+      slug: LATEST_RESUME_SLUG,
+    },
+    ...docs.map(({ slug }) => ({
+      slug,
+    })),
+  ]
 }
 
 export async function generateMetadata({ params }: PageProps<'/resume/[slug]'>): Promise<Metadata> {
   const { slug } = await params
-  const resume = await queryResumeDocumentBySlug(slug)
+  const resume = await resolveResumeDocument(slug)
 
   const {
     general: { siteName },
@@ -261,50 +280,4 @@ export async function generateMetadata({ params }: PageProps<'/resume/[slug]'>):
       siteName: siteName ?? undefined,
     },
   }
-}
-
-export const fetchNewerDocumentVersions = async (doc: ResumeDocumentData) => {
-  'use cache'
-  cacheLife('max')
-  cacheTag(CollectionSlug.ResumeDocuments)
-
-  const payload = await getPayload({
-    config,
-  })
-  const { docs } = await payload.find({
-    collection: CollectionSlug.ResumeDocuments,
-    pagination: false,
-    // limit: 0,
-    where: {
-      createdAt: {
-        greater_than_equal: doc?.createdAt,
-      },
-    },
-  })
-  return Array.isArray(docs) ? docs.length - 1 : 0
-}
-
-export const queryResumeDocumentBySlug = async (slug: string) => {
-  'use cache'
-  cacheLife('max')
-  cacheTag(CollectionSlug.ResumeDocuments)
-
-  const payload = await getPayload({
-    config,
-  })
-
-  const { docs = [] } = await payload.find({
-    collection: CollectionSlug.ResumeDocuments,
-    draft: false,
-    limit: 1,
-    pagination: false,
-    // overrideAccess: false,
-    where: {
-      slug: {
-        equals: slug,
-      },
-    },
-  })
-
-  return (docs[0] as CollectionData<CollectionSlug['ResumeDocuments']>) || null
 }

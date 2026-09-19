@@ -1,61 +1,68 @@
 # Personal Website - Daniel Heene
 
-This repository contains the source code for my personal website: [daniel.heene.io](https://daniel.heene.io).
+This repository contains the source code for the personal website, blog, and resume builder: [daniel.heene.io](https://daniel.heene.io).
 
-> **For AI coding agents**: see [`AGENTS.md`](./AGENTS.md) for coding conventions, architecture
-> notes, and known security/style guardrails before making changes.
+> **For AI coding agents and contributors**: See [`AGENTS.md`](./AGENTS.md) for coding conventions, architecture notes, and known security/style guardrails before making changes.
+
+---
 
 ## Tech Stack
 
+- **Language & Runtime**: [TypeScript](https://www.typescriptlang.org/) / [Node.js](https://nodejs.org/) (`^26.0.0`)
 - **Framework**: [Next.js 16](https://nextjs.org/) (App Router, React 19)
 - **CMS**: [Payload CMS 3.x](https://payloadcms.com/)
-- **Database**: [MongoDB](https://www.mongodb.com/) (via Mongoose)
-- **Cache/KV**: [Redis](https://redis.io/)
-- **Storage**: S3-compatible storage (local Minio in development)
-- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
-- **Analytics**: [Umami](https://umami.is/) (Optional)
-- **Email**: [UseSend](https://usesend.com/) (Optional)
+- **Database**: [MongoDB 8](https://www.mongodb.com/) (via `@payloadcms/db-mongodb`)
+- **Cache & Pub/Sub**: [Redis 8](https://redis.io/) (`@payloadcms/kv-redis`, `@trieb.work/nextjs-turbo-redis-cache`, and custom SSE pub/sub handler)
+- **Storage**: S3-compatible storage ([RustFS](https://github.com/rustfs/rustfs) in local dev via Docker, AWS S3 / Cloudflare R2 in production via `@payloadcms/storage-s3`)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/), PostCSS, Tailwind Variants
+- **Component Development**: [Storybook 10](https://storybook.js.org/)
+- **Linting & Formatting**: [Biome](https://biomejs.dev/) (no ESLint/Prettier)
+- **Package Manager**: [pnpm](https://pnpm.io/) (`^11.0.0`, pinned `pnpm@11.18.0`)
+- **Testing**: [Vitest](https://vitest.dev/) (Unit), [Playwright](https://playwright.dev/) (E2E)
+- **Integrations & Services**:
+  - **Analytics**: [Umami](https://umami.is/) (Optional)
+  - **Transactional Email**: [UseSend](https://usesend.com/) / [React Email](https://react.email/) (Optional)
+  - **Error Tracking & Tracing**: [Sentry](https://sentry.io/) (Optional)
+  - **AI Metadata & Alt-Text**: OpenAI / Anthropic (Optional)
+  - **Address & Geocoding**: Mapbox (Optional)
+  - **Stock Photos**: Unsplash API (Optional)
+  - **Icons**: Self-hosted Iconify API (`https://icons.heene.io`)
+  - **Dev Tunnel**: Cloudflare Tunnel (Optional)
+
+---
 
 ## Requirements
 
 - **Node.js**: `^26.0.0`
-- **pnpm**: `^11.0.0`
-- **Docker**: For running local database, cache, and storage services.
+- **pnpm**: `^11.0.0` (v11.18.0 recommended)
+- **Docker & Docker Compose**: For running local database (MongoDB), cache (Redis), and object storage (RustFS).
+- **Doppler CLI**: For environment configuration and secret management.
+
+---
 
 ## Setup & Local Development
 
 ### 1. Environment Configuration
 
-Configuration and secrets are managed in [Doppler](https://doppler.com). Install the CLI,
-link this directory to the project, then write the config out to `.env.local`:
+Configuration and secrets are managed in [Doppler](https://doppler.com). Install the CLI, link this directory to the project, then write the config out to `.env.local`:
 
 ```bash
-brew install dopplerhq/cli/doppler   # see docs.doppler.com/docs/install-cli for other platforms
+brew install dopplerhq/cli/doppler   # See docs.doppler.com/docs/install-cli for other platforms
 doppler login
 doppler setup --project website --config <your-config>
-pnpm load-env                        # writes .env.local from the active config
+pnpm load-env                        # Writes .env.local from active Doppler config
 ```
 
-`doppler setup` stores the project and config against this directory in `~/.doppler`, so
-it is a one-time step per clone. There is no checked-in default: configs differ per
-developer (`development_personal` and the like), and pinning one in the repo made it easy
-to build against the wrong database without noticing. `doppler configure` shows what the
-current directory resolves to.
+- `doppler setup` stores the project and config against this directory in `~/.doppler` (one-time step per clone).
+- `pnpm load-env` is the only command that talks to Doppler. Next.js loads `.env.local` automatically, so standard commands (`pnpm dev`, `pnpm build`) work without wrapping `doppler run`.
+- **Re-run `pnpm load-env` after changing variables in Doppler or switching configs** with `doppler setup --config <name>`.
+- `pnpm load-env --check` reports whether `.env.local` is in sync with Doppler and exits non-zero if drift is detected (without writing).
+- `.env.local` is gitignored and written with owner-only permissions (`0600`).
+- To inspect secrets without writing to disk, run `doppler secrets`.
 
-`pnpm load-env` is the only thing that talks to Doppler. Next loads `.env.local`
-automatically, so no package script wraps `doppler run` — `pnpm dev`, `pnpm payload` and
-the rest just work. **Re-run it after changing anything in Doppler, or after switching
-configs** with `doppler setup --config <name>`; nothing detects drift on its own.
+### 2. Start Local Services
 
-- `pnpm load-env --check` reports whether `.env.local` is current and exits non-zero if
-  not, without writing.
-- The file is gitignored and written owner-only (`0600`) — it holds every secret the
-  project uses. It is never generated as a side effect of another script.
-- To inspect what will be written without touching the filesystem, run `doppler secrets`.
-
-### 2. Start Services
-
-Launch the infrastructure (MongoDB, Redis, and Minio) using Docker Compose:
+Launch the infrastructure services (MongoDB 8, Redis 8, and RustFS storage with automatic bucket creation) using Docker Compose:
 
 ```bash
 docker compose up -d
@@ -67,7 +74,9 @@ docker compose up -d
 pnpm install
 ```
 
-### 4. Generate Payload Artifacts
+> Git hooks (Husky, lint-staged, commitlint) are installed automatically during `pnpm install`.
+
+### 4. Generate Payload Types & Import Map
 
 Payload requires generated TypeScript types and an import map for the admin panel:
 
@@ -75,318 +84,318 @@ Payload requires generated TypeScript types and an import map for the admin pane
 pnpm generate
 ```
 
+> Always run `pnpm generate` after adding or changing collections, globals, blocks, or fields.
+
 ### 5. Run the Application
 
-Start the development server:
+Start the development server (runs Next.js dev server and Storybook in parallel):
 
 ```bash
 pnpm dev
 ```
 
-- **Frontend**: [http://localhost:3000](http://localhost:3000)
-- **Admin Panel**: [http://localhost:3000/admin](http://localhost:3000/admin)
-
-## Environment Variables
-
-`apps/web/src/types/environment.ts` is the source of truth: it declares a Zod schema that
-`next.config.ts` validates at load time, so the process exits immediately if anything
-required is missing or malformed. Doppler stores the values; the list below explains them.
-
-Everything is **required** unless marked optional.
-
-### Core
-
-| Variable | Purpose |
-| --- | --- |
-| `DATABASE_URL` | MongoDB connection string. |
-| `REDIS_URL` | Redis connection URL (KV adapter and cache handler). |
-| `SERVER_URL` | Public URL of the server. Inlined into the client bundle. |
-| `SERVER_HOST` | Host/port used for server-side URL construction. |
-| `PAYLOAD_SECRET` | Encrypts Payload JWT tokens. |
-| `PREVIEW_SECRET` | Authenticates Next.js/Payload draft previews. |
-| `CRON_SECRET` | Reserved for cron tasks. Declared but not yet enforced by any route (see `AGENTS.md`). |
-
-### Status page
-
-| Variable | Purpose |
-| --- | --- |
-| `STATUS_PAGE_URL` | Status page link. Inlined into the client bundle. |
-| `STATUS_PAGE_HEARTBEAT_URL` | Heartbeat endpoint pinged server-side. |
-
-### Storage (Minio in local dev)
-
-`S3_BUCKET`, `S3_REGION`, `S3_ENDPOINT`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`.
-
-### Analytics, email, and third-party APIs
-
-| Variable | Purpose |
-| --- | --- |
-| `NEXT_PUBLIC_UMAMI_URL`, `NEXT_PUBLIC_UMAMI_SITE_ID` | Umami rewrite target and site ID (a UUID). |
-| `UMAMI_USERNAME`, `UMAMI_PASSWORD` | Credentials for the server-side Umami stats query. |
-| `USESEND_URL`, `USESEND_API_KEY`, `USESEND_DEFAULT_FROM_ADDRESS`, `USESEND_DEFAULT_FROM_NAME` | UseSend email provider. |
-| `OPENAI_API_KEY`, `ANTHROPIC_API_KEY` | Generated alt text and meta descriptions. |
-| `MAPBOX_API_KEY` | Address and coordinate lookups. |
-| `UNSPLASH_ACCESS_KEY` | Stock photo search & import in the media library admin. Optional — the feature is hidden if unset. |
-
-### Sentry (all optional)
-
-With no DSN the SDK is never initialised and the app runs unchanged. `SENTRY_DSN` is public
-by design and is inlined into the client bundle. `SENTRY_ENVIRONMENT`, `SENTRY_RELEASE` and
-`SENTRY_TRACES_SAMPLE_RATE` tune reporting; `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` and
-`SENTRY_PROJECT` are only needed to upload source maps during a build;
-`NEXT_PUBLIC_SENTRY_REPLAY_RATE` and `NEXT_PUBLIC_SENTRY_REPLAY_ERROR_RATE` control replay
-sampling.
-
-### Cloudflare tunnel (all optional)
-
-`CLOUDFLARE_TUNNEL_HOST`, `CLOUDFLARE_TUNNEL_URL` and `CLOUDFLARE_TUNNEL_TOKEN` are only
-read when starting the dev server with `--tunnel`.
-
-> **Fixed at build time.** `SERVER_URL`, `STATUS_PAGE_URL` and `SENTRY_DSN` are listed in
-> `next.config.ts`'s `env:` block, which inlines them into the compiled bundle. On top of
-> that, `cacheComponents: true` gives nearly every route a shell rendered at build time,
-> so a server-side `process.env` read is captured into that shell and served from cache —
-> moving the read further up the tree does not change this. All three must therefore be
-> correct when the app is built, which makes a build specific to one environment. All
-> three are public values, so nothing secret is baked in.
-
-## Production Build
-
-Dokploy builds the app from source on the deployment server; there is no image to
-build or push. The build needs a reachable database because `generateStaticParams()`
-calls `payload.find()`, and a Redis URL because the KV adapter is constructed while
-`payload.config.ts` loads.
-
-To reproduce a production build locally:
+Or run services independently:
 
 ```bash
-pnpm build
-pnpm start
+pnpm dev:app          # Next.js dev server only (http://localhost:3000)
+pnpm dev:storybook    # Storybook only (http://localhost:6006)
+pnpm email:dev        # React Email preview server (http://localhost:3005)
 ```
 
-Notes:
+#### Application Endpoints
 
-- **Three values are inlined at build time.** `SERVER_URL`, `STATUS_PAGE_URL` and
-  `SENTRY_DSN` are baked into the client bundle and captured in the prerendered shell
-  (`cacheComponents: true` gives nearly every route a build-time shell), so passing them
-  at run time only satisfies the schema check — it does not change what is served. Build
-  with the config you intend to run. Every secret and all server-only config *is*
-  runtime, so a deployment can be repointed at a different database, cache, bucket or
-  mail provider without rebuilding.
-- **A production build validates only the build-time subset** of the schema; the full
-  schema is validated at boot, so a missing runtime variable still fails fast — at the
-  point where it can be supplied.
-- **Private hosts need Tailscale.** The `development` config points `DATABASE_URL` and
-  `REDIS_URL` at hosts on the tailnet, so the build only resolves them from a machine
-  already on the tailnet.
-- **`docker compose up -d` is only the local infrastructure** (Mongo, Redis, rustfs).
-  The app is not a compose service — it runs via `pnpm dev`.
+- **Frontend**: [http://localhost:3000](http://localhost:3000)
+- **Admin Panel**: [http://localhost:3000/admin](http://localhost:3000/admin)
+- **Storybook**: [http://localhost:6006](http://localhost:6006)
+- **React Email Previews**: [http://localhost:3005](http://localhost:3005)
+
+---
+
+## Entry Points
+
+- **Next.js App Router**:
+  - `app/(frontend)/`: Public website pages, layouts, and API routes (`/api/preview`, `/api/sse`, `/api/heartbeat`, `/api/health/*`, etc.).
+  - `app/(payload)/`: Payload CMS admin panel routes (`/admin`).
+- **Payload Configuration**: `payload.config.ts` in the project root, integrated into Next.js via `withPayload` in `next.config.ts`.
+- **Jobs Queue & Worker**: `src/jobs-queue/` and standalone background worker entrypoint `scripts/start-worker.mjs` with `scripts/health-server.ts`.
+- **Dev Runner**: `scripts/dev.mjs` (handles `--tunnel` Cloudflare tunnel argument and orchestrates dev processes).
+- **Environment Loader**: `scripts/load-env.mjs` (fetches active Doppler secrets into `.env.local`).
+
+---
 
 ## Available Scripts
 
-No script wraps `doppler run`. Locally the environment comes from `.env.local`, which
-Next loads on its own — see [Environment Configuration](#1-environment-configuration) for
-how to generate it. On the deployment server Dokploy supplies the environment directly.
-The one script that does talk to Doppler is `pnpm load-env`, which writes that file.
+| Script | Description |
+| --- | --- |
+| `pnpm dev` | Starts Next.js dev server and Storybook in parallel (supports `--tunnel`). |
+| `pnpm dev:app` | Starts Next.js development server only (`localhost:3000`). |
+| `pnpm dev:storybook` | Starts Storybook development server (`localhost:6006`). |
+| `pnpm build` | Production build (compiles Next.js bundle with Sentry release tagging). |
+| `pnpm build:storybook` | Builds static Storybook documentation into `dist/`. |
+| `pnpm serve:storybook` | Serves the static Storybook build on port 3020. |
+| `pnpm start` | Starts the production Next.js application server. |
+| `pnpm start:worker` | Runs standalone background jobs worker and health monitoring server. |
+| `pnpm load-env` | Writes `.env.local` from active Doppler config (`--check` validates drift). |
+| `pnpm generate` | Runs `generate:types` and `generate:importmap` in parallel. |
+| `pnpm generate:types` | Generates TypeScript types for Payload collections and globals (`src/types/payload.ts`). |
+| `pnpm generate:importmap` | Regenerates Payload admin component import map. |
+| `pnpm payload` | Wrapper to execute Payload CLI commands. |
+| `pnpm migrate` | Runs database migrations via Payload CLI. |
+| `pnpm ci` | CI sequence: runs database migrations and production build. |
+| `pnpm lint` | Runs `biome check` (code quality, linting, and format checks). |
+| `pnpm format` | Runs `biome format --write` to auto-fix code formatting. |
+| `pnpm typecheck` | Runs TypeScript typechecker (`tsc --noEmit`). |
+| `pnpm deps:lint` | Runs Syncpack to check dependency version consistency across packages. |
+| `pnpm deps:fix` | Runs Syncpack to automatically align dependency versions. |
+| `pnpm deps:update` | Updates dependency versions using Syncpack. |
+| `pnpm chore:sort` | Formats `package.json` using Syncpack. |
+| `pnpm chore:reinstall` | Cleans `node_modules` and `pnpm-lock.yaml`, then runs fresh `pnpm install`. |
+| `pnpm email:dev` | Starts React Email development server on port 3005 (`src/emails`). |
+| `pnpm seed:topics` | Seeds fixture blog topics (`--clean` to remove). |
+| `pnpm seed:posts` | Seeds fixture blog posts and media (`--clean` to remove, `--count <n>` to set quantity). |
+| `pnpm seed:pages` | Seeds fixture pages (`--clean` to remove, `--count <n>` to set quantity). |
+| `pnpm links:migrate` | Runs database migration for link field naming. |
+| `pnpm refs:backfill` | Rebuilds content reference index table. |
+| `pnpm test` | Runs unit tests once via Vitest. |
+| `pnpm test:watch` | Runs Vitest in interactive watch mode. |
+| `pnpm test:coverage` | Runs Vitest with v8 code coverage reporting. |
+| `pnpm test:e2e` | Runs Playwright E2E tests against `.env.test`. |
+| `pnpm test:e2e:ui` | Runs Playwright E2E tests with interactive UI. |
+| `pnpm test:e2e:docker` | Runs Playwright E2E tests inside Docker Chromium container. |
+| `pnpm release` | Runs semantic-release to calculate version, tag, and publish changelog. |
+| `pnpm release:dry-run` | Runs semantic-release in dry-run mode. |
 
-- `pnpm load-env`: Writes `.env.local` from the active Doppler config (`--check` to
-  report drift without writing).
-- `pnpm dev`: Starts the Next.js development server (and Storybook, in parallel).
-- `pnpm build`: Builds the application for production.
-- `pnpm start`: Starts the production server.
-- `pnpm generate`: Runs `generate:types` and `generate:importmap` in parallel.
-- `pnpm payload`: Wrapper for Payload CLI.
-- `pnpm migrate`: Runs database migrations.
-- `pnpm ci`: Sequence for CI/CD (migration + build).
-- `pnpm lint`: Runs `biome check` (lint + format check) for code quality.
-- `pnpm format`: Runs `biome format --write` to auto-fix formatting.
-- `pnpm storybook` / `pnpm dev:storybook`: Runs Storybook for isolated component development.
+---
+
+## Environment Variables
+
+The source of truth is declared as a Zod schema in `src/types/environment.ts`. It is validated by `next.config.ts` during startup, failing fast if required variables are missing or malformed.
+
+### Core & Server
+
+| Variable | Type / Requirement | Purpose |
+| --- | --- | --- |
+| `NODE_ENV` | Optional (`development` \| `production` \| `test`) | Runtime environment (defaults to `development`). |
+| `SERVER_HOST` | **Required** | Host/port used for server-side URL construction. |
+| `SERVER_URL` | **Required** (URL) | Public URL of the server (inlined into client bundle at build time). |
+| `PAYLOAD_SECRET` | **Required** | Secret key used to encrypt Payload JWT tokens. |
+| `PREVIEW_SECRET` | **Required** | Shared secret for draft/preview authentication. |
+| `CRON_SECRET` | **Required** | Secret token reserved for securing cron/scheduled tasks. |
+
+### Database & Cache
+
+| Variable | Type / Requirement | Purpose |
+| --- | --- | --- |
+| `DATABASE_URL` | **Required** | MongoDB connection string (e.g. `mongodb://127.0.0.1:27017/productiondb`). |
+| `REDIS_URL` | **Required** | Redis connection string (used for KV adapter, cache handler, and SSE pub/sub). |
+
+### Storage (S3 / RustFS / Minio)
+
+| Variable | Type / Requirement | Purpose |
+| --- | --- | --- |
+| `S3_BUCKET` | **Required** | S3 bucket name. |
+| `S3_ENDPOINT` | **Required** | S3 API endpoint URL (e.g. `http://127.0.0.1:9000` locally). |
+| `S3_REGION` | **Required** | S3 region identifier (`us-east-1` for local RustFS). |
+| `S3_ACCESS_KEY` | **Required** | S3 access key ID. |
+| `S3_SECRET_KEY` | **Required** | S3 secret access key. |
+
+### Jobs Queue & Worker
+
+| Variable | Type / Requirement | Purpose |
+| --- | --- | --- |
+| `PAYLOAD_JOBS_ENABLE_APP_WORKERS` | Optional (`true` \| `false`) | Enables embedded job workers in the main Next.js app process (defaults to `false`). |
+
+### Status Page
+
+| Variable | Type / Requirement | Purpose |
+| --- | --- | --- |
+| `STATUS_PAGE_URL` | **Required** (URL) | Public status page URL (inlined into client bundle). |
+| `STATUS_PAGE_HEARTBEAT_URL` | **Required** (URL) | Heartbeat monitoring URL pinged server-side. |
+
+### Analytics & Email (Optional)
+
+| Variable | Type / Requirement | Purpose |
+| --- | --- | --- |
+| `NEXT_PUBLIC_UMAMI_URL` | **Required** | Umami analytics script URL / rewrite target. |
+| `NEXT_PUBLIC_UMAMI_SITE_ID` | **Required** (UUID) | Umami tracking site UUID. |
+| `UMAMI_USERNAME` | **Required** | Umami account username for server-side stats queries. |
+| `UMAMI_PASSWORD` | **Required** | Umami account password for server-side stats queries. |
+| `USESEND_URL` | **Required** (URL) | UseSend transactional email endpoint. |
+| `USESEND_API_KEY` | **Required** | UseSend API authorization key. |
+| `USESEND_DEFAULT_FROM_ADDRESS` | **Required** (Email) | Default sender email address. |
+| `USESEND_DEFAULT_FROM_NAME` | **Required** | Default sender display name. |
+
+### Third-Party APIs
+
+| Variable | Type / Requirement | Purpose |
+| --- | --- | --- |
+| `NEXT_PUBLIC_ICONIFY_API` | Optional (URL) | Self-hosted Iconify API (defaults to `https://icons.heene.io`). |
+| `OPENAI_API_KEY` | **Required** | API key for OpenAI (used for automated alt-text and meta descriptions). |
+| `ANTHROPIC_API_KEY` | **Required** | API key for Anthropic Claude (alternative AI generation provider). |
+| `MAPBOX_API_KEY` | **Required** | Mapbox access token for address and coordinate lookups. |
+| `UNSPLASH_ACCESS_KEY` | Optional | Unsplash API access key for stock photo search & direct media import. |
+
+### Error Tracking (Sentry, Optional)
+
+| Variable | Type / Requirement | Purpose |
+| --- | --- | --- |
+| `SENTRY_DSN` | Optional (URL) | Enables Sentry SDK if provided (inlined at build time). |
+| `SENTRY_ENVIRONMENT` | Optional | Custom environment name reported to Sentry. |
+| `SENTRY_RELEASE` | Optional | Release tag reported to Sentry. |
+| `SENTRY_TRACES_SAMPLE_RATE` | Optional | Performance trace sample rate (`0` to `1`). |
+| `SENTRY_AUTH_TOKEN` | Optional | Sentry authentication token for source map upload during build. |
+| `SENTRY_ORG` | Optional | Sentry organization slug for source map upload. |
+| `SENTRY_PROJECT` | Optional | Sentry project name for source map upload. |
+
+### Cloudflare Tunnel (Optional)
+
+| Variable | Type / Requirement | Purpose |
+| --- | --- | --- |
+| `CLOUDFLARE_TUNNEL_HOST` | Optional | Hostname for local dev tunnel. |
+| `CLOUDFLARE_TUNNEL_URL` | Optional (URL) | Target URL for Cloudflare tunnel. |
+| `CLOUDFLARE_TUNNEL_TOKEN` | Optional | Cloudflare tunnel authentication token. |
+
+> **Build-Time Inlining Notice**: `SERVER_URL`, `STATUS_PAGE_URL`, and `SENTRY_DSN` are inlined into the client bundle at build time by `next.config.ts`. Additionally, route shells rendered at build time with `cacheComponents: true` capture server-side values. Ensure correct values are present during `pnpm build`.
+
+---
 
 ## Project Structure
 
 ```text
 .
-├── app/                  # Next.js App Router
-│   ├── (frontend)/       # Public site routes, incl. api/ (preview, sse, heartbeat)
-│   └── (payload)/        # Payload admin panel routes
-├── src/                  # Application Source
-│   ├── access/           # Payload Access Control functions
-│   ├── blocks/           # Reusable Payload Blocks (resume sections, content blocks)
-│   ├── collections/      # Payload Collections (Media, Pages, BlogPosts, Resume*, Users, etc.)
-│   ├── components/       # React Components
-│   ├── contexts/         # React Context providers
-│   ├── fields/           # Custom/reusable Payload Field factories
-│   ├── globals/          # Payload Globals (SiteSettings, PDFGeneratorSettings, etc.)
-│   ├── hooks/            # React hooks
-│   ├── jobs-queue/       # Payload Jobs Queue tasks/workflows
-│   ├── lib/              # Framework-agnostic utilities (Redis handler, caching, etc.)
-│   ├── pdf/              # PDF generation (resume export)
-│   ├── styles/           # CSS and Tailwind styles
-│   ├── types/            # Shared/generated TypeScript types (incl. generated payload.ts)
-│   └── widgets/          # Payload admin dashboard widgets
-├── public/               # Static Assets
-├── scripts/              # Standalone Node scripts (e.g. dev tunnel)
-├── payload.config.ts     # Payload CMS configuration (root-level, not under src/)
-├── docker-compose.yml    # Local Infrastructure
-└── next.config.ts        # Next.js Configuration
+├── app/                          # Next.js App Router
+│   ├── (frontend)/               # Public website routes, layouts, and API routes
+│   │   ├── [locale]/             # Localized routes (en, de)
+│   │   ├── api/                  # API endpoints (preview, sse, health, heartbeat, icons, etc.)
+│   │   └── layout.tsx            # Frontend root layout
+│   └── (payload)/                # Payload CMS admin routes
+│       ├── admin/                # Payload admin UI routes
+│       ├── api/                  # Payload REST & GraphQL API endpoints
+│       └── layout.tsx            # Payload admin layout
+├── src/                          # Application source code
+│   ├── access/                   # Payload access control policies (anyone, authenticated, etc.)
+│   ├── blocks/                   # Reusable Payload blocks (Hero, Content, Resume, Media, etc.)
+│   ├── collections/              # Payload collections (Media, Pages, Posts, Resume*, Users, etc.)
+│   ├── components/               # React UI components & Storybook stories
+│   ├── contexts/                 # React context providers (theme, locale, etc.)
+│   ├── emails/                   # React Email templates
+│   ├── fields/                   # Reusable Payload field factories (Slug, HeroSlides, Link, etc.)
+│   ├── fonts/                    # Custom font definitions
+│   ├── globals/                  # Payload globals (SiteSettings, PDFGeneratorSettings, etc.)
+│   ├── hooks/                    # Custom React hooks
+│   ├── jobs-queue/               # Payload background jobs, tasks, workflows, and health checks
+│   ├── lib/                      # Utilities (RedisHandler, SSE, image optimization, seeding, etc.)
+│   ├── migrations/               # Database migration scripts
+│   ├── pdf/                      # PDF resume generator components (@react-pdf/renderer)
+│   ├── plugins/                  # Custom Payload plugins
+│   ├── stories/                  # Global Storybook configurations & documentation
+│   ├── styles/                   # CSS and Tailwind 4 stylesheets
+│   ├── types/                    # TypeScript declarations, environment schema, generated types
+│   └── widgets/                  # Custom Payload dashboard widgets
+├── public/                       # Static public assets (favicons, icons, robots.txt)
+├── scripts/                      # Utility scripts (dev runner, worker, seeders, environment loader)
+├── docs/                         # Specifications, architecture notes, and design plans
+├── e2e/                          # Playwright end-to-end test specs
+├── docker-compose.yml            # Local development infrastructure (MongoDB, Redis, RustFS)
+├── next.config.ts                # Next.js configuration & Payload integration
+├── payload.config.ts             # Payload CMS master configuration
+├── biome.json                    # Biome linting and formatting configuration
+├── playwright.config.ts          # Playwright E2E configuration
+├── vitest.config.ts              # Vitest unit test configuration
+├── vitest.setup.ts               # Vitest environment setup and mocks
+└── package.json                  # Dependencies, scripts, and engine requirements
 ```
-
-## Entrypoints
-
-- Next.js App Router under `app/` (served via `pnpm dev` / `pnpm start`).
-- Payload CMS is configured in `payload.config.ts` (repo root) and integrated via `withPayload` in `next.config.ts`.
-- File uploads are handled by Payload collections with the S3 storage plugin configured in `payload.config.ts`.
-
-## Testing
-
-Unit tests run with **Vitest**, end-to-end tests with **Playwright** (Chromium).
-
-- **Unit tests**: `pnpm test` (watch mode: `pnpm test:watch`, coverage: `pnpm test:coverage`)
-- **E2E tests**: `pnpm test:e2e` (interactive UI: `pnpm test:e2e:ui`)
-- **E2E in Docker Chromium**: `pnpm test:e2e:docker`
-
-Conventions:
-
-- Unit tests are co-located as `*.test.ts` next to the code under test (config: `vitest.config.ts`,
-  shared mocks and `TZ=UTC` in `vitest.setup.ts`).
-- E2E specs live in `e2e/*.spec.ts` (config: `playwright.config.ts`). They are smoke tests only —
-  the site is CMS-driven, so they assert structural health, not content.
-
-E2E prerequisites:
-
-- `docker compose up -d` (MongoDB, Redis and S3 storage must be reachable).
-- `.env.test` is committed with dummy, format-valid values so the app can boot. Flows backed by
-  real external services do **not** work with it: AI generation (OpenAI/Anthropic), Mapbox
-  geocoding, email (UseSend), Umami analytics and the status-page heartbeat.
-- `pnpm test:e2e` starts (or reuses) the dev server automatically. The Docker flow
-  (`scripts/e2e-docker.sh`) expects the dev server already running on the host and uses the
-  `mcr.microsoft.com/playwright` image — its tag must always match the `@playwright/test` version
-  in `package.json`; bump them together.
-
-## Commits & Git Hooks
-
-Hooks are installed by Husky via the `prepare` script, so `pnpm install` sets
-them up automatically.
-
-| Hook | Runs |
-| --- | --- |
-| `pre-commit` | `lint-staged` → `biome check --write` on staged files only |
-| `commit-msg` | `commitlint` against Conventional Commits |
-
-Formatting fixes are re-staged automatically, so a commit that only needed
-formatting still goes through. Only staged files are touched — pre-existing
-issues elsewhere never block an unrelated commit.
-
-Commit messages follow [Conventional Commits](https://www.conventionalcommits.org):
-
-```text
-feat(admin): add Iconify icon picker field
-fix: repair the Docker build for the flat repo layout
-chore!: drop Node 20 support        # `!` marks a breaking change
-```
-
-Scopes are deliberately unrestricted — see `commitlint.config.mjs`.
-
-Both hooks can be skipped with `git commit --no-verify` for genuine
-emergencies; the same commitlint check runs on pull requests in CI, so a
-bypassed message still has to be fixed before merge.
-
-## Error Tracking (Sentry)
-
-Sentry is wired for errors, Web Vitals, logs and traces, but stays **completely
-inert until `SENTRY_DSN` is set** — no DSN means `Sentry.init` is never called,
-so local development is unaffected.
-
-| Variable | Purpose |
-| --- | --- |
-| `SENTRY_DSN` | Enables the SDK. Everything below is ignored without it. |
-| `SENTRY_TRACES_SAMPLE_RATE` | Trace sampling, `0`–`1`. Defaults to `1` in dev, `0.1` in production. |
-| `SENTRY_ENVIRONMENT` / `SENTRY_RELEASE` | Override the reported environment and release. |
-| `SENTRY_AUTH_TOKEN` + `SENTRY_ORG` + `SENTRY_PROJECT` | Source-map upload during build. All three required; skipped otherwise. |
-| `NEXT_PUBLIC_SENTRY_REPLAY_RATE` / `..._ERROR_RATE` | Session replay, off by default. |
-
-Notes:
-
-- `/api/sse` and `/api/health/*` are excluded from tracing — they are polled or
-  long-lived and would dominate the quota.
-- Sentry requests are proxied through `/monitoring` so ad blockers cannot drop them.
-- Source maps are deleted after upload, so they are never served publicly.
-
-## Features
-
-- **Media Optimization**: Images are stored in S3 and automatically generate `alt` text and `blurDataURL` on upload using `sharp`.
-- **SVG Optimization**: Optimize SVGs for logos using `svgo` in the admin UI. Note: this is a client-side editor convenience only, not a server-side sanitization boundary — see `AGENTS.md` for the related security note.
-- **Localization**: Full support for English (`en`) and German (`de`) with localized admin panel and content.
-- **Modern Styling**: Powered by Tailwind CSS v4.
-- **Live Preview & Server-Sent Events**: Draft/live preview via `app/(frontend)/api/preview`, and a Redis pub/sub-backed SSE endpoint (`app/(frontend)/api/sse`) for real-time status updates.
-
-### Data Seeding
-
-Seed blog topics and posts for local testing (idempotent, matched by slug):
-
-```bash
-pnpm seed:blog          # create 6 topics + 30 posts (with downloaded images)
-pnpm seed:blog:clean    # remove them again
-```
-
-Article structure and prose are randomized per post title with a seeded PRNG, so
-reruns produce identical output while each post differs. Images are downloaded
-from `picsum.photos` (keyless) and uploaded into the images collection; the AI
-alt-text hook is skipped during seeding.
-
-Note: `payload run` only forwards CLI arguments after a `--` separator — see the
-`seed:blog:clean` script.
-- TODO: If seeding is needed, add a dedicated script or route and document usage here.
-
-## CI / Deployment
-
-One workflow, `.github/workflows/ci-release.yml`, covers both pull requests and merges —
-which jobs run depends only on the trigger and, for pushes, which branch.
-
-**Pull request against `main` or `develop`** — lint and test only, nothing is built or
-pushed:
-
-1. **Lint** — commitlint over the PR's commit range, `biome check`, and `deps:lint`.
-   No `tsc --noEmit` here: it needs the ambient `PageProps`/`LayoutProps` types Next.js
-   generates from the app directory's routes, which in turn needs the full build-time env
-   (per `src/types/environment.ts`) that's only wired into the `build` job's environment
-   secrets — not worth duplicating into the PR gate for now.
-2. **Unit Tests** — `vitest run --coverage`. The suite mocks `payload` and stubs its own
-   environment in `vitest.setup.ts`, so it needs no database, no tailnet and no secrets.
-
-Both are required status checks — a PR cannot merge unless they pass.
-
-**Push to `main` or `develop`** — build and deploy, no separate promote/retag step:
-
-1. **Bump version** (`main` only) — `semantic-release` computes the next version from
-   commit history and pushes the release commit + tag as a GitHub App identity (main's
-   ruleset requires signed, PR-originated commits, which a plain `GITHUB_TOKEN` push
-   can't satisfy). `develop` skips this job entirely; it never gets a semver bump.
-2. **Build & push images** — builds all three images (`Dockerfile`'s `app`, `worker`, and
-   `storybook` targets) for `linux/amd64` only and pushes them to `ghcr.io/danielheene/
-   website/{app,worker,storybook}`, then triggers Dokploy to redeploy each app. The
-   app/worker build needs a reachable database, since `generateStaticParams()` calls
-   `payload.find()` in several routes — the runner joins the tailnet via
-   `tailscale/github-action` for that step. Tags are branch-literal, not SHA-based:
-   - `main` → `:latest` (+ `:vX.Y.Z` if the version job just cut a release)
-   - `develop` → `:edge`
-
-`main` and `develop` are the only branches this workflow runs on, so `environment:`
-(`Production` for `main`, `Development` for `develop`) is a static, literal binding per
-branch — there's exactly one deployment chain per branch and no conditional environment
-logic to reason about.
-
-Secrets and non-secret config reach both CI and the server from Doppler: the Doppler
-GitHub App syncs into the same two GitHub environments the build job binds to.
-
-## Code Quality & Security Notes
-
-- Linting/formatting is enforced by [Biome](https://biomejs.dev/) (`biome.json`), not ESLint/Prettier — see `AGENTS.md` for the full style conventions.
-- `pnpm lint` does not currently pass cleanly on `main` (pre-existing formatting and lint diagnostics); avoid introducing new issues when touching a file.
-- See [`AGENTS.md`](./AGENTS.md) for a summary of known security guardrails (open `queryPresets` access, unauthenticated SSE channel subscription, unsanitized raw SVG rendering, unused `CRON_SECRET`) to keep in mind when working in related areas.
 
 ---
 
-#### Legacy Code
+## Testing
 
-The following code of my previous websites is no longer maintained, but a dump of their code bases can still be found under the following tags: [website-v2](https://github.com/danielheene/website/tree/homepage-v2) | [website-v1](https://github.com/danielheene/website/tree/homepage-v1).
+### Unit Tests (Vitest)
+
+Unit tests are co-located next to the code under test as `*.test.ts` / `*.test.tsx`.
+
+```bash
+pnpm test             # Run all unit tests once
+pnpm test:watch       # Run unit tests in interactive watch mode
+pnpm test:coverage    # Generate test coverage report
+```
+
+- Configuration: `vitest.config.ts`.
+- Mocks & environment: `vitest.setup.ts` forces `TZ=UTC` and mocks `payload`, `next/cache`, and `redis`. Real implementations of `tailwind-merge`, `date-fns`, `slugify`, `pupa`, and `neotraverse` are tested directly.
+
+### End-to-End Tests (Playwright)
+
+E2E tests live in `e2e/*.spec.ts` and test structural health and smoke flows.
+
+```bash
+pnpm test:e2e         # Run Playwright tests headlessly
+pnpm test:e2e:ui      # Open Playwright interactive UI test runner
+pnpm test:e2e:docker  # Run tests in Playwright Docker Chromium container
+```
+
+**E2E Prerequisites**:
+1. Run `docker compose up -d` so MongoDB, Redis, and RustFS storage are active.
+2. E2E tests execute using `.env.test` with dummy valid credentials.
+3. `pnpm test:e2e` automatically starts or reuses the local dev server. For Docker tests (`pnpm test:e2e:docker`), start the dev server beforehand with `pnpm dev:app`.
+
+---
+
+## Data Seeding
+
+Seed fixture content into local MongoDB for development and testing:
+
+```bash
+# Seed Topics (categories)
+pnpm seed:topics          # Creates fixture blog topics
+pnpm seed:topics:clean    # Removes seeded blog topics
+
+# Seed Blog Posts (with images)
+pnpm seed:posts           # Creates blog topics & 30 posts with downloaded images
+pnpm seed:posts:clean     # Removes seeded posts and associated media
+# Pass custom count via: pnpm seed:posts -- --count 10
+
+# Seed Pages
+pnpm seed:pages           # Creates standard fixture pages
+pnpm seed:pages:clean     # Removes seeded pages
+# Pass custom count via: pnpm seed:pages -- --count 5
+```
+
+- Seeders are idempotent and match by slug.
+- Article prose and layouts are deterministic per title using a seeded pseudo-random generator.
+- Images are downloaded from `picsum.photos` and uploaded into Payload media.
+
+---
+
+## CI / CD & Deployment
+
+The deployment pipeline is configured in `.github/workflows/ci-release.yml`:
+
+- **Pull Requests** (against `main` or `develop`):
+  1. **Lint Check**: Validates commit messages with `commitlint`, executes `biome check`, and runs `syncpack` (`deps:lint`).
+  2. **Unit Tests**: Runs `vitest run --coverage`.
+- **Pushes to `develop` / `main`**:
+  1. **Semantic Versioning** (`main` only): Computes semver bump and generates tag/changelog via `semantic-release`.
+  2. **Docker Builds**: Builds multi-target images (`app`, `worker`, `storybook` in `Dockerfile`) for `linux/amd64` and pushes them to GitHub Container Registry (`ghcr.io/danielheene/website/*`).
+  3. **Dokploy Deployment**: Triggers automated deployment webhook on the production server.
+
+---
+
+## Git Hooks & Conventions
+
+Husky manages Git hooks installed automatically during `pnpm install`:
+
+- `pre-commit`: Runs `lint-staged` with `biome check --write` on staged files.
+- `commit-msg`: Enforces [Conventional Commits](https://www.conventionalcommits.org/) format using `commitlint`.
+
+Example valid commit messages:
+```text
+feat(admin): add Iconify icon picker field
+fix(media): sanitize SVG uploads before rendering
+chore: update dependencies
+```
+
+---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).

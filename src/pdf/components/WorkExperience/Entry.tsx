@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { StyleSheet, View } from '@react-pdf/renderer'
+import { StyleSheet, Styles, View } from '@react-pdf/renderer'
 
 const styles = StyleSheet.create({
   container: {
@@ -8,8 +8,20 @@ const styles = StyleSheet.create({
   },
 })
 
-export const Entry = ({ children }: { children: ReactNode }) => (
-  <View style={styles.container} wrap={false}>
+export const Entry = ({
+  children,
+  style = {},
+}: {
+  children: ReactNode
+  style?: Styles[string]
+}) => (
+  <View
+    style={{
+      ...styles.container,
+      ...style,
+    }}
+    wrap={false}
+  >
     {children}
   </View>
 )

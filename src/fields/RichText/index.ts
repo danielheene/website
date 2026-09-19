@@ -28,6 +28,7 @@ import {
 import { cn } from 'tailwind-variants'
 
 import { IconPickerFeature } from '@/fields/Icon/lexical/feature.server'
+import { linkFeatureFields } from '@/fields/Link'
 import { BlockSlug } from '@/types/blocks'
 
 const defaultAdminConfig: LexicalFieldAdminProps = {
@@ -109,18 +110,19 @@ const inlineFeatures = [
 
 const captionFeatures = [
   ...inlineFeatures,
-  // Uses lexical's stock link fields (`linkType: 'internal' | 'custom'`,
-  // `doc`, `url`, `newTab`) rather than swapping in `LinkField`'s fields —
-  // the editor already has the link's visible text selected before opening
-  // the popup, so a separate `label` field would just duplicate it, and an
-  // icon belongs in the selection itself (an inline `IconNode` can be part
-  // of what gets linked) rather than a picker field. `LinkField` deliberately
-  // mirrors these same field names/values for the contexts that do need them
-  // (`LinkGroupBlock`, Footer nav, and other group/array fields with no
-  // selected editor text to derive a label from) — see its module doc
-  // comment — so `resolveLinkTarget`/`CMSLink`/the RichText `link` converter
-  // read both shapes through the same logic.
-  LinkFeature(),
+  // `linkFeatureFields` mirrors `LinkField`'s own rows (`linkType`/`newTab`,
+  // `doc`/`url`, a `text` label) minus the icon fields — an inline `IconNode`
+  // already covers icons inside the editor's own selected text, so
+  // `iconBefore`/`iconAfter`/`iconOnly` would just be dead controls here.
+  // Sharing the row-building logic keeps this drawer looking like the same
+  // control as a standalone `LinkField` (`LinkGroupBlock`, Footer nav, and
+  // other group/array fields with no selected editor text) rather than two
+  // link editors that quietly drift apart — see `fields/Link/index.ts`'s
+  // module doc comment — and lets `resolveLinkTarget`/`CMSLink`/the RichText
+  // `link` converter read both shapes through the same logic.
+  LinkFeature({
+    fields: () => linkFeatureFields,
+  }),
 ]
 
 const markdownFeatures = [
@@ -185,12 +187,17 @@ export const RichTextField = ({
           String.raw`[&_.rich-text-lexical\_\_label-row]:border-none`,
           String.raw`[&_.rich-text-lexical\_\_wrap_.fixed-toolbar]:top-0`,
           // String.raw`[&_.rich-text-lexical\_\_wrap_.fixed-toolbar]:border-[0_0_1px_0]`,
+          String.raw`[&_.rich-text-lexical\_\_wrap]:h-full`,
+          String.raw`[&_.rich-text-lexical\_\_wrap]:flex`,
+          String.raw`[&_.rich-text-lexical\_\_wrap]:flex-col`,
           String.raw`[&_.rich-text-lexical\_\_wrap_.fixed-toolbar]:min-h-auto`,
           String.raw`[&_.rich-text-lexical\_\_wrap_.fixed-toolbar]:p-0.5`,
           String.raw`[&_.rich-text-lexical\_\_wrap_.toolbar-popup\_\_button-alignJustify]:hidden`,
           String.raw`[&_.rich-text-lexical\_\_wrap_.editor-container]:border`,
           String.raw`[&_.rich-text-lexical\_\_wrap_.editor-container]:border-(--theme-elevation-150)`,
           String.raw`[&_.rich-text-lexical\_\_wrap_.editor-container]:font-sans`,
+          String.raw`[&_.rich-text-lexical\_\_wrap_.editor-container]:h-full`,
+          String.raw`[&_.rich-text-lexical\_\_wrap_.editor-container]:grow`,
           String.raw`[&_.rich-text-lexical\_\_wrap_.ContentEditable\_\_root]:p-2.5`,
           String.raw`[&_.rich-text-lexical\_\_wrap_.draggable-block-menu]:left-[30px]`,
 

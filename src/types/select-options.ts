@@ -47,6 +47,7 @@ export const LANGUAGE_PROFICIENCY = {
   B2: 'b2',
   C1: 'c1',
   C2: 'c2',
+  NATIVE: 'native',
 } as const
 
 /**

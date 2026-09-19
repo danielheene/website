@@ -38,8 +38,7 @@ export const ResumeDownloadButton = ({
         href={url}
         download={fileName}
         onClick={() =>
-          track('resume-download', {
-            locale,
+          track(`resume-download-${locale}`, {
             slug,
             fileName,
           })

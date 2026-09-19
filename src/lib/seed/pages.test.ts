@@ -71,18 +71,18 @@ describe('seedPages', () => {
     expect(create).toHaveBeenCalledTimes(3 + imageCreates.length)
   })
 
-  it('gives a shader-backed hero the correct background shape when the shader branch is chosen', async () => {
+  it('gives a shader-backed hero the correct slides shape when the shader branch is chosen', async () => {
     find.mockResolvedValue({
       docs: [],
     })
-    const heroBackgrounds: unknown[] = []
+    const heroSlides: unknown[][] = []
     create.mockImplementation(async ({ collection, data }) => {
       if (collection === 'images') {
         return {
           id: 'image-1',
         }
       }
-      heroBackgrounds.push(data.hero.background)
+      heroSlides.push(data.hero.slides)
       return {
         id: 'page-1',
       }
@@ -93,52 +93,49 @@ describe('seedPages', () => {
     // branch, without mocking the randomness source directly.
     await seedPages(makePayload(), 20)
 
-    const shaderBackgrounds = heroBackgrounds.filter(
-      (
-        background,
-      ): background is {
-        backgroundType: string
-        shader: string
-      } =>
+    const shaderSlides = heroSlides.filter(
+      ([slide]) =>
         (
-          background as {
-            backgroundType: string
+          slide as {
+            slideType: string
           }
-        ).backgroundType === 'shader',
+        ).slideType === 'shader',
     )
-    const mediaBackgrounds = heroBackgrounds.filter(
-      (background) =>
+    const imageSlides = heroSlides.filter(
+      ([slide]) =>
         (
-          background as {
-            backgroundType: string
+          slide as {
+            slideType: string
           }
-        ).backgroundType === 'media',
+        ).slideType === 'image',
     )
 
-    expect(shaderBackgrounds.length).toBeGreaterThan(0)
-    expect(mediaBackgrounds.length).toBeGreaterThan(0)
+    expect(shaderSlides.length).toBeGreaterThan(0)
+    expect(imageSlides.length).toBeGreaterThan(0)
 
-    for (const background of shaderBackgrounds) {
-      expect(background).toEqual({
-        backgroundType: 'shader',
-        shader: expect.any(String),
-      })
+    for (const slides of shaderSlides) {
+      expect(slides).toEqual([
+        {
+          slideType: 'shader',
+          shader: expect.any(String),
+        },
+      ])
     }
-    for (const background of mediaBackgrounds) {
-      expect(background).toEqual({
-        backgroundType: 'media',
-        media: [
-          {
+    for (const slides of imageSlides) {
+      expect(slides).toEqual([
+        {
+          slideType: 'image',
+          media: {
             relationTo: 'images',
             value: 'image-1',
           },
-        ],
-      })
+        },
+      ])
     }
 
     // Image creation is skipped entirely for shader-backed pages.
     const imageCreates = create.mock.calls.filter(([args]) => args.collection === 'images')
-    expect(imageCreates).toHaveLength(mediaBackgrounds.length)
+    expect(imageCreates).toHaveLength(imageSlides.length)
   })
 
   it('skips a slug that already exists instead of creating a duplicate', async () => {
@@ -267,14 +264,15 @@ describe('cleanPages', () => {
             {
               id: 'page-1',
               hero: {
-                background: {
-                  media: [
-                    {
+                slides: [
+                  {
+                    slideType: 'image',
+                    media: {
                       relationTo: 'images',
                       value: 'image-1',
                     },
-                  ],
-                },
+                  },
+                ],
               },
             },
           ],
@@ -343,14 +341,15 @@ describe('cleanPages', () => {
             {
               id: 'page-1',
               hero: {
-                background: {
-                  media: [
-                    {
+                slides: [
+                  {
+                    slideType: 'image',
+                    media: {
                       relationTo: 'images',
                       value: 'image-1',
                     },
-                  ],
-                },
+                  },
+                ],
               },
             },
           ],
@@ -389,9 +388,7 @@ describe('cleanPages', () => {
             {
               id: 'page-1',
               hero: {
-                background: {
-                  media: [],
-                },
+                slides: [],
               },
             },
           ],

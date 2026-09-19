@@ -1,8 +1,26 @@
-import type { FieldHook, RowField, UIField } from 'payload'
+import type { FieldHook, RichTextField, RowField, UIField } from 'payload'
 
 import { describe, expect, it, vi } from 'vitest'
 
 import { enqueueAutoTranslate } from '@/fields/BilingualRichText/hooks/enqueueAutoTranslate'
+
+const paragraph = (text: string) => ({
+  root: {
+    children: text
+      ? [
+          {
+            type: 'paragraph',
+            children: [
+              {
+                type: 'text',
+                text,
+              },
+            ],
+          },
+        ]
+      : [],
+  },
+})
 
 // The real `lexicalEditor()` (from `@payloadcms/richtext-lexical`) returns an
 // opaque async resolver function that can't be introspected without a full
@@ -68,7 +86,11 @@ describe('BilingualRichTextField', () => {
     }
   })
 
-  it('marks both language fields required when required is true', () => {
+  it('does not set required on the individual language fields when required is true', () => {
+    // A one-sided save is exactly what enqueueAutoTranslate exists to
+    // backfill — Payload's own per-field `required` would reject it before
+    // that hook ever runs, so `required` is enforced via `validate` instead
+    // (see the tests below) rather than the built-in flag.
     const field = BilingualRichTextField({
       name: 'task',
       required: true,
@@ -81,14 +103,92 @@ describe('BilingualRichTextField', () => {
           required?: boolean
         }
       ).required,
-    ).toBe(true)
+    ).toBeUndefined()
     expect(
       (
         inner[2] as {
           required?: boolean
         }
       ).required,
-    ).toBe(true)
+    ).toBeUndefined()
+  })
+
+  it('does not attach a validate function to either field when required is false (the default)', () => {
+    const field = BilingualRichTextField({
+      name: 'task',
+    })
+    const inner = innerRowFields(field)
+
+    expect((inner[0] as RichTextField).validate).toBeUndefined()
+    expect((inner[2] as RichTextField).validate).toBeUndefined()
+  })
+
+  describe('required: true — at-least-one-language validate', () => {
+    const field = BilingualRichTextField({
+      name: 'task',
+      required: true,
+    })
+    const inner = innerRowFields(field)
+    const enValidate = (inner[0] as RichTextField).validate
+    const deValidate = (inner[2] as RichTextField).validate
+
+    // biome-ignore lint/suspicious/noExplicitAny: minimal stand-in for ValidateOptions — only siblingData is read
+    const withSiblingData = (siblingData: Record<string, unknown>): any => ({
+      siblingData,
+    })
+
+    it('passes when this field has content, regardless of the other language', () => {
+      expect(
+        enValidate?.(
+          paragraph('Hello'),
+          withSiblingData({
+            de: paragraph(''),
+          }),
+        ),
+      ).toBe(true)
+    })
+
+    it('passes when the other language has content and this field is empty', () => {
+      expect(
+        enValidate?.(
+          paragraph(''),
+          withSiblingData({
+            de: paragraph('Hallo'),
+          }),
+        ),
+      ).toBe(true)
+    })
+
+    it('fails when both languages are empty', () => {
+      const result = enValidate?.(
+        paragraph(''),
+        withSiblingData({
+          de: paragraph(''),
+        }),
+      )
+
+      expect(result).not.toBe(true)
+      expect(typeof result).toBe('string')
+    })
+
+    it('reads the correct sibling field for German (the other direction)', () => {
+      expect(
+        deValidate?.(
+          paragraph(''),
+          withSiblingData({
+            en: paragraph('Hello'),
+          }),
+        ),
+      ).toBe(true)
+
+      const result = deValidate?.(
+        paragraph(''),
+        withSiblingData({
+          en: paragraph(''),
+        }),
+      )
+      expect(result).not.toBe(true)
+    })
   })
 
   it('points the translate-controls ui field at TranslateControls and forwards layout as a clientProp', () => {

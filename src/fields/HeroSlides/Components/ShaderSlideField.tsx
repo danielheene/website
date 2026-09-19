@@ -16,14 +16,14 @@ const ShaderPreviewCanvas = dynamic(() => import('./ShaderPreviewCanvas'), {
 })
 
 /**
- * Payload admin control for `HeroBackgroundField`'s `shader` sub-field.
- * Shows the current selection (label + a small live preview) and a button
- * to open the full picker drawer.
+ * Admin control for `HeroSlidesField`'s per-row `shader` sub-field. Shows the
+ * current selection (label + a small live preview) and a button to open the
+ * full picker drawer.
  *
- * Structurally modeled on `src/fields/Icon/Field.tsx` — `useField` for the
- * value, `useModal`/`useDrawerSlug` to open a `Drawer`, pick-and-close.
+ * `path` is already row-qualified by Payload (e.g. `slides.0.shader`), so
+ * `useField` here reads/writes only this row's value.
  */
-const HeroBackgroundShaderField = ({ path, field, readOnly }: SelectFieldClientProps) => {
+const HeroSlideShaderField = ({ path, field, readOnly }: SelectFieldClientProps) => {
   const { value, setValue, showError, errorMessage } = useField<ShaderPresetKey>({
     path,
   })
@@ -40,8 +40,8 @@ const HeroBackgroundShaderField = ({ path, field, readOnly }: SelectFieldClientP
         {selectedPreset ? (
           <div className="h-16 w-24 overflow-hidden rounded-md border border-input">
             <ShaderPreviewCanvas
-              entry={SHADER_COMPONENTS[selectedPreset.key]}
               className="h-full w-full"
+              entry={SHADER_COMPONENTS[selectedPreset.key]}
             />
           </div>
         ) : (
@@ -51,11 +51,11 @@ const HeroBackgroundShaderField = ({ path, field, readOnly }: SelectFieldClientP
         )}
 
         <Button
-          type="button"
           buttonStyle="secondary"
-          size="small"
           disabled={readOnly}
           onClick={() => openModal(drawerSlug)}
+          size="small"
+          type="button"
         >
           {selectedPreset ? `Change (${selectedPreset.label})` : 'Choose a shader…'}
         </Button>
@@ -63,15 +63,15 @@ const HeroBackgroundShaderField = ({ path, field, readOnly }: SelectFieldClientP
 
       {!readOnly && (
         <ShaderPickerDrawer
+          onSelectAction={(key) => setValue(key)}
           slug={drawerSlug}
           value={value}
-          onSelectAction={(key) => setValue(key)}
         />
       )}
 
-      <FieldError showError={showError} message={errorMessage} path={path} />
+      <FieldError message={errorMessage} path={path} showError={showError} />
     </div>
   )
 }
 
-export default HeroBackgroundShaderField
+export default HeroSlideShaderField

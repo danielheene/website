@@ -10,6 +10,14 @@ import sharp, { type SharpInput } from 'sharp'
  * @param input
  */
 export const fetchAnthropicImageAltText = async (input: SharpInput): Promise<string> => {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    throw new Error('ANTHROPIC_API_KEY is not configured.')
+  }
+
+  const anthropic = createAnthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY,
+  })
+
   const resizedImageBuffer = await sharp(input)
     .autoOrient()
     .resize({
@@ -22,12 +30,12 @@ export const fetchAnthropicImageAltText = async (input: SharpInput): Promise<str
     })
     .toBuffer()
 
-  const anthropic = createAnthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
-  })
-
   const { text } = await generateText({
     model: anthropic('claude-haiku-4-5'),
+    telemetry: {
+      isEnabled: true,
+      functionId: 'fetchAnthropicImageAltText',
+    },
     system: dedent`
       Write a short but meaningful sentence that explains the attached image and helps improve its accessibility by describing the content of the image, adapted for visually impaired people or users of screen readers.
 

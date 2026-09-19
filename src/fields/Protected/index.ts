@@ -34,9 +34,9 @@ export const ProtectedField = ({
       label: 'Protected',
       type: 'checkbox',
       access: {
-        create: () => false,
+        create: () => true,
         read: () => true,
-        update: () => false,
+        update: () => true,
       },
       required: true,
       defaultValue: false,
