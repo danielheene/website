@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import { Logo, LogoColor, LogoVariant } from './Logo'
+import { Logo, LogoColor, LogoVariant } from '@/components/Logo/Logo'
 
 const meta = {
-  title: 'Components/Logo',
+  title: 'Logo',
   component: Logo,
   args: {
     variant: LogoVariant.Inline,

@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import Grainient from './Grainient'
+import Grainient from '@/components/Shaders/Grainient/Grainient'
 
 const meta = {
-  title: 'Shaders/Grainient',
+  title: 'Grainient',
   component: Grainient,
   parameters: {
     // 'padded' avoids 'fullscreen' stretching the decorator to the canvas's full height, which

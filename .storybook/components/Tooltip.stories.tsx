@@ -1,10 +1,10 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import { Button } from '../Button'
-import { Tooltip } from './Tooltip'
+import { Button } from '@/components/Button'
+import { Tooltip } from '@/components/Tooltip/Tooltip'
 
 const meta = {
-  title: 'Components/Tooltip',
+  title: 'Tooltip',
   component: Tooltip,
   args: {
     children: <Button variant="outline">Hover me</Button>,

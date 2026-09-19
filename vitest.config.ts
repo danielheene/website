@@ -1,6 +1,7 @@
 import { createRequire } from 'node:module'
 import path from 'node:path'
 
+import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineConfig } from 'vitest/config'
 
 const require = createRequire(import.meta.url)
@@ -9,8 +10,10 @@ const require = createRequire(import.meta.url)
 const packageDir = (name: string) => path.dirname(require.resolve(`${name}/package.json`))
 
 export default defineConfig({
+  plugins: [
+    tsconfigPaths(),
+  ],
   resolve: {
-    tsconfigPaths: true,
     alias: {
       // tsconfig maps `react` to @types/react for editor tooling; that path
       // has no runtime entry, so component tests must resolve the real package

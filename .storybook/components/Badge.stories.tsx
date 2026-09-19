@@ -1,18 +1,18 @@
 import { Fragment } from 'react'
 
-import type { Meta, StoryObj } from '@storybook/nextjs'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import { Separator } from '../Separator'
-import { Badge, BadgeProps, badgeStyles } from './Badge'
+import { Badge, BadgeProps, badgeStyles } from '@/components/Badge/Badge'
+import { Separator } from '@/components/Separator'
 
 const meta = {
-  title: 'Components/Badge',
+  title: 'Badge',
   component: Badge,
   args: {
     color: badgeStyles.defaultVariants.color,
     style: badgeStyles.defaultVariants.style,
     size: badgeStyles.defaultVariants.size,
-    children: 'Badge',
+    children: 'Badge Label',
   },
   argTypes: {
     color: {

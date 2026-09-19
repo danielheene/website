@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import { Switch } from './Switch'
+import { Switch } from '@/components/Switch/Switch'
 
 const meta = {
-  title: 'Components/Switch',
+  title: 'Switch',
   component: Switch,
   args: {
     checked: false,

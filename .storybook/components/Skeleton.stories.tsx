@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import { Skeleton } from './Skeleton'
+import { Skeleton } from '@/components/Skeleton/Skeleton'
 
 const meta = {
-  title: 'Components/Skeleton',
+  title: 'Skeleton',
   component: Skeleton,
   args: {
     noPulse: false,

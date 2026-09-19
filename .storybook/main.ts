@@ -1,30 +1,40 @@
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
-
-import { defineMain } from '@storybook/nextjs/node'
-import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin'
-
-const dirName = dirname(fileURLToPath(import.meta.url))
+import { defineMain } from '@storybook/nextjs-vite/node'
 
 export default defineMain({
   framework: {
-    name: '@storybook/nextjs',
+    name: '@storybook/nextjs-vite',
     options: {
       nextConfigPath: '../next.config.ts',
-      builder: {
-        useSWC: true,
-      },
     },
   },
   core: {
     disableTelemetry: true,
     disableWhatsNewNotifications: true,
+    allowedHosts: [
+      'localhost',
+      '127.0.0.1',
+      'storybook.heene.io',
+      'storybook.heene.dev',
+      'storybook.heene.review',
+      'storybook.heene.nexus',
+    ],
   },
   stories: [
-    // Presentational components and their stories all live under src/ now that
-    // the repo is a single package.
-    '../src/**/*.mdx',
-    '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)',
+    {
+      directory: './foundations',
+      titlePrefix: 'Foundations',
+      files: '*.mdx',
+    },
+    {
+      directory: './components',
+      titlePrefix: 'UI Components',
+      files: '*.stories.tsx',
+    },
+    {
+      directory: './shaders',
+      titlePrefix: 'Shaders',
+      files: '*.@(mdx|tsx)',
+    },
   ],
   staticDirs: [
     '../public',
@@ -50,7 +60,7 @@ export default defineMain({
     '@storybook/addon-docs',
     '@storybook/addon-onboarding',
     '@storybook/addon-themes',
-    '@storybook/addon-webpack5-compiler-swc',
+    '@storybook/addon-mcp',
   ],
   typescript: {
     reactDocgen: 'react-docgen-typescript',
@@ -58,16 +68,5 @@ export default defineMain({
       shouldExtractLiteralValuesFromEnum: true,
       propFilter: (prop) => !!prop.parent?.fileName?.includes('node_modules'),
     },
-  },
-  webpackFinal: async (config) => {
-    config.resolve = config.resolve ?? {}
-    config.resolve.plugins = [
-      ...(config.resolve.plugins ?? []),
-      new TsconfigPathsPlugin({
-        configFile: resolve(dirName, '../tsconfig.json'),
-      }),
-    ]
-
-    return config
   },
 })

@@ -1,9 +1,9 @@
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import { Banner, BannerVariant } from './Banner'
+import { Banner, BannerVariant } from '@/components/Banner/Banner'
 
 const meta = {
-  title: 'Components/Banner',
+  title: 'Banner',
   component: Banner,
   args: {
     children: 'Sit esse deserunt anim incididunt fugiat exercitation adipisicing ullamco amet.',

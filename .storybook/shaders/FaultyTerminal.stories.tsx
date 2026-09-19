@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import FaultyTerminal from './FaultyTerminal'
+import FaultyTerminal from '@/components/Shaders/FaultyTerminal/FaultyTerminal'
 
 // FaultyTerminalProps extends React.HTMLAttributes<HTMLDivElement>, which would otherwise pull
 // hundreds of inherited DOM event-handler props into the auto-generated arg table. Restrict
@@ -27,7 +27,7 @@ const OWN_PROP_NAMES = [
 ]
 
 const meta = {
-  title: 'Shaders/FaultyTerminal',
+  title: 'FaultyTerminal',
   component: FaultyTerminal,
   parameters: {
     controls: {

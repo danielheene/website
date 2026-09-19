@@ -1,11 +1,11 @@
 import { useState } from 'react'
 
-import type { Meta, StoryObj } from '@storybook/nextjs'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import { ThemeToggleIconButton } from './ThemeToggleIIconButton'
+import { ThemeToggleIconButton } from '@/components/ThemeToggle'
 
 const meta = {
-  title: 'Components/ThemeToggleIconButton',
+  title: 'ThemeToggleIconButton',
   component: ThemeToggleIconButton,
   args: {
     theme: 'light',

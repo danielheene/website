@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import DarkVeil from './DarkVeil'
+import DarkVeil from '@/components/Shaders/DarkVeil/DarkVeil'
 
 const meta = {
-  title: 'Shaders/DarkVeil',
+  title: 'DarkVeil',
   component: DarkVeil,
   parameters: {
     // 'padded' avoids 'fullscreen' stretching the decorator to the canvas's full height, which

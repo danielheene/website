@@ -1,11 +1,15 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import { Button } from '../Button'
-import { Icon } from '../Icon'
-import { ButtonGroup, ButtonGroupSeparator, ButtonGroupText } from './ButtonGroup'
+import { Button } from '@/components/Button'
+import {
+  ButtonGroup,
+  ButtonGroupSeparator,
+  ButtonGroupText,
+} from '@/components/ButtonGroup/ButtonGroup'
+import { Icon } from '@/components/Icon'
 
 const meta = {
-  title: 'Components/ButtonGroup',
+  title: 'ButtonGroup',
   component: ButtonGroup,
   args: {
     orientation: 'horizontal',
