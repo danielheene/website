@@ -1,3 +1,10 @@
+## [1.2.5](https://github.com/danielheene/website/compare/v1.2.4...v1.2.5) (2026-09-19)
+
+
+### Bug Fixes
+
+* **storybook:** drop serve's SPA rewrite mode, breaking iframe routing ([#71](https://github.com/danielheene/website/issues/71)) ([363dafe](https://github.com/danielheene/website/commit/363dafedcef23040a1069ba2de0f33b517ad12ad))
+
 ## [1.2.4](https://github.com/danielheene/website/compare/v1.2.3...v1.2.4) (2026-09-06)
 
 
