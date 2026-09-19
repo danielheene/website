@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import { Headline } from './Headline'
+import { Headline } from '@/components/Headline/Headline'
 
 const meta = {
-  title: 'Components/Headline',
+  title: 'Headline',
   component: Headline,
   args: {
     variant: 'default',

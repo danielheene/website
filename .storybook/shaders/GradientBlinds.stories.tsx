@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import GradientBlinds from './GradientBlinds'
+import GradientBlinds from '@/components/Shaders/GradientBlinds/GradientBlinds'
 
 const meta = {
-  title: 'Shaders/GradientBlinds',
+  title: 'GradientBlinds',
   component: GradientBlinds,
   parameters: {
     // 'padded' avoids 'fullscreen' stretching the decorator to the canvas's full height, which

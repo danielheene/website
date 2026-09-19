@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import { Separator } from './Separator'
+import { Separator } from '@/components/Separator/Separator'
 
 const meta = {
-  title: 'Components/Separator',
+  title: 'Separator',
   component: Separator,
   args: {
     orientation: 'horizontal',
