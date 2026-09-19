@@ -5,7 +5,7 @@ import { ImageMedia } from '@/components/ImageMedia'
 
 import { HeroCarousel } from './HeroCarousel'
 import { ShaderHeroBackground } from './ShaderHeroBackground'
-import { isSafeMediaUrl, toSlideItems } from './toSlideItems'
+import { toSlideItems } from './toSlideItems'
 
 export interface HeroMediaProps {
   /** The whole `hero.slides` array value: `{ slideType, media, shader }[]`. */
@@ -65,25 +65,16 @@ export const HeroMedia = ({
           ) : items[0].kind === 'video' ? (
             // A single video has no successor to blend into, so it loops —
             // mirrors HeroCarousel's `loop={items.length < 2}` for one slide.
-            //
-            // Re-checked at this render sink (toSlideItems already filters
-            // unsafe schemes out of `items`) so the http(s)-only guard sits
-            // directly next to the raw `<video src>` it protects, rather than
-            // relying on a caller several modules away. Renders nothing
-            // rather than falling into the shader branch below, which has no
-            // presetKey for a video item.
-            isSafeMediaUrl(items[0].url) && (
-              <video
-                autoPlay
-                className="h-full w-full object-cover"
-                loop
-                muted
-                playsInline
-                poster={items[0].poster ?? undefined}
-                preload="auto"
-                src={items[0].url}
-              />
-            )
+            <video
+              autoPlay
+              className="h-full w-full object-cover"
+              loop
+              muted
+              playsInline
+              poster={items[0].poster ?? undefined}
+              preload="auto"
+              src={items[0].url}
+            />
           ) : (
             <ShaderHeroBackground
               className="absolute inset-0 h-full w-full"

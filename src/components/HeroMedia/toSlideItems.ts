@@ -42,26 +42,6 @@ type SlideRow = {
 const isSlideRow = (row: unknown): row is SlideRow => typeof row === 'object' && row !== null
 
 /**
- * `media.value.url` is typed as a bare `string` all the way through, but it
- * ultimately reaches a raw `<video src>` in HeroSlide/HeroMedia — nothing
- * upstream stops a `javascript:`/`data:` value from getting there. It's an
- * S3-backed Payload upload field rather than free text, so this should never
- * actually fire, but restricting to http(s) here is the real trust boundary
- * for that sink (mirroring how ImageMedia goes through next/image's own
- * remotePatterns allowlist instead of rendering `url` directly).
- */
-export const isSafeMediaUrl = (url: string): boolean => {
-  try {
-    return [
-      'http:',
-      'https:',
-    ].includes(new URL(url, 'http://localhost').protocol)
-  } catch {
-    return false
-  }
-}
-
-/**
  * Normalizes `HeroSlidesField`'s array value — each row an image, a video, or
  * a shader preset — into a flat list of renderable slides.
  *
@@ -95,7 +75,7 @@ export const toSlideItems = (slides: unknown, fallbackAlt: string): HeroMediaIte
 
     if (isPopulated<'images', MediaImage>(media, CollectionSlug.MediaImages)) {
       const { id, url, alt, blurDataURL } = media.value
-      if (!url || !isSafeMediaUrl(url)) return []
+      if (!url) return []
 
       return [
         {
@@ -110,7 +90,7 @@ export const toSlideItems = (slides: unknown, fallbackAlt: string): HeroMediaIte
 
     if (isPopulated<'videos', MediaVideo>(media, CollectionSlug.MediaVideos)) {
       const { id, url, thumbnails } = media.value
-      if (!url || !isSafeMediaUrl(url)) return []
+      if (!url) return []
 
       // Videos have no alt of their own; the generated thumbnail doubles as a
       // poster so the slide is not blank before the first frame decodes.
@@ -118,15 +98,13 @@ export const toSlideItems = (slides: unknown, fallbackAlt: string): HeroMediaIte
         (thumbnail) => typeof thumbnail?.value === 'object' && thumbnail.value?.url,
       )?.value
 
-      const posterUrl = typeof poster === 'object' ? poster.url : undefined
-
       return [
         {
           kind: 'video',
           id: id ? String(id) : rowId,
           url,
           alt: fallbackAlt,
-          poster: posterUrl && isSafeMediaUrl(posterUrl) ? posterUrl : undefined,
+          poster: typeof poster === 'object' ? poster.url : undefined,
         },
       ]
     }

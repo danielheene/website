@@ -6,7 +6,6 @@ import { ImageMedia } from '@/components/ImageMedia'
 
 import { ShaderHeroBackground } from './ShaderHeroBackground'
 import type { ShaderPresetKey } from './shaderPresets'
-import { isSafeMediaUrl } from './toSlideItems'
 
 export type HeroMediaItem =
   | {
@@ -137,25 +136,17 @@ export const HeroSlide = ({
           url={item.url}
         />
       ) : item.kind === 'video' ? (
-        // Re-checked at this render sink (toSlideItems already filters
-        // unsafe schemes out of every item) so the http(s)-only guard sits
-        // directly next to the raw `<video src>` it protects, rather than
-        // relying on a caller several modules away. Renders nothing rather
-        // than falling into the shader branch below, which has no
-        // presetKey for a video item.
-        isSafeMediaUrl(item.url) && (
-          <video
-            className="h-full w-full object-cover"
-            controls={false}
-            loop={loop}
-            muted
-            playsInline
-            poster={item.poster ?? undefined}
-            preload={priority ? 'auto' : 'metadata'}
-            ref={videoRef}
-            src={item.url}
-          />
-        )
+        <video
+          className="h-full w-full object-cover"
+          controls={false}
+          loop={loop}
+          muted
+          playsInline
+          poster={item.poster ?? undefined}
+          preload={priority ? 'auto' : 'metadata'}
+          ref={videoRef}
+          src={item.url}
+        />
       ) : (
         <ShaderHeroBackground className="h-full w-full" presetKey={item.presetKey} />
       )}
