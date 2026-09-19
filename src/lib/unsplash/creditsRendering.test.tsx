@@ -5,6 +5,7 @@ import {
   LinkJSXConverter,
 } from '@payloadcms/richtext-lexical/react'
 
+import { JSDOM } from 'jsdom'
 import { describe, expect, it } from 'vitest'
 
 import { buildCreditsValue } from './buildCreditsValue'
@@ -54,6 +55,14 @@ const renderCredits = (value: ReturnType<typeof buildCreditsValue>): string =>
     } as ConverterArgs) as ConverterArgs,
   )
 
+/**
+ * Real HTML parsing rather than a `replace(/<[^>]+>/g, '')` regex — a regex
+ * can't correctly account for every HTML construct (nested/malformed tags,
+ * `>` inside an attribute value, ...), so it's an unreliable way to assert
+ * on visible text even in a test with fully controlled input.
+ */
+const visibleText = (html: string): string => new JSDOM(html).window.document.body.textContent
+
 describe('credits value rendering', () => {
   it('renders both credits as anchors with visible text and the UTM-tagged hrefs', () => {
     const html = renderCredits(
@@ -72,7 +81,7 @@ describe('credits value rendering', () => {
 
     // No empty anchors: the exact failure mode `children: []` produced.
     expect(html).not.toMatch(/<a\b[^>]*><\/a>/)
-    expect(html.replace(/<[^>]+>/g, '')).toBe('Jane Doe [Unsplash]')
+    expect(visibleText(html)).toBe('Jane Doe [Unsplash]')
   })
 
   it('is a real render boundary: emptying the link children produces empty anchors', () => {
@@ -94,6 +103,6 @@ describe('credits value rendering', () => {
       if (node.type === 'link') node.children = []
     }
 
-    expect(renderCredits(value).replace(/<[^>]+>/g, '')).toBe(' []')
+    expect(visibleText(renderCredits(value))).toBe(' []')
   })
 })
