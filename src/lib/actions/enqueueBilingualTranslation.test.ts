@@ -17,6 +17,10 @@ vi.mock('next/server', () => ({
     ),
 }))
 
+vi.mock('next/headers', () => ({
+  headers: vi.fn(async () => new Headers()),
+}))
+
 import { QueueSlug, TaskSlug } from '@/types/jobs-queue'
 
 import { enqueueBilingualTranslation } from './enqueueBilingualTranslation'
@@ -26,6 +30,11 @@ const queueMock = vi.fn(async () => ({
 }))
 const runByIDMock = vi.fn(async () => ({}))
 const loggerErrorMock = vi.fn()
+const authMock = vi.fn(async () => ({
+  user: {
+    id: 'user-1',
+  },
+}))
 
 const baseArgs = {
   collectionSlug: 'resume-jobs',
@@ -45,6 +54,12 @@ beforeEach(() => {
   runByIDMock.mockClear()
   loggerErrorMock.mockClear()
   afterMock.mockClear()
+  authMock.mockClear()
+  authMock.mockResolvedValue({
+    user: {
+      id: 'user-1',
+    },
+  } as never)
 
   vi.mocked(getPayload).mockResolvedValue({
     jobs: {
@@ -54,6 +69,7 @@ beforeEach(() => {
     logger: {
       error: loggerErrorMock,
     },
+    auth: authMock,
   } as never)
 })
 
@@ -109,5 +125,16 @@ describe('enqueueBilingualTranslation', () => {
         }),
       }),
     )
+  })
+
+  it('rejects without queuing when there is no signed-in user', async () => {
+    authMock.mockResolvedValueOnce({
+      user: null,
+    } as never)
+
+    await expect(enqueueBilingualTranslation(baseArgs)).rejects.toThrow(
+      'You must be signed in to translate content.',
+    )
+    expect(queueMock).not.toHaveBeenCalled()
   })
 })
