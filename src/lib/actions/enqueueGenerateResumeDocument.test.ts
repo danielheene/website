@@ -51,13 +51,17 @@ const find = vi.fn(async () => ({
   docs: [] as unknown[],
 }))
 const findGlobal = vi.fn(async () => SETTINGS)
+const count = vi.fn(async () => ({
+  totalDocs: 0,
+}))
 const runByID = vi.fn(async () => ({}))
 const loggerError = vi.fn()
 
 /**
  * `getPayload` is stubbed globally in vitest.setup.ts with a fixed shape; this
  * module needs `jobs.queue`/`jobs.runByID` and per-test control over
- * `find`/`findGlobal`.
+ * `find`/`findGlobal`/`count` (the last used by generateResumeDocumentCustomId
+ * to check for slug collisions).
  */
 beforeEach(() => {
   queue.mockClear()
@@ -67,6 +71,10 @@ beforeEach(() => {
   })
   findGlobal.mockClear()
   findGlobal.mockResolvedValue(SETTINGS)
+  count.mockClear()
+  count.mockResolvedValue({
+    totalDocs: 0,
+  })
   runByID.mockClear()
   loggerError.mockClear()
   afterMock.mockClear()
@@ -74,6 +82,7 @@ beforeEach(() => {
   vi.mocked(getPayload).mockResolvedValue({
     find,
     findGlobal,
+    count,
     jobs: {
       queue,
       runByID,
@@ -124,7 +133,7 @@ describe('enqueueGenerateResumeDocument', () => {
 
     const [first, second] = queue.mock.calls.map((call) => call[0].input.customId)
 
-    expect(first).toHaveLength(8)
+    expect(first).toHaveLength(10)
     expect(second).not.toBe(first)
   })
 

@@ -97,7 +97,7 @@ describe('buildContentCaptionValue', () => {
     const [contentRun, captionRun] = paragraph.props.children
 
     expect(contentRun.props.style).toEqual({
-      fontWeight: 'bold',
+      fontWeight: '500',
     })
     expect(contentRun.props.children).toBe('TypeScript')
     expect(captionRun).toBe(' - Advanced')
