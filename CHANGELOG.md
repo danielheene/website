@@ -1,3 +1,10 @@
+## [1.2.6](https://github.com/danielheene/website/compare/v1.2.5...v1.2.6) (2026-09-19)
+
+
+### Bug Fixes
+
+* **bilingual:** require a signed-in user in enqueueBilingualTranslation ([#74](https://github.com/danielheene/website/issues/74)) ([b06aba0](https://github.com/danielheene/website/commit/b06aba0642791c30e1064a4ac2039939b30a91c5))
+
 ## [1.2.5](https://github.com/danielheene/website/compare/v1.2.4...v1.2.5) (2026-09-19)
 
 
