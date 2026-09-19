@@ -152,14 +152,16 @@ describe('HeroSlidesSidebarEditor', () => {
     setBackgroundProcessingMock.mockClear()
   })
 
-  it('shows an empty state and the add menu when there are no slides yet', () => {
+  it('shows a select button (not plain empty text) when there is no slide yet', () => {
     render(<HeroSlidesSidebarEditor {...fieldProps} />)
 
-    expect(screen.getByText('No hero slides yet')).toBeInTheDocument()
+    expect(screen.getByText('Select Hero BG')).toBeInTheDocument()
     expect(screen.getByTestId('add-slide-menu-hero.slides-add')).toBeInTheDocument()
+    expect(screen.queryByText('No hero slide yet')).not.toBeInTheDocument()
+    expect(screen.queryByText('Empty')).not.toBeInTheDocument()
   })
 
-  it('hides prev/next and dots for a singleton, but still shows Remove/Replace', () => {
+  it('never renders prev/next/dots — this variant is always exactly one slide', () => {
     rows = [
       {
         id: 'row-0',
@@ -183,17 +185,13 @@ describe('HeroSlidesSidebarEditor', () => {
 
     expect(screen.queryByLabelText('Previous slide')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Next slide')).not.toBeInTheDocument()
-    expect(screen.getByLabelText('Remove slide')).toBeInTheDocument()
-    expect(screen.getByLabelText('Replace slide')).toBeInTheDocument()
+    expect(screen.queryByLabelText(/Go to slide/)).not.toBeInTheDocument()
   })
 
-  it('shows prev/next + dots for 2+ slides and steps between them', () => {
+  it('shows the slide preview, and Remove/Replace, once a slide exists', () => {
     rows = [
       {
         id: 'row-0',
-      },
-      {
-        id: 'row-1',
       },
     ]
     setFormFields({
@@ -208,41 +206,26 @@ describe('HeroSlidesSidebarEditor', () => {
           },
         },
       },
-      'hero.slides.1.slideType': {
-        value: 'image',
-      },
-      'hero.slides.1.media': {
-        value: {
-          relationTo: 'images',
-          value: {
-            url: 'https://example.com/b.webp',
-          },
-        },
-      },
     })
 
     const { container } = render(<HeroSlidesSidebarEditor {...fieldProps} />)
 
     expect(container.querySelector('img')).toHaveAttribute('src', 'https://example.com/a.webp')
 
-    fireEvent.click(screen.getByLabelText('Next slide'))
+    const removeButton = screen.getByLabelText('Remove slide')
+    const replaceButton = screen.getByLabelText('Replace slide')
+    expect(removeButton).toBeInTheDocument()
+    expect(replaceButton).toBeInTheDocument()
 
-    expect(container.querySelector('img')).toHaveAttribute('src', 'https://example.com/b.webp')
-    expect(screen.getByLabelText('Go to slide 2')).toHaveAttribute('aria-current', 'true')
+    // Hover-only toolbar — hidden at rest, matching `SlideThumb`'s convention.
+    const toolbar = removeButton.closest('.group-hover\\:opacity-100')
+    expect(toolbar).toHaveClass('opacity-0')
+
+    // No add menu once the one allowed slide is already filled.
+    expect(screen.queryByTestId('add-slide-menu-hero.slides-add')).not.toBeInTheDocument()
   })
 
-  it('appends a new row via addFieldRow when the add menu selects an image', () => {
-    rows = [
-      {
-        id: 'row-0',
-      },
-    ]
-    setFormFields({
-      'hero.slides.0.slideType': {
-        value: 'image',
-      },
-    })
-
+  it('inserts the first row (at index 0) via addFieldRow when the add menu selects an image', () => {
     render(<HeroSlidesSidebarEditor {...fieldProps} />)
 
     fireEvent.click(
@@ -255,7 +238,7 @@ describe('HeroSlidesSidebarEditor', () => {
       expect.objectContaining({
         path: 'hero.slides',
         schemaPath: 'hero.slides',
-        rowIndex: 1,
+        rowIndex: 0,
         subFieldState: expect.objectContaining({
           media: expect.objectContaining({
             value: {
@@ -268,27 +251,20 @@ describe('HeroSlidesSidebarEditor', () => {
     )
   })
 
-  it('replaces the active slide via replaceFieldRow when the replace menu selects an image', () => {
+  it('replaces row 0 via replaceFieldRow when the replace menu selects an image', () => {
     rows = [
       {
         id: 'row-0',
-      },
-      {
-        id: 'row-1',
       },
     ]
     setFormFields({
       'hero.slides.0.slideType': {
         value: 'image',
       },
-      'hero.slides.1.slideType': {
-        value: 'image',
-      },
     })
 
     render(<HeroSlidesSidebarEditor {...fieldProps} />)
 
-    fireEvent.click(screen.getByLabelText('Next slide'))
     fireEvent.click(
       screen.getByRole('button', {
         name: 'Select Image (hero.slides-replace)',
@@ -299,7 +275,7 @@ describe('HeroSlidesSidebarEditor', () => {
       expect.objectContaining({
         path: 'hero.slides',
         schemaPath: 'hero.slides',
-        rowIndex: 1,
+        rowIndex: 0,
         subFieldState: expect.objectContaining({
           media: expect.objectContaining({
             value: {
@@ -312,32 +288,25 @@ describe('HeroSlidesSidebarEditor', () => {
     )
   })
 
-  it('removes the active slide via removeFieldRow when Remove is clicked', () => {
+  it('removes row 0 via removeFieldRow when Remove is clicked', () => {
     rows = [
       {
         id: 'row-0',
-      },
-      {
-        id: 'row-1',
       },
     ]
     setFormFields({
       'hero.slides.0.slideType': {
         value: 'image',
       },
-      'hero.slides.1.slideType': {
-        value: 'image',
-      },
     })
 
     render(<HeroSlidesSidebarEditor {...fieldProps} />)
 
-    fireEvent.click(screen.getByLabelText('Next slide'))
     fireEvent.click(screen.getByLabelText('Remove slide'))
 
     expect(removeFieldRowMock).toHaveBeenCalledWith({
       path: 'hero.slides',
-      rowIndex: 1,
+      rowIndex: 0,
     })
   })
 })

@@ -44,6 +44,41 @@ describe('SelectMediaDrawer', () => {
     )
   })
 
+  it('scopes the fetch to uploaded assets, excluding machine-generated ones', () => {
+    usePayloadAPIMock.mockReturnValue([
+      {
+        data: {
+          docs: [],
+        },
+        isLoading: false,
+        isError: false,
+      },
+    ])
+
+    render(<SelectMediaDrawer kind="image" onSelectAction={vi.fn()} slug="select-image" />)
+
+    expect(usePayloadAPIMock).toHaveBeenCalledWith(
+      '/api/images',
+      expect.objectContaining({
+        initialParams: expect.objectContaining({
+          where: {
+            generatorFlags: {
+              not_in: expect.arrayContaining([
+                'thumbnail',
+                'resume-asset',
+              ]),
+            },
+          },
+        }),
+      }),
+    )
+
+    const [, { initialParams }] = usePayloadAPIMock.mock.calls[0]
+    // `unsplash-import` must stay outside the exclusion list — imported
+    // photos are meant to show up here like any hand-uploaded image.
+    expect(initialParams.where.generatorFlags.not_in).not.toContain('unsplash-import')
+  })
+
   it('fetches the videos collection with a depth of 1 (needed to resolve the poster thumbnail)', () => {
     usePayloadAPIMock.mockReturnValue([
       {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useCallback, useRef } from 'react'
 import { Button, Popup, PopupList, useDrawerSlug, useModal } from '@payloadcms/ui'
 
 import type { ShaderPresetKey } from '@/components/HeroMedia/shaderPresets'
@@ -68,6 +68,26 @@ export const AddSlideMenu = ({
   const imageInputRef = useRef<HTMLInputElement>(null)
   const videoInputRef = useRef<HTMLInputElement>(null)
 
+  // Payload's `Popup` re-derives its internal `setActive` callback from
+  // `onToggleOpen`/`onToggleClose` every render, and its own `forceOpen`
+  // effect depends on that callback's identity — so passing new inline
+  // closures here on every render re-triggers that effect every render,
+  // which sets state, which re-renders, forever (only observable once a
+  // caller actually passes `open`, since `forceOpen`'s effect is a no-op
+  // otherwise). Must stay referentially stable across renders.
+  const handleToggleClose = useCallback(
+    () => onOpenChange?.(false),
+    [
+      onOpenChange,
+    ],
+  )
+  const handleToggleOpen = useCallback(
+    () => onOpenChange?.(true),
+    [
+      onOpenChange,
+    ],
+  )
+
   return (
     <>
       <Popup
@@ -81,8 +101,8 @@ export const AddSlideMenu = ({
         buttonType="custom"
         forceOpen={open}
         horizontalAlign="left"
-        onToggleClose={() => onOpenChange?.(false)}
-        onToggleOpen={() => onOpenChange?.(true)}
+        onToggleClose={handleToggleClose}
+        onToggleOpen={handleToggleOpen}
         render={({ close }) => (
           <PopupList.ButtonGroup>
             <PopupList.GroupLabel label="Image" />

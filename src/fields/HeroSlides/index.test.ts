@@ -53,6 +53,46 @@ describe('HeroSlidesField', () => {
     expect(field.maxRows).toBe(1)
   })
 
+  it('defaults to the filmstrip editor', () => {
+    const field = HeroSlidesField({
+      name: 'slides',
+    })
+
+    expect(field.admin?.components?.Field).toMatchObject({
+      path: '@/fields/HeroSlides/Components/FilmstripEditor',
+    })
+  })
+
+  it('uses the sidebar editor when editorVariant is sidebar', () => {
+    const field = HeroSlidesField({
+      name: 'slides',
+      editorVariant: 'sidebar',
+    })
+
+    expect(field.admin?.components?.Field).toMatchObject({
+      path: '@/fields/HeroSlides/Components/HeroSlidesSidebarEditor',
+    })
+  })
+
+  it("forces maxRows to 1 for editorVariant: 'sidebar', regardless of what's passed", () => {
+    const field = HeroSlidesField({
+      name: 'slides',
+      editorVariant: 'sidebar',
+      maxRows: 5,
+    })
+
+    expect(field.maxRows).toBe(1)
+  })
+
+  it("leaves maxRows unbounded for editorVariant: 'filmstrip' when not explicitly set", () => {
+    const field = HeroSlidesField({
+      name: 'slides',
+      editorVariant: 'filmstrip',
+    })
+
+    expect(field.maxRows).toBeUndefined()
+  })
+
   it('registers the custom RowLabel component', () => {
     const field = HeroSlidesField({
       name: 'slides',

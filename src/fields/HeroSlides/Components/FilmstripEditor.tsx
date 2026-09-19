@@ -1,10 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { ArrayFieldClientProps } from 'payload'
 
 import useEmblaCarousel from 'embla-carousel-react'
 
+import { Button } from '@/components/Button'
+import { Icon } from '@/components/Icon'
 import type { UnsplashSearchResult } from '@/lib/unsplash/types'
 
 import { AddSlideMenu } from './AddSlideMenu'
@@ -30,6 +32,7 @@ export const FilmstripEditor = (props: ArrayFieldClientProps) => {
   const {
     path,
     rows,
+    maxRows,
     removeRow,
     moveRow,
     importingId,
@@ -45,18 +48,39 @@ export const FilmstripEditor = (props: ArrayFieldClientProps) => {
     thumbnailCache,
   } = useHeroSlideFieldEditor(props)
 
-  // The row currently targeted by a "Replace" click — drives the hidden,
-  // controlled `AddSlideMenu` instance shared by every `SlideThumb` (one
-  // instance, retargeted per click, rather than one per row).
-  const [replaceRowIndex, setReplaceRowIndex] = useState<number | null>(null)
-
   const canReorder = rows.length > 1
+  const canAddRow = maxRows === undefined || rows.length < maxRows
 
-  const [emblaRef] = useEmblaCarousel({
+  const [emblaRef, emblaApi] = useEmblaCarousel({
     align: 'start',
     containScroll: 'trimSnaps',
     dragFree: true,
   })
+
+  const [canScrollPrev, setCanScrollPrev] = useState(false)
+  const [canScrollNext, setCanScrollNext] = useState(false)
+
+  const onEmblaSelect = useCallback(() => {
+    if (!emblaApi) return
+    setCanScrollPrev(emblaApi.canScrollPrev())
+    setCanScrollNext(emblaApi.canScrollNext())
+  }, [
+    emblaApi,
+  ])
+
+  useEffect(() => {
+    if (!emblaApi) return
+    onEmblaSelect()
+    emblaApi.on('select', onEmblaSelect)
+    emblaApi.on('reInit', onEmblaSelect)
+    return () => {
+      emblaApi.off('select', onEmblaSelect)
+      emblaApi.off('reInit', onEmblaSelect)
+    }
+  }, [
+    emblaApi,
+    onEmblaSelect,
+  ])
 
   return (
     <div className="flex flex-col gap-3">
@@ -67,8 +91,11 @@ export const FilmstripEditor = (props: ArrayFieldClientProps) => {
               canMoveLeft={rowIndex > 0}
               canMoveRight={rowIndex < rows.length - 1}
               canReorder={canReorder}
+              importingId={importingId}
               isPending={importingId !== null && rowIndex === pendingRowIndex}
               key={row.id}
+              menuId={`${path}.${rowIndex}-replace`}
+              onImportUnsplash={(result) => void importUnsplashPhoto(result.id, rowIndex)}
               onMoveLeft={() => moveRow(rowIndex, rowIndex - 1)}
               onMoveRight={() => moveRow(rowIndex, rowIndex + 1)}
               onRemove={() =>
@@ -76,59 +103,69 @@ export const FilmstripEditor = (props: ArrayFieldClientProps) => {
                   rowIndex,
                 })
               }
-              onReplace={() => setReplaceRowIndex(rowIndex)}
+              onReplaceWithImage={(doc) => replaceWithImage(rowIndex, doc)}
+              onReplaceWithShader={(key) => replaceWithShader(rowIndex, key)}
+              onReplaceWithVideo={(doc) => replaceWithVideo(rowIndex, doc)}
+              onUploadImage={(file) => void uploadFile('image', file, rowIndex)}
+              onUploadVideo={(file) => void uploadFile('video', file, rowIndex)}
               rowPath={`${path}.${rowIndex}`}
               thumbnailCache={thumbnailCache}
             />
           ))}
+
+          {canAddRow && (
+            <div className="flex aspect-video w-[450px] shrink-0 grow-0 basis-[450px] items-center justify-center overflow-hidden rounded-md border border-input bg-black/5">
+              <AddSlideMenu
+                disabled={importingId !== null}
+                importingId={importingId}
+                menuId={`${path}-add`}
+                onSelectImage={(doc) => insertImage(rows.length, doc)}
+                onSelectShader={(key) => insertShader(rows.length, key)}
+                onSelectUnsplash={(result: UnsplashSearchResult) =>
+                  void importUnsplashPhoto(result.id, rows.length)
+                }
+                onSelectVideo={(doc) => insertVideo(rows.length, doc)}
+                onUploadImage={(file) => void uploadFile('image', file, rows.length)}
+                onUploadVideo={(file) => void uploadFile('video', file, rows.length)}
+                renderTrigger={
+                  <Button
+                    disabled={importingId !== null}
+                    size="sm"
+                    startIcon="plus"
+                    type="button"
+                    variant="secondary"
+                  >
+                    Select Hero BG
+                  </Button>
+                }
+              />
+            </div>
+          )}
         </div>
       </div>
 
-      <div>
-        <AddSlideMenu
-          importingId={importingId}
-          menuId={`${path}-add`}
-          onSelectImage={(doc) => insertImage(rows.length, doc)}
-          onSelectShader={(key) => insertShader(rows.length, key)}
-          onSelectUnsplash={(result: UnsplashSearchResult) =>
-            void importUnsplashPhoto(result.id, rows.length)
-          }
-          onSelectVideo={(doc) => insertVideo(rows.length, doc)}
-          onUploadImage={(file) => void uploadFile('image', file, rows.length)}
-          onUploadVideo={(file) => void uploadFile('video', file, rows.length)}
-        />
+      <div className="flex items-center gap-1">
+        <Button
+          aria-label="Scroll slides left"
+          disabled={!canScrollPrev}
+          onClick={() => emblaApi?.scrollPrev()}
+          size="icon-sm"
+          type="button"
+          variant="secondary"
+        >
+          <Icon name="arrow-left" />
+        </Button>
+        <Button
+          aria-label="Scroll slides right"
+          disabled={!canScrollNext}
+          onClick={() => emblaApi?.scrollNext()}
+          size="icon-sm"
+          type="button"
+          variant="secondary"
+        >
+          <Icon name="arrow-right" />
+        </Button>
       </div>
-
-      {/* One hidden, controlled `AddSlideMenu` shared by every `SlideThumb`'s
-          "Replace" button — retargeted to the clicked row's index rather
-          than instantiated per row, since only one can be open at a time. */}
-      <AddSlideMenu
-        importingId={importingId}
-        menuId={`${path}-replace`}
-        onOpenChange={(open) => {
-          if (!open) setReplaceRowIndex(null)
-        }}
-        onSelectImage={(doc) => {
-          if (replaceRowIndex !== null) replaceWithImage(replaceRowIndex, doc)
-        }}
-        onSelectShader={(key) => {
-          if (replaceRowIndex !== null) replaceWithShader(replaceRowIndex, key)
-        }}
-        onSelectUnsplash={(result: UnsplashSearchResult) => {
-          if (replaceRowIndex !== null) void importUnsplashPhoto(result.id, replaceRowIndex)
-        }}
-        onSelectVideo={(doc) => {
-          if (replaceRowIndex !== null) replaceWithVideo(replaceRowIndex, doc)
-        }}
-        onUploadImage={(file) => {
-          if (replaceRowIndex !== null) void uploadFile('image', file, replaceRowIndex)
-        }}
-        onUploadVideo={(file) => {
-          if (replaceRowIndex !== null) void uploadFile('video', file, replaceRowIndex)
-        }}
-        open={replaceRowIndex !== null}
-        renderTrigger={<span className="sr-only" />}
-      />
     </div>
   )
 }

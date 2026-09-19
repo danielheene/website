@@ -3,7 +3,7 @@ import type { BaseFilter, Where } from 'payload'
 import { describe, expect, it } from 'vitest'
 
 import { MEDIA_SCOPE_PARAM, MediaScope, resolveMediaScope, scopeMediaAssets } from './baseFilter'
-import { GENERATOR_FLAGS } from './index'
+import { GENERATED_ASSET_FLAGS } from './index'
 
 type BaseFilterArgs = Parameters<BaseFilter>[0]
 
@@ -49,7 +49,7 @@ describe('scopeMediaAssets', () => {
     expect(scopeMediaAssets(withScope())).toEqual({
       generatorFlags: {
         not_in: [
-          ...GENERATOR_FLAGS,
+          ...GENERATED_ASSET_FLAGS,
         ],
       },
     })
@@ -63,7 +63,7 @@ describe('scopeMediaAssets', () => {
     expect(scopeMediaAssets(withScope(MediaScope.Generated))).toEqual({
       generatorFlags: {
         in: [
-          ...GENERATOR_FLAGS,
+          ...GENERATED_ASSET_FLAGS,
         ],
       },
     })
@@ -92,5 +92,16 @@ describe('scopeMediaAssets', () => {
         req: {},
       } as unknown as BaseFilterArgs),
     ).toEqual(scopeMediaAssets(withScope()))
+  })
+
+  it("does not classify 'unsplash-import' as generated — imported photos stay in the Uploaded scope", () => {
+    const generated = scopeMediaAssets(withScope(MediaScope.Generated)) as Where
+    const inList = (
+      generated.generatorFlags as {
+        in: string[]
+      }
+    ).in
+
+    expect(inList).not.toContain('unsplash-import')
   })
 })

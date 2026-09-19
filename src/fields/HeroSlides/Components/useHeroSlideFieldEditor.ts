@@ -1,10 +1,11 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ArrayFieldClientProps, FormState } from 'payload'
-import { useField, useForm } from '@payloadcms/ui'
+import { useField, useForm, useFormFields } from '@payloadcms/ui'
 
 import type { ShaderPresetKey } from '@/components/HeroMedia/shaderPresets'
+import { CollectionSlug } from '@/types/collections'
 import type { MediaImage, MediaVideo } from '@/types/payload'
 
 import type { MediaThumbnailCache } from './resolveSlideThumbnail'
@@ -88,6 +89,7 @@ const shaderSubFieldState = (key: ShaderPresetKey): FormState => ({
 export const useHeroSlideFieldEditor = (props: ArrayFieldClientProps) => {
   const { path: pathFromProps, schemaPath: schemaPathFromProps } = props
   const schemaPath = schemaPathFromProps ?? props.field.name
+  const maxRows = props.field.maxRows
 
   const { path, rows = [] } = useField({
     hasRows: true,
@@ -111,6 +113,51 @@ export const useHeroSlideFieldEditor = (props: ArrayFieldClientProps) => {
       [doc.id]: value,
     }))
   }, [])
+
+  // Rows already on the document when the admin form first loads never went
+  // through `insertImage`/`replaceWithImage` etc. this session, so nothing
+  // ever called `cacheThumbnail` for them — and per the doc comment above,
+  // Payload's own form state gives `media.value` back as a bare id even on
+  // a fresh load, not a populated object. Without this, every image/video
+  // slide shows "Empty" until the user replaces it. This hydrates the cache
+  // once per row id by fetching the referenced doc directly.
+  const mediaByRow = useFormFields(([fields]) =>
+    rows.map((_row, rowIndex) => fields?.[`${path}.${rowIndex}.media`]?.value),
+  )
+  const hydratedIds = useRef(new Set<string>())
+  useEffect(() => {
+    for (const value of mediaByRow) {
+      if (!value || typeof value !== 'object') continue
+      const { relationTo, value: mediaValue } = value as {
+        relationTo?: string
+        value?: unknown
+      }
+      if (typeof mediaValue !== 'string') continue
+      const id = mediaValue
+      if (hydratedIds.current.has(id) || thumbnailCache[id]) continue
+      if (relationTo !== 'images' && relationTo !== 'videos') continue
+
+      hydratedIds.current.add(id)
+      const kind = relationTo === 'images' ? 'image' : 'video'
+      const collection =
+        relationTo === 'images' ? CollectionSlug.MediaImages : CollectionSlug.MediaVideos
+      const depth = kind === 'video' ? 1 : 0
+
+      fetch(`/api/${collection}/${id}?depth=${depth}`)
+        .then((response) => (response.ok ? response.json() : null))
+        .then((doc: (MediaImage | MediaVideo) | null) => {
+          if (doc) cacheThumbnail(doc, kind)
+        })
+        .catch(() => {
+          // A failed hydration just leaves that row showing "Empty" —
+          // Remove/Replace still work, so this isn't fatal.
+        })
+    }
+  }, [
+    mediaByRow,
+    thumbnailCache,
+    cacheThumbnail,
+  ])
 
   const addRow = useCallback(
     (args: { rowIndex: number; subFieldState: FormState }) =>
@@ -246,6 +293,7 @@ export const useHeroSlideFieldEditor = (props: ArrayFieldClientProps) => {
   return {
     path,
     rows,
+    maxRows,
     removeRow,
     moveRow,
     importingId,

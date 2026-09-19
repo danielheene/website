@@ -11,9 +11,10 @@ type Row = {
 }
 
 // A minimal stand-in for the real `ArrayFieldClientProps` this component
-// only reads `path`/`schemaPath`/`field.name` from (via `useField`'s
-// `potentiallyStalePath` and the mutator wrappers) — the rest of the real
-// shape is irrelevant to this component's own logic.
+// reads `path`/`schemaPath`/`field.name`/`field.maxRows` from (via
+// `useField`'s `potentiallyStalePath`, the mutator wrappers, and the
+// `maxRows` cap check) — the rest of the real shape is irrelevant to this
+// component's own logic.
 const fieldProps = {
   field: {
     name: 'slides',
@@ -46,7 +47,21 @@ vi.mock('@payloadcms/ui', () => ({
     replaceFieldRow: replaceFieldRowMock,
     setBackgroundProcessing: setBackgroundProcessingMock,
   }),
-  useFormFields: () => ({}),
+  useFormFields: (
+    selector: (
+      args: [
+        Record<
+          string,
+          {
+            value?: unknown
+          }
+        >,
+      ],
+    ) => unknown,
+  ) =>
+    selector([
+      {},
+    ]),
   toast: {
     error: vi.fn(),
   },
@@ -78,25 +93,28 @@ vi.mock('./SlideThumb', () => ({
     canMoveRight,
     canReorder,
     isPending,
+    menuId,
     onMoveLeft,
     onMoveRight,
     onRemove,
-    onReplace,
+    onReplaceWithImage,
     rowPath,
   }: {
     canMoveLeft: boolean
     canMoveRight: boolean
     canReorder: boolean
     isPending: boolean
+    menuId: string
     onMoveLeft: () => void
     onMoveRight: () => void
     onRemove: () => void
-    onReplace: () => void
+    onReplaceWithImage: (doc: { id: string }) => void
     rowPath: string
   }) => (
     <div data-testid={`slide-thumb-${rowPath}`}>
       <span>{`canReorder:${canReorder}`}</span>
       <span>{`isPending:${isPending}`}</span>
+      <span>{`menuId:${menuId}`}</span>
       <button disabled={!canMoveLeft} onClick={onMoveLeft} type="button">
         Move left
       </button>
@@ -106,7 +124,14 @@ vi.mock('./SlideThumb', () => ({
       <button onClick={onRemove} type="button">
         Remove
       </button>
-      <button onClick={onReplace} type="button">
+      <button
+        onClick={() =>
+          onReplaceWithImage({
+            id: 'img-1',
+          })
+        }
+        type="button"
+      >
         Replace
       </button>
     </div>
@@ -166,6 +191,64 @@ describe('FilmstripEditor', () => {
 
     expect(screen.getByTestId('slide-thumb-hero.slides.0')).toBeInTheDocument()
     expect(screen.getByTestId('slide-thumb-hero.slides.1')).toBeInTheDocument()
+    expect(screen.getByTestId('add-slide-menu-hero.slides-add')).toBeInTheDocument()
+  })
+
+  it('keeps the trailing add menu when unbounded (no maxRows)', () => {
+    rows = [
+      {
+        id: 'row-0',
+      },
+      {
+        id: 'row-1',
+      },
+    ]
+
+    render(<FilmstripEditor {...fieldProps} />)
+
+    expect(screen.getByTestId('add-slide-menu-hero.slides-add')).toBeInTheDocument()
+  })
+
+  it('hides the trailing add menu once maxRows is reached', () => {
+    rows = [
+      {
+        id: 'row-0',
+      },
+      {
+        id: 'row-1',
+      },
+    ]
+    const cappedFieldProps = {
+      ...fieldProps,
+      field: {
+        ...fieldProps.field,
+        maxRows: 2,
+      },
+    } as ArrayFieldClientProps
+
+    render(<FilmstripEditor {...cappedFieldProps} />)
+
+    expect(screen.getByTestId('slide-thumb-hero.slides.0')).toBeInTheDocument()
+    expect(screen.getByTestId('slide-thumb-hero.slides.1')).toBeInTheDocument()
+    expect(screen.queryByTestId('add-slide-menu-hero.slides-add')).not.toBeInTheDocument()
+  })
+
+  it('still shows the trailing add menu below maxRows', () => {
+    rows = [
+      {
+        id: 'row-0',
+      },
+    ]
+    const cappedFieldProps = {
+      ...fieldProps,
+      field: {
+        ...fieldProps.field,
+        maxRows: 2,
+      },
+    } as ArrayFieldClientProps
+
+    render(<FilmstripEditor {...cappedFieldProps} />)
+
     expect(screen.getByTestId('add-slide-menu-hero.slides-add')).toBeInTheDocument()
   })
 
@@ -276,7 +359,7 @@ describe('FilmstripEditor', () => {
     )
   })
 
-  it('opens the shared replace menu targeted at the clicked row, and replaces that row on selection', () => {
+  it("gives each row its own replace menuId, and replaces that row's field when it selects an image", () => {
     rows = [
       {
         id: 'row-0',
@@ -287,21 +370,21 @@ describe('FilmstripEditor', () => {
     ]
     render(<FilmstripEditor {...fieldProps} />)
 
-    // Closed until a "Replace" is clicked.
-    expect(screen.getByTestId('add-slide-menu-hero.slides-replace')).toHaveTextContent('open:false')
+    // Each row's "Replace" is its own `AddSlideMenu` instance, not a single
+    // shared one retargeted by index — a shared instance's hidden trigger
+    // positioned the popup at the bottom of the section instead of at the
+    // clicked row (the bug this per-row wiring fixes).
+    expect(screen.getByTestId('slide-thumb-hero.slides.0')).toHaveTextContent(
+      'menuId:hero.slides.0-replace',
+    )
+    expect(screen.getByTestId('slide-thumb-hero.slides.1')).toHaveTextContent(
+      'menuId:hero.slides.1-replace',
+    )
 
     const secondThumb = screen.getByTestId('slide-thumb-hero.slides.1')
     fireEvent.click(
       within(secondThumb).getByRole('button', {
         name: 'Replace',
-      }),
-    )
-
-    expect(screen.getByTestId('add-slide-menu-hero.slides-replace')).toHaveTextContent('open:true')
-
-    fireEvent.click(
-      screen.getByRole('button', {
-        name: 'Select Image (hero.slides-replace)',
       }),
     )
 

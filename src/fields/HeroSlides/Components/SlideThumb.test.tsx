@@ -84,15 +84,38 @@ vi.mock('next/dynamic', () => ({
   },
 }))
 
+// `SlideThumb` renders its own `AddSlideMenu` instance for "Replace" now
+// (rather than delegating to a caller-owned callback) — this test only
+// exercises `SlideThumb`'s own layout/toolbar logic, not `AddSlideMenu`'s
+// picker internals, so it's stubbed the same way `HeroSlidesSidebarEditor`'s
+// tests stub it: `renderTrigger` passes through unchanged, so the real
+// `aria-label="Replace slide"` button `SlideThumb` supplies is still queryable.
+vi.mock('./AddSlideMenu', () => ({
+  AddSlideMenu: ({
+    menuId,
+    renderTrigger,
+  }: {
+    menuId: string
+    renderTrigger?: React.ReactNode
+  }) => <div data-testid={`add-slide-menu-${menuId}`}>{renderTrigger}</div>,
+}))
+
 const defaultProps = {
   canMoveLeft: true,
   canMoveRight: true,
   canReorder: true,
+  importingId: null,
   isPending: false,
+  menuId: 'hero.slides.0-replace',
+  onImportUnsplash: vi.fn(),
   onMoveLeft: vi.fn(),
   onMoveRight: vi.fn(),
   onRemove: vi.fn(),
-  onReplace: vi.fn(),
+  onReplaceWithImage: vi.fn(),
+  onReplaceWithShader: vi.fn(),
+  onReplaceWithVideo: vi.fn(),
+  onUploadImage: vi.fn(),
+  onUploadVideo: vi.fn(),
   rowPath: 'hero.slides.0',
   thumbnailCache: {},
 }
@@ -198,22 +221,24 @@ describe('SlideThumb', () => {
     expect(screen.queryByLabelText('Replace slide')).not.toBeInTheDocument()
   })
 
-  it('always shows Remove and Replace, calling their handlers on click', () => {
+  it('always shows Remove, calling its handler on click, and Replace as its own AddSlideMenu instance', () => {
     setFormFields({
       'hero.slides.0.slideType': {
         value: 'image',
       },
     })
     const onRemove = vi.fn()
-    const onReplace = vi.fn()
 
-    render(<SlideThumb {...defaultProps} onRemove={onRemove} onReplace={onReplace} />)
+    render(<SlideThumb {...defaultProps} onRemove={onRemove} />)
 
     fireEvent.click(screen.getByLabelText('Remove slide'))
-    fireEvent.click(screen.getByLabelText('Replace slide'))
-
     expect(onRemove).toHaveBeenCalledTimes(1)
-    expect(onReplace).toHaveBeenCalledTimes(1)
+
+    // "Replace" is this row's own `AddSlideMenu`, keyed by its own `menuId` —
+    // not a shared instance retargeted by index (see `FilmstripEditor`'s
+    // fix: a shared instance's hidden trigger positioned the popup wrong).
+    expect(screen.getByTestId(`add-slide-menu-${defaultProps.menuId}`)).toBeInTheDocument()
+    expect(screen.getByLabelText('Replace slide')).toBeInTheDocument()
   })
 
   it('hides the reorder carets entirely when canReorder is false (singleton)', () => {

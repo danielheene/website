@@ -6,20 +6,23 @@ import { CollectionSlug } from '@/types/collections'
 type HeroSlidesFieldOptions = {
   name: string
   /**
-   * Caps the array length. Omit for an unbounded carousel (Pages, BlogPosts,
-   * BlogTopics); pass `1` where a single slide is still the intended shape
-   * (e.g. SiteSettings' error hero, if it should stay non-carousel).
+   * Caps the array length. Omit for an unbounded carousel (Pages); ignored
+   * for `editorVariant: 'sidebar'`, which is always capped at 1 regardless
+   * of what's passed here — see `editorVariant`.
    */
   maxRows?: number
   /**
    * Which admin editor renders this array's rows:
-   * - `'filmstrip'` (default) — a row of small thumbnails in a wide
-   *   main-content tab. Use where the Hero tab carries more than just
-   *   background media (Pages' hero also has a content-type toggle and a
-   *   RichText field), which is why it needs a tab of its own.
-   * - `'sidebar'` — a single large 16:9 preview with prev/next + dots,
-   *   compact enough for the document sidebar. Use where hero is *only*
-   *   background media selection (Posts/Topics).
+   * - `'filmstrip'` (default) — an Embla carousel of 450px thumbnails in a
+   *   wide main-content tab, one or more slides. Use where the Hero tab
+   *   carries more than just background media (Pages' hero also has a
+   *   content-type toggle and a RichText field), which is why it needs a
+   *   tab of its own.
+   * - `'sidebar'` — a single large 16:9 preview, compact enough for the
+   *   document sidebar. Always exactly one slide (this variant forces
+   *   `maxRows: 1`) — there is never a second slide to navigate to, so its
+   *   editor carries no prev/next/dots. Use where hero is *only* background
+   *   media selection (Posts/Topics).
    */
   editorVariant?: 'filmstrip' | 'sidebar'
 }
@@ -61,7 +64,7 @@ export const HeroSlidesField = ({
     plural: 'Slides',
   },
   minRows: 1,
-  maxRows,
+  maxRows: editorVariant === 'sidebar' ? 1 : maxRows,
   admin: {
     initCollapsed: true,
     components: {

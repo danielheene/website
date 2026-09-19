@@ -11,6 +11,7 @@ import { HeroSlidesField } from '@/fields/HeroSlides'
 import { MetaField } from '@/fields/Meta'
 import { ProtectedField } from '@/fields/Protected'
 import { RichTextField } from '@/fields/RichText'
+import { SectionGroupField } from '@/fields/SectionGroup'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
 import { generatePreviewPath } from '@/lib/generatePreviewPath'
@@ -125,8 +126,15 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
           label: 'Hero',
           name: 'hero',
           fields: [
-            HeroSlidesField({
-              name: 'slides',
+            SectionGroupField({
+              label: 'Background',
+              description:
+                'The hero background strip. Add one or more slides, then reorder or replace them.',
+              fields: [
+                HeroSlidesField({
+                  name: 'slides',
+                }),
+              ],
             }),
             {
               name: 'contentType',

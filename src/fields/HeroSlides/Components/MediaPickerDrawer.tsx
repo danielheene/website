@@ -57,7 +57,12 @@ export const MediaPickerDrawer = ({
         <p className="text-sm text-muted-foreground">{emptyMessage}</p>
       )}
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+      <div
+        className="grid gap-4"
+        style={{
+          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+        }}
+      >
         {items.map((item) => (
           <button
             aria-label={item.label}

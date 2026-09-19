@@ -5,6 +5,7 @@ import { jsonSchema } from 'ai'
 import { authenticated } from '@/access/authenticated'
 import { HeroSlidesField } from '@/fields/HeroSlides'
 import { LinkField } from '@/fields/Link'
+import { SectionGroupField } from '@/fields/SectionGroup'
 import { TemplateField } from '@/fields/Template'
 import { generateResumeDocumentHook } from '@/lib/hooks/global'
 import { AdminGroup } from '@/types/admin-panel'
@@ -173,9 +174,15 @@ export const SiteSettings: GlobalConfig = {
                     },
                   },
                 },
-                HeroSlidesField({
-                  name: 'errorHero',
-                  maxRows: 1,
+                SectionGroupField({
+                  label: 'Background',
+                  description: 'The hero background used on error pages.',
+                  fields: [
+                    HeroSlidesField({
+                      name: 'errorHero',
+                      maxRows: 1,
+                    }),
+                  ],
                 }),
               ],
             },

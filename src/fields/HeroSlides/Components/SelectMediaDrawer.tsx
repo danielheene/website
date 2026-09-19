@@ -2,6 +2,7 @@
 
 import { usePayloadAPI } from '@payloadcms/ui'
 
+import { buildMediaScopeWhere, MediaScope } from '@/fields/GeneratorFlags/baseFilter'
 import { CollectionSlug } from '@/types/collections'
 import type { MediaImage, MediaVideo } from '@/types/payload'
 
@@ -40,6 +41,14 @@ interface SelectMediaDrawerProps {
  * assets; there is no search/pagination footer yet (see the sibling
  * Unsplash/image-library drawers for a paginated example if that becomes
  * necessary here too).
+ *
+ * Scoped to `MediaScope.Uploaded` — the same "hand-uploaded, not machine-
+ * generated" filter the collections' own list views default to (see
+ * `scopeMediaAssets`) — applied explicitly here via `where`, since that
+ * filter is Payload's `admin.baseFilter` and only runs for the List View and
+ * Lexical internal-link relationship fields, not for this drawer's own
+ * `usePayloadAPI` fetch. Without it, generated thumbnails/resume assets that
+ * never appear in the real media list would still show up here.
  */
 export const SelectMediaDrawer = ({
   slug,
@@ -54,6 +63,7 @@ export const SelectMediaDrawer = ({
       limit: 50,
       sort: '-createdAt',
       depth: kind === 'video' ? 1 : 0,
+      where: buildMediaScopeWhere(MediaScope.Uploaded),
     },
   })
 
