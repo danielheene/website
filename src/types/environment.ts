@@ -26,24 +26,22 @@ export const envSchema = z.object({
   STATUS_PAGE_URL: z.url(),
   STATUS_PAGE_HEARTBEAT_URL: z.url(),
 
+  /**
+   * Base URL used by generateResumeDocumentRedirectURL to build the
+   * redirect target for /download/resume.pdf and localized resume jobs.
+   */
+  RESUME_REDIRECT_URL_BASE: z.url(),
+
   PAYLOAD_SECRET: z.string(),
   PREVIEW_SECRET: z.string(),
   CRON_SECRET: z.string(),
 
-  PAYLOAD_JOBS_ALIVE_URL: emptyAsUndefined(z.url()),
   PAYLOAD_JOBS_ENABLE_APP_WORKERS: z
     .enum([
       'true',
       'false',
     ])
     .default('false'),
-
-  /**
-   * Port the standalone worker health server (`scripts/health-server.ts`)
-   * listens on inside the `worker` container. Irrelevant to the `app`
-   * container, which reports job health via `/api/health/jobs` instead.
-   */
-  JOB_RUNNER_HEALTH_PORT: z.coerce.number().int().positive().default(3010),
 
   DATABASE_URL: z.string(),
   REDIS_URL: z.string(),

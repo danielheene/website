@@ -43,7 +43,7 @@ export interface JobsHealth {
  * record is used here as a second, independent signal: a worker can have no
  * stalled jobs simply because nothing has been enqueued, so the absence of a
  * recent heartbeat is the only way to tell "queue is idle" apart from "queue
- * runner stopped." Shared between the Next.js `/api/health/jobs` route and
+ * runner stopped." Shared between the Next.js `/api/health/worker` route and
  * the standalone worker health server (`scripts/health-server.ts`) so both
  * report identical numbers from the same DB-backed truth.
  */

@@ -204,8 +204,6 @@ The source of truth is declared as a Zod schema in `src/types/environment.ts`. I
 | Variable | Type / Requirement | Purpose |
 | --- | --- | --- |
 | `PAYLOAD_JOBS_ENABLE_APP_WORKERS` | Optional (`true` \| `false`) | Enables embedded job workers in the main Next.js app process (defaults to `false`). |
-| `PAYLOAD_JOBS_ALIVE_URL` | Optional (URL) | Endpoint to report worker liveness / heartbeat. |
-| `JOB_RUNNER_HEALTH_PORT` | Optional (Number) | HTTP port for standalone worker health server (defaults to `3010`). |
 
 ### Status Page
 

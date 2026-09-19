@@ -12,7 +12,7 @@ const rate = (value: string | undefined, fallback: number): number => {
   return Number.isFinite(parsed) && parsed >= 0 && parsed <= 1 ? parsed : fallback
 }
 
-const isProduction = process.env.NODE_ENV === 'production'
+const isProduction = process.env.SENTRY_ENVIRONMENT === 'production'
 
 export const SENTRY_DSN = process.env.SENTRY_DSN
 export const SENTRY_ENABLED = Boolean(SENTRY_DSN)

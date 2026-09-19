@@ -36,7 +36,7 @@ describe('tracesSampler', () => {
   const inherit = (fallback: number) => fallback
 
   it('samples everything outside production', async () => {
-    vi.stubEnv('NODE_ENV', 'development')
+    vi.stubEnv('SENTRY_ENVIRONMENT', 'development')
     const { sharedSentryOptions } = await loadOptions()
     expect(
       sharedSentryOptions.tracesSampler({
@@ -47,7 +47,7 @@ describe('tracesSampler', () => {
   })
 
   it('samples a fraction in production', async () => {
-    vi.stubEnv('NODE_ENV', 'production')
+    vi.stubEnv('SENTRY_ENVIRONMENT', 'production')
     const { sharedSentryOptions } = await loadOptions()
     expect(
       sharedSentryOptions.tracesSampler({
@@ -69,7 +69,7 @@ describe('tracesSampler', () => {
   })
 
   it('ignores out-of-range and non-numeric values', async () => {
-    vi.stubEnv('NODE_ENV', 'production')
+    vi.stubEnv('SENTRY_ENVIRONMENT', 'production')
     for (const value of [
       '2',
       '-1',
@@ -112,7 +112,7 @@ describe('tracesSampler', () => {
     ).toBe(0)
     expect(
       sharedSentryOptions.tracesSampler({
-        name: 'GET /api/health/jobs',
+        name: 'GET /api/health/worker',
         inheritOrSampleWith: inherit,
       }),
     ).toBe(0)

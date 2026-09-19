@@ -8,7 +8,7 @@
  *    listener of its own, so a container `HEALTHCHECK` has nothing to curl
  *    locally. This starts a tiny server alongside it, in the same container,
  *    reporting the same `checkJobsHealth` truth the Next.js app exposes at
- *    `/api/health/jobs` — reachable at `http://localhost:$JOB_RUNNER_HEALTH_PORT/health`
+ *    `/api/health/worker` — reachable at `http://localhost:3010/health`
  *    without depending on the app container or any external network.
  *
  *    Runs forever; `worker`'s CMD is expected to start this alongside
@@ -28,7 +28,7 @@ import { getPayload } from 'payload'
 
 import { checkJobsHealth } from '@/jobs-queue/lib/checkJobsHealth'
 
-const port = Number(process.env.JOB_RUNNER_HEALTH_PORT ?? 3010)
+const port = Number(process.env.PORT ?? 3010)
 
 const payload = await getPayload({
   config,
