@@ -132,7 +132,7 @@ pnpm email:dev        # React Email preview server (http://localhost:3005)
 | `pnpm dev:storybook` | Starts Storybook development server (`localhost:6006`). |
 | `pnpm build` | Production build (compiles Next.js bundle with Sentry release tagging). |
 | `pnpm build:storybook` | Builds static Storybook documentation into `dist/`. |
-| `pnpm serve:storybook` | Serves the static Storybook build on port 3020. |
+| `pnpm start:storybook` | Serves the static Storybook build on port 3020. |
 | `pnpm start` | Starts the production Next.js application server. |
 | `pnpm start:worker` | Runs standalone background jobs worker and health monitoring server. |
 | `pnpm load-env` | Writes `.env.local` from active Doppler config (`--check` validates drift). |

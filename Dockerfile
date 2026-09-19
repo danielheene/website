@@ -152,11 +152,6 @@ LABEL org.opencontainers.image.title="website-storybook" \
 RUN npm install -g serve
 COPY --from=storybook-builder /app/dist ./dist
 EXPOSE 3020
-# Runs the `serve` binary directly rather than `pnpm run serve:storybook`:
-# this stage has no node_modules/lockfile (only `dist` is copied in), so
-# `pnpm run` would try to resolve/install the whole workspace at container
-# startup — confirmed by testing this locally, it pulls 1000+ packages over
-# the network before ever serving a request. `serve:storybook` still exists
-# in package.json as the documented definition of this command; it's just
-# not how this particular stage invokes it.
-CMD ["serve", "-s", "dist", "-l", "3020"]
+HEALTHCHECK --interval=60s --timeout=10s --retries=3 --start-period=30s \
+    CMD node -e "fetch('http://localhost:3020').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+CMD ["serve", "dist", "-l", "3020"]
