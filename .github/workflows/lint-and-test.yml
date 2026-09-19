@@ -8,6 +8,11 @@ on:
       - main
       - develop
 
+# Both jobs only checkout, install, and run lint/tests — neither needs to
+# write anything, so GITHUB_TOKEN is scoped down to read-only.
+permissions:
+  contents: read
+
 jobs:
   lint:
     name: Lint
