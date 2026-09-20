@@ -1,3 +1,10 @@
+## [1.2.7](https://github.com/danielheene/website/compare/v1.2.6...v1.2.7) (2026-09-20)
+
+
+### Bug Fixes
+
+* **storybook:** suppress noisy "use client" Rollup warnings on build ([#75](https://github.com/danielheene/website/issues/75)) ([4c53529](https://github.com/danielheene/website/commit/4c535296e5a1cc65a757d11335e277d3f66c3124))
+
 ## [1.2.6](https://github.com/danielheene/website/compare/v1.2.5...v1.2.6) (2026-09-19)
 
 
