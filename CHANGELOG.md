@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/danielheene/website/compare/v1.2.7...v1.3.0) (2026-09-20)
+
+
+### Features
+
+* **admin:** link group row labels, meta SERP progress bar, own-tracking hook ([#76](https://github.com/danielheene/website/issues/76)) ([c27175b](https://github.com/danielheene/website/commit/c27175b57799f1cc0e440c036aaabfeaa365dd0c)), closes [#e8eaf2](https://github.com/danielheene/website/issues/e8eaf2) [#9e9e9e](https://github.com/danielheene/website/issues/9e9e9e)
+
 ## [1.2.7](https://github.com/danielheene/website/compare/v1.2.6...v1.2.7) (2026-09-20)
 
 
