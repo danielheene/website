@@ -49,11 +49,11 @@ export type LinkFieldDataLean = Omit<LinkFieldData, 'doc'> & {
 /**
  * A `{ link, id }` entry as stored in a `LinkGroupField` array (`LinkGroupBlock`
  * and similar) — {@link LinkFieldDataLean}'s recursion problem, one level up.
- * `LinkGroupField`'s `entries` array nests a whole `LinkField()` group inside
- * each row, so each entry carries its link data under a `link` key. Define
- * this once and reuse it rather than typing each call site off the generated
- * block interfaces, which carry the same full `Page`/`BlogPostData`/`Topic`
- * documents `LinkFieldDataLean` exists to avoid.
+ * `LinkGroupField` is a flat `array` named `links`; each row nests a whole
+ * `LinkField()` group under a `link` key. Define this once and reuse it rather
+ * than typing each call site off the generated block interfaces, which carry
+ * the same full `Page`/`BlogPostData`/`Topic` documents `LinkFieldDataLean`
+ * exists to avoid.
  */
 export type LinkGroupEntry = {
   link: LinkFieldDataLean

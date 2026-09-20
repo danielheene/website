@@ -1,0 +1,55 @@
+.serp-bar {
+  margin-top: 6px;
+
+  .serp-bar__row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .serp-bar__track {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--theme-elevation-100);
+    overflow: hidden;
+  }
+
+  .serp-bar__fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--theme-success-500, #22c55e);
+    transition:
+      width 120ms ease,
+      background 120ms ease;
+
+    &.serp-bar__fill--warn {
+      background: var(--theme-warning-500, #f59e0b);
+    }
+
+    &.serp-bar__fill--danger {
+      background: var(--theme-error-500, #ef4444);
+    }
+  }
+
+  .serp-bar__label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    font-size: 11px;
+    line-height: 1;
+    color: var(--theme-elevation-500);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+
+    span.serp-bar__label--over {
+      color: var(--theme-error-500, #ef4444);
+      font-weight: 600;
+    }
+  }
+
+  .serp-bar__separator {
+    color: var(--theme-elevation-300);
+  }
+}

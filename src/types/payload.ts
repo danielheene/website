@@ -283,18 +283,12 @@ export interface CodeBlock {
  * via the `definition` "LinkGroupBlock".
  */
 export interface LinkGroupBlock {
-  links?: {
-    entries?:
-      | {
-          link: LinkFieldData;
-          id?: string | null;
-        }[]
-      | null;
-    /**
-     * Choose how the links should be aligned.
-     */
-    alignment?: ('left' | 'right' | 'center' | 'list') | null;
-  };
+  links?:
+    | {
+        link: LinkFieldData;
+        id?: string | null;
+      }[]
+    | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'LinkGroupBlock';
@@ -801,6 +795,12 @@ export interface BlogPostData {
   id: string;
   title: string;
   slug: string;
+  topics?:
+    | {
+        relationTo: 'topics';
+        value: string | Topic;
+      }[]
+    | null;
   hero?: {
     slides?:
       | {
@@ -822,41 +822,7 @@ export interface BlogPostData {
         }[]
       | null;
   };
-  topics?:
-    | {
-        relationTo: 'topics';
-        value: string | Topic;
-      }[]
-    | null;
   readingTime?: number | null;
-  links?:
-    | {
-        icon?: string | null;
-        url?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  relatedPosts?:
-    | {
-        relationTo: 'posts';
-        value: string | BlogPostData;
-      }[]
-    | null;
-  excerpt?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
   content?: {
     root: {
       type: string;
@@ -872,6 +838,12 @@ export interface BlogPostData {
     };
     [k: string]: unknown;
   } | null;
+  links?:
+    | {
+        link: LinkFieldData;
+        id?: string | null;
+      }[]
+    | null;
   /**
    * This field group contains meta information for SEO purposes.
    * It includes fields for title, description, and SERP optimization.
@@ -1788,6 +1760,7 @@ export interface PayloadMigration {
 export interface PostsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
+  topics?: T;
   hero?:
     | T
     | {
@@ -1800,18 +1773,14 @@ export interface PostsSelect<T extends boolean = true> {
               id?: T;
             };
       };
-  topics?: T;
   readingTime?: T;
+  content?: T;
   links?:
     | T
     | {
-        icon?: T;
-        url?: T;
+        link?: T | LinkFieldDataSelect<T>;
         id?: T;
       };
-  relatedPosts?: T;
-  excerpt?: T;
-  content?: T;
   meta?:
     | T
     | {
@@ -1823,6 +1792,20 @@ export interface PostsSelect<T extends boolean = true> {
   createdAt?: T;
   deletedAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LinkFieldData_select".
+ */
+export interface LinkFieldDataSelect<T extends boolean = true> {
+  linkType?: T;
+  newTab?: T;
+  iconOnly?: T;
+  doc?: T;
+  url?: T;
+  iconBefore?: T;
+  text?: T;
+  iconAfter?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -76,6 +76,10 @@
     @apply [&>svg]:transition-opacity;
   }
 
+  .nav-footer__item--static {
+    @apply cursor-default hover:bg-neutral/0;
+  }
+
   .nav-footer__item-icon--hidden {
     @apply opacity-0;
   }

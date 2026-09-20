@@ -178,18 +178,15 @@ const codeContentBlock = (random: Random) => {
 /** One `LinkGroupBlock` with 2-3 custom-URL entries — no internal relationships, see plan Non-goals. */
 const linkGroupBlock = (random: Random) => ({
   blockType: 'LinkGroupBlock',
-  links: {
-    alignment: 'list',
-    entries: pickSome(random, LINKS, 2 + Math.floor(random() * 2)).map((entry) => ({
-      link: {
-        linkType: 'custom',
-        newTab: true,
-        label: entry.label,
-        url: entry.url,
-        doc: null,
-      },
-    })),
-  },
+  links: pickSome(random, LINKS, 2 + Math.floor(random() * 2)).map((entry) => ({
+    link: {
+      linkType: 'custom',
+      newTab: true,
+      label: entry.label,
+      url: entry.url,
+      doc: null,
+    },
+  })),
 })
 
 const pageBlocks = (seed: string): Page['content'] => {

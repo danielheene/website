@@ -50,6 +50,7 @@ const rootFeatures = [
       text: {
         type: 'dropdown',
         order: 10,
+        maxActiveItems: 1,
       },
 
       /**
@@ -84,15 +85,20 @@ const rootFeatures = [
        * links, blockquote, hr, code */
       features: {
         type: 'buttons',
-        order: 40,
+        order: 45,
       },
 
       /**
        * custom blocks:
        */
       add: {
-        type: 'dropdown',
+        type: 'buttons',
         order: 50,
+      },
+
+      blocks: {
+        type: 'dropdown',
+        order: 55,
       },
     },
     disableIfParentHasFixedToolbar: true,

@@ -42,6 +42,8 @@ export const NavClient = ({ navigationConfig, user }: NavClientProps) => {
           avatarSrc={get(user, 'avatar.value.url', '')}
           email={user.email}
           name={user.name || ''}
+          enableOwnTracking={Boolean(user.enableOwnTracking)}
+          userId={user.id}
         />
       </div>
       <button

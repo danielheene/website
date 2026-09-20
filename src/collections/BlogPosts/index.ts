@@ -5,6 +5,7 @@ import { authenticated } from '@/access/authenticated'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { HeroSlidesField } from '@/fields/HeroSlides'
 import { IconField } from '@/fields/Icon'
+import { LinkGroupField } from '@/fields/LinkGroup'
 import { MetaField } from '@/fields/Meta'
 import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
@@ -14,7 +15,7 @@ import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 import { BlogPostData } from '@/types/payload'
 
-import { generateExcerptAndReadingTime } from './hooks/generateExcerptAndReadingTime'
+import { generateReadingTime } from './hooks/generateReadingTime'
 import { revalidateBlogPost } from './hooks/revalidateBlogPost'
 
 export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
@@ -66,7 +67,7 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
   },
   hooks: {
     beforeChange: [
-      generateExcerptAndReadingTime,
+      generateReadingTime,
     ],
     afterChange: [
       revalidateBlogPost,
@@ -84,6 +85,20 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
       fieldToUse: 'title',
     }),
     {
+      name: 'topics',
+      type: 'relationship',
+      admin: {
+        position: 'sidebar',
+        appearance: 'drawer',
+        allowCreate: true,
+        allowEdit: true,
+      },
+      hasMany: true,
+      relationTo: [
+        CollectionSlug.BlogTopics,
+      ],
+    },
+    {
       name: 'hero',
       type: 'group',
       label: false,
@@ -100,69 +115,15 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
         }),
       ],
     },
-    {
-      name: 'topics',
-      type: 'relationship',
-      admin: {
-        position: 'sidebar',
-        appearance: 'drawer',
-        allowCreate: true,
-        allowEdit: true,
-      },
-      hasMany: true,
-      relationTo: [
-        CollectionSlug.BlogTopics,
-      ],
-    },
+
     {
       name: 'readingTime',
       type: 'number',
       label: 'Estimated Reading Time (min)',
       admin: {
+        hidden: true,
         position: 'sidebar',
       },
-    },
-    {
-      name: 'links',
-      type: 'array',
-      fields: [
-        {
-          type: 'row',
-          fields: [
-            IconField({
-              name: 'icon',
-            }),
-            {
-              name: 'url',
-              label: false,
-              type: 'text',
-              admin: {
-                placeholder: 'URL',
-              },
-            },
-          ],
-        },
-      ],
-    },
-    {
-      name: 'relatedPosts',
-      type: 'relationship',
-      admin: {
-        position: 'sidebar',
-      },
-      filterOptions: ({ id }) => {
-        return {
-          id: {
-            not_in: [
-              id,
-            ],
-          },
-        }
-      },
-      hasMany: true,
-      relationTo: [
-        CollectionSlug.BlogPosts,
-      ],
     },
 
     /* -------------- Content -------------- */
@@ -172,22 +133,6 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
         {
           label: 'Content',
           fields: [
-            {
-              type: 'collapsible',
-              label: 'Excerpt',
-              admin: {
-                initCollapsed: true,
-              },
-              fields: [
-                RichTextField({
-                  name: 'excerpt',
-                  editorVariant: 'markdown',
-                  overrides: {
-                    label: false,
-                  },
-                }),
-              ],
-            },
             RichTextField({
               name: 'content',
               editorVariant: 'post',
@@ -195,6 +140,12 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
                 label: false,
               },
             }),
+          ],
+        },
+        {
+          label: 'Links',
+          fields: [
+            LinkGroupField(),
           ],
         },
         {

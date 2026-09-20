@@ -11,20 +11,16 @@ type LinkGroupBlockRendererProps = {
 
 export const LinkGroupBlockRenderer = ({
   className,
-  links: { alignment, entries },
+  links,
 }: LinkGroupBlockRendererProps): JSX.Element => {
   return (
     <ul
       className={cn([
         'flex gap-4',
-        alignment === 'left' && 'justify-start',
-        alignment === 'center' && 'justify-center',
-        alignment === 'right' && 'justify-end',
-        alignment === 'list' && 'flex-col items-start',
         className,
       ])}
     >
-      {entries.map(({ id, link }) => (
+      {links.map(({ id, link }) => (
         <li key={id}>
           <CMSLink {...link} />
         </li>
