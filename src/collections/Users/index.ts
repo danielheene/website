@@ -7,6 +7,14 @@ import { CollectionSlug } from '@/types/collections'
 
 import { loginAfterCreate } from './hooks/loginAfterCreate'
 
+// The create-first-user view renders every collection field regardless of admin.hidden
+// (it calls buildFormState with renderAllFields: true), so hiding fields there requires
+// admin.condition instead, keyed off the absence of a logged-in user (create-first-user
+// runs with no req.user, unlike a normal authenticated create/edit).
+const showUnlessCreatingFirstUser: NonNullable<
+  CollectionConfig['fields'][number]['admin']
+>['condition'] = (_data, _siblingData, { user }) => Boolean(user)
+
 export const Users: CollectionConfig = {
   slug: CollectionSlug.Users,
 
@@ -21,6 +29,9 @@ export const Users: CollectionConfig = {
     {
       type: 'text',
       name: 'name',
+      admin: {
+        condition: showUnlessCreatingFirstUser,
+      },
     },
     {
       type: 'upload',
@@ -28,6 +39,9 @@ export const Users: CollectionConfig = {
       relationTo: [
         CollectionSlug.MediaImages,
       ],
+      admin: {
+        condition: showUnlessCreatingFirstUser,
+      },
     },
     {
       type: 'checkbox',
@@ -38,6 +52,7 @@ export const Users: CollectionConfig = {
       admin: {
         description:
           "When enabled, your own visits will be tracked in analytics like any other visitor. Off by default so your admin browsing doesn't skew site statistics.",
+        condition: showUnlessCreatingFirstUser,
       },
     },
   ],

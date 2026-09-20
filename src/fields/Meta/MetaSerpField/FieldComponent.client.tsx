@@ -49,11 +49,11 @@ export const FieldComponentClient = ({
           '--serp-site-name-font': `Google Sans, Arial, sans-serif`,
           '--serp-site-name-font-size': `14px`,
           '--serp-site-name-line-height': `20px`,
-          '--serp-site-name-color': `light-dark(#4d5156, #bfbfbf)`,
+          '--serp-site-name-color': `light-dark(#202124, #e8eaf2)`,
           '--serp-page-url-font': `Google Sans, Arial, sans-serif`,
           '--serp-page-url-font-size': `12px`,
           '--serp-page-url-line-height': `18px`,
-          '--serp-page-url-color': `light-dark(#4d5156, #bfbfbf)`,
+          '--serp-page-url-color': `light-dark(#4d5156, #bdc1c6)`,
           '--serp-title-font': `Google Sans, Arial, sans-serif`,
           '--serp-title-font-size': `22px`,
           '--serp-title-line-height': `28px`,
@@ -61,7 +61,7 @@ export const FieldComponentClient = ({
           '--serp-description-font': `Google Sans, Arial, sans-serif`,
           '--serp-description-font-size': `14px`,
           '--serp-description-line-height': `22px`,
-          '--serp-description-color': `light-dark(#4d5156, #bfbfbf)`,
+          '--serp-description-color': `light-dark(#4d5156, #9e9e9e)`,
         } as CSSProperties
       }
     >
@@ -89,7 +89,7 @@ export const FieldComponentClient = ({
                 'overflow-hidden',
               ])}
             >
-              {/** biome-ignore lint/performance/noImgElement: <explanation> */}
+              {/** biome-ignore lint/performance/noImgElement: favicon needs natural image loading */}
               <img className="block aspect-square h-full w-full" src={faviconUrl} alt="" />
             </div>
           )}
@@ -159,8 +159,8 @@ export const FieldComponentClient = ({
         }}
         className={cn([
           'line-clamp-2',
-          'w-[680px]',
-          'lg:w-[920px]',
+          'w-[540px]',
+          'lg:w-[600px]',
           'overflow-hidden',
         ])}
       >

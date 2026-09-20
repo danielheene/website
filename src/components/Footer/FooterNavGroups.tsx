@@ -25,11 +25,11 @@ export const FooterNavGroups = ({ navGroups, className }: FooterNavGroupsProps) 
           </h3>
           <ul className="text-sm ml-1">
             {entries?.map(({ id, ...link }) => (
-              <li
-                key={id}
-                className="font-pp-frama font-medium xl:text-lg text-current/75 hover:text-current"
-              >
-                <CMSLink {...link} className="text-2xl leading-none no-underline" />
+              <li key={id} className=" text-current/75 hover:text-current">
+                <CMSLink
+                  {...link}
+                  className="font-pp-frama font-medium text-sm xl:text-lg tracking-wider leading-none no-underline"
+                />
               </li>
             ))}
           </ul>

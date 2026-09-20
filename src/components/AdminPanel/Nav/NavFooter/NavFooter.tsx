@@ -10,6 +10,7 @@ import { cn } from 'tailwind-variants'
 
 import { Icon } from '@/components/Icon'
 import { Switch } from '@/components/Switch'
+import { useOwnTracking } from '@/hooks/use-own-tracking'
 
 import './NavFooter.styles.css'
 
@@ -17,6 +18,8 @@ interface NavFooterProps {
   avatarSrc?: string
   email: string
   name: string
+  enableOwnTracking: boolean
+  userId: string
 }
 
 interface DropdownPosition {
@@ -24,8 +27,16 @@ interface DropdownPosition {
   left: number
 }
 
-export function NavFooter({ avatarSrc, email, name }: NavFooterProps) {
+export function NavFooter({ avatarSrc, email, name, enableOwnTracking, userId }: NavFooterProps) {
   const { theme, setTheme } = useTheme()
+  const {
+    enabled: ownTrackingEnabled,
+    isSaving: ownTrackingIsSaving,
+    toggle: toggleOwnTracking,
+  } = useOwnTracking({
+    userId,
+    initialValue: enableOwnTracking,
+  })
   const dropdownRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const [dropdownIsOpen, setDropdownIsOpen] = useState<boolean>(false)
@@ -207,6 +218,17 @@ export function NavFooter({ avatarSrc, email, name }: NavFooterProps) {
               />
               <span>Dark Mode</span>
               <Switch checked={theme === 'dark'} />
+            </button>
+
+            <button
+              type="button"
+              onClick={toggleOwnTracking}
+              disabled={ownTrackingIsSaving}
+              className="nav-footer__item"
+            >
+              <Icon name="lucide:eye" />
+              <span>Track My Visits</span>
+              <Switch checked={ownTrackingEnabled} />
             </button>
 
             <hr className="nav-footer__separator" />

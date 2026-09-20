@@ -1,63 +1,39 @@
-import { deepMerge, type GroupField, type OptionObject } from 'payload'
+import { type ArrayField, deepMerge } from 'payload'
+
+import { cn } from 'tailwind-variants'
+import { OmitDeep } from 'type-fest'
 
 import { LinkField } from '@/fields/Link'
 
-export const alignmentOptions: Record<string, OptionObject> = {
-  left: {
-    label: 'Left Aligned',
-    value: 'left',
-  },
-  right: {
-    label: 'Right Aligned',
-    value: 'right',
-  },
-  center: {
-    label: 'Centered',
-    value: 'center',
-  },
-  list: {
-    label: 'List',
-    value: 'list',
-  },
-}
-
-type LinkGroupFieldOverrides = Partial<Omit<GroupField, 'name' | 'type' | 'fields'>>
+type LinkGroupFieldOverrides = Partial<
+  OmitDeep<ArrayField, 'name' | 'type' | 'fields' | 'admin.className' | 'admin.components.RowLabel'>
+>
 
 interface LinkGroupFieldProps {
   overrides?: LinkGroupFieldOverrides
 }
 
-export const LinkGroupField = ({ overrides = {} }: LinkGroupFieldProps = {}): GroupField =>
-  deepMerge<GroupField, LinkGroupFieldOverrides>(
+export const LinkGroupField = ({ overrides = {} }: LinkGroupFieldProps = {}): ArrayField =>
+  deepMerge<ArrayField, LinkGroupFieldOverrides>(
     {
-      type: 'group',
+      type: 'array',
       name: 'links',
-      label: false,
+      labels: {
+        singular: 'Link',
+        plural: 'Links',
+      },
       admin: {
-        hideGutter: true,
+        className: cn([
+          String.raw`[&_.collapsible\_\_content]:pb-0`,
+          String.raw`[&_.group-field\-\-within-collapsible]:pb-0`,
+          String.raw`[&_.group-field\-\-within-collapsible]:border-none`,
+        ]),
+        components: {
+          RowLabel: '@/fields/Link/components/RowLabel#LinkRowLabel',
+        },
       },
       fields: [
-        {
-          name: 'entries',
-          type: 'array',
-          label: false,
-          labels: {
-            singular: 'Link',
-            plural: 'Links',
-          },
-          fields: [
-            LinkField(),
-          ],
-        },
-        {
-          name: 'alignment',
-          type: 'select',
-          admin: {
-            description: 'Choose how the links should be aligned.',
-          },
-          defaultValue: 'left',
-          options: Object.values(alignmentOptions),
-        },
+        LinkField(),
       ],
     },
     overrides,
