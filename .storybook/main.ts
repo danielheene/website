@@ -38,22 +38,6 @@ export default defineMain({
   ],
   staticDirs: [
     '../public',
-    {
-      from: '../src/fonts/pp-frama/files',
-      to: '/src/fonts/pp-frama/files',
-    },
-    {
-      from: '../src/fonts/pp-frama-text/files',
-      to: '/src/fonts/pp-frama-text/files',
-    },
-    {
-      from: '../src/fonts/pp-supply-sans/files',
-      to: '/src/fonts/pp-supply-sans/files',
-    },
-    {
-      from: '../src/fonts/pp-supply-mono/files',
-      to: '/src/fonts/pp-supply-mono/files',
-    },
   ],
   addons: [
     '@storybook/addon-a11y',
@@ -65,8 +49,41 @@ export default defineMain({
   typescript: {
     reactDocgen: 'react-docgen-typescript',
     reactDocgenTypescriptOptions: {
+      tsconfigPath: './tsconfig.json',
       shouldExtractLiteralValuesFromEnum: true,
       propFilter: (prop) => !!prop.parent?.fileName?.includes('node_modules'),
     },
+  },
+  async viteFinal(config) {
+    const existingOnwarn = config.build?.rollupOptions?.onwarn
+
+    return {
+      ...config,
+      build: {
+        ...config.build,
+        rollupOptions: {
+          ...config.build?.rollupOptions,
+          // "use client" has no meaning once bundled for the browser here —
+          // Storybook only needs the component, not the RSC boundary marker
+          // Next.js would otherwise read it for. Rollup's own warning about
+          // it is accurate but not actionable in this context, so it's
+          // filtered out rather than left as noise on every build.
+          onwarn(warning, warn) {
+            if (
+              warning.code === 'MODULE_LEVEL_DIRECTIVE' &&
+              warning.message.includes('"use client"')
+            ) {
+              return
+            }
+
+            if (existingOnwarn) {
+              existingOnwarn(warning, warn)
+            } else {
+              warn(warning)
+            }
+          },
+        },
+      },
+    }
   },
 })
