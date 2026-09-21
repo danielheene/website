@@ -13,7 +13,7 @@ This repository contains the source code for the personal website, blog, and res
 - **CMS**: [Payload CMS 3.x](https://payloadcms.com/)
 - **Database**: [MongoDB 8](https://www.mongodb.com/) (via `@payloadcms/db-mongodb`)
 - **Cache & Pub/Sub**: [Redis 8](https://redis.io/) (`@payloadcms/kv-redis`, `@trieb.work/nextjs-turbo-redis-cache`, and custom SSE pub/sub handler)
-- **Storage**: S3-compatible storage ([RustFS](https://github.com/rustfs/rustfs) in local dev via Docker, AWS S3 / Cloudflare R2 in production via `@payloadcms/storage-s3`)
+- **Storage**: S3-compatible storage ([RustFS](https://rustfs.com) in local dev via Docker, AWS S3 / Cloudflare R2 in production via `@payloadcms/storage-s3`)
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/), PostCSS, Tailwind Variants
 - **Component Development**: [Storybook 10](https://storybook.js.org/)
 - **Linting & Formatting**: [Biome](https://biomejs.dev/) (no ESLint/Prettier)
@@ -114,7 +114,7 @@ pnpm email:dev        # React Email preview server (http://localhost:3005)
 ## Entry Points
 
 - **Next.js App Router**:
-  - `app/(frontend)/`: Public website pages, layouts, and API routes (`/api/preview`, `/api/sse`, `/api/heartbeat`, `/api/health/*`, etc.).
+  - `app/(frontend)/`: Public website pages, layouts, and API routes (`/api/preview`, `/api/sse`, `/api/heartbeat`, `/api/health/*`, etc.). Dynamic pages are under `[slug]/`.
   - `app/(payload)/`: Payload CMS admin panel routes (`/admin`).
 - **Payload Configuration**: `payload.config.ts` in the project root, integrated into Next.js via `withPayload` in `next.config.ts`.
 - **Jobs Queue & Worker**: `src/jobs-queue/` and standalone background worker entrypoint `scripts/start-worker.mjs` with `scripts/health-server.ts`.
@@ -148,7 +148,7 @@ pnpm email:dev        # React Email preview server (http://localhost:3005)
 | `pnpm deps:lint` | Runs Syncpack to check dependency version consistency across packages. |
 | `pnpm deps:fix` | Runs Syncpack to automatically align dependency versions. |
 | `pnpm deps:update` | Updates dependency versions using Syncpack. |
-| `pnpm chore:sort` | Formats `package.json` using Syncpack. |
+| `pnpm chore:format` | Formats `package.json` field order using Syncpack. |
 | `pnpm chore:reinstall` | Cleans `node_modules` and `pnpm-lock.yaml`, then runs fresh `pnpm install`. |
 | `pnpm email:dev` | Starts React Email development server on port 3005 (`src/emails`). |
 | `pnpm seed:topics` | Seeds fixture blog topics (`--clean` to remove). |
@@ -265,7 +265,7 @@ The source of truth is declared as a Zod schema in `src/types/environment.ts`. I
 .
 ├── app/                          # Next.js App Router
 │   ├── (frontend)/               # Public website routes, layouts, and API routes
-│   │   ├── [locale]/             # Localized routes (en, de)
+│   │   ├── [slug]/               # Dynamic page routes
 │   │   ├── api/                  # API endpoints (preview, sse, health, heartbeat, icons, etc.)
 │   │   └── layout.tsx            # Frontend root layout
 │   └── (payload)/                # Payload CMS admin routes
