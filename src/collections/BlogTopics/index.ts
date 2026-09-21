@@ -50,15 +50,18 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
       'highlighted',
     ],
     components: {
-      listMenuItems: [
-        {
-          path: '@/components/AdminPanel/SeedActions#SeedActions',
-          clientProps: {
-            collectionSlug: CollectionSlug.BlogTopics,
-            collectionLabel: 'Topics',
-          },
-        },
-      ],
+      listMenuItems:
+        process.env.NODE_ENV !== 'production'
+          ? [
+              {
+                path: '@/components/AdminPanel/SeedActions#SeedActions',
+                clientProps: {
+                  collectionSlug: CollectionSlug.BlogTopics,
+                  collectionLabel: 'Topics',
+                },
+              },
+            ]
+          : [],
     },
   },
   access: {
