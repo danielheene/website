@@ -1,14 +1,17 @@
 import type { ShaderPresetKey } from '@/components/HeroMedia/shaderPresets'
-import DarkVeil, {
+import {
+  DarkVeil,
   type DarkVeilProps,
   defaultProps as darkVeilDefaults,
 } from '@/components/Shaders/DarkVeil'
-import FaultyTerminal, { type FaultyTerminalProps } from '@/components/Shaders/FaultyTerminal'
-import GradientBlinds, {
+import { FaultyTerminal, type FaultyTerminalProps } from '@/components/Shaders/FaultyTerminal'
+import {
+  GradientBlinds,
   type GradientBlindsProps,
   defaultProps as gradientBlindsDefaults,
 } from '@/components/Shaders/GradientBlinds'
-import Grainient, {
+import {
+  Grainient,
   type GrainientProps,
   defaultProps as grainientDefaults,
 } from '@/components/Shaders/Grainient'

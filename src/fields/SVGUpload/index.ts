@@ -15,7 +15,7 @@ type SVGUploadProps = {
   >
 }
 
-export const SVGUpload = ({ fieldToUse, overrides = {} }: SVGUploadProps): UIField => {
+export const SVGUploadField = ({ fieldToUse, overrides = {} }: SVGUploadProps): UIField => {
   return deepMerge<UIField, Partial<UIField>>(
     {
       type: 'ui',

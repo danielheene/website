@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import DarkVeil from '@/components/Shaders/DarkVeil/DarkVeil'
+import { DarkVeil } from '@/components/Shaders/DarkVeil/DarkVeil'
 
 const meta = {
   title: 'DarkVeil',

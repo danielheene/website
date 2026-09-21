@@ -5,7 +5,7 @@ import { cn } from 'tailwind-variants'
 import { authenticated } from '@/access/authenticated'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { SlugField } from '@/fields/Slug'
-import { SVGUpload } from '@/fields/SVGUpload'
+import { SVGUploadField } from '@/fields/SVGUpload'
 import { TitleField } from '@/fields/Title'
 import { sanitizeSvg } from '@/lib/sanitizeSvg'
 import { CollectionSlug } from '@/types/collections'
@@ -62,7 +62,7 @@ export const ResumeCustomers: CollectionConfig<CollectionSlug['ResumeCustomers']
             width: '50%',
           },
           fields: [
-            SVGUpload({
+            SVGUploadField({
               fieldToUse: 'svg',
             }),
           ],

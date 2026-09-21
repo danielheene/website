@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/performance/noImgElement: <explanation> */
 'use client'
 
 import { type SyntheticEvent, useCallback, useMemo, useState } from 'react'
