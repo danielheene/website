@@ -11,6 +11,7 @@ import { generateResumeDocumentTitle } from './generateResumeDocumentTitle'
 import { generateResumeFile } from './generateResumeFile'
 import { generateResumeFilename } from './generateResumeFilename'
 import { generateVideoThumbnails } from './generateVideoThumbnails'
+import { heartbeatCleanup } from './heartbeatCleanup'
 import { heartbeatPing } from './heartbeatPing'
 import { seedCollection } from './seedCollection'
 import { syncSkillSorting } from './syncSkillSorting'
@@ -30,6 +31,7 @@ export const TASKS = [
   autoTranslateBilingualField,
   generateResumeDocumentTitle,
   createResumeDocument,
+  heartbeatCleanup,
   heartbeatPing,
   seedCollection,
   syncSkillSorting,

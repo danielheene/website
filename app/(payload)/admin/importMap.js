@@ -1,7 +1,7 @@
 import { default as default_60b9f65365606d3c11eae014a9a986c5 } from '@/fields/Title/CellWithThumbnail'
 import { default as default_f4e2381ac6c67e8deed93345830aa6f3 } from '@/fields/Slug/components/FieldComponent'
 import { default as default_0cf866006ed14d81e264cb203fecfc4b } from '@/fields/HeroSlides/Components/ShaderSlideField'
-import { default as default_7b7a2751ecf7195298a7498f756c9c1c } from '@/fields/HeroSlides/Components/HeroSlidesSidebarEditor'
+import { default as default_606da7f08151f2f6ba585e97ed8a938a } from '@/fields/HeroSlides/Components/SingleSlideEditor'
 import { default as default_8289f9b491a8c4e2741708332826c2c7 } from '@/fields/HeroSlides/Components/RowLabel'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -84,7 +84,7 @@ export const importMap = {
   "@/fields/Title/CellWithThumbnail#default": default_60b9f65365606d3c11eae014a9a986c5,
   "@/fields/Slug/components/FieldComponent#default": default_f4e2381ac6c67e8deed93345830aa6f3,
   "@/fields/HeroSlides/Components/ShaderSlideField#default": default_0cf866006ed14d81e264cb203fecfc4b,
-  "@/fields/HeroSlides/Components/HeroSlidesSidebarEditor#default": default_7b7a2751ecf7195298a7498f756c9c1c,
+  "@/fields/HeroSlides/Components/SingleSlideEditor#default": default_606da7f08151f2f6ba585e97ed8a938a,
   "@/fields/HeroSlides/Components/RowLabel#default": default_8289f9b491a8c4e2741708332826c2c7,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,

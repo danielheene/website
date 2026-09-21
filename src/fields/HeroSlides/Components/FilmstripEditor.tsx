@@ -24,7 +24,7 @@ import { useHeroSlideFieldEditor } from './useHeroSlideFieldEditor'
  * rather than living in the sidebar.
  *
  * (Where hero is *only* background media selection — Posts/Topics — it
- * belongs in the sidebar instead, using `HeroSlidesSidebarEditor`'s compact
+ * belongs in the sidebar instead, using `SingleSlideEditor`'s compact
  * single-preview-with-dots layout. Both share their row-mutation core via
  * `useHeroSlideFieldEditor`.)
  */

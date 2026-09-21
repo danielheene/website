@@ -74,6 +74,12 @@ export const envSchema = z.object({
   OPENAI_API_KEY: z.string(),
   ANTHROPIC_API_KEY: z.string(),
   MAPBOX_API_KEY: z.string(),
+  /**
+   * Same Mapbox token exposed to the browser for AddressAutofill autocomplete.
+   * Must match MAPBOX_API_KEY and be restricted to the admin panel origin in the
+   * Mapbox dashboard.
+   */
+  NEXT_PUBLIC_MAPBOX_API_KEY: z.string(),
   UNSPLASH_ACCESS_KEY: emptyAsUndefined(z.string()),
 
   /**

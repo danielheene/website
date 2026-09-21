@@ -63,21 +63,21 @@ describe('HeroSlidesField', () => {
     })
   })
 
-  it('uses the sidebar editor when editorVariant is sidebar', () => {
+  it("uses the sidebar editor component when editorVariant is 'single'", () => {
     const field = HeroSlidesField({
       name: 'slides',
-      editorVariant: 'sidebar',
+      editorVariant: 'single',
     })
 
     expect(field.admin?.components?.Field).toMatchObject({
-      path: '@/fields/HeroSlides/Components/HeroSlidesSidebarEditor',
+      path: '@/fields/HeroSlides/Components/SingleSlideEditor',
     })
   })
 
-  it("forces maxRows to 1 for editorVariant: 'sidebar', regardless of what's passed", () => {
+  it("forces maxRows to 1 for editorVariant: 'single', regardless of what's passed", () => {
     const field = HeroSlidesField({
       name: 'slides',
-      editorVariant: 'sidebar',
+      editorVariant: 'single',
       maxRows: 5,
     })
 
@@ -91,6 +91,45 @@ describe('HeroSlidesField', () => {
     })
 
     expect(field.maxRows).toBeUndefined()
+  })
+
+  it('does not set admin.position by default', () => {
+    const field = HeroSlidesField({
+      name: 'slides',
+    })
+
+    expect(field.admin?.position).toBeUndefined()
+  })
+
+  it("defaults admin.position to 'sidebar' for editorVariant: 'single'", () => {
+    const field = HeroSlidesField({
+      name: 'slides',
+      editorVariant: 'single',
+    })
+
+    expect(field.admin?.position).toBe('sidebar')
+  })
+
+  it("sets admin.position to 'sidebar' when position is 'sidebar'", () => {
+    const field = HeroSlidesField({
+      name: 'slides',
+      position: 'sidebar',
+    })
+
+    expect(field.admin?.position).toBe('sidebar')
+  })
+
+  it('position is independent of editorVariant — filmstrip editor can also be placed in the sidebar', () => {
+    const field = HeroSlidesField({
+      name: 'slides',
+      editorVariant: 'filmstrip',
+      position: 'sidebar',
+    })
+
+    expect(field.admin?.position).toBe('sidebar')
+    expect(field.admin?.components?.Field).toMatchObject({
+      path: '@/fields/HeroSlides/Components/FilmstripEditor',
+    })
   })
 
   it('registers the custom RowLabel component', () => {

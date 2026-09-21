@@ -112,6 +112,18 @@ export const SlideThumb = ({
           {/* biome-ignore lint/performance/noImgElement: a tiny admin-only picker thumbnail, not a page asset */}
           <img alt="" className="h-full w-full object-cover" src={thumbnail.url} />
         </DuoTone>
+      ) : thumbnail.kind === 'video-url' ? (
+        <DuoTone contained className="h-full w-full">
+          {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+          <video
+            autoPlay
+            className="h-full w-full object-cover"
+            loop
+            muted
+            playsInline
+            src={thumbnail.url}
+          />
+        </DuoTone>
       ) : (
         <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
           Empty

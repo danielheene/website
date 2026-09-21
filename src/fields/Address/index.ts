@@ -3,8 +3,7 @@ import type { Field, GroupField } from 'payload'
 import { startCase } from 'lodash-es'
 import { cn } from 'tailwind-variants'
 
-import { resolveAddressData } from '@/fields/Address/hooks/resolveAddressData'
-import { syncAddressDataBetweenBilingualLanguage } from '@/fields/Address/hooks/syncAddressDataBetweenBilingualLanguage'
+import { syncBilingualAddress } from '@/fields/Address/hooks/syncBilingualAddress'
 import { SectionGroupField } from '@/fields/SectionGroup'
 
 const fields: Field[] = [
@@ -142,17 +141,14 @@ export const AddressField = ({
         },
         hideGutter: true,
       },
-      hooks: {
-        beforeValidate: [
-          resolveAddressData,
-        ],
-        beforeChange: [
-          syncAddressDataBetweenBilingualLanguage,
-        ],
-      },
       fields,
     })),
     overrides: {
+      hooks: {
+        beforeChange: [
+          syncBilingualAddress,
+        ],
+      },
       admin: {
         className: '[&_header]:w-full',
         components: {

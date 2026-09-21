@@ -51,6 +51,8 @@ export const syncSkillSorting: TaskConfig<TaskSlug['SyncSkillSorting']> = {
       fetchResumeSkills(),
     ])
 
+    const publishedSkillIds = new Set(skills.map(({ id }) => String(id)))
+
     const skillSorting = skillSortingKeys.reduce((acc, configKey: keyof SkillSorting) => {
       if (configKey === 'skillTypeSortable') {
         const prevEntries: SkillTypeSortable[] = get(previousSkillSorting, configKey, [])
@@ -68,20 +70,45 @@ export const syncSkillSorting: TaskConfig<TaskSlug['SyncSkillSorting']> = {
 
       const prevEntries: SkillEntrySortable[] = get(previousSkillSorting, configKey, [])
 
-      acc[configKey] = [
-        ...prevEntries,
-        ...skills
-          .filter(({ type }) => type === configKey)
-          .map(({ id, content }) => ({
-            id,
-            label: convertLexicalToPlaintext({
-              data: content,
-            }).trim(),
-          })),
-      ].filter(
-        (entry: SkillEntrySortable, index, array) =>
-          array.findIndex(({ id }) => id === entry.id) === index,
+      // Update labels for existing entries from current skills, then append new ones.
+      // Also prune entries whose skill no longer exists in the collection at all.
+      const currentTypeSkills = skills.filter(({ type }) => type === configKey)
+      const currentTypeMap = new Map(
+        currentTypeSkills.map(({ id, content }) => [
+          String(id),
+          convertLexicalToPlaintext({
+            data: content,
+          }).trim(),
+        ]),
       )
+
+      const seen = new Set<string>()
+      const merged: SkillEntrySortable[] = []
+
+      for (const entry of prevEntries) {
+        const strId = String(entry.id)
+        if (seen.has(strId)) continue
+        if (!publishedSkillIds.has(strId)) continue
+        seen.add(strId)
+        merged.push({
+          id: entry.id,
+          label: currentTypeMap.get(strId) ?? entry.label,
+        })
+      }
+
+      for (const { id, content } of currentTypeSkills) {
+        const strId = String(id)
+        if (seen.has(strId)) continue
+        seen.add(strId)
+        merged.push({
+          id,
+          label: convertLexicalToPlaintext({
+            data: content,
+          }).trim(),
+        })
+      }
+
+      acc[configKey] = merged
 
       return acc
     }, {} as SkillSorting)

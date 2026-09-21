@@ -56,11 +56,12 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
   //   type: true,
   //   experienceInterval: true,
   // },
-  disableBulkEdit: true,
+  disableBulkEdit: false,
   disableDuplicate: true,
   lockDocuments: false,
   forceSelect: {
     content: true,
+    title: true,
     type: true,
   },
   fields: [
@@ -78,8 +79,7 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
     {
       type: 'text',
       name: 'title',
-      label: 'Content',
-      // virtual: true,
+      label: 'Title',
       admin: {
         hidden: true,
         readOnly: true,
@@ -90,7 +90,8 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
       },
       hooks: {
         afterRead: [
-          ({ siblingData }) => {
+          ({ siblingData, data }) => {
+            console.log('data', data?.content)
             const content = (
               siblingData as
                 | {
@@ -112,20 +113,6 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
         ],
       },
     },
-    // {
-    //   name: 'skilledJobs',
-    //   type: 'join',
-    //   collection: CollectionSlug['ResumeJobs'],
-    //   on: 'skills',
-    //   hasMany: true,
-    //   virtual: true,
-    //   admin: {
-    //     allowCreate: false,
-    //     disableGroupBy: true,
-    //     disableListColumn: true,
-    //     disableListFilter: true,
-    //   },
-    // },
 
     /* -------------- Sidebar Content -------------- */
     {
@@ -214,5 +201,11 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
     GeneratorFlagsField(),
   ],
   trash: true,
-  versions: false,
+  versions: {
+    drafts: {
+      autosave: false,
+      schedulePublish: true,
+    },
+    maxPerDoc: 1,
+  },
 }

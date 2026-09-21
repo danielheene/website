@@ -29,9 +29,9 @@ export const SkillSortingField: JSONFieldClientComponent = ({ path }: JSONFieldC
     <div className={cn('grid grid-cols-2 gap-2 -mx-2')}>
       <Sortable<SkillTypeSortable>
         entries={value?.skillTypeSortable || []}
-        handleEntryMove={() => {
+        handleEntryMove={(newEntries) => {
           if (!formProcessing && !formInitializing) {
-            handleEntryMove('skillTypeSortable')
+            handleEntryMove('skillTypeSortable')(newEntries)
           }
         }}
         selectedEntry={isSelected}
@@ -39,10 +39,10 @@ export const SkillSortingField: JSONFieldClientComponent = ({ path }: JSONFieldC
         className="p-2 w-full"
       />
       <Sortable<SkillEntrySortable>
-        entries={value?.[isSelected?.id] || []}
-        handleEntryMove={() => {
-          if (!formProcessing && !formInitializing) {
-            handleEntryMove(isSelected?.id)
+        entries={(isSelected?.id ? value?.[isSelected.id] : undefined) || []}
+        handleEntryMove={(newEntries) => {
+          if (!formProcessing && !formInitializing && isSelected?.id) {
+            handleEntryMove(isSelected.id)(newEntries)
           }
         }}
         className="p-2 w-full"
