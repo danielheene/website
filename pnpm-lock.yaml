@@ -32,9 +32,6 @@ importers:
       '@napi-rs/canvas':
         specifier: ^1.0.9
         version: 1.0.9
-      '@paper-design/shaders-react':
-        specifier: ^0.0.81
-        version: 0.0.81(@types/react@19.3.0)(react@19.3.0)
       '@payloadcms/db-mongodb':
         specifier: ^3.88.0
         version: 3.88.0(payload@3.88.0(graphql@16.14.2)(supports-color@10.2.2)(typescript@6.0.3))(supports-color@10.2.2)
@@ -167,9 +164,6 @@ importers:
       react-email:
         specifier: ^6.9.5
         version: 6.9.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(supports-color@10.2.2)
-      react-select:
-        specifier: ^5.10.2
-        version: 5.10.2(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(supports-color@10.2.2)
       recharts:
         specifier: ^3.10.1
         version: 3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@17.0.2)(react@19.3.0)(redux@5.0.1)
@@ -2479,18 +2473,6 @@ packages:
     resolution: {integrity: sha512-VPoCAhKvCQTlG7vxqaBXcmuvbh77BfnGXj8g0pbvVXpm1F/R8rDVwqIWcEbMzrI1JvJlm8v7T9uMVQb6UctMRg==}
     cpu: [x64]
     os: [win32]
-
-  '@paper-design/shaders-react@0.0.81':
-    resolution: {integrity: sha512-3FMkeZqj9sSvK/WkgekGu3crnOQd4R2iH8IT+jVBuQmq1m8p88VFvxh63s9bSt2exBwjBNaRfSo0FSCeNxqh3w==}
-    peerDependencies:
-      '@types/react': ^18 || ^19
-      react: ^19.2.7
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-
-  '@paper-design/shaders@0.0.81':
-    resolution: {integrity: sha512-jeGdyjMscZ2bxmQdo8lhwUufHUf4iq3s1ayjh8PXU7Go42Rw8E3I0It1FZdc3HuWt5J82m//DRWaxsRqRfA4Gg==}
 
   '@payloadcms/db-mongodb@3.88.0':
     resolution: {integrity: sha512-bjXWm7DvUQYLCTe3zJ9Pr57gEX5pQOtH+SgAhJBhh2fMYy/bE7pLf0DJG8z1E6N9Z8b1EX3kWkE1bhTYnR5Gxg==}
@@ -7790,12 +7772,6 @@ packages:
       redux:
         optional: true
 
-  react-select@5.10.2:
-    resolution: {integrity: sha512-Z33nHdEFWq9tfnfVXaiM12rbJmk+QjFEztWLtmXqQhz6Al4UZZ9xc0wiatmGtUOCCnHN0WizL3tCMYRENX4rVQ==}
-    peerDependencies:
-      react: ^19.2.7
-      react-dom: ^19.2.7
-
   react-select@5.9.0:
     resolution: {integrity: sha512-nwRKGanVHGjdccsnzhFte/PULziueZxGD8LL2WojON78Mvnq7LdAMEtu2frrwld1fr3geixg3iiMBIc/LLAZpw==}
     peerDependencies:
@@ -11185,15 +11161,6 @@ snapshots:
 
   '@oxc-resolver/binding-win32-x64-msvc@11.21.2':
     optional: true
-
-  '@paper-design/shaders-react@0.0.81(@types/react@19.3.0)(react@19.3.0)':
-    dependencies:
-      '@paper-design/shaders': 0.0.81
-      react: 19.3.0
-    optionalDependencies:
-      '@types/react': 19.3.0
-
-  '@paper-design/shaders@0.0.81': {}
 
   '@payloadcms/db-mongodb@3.88.0(payload@3.88.0(graphql@16.14.2)(supports-color@10.2.2)(typescript@6.0.3))(supports-color@10.2.2)':
     dependencies:
@@ -16878,23 +16845,6 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.3.0
       redux: 5.0.1
-
-  react-select@5.10.2(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(supports-color@10.2.2):
-    dependencies:
-      '@babel/runtime': 7.29.7
-      '@emotion/cache': 11.14.0
-      '@emotion/react': 11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@10.2.2)
-      '@floating-ui/dom': 1.8.0
-      '@types/react-transition-group': 4.4.12(@types/react@19.3.0)
-      memoize-one: 6.0.0
-      prop-types: 15.8.1
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
-      react-transition-group: 4.4.5(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      use-isomorphic-layout-effect: 1.2.1(@types/react@19.3.0)(react@19.3.0)
-    transitivePeerDependencies:
-      - '@types/react'
-      - supports-color
 
   react-select@5.9.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(supports-color@10.2.2):
     dependencies:
