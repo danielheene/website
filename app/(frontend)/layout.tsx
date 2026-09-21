@@ -24,8 +24,10 @@ export default async function RootLayout({
 }: {
   children: ReactNode | ReactNode[]
 }): Promise<JSX.Element> {
-  const globalUserSettings = await fetchGlobalUserSettingsCached()
-  const SiteSettings = await fetchSiteSettingsCached()
+  const [globalUserSettings, SiteSettings] = await Promise.all([
+    fetchGlobalUserSettingsCached(),
+    fetchSiteSettingsCached(),
+  ])
   const personSchema = generatePersonSchema(globalUserSettings)
   const webSiteSchema = generateWebSiteSchema(SiteSettings)
 

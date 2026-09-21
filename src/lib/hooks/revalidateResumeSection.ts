@@ -7,7 +7,7 @@ import type {
 } from 'payload'
 
 import { generateContentPath } from '@/lib/generateContentPath'
-import { CollectionSlug, CollectionSlugValue } from '@/types/collections'
+import { CollectionSlug } from '@/types/collections'
 import type { GlobalSlugValue } from '@/types/globals'
 import type { PageLayout } from '@/types/payload'
 

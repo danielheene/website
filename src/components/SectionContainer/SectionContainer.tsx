@@ -25,7 +25,7 @@ export const SectionContainer = ({
   variant = 'default',
   children,
 }: SectionContainerProps) => {
-  const [observerRef, isObserving, entry] = useIntersectionObserver({
+  const [observerRef, isObserving, _entry] = useIntersectionObserver({
     threshold: [
       0.1,
       0.25,

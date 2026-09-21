@@ -24,7 +24,7 @@ export const FieldComponentClient = ({
     path,
   })
 
-  const [isDragging, setIsDragging] = useState<boolean>(false)
+  const [_isDragging, setIsDragging] = useState<boolean>(false)
   const [isUploading, setIsUploading] = useState<boolean>(false)
 
   /**

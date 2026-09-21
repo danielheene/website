@@ -1,4 +1,4 @@
-import type { BlockSlug as RegisteredBlockSlug, TypedBlock, TypedGlobal } from 'payload'
+import type { BlockSlug as RegisteredBlockSlug, TypedBlock } from 'payload'
 
 import type { PascalCase } from 'type-fest'
 

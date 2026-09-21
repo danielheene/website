@@ -63,7 +63,7 @@ const prepStops = (stops?: string[]) => {
   }
 }
 
-const GradientBlinds: React.FC<GradientBlindsProps> = ({
+export const GradientBlinds: React.FC<GradientBlindsProps> = ({
   className,
   dpr,
   paused = false,
@@ -581,5 +581,3 @@ void main() {
     />
   )
 }
-
-export default GradientBlinds

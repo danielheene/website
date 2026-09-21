@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button, ConfirmationModal, DrawerToggler, Modal, toast, useModal } from '@payloadcms/ui'
+import { Button, ConfirmationModal, Modal, toast, useModal } from '@payloadcms/ui'
 
 import { useServerSentEvents } from '@/components/hooks/use-server-sent-events'
 import { enqueueSeedCollection } from '@/lib/actions/enqueueSeedCollection'

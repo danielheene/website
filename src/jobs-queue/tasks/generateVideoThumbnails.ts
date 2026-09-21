@@ -8,7 +8,6 @@ import { ALL_FORMATS, BufferSource, Input, type VideoSample, VideoSampleSink } f
 import type { GeneratorFlag } from '@/fields/GeneratorFlags'
 import { CollectionSlug } from '@/types/collections'
 import { TaskSlug } from '@/types/jobs-queue'
-import type { MediaVideo } from '@/types/payload'
 
 let registered = false
 

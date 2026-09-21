@@ -4,14 +4,14 @@ import { get, upperFirst } from 'lodash-es'
 
 import { resolveRelations } from '@/lib/resolveRelation'
 
-import CelllWithThumbnailClient from './CelllWithThumbnail.client'
+import CellWithThumbnailClient from './CellWithThumbnail.client'
 
 type CellWithThumbnailProps = {
   thumbnailPath: string
 } & DefaultServerCellComponentProps<TextFieldClient, string>
 
 export const CellWithThumbnail = async (props: CellWithThumbnailProps) => {
-  const { rowData, cellData, field, payload, collectionSlug, thumbnailPath, i18n } = props
+  const { rowData, cellData, field, collectionSlug, thumbnailPath } = props
 
   const thumbnailPathBase = thumbnailPath.replace(/\.(url|thumbnailURL)$/, '')
   const document = await resolveRelations(rowData)
@@ -31,7 +31,7 @@ export const CellWithThumbnail = async (props: CellWithThumbnailProps) => {
   }
 
   return (
-    <CelllWithThumbnailClient
+    <CellWithThumbnailClient
       thumbnailURL={thumbnailURL}
       titleValue={titleValue}
       doc={JSON.parse(JSON.stringify(rowData))}

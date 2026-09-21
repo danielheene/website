@@ -253,7 +253,7 @@ function hexToRgb(hex: string): [
   ]
 }
 
-export default function FaultyTerminal({
+export function FaultyTerminal({
   scale = 1,
   gridMul = [
     2,

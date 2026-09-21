@@ -13,9 +13,11 @@ Personal website + blog + resume builder for [daniel.heene.io](https://daniel.he
 - **Payload CMS 3.x** — configured in `payload.config.ts`, content modeled in `src/collections/`,
   `src/globals/`, `src/blocks/`, `src/fields/`.
 - **MongoDB** (via `@payloadcms/db-mongodb`) as the primary database.
-- **Redis** — used both as Payload's KV cache (`@payloadcms/kv-redis`), the Next.js turbo cache
-  (`@trieb.work/nextjs-turbo-redis-cache`), and a custom pub/sub layer (`src/lib/RedisHandler.ts`)
-  that powers Server-Sent Events (`app/(frontend)/api/sse/route.ts`).
+- **Redis** — used as Payload's own KV store (`@payloadcms/kv-redis`, no TTL support — see
+  `src/lib/redirects/redirectCache.ts` for the caching pattern to use instead when you need
+  expiry) and via `src/lib/RedisHandler.ts`, a thin wrapper around the `redis` package that
+  provides app-level `get`/`set`/`invalidate` (with real TTL) plus the pub/sub layer that powers
+  Server-Sent Events (`app/(frontend)/api/sse/route.ts`).
 - **S3-compatible storage** (`@payloadcms/storage-s3`, RustFS locally via Docker) for media.
 - **Tailwind CSS 4** for styling, **Storybook** for component development.
 - **Biome** for linting/formatting (not ESLint/Prettier).

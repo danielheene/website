@@ -149,7 +149,7 @@ type GrainientCtx = {
 }
 const ctxMap = new WeakMap<HTMLDivElement, GrainientCtx>()
 
-const Grainient: React.FC<GrainientProps> = ({
+export const Grainient: React.FC<GrainientProps> = ({
   timeSpeed = 0.25,
   colorBalance = 0.0,
   warpStrength = 1.0,
@@ -451,5 +451,3 @@ const Grainient: React.FC<GrainientProps> = ({
     />
   )
 }
-
-export default Grainient

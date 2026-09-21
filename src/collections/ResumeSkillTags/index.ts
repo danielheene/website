@@ -53,62 +53,6 @@ export const ResumeSkillTags: CollectionConfig<CollectionSlug['ResumeSkillTags']
       },
     },
 
-    // {
-    //   type: 'number',
-    //   name: 'interval',
-    //   hooks: {
-    //     afterRead: [
-    //       async ({ req, originalDoc }) => {
-    //         const payload = await getPayload({
-    //           config,
-    //         })
-    //         const { docs = [] } = await payload.find({
-    //           collection: CollectionSlug.ResumeJobs,
-    //           pagination: false,
-    //           limit: 0,
-    //           draft: false,
-    //           depth: 1,
-    //           select: {
-    //             startDate: true,
-    //             endDate: true,
-    //             skillTags: true,
-    //           },
-    //           // where: {
-    //           //   skillTags: {
-    //           //     contains: originalDoc.id,
-    //           //   },
-    //           // },
-    //         })
-    //
-    //         const intervals: Interval[] = docs.map(({ startDate, endDate }) => [
-    //           new Date(startDate),
-    //           endDate ? new Date(endDate) : new Date(),
-    //         ])
-    //         console.log(intervals)
-    //
-    //         const mergedIntervals = Intervals.mergeIntervals(intervals)
-    //
-    //         console.log(mergedIntervals)
-    //
-    //         return mergedIntervals.reduce(
-    //           (acc, interval) => acc + differenceInMonths(...interval),
-    //           0,
-    //         )
-    //       },
-    //     ],
-    //   },
-    // },
-
-    // {
-    //   type: 'join',
-    //   virtual: true,
-    //   name: 'resumeJobs',
-    //   defaultLimit: 999,
-    //   collection: CollectionSlug.ResumeJobs,
-    //   hasMany: true,
-    //   on: 'skillTags',
-    // },
-
     GeneratorFlagsField(),
   ],
 }

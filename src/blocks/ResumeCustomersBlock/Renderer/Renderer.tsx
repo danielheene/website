@@ -1,7 +1,5 @@
 'use server'
 
-import { Suspense } from 'react'
-
 import { fetchResumeCustomersCached } from '@/lib/fetchers/fetchResumeCustomers'
 import type { ResumeCustomersBlock } from '@/types/payload'
 

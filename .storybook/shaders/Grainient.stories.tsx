@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import Grainient from '@/components/Shaders/Grainient/Grainient'
+import { Grainient } from '@/components/Shaders/Grainient/Grainient'
 
 const meta = {
   title: 'Grainient',
