@@ -10,10 +10,10 @@
     "#frontend.css": "./src/styles/frontend.css"
   },
   "scripts": {
-    "build": "SENTRY_RELEASE=\"${SENTRY_RELEASE:-website@$(node -p 'require(\"./package.json\").version')}\" pnpm run next build",
+    "build": "pnpm run next build",
     "build:storybook": "pnpm run storybook build --output-dir dist",
     "chore:reinstall": "pnpm --shell-mode exec rm -rf node_modules && pnpm --shell-mode exec rm pnpm-lock.yaml && pnpm install",
-    "chore:sort": "syncpack format",
+    "chore:format": "syncpack format --source",
     "ci": "pnpm run migrate && pnpm run build",
     "deps:fix": "syncpack fix --dependency-types prod,dev,peer",
     "deps:lint": "syncpack lint --dependency-types prod,dev,peer",
@@ -169,7 +169,6 @@
     "cssnano": "^8.0.10",
     "husky": "^9.1.7",
     "lint-staged": "^17.5.1",
-    "next": "^16.3.4",
     "playwright": "~1.63.0",
     "postcss": "^8.5.28",
     "react": "^19.2.7",
