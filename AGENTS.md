@@ -13,9 +13,15 @@ Personal website + blog + resume builder for [daniel.heene.io](https://daniel.he
 - **Payload CMS 3.x** — configured in `payload.config.ts`, content modeled in `src/collections/`,
   `src/globals/`, `src/blocks/`, `src/fields/`.
 - **MongoDB** (via `@payloadcms/db-mongodb`) as the primary database.
-- **Redis** — used both as Payload's KV cache (`@payloadcms/kv-redis`), the Next.js turbo cache
-  (`@trieb.work/nextjs-turbo-redis-cache`), and a custom pub/sub layer (`src/lib/RedisHandler.ts`)
-  that powers Server-Sent Events (`app/(frontend)/api/sse/route.ts`).
+- **Redis** — used as Payload's own KV store (`@payloadcms/kv-redis`, no TTL support — see
+  `src/lib/redirects/redirectCache.ts` for the caching pattern to use instead when you need
+  expiry) and via `src/lib/RedisHandler.ts`, a thin wrapper around the `redis` package that
+  provides app-level `get`/`set`/`invalidate` (with real TTL) plus the pub/sub layer that powers
+  Server-Sent Events (`app/(frontend)/api/sse/route.ts`). `docker-compose.yml` provisions Redis
+  with `notify-keyspace-events` for `@trieb.work/nextjs-turbo-redis-cache`, but that package is
+  **not** installed and no Next.js `cacheHandler` is wired up — `use cache` entries (including the
+  icon-collection route) currently live in Next's default per-instance store, not Redis. Wiring
+  that up is a known gap, not a completed integration; don't assume it's active.
 - **S3-compatible storage** (`@payloadcms/storage-s3`, RustFS locally via Docker) for media.
 - **Tailwind CSS 4** for styling, **Storybook** for component development.
 - **Biome** for linting/formatting (not ESLint/Prettier).
