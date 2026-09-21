@@ -28,11 +28,8 @@ export const HeroClient = ({
           width={background.width}
           height={background.height}
           blurDataURL={background.blurDataURL}
-          // sizes="1920px"
-          // priority
           className="absolute top-0 right-0 left-0 bottom-0 z-0"
           fill
-          // duoTone
         />
       )}
       <div
