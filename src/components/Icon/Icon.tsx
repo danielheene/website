@@ -2,7 +2,7 @@
 
 import { type ComponentPropsWithoutRef, forwardRef, type JSX } from 'react'
 
-import { addAPIProvider, IconifyIcon, Icon as IconifyIconComponent } from '@iconify/react'
+import { addAPIProvider, Icon as IconifyIconComponent } from '@iconify/react'
 
 import { ICONIFY_API } from './api'
 

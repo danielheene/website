@@ -1,6 +1,6 @@
 'use client'
 
-import { HTMLAttributes, JSX, Ref, RefAttributes, useState } from 'react'
+import { HTMLAttributes, JSX, Ref, useState } from 'react'
 
 import * as SwitchPrimitives from '@radix-ui/react-switch'
 import { ClassValue, cn } from 'tailwind-variants'

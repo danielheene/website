@@ -34,7 +34,7 @@ export const FieldComponent: NumberFieldClientComponent = ({
   const [localValue, setLocalValue] = useState<string>('')
   const throttledLocalValue = useThrottledValue(localValue, 1000)
 
-  const { i18n, t } = useTranslation()
+  const { i18n } = useTranslation()
   const {
     value: fieldValue,
     formProcessing,

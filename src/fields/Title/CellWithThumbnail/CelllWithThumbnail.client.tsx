@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import type { CollectionSlug, DefaultCellComponentProps, TextFieldClient } from 'payload'
+import type { CollectionSlug } from 'payload'
 import { useListDrawerContext } from '@payloadcms/ui'
 
 import { cn } from 'tailwind-variants'
@@ -23,7 +23,7 @@ export const CellWithThumbnailClient = ({
   docID,
   doc,
 }: CellWithThumbnailClientProps) => {
-  const { onSelect, isInDrawer, selectedOption } = useListDrawerContext()
+  const { onSelect, isInDrawer } = useListDrawerContext()
 
   const sharedStyles = cn([
     'mx-0 my-[-10px] p-0 w-full',

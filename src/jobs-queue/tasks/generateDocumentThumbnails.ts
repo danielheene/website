@@ -6,7 +6,6 @@ import { PDFParse } from 'pdf-parse'
 import type { GeneratorFlag } from '@/fields/GeneratorFlags'
 import { CollectionSlug } from '@/types/collections'
 import { TaskSlug } from '@/types/jobs-queue'
-import { MediaDocument } from '@/types/payload'
 
 export const generateDocumentThumbnails: TaskConfig<TaskSlug['GenerateDocumentThumbnails']> = {
   slug: TaskSlug.GenerateDocumentThumbnails,

@@ -20,10 +20,9 @@ export const FieldComponent: CheckboxFieldClientComponent = ({
   iconActive,
   iconInactive,
 }: FieldComponentProps) => {
-  const { value, setValue, disabled, blocksFilterOptions, errorMessage, errorPaths } =
-    useField<boolean>({
-      path,
-    })
+  const { value, setValue } = useField<boolean>({
+    path,
+  })
 
   return (
     <div

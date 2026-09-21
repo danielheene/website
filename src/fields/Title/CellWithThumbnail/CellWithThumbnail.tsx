@@ -11,7 +11,7 @@ type CellWithThumbnailProps = {
 } & DefaultServerCellComponentProps<TextFieldClient, string>
 
 export const CellWithThumbnail = async (props: CellWithThumbnailProps) => {
-  const { rowData, cellData, field, payload, collectionSlug, thumbnailPath, i18n } = props
+  const { rowData, cellData, field, collectionSlug, thumbnailPath } = props
 
   const thumbnailPathBase = thumbnailPath.replace(/\.(url|thumbnailURL)$/, '')
   const document = await resolveRelations(rowData)

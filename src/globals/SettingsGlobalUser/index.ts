@@ -1,7 +1,5 @@
 import type { GlobalConfig } from 'payload'
 
-import dedent from 'dedent'
-
 import { authenticated } from '@/access/authenticated'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { AddressField } from '@/fields/Address'

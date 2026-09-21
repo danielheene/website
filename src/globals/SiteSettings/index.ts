@@ -7,7 +7,6 @@ import { SectionGroupField } from '@/fields/SectionGroup'
 import { TemplateField } from '@/fields/Template'
 import { generateResumeDocumentHook } from '@/lib/hooks/global'
 import { AdminGroup } from '@/types/admin-panel'
-import { CollectionSlug } from '@/types/collections'
 import { GlobalData, GlobalSlug } from '@/types/globals'
 
 import { revalidateDocument } from './hooks/revalidateDocument'
