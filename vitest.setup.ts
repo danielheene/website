@@ -70,6 +70,8 @@ vi.mock('redis', () => ({
     connect: vi.fn(),
     get: vi.fn(),
     set: vi.fn(),
+    del: vi.fn(),
+    scanIterator: vi.fn(() => []),
     publish: vi.fn(),
     subscribe: vi.fn(),
     quit: vi.fn(),

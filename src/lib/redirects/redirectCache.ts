@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 
 import { normalizeRedirectPath } from '@/collections/Redirects/hooks/normalizeFromPath'
 import { extractErrorMessage } from '@/lib/extractErrorMessage'
+import { get, getClient, set } from '@/lib/RedisHandler'
 
 import { type ResolvedRedirect, resolveRedirect } from './resolveRedirect'
 
@@ -12,9 +13,11 @@ const CACHE_PREFIX = 'redirects:lookup:'
 /**
  * Safety net for rows changed without going through the collection hooks (a
  * direct DB write, a restored dump). Hook-driven invalidation is what normally
- * keeps this fresh, so the window can be generous.
+ * keeps this fresh, so the window can be generous. Backed by Redis' own EX
+ * expiry (via RedisHandler), so stale entries drop out on their own instead
+ * of lingering until overwritten or swept.
  */
-const TTL_MS = 5 * 60 * 1000
+const TTL_SECONDS = 5 * 60
 
 const cacheKeyFor = (pathname: string): string =>
   `${CACHE_PREFIX}${normalizeRedirectPath(pathname)}`
@@ -22,38 +25,40 @@ const cacheKeyFor = (pathname: string): string =>
 interface CacheEntry {
   /** Null is cached too: "no redirect here" is the common case and the one worth skipping the DB for. */
   redirect: ResolvedRedirect | null
-  expiresAt: number
 }
 
 /**
  * Resolves a redirect for `pathname`, memoizing the result — including misses —
- * in the KV store.
+ * in Redis.
  *
  * `proxy.ts` calls this on every request that reaches the redirect stage, so
  * the miss path is the hot one: without caching negatives, each request for a
  * path with no redirect would still cost a query.
  */
 export const fetchRedirect = async (pathname: string): Promise<ResolvedRedirect | null> => {
+  const cacheKey = cacheKeyFor(pathname)
+  const cached = await get<CacheEntry>(cacheKey)
+
+  if (cached) {
+    return cached.redirect
+  }
+
   const payload = await getPayload({
     config,
   })
-
-  const cacheKey = cacheKeyFor(pathname)
-  const cached = await payload.kv.get<CacheEntry>(cacheKey)
-
-  if (cached && cached.expiresAt > Date.now()) {
-    return cached.redirect
-  }
 
   const redirect = await resolveRedirect({
     payload,
     pathname,
   })
 
-  await payload.kv.set(cacheKey, {
-    redirect,
-    expiresAt: Date.now() + TTL_MS,
-  } satisfies CacheEntry)
+  await set(
+    cacheKey,
+    {
+      redirect,
+    } satisfies CacheEntry,
+    TTL_SECONDS,
+  )
 
   return redirect
 }
@@ -68,15 +73,14 @@ export const fetchRedirect = async (pathname: string): Promise<ResolvedRedirect 
  * small and refills on demand.
  */
 export const invalidateRedirectCache = async (): Promise<void> => {
-  const payload = await getPayload({
-    config,
-  })
-
   try {
-    const keys = await payload.kv.keys()
-    await Promise.all(
-      keys.filter((key) => key.startsWith(CACHE_PREFIX)).map((key) => payload.kv.delete(key)),
-    )
+    const redis = await getClient()
+
+    for await (const key of redis.scanIterator({
+      MATCH: `${CACHE_PREFIX}*`,
+    })) {
+      await redis.del(key)
+    }
   } catch (error) {
     console.error('Failed to invalidate redirect cache:', extractErrorMessage(error))
   }
