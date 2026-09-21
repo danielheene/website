@@ -1,3 +1,10 @@
+## [1.4.2](https://github.com/danielheene/website/compare/v1.4.1...v1.4.2) (2026-09-21)
+
+
+### Bug Fixes
+
+* **ts:** resolve ButtonProps type errors from tailwind-variants v3.7 ([#79](https://github.com/danielheene/website/issues/79)) ([02c75cd](https://github.com/danielheene/website/commit/02c75cd3a7120095d264878d32bc72aed6b87aab))
+
 ## [1.4.1](https://github.com/danielheene/website/compare/v1.4.0...v1.4.1) (2026-09-21)
 
 
