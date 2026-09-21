@@ -15,16 +15,22 @@ import type { ShaderPresetKey } from './shaderPresets'
  * every render, defeating memoization and risking remounts on re-render.
  */
 const SHADER_COMPONENTS: Record<ShaderPresetKey, ReturnType<typeof dynamic>> = {
-  darkveil: dynamic(() => import('@/components/Shaders/DarkVeil'), {
+  darkveil: dynamic(() => import('@/components/Shaders/DarkVeil').then((mod) => mod.DarkVeil), {
     ssr: false,
   }),
-  'faulty-terminal': dynamic(() => import('@/components/Shaders/FaultyTerminal'), {
-    ssr: false,
-  }),
-  'gradient-blinds': dynamic(() => import('@/components/Shaders/GradientBlinds'), {
-    ssr: false,
-  }),
-  grainient: dynamic(() => import('@/components/Shaders/Grainient'), {
+  'faulty-terminal': dynamic(
+    () => import('@/components/Shaders/FaultyTerminal').then((mod) => mod.FaultyTerminal),
+    {
+      ssr: false,
+    },
+  ),
+  'gradient-blinds': dynamic(
+    () => import('@/components/Shaders/GradientBlinds').then((mod) => mod.GradientBlinds),
+    {
+      ssr: false,
+    },
+  ),
+  grainient: dynamic(() => import('@/components/Shaders/Grainient').then((mod) => mod.Grainient), {
     ssr: false,
   }),
 }

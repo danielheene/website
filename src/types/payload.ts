@@ -443,6 +443,7 @@ export interface MediaImage {
     | 'seeded-dummy'
   )[];
   prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -504,6 +505,7 @@ export interface MediaVideo {
     | 'seeded-dummy'
   )[];
   prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -964,6 +966,7 @@ export interface User {
   resetPasswordExpiration?: string | null;
   salt?: string | null;
   hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
   sessions?:
@@ -1015,6 +1018,7 @@ export interface MediaDocument {
     | 'seeded-dummy'
   )[];
   prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -1060,6 +1064,7 @@ export interface MediaAudio {
     | 'seeded-dummy'
   )[];
   prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -1642,6 +1647,7 @@ export interface PayloadImport {
       | null;
   };
   prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -1898,6 +1904,7 @@ export interface UsersSelect<T extends boolean = true> {
   resetPasswordExpiration?: T;
   salt?: T;
   hash?: T;
+  resetPasswordRequestedAt?: T;
   loginAttempts?: T;
   lockUntil?: T;
   sessions?:
@@ -1919,6 +1926,7 @@ export interface ImagesSelect<T extends boolean = true> {
   blurDataURL?: T;
   generatorFlags?: T;
   prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1955,6 +1963,7 @@ export interface VideosSelect<T extends boolean = true> {
   thumbnails?: T;
   generatorFlags?: T;
   prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1977,6 +1986,7 @@ export interface DocumentsSelect<T extends boolean = true> {
   thumbnails?: T;
   generatorFlags?: T;
   prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1998,6 +2008,7 @@ export interface AudiosSelect<T extends boolean = true> {
   credits?: T;
   generatorFlags?: T;
   prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -2195,6 +2206,7 @@ export interface PayloadImportsSelect<T extends boolean = true> {
         issueDetails?: T;
       };
   prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -3126,7 +3138,10 @@ export interface TaskSchedulePublish {
           value: string | ResumeSkillData;
         } | null);
     global?: string | null;
-    user?: (string | null) | User;
+    user?: {
+      relationTo: 'users';
+      value: string | User;
+    } | null;
   };
   output?: unknown;
 }
