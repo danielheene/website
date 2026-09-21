@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/danielheene/website/compare/v1.4.0...v1.4.1) (2026-09-21)
+
+
+### Bug Fixes
+
+* **env:** remove unused NEXT_PUBLIC_MAPBOX_API_KEY from env schema ([#78](https://github.com/danielheene/website/issues/78)) ([1d948b4](https://github.com/danielheene/website/commit/1d948b4c81c082381313a8aad14c525d1c31f64a))
+
 # [1.4.0](https://github.com/danielheene/website/compare/v1.3.0...v1.4.0) (2026-09-21)
 
 
