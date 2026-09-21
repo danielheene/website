@@ -41,17 +41,14 @@ export const config = buildConfig({
       Nav: '@/components/AdminPanel#Nav',
     },
     dashboard: {
-      defaultLayout: [
-        {
-          widgetSlug: 'scheduled-jobs-widget',
-          width: 'full',
-        },
-        {
-          widgetSlug: 'umami-widget',
-          width: 'full',
-        },
-      ],
       widgets: [
+        {
+          slug: 'status-banners-widget',
+          label: 'Status Banners',
+          Component: '@/widgets/StatusBannersWidget#StatusBannersWidget',
+          minWidth: 'full',
+          maxWidth: 'full',
+        },
         {
           slug: 'scheduled-jobs-widget',
           label: 'Scheduled Jobs',
@@ -65,6 +62,20 @@ export const config = buildConfig({
           Component: '@/widgets/UmamiWidget#UmamiWidget',
           minWidth: 'full',
           maxWidth: 'full',
+        },
+      ],
+      defaultLayout: [
+        {
+          widgetSlug: 'status-banners-widget',
+          width: 'full',
+        },
+        {
+          widgetSlug: 'scheduled-jobs-widget',
+          width: 'full',
+        },
+        {
+          widgetSlug: 'umami-widget',
+          width: 'full',
         },
       ],
     },

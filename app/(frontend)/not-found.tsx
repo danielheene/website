@@ -17,7 +17,7 @@ export default async function NotFound() {
           <h1 className="text-9xl">404</h1>
           <p className="text-3xl">This page could not be found.</p>
         </div>
-        <Button color="secondary" size="lg" className="text-4xl px-8 py-4 font-mono" asChild>
+        <Button variant="secondary" size="lg" className="text-4xl px-8 py-4 font-mono" asChild>
           <Link href="/">
             <span>GO TO HOMEPAGE</span>
             <Icon name="mdi:arrow-forward" className="ml-8 text-[110%] leading-[1em]" />

@@ -32,14 +32,18 @@ describe('generateWebSiteSchema', () => {
     ).toBe('line1 line2 line3')
   })
 
-  it('adds the image only for media image objects', () => {
+  it('adds the image only for image slides with a url', () => {
     expect(
       generateWebSiteSchema(
         general({
-          image: {
-            mimeType: 'image/png',
-            url: '/i.png',
-          },
+          defaultOpengraphImage: [
+            {
+              slideType: 'image',
+              media: {
+                url: '/i.png',
+              },
+            },
+          ],
         }),
       ).image,
     ).toEqual({
@@ -49,7 +53,12 @@ describe('generateWebSiteSchema', () => {
     expect(
       generateWebSiteSchema(
         general({
-          image: 'plain-string',
+          defaultOpengraphImage: [
+            {
+              slideType: 'shader',
+              shader: 'gradient-blinds',
+            },
+          ],
         }),
       ),
     ).not.toHaveProperty('image')

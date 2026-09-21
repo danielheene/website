@@ -1,4 +1,4 @@
-import { ComponentProps, forwardRef, ReactNode } from 'react'
+import { forwardRef, ReactNode } from 'react'
 
 import * as Slot from '@radix-ui/react-slot'
 import { cn, tv, VariantProps } from 'tailwind-variants'
@@ -80,7 +80,7 @@ export interface BadgeProps extends VariantProps<typeof badgeStyles> {
 
 const BadgeSlot = Slot.createSlot<HTMLSpanElement, BadgeProps>('Badge.Slot')
 
-export const Badge = forwardRef<HTMLSpanElement, BadgeProps & ComponentProps<'span'>>(
+export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
   ({ color, style, size, children, className, asChild, ...props }, ref) => {
     const Component = asChild ? BadgeSlot : 'span'
 

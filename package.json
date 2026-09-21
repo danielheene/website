@@ -2,18 +2,24 @@
   "name": "website",
   "version": "1.4.1",
   "private": true,
-  "description": "",
+  "description": "personal website, blog, and resume builder",
+  "homepage": "https://daniel.heene.io",
+  "repository": "https://github.com/danielheene/website",
   "license": "MIT",
+  "author": {
+    "name": "Daniel Heene",
+    "email": "daniel@heene.io"
+  },
   "type": "module",
   "imports": {
     "#payload.css": "./src/styles/payload.css",
     "#frontend.css": "./src/styles/frontend.css"
   },
   "scripts": {
-    "build": "SENTRY_RELEASE=\"${SENTRY_RELEASE:-website@$(node -p 'require(\"./package.json\").version')}\" pnpm run next build",
+    "build": "pnpm run next build",
     "build:storybook": "pnpm run storybook build --output-dir dist",
     "chore:reinstall": "pnpm --shell-mode exec rm -rf node_modules && pnpm --shell-mode exec rm pnpm-lock.yaml && pnpm install",
-    "chore:sort": "syncpack format",
+    "chore:format": "syncpack format",
     "ci": "pnpm run migrate && pnpm run build",
     "deps:fix": "syncpack fix --dependency-types prod,dev,peer",
     "deps:lint": "syncpack lint --dependency-types prod,dev,peer",
@@ -54,27 +60,14 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
   },
-  "lint-staged": {
-    "package.json": [
-      "syncpack format --source",
-      "syncpack fix --dependency-types prod,dev,peer --source",
-      "pnpm install"
-    ],
-    "*.{ts,tsx,js,jsx,mjs,cjs,json,jsonc,css}": [
-      "biome check --write --no-errors-on-unmatched"
-    ]
-  },
   "resolutions": {
-    "pdfjs-dist": "5.4.296",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
-    "redis": "4.7.0"
+    "pdfjs-dist": "5.4.296"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.58",
     "@iconify/react": "^6.0.2",
     "@mediabunny/server": "^1.58.1",
-    "@napi-rs/canvas": "^1.0.3",
+    "@napi-rs/canvas": "^1.0.9",
     "@paper-design/shaders-react": "^0.0.81",
     "@payloadcms/db-mongodb": "^3.88.0",
     "@payloadcms/kv-redis": "^3.88.0",
@@ -110,7 +103,7 @@
     "mediabunny": "^1.58.1",
     "nanoid": "^6.0.1",
     "neotraverse": "^1.0.1",
-    "next": "^16.3.4",
+    "next": "^16.3.5",
     "next-themes": "^0.4.6",
     "ogl": "^1.0.11",
     "payload": "^3.88.0",
@@ -167,12 +160,11 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@types/timestring": "^7.0.0",
-    "@vitest/coverage-v8": "^4.1.10",
+    "@vitest/coverage-v8": "^4.1.11",
     "autoprefixer": "^10.6.1",
-    "cssnano": "^8.0.1",
+    "cssnano": "^8.0.10",
     "husky": "^9.1.7",
     "lint-staged": "^17.5.1",
-    "next": "^16.3.4",
     "playwright": "~1.63.0",
     "postcss": "^8.5.28",
     "react": "^19.2.7",
@@ -186,12 +178,13 @@
     "typescript": "^6.0.3",
     "vite": "^7.0.0",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.1.10",
+    "vitest": "^4.1.11",
     "wrangler": "^4.135.0"
   },
   "packageManager": "pnpm@11.18.0",
   "engines": {
     "node": "^26.0.0",
     "pnpm": "^11.0.0"
-  }
+  },
+  "readme": "https://github.com/danielheene/website"
 }

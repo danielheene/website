@@ -1,6 +1,6 @@
 'use client'
 
-import { ComponentProps, forwardRef, ReactNode } from 'react'
+import { ButtonHTMLAttributes, forwardRef, ReactNode } from 'react'
 
 import { createSlot, createSlottable } from '@radix-ui/react-slot'
 import { tv, VariantProps } from 'tailwind-variants'
@@ -103,8 +103,11 @@ export const buttonStyles = tv({
   },
 })
 
-export interface ButtonProps extends VariantProps<typeof buttonStyles> {
+export interface ButtonProps
+  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'color'>,
+    VariantProps<typeof buttonStyles> {
   children?: ReactNode
+  className?: string
   startIcon?: string
   endIcon?: string
   asChild?: boolean
@@ -113,7 +116,7 @@ export interface ButtonProps extends VariantProps<typeof buttonStyles> {
 const ButtonSlot = createSlot<HTMLButtonElement, ButtonProps>('Button.Slot')
 const ButtonSlottable = createSlottable('Button.Slottable')
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps & ComponentProps<'button'>>(
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     { variant, size, fullWidth, startIcon, endIcon, className, asChild, children, ...props },
     ref,

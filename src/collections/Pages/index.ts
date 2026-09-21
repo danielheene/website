@@ -65,15 +65,18 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
     },
     preview: (data: Partial<Page>) => generatePreviewPath(CollectionSlug.Pages, data.slug),
     components: {
-      listMenuItems: [
-        {
-          path: '@/components/AdminPanel/SeedActions#SeedActions',
-          clientProps: {
-            collectionSlug: CollectionSlug.Pages,
-            collectionLabel: 'Pages',
-          },
-        },
-      ],
+      listMenuItems:
+        process.env.NODE_ENV !== 'production'
+          ? [
+              {
+                path: '@/components/AdminPanel/SeedActions#SeedActions',
+                clientProps: {
+                  collectionSlug: CollectionSlug.Pages,
+                  collectionLabel: 'Pages',
+                },
+              },
+            ]
+          : [],
     },
   },
   fields: [

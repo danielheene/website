@@ -54,15 +54,18 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
     preview: (data: Partial<BlogPostData>) =>
       generatePreviewPath(CollectionSlug.BlogPosts, data.slug),
     components: {
-      listMenuItems: [
-        {
-          path: '@/components/AdminPanel/SeedActions#SeedActions',
-          clientProps: {
-            collectionSlug: CollectionSlug.BlogPosts,
-            collectionLabel: 'Posts',
-          },
-        },
-      ],
+      listMenuItems:
+        process.env.NODE_ENV !== 'production'
+          ? [
+              {
+                path: '@/components/AdminPanel/SeedActions#SeedActions',
+                clientProps: {
+                  collectionSlug: CollectionSlug.BlogPosts,
+                  collectionLabel: 'Posts',
+                },
+              },
+            ]
+          : [],
     },
   },
   hooks: {

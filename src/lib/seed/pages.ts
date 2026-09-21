@@ -182,7 +182,7 @@ const linkGroupBlock = (random: Random) => ({
     link: {
       linkType: 'custom',
       newTab: true,
-      label: entry.label,
+      text: entry.label,
       url: entry.url,
       doc: null,
     },
