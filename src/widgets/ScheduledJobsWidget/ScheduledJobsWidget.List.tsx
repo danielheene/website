@@ -54,7 +54,6 @@ export const ScheduledJobsWidgetList = ({ jobs }: ScheduledJobsWidgetListProps) 
   }
 
   const visibleJobs = selectedQueue ? jobs.filter((job) => job.queue === selectedQueue) : jobs
-  const staleCount = visibleJobs.filter((job) => new Date(job.waitUntil) <= new Date()).length
 
   return (
     <div className="pb-12">
@@ -62,7 +61,6 @@ export const ScheduledJobsWidgetList = ({ jobs }: ScheduledJobsWidgetListProps) 
         <Header
           queues={ALL_QUEUES}
           selectedQueue={selectedQueue}
-          staleCount={staleCount}
           onSelectQueue={setSelectedQueue}
           onMoveQueue={handleMoveQueue}
         />

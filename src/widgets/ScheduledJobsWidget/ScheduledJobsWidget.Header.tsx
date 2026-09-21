@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from 'react'
 import { startCase } from 'lodash-es'
 import { cn } from 'tailwind-variants'
 
-import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
 import { ButtonGroup, ButtonGroupSeparator } from '@/components/ButtonGroup'
 import { Icon } from '@/components/Icon'
@@ -13,20 +12,13 @@ import { Icon } from '@/components/Icon'
 interface HeaderProps {
   queues: string[]
   selectedQueue: string | null
-  staleCount: number
   onSelectQueue: (queue: string | null) => void
   onMoveQueue: (direction: 1 | -1) => void
 }
 
 const ALL_QUEUES_LABEL = 'All Queues'
 
-export const Header = ({
-  queues,
-  selectedQueue,
-  staleCount,
-  onSelectQueue,
-  onMoveQueue,
-}: HeaderProps) => {
+export const Header = ({ queues, selectedQueue, onSelectQueue, onMoveQueue }: HeaderProps) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false)
   const popupRef = useRef<HTMLDivElement>(null)
 
@@ -61,16 +53,9 @@ export const Header = ({
         <div className="text-xs md:text-sm lg:text-md text-muted-foreground">
           Scheduled Jobs Controls:
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-md md:text-lg lg:text-xl font-medium leading-none">
-            {selectedQueue ? startCase(selectedQueue) : ALL_QUEUES_LABEL}
-          </span>
-          {staleCount > 0 && (
-            <Badge color="warning" size="sm">
-              {staleCount} stale
-            </Badge>
-          )}
-        </div>
+        <span className="text-md md:text-lg lg:text-xl font-medium leading-none">
+          {selectedQueue ? startCase(selectedQueue) : ALL_QUEUES_LABEL}
+        </span>
       </div>
 
       <div className="flex flex-row gap-2.5">

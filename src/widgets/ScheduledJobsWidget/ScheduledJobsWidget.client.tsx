@@ -7,7 +7,6 @@ import { toast } from '@payloadcms/ui'
 import { format, formatDistanceToNow } from 'date-fns'
 import { cn } from 'tailwind-variants'
 
-import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
 import { useServerSentEvents } from '@/components/hooks/use-server-sent-events'
 import { cancelScheduledJob } from '@/lib/actions/cancelScheduledJob'
@@ -133,16 +132,9 @@ export const ScheduledJobsWidgetClient = ({
           'flex flex-col gap-1 mr-auto',
         ])}
       >
-        <div className="flex items-center gap-2">
-          <span className="text-lg leading-none font-mono font-medium">
-            {taskSlug ?? workflowSlug}
-          </span>
-          {isDue && (
-            <Badge color="warning" size="sm">
-              Stale
-            </Badge>
-          )}
-        </div>
+        <span className="text-lg leading-none font-mono font-medium">
+          {taskSlug ?? workflowSlug}
+        </span>
         <span className="text-sm leading-none font-mono opacity-60">
           {remainingLabel} [{format(waitUntil, 'p')}]
         </span>

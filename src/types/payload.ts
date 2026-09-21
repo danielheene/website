@@ -186,6 +186,7 @@ export interface Config {
   };
   locale: null;
   widgets: {
+    'status-banners-widget': StatusBannersWidgetWidget;
     'scheduled-jobs-widget': ScheduledJobsWidgetWidget;
     'umami-widget': UmamiWidgetWidget;
     collections: CollectionsWidget;
@@ -2752,6 +2753,16 @@ export interface PayloadJobsStatsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "status-banners-widget_widget".
+ */
+export interface StatusBannersWidgetWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
