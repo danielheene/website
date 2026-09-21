@@ -19,7 +19,7 @@
     "build": "pnpm run next build",
     "build:storybook": "pnpm run storybook build --output-dir dist",
     "chore:reinstall": "pnpm --shell-mode exec rm -rf node_modules && pnpm --shell-mode exec rm pnpm-lock.yaml && pnpm install",
-    "chore:format": "syncpack format --source",
+    "chore:format": "syncpack format",
     "ci": "pnpm run migrate && pnpm run build",
     "deps:fix": "syncpack fix --dependency-types prod,dev,peer",
     "deps:lint": "syncpack lint --dependency-types prod,dev,peer",
