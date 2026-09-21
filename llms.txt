@@ -50,4 +50,8 @@ important file: read it first, every time.
 - [src/emails/](src/emails): React Email templates and rendering (contact form notifications).
 - [src/pdf/](src/pdf): PDF generation (resume export).
 - [src/jobs-queue/](src/jobs-queue): Payload Jobs Queue tasks/workflows.
+- [src/widgets/](src/widgets): Custom Payload dashboard widgets (async server components registered
+  in `payload.config.ts`; client parts call server actions from `src/lib/actions/`).
+- [src/lib/actions/](src/lib/actions): Server actions (`'use server'`) for admin mutations (job
+  rescheduling, cancellation, etc.).
 - [e2e/](e2e): Playwright E2E specs — structural smoke tests, not content assertions.

@@ -16,7 +16,7 @@ Personal website + blog + resume builder for [daniel.heene.io](https://daniel.he
 - **Redis** — used both as Payload's KV cache (`@payloadcms/kv-redis`), the Next.js turbo cache
   (`@trieb.work/nextjs-turbo-redis-cache`), and a custom pub/sub layer (`src/lib/RedisHandler.ts`)
   that powers Server-Sent Events (`app/(frontend)/api/sse/route.ts`).
-- **S3-compatible storage** (`@payloadcms/storage-s3`, Minio locally) for media.
+- **S3-compatible storage** (`@payloadcms/storage-s3`, RustFS locally via Docker) for media.
 - **Tailwind CSS 4** for styling, **Storybook** for component development.
 - **Biome** for linting/formatting (not ESLint/Prettier).
 
@@ -110,6 +110,13 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
 - **Revalidation**: Payload collection hooks call `revalidate*` helpers (e.g.
   `src/collections/Pages/hooks/revalidatePage.ts`) to invalidate Next.js cache tags after content
   changes — follow this pattern for any new collection that's rendered on the frontend.
+- **Dashboard widgets** (`src/widgets/`): async server components registered in `payload.config.ts`
+  under `admin.dashboard.widgets`. Each widget has a `slug`, `Component` path, and optional
+  `minWidth`/`maxWidth`. Run `pnpm generate` after adding a new widget so its slug is included in
+  the inferred `defaultLayout` union type. Client-side widget parts live alongside as
+  `*.client.tsx` files and call server actions from `src/lib/actions/` for mutations.
+- **Server actions** (`src/lib/actions/`): `'use server'` functions for admin mutations (job
+  rescheduling, cancellation, etc.). Use `useTransition` on the client side when calling them.
 
 ## Security Guardrails (found during review — respect these when touching related code)
 
