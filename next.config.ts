@@ -1,10 +1,10 @@
 import { ChildProcess, spawn } from 'node:child_process'
 
 import { NextConfig } from 'next'
-import { PHASE_DEVELOPMENT_SERVER, PHASE_PRODUCTION_BUILD } from 'next/constants'
+import { PHASE_DEVELOPMENT_SERVER } from 'next/constants'
 import { withPayload } from '@payloadcms/next/withPayload'
 
-import { withSentryConfig } from '@sentry/nextjs'
+import { withSentryConfig } from '@sentry/nextjs/config'
 import z from 'zod'
 
 import { envSchema } from '@/types/environment'

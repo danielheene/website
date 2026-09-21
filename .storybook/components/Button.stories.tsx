@@ -37,7 +37,6 @@ const meta = {
           'button',
           'submit',
           'reset',
-          'link',
         ],
         defaultValue: 'button',
       },
@@ -98,35 +97,4 @@ export const WithStartAndEndIcon: Story = {
     endIcon: 'material-symbols:check-circle',
     children: 'Download',
   },
-}
-
-/**
- * `asChild` merges the button's classes onto the caller's own element (here
- * a plain `<a>` standing in for `next/link`'s `Link`) instead of rendering
- * a `<button>` — Radix's `Slot` under the hood. `startIcon`/`endIcon` still
- * work in this mode: they render as ordinary siblings next to the slotted
- * element, which is wrapped in `Slottable` internally so `Slot` can tell it
- * apart from the icons. Inspect the DOM: there is exactly one `<a>`,
- * carrying the button's classes, with two real `<svg>` siblings — nothing
- * is dropped, nothing is double-wrapped.
- *
- * See `Patterns/Radix Slot` for how `Slot`/`Slottable` work in isolation.
- */
-export const AsChildWithIcons: Story = {
-  name: 'Icons/asChild + startIcon + endIcon',
-  argTypes: {
-    children: {
-      control: false,
-    },
-  },
-  args: {
-    asChild: true,
-    startIcon: 'material-symbols:download',
-    endIcon: 'material-symbols:check-circle',
-  },
-  render: (args) => (
-    <Button {...args}>
-      <a href="/resume.pdf">Download wwwwwww</a>
-    </Button>
-  ),
 }

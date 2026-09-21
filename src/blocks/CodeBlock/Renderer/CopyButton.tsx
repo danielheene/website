@@ -20,7 +20,7 @@ export function CopyButton({ code }: { code: string }) {
   return (
     <div className="flex justify-end align-middle">
       <Button
-        color="secondary"
+        variant="secondary"
         size="sm"
         type="button"
         className="flex gap-1"

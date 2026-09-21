@@ -1,6 +1,5 @@
 import type { WebSiteLeaf, WithContext } from 'schema-dts'
 
-import { isMediaImage } from '@/lib/typeGuards'
 import { GlobalData, GlobalSlug } from '@/types/globals'
 
 /**
@@ -21,10 +20,21 @@ export function generateWebSiteSchema({
     webSite.description = data.description?.replaceAll(/(\r?\n|\r\n?)/g, ' ')
   }
 
-  if (isMediaImage(data.image)) {
+  const firstImageSlide = data.defaultOpengraphImage?.find(
+    (slide) => slide.slideType === 'image' && typeof slide.media === 'object',
+  )
+  const ogImageUrl =
+    firstImageSlide && typeof firstImageSlide.media === 'object' && 'url' in firstImageSlide.media
+      ? (
+          firstImageSlide.media as {
+            url?: string
+          }
+        ).url
+      : undefined
+  if (ogImageUrl) {
     webSite.image = {
       '@type': 'ImageObject',
-      url: data.image.url,
+      url: ogImageUrl,
     }
   }
 
