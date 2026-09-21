@@ -2,8 +2,14 @@
   "name": "website",
   "version": "1.4.1",
   "private": true,
-  "description": "",
+  "description": "personal website, blog, and resume builder",
+  "homepage": "https://daniel.heene.io",
+  "repository": "https://github.com/danielheene/website",
   "license": "MIT",
+  "author": {
+    "name": "Daniel Heene",
+    "email": "daniel@heene.io"
+  },
   "type": "module",
   "imports": {
     "#payload.css": "./src/styles/payload.css",
@@ -53,16 +59,6 @@
     "test:e2e:ui": "node --env-file=.env.test node_modules/@playwright/test/cli.js test --ui",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
-  },
-  "lint-staged": {
-    "package.json": [
-      "syncpack format --source",
-      "syncpack fix --dependency-types prod,dev,peer --source",
-      "pnpm install"
-    ],
-    "*.{ts,tsx,js,jsx,mjs,cjs,json,jsonc,css}": [
-      "biome check --write --no-errors-on-unmatched"
-    ]
   },
   "resolutions": {
     "pdfjs-dist": "5.4.296"
@@ -189,5 +185,6 @@
   "engines": {
     "node": "^26.0.0",
     "pnpm": "^11.0.0"
-  }
+  },
+  "readme": "https://github.com/danielheene/website"
 }

@@ -5,10 +5,9 @@ import { useRouter } from 'next/navigation'
 import { toast } from '@payloadcms/ui'
 
 import { startCase } from 'lodash-es'
-import { cn } from 'tailwind-variants'
 
+import { Banner } from '@/components/Banner'
 import { Button } from '@/components/Button'
-import { Icon } from '@/components/Icon'
 import { cancelScheduledJob } from '@/lib/actions/cancelScheduledJob'
 import { rescheduleJob } from '@/lib/actions/rescheduleJob'
 
@@ -50,16 +49,7 @@ export const StatusBannerItem = ({ id, jobName, waitUntil }: StatusBannerItemPro
   }
 
   return (
-    <div
-      className={cn([
-        'flex items-start gap-3 p-4',
-        'border border-warning-700/40 bg-warning-700/10',
-      ])}
-    >
-      <Icon
-        name="material-symbols:warning-rounded"
-        className="mt-0.5 shrink-0 size-5 text-warning-700"
-      />
+    <Banner variant="warning">
       <div className="flex flex-col gap-3 flex-1 min-w-0">
         <div className="flex flex-col gap-0.5">
           <span className="text-sm font-mono font-medium leading-tight">
@@ -92,6 +82,6 @@ export const StatusBannerItem = ({ id, jobName, waitUntil }: StatusBannerItemPro
           </Button>
         </div>
       </div>
-    </div>
+    </Banner>
   )
 }
