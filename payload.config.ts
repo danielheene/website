@@ -43,6 +43,10 @@ export const config = buildConfig({
     dashboard: {
       defaultLayout: [
         {
+          widgetSlug: 'scheduled-jobs-widget',
+          width: 'full',
+        },
+        {
           widgetSlug: 'umami-widget',
           width: 'full',
         },
@@ -205,9 +209,39 @@ export const config = buildConfig({
     referencesPlugin(),
     redirectsPlugin(),
     importExportPlugin({
-      collections: undefined,
-      defaultVersionStatus: 'published',
-      batchSize: 250,
+      overrideImportCollection: ({ collection }) => {
+        return {
+          ...collection,
+          slug: CollectionSlug.PayloadImports,
+        }
+      },
+      collections: [
+        CollectionSlug.BlogPosts,
+        CollectionSlug.BlogTopics,
+        CollectionSlug.Pages,
+        CollectionSlug.ResumeCustomers,
+        CollectionSlug.ResumeJobs,
+        CollectionSlug.ResumeProjects,
+        CollectionSlug.ResumeSkills,
+        CollectionSlug.ResumeSkillTags,
+      ].map((slug) => ({
+        slug,
+        export: {
+          format: 'json',
+          disableJobsQueue: true,
+          disableSave: true,
+          limit: 10000,
+          batchSize: 1000,
+        },
+        import: {
+          // Run synchronously in the same request so req.file.data is still
+          // available — avoids a URL round-trip to S3 that fails inside Docker.
+          disableJobsQueue: true,
+          defaultVersionStatus: 'published',
+          limit: 10000,
+          batchSize: 1000,
+        },
+      })),
     }),
     // nestedDocsPlugin({
     //   collections: [CollectionSlug['ResumeSkills']],
@@ -247,6 +281,7 @@ export const config = buildConfig({
         }),
       },
     }),
+
     s3Storage({
       enabled: true,
       collections: {
@@ -261,6 +296,9 @@ export const config = buildConfig({
         },
         [CollectionSlug.MediaAudios]: {
           prefix: CollectionSlug.MediaAudios,
+        },
+        [CollectionSlug.PayloadImports]: {
+          prefix: CollectionSlug.PayloadImports,
         },
       },
       useCompositePrefixes: true,

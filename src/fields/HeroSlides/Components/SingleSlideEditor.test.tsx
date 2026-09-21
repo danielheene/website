@@ -5,7 +5,7 @@ import type { ArrayFieldClientProps } from 'payload'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { HeroSlidesSidebarEditor } from './HeroSlidesSidebarEditor'
+import { SingleSlideEditor } from './SingleSlideEditor'
 
 type Row = {
   id: string
@@ -141,7 +141,7 @@ vi.mock('./AddSlideMenu', () => ({
   ),
 }))
 
-describe('HeroSlidesSidebarEditor', () => {
+describe('SingleSlideEditor', () => {
   beforeEach(() => {
     rows = []
     setFormFields({})
@@ -153,7 +153,7 @@ describe('HeroSlidesSidebarEditor', () => {
   })
 
   it('shows a select button (not plain empty text) when there is no slide yet', () => {
-    render(<HeroSlidesSidebarEditor {...fieldProps} />)
+    render(<SingleSlideEditor {...fieldProps} />)
 
     expect(screen.getByText('Select Hero BG')).toBeInTheDocument()
     expect(screen.getByTestId('add-slide-menu-hero.slides-add')).toBeInTheDocument()
@@ -181,7 +181,7 @@ describe('HeroSlidesSidebarEditor', () => {
       },
     })
 
-    render(<HeroSlidesSidebarEditor {...fieldProps} />)
+    render(<SingleSlideEditor {...fieldProps} />)
 
     expect(screen.queryByLabelText('Previous slide')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Next slide')).not.toBeInTheDocument()
@@ -208,7 +208,7 @@ describe('HeroSlidesSidebarEditor', () => {
       },
     })
 
-    const { container } = render(<HeroSlidesSidebarEditor {...fieldProps} />)
+    const { container } = render(<SingleSlideEditor {...fieldProps} />)
 
     expect(container.querySelector('img')).toHaveAttribute('src', 'https://example.com/a.webp')
 
@@ -226,7 +226,7 @@ describe('HeroSlidesSidebarEditor', () => {
   })
 
   it('inserts the first row (at index 0) via addFieldRow when the add menu selects an image', () => {
-    render(<HeroSlidesSidebarEditor {...fieldProps} />)
+    render(<SingleSlideEditor {...fieldProps} />)
 
     fireEvent.click(
       screen.getByRole('button', {
@@ -263,7 +263,7 @@ describe('HeroSlidesSidebarEditor', () => {
       },
     })
 
-    render(<HeroSlidesSidebarEditor {...fieldProps} />)
+    render(<SingleSlideEditor {...fieldProps} />)
 
     fireEvent.click(
       screen.getByRole('button', {
@@ -300,7 +300,7 @@ describe('HeroSlidesSidebarEditor', () => {
       },
     })
 
-    render(<HeroSlidesSidebarEditor {...fieldProps} />)
+    render(<SingleSlideEditor {...fieldProps} />)
 
     fireEvent.click(screen.getByLabelText('Remove slide'))
 

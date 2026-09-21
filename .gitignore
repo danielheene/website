@@ -28,6 +28,10 @@ storybook-static/
 !.env.example
 !.env.test
 
+# Local data exports and draft content
+imports/
+content/blog-drafts/
+
 # test artifacts
 coverage
 playwright-report

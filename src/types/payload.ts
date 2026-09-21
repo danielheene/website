@@ -133,7 +133,7 @@ export interface Config {
     'document-references': DocumentReference;
     redirects: Redirect;
     exports: Export;
-    imports: Import;
+    'payload-imports': PayloadImport;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -162,7 +162,7 @@ export interface Config {
     'document-references': DocumentReferencesSelect<false> | DocumentReferencesSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     exports: ExportsSelect<false> | ExportsSelect<true>;
-    imports: ImportsSelect<false> | ImportsSelect<true>;
+    'payload-imports': PayloadImportsSelect<false> | PayloadImportsSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -203,6 +203,7 @@ export interface Config {
       autoTranslateBilingualField: TaskAutoTranslateBilingualField;
       generateResumeDocumentTitle: TaskGenerateResumeDocumentTitle;
       createResumeDocument: TaskCreateResumeDocument;
+      heartbeatCleanup: TaskHeartbeatCleanup;
       heartbeatPing: TaskHeartbeatPing;
       seedCollection: TaskSeedCollection;
       syncSkillSorting: TaskSyncSkillSorting;
@@ -1218,6 +1219,7 @@ export interface PayloadJob {
           | 'autoTranslateBilingualField'
           | 'generateResumeDocumentTitle'
           | 'createResumeDocument'
+          | 'heartbeatCleanup'
           | 'heartbeatPing'
           | 'seedCollection'
           | 'syncSkillSorting'
@@ -1270,6 +1272,7 @@ export interface PayloadJob {
         | 'autoTranslateBilingualField'
         | 'generateResumeDocumentTitle'
         | 'createResumeDocument'
+        | 'heartbeatCleanup'
         | 'heartbeatPing'
         | 'seedCollection'
         | 'syncSkillSorting'
@@ -1496,6 +1499,7 @@ export interface ResumeSkillData {
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1613,9 +1617,9 @@ export interface Export {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "imports".
+ * via the `definition` "payload-imports".
  */
-export interface Import {
+export interface PayloadImport {
   id: string;
   collectionSlug: string;
   importMode?: ('create' | 'update' | 'upsert') | null;
@@ -1636,6 +1640,7 @@ export interface Import {
       | boolean
       | null;
   };
+  prefix?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -2098,6 +2103,7 @@ export interface ResumeSkillsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2171,9 +2177,9 @@ export interface ExportsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "imports_select".
+ * via the `definition` "payload-imports_select".
  */
-export interface ImportsSelect<T extends boolean = true> {
+export interface PayloadImportsSelect<T extends boolean = true> {
   collectionSlug?: T;
   importMode?: T;
   matchField?: T;
@@ -2187,6 +2193,7 @@ export interface ImportsSelect<T extends boolean = true> {
         issues?: T;
         issueDetails?: T;
       };
+  prefix?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -2306,10 +2313,25 @@ export interface GeneralSettings {
    * This description is used for generating website metadata.  This description is also used as fallback if no document description is available.
    */
   description?: string | null;
-  image?: {
-    relationTo: 'images';
-    value: string | MediaImage;
-  } | null;
+  defaultOpengraphImage?:
+    | {
+        slideType?: ('image' | 'video' | 'shader') | null;
+        /**
+         * Fills the first screen.
+         */
+        media?:
+          | ({
+              relationTo: 'images';
+              value: string | MediaImage;
+            } | null)
+          | ({
+              relationTo: 'videos';
+              value: string | MediaVideo;
+            } | null);
+        shader?: ('darkveil' | 'faulty-terminal' | 'gradient-blinds' | 'grainient') | null;
+        id?: string | null;
+      }[]
+    | null;
   errorHero?:
     | {
         slideType?: ('image' | 'video' | 'shader') | null;
@@ -2553,7 +2575,14 @@ export interface GeneralSettingsSelect<T extends boolean = true> {
   siteURL?: T;
   titleTemplate?: T;
   description?: T;
-  image?: T;
+  defaultOpengraphImage?:
+    | T
+    | {
+        slideType?: T;
+        media?: T;
+        shader?: T;
+        id?: T;
+      };
   errorHero?:
     | T
     | {
@@ -2958,6 +2987,14 @@ export interface TaskCreateResumeDocument {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskHeartbeatCleanup".
+ */
+export interface TaskHeartbeatCleanup {
+  input?: unknown;
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "TaskHeartbeatPing".
  */
 export interface TaskHeartbeatPing {
@@ -3011,7 +3048,7 @@ export interface TaskCreateCollectionExport {
       | 'document-references'
       | 'redirects'
       | 'exports'
-      | 'imports';
+      | 'payload-imports';
     drafts?: ('yes' | 'no') | null;
     exportCollection: string;
     fields?: string[] | null;
@@ -3072,6 +3109,10 @@ export interface TaskSchedulePublish {
       | ({
           relationTo: 'resume-projects';
           value: string | ResumeProjectData;
+        } | null)
+      | ({
+          relationTo: 'resume-skills';
+          value: string | ResumeSkillData;
         } | null);
     global?: string | null;
     user?: (string | null) | User;

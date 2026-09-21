@@ -50,6 +50,10 @@ export type ResolvedSlideThumbnail =
       url: string
     }
   | {
+      kind: 'video-url'
+      url: string
+    }
+  | {
       kind: 'empty'
     }
 
@@ -58,7 +62,7 @@ export type ResolvedSlideThumbnail =
  * preset key (for a live `ShaderPreviewCanvas`), an image URL (the uploaded
  * image itself, or a video's poster frame), or nothing yet (a fresh/pending
  * row with no media set). Shared by `RowLabel`, `SlideThumb`, and
- * `HeroSlidesSidebarEditor` so every preview resolves the same way.
+ * `SingleSlideEditor` so every preview resolves the same way.
  *
  * `thumbnailCache` (the `id → {url}`/`{thumbnails}` map from
  * `useHeroSlideFieldEditor`) is consulted whenever `media.value` is a bare
@@ -91,22 +95,34 @@ export const resolveSlideThumbnail = (
         ? thumbnailCache?.[rawValue]
         : undefined
 
-  const imageUrl = slideType !== 'shader' ? populated?.url : undefined
+  const rawUrl = slideType !== 'shader' ? populated?.url : undefined
 
-  const posterThumbnail =
-    slideType === 'video'
-      ? populated?.thumbnails?.find((thumbnail) => typeof thumbnail?.value === 'object')?.value
-      : undefined
-  const posterUrl = typeof posterThumbnail === 'object' ? posterThumbnail?.url : undefined
+  if (slideType === 'video') {
+    const posterThumbnail = populated?.thumbnails?.find(
+      (thumbnail) => typeof thumbnail?.value === 'object',
+    )?.value
+    const posterUrl = typeof posterThumbnail === 'object' ? posterThumbnail?.url : undefined
 
-  const url = imageUrl ?? posterUrl
-
-  if (url) {
+    if (posterUrl)
+      return {
+        kind: 'image-url',
+        url: posterUrl,
+      }
+    if (rawUrl)
+      return {
+        kind: 'video-url',
+        url: rawUrl,
+      }
     return {
-      kind: 'image-url',
-      url,
+      kind: 'empty',
     }
   }
+
+  if (rawUrl)
+    return {
+      kind: 'image-url',
+      url: rawUrl,
+    }
 
   return {
     kind: 'empty',

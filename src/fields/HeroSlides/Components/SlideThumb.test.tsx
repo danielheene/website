@@ -87,7 +87,7 @@ vi.mock('next/dynamic', () => ({
 // `SlideThumb` renders its own `AddSlideMenu` instance for "Replace" now
 // (rather than delegating to a caller-owned callback) — this test only
 // exercises `SlideThumb`'s own layout/toolbar logic, not `AddSlideMenu`'s
-// picker internals, so it's stubbed the same way `HeroSlidesSidebarEditor`'s
+// picker internals, so it's stubbed the same way `SingleSlideEditor`'s
 // tests stub it: `renderTrigger` passes through unchanged, so the real
 // `aria-label="Replace slide"` button `SlideThumb` supplies is still queryable.
 vi.mock('./AddSlideMenu', () => ({

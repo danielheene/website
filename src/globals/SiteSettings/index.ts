@@ -1,7 +1,5 @@
 import type { ArrayField, GlobalConfig } from 'payload'
 
-import { jsonSchema } from 'ai'
-
 import { authenticated } from '@/access/authenticated'
 import { HeroSlidesField } from '@/fields/HeroSlides'
 import { LinkField } from '@/fields/Link'
@@ -163,27 +161,51 @@ export const SiteSettings: GlobalConfig = {
                   },
                 },
                 {
-                  name: 'image',
-                  type: 'upload',
-                  relationTo: [
-                    CollectionSlug.MediaImages,
-                  ],
-                  filterOptions: {
-                    mimeType: {
-                      contains: 'image',
-                    },
+                  type: 'row',
+                  admin: {
+                    className: 'py-8',
                   },
-                },
-                SectionGroupField({
-                  label: 'Background',
-                  description: 'The hero background used on error pages.',
                   fields: [
-                    HeroSlidesField({
-                      name: 'errorHero',
-                      maxRows: 1,
+                    SectionGroupField({
+                      label: 'Default Opengraph Image',
+                      description: `
+                        This image is used as fallback if no document image is available
+                      `,
+                      hideGutter: true,
+                      overrides: {
+                        admin: {
+                          width: '50%',
+                        },
+                      },
+                      fields: [
+                        HeroSlidesField({
+                          name: 'defaultOpengraphImage',
+                          position: undefined,
+                          editorVariant: 'single',
+                        }),
+                      ],
+                    }),
+                    SectionGroupField({
+                      label: 'Error Page Hero',
+                      description: `
+                        The selected item is used to render the error page hero
+                      `,
+                      hideGutter: true,
+                      overrides: {
+                        admin: {
+                          width: '50%',
+                        },
+                      },
+                      fields: [
+                        HeroSlidesField({
+                          name: 'errorHero',
+                          position: undefined,
+                          editorVariant: 'single',
+                        }),
+                      ],
                     }),
                   ],
-                }),
+                },
               ],
             },
           ],

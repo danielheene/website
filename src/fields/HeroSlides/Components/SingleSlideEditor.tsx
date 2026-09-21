@@ -34,7 +34,7 @@ const ShaderPreviewCanvas = dynamic(() => import('./ShaderPreviewCanvas'), {
  * unbounded at one or more slides. Both share their row-mutation core via
  * `useHeroSlideFieldEditor`.)
  */
-export const HeroSlidesSidebarEditor = (props: ArrayFieldClientProps) => {
+export const SingleSlideEditor = (props: ArrayFieldClientProps) => {
   const {
     path,
     rows,
@@ -97,6 +97,18 @@ export const HeroSlidesSidebarEditor = (props: ArrayFieldClientProps) => {
         <DuoTone contained className="h-full w-full">
           {/* biome-ignore lint/performance/noImgElement: a small admin-only sidebar preview, not a page asset */}
           <img alt="" className="h-full w-full object-cover" src={thumbnail.url} />
+        </DuoTone>
+      ) : thumbnail.kind === 'video-url' ? (
+        <DuoTone contained className="h-full w-full">
+          {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+          <video
+            autoPlay
+            className="h-full w-full object-cover"
+            loop
+            muted
+            playsInline
+            src={thumbnail.url}
+          />
         </DuoTone>
       ) : !hasRow ? (
         <div className="flex h-full w-full items-center justify-center">
@@ -170,4 +182,4 @@ export const HeroSlidesSidebarEditor = (props: ArrayFieldClientProps) => {
   )
 }
 
-export default HeroSlidesSidebarEditor
+export default SingleSlideEditor

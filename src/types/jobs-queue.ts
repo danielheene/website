@@ -14,6 +14,7 @@ export const TaskSlug = {
   GenerateResumeFile: 'generateResumeFile',
   GenerateResumeDocumentTitle: 'generateResumeDocumentTitle',
   CreateResumeDocument: 'createResumeDocument',
+  HeartbeatCleanup: 'heartbeatCleanup',
   HeartbeatPing: 'heartbeatPing',
   AutoTranslateBilingualField: 'autoTranslateBilingualField',
   SeedCollection: 'seedCollection',

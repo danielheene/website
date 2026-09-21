@@ -1,5 +1,8 @@
 import { ImageResponse } from 'takumi-js/response'
 
+import { fetchSiteSettingsCached } from '@/lib/fetchers'
+import { resolveOgBackground } from '@/lib/resolveOgBackground'
+
 export const alt = 'Blog'
 export const size = {
   width: 1200,
@@ -7,8 +10,38 @@ export const size = {
 }
 
 export default async function Image() {
+  const {
+    general: { defaultOpengraphImage },
+  } = await fetchSiteSettingsCached()
+
+  const bg = resolveOgBackground(defaultOpengraphImage)
+  const bgSrc = bg.kind === 'image' ? bg.url : bg.kind === 'shader' ? bg.thumbnailSrc : undefined
+
   return new ImageResponse(
-    <div tw="flex h-full w-full items-center justify-center bg-neutral-900 text-neutral-100">
+    <div
+      tw={`relative flex h-full w-full items-center justify-center text-neutral-100${!bgSrc ? ' bg-neutral-900' : ''}`}
+    >
+      {bgSrc && (
+        // biome-ignore lint/performance/noImgElement: Takumi/OG image rendering requires a plain <img>, not next/image
+        <img
+          alt=""
+          src={bgSrc}
+          tw="absolute inset-0 h-full w-full object-cover"
+          style={{
+            position: 'absolute',
+            zIndex: -1,
+          }}
+        />
+      )}
+      {bgSrc && (
+        <div
+          tw="absolute inset-0 bg-black/40"
+          style={{
+            position: 'absolute',
+            zIndex: -1,
+          }}
+        />
+      )}
       <h1 tw="text-7xl font-bold tracking-tight">Blog</h1>
     </div>,
     {

@@ -41,7 +41,7 @@ export const buttonStyles = tv({
       ghost: [
         '[--button-text-color:var(--color-foreground)] hover:[--button-text-color:var(--color-foreground)]',
         '[--button-background-color:var(--color-transparent)] hover:[--button-background-color:var(--color-muted)]',
-        '[--button-border-color:var(--color-border)] hover:[--button-border-color:var(--color-border)]',
+        '[--button-border-color:var(--color-transparent)] hover:[--button-border-color:var(--color-border)]',
       ],
       destructive: [
         '[--button-text-color:var(--color-destructive)] hover:[--button-text-color:var(--color-destructive)]',
@@ -58,19 +58,19 @@ export const buttonStyles = tv({
     },
     size: {
       default: [
-        'h-10 gap-1.5 px-4',
+        'min-h-10 gap-1.5 px-4',
         'has:data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5',
       ],
       xs: [
-        "h-7 gap-1 px-4 [&>svg:not([class*='size-'])]:size-3 text-sm",
+        "min-h-7 gap-1 px-4 [&>svg:not([class*='size-'])]:size-3 text-sm",
         'has-data-[icon=inline-end]:pr-1 has-data-[icon=inline-start]:pl-1',
       ],
       sm: [
-        'h-9 gap-1 px-2.5',
+        'min-h-9 gap-1 px-2.5',
         'has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5',
       ],
       lg: [
-        'h-11 gap-1.5 px-4',
+        'min-h-11 gap-1.5 px-4',
         'has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2',
       ],
 
@@ -93,7 +93,7 @@ export const buttonStyles = tv({
     },
     fullWidth: {
       false: '',
-      true: 'flex',
+      true: 'flex w-full grow shrink-0',
     },
   },
   defaultVariants: {
