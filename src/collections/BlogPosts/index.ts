@@ -1,7 +1,7 @@
 import { CollectionConfig } from 'payload'
 
-import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
+import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { HeroSlidesField } from '@/fields/HeroSlides'
 import { LinkGroupField } from '@/fields/LinkGroup'
@@ -34,7 +34,7 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
   access: {
     create: authenticated,
     delete: authenticated,
-    read: anyone,
+    read: authenticatedOrPublished,
     update: authenticated,
   },
   admin: {

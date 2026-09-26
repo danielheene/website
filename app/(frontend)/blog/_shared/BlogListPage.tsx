@@ -84,8 +84,8 @@ const queryPublishedPosts = async ({
     ],
     depth: 2,
     where: {
-      // BlogPosts is readable by anyone, so a never-published draft would
-      // otherwise be listed
+      // already implied by authenticatedOrPublished; kept explicit so the
+      // listing stays correct should the query ever run with overrideAccess
       _status: {
         equals: 'published',
       },

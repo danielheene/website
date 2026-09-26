@@ -103,6 +103,10 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   `authenticated`, `authenticatedOrPublished`, `forbidden`). There is **no role/permission system**
   — `authenticated` only checks "is any Payload user logged in". Treat every Payload user as
   fully trusted (single-admin trust model) unless you introduce roles explicitly.
+  Read access follows the drafts setting: every schema with `versions.drafts` uses
+  `authenticatedOrPublished`, and nothing without drafts may (there is no `_status` to filter on).
+  `src/access/schemaAccess.test.ts` enforces this. Local-API reads default to `overrideAccess: true`,
+  so fetchers that skip access must filter `_status: 'published'` themselves.
 - **Collections/Blocks/Fields/Globals** are factory-function based — most fields (e.g.
   `TitleField()`, `SlugField()`) accept an `overrides` object rather than being edited in place.
   Reuse existing field factories instead of inlining raw Payload field configs when one exists.

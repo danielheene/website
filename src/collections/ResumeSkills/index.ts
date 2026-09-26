@@ -5,6 +5,7 @@ import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintex
 import { truncate } from 'lodash-es'
 
 import { authenticated } from '@/access/authenticated'
+import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { BilingualRichTextField } from '@/fields/BilingualRichText'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { generateResumeDocumentHook } from '@/lib/hooks/collection'
@@ -25,7 +26,7 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
     interface: 'ResumeSkillData',
   },
   access: {
-    read: authenticated,
+    read: authenticatedOrPublished,
     update: authenticated,
     create: authenticated,
     delete: authenticated,
@@ -115,13 +116,6 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
     },
 
     /* -------------- Sidebar Content -------------- */
-    {
-      type: 'checkbox',
-      name: 'published',
-      admin: {
-        position: 'sidebar',
-      },
-    },
     {
       name: 'type',
       type: 'select',
