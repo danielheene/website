@@ -123,8 +123,8 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
       fieldToUse: 'title',
       overrides: {
         validate: (value: string | null | undefined) => {
-          // these segments belong to /blog/page/<n> and /blog/post/<slug>;
-          // a topic using them would be permanently unreachable
+          // these segments belong to /blog/post/<slug> and the legacy
+          // /blog/page/<n> redirects; a topic using them would be unreachable
           if (typeof value === 'string' && RESERVED_TOPIC_SLUGS.includes(value)) {
             return `"${value}" is reserved by the blog routes — choose another slug.`
           }

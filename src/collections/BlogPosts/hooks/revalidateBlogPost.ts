@@ -1,4 +1,4 @@
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import type { CollectionAfterChangeHook } from 'payload'
 
 import { generateContentPath } from '@/lib/generateContentPath'
@@ -30,6 +30,17 @@ export const revalidateBlogPost: CollectionAfterChangeHook<BlogPostData> = ({
     payload.logger.info(`Revalidating old post at path: ${oldPath}`)
 
     revalidatePath(oldPath)
+  }
+
+  if (doc._status === 'published' || setUnpublished) {
+    // listings, the RSS feed and the sitemap all cache post queries under
+    // this tag; per-path revalidation above does not reach them
+    try {
+      revalidateTag(CollectionSlug.BlogPosts, 'max')
+    } catch {
+      // No Next context (e.g. a scheduled publish run by the standalone jobs
+      // worker) — see revalidateLatestResumeDocument for the full story.
+    }
   }
 
   return doc

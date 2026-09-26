@@ -16,6 +16,7 @@ import PPFrama from '@/fonts/pp-frama/next'
 import PPFramaText from '@/fonts/pp-frama-text/next'
 import PPSupplyMono from '@/fonts/pp-supply-mono/next'
 import PPSupplySans from '@/fonts/pp-supply-sans/next'
+import { BLOG_FEED_PATH } from '@/lib/blog/feed'
 import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fetchers'
 import { generatePersonSchema, generateWebSiteSchema, JsonLd } from '@/lib/jsonLd'
 
@@ -85,6 +86,18 @@ export default async function RootLayout({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.SERVER_URL),
   title: process.env.SERVER_URL,
+
+  // feed autodiscovery (`<link rel="alternate" type="application/rss+xml">`)
+  alternates: {
+    types: {
+      'application/rss+xml': [
+        {
+          url: BLOG_FEED_PATH,
+          title: 'Blog',
+        },
+      ],
+    },
+  },
 
   icons: [
     {

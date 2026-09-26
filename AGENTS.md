@@ -112,6 +112,12 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
 - **Revalidation**: Payload collection hooks call `revalidate*` helpers (e.g.
   `src/collections/Pages/hooks/revalidatePage.ts`) to invalidate Next.js cache tags after content
   changes — follow this pattern for any new collection that's rendered on the frontend.
+- **Blog listings** (`/blog`, `/blog/<topic>`) paginate and sort via `?page=` / `?sort=`, read
+  only inside the grid's Suspense boundary so the shell still prerenders. `src/lib/blog/listing.ts`
+  owns the params (sort options, parsing, href building); `proxy.ts` uses it to redirect
+  non-canonical forms (legacy `/page/<n>` segments, `page=1`, unknown sorts) and to mark non-default
+  sorts `noindex`. The RSS feed (`/blog/feed.xml`) and `app/sitemap.ts` cache under the `posts` tag,
+  which `revalidateBlogPost` invalidates.
 - **Dashboard widgets** (`src/widgets/`): async server components registered in `payload.config.ts`
   under `admin.dashboard.widgets`. Each widget has a `slug`, `Component` path, and optional
   `minWidth`/`maxWidth`. Run `pnpm generate` after adding a new widget so its slug is included in

@@ -8,6 +8,7 @@ import { getPayload } from 'payload'
 import { format } from 'date-fns'
 import { cn } from 'tailwind-variants'
 
+import { Button } from '@/components/Button'
 import { DuoTone } from '@/components/DuoTone'
 import { Headline } from '@/components/Headline'
 import { HeroMedia } from '@/components/HeroMedia'
@@ -16,25 +17,19 @@ import { toSlideItems } from '@/components/HeroMedia/toSlideItems'
 import { ImageMedia } from '@/components/ImageMedia'
 import { PageContainer } from '@/components/PageContainer'
 import { Pagination } from '@/components/Pagination'
+import {
+  BLOG_PATH,
+  BLOG_SORT_OPTIONS,
+  BLOG_SORTS,
+  type BlogSort,
+  buildBlogListingHref,
+  POSTS_PER_PAGE,
+  parseBlogListingParams,
+} from '@/lib/blog/listing'
 import { CollectionSlug } from '@/types/collections'
 import type { BlogPostData, Topic } from '@/types/payload'
 
 import { FeaturedTopics } from '../[slug]/components/FeaturedTopics'
-
-export const POSTS_PER_PAGE = 12
-
-/**
- * Parses a `/page/<n>` segment. Returns null for anything that is not a
- * positive integer so the route can 404 rather than silently showing page 1 —
- * `/blog/page/abc` should not be a soft-200.
- */
-export const resolvePageParam = (raw: string | string[] | undefined): number | null => {
-  const value = Array.isArray(raw) ? raw[0] : raw
-  if (!value || !/^[0-9]+$/.test(value)) return null
-
-  const parsed = Number.parseInt(value, 10)
-  return parsed >= 1 ? parsed : null
-}
 
 export const queryPublishedTopicBySlug = async (slug: string): Promise<Topic | null> => {
   'use cache'
@@ -61,7 +56,15 @@ export const queryPublishedTopicBySlug = async (slug: string): Promise<Topic | n
   return (docs[0] as Topic) ?? null
 }
 
-const queryPublishedPosts = async ({ topicId, page }: { topicId?: string; page: number }) => {
+const queryPublishedPosts = async ({
+  topicId,
+  page,
+  sort,
+}: {
+  topicId?: string
+  page: number
+  sort: BlogSort
+}) => {
   'use cache'
   cacheLife('max')
   cacheTag(CollectionSlug.BlogPosts)
@@ -76,17 +79,24 @@ const queryPublishedPosts = async ({ topicId, page }: { topicId?: string; page: 
     overrideAccess: false,
     limit: POSTS_PER_PAGE,
     page,
-    sort: '-createdAt',
+    sort: [
+      ...BLOG_SORT_OPTIONS[sort].sort,
+    ],
     depth: 2,
-    ...(topicId
-      ? {
-          where: {
+    where: {
+      // BlogPosts is readable by anyone, so a never-published draft would
+      // otherwise be listed
+      _status: {
+        equals: 'published',
+      },
+      ...(topicId
+        ? {
             'topics.value': {
               equals: topicId,
             },
-          },
-        }
-      : {}),
+          }
+        : {}),
+    },
   })
 }
 
@@ -172,25 +182,49 @@ const PostCard = ({ post }: { post: BlogPostData }) => {
   )
 }
 
+const SortControl = ({ basePath, sort }: { basePath: string; sort: BlogSort }) => (
+  <nav
+    aria-label="Sort posts"
+    className={cn([
+      'col-span-full flex flex-wrap items-center justify-end gap-2 font-mono',
+    ])}
+  >
+    {BLOG_SORTS.map((option) => (
+      <Button key={option} size="sm" variant={option === sort ? 'default' : 'outline'} asChild>
+        <Link
+          href={buildBlogListingHref(basePath, {
+            sort: option,
+          })}
+          aria-current={option === sort ? 'true' : undefined}
+        >
+          {BLOG_SORT_OPTIONS[option].label}
+        </Link>
+      </Button>
+    ))}
+  </nav>
+)
+
 const PostsGrid = async ({
   topicId,
   basePath,
-  page,
+  searchParams,
 }: {
   topicId?: string
   basePath: string
-  page: number
+  searchParams: BlogListPageProps['searchParams']
 }) => {
+  const { page, sort } = parseBlogListingParams(await searchParams)
   const {
     docs: posts,
+    totalDocs,
     totalPages,
-    page: currentPage = 1,
   } = await queryPublishedPosts({
     topicId,
     page,
+    sort,
   })
 
-  if (posts.length === 0) {
+  if (totalDocs === 0) {
     return (
       <p
         className={cn([
@@ -202,61 +236,66 @@ const PostsGrid = async ({
     )
   }
 
+  // The status is already sent by the time this renders (it streams behind a
+  // Suspense boundary), so an out-of-range page gets a way back, not a 404.
+  if (posts.length === 0) {
+    return (
+      <p
+        className={cn([
+          'col-span-full text-muted-foreground',
+        ])}
+      >
+        There is no page {page}.{' '}
+        <Link
+          href={buildBlogListingHref(basePath, {
+            sort,
+          })}
+          className="underline"
+        >
+          Back to the first page
+        </Link>
+      </p>
+    )
+  }
+
   return (
     <>
+      {totalDocs > 1 && <SortControl basePath={basePath} sort={sort} />}
       {posts.map((post) => (
         <PostCard key={post.id} post={post as BlogPostData} />
       ))}
-      <Pagination basePath={basePath} page={currentPage} totalPages={totalPages} />
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        pageHref={(target) =>
+          buildBlogListingHref(basePath, {
+            page: target,
+            sort,
+          })
+        }
+      />
     </>
   )
-}
-
-/**
- * Total number of pages for a listing, used by the paginated routes to reject
- * out-of-range URLs. The check cannot live inside the grid: that renders behind
- * a Suspense boundary, where notFound() no longer changes the response status.
- */
-export const countTotalPages = async (topicId?: string): Promise<number> => {
-  'use cache'
-  cacheLife('max')
-  cacheTag(CollectionSlug.BlogPosts)
-
-  const payload = await getPayload({
-    config,
-  })
-
-  const { totalDocs } = await payload.count({
-    collection: CollectionSlug.BlogPosts,
-    overrideAccess: false,
-    ...(topicId
-      ? {
-          where: {
-            'topics.value': {
-              equals: topicId,
-            },
-          },
-        }
-      : {}),
-  })
-
-  return Math.max(1, Math.ceil(totalDocs / POSTS_PER_PAGE))
 }
 
 export interface BlogListPageProps {
   /** Topic to filter by; omitted on the unfiltered /blog listing. */
   topic?: Topic | null
-  /** 1-based page number taken from the route. */
-  page: number
+  /**
+   * The route's unresolved `searchParams` (`?page=`, `?sort=`). Passed down as
+   * a promise and only awaited inside the grid's Suspense boundary, so the
+   * rest of the page still prerenders as a static shell under Cache
+   * Components.
+   */
+  searchParams: PageProps<'/blog'>['searchParams']
 }
 
 /**
- * Shared post listing rendered by every blog route: /blog, /blog/<topic> and
- * their /page/<n> variants. Keeping one component means the layout, header and
- * pagination cannot drift between them.
+ * Shared post listing rendered by /blog and /blog/<topic>. Keeping one
+ * component means the layout, header and pagination cannot drift between them.
  */
-export const BlogListPage = async ({ topic, page }: BlogListPageProps) => {
-  const basePath = topic ? `/blog/${topic.slug}` : '/blog'
+export const BlogListPage = async ({ topic, searchParams }: BlogListPageProps) => {
+  const basePath = topic ? `${BLOG_PATH}/${topic.slug}` : BLOG_PATH
   const hasTopicHero = toSlideItems(topic?.hero?.slides, topic?.title ?? '').length > 0
 
   return (
@@ -372,7 +411,7 @@ export const BlogListPage = async ({ topic, page }: BlogListPageProps) => {
                   </>
                 }
               >
-                <PostsGrid topicId={topic?.id} basePath={basePath} page={page} />
+                <PostsGrid topicId={topic?.id} basePath={basePath} searchParams={searchParams} />
               </Suspense>
             </div>
           </div>
