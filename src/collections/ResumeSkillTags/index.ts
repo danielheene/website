@@ -5,6 +5,8 @@ import {
   SINGLE_VERSION_DRAFTS,
 } from '@/collections/shared/singleVersionDrafts'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
+import { IconField } from '@/fields/Icon'
+import { SkillTypeField } from '@/fields/SkillType'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
 import { authenticated } from '@/lib/access/authenticated'
@@ -47,6 +49,7 @@ export const ResumeSkillTags: CollectionConfig<CollectionSlug['ResumeSkillTags']
     defaultColumns: [
       'title',
       'slug',
+      'type',
       'interval',
     ],
     disableCopyToLocale: true,
@@ -63,14 +66,40 @@ export const ResumeSkillTags: CollectionConfig<CollectionSlug['ResumeSkillTags']
     },
   },
   fields: [
-    TitleField({
-      overrides: {
-        label: 'Title',
-      },
-    }),
+    {
+      type: 'row',
+      fields: [
+        IconField({
+          overrides: {
+            admin: {
+              width: '10%',
+            },
+          },
+        }),
+        TitleField({
+          overrides: {
+            label: 'Title',
+            admin: {
+              width: '90%',
+              components: {
+                Cell: '@/collections/ResumeSkillTags/components/TitleCell#TitleCell',
+              },
+            },
+          },
+        }),
+      ],
+    },
 
     SlugField({
       fieldToUse: 'title',
+    }),
+
+    SkillTypeField({
+      overrides: {
+        admin: {
+          position: 'sidebar',
+        },
+      },
     }),
 
     {

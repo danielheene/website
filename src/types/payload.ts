@@ -1385,8 +1385,10 @@ export interface ResumeJobData {
 export interface ResumeSkillTagData {
   id: string;
   _order?: string | null;
+  icon?: string | null;
   title: string;
   slug: string;
+  type?: SkillType;
   interval?: number | null;
   generatorFlags?: (
     | 'resume-asset'
@@ -2132,8 +2134,10 @@ export interface ResumeSkillsSelect<T extends boolean = true> {
  */
 export interface ResumeSkillTagsSelect<T extends boolean = true> {
   _order?: T;
+  icon?: T;
   title?: T;
   slug?: T;
+  type?: T;
   interval?: T;
   generatorFlags?: T;
   updatedAt?: T;

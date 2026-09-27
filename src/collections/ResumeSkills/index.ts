@@ -7,12 +7,11 @@ import { truncate } from 'lodash-es'
 import { hideVersionsTabForSingleVersion } from '@/collections/shared/singleVersionDrafts'
 import { BilingualRichTextField } from '@/fields/BilingualRichText'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
+import { SkillTypeField } from '@/fields/SkillType'
 import { authenticated } from '@/lib/access/authenticated'
-import { translate } from '@/lib/i18n'
 import { generateResumeDocumentHook } from '@/lib/payloadHooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
-import { SKILL_TYPE } from '@/types/select-options'
 
 import { enqueueSyncSkillSorting } from './hooks/enqueueSyncSkillSorting'
 
@@ -141,18 +140,13 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
         position: 'sidebar',
       },
     },
-    {
-      name: 'type',
-      type: 'select',
-      interfaceName: 'SkillType',
-      options: Object.values(SKILL_TYPE).map((skillType) => ({
-        label: translate('en', `skill.type.${skillType}`),
-        value: skillType,
-      })),
-      admin: {
-        position: 'sidebar',
+    SkillTypeField({
+      overrides: {
+        admin: {
+          position: 'sidebar',
+        },
       },
-    },
+    }),
     {
       type: 'relationship',
       name: 'skillTags',
