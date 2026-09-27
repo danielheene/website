@@ -170,6 +170,13 @@ const buildJsxConverters =
           />
         )
       },
+      /**
+       * WordPress-style "more" marker inserted by ReadMoreFeature. It only
+       * defines where `generateExcerpt` cuts the post for listings — the
+       * published page renders the content continuously, same as WordPress
+       * itself, so this renders nothing.
+       */
+      readMore: () => null,
       blocks: {
         // Shiki is server-only, so highlighting is resolved ahead of render by
         // `highlightRichText` and looked up here. A miss (a caller that did not

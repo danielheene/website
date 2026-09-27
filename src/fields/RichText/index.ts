@@ -29,6 +29,7 @@ import { cn } from 'tailwind-variants'
 
 import { IconPickerFeature } from '@/fields/Icon/lexical/feature.server'
 import { linkFeatureFields } from '@/fields/Link'
+import { ReadMoreFeature } from '@/fields/RichText/lexical/readMore/feature.server'
 import { BlockSlug } from '@/types/blocks'
 
 const defaultAdminConfig: LexicalFieldAdminProps = {
@@ -165,6 +166,7 @@ const postFeatures = [
   IndentFeature(),
   EXPERIMENTAL_TableFeature(),
   IconPickerFeature(),
+  ReadMoreFeature(),
 ]
 
 export type RichTextEditorVariant = 'inline' | 'caption' | 'markdown' | 'post'

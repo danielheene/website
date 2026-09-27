@@ -854,6 +854,7 @@ export interface BlogPostData {
   };
   readingTime?: number | null;
   wordCount?: number | null;
+  excerpt?: string | null;
   content?: {
     root: {
       type: string;
@@ -1820,6 +1821,7 @@ export interface PostsSelect<T extends boolean = true> {
       };
   readingTime?: T;
   wordCount?: T;
+  excerpt?: T;
   content?: T;
   links?:
     | T
