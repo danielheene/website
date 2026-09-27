@@ -36,13 +36,7 @@ async function getCollectionData(collection: RenderedCollection): Promise<
     collection,
     limit: 10000,
     pagination: false,
-    // BlogTopics has no drafts/versions system, so `draft` is not a valid
-    // query option for it (see src/collections/BlogTopics/index.ts).
-    ...(collection === CollectionSlug.BlogTopics
-      ? {}
-      : {
-          draft: false,
-        }),
+    draft: false,
     where: {},
     select: {
       slug: true,
