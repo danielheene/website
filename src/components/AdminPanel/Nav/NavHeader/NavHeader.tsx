@@ -5,7 +5,7 @@ import './NavHeader.styles.css'
 import { useNav } from '@payloadcms/ui'
 
 import { Logo } from '@/components/Logo'
-import { useIsMobile } from '@/hooks/use-mobile'
+import { useIsMobile } from '@/lib/hooks/useIsMobile'
 
 export const NavHeader = () => {
   const { navOpen } = useNav()

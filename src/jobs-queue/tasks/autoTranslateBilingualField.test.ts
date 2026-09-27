@@ -6,7 +6,7 @@ const findByIDMock = vi.fn()
 const updateMock = vi.fn()
 const loggerErrorMock = vi.fn()
 
-vi.mock('@/lib/fetchAnthropicTranslation', () => ({
+vi.mock('@/lib/anthropic/fetchTranslation', () => ({
   fetchAnthropicTranslation: (...args: unknown[]) => fetchAnthropicTranslationMock(...args),
 }))
 

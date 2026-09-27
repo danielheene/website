@@ -4,11 +4,11 @@ import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintex
 
 import { truncate } from 'lodash-es'
 
-import { authenticated } from '@/access/authenticated'
 import { BilingualRichTextField } from '@/fields/BilingualRichText'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
-import { generateResumeDocumentHook } from '@/lib/hooks/collection'
+import { authenticated } from '@/lib/access/authenticated'
 import { translate } from '@/lib/i18n'
+import { generateResumeDocumentHook } from '@/lib/payloadHooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 import { SKILL_TYPE } from '@/types/select-options'

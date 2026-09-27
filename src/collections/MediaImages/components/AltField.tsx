@@ -1,7 +1,7 @@
 import type { TextFieldServerComponent } from 'payload'
 
 import { TextFieldWithLockAndGenerate } from '@/components/AdminPanel/TextFieldWithLockAndGenerate'
-import { fetchAnthropicImageAltText } from '@/lib/fetchAnthropicImageAltText'
+import { fetchAnthropicImageAltText } from '@/lib/anthropic/fetchImageAltText'
 
 export const AltField: TextFieldServerComponent = ({ data: { url }, path, clientField }) => {
   const generateFunction = async () => {

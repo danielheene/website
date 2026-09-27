@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
-import { authenticated } from '@/access/authenticated'
-import { forbidden } from '@/access/forbidden'
+import { authenticated } from '@/lib/access/authenticated'
+import { forbidden } from '@/lib/access/forbidden'
 import { CollectionSlug } from '@/types/collections'
 
 /**

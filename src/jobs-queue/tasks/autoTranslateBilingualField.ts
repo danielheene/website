@@ -4,8 +4,8 @@ import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical
 import * as Sentry from '@sentry/nextjs'
 import { cloneDeep, get, set } from 'lodash-es'
 
+import { fetchAnthropicTranslation } from '@/lib/anthropic/fetchTranslation'
 import { extractErrorMessage } from '@/lib/extractErrorMessage'
-import { fetchAnthropicTranslation } from '@/lib/fetchAnthropicTranslation'
 import { isEmptyValue } from '@/lib/lexical/isEmptyValue'
 import { publish } from '@/lib/RedisHandler'
 import type { AutoTranslateBilingualFieldProgress } from '@/lib/sse/channels'

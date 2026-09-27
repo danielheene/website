@@ -2,11 +2,11 @@ import { CollectionConfig } from 'payload'
 
 import { cn } from 'tailwind-variants'
 
-import { authenticated } from '@/access/authenticated'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { SlugField } from '@/fields/Slug'
 import { SVGUploadField } from '@/fields/SVGUpload'
 import { TitleField } from '@/fields/Title'
+import { authenticated } from '@/lib/access/authenticated'
 import { sanitizeSvg } from '@/lib/sanitizeSvg'
 import { CollectionSlug } from '@/types/collections'
 

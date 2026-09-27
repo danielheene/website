@@ -1,9 +1,9 @@
 import { CollectionConfig } from 'payload'
 
-import { authenticated } from '@/access/authenticated'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { RichTextField } from '@/fields/RichText'
-import { generateResumeDocumentHook } from '@/lib/hooks/collection'
+import { authenticated } from '@/lib/access/authenticated'
+import { generateResumeDocumentHook } from '@/lib/payloadHooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 

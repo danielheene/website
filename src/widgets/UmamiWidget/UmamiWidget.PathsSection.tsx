@@ -11,7 +11,7 @@ import {
 } from '@/components/AdminPanel/Card'
 import { MetricsTable } from '@/components/MetricsTable'
 import { Skeleton } from '@/components/Skeleton'
-import { useArrayPagination } from '@/hooks/use-array-pagination'
+import { useArrayPagination } from '@/lib/hooks/useArrayPagination'
 
 import type { UmamiPath } from './UmamiWidget.data'
 

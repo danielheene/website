@@ -86,8 +86,11 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   this is the dominant pattern in `src/components/`.
 - **Barrel files**: existing `index.ts`/`index.tsx` files use either `export * from './X'` or
   `export { X } from './X'` — match whichever pattern already exists in the folder you're editing.
-- **Hooks vs. utils naming**: files in `src/hooks/` use kebab-case (`use-mobile.ts`); files in
-  `src/lib/` use camelCase (`generateSlug.ts`). Follow the convention of the folder you're in.
+- **Hooks vs. utils naming**: everything lives under `src/lib/` now (see Architecture Notes), but
+  the two hook flavors stay visually distinct — React hooks in `src/lib/hooks/` are camelCase named
+  after the hook (`useIsMobile.ts`), Payload lifecycle hooks in `src/lib/payloadHooks/` are
+  camelCase named after what they do (`generateChecksum.ts`). Plain utils use camelCase
+  (`generateSlug.ts`).
 - **Fields**: folder name has no suffix (`src/fields/Slug/`), but the exported factory function
   has an `XField` suffix (`SlugField`, `TitleField`). Keep this pattern for new fields.
 - **Globals**: naming is currently inconsistent (`SiteSettings`, `SettingsGlobalUser`,
@@ -99,10 +102,17 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
 
 ## Architecture Notes
 
-- **Access control** (`src/access/`): small, composable `Access` functions (`anyone`,
+- **Access control** (`src/lib/access/`): small, composable `Access` functions (`anyone`,
   `authenticated`, `authenticatedOrPublished`, `forbidden`). There is **no role/permission system**
   — `authenticated` only checks "is any Payload user logged in". Treat every Payload user as
   fully trusted (single-admin trust model) unless you introduce roles explicitly.
+- **`src/lib/` layout**: domain subfolders group related code — `access/` (Payload `Access`
+  functions), `hooks/` (React hooks), `payloadHooks/` (Payload collection/global lifecycle hooks —
+  distinct from `hooks/`, don't conflate the two), `anthropic/` and `mapbox/` (external API
+  clients, same shape as `unsplash/`), plus `actions/`, `fetchers/`, `date/`, `i18n/`, `jsonLd/`,
+  `redirects/`, `references/`, `seed/`, `sentry/`, `shiki/`, `sse/`, `umami/`, `unsplash/`. A new
+  external API client or hook goes in the matching subfolder; a handful of genuinely standalone
+  utilities stay flat at the top of `src/lib/`.
 - **Collections/Blocks/Fields/Globals** are factory-function based — most fields (e.g.
   `TitleField()`, `SlugField()`) accept an `overrides` object rather than being edited in place.
   Reuse existing field factories instead of inlining raw Payload field configs when one exists.

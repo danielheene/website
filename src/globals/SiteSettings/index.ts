@@ -1,11 +1,11 @@
 import type { ArrayField, GlobalConfig } from 'payload'
 
-import { authenticated } from '@/access/authenticated'
 import { HeroSlidesField } from '@/fields/HeroSlides'
 import { LinkField } from '@/fields/Link'
 import { SectionGroupField } from '@/fields/SectionGroup'
 import { TemplateField } from '@/fields/Template'
-import { generateResumeDocumentHook } from '@/lib/hooks/global'
+import { authenticated } from '@/lib/access/authenticated'
+import { generateResumeDocumentHook } from '@/lib/payloadHooks/global'
 import { AdminGroup } from '@/types/admin-panel'
 import { GlobalData, GlobalSlug } from '@/types/globals'
 
