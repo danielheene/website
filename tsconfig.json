@@ -51,6 +51,7 @@
     "next.config.ts",
     ".storybook/**/*.ts",
     ".storybook/**/*.tsx",
-    ".storybook/**/*.mdx"
+    ".storybook/**/*.mdx",
+    "node_modules/.pnpm/storybook@10.6.0_@types+react@19.3.0_prettier@3.9.6_react@19.3.0/node_modules/storybook/dist/manager/runtime.js"
   ]
 }

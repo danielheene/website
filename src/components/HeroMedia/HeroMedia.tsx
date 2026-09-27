@@ -4,6 +4,7 @@ import { DuoTone } from '@/components/DuoTone'
 import { ImageMedia } from '@/components/ImageMedia'
 
 import { HeroCarousel } from './HeroCarousel'
+import { HeroVideoPlayer } from './HeroVideoPlayer'
 import { ShaderHeroBackground } from './ShaderHeroBackground'
 import { toSlideItems } from './toSlideItems'
 
@@ -63,16 +64,10 @@ export const HeroMedia = ({
               url={items[0].url}
             />
           ) : items[0].kind === 'video' ? (
-            // A single video has no successor to blend into, so it loops —
-            // mirrors HeroCarousel's `loop={items.length < 2}` for one slide.
-            <video
-              autoPlay
-              className="h-full w-full object-cover"
+            <HeroVideoPlayer
+              blurDataURL={items[0].blurDataURL}
               loop
-              muted
-              playsInline
-              poster={items[0].poster ?? undefined}
-              preload="auto"
+              poster={items[0].poster}
               src={items[0].url}
             />
           ) : (

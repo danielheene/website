@@ -100,7 +100,7 @@ export const ResumeDocument = ({
       >
         {process.env.SERVER_HOST !== 'daniel.heene.io' && (
           <View style={styles.debug} fixed>
-            <Text style={textStyles.debugText}>DEBUG</Text>
+            <Text style={textStyles.debugText}>DRAFT</Text>
           </View>
         )}
         <Header {...header} style={styles.header} fixed />

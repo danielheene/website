@@ -5,7 +5,7 @@ import { cn, tv, VariantProps } from 'tailwind-variants'
 
 export const badgeStyles = tv({
   base: cn([
-    'inline-flex items-center px-2 py-1',
+    'flex items-center px-2 py-1 w-fit',
     'font-medium font-mono select-none',
     'border ',
   ]),

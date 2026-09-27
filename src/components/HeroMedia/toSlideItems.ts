@@ -94,9 +94,11 @@ export const toSlideItems = (slides: unknown, fallbackAlt: string): HeroMediaIte
 
       // Videos have no alt of their own; the generated thumbnail doubles as a
       // poster so the slide is not blank before the first frame decodes.
-      const poster = (thumbnails ?? []).find(
+      const posterImage = (thumbnails ?? []).find(
         (thumbnail) => typeof thumbnail?.value === 'object' && thumbnail.value?.url,
       )?.value
+
+      const posterObj = typeof posterImage === 'object' ? posterImage : undefined
 
       return [
         {
@@ -104,7 +106,8 @@ export const toSlideItems = (slides: unknown, fallbackAlt: string): HeroMediaIte
           id: id ? String(id) : rowId,
           url,
           alt: fallbackAlt,
-          poster: typeof poster === 'object' ? poster.url : undefined,
+          poster: posterObj?.url ?? undefined,
+          blurDataURL: posterObj?.blurDataURL ?? undefined,
         },
       ]
     }

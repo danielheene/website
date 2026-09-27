@@ -111,21 +111,31 @@ export const Footer = async () => {
               <Logo
                 variant="inline"
                 className="h-(--footer-header-height) mb-(--footer-header-gap)"
-                blink
               />
             </Link>
             <FooterSocialLinks socialLinks={socialLinks} />
+            <ServiceStatus />
           </div>
           <div className="flex flex-col gap-8 col-span-12 2xl:col-span-6">
             <FooterNavGroups navGroups={navGroups} className="w-full" />
           </div>
-          <div className="absolute top-0 right-0">
-            <FooterThemeSwitcher />
-          </div>
+          <div className="absolute top-0 right-0"></div>
         </div>
 
-        <div className="mt-8 flex flex-col justify-between gap-4 border-t py-8 text-xs font-medium text-muted-foreground md:flex-row md:items-center md:text-left">
-          <ServiceStatus className="mr-auto" />
+        <div className="mt-8 flex flex-col justify-between gap-4 border-t py-8 md:flex-row md:items-center md:text-left">
+          <FooterThemeSwitcher
+            options={[
+              'light',
+              'system',
+              'dark',
+            ]}
+          />{' '}
+          <FooterThemeSwitcher
+            options={[
+              'light',
+              'dark',
+            ]}
+          />
           <FooterLegalLinks entries={legalPages.entries} />
         </div>
       </section>

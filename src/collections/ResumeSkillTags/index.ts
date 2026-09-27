@@ -1,6 +1,7 @@
 import { CollectionConfig } from 'payload'
 
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
+import { IconField } from '@/fields/Icon'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
 import { generateResumeDocumentHook } from '@/lib/hooks/collection'
@@ -33,11 +34,18 @@ export const ResumeSkillTags: CollectionConfig<CollectionSlug['ResumeSkillTags']
     disableCopyToLocale: true,
   },
   fields: [
-    TitleField({
-      overrides: {
-        label: 'Title',
-      },
-    }),
+    {
+      type: 'row',
+      fields: [
+        IconField(),
+
+        TitleField({
+          overrides: {
+            label: 'Title',
+          },
+        }),
+      ],
+    },
 
     SlugField({
       fieldToUse: 'title',

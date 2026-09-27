@@ -49,12 +49,18 @@ export const SectionContainer = ({
       id={id}
       className={cn([
         'relative m-0 p-0 shrink-0 grow-0',
-        'py-20 md:py-32 lg:py-40',
+
         variant === 'default' && 'bg-background text-foreground',
         variant === 'primary' && 'bg-primary text-primary-foreground',
       ])}
     >
-      <div ref={observerRef} className="min-h-[50vh]">
+      <div
+        ref={observerRef}
+        className={cn([
+          'min-h-50',
+          // 'py-20 md:py-32 lg:py-40',
+        ])}
+      >
         {children}
       </div>
     </section>
