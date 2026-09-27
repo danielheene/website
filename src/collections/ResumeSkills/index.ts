@@ -47,6 +47,13 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
       'type',
     ],
     disableCopyToLocale: true,
+    pagination: {
+      defaultLimit: 50,
+      limits: [
+        50,
+        100,
+      ],
+    },
     components: {
       views: {
         edit: {

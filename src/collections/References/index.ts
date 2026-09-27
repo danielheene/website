@@ -38,6 +38,14 @@ export const References: CollectionConfig = {
   admin: {
     hidden: false,
     useAsTitle: 'targetId',
+    pagination: {
+      defaultLimit: 25,
+      limits: [
+        25,
+        50,
+        100,
+      ],
+    },
     defaultColumns: [
       'targetCollection',
       'targetId',

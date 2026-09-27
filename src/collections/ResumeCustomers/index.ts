@@ -32,6 +32,13 @@ export const ResumeCustomers: CollectionConfig<CollectionSlug['ResumeCustomers']
   },
   admin: {
     useAsTitle: 'title',
+    pagination: {
+      defaultLimit: 50,
+      limits: [
+        50,
+        100,
+      ],
+    },
     defaultColumns: [
       'title',
       'slug',

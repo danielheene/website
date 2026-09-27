@@ -40,6 +40,13 @@ export const ResumeJobs: CollectionConfig<CollectionSlug['ResumeJobs']> = {
   admin: {
     useAsTitle: 'employer',
     group: AdminGroup.Resume,
+    pagination: {
+      defaultLimit: 50,
+      limits: [
+        50,
+        100,
+      ],
+    },
     defaultColumns: [
       'employer',
       'title',

@@ -39,6 +39,14 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
     useAsTitle: 'title',
     group: AdminGroup.Blog,
     groupBy: true,
+    pagination: {
+      defaultLimit: 25,
+      limits: [
+        25,
+        50,
+        100,
+      ],
+    },
     livePreview: {
       url: ({ data }) => generatePreviewPath(CollectionSlug.BlogTopics, data.slug),
     },

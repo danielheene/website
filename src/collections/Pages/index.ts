@@ -58,6 +58,14 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
   admin: {
     group: AdminGroup.General,
     useAsTitle: 'title',
+    pagination: {
+      defaultLimit: 25,
+      limits: [
+        25,
+        50,
+        100,
+      ],
+    },
     defaultColumns: [
       'title',
       'slug',

@@ -58,6 +58,14 @@ export const Redirects: CollectionConfig = {
   admin: {
     group: AdminGroup.Settings,
     useAsTitle: 'from',
+    pagination: {
+      defaultLimit: 25,
+      limits: [
+        25,
+        50,
+        100,
+      ],
+    },
     defaultColumns: [
       'from',
       'type',

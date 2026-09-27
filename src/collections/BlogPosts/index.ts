@@ -44,6 +44,14 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
   admin: {
     group: AdminGroup.Blog,
     useAsTitle: 'title',
+    pagination: {
+      defaultLimit: 25,
+      limits: [
+        25,
+        50,
+        100,
+      ],
+    },
     defaultColumns: [
       'title',
       'slug',

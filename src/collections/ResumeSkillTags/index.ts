@@ -37,6 +37,13 @@ export const ResumeSkillTags: CollectionConfig<CollectionSlug['ResumeSkillTags']
   admin: {
     useAsTitle: 'title',
     group: AdminGroup.Resume,
+    pagination: {
+      defaultLimit: 50,
+      limits: [
+        50,
+        100,
+      ],
+    },
     defaultColumns: [
       'title',
       'slug',

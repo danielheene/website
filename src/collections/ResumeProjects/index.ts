@@ -36,6 +36,13 @@ export const ResumeProjects: CollectionConfig<CollectionSlug['ResumeProjects']> 
     useAsTitle: 'title',
     group: AdminGroup.Resume,
     disableCopyToLocale: true,
+    pagination: {
+      defaultLimit: 50,
+      limits: [
+        50,
+        100,
+      ],
+    },
     components: {
       views: {
         edit: {

@@ -24,6 +24,14 @@ export const Users: CollectionConfig = {
     },
     useAsTitle: 'email',
     group: AdminGroup.Settings,
+    pagination: {
+      defaultLimit: 25,
+      limits: [
+        25,
+        50,
+        100,
+      ],
+    },
   },
   fields: [
     {
