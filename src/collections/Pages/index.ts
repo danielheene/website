@@ -4,6 +4,10 @@ import { startCase } from 'lodash-es'
 
 import { BLOCK_SLUGS } from '@/blocks'
 import { revalidatePage } from '@/collections/Pages/hooks/revalidatePage'
+import {
+  hideVersionsTabForSingleVersion,
+  SINGLE_VERSION_DRAFTS,
+} from '@/collections/shared/singleVersionDrafts'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { HeroSlidesField } from '@/fields/HeroSlides'
 import { MetaField } from '@/fields/Meta'
@@ -77,6 +81,15 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
               },
             ]
           : [],
+      views: {
+        edit: {
+          versions: {
+            tab: {
+              condition: hideVersionsTabForSingleVersion,
+            },
+          },
+        },
+      },
     },
   },
   fields: [
@@ -216,11 +229,5 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
     ],
   },
   trash: true,
-  versions: {
-    drafts: {
-      autosave: false,
-      schedulePublish: true,
-    },
-    maxPerDoc: 50,
-  },
+  versions: SINGLE_VERSION_DRAFTS,
 }

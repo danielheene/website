@@ -1,5 +1,9 @@
 import { CollectionConfig } from 'payload'
 
+import {
+  hideVersionsTabForSingleVersion,
+  SINGLE_VERSION_DRAFTS,
+} from '@/collections/shared/singleVersionDrafts'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { RichTextField } from '@/fields/RichText'
 import { authenticated } from '@/lib/access/authenticated'
@@ -32,6 +36,17 @@ export const ResumeProjects: CollectionConfig<CollectionSlug['ResumeProjects']> 
     useAsTitle: 'title',
     group: AdminGroup.Resume,
     disableCopyToLocale: true,
+    components: {
+      views: {
+        edit: {
+          versions: {
+            tab: {
+              condition: hideVersionsTabForSingleVersion,
+            },
+          },
+        },
+      },
+    },
   },
   disableBulkEdit: true,
   disableDuplicate: true,
@@ -92,11 +107,5 @@ export const ResumeProjects: CollectionConfig<CollectionSlug['ResumeProjects']> 
     GeneratorFlagsField(),
   ],
   trash: true,
-  versions: {
-    drafts: {
-      autosave: false,
-      schedulePublish: true,
-    },
-    maxPerDoc: 50,
-  },
+  versions: SINGLE_VERSION_DRAFTS,
 }

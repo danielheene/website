@@ -1,5 +1,9 @@
 import { CollectionConfig } from 'payload'
 
+import {
+  hideVersionsTabForSingleVersion,
+  SINGLE_VERSION_DRAFTS,
+} from '@/collections/shared/singleVersionDrafts'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { HeroSlidesField } from '@/fields/HeroSlides'
 import { LinkGroupField } from '@/fields/LinkGroup'
@@ -7,8 +11,8 @@ import { MetaField } from '@/fields/Meta'
 import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
-import { anyone } from '@/lib/access/anyone'
 import { authenticated } from '@/lib/access/authenticated'
+import { authenticatedOrPublished } from '@/lib/access/authenticatedOrPublished'
 import { generatePreviewPath } from '@/lib/generatePreviewPath'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
@@ -34,7 +38,7 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
   access: {
     create: authenticated,
     delete: authenticated,
-    read: anyone,
+    read: authenticatedOrPublished,
     update: authenticated,
   },
   admin: {
@@ -65,6 +69,15 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
               },
             ]
           : [],
+      views: {
+        edit: {
+          versions: {
+            tab: {
+              condition: hideVersionsTabForSingleVersion,
+            },
+          },
+        },
+      },
     },
   },
   hooks: {
@@ -119,13 +132,30 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
     },
 
     {
-      name: 'readingTime',
-      type: 'number',
-      label: 'Estimated Reading Time (min)',
+      type: 'row',
       admin: {
-        hidden: true,
         position: 'sidebar',
       },
+      fields: [
+        {
+          name: 'readingTime',
+          type: 'number',
+          label: 'Reading Time (min)',
+          admin: {
+            readOnly: true,
+            width: '50%',
+          },
+        },
+        {
+          name: 'wordCount',
+          type: 'number',
+          label: 'Word Count',
+          admin: {
+            readOnly: true,
+            width: '50%',
+          },
+        },
+      ],
     },
 
     /* -------------- Content -------------- */
@@ -162,11 +192,5 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
     GeneratorFlagsField(),
   ],
   trash: true,
-  versions: {
-    drafts: {
-      autosave: false,
-      schedulePublish: true,
-    },
-    maxPerDoc: 50,
-  },
+  versions: SINGLE_VERSION_DRAFTS,
 }

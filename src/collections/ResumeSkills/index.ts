@@ -4,6 +4,7 @@ import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintex
 
 import { truncate } from 'lodash-es'
 
+import { hideVersionsTabForSingleVersion } from '@/collections/shared/singleVersionDrafts'
 import { BilingualRichTextField } from '@/fields/BilingualRichText'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { authenticated } from '@/lib/access/authenticated'
@@ -46,6 +47,17 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
       'type',
     ],
     disableCopyToLocale: true,
+    components: {
+      views: {
+        edit: {
+          versions: {
+            tab: {
+              condition: hideVersionsTabForSingleVersion,
+            },
+          },
+        },
+      },
+    },
   },
   // defaultPopulate: {
   //   content: {

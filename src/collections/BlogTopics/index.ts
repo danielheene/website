@@ -1,5 +1,9 @@
 import type { AccessArgs, CollectionConfig } from 'payload'
 
+import {
+  hideVersionsTabForSingleVersion,
+  SINGLE_VERSION_DRAFTS,
+} from '@/collections/shared/singleVersionDrafts'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { HeroSlidesField } from '@/fields/HeroSlides'
 import { MetaField } from '@/fields/Meta'
@@ -7,8 +11,8 @@ import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
 import { ToggleField } from '@/fields/Toggle'
-import { anyone } from '@/lib/access/anyone'
 import { authenticated } from '@/lib/access/authenticated'
+import { authenticatedOrPublished } from '@/lib/access/authenticatedOrPublished'
 import { generatePreviewPath } from '@/lib/generatePreviewPath'
 import { AdminGroup } from '@/types/admin-panel'
 import { RESERVED_TOPIC_SLUGS } from '@/types/blog'
@@ -62,6 +66,15 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
               },
             ]
           : [],
+      views: {
+        edit: {
+          versions: {
+            tab: {
+              condition: hideVersionsTabForSingleVersion,
+            },
+          },
+        },
+      },
     },
   },
   access: {
@@ -91,10 +104,7 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
 
       return references === 0
     },
-    // topics have no drafts/versions — authenticatedOrPublished would filter
-    // on a nonexistent _status field and crash every access-enforced read
-    // (including populating post.topics and the public REST API)
-    read: anyone,
+    read: authenticatedOrPublished,
     update: authenticated,
   },
   hooks: {
@@ -199,4 +209,5 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
   ],
   orderable: true,
   trash: true,
+  versions: SINGLE_VERSION_DRAFTS,
 }

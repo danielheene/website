@@ -1,5 +1,9 @@
 import type { CollectionConfig } from 'payload'
 
+import {
+  hideVersionsTabForSingleVersion,
+  SINGLE_VERSION_DRAFTS,
+} from '@/collections/shared/singleVersionDrafts'
 import { BilingualRichTextField } from '@/fields/BilingualRichText'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { authenticated } from '@/lib/access/authenticated'
@@ -44,6 +48,17 @@ export const ResumeJobs: CollectionConfig<CollectionSlug['ResumeJobs']> = {
       'interval',
     ],
     disableCopyToLocale: true,
+    components: {
+      views: {
+        edit: {
+          versions: {
+            tab: {
+              condition: hideVersionsTabForSingleVersion,
+            },
+          },
+        },
+      },
+    },
   },
   defaultSort: [
     'startDate',
@@ -190,5 +205,5 @@ export const ResumeJobs: CollectionConfig<CollectionSlug['ResumeJobs']> = {
     GeneratorFlagsField(),
   ],
   trash: true,
-  versions: false,
+  versions: SINGLE_VERSION_DRAFTS,
 }

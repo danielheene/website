@@ -2,6 +2,10 @@ import { CollectionConfig } from 'payload'
 
 import { cn } from 'tailwind-variants'
 
+import {
+  hideVersionsTabForSingleVersion,
+  SINGLE_VERSION_DRAFTS,
+} from '@/collections/shared/singleVersionDrafts'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { SlugField } from '@/fields/Slug'
 import { SVGUploadField } from '@/fields/SVGUpload'
@@ -32,6 +36,17 @@ export const ResumeCustomers: CollectionConfig<CollectionSlug['ResumeCustomers']
       'title',
       'slug',
     ],
+    components: {
+      views: {
+        edit: {
+          versions: {
+            tab: {
+              condition: hideVersionsTabForSingleVersion,
+            },
+          },
+        },
+      },
+    },
   },
   orderable: true,
   fields: [
@@ -116,4 +131,5 @@ export const ResumeCustomers: CollectionConfig<CollectionSlug['ResumeCustomers']
 
     GeneratorFlagsField(),
   ],
+  versions: SINGLE_VERSION_DRAFTS,
 }

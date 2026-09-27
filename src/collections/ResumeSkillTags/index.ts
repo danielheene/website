@@ -1,8 +1,13 @@
 import { CollectionConfig } from 'payload'
 
+import {
+  hideVersionsTabForSingleVersion,
+  SINGLE_VERSION_DRAFTS,
+} from '@/collections/shared/singleVersionDrafts'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
+import { authenticated } from '@/lib/access/authenticated'
 import { generateResumeDocumentHook } from '@/lib/payloadHooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
@@ -15,6 +20,13 @@ export const ResumeSkillTags: CollectionConfig<CollectionSlug['ResumeSkillTags']
   },
   typescript: {
     interface: 'ResumeSkillTagData',
+  },
+  access: {
+    read: authenticated,
+    update: authenticated,
+    create: authenticated,
+    delete: authenticated,
+    readVersions: authenticated,
   },
   hooks: {
     afterOperation: [
@@ -31,6 +43,17 @@ export const ResumeSkillTags: CollectionConfig<CollectionSlug['ResumeSkillTags']
       'interval',
     ],
     disableCopyToLocale: true,
+    components: {
+      views: {
+        edit: {
+          versions: {
+            tab: {
+              condition: hideVersionsTabForSingleVersion,
+            },
+          },
+        },
+      },
+    },
   },
   fields: [
     TitleField({
@@ -55,4 +78,5 @@ export const ResumeSkillTags: CollectionConfig<CollectionSlug['ResumeSkillTags']
 
     GeneratorFlagsField(),
   ],
+  versions: SINGLE_VERSION_DRAFTS,
 }
