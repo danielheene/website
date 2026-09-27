@@ -159,6 +159,7 @@ const postFeatures = [
       BlockSlug.LinkGroup,
       BlockSlug.Code,
       BlockSlug.TwoColumnContent,
+      BlockSlug.HighlightBox,
     ],
   }),
   IndentFeature(),

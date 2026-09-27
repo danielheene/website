@@ -102,6 +102,7 @@ export interface Config {
   };
   blocks: {
     CodeBlock: CodeBlock;
+    HighlightBoxBlock: HighlightBoxBlock;
     LinkGroupBlock: LinkGroupBlock;
     OneColumnContentBlock: OneColumnContentBlock;
     TwoColumnContentBlock: TwoColumnContentBlock;
@@ -282,6 +283,30 @@ export interface CodeBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HighlightBoxBlock".
+ */
+export interface HighlightBoxBlock {
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'HighlightBoxBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "LinkGroupBlock".
  */
 export interface LinkGroupBlock {
@@ -371,6 +396,7 @@ export interface Page {
   content?:
     | (
         | CodeBlock
+        | HighlightBoxBlock
         | LinkGroupBlock
         | OneColumnContentBlock
         | TwoColumnContentBlock
