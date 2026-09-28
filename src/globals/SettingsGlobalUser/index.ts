@@ -1,7 +1,6 @@
 import type { GlobalConfig } from 'payload'
 
 import { authenticated } from '@/access/authenticated'
-import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { AddressField } from '@/fields/Address'
 import { IconField } from '@/fields/Icon'
 import { SectionGroupField } from '@/fields/SectionGroup'
@@ -18,7 +17,9 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
   slug: GlobalSlug.GlobalUserSettings,
   label: 'Global User Settings',
   access: {
-    read: authenticatedOrPublished,
+    // `versions: false` — there is no `_status` to filter on, so
+    // authenticatedOrPublished would break every access-enforced read
+    read: authenticated,
     update: authenticated,
   },
   hooks: {

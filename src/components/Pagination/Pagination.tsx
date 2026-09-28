@@ -7,15 +7,17 @@ import { Button } from '@/components/Button'
 import { Icon } from '@/components/Icon'
 
 interface PaginationProps {
-  basePath: string
   page: number
   totalPages: number
+  /**
+   * Builds the href for a page number, so the caller owns the URL scheme
+   * (e.g. `?page=<n>` alongside whatever other params the listing carries).
+   */
+  pageHref: (page: number) => string
 }
 
-export const Pagination = ({ basePath, page, totalPages }: PaginationProps): JSX.Element => {
+export const Pagination = ({ page, totalPages, pageHref }: PaginationProps): JSX.Element => {
   if (totalPages <= 1) return null
-
-  const pageHref = (target: number) => (target <= 1 ? basePath : `${basePath}/page/${target}`)
 
   return (
     <nav

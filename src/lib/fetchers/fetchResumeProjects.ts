@@ -16,6 +16,12 @@ export const fetchResumeProjects = async (locale: BilingualLanguage = 'en') => {
     draft: false,
     pagination: false,
     limit: 0,
+    // runs with overrideAccess, so never-published drafts must be excluded here
+    where: {
+      _status: {
+        equals: 'published',
+      },
+    },
   })
 
   return await resolveRelations(reduceDataToBilingualLanguage(docs, locale))
