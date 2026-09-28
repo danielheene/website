@@ -35,6 +35,7 @@ const getPublishedEntries = async (collection: ListedCollection): Promise<Listed
     limit: 10000,
     pagination: false,
     draft: false,
+    overrideAccess: false,
     where: {},
     select: {
       title: true,
