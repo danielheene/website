@@ -39,11 +39,22 @@ export const enqueueCalculateSkillTagInterval: CollectionAfterChangeHook<ResumeJ
    * The same draft save would also enqueue a full resume-PDF regeneration
    * through `generateResumeDocumentHook`, which runs as an `afterOperation`
    * hook on the same request and already honors this context flag.
+   *
+   * `req.context` is shared across every document in a bulk update, and
+   * `afterOperation` only runs once the whole operation finishes — so the
+   * flag must only end up `true` if every document touched by this request
+   * was an unpublished draft save. A real change always forces it back to
+   * `false`, and a later draft save never re-sets a flag a real change
+   * already cleared.
    */
   if (isUnpublishedDraftSave(doc, previousDoc)) {
-    if (req.context) req.context.skipGenerateResumeDocumentHook = true
+    if (req.context && req.context.skipGenerateResumeDocumentHook !== false) {
+      req.context.skipGenerateResumeDocumentHook = true
+    }
     return doc
   }
+
+  if (req.context) req.context.skipGenerateResumeDocumentHook = false
 
   const jobDatesChanged =
     previousDoc?.startDate !== doc.startDate || previousDoc?.endDate !== doc.endDate
