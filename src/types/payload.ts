@@ -1381,6 +1381,7 @@ export interface ResumeJobData {
 export interface ResumeSkillTagData {
   id: string;
   _order?: string | null;
+  icon?: string | null;
   title: string;
   slug: string;
   interval?: number | null;
@@ -2121,6 +2122,7 @@ export interface ResumeSkillsSelect<T extends boolean = true> {
  */
 export interface ResumeSkillTagsSelect<T extends boolean = true> {
   _order?: T;
+  icon?: T;
   title?: T;
   slug?: T;
   interval?: T;

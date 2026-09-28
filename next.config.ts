@@ -9,6 +9,11 @@ import z from 'zod'
 
 import { envSchema } from '@/types/environment'
 
+import { name as packageName, version as packageVersion } from './package.json'
+
+const sentryEnvironment = process.env.SENTRY_ENVIRONMENT || 'unknown'
+const sentryRelease = `${packageName}@${packageVersion}-${sentryEnvironment}`
+
 let server: ChildProcess | null = null
 const createTunnel = (token: string) =>
   new Promise<ChildProcess | null>((resolve) => {
@@ -122,12 +127,27 @@ export default async (phase, { defaultConfig }) => {
     reactStrictMode: true,
     cacheComponents: true,
 
+    compiler: {
+      define: {},
+      defineServer: {},
+    },
+
     experimental: {
+      allowDevelopmentBuild: true,
       appNewScrollHandler: true,
       turbopackServerFastRefresh: true,
       serverActions: {
         bodySizeLimit: '10mb',
       },
+      optimizePackageImports: [
+        // 'payload',
+        '@payloadcms/next',
+        '@payloadcms/translations',
+        '@payloadcms/ui',
+        'shiki',
+        // 'svgo',
+        'usehooks-ts',
+      ],
     },
 
     /**
@@ -183,7 +203,8 @@ export default async (phase, { defaultConfig }) => {
       STATUS_PAGE_URL: process.env.STATUS_PAGE_URL,
       RESUME_REDIRECT_URL_BASE: process.env.RESUME_REDIRECT_URL_BASE,
       SENTRY_DSN: process.env.SENTRY_DSN,
-      SENTRY_RELEASE: `${process.env.SENTRY_PROJECT}@${process.env.npm_package_version}-${process.env.SENTRY_ENVIRONMENT || process.env.NODE_ENV || 'production'}`,
+      SENTRY_RELEASE: sentryRelease,
+      SENTRY_ENVIRONMENT: sentryEnvironment,
     },
 
     /**

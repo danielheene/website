@@ -49,7 +49,8 @@ export const ServiceStatusClient = ({
       <Badge
         asChild
         color={STATUS_BADGE_COLOR[status.code]}
-        style="light"
+        style="outline"
+        size="lg"
         className={cn([
           'gap-2 transition-colors',
           // 'hover:bg-[color-mix(in_oklab,var(--badge-color)_35%,var(--color-white)_65%)]',

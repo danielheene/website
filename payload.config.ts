@@ -2,7 +2,7 @@ import path from 'node:path'
 import * as process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
-import { buildConfig } from 'payload'
+import { buildConfig, type CollectionConfig } from 'payload'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { redisKVAdapter } from '@payloadcms/kv-redis'
 import { importExportPlugin } from '@payloadcms/plugin-import-export'
@@ -13,6 +13,7 @@ import { s3Storage } from '@payloadcms/storage-s3'
 import * as Sentry from '@sentry/nextjs'
 import sharp from 'sharp'
 
+import { authenticated } from '@/access/authenticated'
 import { BLOCKS } from '@/blocks'
 import { COLLECTIONS } from '@/collections'
 import { GLOBALS } from '@/globals'
@@ -200,6 +201,13 @@ export const config = buildConfig({
     ],
     jobsCollectionOverrides: ({ defaultJobsCollection }) => ({
       ...defaultJobsCollection,
+      slug: CollectionSlug.PayloadJobs,
+      access: {
+        read: authenticated,
+        update: authenticated,
+        create: authenticated,
+        delete: authenticated,
+      },
       admin: {
         ...defaultJobsCollection.admin,
         hidden: false,

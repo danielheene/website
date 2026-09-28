@@ -12,7 +12,7 @@ import { type HeroMediaItem, HeroSlide } from './HeroSlide'
 /** How long the cross-fade takes. Mirrors `--hero-fade-duration` in the CSS. */
 const FADE_MS = 1200
 
-/** Dwell time for a still image before advancing. */
+/** Dwell time for a still image or shader before advancing. */
 const IMAGE_DWELL_MS = 6000
 
 export interface HeroCarouselProps {
@@ -23,14 +23,10 @@ export interface HeroCarouselProps {
 /**
  * Cross-fading hero carousel.
  *
- * Images advance on a fixed dwell; videos instead hold the carousel until they
- * are *almost* finished, then hand over. The hand-off starts `FADE_MS` before
- * the end so the outgoing video is still playing while the next slide fades up
- * — the video blends into its successor rather than freezing on a last frame
- * and then cutting.
- *
- * Autoplay is driven manually via `stopOnInteraction: false` + explicit reset,
- * because the delay is per-slide rather than uniform.
+ * Images and shaders advance on a fixed dwell (`IMAGE_DWELL_MS`). Videos hold
+ * the carousel for their full duration — autoplay is stopped while a video is
+ * active and the hand-off fires on `ended` so the clip plays completely before
+ * the next slide fades in.
  */
 export const HeroCarousel = ({ items, className }: HeroCarouselProps) => {
   const [emblaRef, emblaApi] = useEmblaCarousel(
@@ -73,9 +69,9 @@ export const HeroCarousel = ({ items, className }: HeroCarouselProps) => {
   ])
 
   /**
-   * A video slide owns its own timing, so the fixed-delay autoplay is paused
-   * while one is on screen and resumed when a still image or shader comes
-   * back around — both dwell for the same fixed delay as an image.
+   * Pause the fixed-delay autoplay while a video slide is active; videos own
+   * their timing and advance via `handleVideoHandoff`. Resume for images and
+   * shaders so they dwell for the standard interval.
    */
   useEffect(() => {
     if (!emblaApi) return
@@ -94,11 +90,7 @@ export const HeroCarousel = ({ items, className }: HeroCarouselProps) => {
     selected,
   ])
 
-  /**
-   * Called by a video slide once it is within `FADE_MS` of its end. The
-   * outgoing video keeps playing through the fade — Embla only swaps opacity —
-   * so the two slides genuinely overlap.
-   */
+  /** Called by a video slide when it ends; advances to the next slide. */
   const handleVideoHandoff = useCallback(
     (index: number) => {
       if (!emblaApi) return
@@ -121,7 +113,6 @@ export const HeroCarousel = ({ items, className }: HeroCarouselProps) => {
       <div className="flex h-full w-full">
         {items.map((item, index) => (
           <HeroSlide
-            fadeMs={FADE_MS}
             index={index}
             isActive={index === selected}
             item={item}

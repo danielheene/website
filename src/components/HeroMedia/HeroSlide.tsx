@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { ImageMedia } from '@/components/ImageMedia'
 
@@ -21,6 +21,7 @@ export type HeroMediaItem =
       url: string
       alt: string
       poster?: string | null
+      blurDataURL?: string | null
     }
   | {
       kind: 'shader'
@@ -33,14 +34,12 @@ export interface HeroSlideProps {
   index: number
   isActive: boolean
   priority: boolean
-  fadeMs: number
   /** Set when this is the only slide, so a video has nothing to hand over to. */
   loop?: boolean
   onHandoff: (index: number) => void
 }
 
 export const HeroSlide = ({
-  fadeMs,
   index,
   isActive,
   item,
@@ -49,6 +48,22 @@ export const HeroSlide = ({
   priority,
 }: HeroSlideProps) => {
   const videoRef = useRef<HTMLVideoElement>(null)
+  /**
+   * Tracks whether the video has buffered enough to begin playing. Starts
+   * false so the poster/blur layer is visible until `canplay` fires, at which
+   * point we fade the video in and hide the placeholder.
+   */
+  const [videoReady, setVideoReady] = useState(false)
+
+  // Reset ready state when the slide goes off-screen so the next activation
+  // starts with the placeholder visible again.
+  useEffect(() => {
+    if (item.kind !== 'video') return
+    if (!isActive) setVideoReady(false)
+  }, [
+    isActive,
+    item.kind,
+  ])
 
   /**
    * Restart a video whenever its slide becomes active, and pause it when it
@@ -81,12 +96,8 @@ export const HeroSlide = ({
   ])
 
   /**
-   * Starts the cross-fade `fadeMs` before the video ends, so it is still
-   * playing as the next slide fades up.
-   *
-   * `timeupdate` fires every ~250ms, which is coarse but well inside the fade
-   * window. `ended` is a backstop for videos shorter than the fade and for
-   * browsers that stop firing `timeupdate` near the end.
+   * Fires `onHandoff` when the video ends so the full clip plays before the
+   * next slide fades in. `ended` is the sole trigger — no early hand-off.
    */
   useEffect(() => {
     const video = videoRef.current
@@ -94,28 +105,14 @@ export const HeroSlide = ({
     // A looping video never hands over, so it needs no end-of-play watcher.
     if (loop) return
 
-    const fadeSeconds = fadeMs / 1000
-
-    const onTimeUpdate = () => {
-      const { currentTime, duration } = video
-      if (!Number.isFinite(duration) || duration <= 0) return
-
-      if (currentTime >= duration - fadeSeconds) {
-        onHandoff(index)
-      }
-    }
-
     const onEnded = () => onHandoff(index)
 
-    video.addEventListener('timeupdate', onTimeUpdate)
     video.addEventListener('ended', onEnded)
 
     return () => {
-      video.removeEventListener('timeupdate', onTimeUpdate)
       video.removeEventListener('ended', onEnded)
     }
   }, [
-    fadeMs,
     index,
     isActive,
     item.kind,
@@ -136,17 +133,51 @@ export const HeroSlide = ({
           url={item.url}
         />
       ) : item.kind === 'video' ? (
-        <video
-          className="h-full w-full object-cover"
-          controls={false}
-          loop={loop}
-          muted
-          playsInline
-          poster={item.poster ?? undefined}
-          preload={priority ? 'auto' : 'metadata'}
-          ref={videoRef}
-          src={item.url}
-        />
+        <>
+          {/* Blur placeholder: base64 data URI — not optimisable by next/image. */}
+          {item.blurDataURL && (
+            // biome-ignore lint/performance/noImgElement: base64 data URI, not a URL
+            <img
+              alt=""
+              aria-hidden
+              className="absolute inset-0 h-full w-full object-cover"
+              src={item.blurDataURL}
+              style={{
+                opacity: videoReady ? 0 : 1,
+                transition: 'opacity 600ms ease',
+              }}
+            />
+          )}
+          {/* Poster image: full-res thumbnail fades out once the video can play. */}
+          {item.poster && (
+            // biome-ignore lint/performance/noImgElement: needs inline opacity transition
+            <img
+              alt=""
+              aria-hidden
+              className="absolute inset-0 h-full w-full object-cover"
+              src={item.poster}
+              style={{
+                opacity: videoReady ? 0 : 1,
+                transition: 'opacity 600ms ease',
+              }}
+            />
+          )}
+          <video
+            className="h-full w-full object-cover"
+            controls={false}
+            loop={loop}
+            muted
+            onCanPlay={() => setVideoReady(true)}
+            playsInline
+            preload={priority ? 'auto' : 'metadata'}
+            ref={videoRef}
+            src={item.url}
+            style={{
+              opacity: videoReady ? 1 : 0,
+              transition: 'opacity 600ms ease',
+            }}
+          />
+        </>
       ) : (
         <ShaderHeroBackground className="h-full w-full" presetKey={item.presetKey} />
       )}
