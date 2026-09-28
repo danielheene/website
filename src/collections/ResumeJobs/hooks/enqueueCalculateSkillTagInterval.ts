@@ -2,6 +2,7 @@ import { CollectionAfterChangeHook } from 'payload'
 
 import { difference, get, union } from 'lodash-es'
 
+import { isUnpublishedDraftSave } from '@/collections/shared/isUnpublishedDraftSave'
 import { QueueSlug, TaskSlug } from '@/types/jobs-queue'
 import { ResumeJobData } from '@/types/payload'
 
@@ -30,6 +31,20 @@ export const enqueueCalculateSkillTagInterval: CollectionAfterChangeHook<ResumeJ
   doc,
   req,
 }) => {
+  /**
+   * Jobs are drafts-enabled, so an admin `Save` usually persists an
+   * unpublished draft. Every consumer reads published data only, so the
+   * interval would be recomputed from exactly the same input — skip it.
+   *
+   * The same draft save would also enqueue a full resume-PDF regeneration
+   * through `generateResumeDocumentHook`, which runs as an `afterOperation`
+   * hook on the same request and already honors this context flag.
+   */
+  if (isUnpublishedDraftSave(doc, previousDoc)) {
+    if (req.context) req.context.skipGenerateResumeDocumentHook = true
+    return doc
+  }
+
   const jobDatesChanged =
     previousDoc?.startDate !== doc.startDate || previousDoc?.endDate !== doc.endDate
 
