@@ -1,6 +1,6 @@
 {
   "name": "website",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "private": true,
   "description": "personal website, blog, and resume builder",
   "homepage": "https://daniel.heene.io",
@@ -64,7 +64,6 @@
   "resolutions": {
     "pdfjs-dist": "5.4.296"
   },
-
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.63",
     "@iconify/react": "^6.0.2",
