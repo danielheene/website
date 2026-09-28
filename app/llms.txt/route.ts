@@ -1,3 +1,4 @@
+import { connection } from 'next/server'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
@@ -75,6 +76,8 @@ const renderSection = (
 }
 
 export async function GET() {
+  await connection()
+
   const { general } = await fetchSiteSettingsCached()
 
   const [pages, posts, topics] = await Promise.all([
