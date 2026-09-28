@@ -105,5 +105,12 @@ jobs:
       - name: Start local services (Mongo, Redis, S3)
         run: docker compose up -d --wait
 
+      # The smoke tests hit the CMS-driven homepage and admin login screen,
+      # which need the schema and seed documents (e.g. the `home` page)
+      # that 00000001_initialize_basic_site creates — without this the DB
+      # is empty and every page-rendering assertion 404s.
+      - name: Run database migrations
+        run: pnpm run migrate
+
       - name: Run E2E tests
         run: pnpm run test:e2e
