@@ -15,7 +15,7 @@ interface FeaturedTopicsProps {
 const fetchFeaturedTopics = async () => {
   'use cache'
   cacheLife('max')
-  cacheTag('featuredTopics')
+  cacheTag('featuredTopics', CollectionSlug.BlogPosts)
 
   const payload = await getPayload({
     config,
@@ -35,10 +35,23 @@ const fetchFeaturedTopics = async () => {
       relatedPosts: true,
     },
     sort: '_order',
-    depth: 2,
+    depth: 0,
+    // the query runs with overrideAccess, so the join would count drafts too;
+    // only the total is shown, so no post docs are needed beyond it
+    joins: {
+      relatedPosts: {
+        count: true,
+        limit: 1,
+        where: {
+          _status: {
+            equals: 'published',
+          },
+        },
+      },
+    },
   })
 
-  return topics.filter((topic) => topic.relatedPosts?.docs?.length > 0)
+  return topics.filter((topic) => topic.relatedPosts?.totalDocs > 0)
 }
 
 export const FeaturedTopics = async ({ currentSlug = '/' }: FeaturedTopicsProps) => {
@@ -49,7 +62,7 @@ export const FeaturedTopics = async ({ currentSlug = '/' }: FeaturedTopicsProps)
       slug: '/',
       title: 'All Topics',
       relatedPosts: {
-        docs: [],
+        totalDocs: 0,
       },
     },
     ...topics,
@@ -67,9 +80,7 @@ export const FeaturedTopics = async ({ currentSlug = '/' }: FeaturedTopicsProps)
           ])}
         >
           {title}
-          {relatedPosts?.docs?.length > 0 && (
-            <span className="ml-1">({relatedPosts?.docs?.length})</span>
-          )}
+          {relatedPosts?.totalDocs > 0 && <span className="ml-1">({relatedPosts.totalDocs})</span>}
         </Link>
       ))}
     </div>

@@ -11,6 +11,7 @@ import { SlugField } from '@/fields/Slug'
 import { SVGUploadField } from '@/fields/SVGUpload'
 import { TitleField } from '@/fields/Title'
 import { authenticated } from '@/lib/access/authenticated'
+import { authenticatedOrPublished } from '@/lib/access/authenticatedOrPublished'
 import { sanitizeSvg } from '@/lib/sanitizeSvg'
 import { CollectionSlug } from '@/types/collections'
 
@@ -24,7 +25,7 @@ export const ResumeCustomers: CollectionConfig<CollectionSlug['ResumeCustomers']
     interface: 'ResumeCustomerData',
   },
   access: {
-    read: authenticated,
+    read: authenticatedOrPublished,
     update: authenticated,
     create: authenticated,
     delete: authenticated,

@@ -17,8 +17,8 @@ export const fetchResumeSkills = async (locale: BilingualLanguage = 'en') => {
     pagination: false,
     limit: 0,
     where: {
-      published: {
-        equals: true,
+      _status: {
+        equals: 'published',
       },
     },
   })

@@ -9,6 +9,7 @@ import { BilingualRichTextField } from '@/fields/BilingualRichText'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { SkillTypeField } from '@/fields/SkillType'
 import { authenticated } from '@/lib/access/authenticated'
+import { authenticatedOrPublished } from '@/lib/access/authenticatedOrPublished'
 import { generateResumeDocumentHook } from '@/lib/payloadHooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
@@ -25,7 +26,7 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
     interface: 'ResumeSkillData',
   },
   access: {
-    read: authenticated,
+    read: authenticatedOrPublished,
     update: authenticated,
     create: authenticated,
     delete: authenticated,
@@ -133,13 +134,6 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
     },
 
     /* -------------- Sidebar Content -------------- */
-    {
-      type: 'checkbox',
-      name: 'published',
-      admin: {
-        position: 'sidebar',
-      },
-    },
     SkillTypeField({
       overrides: {
         admin: {

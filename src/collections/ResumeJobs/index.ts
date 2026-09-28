@@ -7,6 +7,7 @@ import {
 import { BilingualRichTextField } from '@/fields/BilingualRichText'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { authenticated } from '@/lib/access/authenticated'
+import { authenticatedOrPublished } from '@/lib/access/authenticatedOrPublished'
 import { generateResumeDocumentHook } from '@/lib/payloadHooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
@@ -24,7 +25,7 @@ export const ResumeJobs: CollectionConfig<CollectionSlug['ResumeJobs']> = {
     interface: 'ResumeJobData',
   },
   access: {
-    read: authenticated,
+    read: authenticatedOrPublished,
     update: authenticated,
     create: authenticated,
     delete: authenticated,

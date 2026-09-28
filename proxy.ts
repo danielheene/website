@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+import { resolveBlogListingUrl } from '@/lib/blog/listing'
 import { fetchRedirect } from '@/lib/redirects/redirectCache'
 
 /** Paths that must never be redirected, regardless of stored rows. */
@@ -42,5 +43,22 @@ export default async function proxy(request: NextRequest) {
     return NextResponse.redirect(destination, redirect.statusCode)
   }
 
-  return NextResponse.next()
+  /**
+   * Blog listings paginate and sort via `?page=` / `?sort=`. Non-canonical
+   * forms (legacy /page/<n> segments, `page=1`, unknown sorts, …) redirect to
+   * their canonical URL here: the listing reads its params inside a Suspense
+   * boundary, where it can no longer change the response status.
+   */
+  const listing = resolveBlogListingUrl(request.nextUrl.pathname, request.nextUrl.search)
+  if (listing?.redirect) {
+    return NextResponse.redirect(new URL(listing.redirect, request.url), 308)
+  }
+
+  const response = NextResponse.next()
+  // alternative sort orders duplicate the default listing's content
+  if (listing && !listing.indexable) {
+    response.headers.set('X-Robots-Tag', 'noindex, follow')
+  }
+
+  return response
 }

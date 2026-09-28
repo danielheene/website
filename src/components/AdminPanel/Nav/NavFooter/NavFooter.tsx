@@ -1,6 +1,14 @@
 'use client'
 
-import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  ViewTransition,
+} from 'react'
 import ReactDOM from 'react-dom'
 import Image from 'next/image'
 import Link from 'next/link'

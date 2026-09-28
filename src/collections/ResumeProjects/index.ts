@@ -7,6 +7,7 @@ import {
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { RichTextField } from '@/fields/RichText'
 import { authenticated } from '@/lib/access/authenticated'
+import { authenticatedOrPublished } from '@/lib/access/authenticatedOrPublished'
 import { generateResumeDocumentHook } from '@/lib/payloadHooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
@@ -21,7 +22,7 @@ export const ResumeProjects: CollectionConfig<CollectionSlug['ResumeProjects']> 
     interface: 'ResumeProjectData',
   },
   access: {
-    read: authenticated,
+    read: authenticatedOrPublished,
     update: authenticated,
     create: authenticated,
     delete: authenticated,

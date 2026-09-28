@@ -10,6 +10,7 @@ import { SkillTypeField } from '@/fields/SkillType'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
 import { authenticated } from '@/lib/access/authenticated'
+import { authenticatedOrPublished } from '@/lib/access/authenticatedOrPublished'
 import { generateResumeDocumentHook } from '@/lib/payloadHooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
@@ -24,7 +25,7 @@ export const ResumeSkillTags: CollectionConfig<CollectionSlug['ResumeSkillTags']
     interface: 'ResumeSkillTagData',
   },
   access: {
-    read: authenticated,
+    read: authenticatedOrPublished,
     update: authenticated,
     create: authenticated,
     delete: authenticated,

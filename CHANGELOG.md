@@ -1,3 +1,17 @@
+# [1.6.0](https://github.com/danielheene/website/compare/v1.5.0...v1.6.0) (2026-09-28)
+
+
+### Features
+
+* hero video player, footer legal links, and dependency updates ([#84](https://github.com/danielheene/website/issues/84)) ([045b423](https://github.com/danielheene/website/commit/045b423a4ccc8fa68bd02911aba4150a6b71c1dd))
+
+# [1.5.0](https://github.com/danielheene/website/compare/v1.4.2...v1.5.0) (2026-09-28)
+
+
+### Features
+
+* **blog:** search-param pagination, RSS feed, sitemap; publishable-schema access ([#82](https://github.com/danielheene/website/issues/82)) ([9d50f54](https://github.com/danielheene/website/commit/9d50f549bea919ffb04f41d88e0abe3377586bbc))
+
 ## [1.4.2](https://github.com/danielheene/website/compare/v1.4.1...v1.4.2) (2026-09-21)
 
 

@@ -1521,7 +1521,6 @@ export interface ResumeSkillData {
     } | null;
   };
   title?: string | null;
-  published?: boolean | null;
   type?: SkillType;
   skillTags?:
     | {
@@ -2150,7 +2149,6 @@ export interface ResumeSkillsSelect<T extends boolean = true> {
         de?: T;
       };
   title?: T;
-  published?: T;
   type?: T;
   skillTags?: T;
   generatorFlags?: T;

@@ -35,20 +35,19 @@ export async function generateStaticParams() {
 }
 
 /**
- * Posts filtered by topic. Later pages live at /blog/<topic>/page/<n>.
- *
- * See the note in /blog/page.tsx on why `searchParams` is not read here.
+ * Posts filtered by topic. Pagination and sorting live in `?page=` and
+ * `?sort=` — see the note in /blog/page.tsx on how `searchParams` is read.
  */
-export default async function Page({ params }: PageProps<'/blog/[slug]'>) {
+export default async function Page({ params, searchParams }: PageProps<'/blog/[slug]'>) {
   const { slug } = await params
 
-  // `/blog/post/...` and `/blog/page/...` are handled by their own routes
+  // `/blog/post/...` is handled by its own route, `/blog/page/...` by the proxy
   if (RESERVED_TOPIC_SLUGS.includes(slug)) notFound()
 
   const topic = await queryPublishedTopicBySlug(slug)
   if (!topic) notFound()
 
-  return <BlogListPage topic={topic} page={1} />
+  return <BlogListPage topic={topic} searchParams={searchParams} />
 }
 
 export async function generateMetadata({ params }: PageProps<'/blog/[slug]'>): Promise<Metadata> {

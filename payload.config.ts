@@ -2,7 +2,7 @@ import path from 'node:path'
 import * as process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
-import { buildConfig } from 'payload'
+import { buildConfig, type CollectionConfig } from 'payload'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { redisKVAdapter } from '@payloadcms/kv-redis'
 import { importExportPlugin } from '@payloadcms/plugin-import-export'
@@ -19,6 +19,7 @@ import { GLOBALS } from '@/globals'
 import { scopeJobsList } from '@/jobs-queue/lib/jobsListFilter'
 import { TASKS } from '@/jobs-queue/tasks'
 import { WORKFLOWS } from '@/jobs-queue/workflows'
+import { authenticated } from '@/lib/access/authenticated'
 import { SENTRY_ENABLED } from '@/lib/sentry/options'
 import { useSendAdapter } from '@/lib/useSendAdapter'
 import { redirectsPlugin } from '@/plugins/redirects'
@@ -200,6 +201,13 @@ export const config = buildConfig({
     ],
     jobsCollectionOverrides: ({ defaultJobsCollection }) => ({
       ...defaultJobsCollection,
+      slug: CollectionSlug.PayloadJobs,
+      access: {
+        read: authenticated,
+        update: authenticated,
+        create: authenticated,
+        delete: authenticated,
+      },
       admin: {
         ...defaultJobsCollection.admin,
         hidden: false,

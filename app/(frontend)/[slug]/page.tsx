@@ -82,9 +82,7 @@ export default async function Page({ params }: PageProps) {
           </div>
         )}
       </HeroMedia>
-      <div className="container">
-        <RenderBlocks blocks={content} />
-      </div>
+      <RenderBlocks blocks={content} />
 
       {draft && <LivePreviewListener />}
     </PageContainer>
