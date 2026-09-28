@@ -67,23 +67,30 @@ export const toAbsoluteUrl = (url: string | null | undefined): string | null => 
   }
 }
 
+/** Absolute URL restricted to the given protocols, or null. */
+const withProtocol = (url: string | null | undefined, protocols: string[]): string | null => {
+  const absolute = toAbsoluteUrl(url)
+  return absolute && protocols.includes(new URL(absolute).protocol) ? absolute : null
+}
+
 /**
  * Only http(s) and mailto links survive — the frontend renders these through
  * React, which refuses `javascript:` URLs; raw HTML in a feed gets no such
  * protection.
  */
-const safeHref = (url: string | null | undefined): string | null => {
-  const absolute = toAbsoluteUrl(url)
-  if (!absolute) return null
-  const { protocol } = new URL(absolute)
-  return [
+const safeHref = (url: string | null | undefined): string | null =>
+  withProtocol(url, [
     'http:',
     'https:',
     'mailto:',
-  ].includes(protocol)
-    ? absolute
-    : null
-}
+  ])
+
+/** Media sources are fetched, never navigated to: http(s) only. */
+const safeMediaUrl = (url: string | null | undefined): string | null =>
+  withProtocol(url, [
+    'http:',
+    'https:',
+  ])
 
 const linkHref = (fields: LinkFieldDataLean | undefined): string | null => {
   const target = resolveLinkTarget(fields)
@@ -132,7 +139,7 @@ const uploadConverter: HTMLConverter<NodeOf<'upload'>> = ({ node }) => {
   const value = node.value as unknown as UploadValue | string | undefined
   if (!value || typeof value !== 'object') return ''
 
-  const src = toAbsoluteUrl(value.url)
+  const src = safeMediaUrl(value.url)
   if (!src) return ''
 
   const size = [
@@ -141,7 +148,7 @@ const uploadConverter: HTMLConverter<NodeOf<'upload'>> = ({ node }) => {
   ].join('')
 
   if (node.relationTo === CollectionSlug.MediaVideos) {
-    const poster = toAbsoluteUrl(value.thumbnails?.[0]?.value?.url)
+    const poster = safeMediaUrl(value.thumbnails?.[0]?.value?.url)
     return `<video src="${escapeHTML(src)}" controls preload="none"${
       poster ? ` poster="${escapeHTML(poster)}"` : ''
     }${size}></video>`

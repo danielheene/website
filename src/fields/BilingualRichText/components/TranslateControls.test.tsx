@@ -30,6 +30,12 @@ type SseCall = {
 }
 const sseCalls: SseCall[] = []
 
+// The real Icon loads its SVG through Iconify's async loader, whose timer can
+// fire after jsdom is torn down ("window is not defined") and fail the run
+vi.mock('@/components/Icon', () => ({
+  Icon: ({ name }: { name: string }) => <span data-testid={`icon-${name}`} />,
+}))
+
 vi.mock('@payloadcms/ui', () => ({
   fieldBaseClass: 'field-type',
   toast: {

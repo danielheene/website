@@ -82,6 +82,7 @@ export async function up({ payload, session }: MigrateUpArgs): Promise<void> {
 /** Restores the checkbox from `_status`, the value `up` made authoritative. */
 export async function down({ payload, session }: MigrateDownArgs): Promise<void> {
   const skills = payload.db.collections[CollectionSlug.ResumeSkills]
+  const versions = payload.db.versions[CollectionSlug.ResumeSkills]
 
   await skills.collection.updateMany(
     {},
@@ -91,6 +92,27 @@ export async function down({ payload, session }: MigrateDownArgs): Promise<void>
           published: {
             $eq: [
               '$_status',
+              'published',
+            ],
+          },
+        },
+      },
+    ],
+    {
+      session,
+    },
+  )
+
+  // restoring a version copies its `version` onto the document, so versions
+  // need the field back too
+  await versions?.collection.updateMany(
+    {},
+    [
+      {
+        $set: {
+          'version.published': {
+            $eq: [
+              '$version._status',
               'published',
             ],
           },

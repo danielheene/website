@@ -3,6 +3,8 @@ import type { CollectionConfig, GlobalConfig } from 'payload'
 import { describe, expect, it, vi } from 'vitest'
 
 import { COLLECTIONS } from '@/collections'
+import { Redirects } from '@/collections/Redirects'
+import { References } from '@/collections/References'
 import { GLOBALS } from '@/globals'
 
 import { authenticatedOrPublished } from './authenticatedOrPublished'
@@ -17,7 +19,13 @@ const hasDrafts = ({ versions }: CollectionConfig | GlobalConfig): boolean =>
   typeof versions === 'object' && versions !== null && Boolean(versions.drafts)
 
 const schemas = [
-  ...COLLECTIONS.map((config) => ({
+  // Redirects and References are registered through plugins in
+  // payload.config.ts rather than COLLECTIONS
+  ...[
+    ...COLLECTIONS,
+    Redirects,
+    References,
+  ].map((config) => ({
     kind: 'collection',
     config,
   })),

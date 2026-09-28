@@ -134,6 +134,25 @@ describe('postContentToHtml', () => {
     )
   })
 
+  it('drops uploads with a non-http(s) URL', () => {
+    expect(
+      postContentToHtml(
+        doc({
+          type: 'upload',
+          version: 3,
+          relationTo: CollectionSlug.MediaImages,
+          value: {
+            url: 'javascript:alert(1)',
+            width: 10,
+            height: 10,
+          },
+          fields: {},
+          format: '',
+        }),
+      ),
+    ).toBe('')
+  })
+
   it('skips unpopulated uploads', () => {
     expect(
       postContentToHtml(

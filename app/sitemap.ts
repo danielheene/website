@@ -5,6 +5,7 @@ import { getPayload } from 'payload'
 
 import { BLOG_PATH } from '@/lib/blog/listing'
 import { generateContentURL } from '@/lib/generateContentURL'
+import { latestTimestamp as latest } from '@/lib/latestTimestamp'
 import { RESERVED_TOPIC_SLUGS } from '@/types/blog'
 import { CollectionSlug } from '@/types/collections'
 
@@ -28,12 +29,8 @@ import { CollectionSlug } from '@/types/collections'
  */
 
 type Dated = {
-  updatedAt?: string | null
+  updatedAt?: Date | string | null
 }
-
-/** ISO 8601 timestamps sort chronologically as strings. */
-const latest = (...dates: (string | null | undefined)[]): string | undefined =>
-  dates.filter(Boolean).sort().at(-1)
 
 const querySitemapData = async () => {
   'use cache'
@@ -100,14 +97,17 @@ const querySitemapData = async () => {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { pages, posts, topics } = await querySitemapData()
 
-  const entry = (url: string, { updatedAt }: Dated): MetadataRoute.Sitemap[number] => ({
-    url,
-    ...(updatedAt
-      ? {
-          lastModified: updatedAt,
-        }
-      : {}),
-  })
+  const entry = (url: string, { updatedAt }: Dated): MetadataRoute.Sitemap[number] => {
+    const lastModified = latest(updatedAt)
+    return {
+      url,
+      ...(lastModified
+        ? {
+            lastModified,
+          }
+        : {}),
+    }
+  }
 
   // newest post update per topic id; unpopulated relations carry the bare id
   const topicUpdatedAt = new Map<string, string>()
@@ -120,7 +120,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   const pageEntries = pages
-    .filter(({ slug }) => Boolean(slug))
+    // a Page slugged `blog` is shadowed by the static /blog route, and listing
+    // it would duplicate the blog entry below
+    .filter(({ slug }) => Boolean(slug) && slug !== BLOG_PATH.slice(1))
     // home first — it resolves to `/`
     .sort((a, b) => Number(b.slug === 'home') - Number(a.slug === 'home'))
     .map((page) =>
@@ -166,7 +168,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const postEntries = posts
     .filter(({ slug }) => Boolean(slug))
-    .sort((a, b) => (b.updatedAt ?? '').localeCompare(a.updatedAt ?? ''))
+    .sort((a, b) => new Date(b.updatedAt ?? 0).getTime() - new Date(a.updatedAt ?? 0).getTime())
     .map((post) =>
       entry(
         generateContentURL({

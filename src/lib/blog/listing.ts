@@ -43,6 +43,7 @@ export const BLOG_SORT_OPTIONS = {
     sort: [
       'title',
       '-createdAt',
+      '-id',
     ],
   },
 } as const satisfies Record<
@@ -202,7 +203,10 @@ export const resolveBlogListingUrl = (
 
   const query = params.toString()
   const canonical = query ? `${basePath}?${query}` : basePath
-  const current = `${pathname}${search && search !== '?' ? search : ''}`
+  // compared in serialised form: re-encoding untouched params (`%20` → `+`)
+  // alone must not trigger a redirect
+  const incomingQuery = incoming.toString()
+  const current = incomingQuery ? `${pathname}?${incomingQuery}` : pathname
 
   return {
     redirect: canonical === current ? null : canonical,

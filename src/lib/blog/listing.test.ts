@@ -163,6 +163,13 @@ describe('resolveBlogListingUrl', () => {
     expect(resolveBlogListingUrl('/blog', '?page=2&page=3')?.redirect).toBe('/blog?page=2')
   })
 
+  it('does not redirect just to re-encode unrelated params', () => {
+    expect(
+      resolveBlogListingUrl('/blog', '?utm_campaign=my%20campaign&page=2')?.redirect,
+    ).toBeNull()
+    expect(resolveBlogListingUrl('/blog', "?q=(a)!'~")?.redirect).toBeNull()
+  })
+
   it('keeps unrelated params in place', () => {
     expect(resolveBlogListingUrl('/blog', '?utm_source=rss&page=2')).toEqual({
       redirect: null,

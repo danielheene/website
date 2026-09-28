@@ -8,6 +8,7 @@ import { postContentToHtml } from '@/lib/blog/postContentToHtml'
 import { buildRssFeed, type RssItem } from '@/lib/blog/rss'
 import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fetchers'
 import { generateContentURL } from '@/lib/generateContentURL'
+import { latestTimestamp } from '@/lib/latestTimestamp'
 import { CollectionSlug } from '@/types/collections'
 import type { BlogPostData, Topic } from '@/types/payload'
 
@@ -65,10 +66,7 @@ const buildBlogFeed = async (): Promise<string> => {
 
   // newest content change rather than "now", so an unchanged feed stays
   // byte-identical between rebuilds
-  const lastBuildDate = posts
-    .map(({ updatedAt }) => updatedAt)
-    .sort()
-    .at(-1)
+  const lastBuildDate = latestTimestamp(...posts.map(({ updatedAt }) => updatedAt))
 
   return buildRssFeed(
     {
