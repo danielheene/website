@@ -11,12 +11,53 @@ import type { BlogPostData } from '@/types/payload'
 /** Matches WordPress's own automatic-excerpt length when no "more" marker is present. */
 const FALLBACK_EXCERPT_WORD_COUNT = 50
 
-const toPlainText = (data: SerializedEditorState): string =>
-  convertLexicalToHTML({
-    data,
-    disableContainer: true,
+/**
+ * Entities the HTML serializer emits for text it escaped. Excerpts are stored
+ * and rendered as plain text, so anything left encoded would show up
+ * literally (`R&amp;D`) and non-breaking spaces would even be counted as
+ * words by the fallback truncation.
+ */
+const NAMED_ENTITIES: Record<string, string> = {
+  amp: '&',
+  apos: "'",
+  gt: '>',
+  hellip: '…',
+  laquo: '«',
+  ldquo: '“',
+  lsquo: '‘',
+  lt: '<',
+  mdash: '—',
+  nbsp: ' ',
+  ndash: '–',
+  quot: '"',
+  raquo: '»',
+  rdquo: '”',
+  rsquo: '’',
+}
+
+const decodeEntities = (text: string): string =>
+  text.replace(/&(#x?[0-9a-f]+|[a-z]+);/gi, (match, entity: string) => {
+    if (entity.startsWith('#')) {
+      const isHex = entity[1]?.toLowerCase() === 'x'
+      const codePoint = Number.parseInt(entity.slice(isHex ? 2 : 1), isHex ? 16 : 10)
+      if (!Number.isFinite(codePoint) || codePoint < 0 || codePoint > 0x10ffff) return match
+      try {
+        return String.fromCodePoint(codePoint)
+      } catch {
+        return match
+      }
+    }
+
+    return NAMED_ENTITIES[entity.toLowerCase()] ?? match
   })
-    .replace(/<[^>]*>/g, ' ')
+
+const toPlainText = (data: SerializedEditorState): string =>
+  decodeEntities(
+    convertLexicalToHTML({
+      data,
+      disableContainer: true,
+    }).replace(/<[^>]*>/g, ' '),
+  )
     .replace(/\s+/g, ' ')
     .trim()
 
