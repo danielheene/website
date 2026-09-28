@@ -854,6 +854,9 @@ export interface BlogPostData {
   };
   readingTime?: number | null;
   wordCount?: number | null;
+  /**
+   * Used for post listings. Computed from the content before the Read More marker, or the first 50 words when none is set.
+   */
   excerpt?: string | null;
   content?: {
     root: {
