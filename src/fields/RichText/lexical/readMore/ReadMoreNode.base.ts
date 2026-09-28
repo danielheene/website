@@ -1,4 +1,5 @@
 import type {
+  DOMConversionMap,
   DOMExportOutput,
   NodeKey,
   SerializedLexicalNode,
@@ -15,6 +16,13 @@ import { DecoratorNode } from '@payloadcms/richtext-lexical/lexical'
  * tag. It's only ever visible as a divider inside the editor.
  */
 export const READ_MORE_NODE_TYPE = 'readMore'
+
+/**
+ * Marks the `<hr>` this node exports on the HTML clipboard, so the paired
+ * `importDOM` below only converts its own `<hr>` back and leaves a real
+ * horizontal rule from `HorizontalRuleFeature` alone.
+ */
+export const READ_MORE_HTML_ATTRIBUTE = 'data-lexical-read-more'
 
 export type SerializedReadMoreNode = SerializedLexicalNode
 
@@ -61,6 +69,24 @@ export abstract class BaseReadMoreNode<TDecorated> extends DecoratorNode<TDecora
     return '\n'
   }
 
+  static importDOM<TNode extends BaseReadMoreNode<unknown>>(
+    this: new (
+      key?: NodeKey,
+    ) => TNode,
+  ): DOMConversionMap {
+    return {
+      hr: (node) =>
+        node.hasAttribute(READ_MORE_HTML_ATTRIBUTE)
+          ? {
+              conversion: () => ({
+                node: new this(),
+              }),
+              priority: 4,
+            }
+          : null,
+    }
+  }
+
   createDOM(): HTMLElement {
     const element = document.createElement('div')
     element.className = 'lexical-read-more'
@@ -72,8 +98,10 @@ export abstract class BaseReadMoreNode<TDecorated> extends DecoratorNode<TDecora
   }
 
   exportDOM(): DOMExportOutput {
+    const element = document.createElement('hr')
+    element.setAttribute(READ_MORE_HTML_ATTRIBUTE, '')
     return {
-      element: document.createElement('hr'),
+      element,
     }
   }
 
