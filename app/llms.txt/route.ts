@@ -18,6 +18,12 @@ type ListedCollection =
 
 const escapeLinkText = (text: string) => text.replace(/[[\]]/g, '')
 
+const escapeDescription = (text: string) =>
+  text
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/[\\`()[\]]/g, (char) => `\\${char}`)
+
 const getPublishedEntries = async (collection: ListedCollection): Promise<ListedEntry[]> => {
   const payload = await getPayload({
     config,
@@ -56,7 +62,7 @@ const renderSection = (
       collection,
       slug: entry.slug,
     })
-    const description = entry.description ? `: ${entry.description}` : ''
+    const description = entry.description ? `: ${escapeDescription(entry.description)}` : ''
     return `- [${escapeLinkText(entry.title)}](${url})${description}`
   })
 
