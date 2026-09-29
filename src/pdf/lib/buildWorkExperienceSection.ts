@@ -19,7 +19,7 @@ export const buildWorkExperienceSection = async (
     type: DocumentSectionType.WorkExperience,
     data: {
       headline: translate(locale, 'document.workExperience.headline'),
-      entries: jobs.sort().map(({ title, employer, startDate, endDate, tasks }) => ({
+      entries: jobs.map(({ title, employer, startDate, endDate, tasks }) => ({
         title: `${title}, ${employer}`,
         interval: generateExperienceInterval({
           startDate,
