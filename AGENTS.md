@@ -149,6 +149,16 @@ through `getRuntimeConfig()` (`src/lib/runtimeConfig`): the server reads the env
 browser reads what `RuntimeConfigScript` rendered into the page. CI fails
 (`scripts/check-env-leak.mjs`) if a `.env.test` value shows up in `.next`.
 
+## Job handlers (`src/jobs-queue/`)
+
+Task and workflow **configs** (`tasks/`, `workflows/`) are part of the Payload config and therefore of
+the Next.js bundle; their **handlers** are not. Each handler lives in `handlers/<name>.ts` and the
+config points at it with `handler: handlerPath('<name>.ts')` (Payload loads string handlers at run
+time). A handler module exports `handler = wrapHandler(TaskSlug.X, run)`, which adds the Sentry
+instrumentation `withJobObservability` gives inline handlers, and must use `req.payload` instead of
+`getPayload({ config })`. The web process only enqueues jobs (never `runByID`); the worker
+(`scripts/start-worker.mjs`, polling every 5 seconds) runs them.
+
 ## Security Guardrails (found during review — respect these when touching related code)
 
 - **SSE / Redis channels** (`app/(frontend)/api/sse/route.ts`): the `channel` query param is

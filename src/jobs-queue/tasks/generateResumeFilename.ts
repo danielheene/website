@@ -1,6 +1,6 @@
 import { TaskConfig } from 'payload'
 
-import { renderTemplate } from '@/lib/renderTemplate'
+import { handlerPath } from '@/jobs-queue/lib/handlerPath'
 import { TaskSlug } from '@/types/jobs-queue'
 
 export const generateResumeFilename: TaskConfig<TaskSlug['GenerateResumeFilename']> = {
@@ -41,31 +41,5 @@ export const generateResumeFilename: TaskConfig<TaskSlug['GenerateResumeFilename
       required: true,
     },
   ],
-  handler: async ({ input, req: { payload } }) => {
-    'use server'
-
-    const { filenameTemplate, customId, locale } = input
-
-    payload.logger.info(`Generating resume filename for locale: ${locale}`)
-
-    const { result, error } = await renderTemplate({
-      template: filenameTemplate,
-      data: {
-        customId,
-      },
-      locale,
-    })
-
-    if (error) {
-      throw new Error(error)
-    }
-
-    payload.logger.info(`Generated resume filename: ${result}`)
-
-    return {
-      output: {
-        filename: result,
-      },
-    }
-  },
+  handler: handlerPath('generateResumeFilename.ts'),
 }

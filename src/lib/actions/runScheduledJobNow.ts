@@ -8,6 +8,10 @@ import { publish } from '@/lib/RedisHandler'
 import { type ScheduledJobActionProgress, scheduledJobChannel } from '@/lib/sse/channels'
 import { CollectionSlug } from '@/types/collections'
 
+/**
+ * Makes a pending job due immediately. The worker runs it; nothing executes
+ * in the web process.
+ */
 export const runScheduledJobNow = async (jobId: string): Promise<void> => {
   const payload = await getPayload({
     config,
@@ -26,8 +30,13 @@ export const runScheduledJobNow = async (jobId: string): Promise<void> => {
   const channel = scheduledJobChannel(jobId)
 
   try {
-    await payload.jobs.runByID({
+    // Same as `rescheduleJob`: due now, so the worker's next poll runs it.
+    await payload.update({
+      collection: CollectionSlug.PayloadJobs,
       id: jobId,
+      data: {
+        waitUntil: new Date().toISOString(),
+      },
     })
 
     const progress: ScheduledJobActionProgress = {

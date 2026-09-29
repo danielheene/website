@@ -1,12 +1,10 @@
 'use server'
 
 import { headers } from 'next/headers'
-import { after } from 'next/server'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 
-import { extractErrorMessage } from '@/lib/extractErrorMessage'
 import type { BilingualLanguageValue } from '@/types/bilingualLanguage'
 import { QueueSlug, TaskSlug } from '@/types/jobs-queue'
 
@@ -21,13 +19,9 @@ type Args = {
 
 /**
  * Queues an `AutoTranslateBilingualField` job in `'manual'` mode for a
- * translate-button click, and immediately triggers it to run rather than
- * waiting for the next `autoRun` poll on `QueueSlug.Default`.
- *
- * The run is kicked off via `after()` so it keeps executing once this
- * action's response has already gone back to the client with the job id —
- * the caller only needs the id to open the `bilingual-translate:<jobId>` SSE
- * subscription and does not wait for the translation itself to finish here.
+ * translate-button click. The worker runs it; the caller only needs the id to
+ * open the `bilingual-translate:<jobId>` SSE subscription and does not wait
+ * for the translation itself to finish here.
  */
 export const enqueueBilingualTranslation = async (
   args: Args,
@@ -66,16 +60,6 @@ export const enqueueBilingualTranslation = async (
       // as SerializedEditorState.
       sourceValue: args.sourceValue as unknown as Record<string, unknown>,
     },
-  })
-
-  after(async () => {
-    try {
-      await payload.jobs.runByID({
-        id: job.id,
-      })
-    } catch (error) {
-      payload.logger.error(`Failed running job ${job.id}: ${extractErrorMessage(error)}`)
-    }
   })
 
   return {

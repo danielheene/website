@@ -16,7 +16,7 @@ const findByID = vi.fn(async () => ({
   completedAt: null,
   hasError: false,
 }))
-const runByID = vi.fn(async () => ({}))
+const update = vi.fn(async () => ({}))
 const logError = vi.fn()
 const publishMock = vi.fn()
 
@@ -28,7 +28,7 @@ const { runScheduledJobNow } = await import('./runScheduledJobNow')
 
 /**
  * `getPayload` is stubbed globally in vitest.setup.ts with a fixed shape;
- * this module needs `findByID` and `jobs.runByID` under per-test control.
+ * this module needs `findByID` and `update` under per-test control.
  */
 beforeEach(() => {
   findByID.mockClear()
@@ -38,16 +38,14 @@ beforeEach(() => {
     completedAt: null,
     hasError: false,
   })
-  runByID.mockClear()
-  runByID.mockResolvedValue({})
+  update.mockClear()
+  update.mockResolvedValue({})
   logError.mockClear()
   publishMock.mockClear()
 
   vi.mocked(getPayload).mockResolvedValue({
     findByID,
-    jobs: {
-      runByID,
-    },
+    update,
     logger: {
       info: vi.fn(),
       error: logError,
@@ -56,16 +54,20 @@ beforeEach(() => {
 })
 
 describe('runScheduledJobNow', () => {
-  it('runs a still-pending job immediately', async () => {
+  it('makes a still-pending job due now so the worker runs it', async () => {
     await runScheduledJobNow(JOB_ID)
 
-    expect(runByID).toHaveBeenCalledTimes(1)
-    expect(runByID).toHaveBeenCalledWith({
+    expect(update).toHaveBeenCalledTimes(1)
+    expect(update).toHaveBeenCalledWith({
+      collection: 'payload-jobs',
       id: JOB_ID,
+      data: {
+        waitUntil: expect.any(String),
+      },
     })
   })
 
-  it('publishes a success message on the job channel once it finishes', async () => {
+  it('publishes a success message on the job channel once the job is due', async () => {
     await runScheduledJobNow(JOB_ID)
 
     expect(publishMock).toHaveBeenCalledTimes(1)
@@ -79,7 +81,7 @@ describe('runScheduledJobNow', () => {
 
     await runScheduledJobNow(JOB_ID)
 
-    expect(runByID).not.toHaveBeenCalled()
+    expect(update).not.toHaveBeenCalled()
     expect(publishMock).not.toHaveBeenCalled()
   })
 
@@ -93,7 +95,7 @@ describe('runScheduledJobNow', () => {
 
     await runScheduledJobNow(JOB_ID)
 
-    expect(runByID).not.toHaveBeenCalled()
+    expect(update).not.toHaveBeenCalled()
   })
 
   it('does nothing when the job has already completed', async () => {
@@ -106,7 +108,7 @@ describe('runScheduledJobNow', () => {
 
     await runScheduledJobNow(JOB_ID)
 
-    expect(runByID).not.toHaveBeenCalled()
+    expect(update).not.toHaveBeenCalled()
   })
 
   it('does nothing when the job has errored', async () => {
@@ -119,11 +121,11 @@ describe('runScheduledJobNow', () => {
 
     await runScheduledJobNow(JOB_ID)
 
-    expect(runByID).not.toHaveBeenCalled()
+    expect(update).not.toHaveBeenCalled()
   })
 
-  it('logs rather than throws when runByID fails', async () => {
-    runByID.mockRejectedValue(new Error('boom'))
+  it('logs rather than throws when the update fails', async () => {
+    update.mockRejectedValue(new Error('boom'))
 
     await expect(runScheduledJobNow(JOB_ID)).resolves.toBeUndefined()
 
@@ -131,8 +133,8 @@ describe('runScheduledJobNow', () => {
     expect(logError.mock.calls[0][0]).toContain('boom')
   })
 
-  it('publishes an error message on the job channel when runByID fails', async () => {
-    runByID.mockRejectedValue(new Error('boom'))
+  it('publishes an error message on the job channel when the update fails', async () => {
+    update.mockRejectedValue(new Error('boom'))
 
     await runScheduledJobNow(JOB_ID)
 

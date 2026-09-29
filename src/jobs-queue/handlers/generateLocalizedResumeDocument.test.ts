@@ -1,11 +1,9 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { generateLocalizedResumeDocument } from './generateLocalizedResumeDocument'
+import { handler as generateLocalizedResumeDocument } from './generateLocalizedResumeDocument'
 
-// The config's `handler` is typed as `string | TaskHandler<...>` to also allow
-// referencing a handler by import-map path; it's always the function itself here.
-// biome-ignore lint/suspicious/noExplicitAny: narrowing the string|TaskHandler union for tests
-const handler = generateLocalizedResumeDocument.handler as (args: any) => Promise<any>
+// biome-ignore lint/suspicious/noExplicitAny: the mocked args are a subset of TaskHandlerArgs
+const handler = generateLocalizedResumeDocument as (args: any) => Promise<any>
 
 const makePayloadStub = () => ({
   logger: {
@@ -50,6 +48,9 @@ describe('generateLocalizedResumeDocument', () => {
     }
 
     const result = await handler({
+      job: {
+        id: 'job-1',
+      },
       // biome-ignore lint/suspicious/noExplicitAny: mocked subset of Payload's TaskHandlerArgs
       tasks: tasks as any,
       input: makeInput(),
@@ -134,6 +135,9 @@ describe('generateLocalizedResumeDocument', () => {
 
     await expect(
       handler({
+        job: {
+          id: 'job-1',
+        },
         // biome-ignore lint/suspicious/noExplicitAny: mocked subset of Payload's TaskHandlerArgs
         tasks: tasks as any,
         input: makeInput(),

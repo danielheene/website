@@ -120,7 +120,7 @@ describe('enqueueGenerateResumeDocument', () => {
     })
   })
 
-  it('does not force-run the job when forceNow is not set', async () => {
+  it('does not run the job in the web process', async () => {
     await enqueueGenerateResumeDocument()
 
     expect(afterMock).not.toHaveBeenCalled()
@@ -265,20 +265,7 @@ describe('enqueueGenerateResumeDocument', () => {
       expect(queuedWaitUntil().toISOString()).toBe('2026-01-01T12:00:00.000Z')
     })
 
-    it('runs the job immediately via after() rather than waiting for autoRun', async () => {
-      await enqueueGenerateResumeDocument({
-        forceNow: true,
-      })
-
-      expect(afterMock).toHaveBeenCalledTimes(1)
-      expect(runByID).toHaveBeenCalledWith({
-        id: 'job-1',
-      })
-    })
-
-    it('logs rather than throws when the forced run fails', async () => {
-      runByID.mockRejectedValueOnce(new Error('boom'))
-
+    it('schedules the job for now and leaves running it to the worker', async () => {
       await expect(
         enqueueGenerateResumeDocument({
           forceNow: true,
@@ -287,7 +274,8 @@ describe('enqueueGenerateResumeDocument', () => {
         jobId: 'job-1',
       })
 
-      expect(loggerError).toHaveBeenCalledWith(expect.stringContaining('boom'))
+      expect(afterMock).not.toHaveBeenCalled()
+      expect(runByID).not.toHaveBeenCalled()
     })
   })
 

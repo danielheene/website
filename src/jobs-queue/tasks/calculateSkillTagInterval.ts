@@ -1,8 +1,6 @@
-import config from '@payload-config'
-import { getPayload, TaskConfig } from 'payload'
+import { TaskConfig } from 'payload'
 
-import { Interval } from '@/lib/date'
-import { CollectionSlug } from '@/types/collections'
+import { handlerPath } from '@/jobs-queue/lib/handlerPath'
 import { TaskSlug } from '@/types/jobs-queue'
 
 export const calculateSkillTagInterval: TaskConfig<TaskSlug['CalculateSkillTagInterval']> = {
@@ -26,78 +24,5 @@ export const calculateSkillTagInterval: TaskConfig<TaskSlug['CalculateSkillTagIn
       type: 'number',
     },
   ],
-  handler: async ({ input: { skillTagId }, req }) => {
-    'use server'
-
-    const payload = await getPayload({
-      config,
-    })
-
-    const { docs = [] } = await payload.find({
-      collection: CollectionSlug.ResumeJobs,
-      draft: false,
-      pagination: false,
-      limit: undefined,
-      depth: 0,
-      select: {
-        startDate: true,
-        endDate: true,
-      },
-      where: {
-        'skillTags.value': {
-          contains: skillTagId,
-        },
-      },
-    })
-
-    if (docs.length === 0) {
-      req.payload.logger.info(`No jobs found for skill tag: ${skillTagId}`)
-
-      await payload.update({
-        collection: CollectionSlug.ResumeSkillTags,
-        id: skillTagId,
-        data: {
-          interval: 0,
-        },
-      })
-
-      return {
-        output: {
-          interval: 0,
-        },
-      }
-    }
-
-    req.payload.logger.info(`Found ${docs.length} jobs entries containing skill tag: ${skillTagId}`)
-
-    const intervals: Interval[] = docs.map(
-      ({ startDate, endDate }) => new Interval(startDate, endDate),
-    )
-
-    const mergedIntervals = Interval.mergeIntervals(intervals)
-
-    req.payload.logger.info(
-      `Merged ${mergedIntervals.length} intervals for skill tag: ${skillTagId}`,
-    )
-
-    const intervalMonths = mergedIntervals.reduce((acc, curr) => acc + curr.differenceInMonths, 0)
-
-    req.payload.logger.info(`Calculated ${intervalMonths} months for skill tag: ${skillTagId}`)
-
-    await payload.update({
-      collection: CollectionSlug.ResumeSkillTags,
-      id: skillTagId,
-      data: {
-        interval: intervalMonths,
-      },
-    })
-
-    req.payload.logger.info(`Updated skill tag ${skillTagId} with interval: ${intervalMonths}`)
-
-    return {
-      output: {
-        interval: intervalMonths,
-      },
-    }
-  },
+  handler: handlerPath('calculateSkillTagInterval.ts'),
 }
