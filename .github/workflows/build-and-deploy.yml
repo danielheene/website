@@ -103,17 +103,99 @@ jobs:
           # secrets.GITHUB_TOKEN is not.
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
+  # Applies pending Payload migrations to the target environment's database
+  # before the images are built, so `next build`'s prerendering reads
+  # post-migration data. Kept out of the Dockerfile: a DB-mutating step
+  # belongs in its own observable job, not inside an image layer.
+  migrate:
+    name: Run database migrations
+    needs: version
+    # Same develop/no-release handling as the build job below.
+    if: |
+      always() &&
+      !contains(needs.version.result, 'failure') && !contains(needs.version.result, 'cancelled')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
+    steps:
+      - name: Checkout
+        # main: the release commit semantic-release just pushed, so the
+        # migrations run are the ones shipping in the image.
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.ref }}
+
+      # Same tailnet path the build job uses to reach the database.
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@780049a30b6ff5c378a9e7b389d15ece7a204888 # v4.1.3
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+          args: --accept-dns=true
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 26
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # `payload migrate` reads process.env directly, and payload.config.ts
+      # builds its full plugin set eagerly whatever the command — so this is
+      # the same variable set as the build job's env file (minus Sentry, which
+      # stays inert without a DSN). Step-level `env:` hands the values over
+      # as-is: no dotenv parsing, so values with spaces or brackets are safe.
+      - name: Run database migrations
+        run: pnpm run migrate
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_URL: ${{ secrets.SERVER_URL }}
+          STATUS_PAGE_URL: ${{ secrets.STATUS_PAGE_URL }}
+          STATUS_PAGE_HEARTBEAT_URL: ${{ secrets.STATUS_PAGE_HEARTBEAT_URL }}
+          RESUME_REDIRECT_URL_BASE: ${{ secrets.RESUME_REDIRECT_URL_BASE }}
+          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+          PREVIEW_SECRET: ${{ secrets.PREVIEW_SECRET }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          REDIS_URL: ${{ secrets.REDIS_URL }}
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+          S3_REGION: ${{ secrets.S3_REGION }}
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+          UMAMI_USERNAME: ${{ secrets.UMAMI_USERNAME }}
+          UMAMI_PASSWORD: ${{ secrets.UMAMI_PASSWORD }}
+          NEXT_PUBLIC_UMAMI_URL: ${{ secrets.NEXT_PUBLIC_UMAMI_URL }}
+          NEXT_PUBLIC_UMAMI_SITE_ID: ${{ secrets.NEXT_PUBLIC_UMAMI_SITE_ID }}
+          USESEND_URL: ${{ secrets.USESEND_URL }}
+          USESEND_API_KEY: ${{ secrets.USESEND_API_KEY }}
+          USESEND_DEFAULT_FROM_ADDRESS: ${{ secrets.USESEND_DEFAULT_FROM_ADDRESS }}
+          USESEND_DEFAULT_FROM_NAME: ${{ secrets.USESEND_DEFAULT_FROM_NAME }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MAPBOX_API_KEY: ${{ secrets.MAPBOX_API_KEY }}
+          UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
+
   build:
     name: Build & push images
-    needs: version
+    needs:
+      - version
+      - migrate
     # develop has no version job to depend on (skipped entirely, not
     # failed/cancelled) — always() plus explicit failure()/cancelled() checks
     # is what lets this job run on develop pushes as well as on main pushes
     # that didn't cut a release (a docs/chore-only push, or a [skip ci]
-    # commit re-triggering this workflow).
+    # commit re-triggering this workflow). A failed migration blocks the build.
     if: |
       always() &&
-      !contains(needs.version.result, 'failure') && !contains(needs.version.result, 'cancelled')
+      !contains(needs.version.result, 'failure') && !contains(needs.version.result, 'cancelled') &&
+      !contains(needs.migrate.result, 'failure') && !contains(needs.migrate.result, 'cancelled')
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     # One literal environment per branch — main and develop are the only

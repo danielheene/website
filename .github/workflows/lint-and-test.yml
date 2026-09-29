@@ -112,5 +112,11 @@ jobs:
       - name: Run database migrations
         run: pnpm run migrate
 
+      # blog.spec.ts needs published posts. seed:posts creates its own topics,
+      # and each post fetches one placeholder image from picsum.photos, so
+      # the count stays small.
+      - name: Seed blog content
+        run: pnpm run seed:posts -- --count 2
+
       - name: Run E2E tests
         run: pnpm run test:e2e
