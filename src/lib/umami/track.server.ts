@@ -1,5 +1,7 @@
 'use server'
 
+import { getRuntimeConfig } from '@/lib/runtimeConfig'
+
 import { isTrackingSuppressed } from './isTrackingSuppressed.server'
 import { sendUmamiPayload } from './sendUmamiPayload'
 import type { UmamiSendPayload, UmamiSendPayloadPayload } from './Umami.types'
@@ -33,7 +35,7 @@ export const trackServerEvent = async ({
   }
 
   const payload: UmamiSendPayloadPayload = {
-    website: process.env.NEXT_PUBLIC_UMAMI_SITE_ID ?? '',
+    website: getRuntimeConfig().umamiSiteId ?? '',
     name,
     ...(data
       ? {

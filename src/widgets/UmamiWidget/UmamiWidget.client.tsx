@@ -6,6 +6,7 @@ import { FullscreenModal, useModal } from '@payloadcms/ui'
 import { parseISO } from 'date-fns'
 
 import { Interval } from '@/lib/date'
+import { getRuntimeConfig } from '@/lib/runtimeConfig'
 
 import { DateRangeModal } from './UmamiWidget.DateRangeModal'
 import type { UmamiEvent, UmamiPageViews, UmamiPath, UmamiStats } from './UmamiWidget.data'
@@ -108,7 +109,7 @@ export const UmamiWidgetClient = ({
 
   const umamiUrl = useMemo(() => {
     const umamiPath = `${teamId ? `/teams/${teamId}` : ''}/websites/${id}/`
-    return new URL(umamiPath, process.env.NEXT_PUBLIC_UMAMI_URL).toString()
+    return new URL(umamiPath, getRuntimeConfig().umamiUrl).toString()
   }, [
     id,
     teamId,

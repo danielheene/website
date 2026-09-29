@@ -22,7 +22,11 @@ describe('track', () => {
 
   describe('in a browser context', () => {
     beforeEach(() => {
-      vi.stubGlobal('window', {})
+      vi.stubGlobal('window', {
+        __RUNTIME_CONFIG__: {
+          umamiSiteId: SITE_ID,
+        },
+      })
       vi.stubGlobal('location', {
         pathname: '/foo',
         search: '?bar=baz',
@@ -200,7 +204,11 @@ describe('track', () => {
     })
 
     it('sends when window.__UMAMI_SUPPRESSED__ is unset', () => {
-      vi.stubGlobal('window', {})
+      vi.stubGlobal('window', {
+        __RUNTIME_CONFIG__: {
+          umamiSiteId: SITE_ID,
+        },
+      })
 
       track()
 
@@ -210,7 +218,11 @@ describe('track', () => {
 
   describe('admin path exclusion', () => {
     beforeEach(() => {
-      vi.stubGlobal('window', {})
+      vi.stubGlobal('window', {
+        __RUNTIME_CONFIG__: {
+          umamiSiteId: SITE_ID,
+        },
+      })
       vi.stubGlobal('navigator', {
         language: 'en-US',
       })
@@ -275,7 +287,11 @@ describe('trackPageview', () => {
 
   describe('in a browser context', () => {
     beforeEach(() => {
-      vi.stubGlobal('window', {})
+      vi.stubGlobal('window', {
+        __RUNTIME_CONFIG__: {
+          umamiSiteId: SITE_ID,
+        },
+      })
       vi.stubGlobal('location', {
         pathname: '/previous/path',
         search: '?bar=baz',
@@ -366,7 +382,11 @@ describe('trackPageview', () => {
     })
 
     it('sends when not suppressed', () => {
-      vi.stubGlobal('window', {})
+      vi.stubGlobal('window', {
+        __RUNTIME_CONFIG__: {
+          umamiSiteId: SITE_ID,
+        },
+      })
 
       trackPageview('/destination/path')
 
@@ -376,7 +396,11 @@ describe('trackPageview', () => {
 
   describe('admin path exclusion', () => {
     beforeEach(() => {
-      vi.stubGlobal('window', {})
+      vi.stubGlobal('window', {
+        __RUNTIME_CONFIG__: {
+          umamiSiteId: SITE_ID,
+        },
+      })
       vi.stubGlobal('navigator', {
         language: 'en-US',
       })

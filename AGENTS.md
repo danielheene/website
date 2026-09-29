@@ -140,6 +140,15 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
 - **Server actions** (`src/lib/actions/`): `'use server'` functions for admin mutations (job
   rescheduling, cancellation, etc.). Use `useTransition` on the client side when calling them.
 
+## Environment-specific values (compile once, deploy anywhere)
+
+The compiled Next output is built once and finalised per environment, so it must contain no
+environment-specific value. Do not add such values to `next.config.ts` `env`, do not reference
+`process.env.NEXT_PUBLIC_*` statically and do not add `rewrites()` that embed a URL. Read them
+through `getRuntimeConfig()` (`src/lib/runtimeConfig`): the server reads the environment, the
+browser reads what `RuntimeConfigScript` rendered into the page. CI fails
+(`scripts/check-env-leak.mjs`) if a `.env.test` value shows up in `.next`.
+
 ## Security Guardrails (found during review — respect these when touching related code)
 
 - **SSE / Redis channels** (`app/(frontend)/api/sse/route.ts`): the `channel` query param is
