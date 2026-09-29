@@ -133,7 +133,6 @@ export default async (phase, { defaultConfig }) => {
     },
 
     experimental: {
-      allowDevelopmentBuild: true,
       appNewScrollHandler: true,
       turbopackServerFastRefresh: true,
       serverActions: {
