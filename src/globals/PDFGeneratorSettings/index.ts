@@ -10,6 +10,7 @@ import { generateResumeDocumentUnsafeCustomId } from '@/lib/generateResumeDocume
 import { generateResumeDocumentHook } from '@/lib/payloadHooks/global'
 import { AdminGroup } from '@/types/admin-panel'
 import { GlobalSlug } from '@/types/globals'
+import { SkillSorting } from '@/types/payload'
 
 import { revalidateDocument } from './hooks/revalidateDocument'
 import { sanitizeSkillSorting } from './hooks/sanitizeSkillSorting'
