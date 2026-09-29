@@ -25,12 +25,16 @@ const fail = (message) => {
   process.exit(1)
 }
 
+// Tests and stories are never executed in an image.
+const NOT_SHIPPED = /\.(test|spec|stories)\.(ts|tsx|mdx)$/
+
 const copy = (from, to = from) => {
   const source = path.join(root, from)
   if (!existsSync(source)) fail(`missing ${from}`)
   cpSync(source, path.join(out, to), {
     recursive: true,
     dereference: false,
+    filter: (file) => !NOT_SHIPPED.test(file),
   })
 }
 
@@ -67,18 +71,20 @@ const assemblers = {
     ]) {
       copy(entry)
     }
-    // HUSKY=0: the `prepare` script would otherwise fail without devDependencies.
-    run('pnpm', [
-      'install',
-      '--prod',
-      '--frozen-lockfile',
-    ], {
-      cwd: out,
-      env: {
-        ...process.env,
-        HUSKY: '0',
+    // --ignore-scripts: the root `prepare` script (husky) is a devDependency,
+    // and every runtime dependency here ships prebuilt binaries.
+    run(
+      'pnpm',
+      [
+        'install',
+        '--prod',
+        '--frozen-lockfile',
+        '--ignore-scripts',
+      ],
+      {
+        cwd: out,
       },
-    })
+    )
   },
 
   storybook: () => {
