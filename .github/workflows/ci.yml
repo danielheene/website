@@ -157,14 +157,17 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     environment: Testing
-    # One shared set of Testing services: runs queue instead of overlapping.
+    # Pull requests share one set of Testing services, so their runs must not
+    # overlap. GitHub keeps only one pending run per group (a newer one replaces
+    # it), which is fine for PRs. Pushes gate a deploy and must never be
+    # cancelled, so they use local containers and a group of their own.
     concurrency:
-      group: e2e-testing
+      group: ${{ github.event_name == 'pull_request' && 'e2e-testing' || format('e2e-{0}', github.run_id) }}
       cancel-in-progress: false
     env:
-      # Set only where the Testing environment's secrets are readable (not for
-      # forks or dependabot); otherwise the job uses local containers.
-      DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+      # Set only for pull requests where the Testing environment's secrets are
+      # readable (not forks or dependabot); otherwise the job uses local containers.
+      DOKPLOY_API_KEY: ${{ github.event_name == 'pull_request' && secrets.DOKPLOY_API_KEY || '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

@@ -141,6 +141,10 @@ export type ScheduledJobActionProgress =
       status: 'success'
     }
   | {
+      // "Run now" only makes the job due; the worker picks it up on its next poll.
+      status: 'queued'
+    }
+  | {
       status: 'cancelled'
     }
   | {

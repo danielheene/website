@@ -67,12 +67,12 @@ describe('runScheduledJobNow', () => {
     })
   })
 
-  it('publishes a success message on the job channel once the job is due', async () => {
+  it('publishes a queued message on the job channel once the job is due', async () => {
     await runScheduledJobNow(JOB_ID)
 
     expect(publishMock).toHaveBeenCalledTimes(1)
     expect(publishMock).toHaveBeenCalledWith(scheduledJobChannel(JOB_ID), {
-      status: 'success',
+      status: 'queued',
     })
   })
 

@@ -40,7 +40,7 @@ export const runScheduledJobNow = async (jobId: string): Promise<void> => {
     })
 
     const progress: ScheduledJobActionProgress = {
-      status: 'success',
+      status: 'queued',
     }
     await publish(channel, progress)
   } catch (error) {

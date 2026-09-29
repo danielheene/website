@@ -115,6 +115,18 @@ const retryUntilReady = async (label, attempt) => {
   fail(`${label} not ready in time: ${lastError?.message ?? lastError}`)
 }
 
+// mongosh and aws echo connection strings and keys in their errors; the
+// message ends up in the CI log.
+const redact = (text) =>
+  [
+    databaseUrl,
+    redisUrl,
+    process.env.S3_ACCESS_KEY,
+    process.env.S3_SECRET_KEY,
+  ]
+    .filter(Boolean)
+    .reduce((message, secret) => message.replaceAll(secret, '***'), text)
+
 const dropMongoDatabase = () => {
   const result = spawnSync(
     'docker',
@@ -134,7 +146,7 @@ const dropMongoDatabase = () => {
       encoding: 'utf8',
     },
   )
-  if (result.status !== 0) throw new Error(result.stderr.trim() || 'mongosh failed')
+  if (result.status !== 0) throw new Error(redact(result.stderr.trim()) || 'mongosh failed')
 }
 
 const flushRedis = async () => {
@@ -173,7 +185,7 @@ const emptyBucket = () => {
       },
     },
   )
-  if (result.status !== 0) throw new Error(result.stderr.trim() || 'aws s3 rm failed')
+  if (result.status !== 0) throw new Error(redact(result.stderr.trim()) || 'aws s3 rm failed')
 }
 
 if (process.env.DOKPLOY_REBUILD !== 'false') {

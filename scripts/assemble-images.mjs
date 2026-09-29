@@ -92,7 +92,7 @@ const assemblers = {
   },
 }
 
-if (!assemblers[target]) fail(`unknown target "${target}" (expected web, worker or storybook)`)
+if (!Object.hasOwn(assemblers, target)) fail(`unknown target "${target}" (expected web, worker or storybook)`)
 
 rmSync(out, {
   recursive: true,

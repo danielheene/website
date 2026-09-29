@@ -6,7 +6,6 @@ import { FullscreenModal, useModal } from '@payloadcms/ui'
 import { parseISO } from 'date-fns'
 
 import { Interval } from '@/lib/date'
-import { getRuntimeConfig } from '@/lib/runtimeConfig'
 
 import { DateRangeModal } from './UmamiWidget.DateRangeModal'
 import type { UmamiEvent, UmamiPageViews, UmamiPath, UmamiStats } from './UmamiWidget.data'
@@ -63,6 +62,9 @@ interface UmamiWidgetClientProps {
   id: string | null
   name: string | null
   teamId: string | null
+  // Passed by the server: the admin layout does not render `RuntimeConfigScript`,
+  // so the browser has no runtime config on first render.
+  umamiBaseUrl?: string
 }
 
 export const UmamiWidgetClient = ({
@@ -74,6 +76,7 @@ export const UmamiWidgetClient = ({
   id,
   name,
   teamId,
+  umamiBaseUrl,
 }: UmamiWidgetClientProps) => {
   const effectiveStartDate = startDateFromProps
     ? parseISO(startDateFromProps)
@@ -109,10 +112,11 @@ export const UmamiWidgetClient = ({
 
   const umamiUrl = useMemo(() => {
     const umamiPath = `${teamId ? `/teams/${teamId}` : ''}/websites/${id}/`
-    return new URL(umamiPath, getRuntimeConfig().umamiUrl).toString()
+    return umamiBaseUrl ? new URL(umamiPath, umamiBaseUrl).toString() : ''
   }, [
     id,
     teamId,
+    umamiBaseUrl,
   ])
 
   const { openModal, closeModal, isModalOpen } = useModal()

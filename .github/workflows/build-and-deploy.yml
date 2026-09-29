@@ -152,6 +152,8 @@ jobs:
     # Every step that needs the application environment (migrate, generate)
     # reads it from here, so the list exists once.
     env:
+      # Every image runs production mode, `develop` (:edge) included; the old
+      # per-branch NODE_ENV build arg is gone with the Docker build phase.
       NODE_ENV: production
       SERVER_HOST: ${{ secrets.SERVER_HOST }}
       SERVER_URL: ${{ secrets.SERVER_URL }}
