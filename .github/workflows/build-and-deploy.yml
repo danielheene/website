@@ -14,9 +14,14 @@ on:
       - main
       - develop
 
+# Each job asks for what it needs.
 permissions:
-  contents: write
-  packages: write
+  contents: read
+
+# Deploys of one branch never overlap or cancel each other mid-way.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 env:
   REGISTRY: ghcr.io
@@ -25,6 +30,8 @@ env:
 jobs:
   version:
     name: Bump version
+    permissions:
+      contents: write
     # Only main cuts a release; develop never gets a semver bump.
     if: >-
       github.ref == 'refs/heads/main' &&
@@ -70,17 +77,8 @@ jobs:
           git config user.name "danielheene-website-release[bot]"
           git config user.email "${{ secrets.RELEASE_APP_ID }}+danielheene-website-release[bot]@users.noreply.github.com"
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
-
-      - name: Setup Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: 26
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Setup
+        uses: ./.github/actions/setup
 
       - name: Release
         id: release
@@ -103,126 +101,100 @@ jobs:
           # secrets.GITHUB_TOKEN is not.
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
-  # Applies pending Payload migrations to the target environment's database
-  # before the images are built, so `next build`'s prerendering reads
-  # post-migration data. Kept out of the Dockerfile: a DB-mutating step
-  # belongs in its own observable job, not inside an image layer.
-  migrate:
-    name: Run database migrations
+  # The same checks as pull requests (lint, unit tests, one environment-agnostic
+  # compile, E2E against the assembled output). See ci.yml.
+  ci:
+    name: CI
     needs: version
-    # Same develop/no-release handling as the build job below.
-    if: |
-      always() &&
-      !contains(needs.version.result, 'failure') && !contains(needs.version.result, 'cancelled')
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
-    steps:
-      - name: Checkout
-        # main: the release commit semantic-release just pushed, so the
-        # migrations run are the ones shipping in the image.
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.ref }}
-
-      # Same tailnet path the build job uses to reach the database.
-      - name: Connect to Tailscale
-        uses: tailscale/github-action@780049a30b6ff5c378a9e7b389d15ece7a204888 # v4.1.3
-        with:
-          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-          tags: tag:ci
-          args: --accept-dns=true
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
-
-      - name: Setup Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: 26
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      # `payload migrate` reads process.env directly, and payload.config.ts
-      # builds its full plugin set eagerly whatever the command — so this is
-      # the same variable set as the build job's env file (minus Sentry, which
-      # stays inert without a DSN). Step-level `env:` hands the values over
-      # as-is: no dotenv parsing, so values with spaces or brackets are safe.
-      - name: Run database migrations
-        run: pnpm run migrate
-        env:
-          SERVER_HOST: ${{ secrets.SERVER_HOST }}
-          SERVER_URL: ${{ secrets.SERVER_URL }}
-          STATUS_PAGE_URL: ${{ secrets.STATUS_PAGE_URL }}
-          STATUS_PAGE_HEARTBEAT_URL: ${{ secrets.STATUS_PAGE_HEARTBEAT_URL }}
-          RESUME_REDIRECT_URL_BASE: ${{ secrets.RESUME_REDIRECT_URL_BASE }}
-          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
-          PREVIEW_SECRET: ${{ secrets.PREVIEW_SECRET }}
-          CRON_SECRET: ${{ secrets.CRON_SECRET }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          REDIS_URL: ${{ secrets.REDIS_URL }}
-          S3_BUCKET: ${{ secrets.S3_BUCKET }}
-          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
-          S3_REGION: ${{ secrets.S3_REGION }}
-          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
-          S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
-          UMAMI_USERNAME: ${{ secrets.UMAMI_USERNAME }}
-          UMAMI_PASSWORD: ${{ secrets.UMAMI_PASSWORD }}
-          NEXT_PUBLIC_UMAMI_URL: ${{ secrets.NEXT_PUBLIC_UMAMI_URL }}
-          NEXT_PUBLIC_UMAMI_SITE_ID: ${{ secrets.NEXT_PUBLIC_UMAMI_SITE_ID }}
-          USESEND_URL: ${{ secrets.USESEND_URL }}
-          USESEND_API_KEY: ${{ secrets.USESEND_API_KEY }}
-          USESEND_DEFAULT_FROM_ADDRESS: ${{ secrets.USESEND_DEFAULT_FROM_ADDRESS }}
-          USESEND_DEFAULT_FROM_NAME: ${{ secrets.USESEND_DEFAULT_FROM_NAME }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          MAPBOX_API_KEY: ${{ secrets.MAPBOX_API_KEY }}
-          UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
-
-  build:
-    name: Build & push images
-    needs:
-      - version
-      - migrate
     # develop has no version job to depend on (skipped entirely, not
     # failed/cancelled) — always() plus explicit failure()/cancelled() checks
     # is what lets this job run on develop pushes as well as on main pushes
     # that didn't cut a release (a docs/chore-only push, or a [skip ci]
-    # commit re-triggering this workflow). A failed migration blocks the build.
+    # commit re-triggering this workflow).
+    if: |
+      always() &&
+      !contains(needs.version.result, 'failure') && !contains(needs.version.result, 'cancelled')
+    uses: ./.github/workflows/ci.yml
+    with:
+      # main: the release commit semantic-release just pushed, so the version
+      # compiled into the output matches the tag
+      ref: ${{ github.ref }}
+    secrets:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+      SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+    permissions:
+      contents: read
+
+  # Finalises the tested compile with this environment's values and ships it:
+  # migrate -> generate (prerender/PPR against the real database) -> assemble
+  # -> COPY-only image builds -> push -> redeploy. No image runs a build.
+  deploy:
+    name: Migrate, generate & push images
+    needs:
+      - version
+      - ci
     if: |
       always() &&
       !contains(needs.version.result, 'failure') && !contains(needs.version.result, 'cancelled') &&
-      !contains(needs.migrate.result, 'failure') && !contains(needs.migrate.result, 'cancelled')
+      needs.ci.result == 'success'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
     # One literal environment per branch — main and develop are the only
     # branches this workflow runs on, so there is exactly one deployment
     # chain per branch and no computed `environment: ${{ expression }}`
     # (GitHub accepts that syntactically but never actually binds an
     # environment from it, so no environment-scoped secrets get injected).
     environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
+    # Every step that needs the application environment (migrate, generate)
+    # reads it from here, so the list exists once.
+    env:
+      NODE_ENV: production
+      SERVER_HOST: ${{ secrets.SERVER_HOST }}
+      SERVER_URL: ${{ secrets.SERVER_URL }}
+      STATUS_PAGE_URL: ${{ secrets.STATUS_PAGE_URL }}
+      STATUS_PAGE_HEARTBEAT_URL: ${{ secrets.STATUS_PAGE_HEARTBEAT_URL }}
+      RESUME_REDIRECT_URL_BASE: ${{ secrets.RESUME_REDIRECT_URL_BASE }}
+      PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+      PREVIEW_SECRET: ${{ secrets.PREVIEW_SECRET }}
+      CRON_SECRET: ${{ secrets.CRON_SECRET }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      REDIS_URL: ${{ secrets.REDIS_URL }}
+      S3_BUCKET: ${{ secrets.S3_BUCKET }}
+      S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+      S3_REGION: ${{ secrets.S3_REGION }}
+      S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+      S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+      UMAMI_USERNAME: ${{ secrets.UMAMI_USERNAME }}
+      UMAMI_PASSWORD: ${{ secrets.UMAMI_PASSWORD }}
+      NEXT_PUBLIC_UMAMI_URL: ${{ secrets.NEXT_PUBLIC_UMAMI_URL }}
+      NEXT_PUBLIC_UMAMI_SITE_ID: ${{ secrets.NEXT_PUBLIC_UMAMI_SITE_ID }}
+      USESEND_URL: ${{ secrets.USESEND_URL }}
+      USESEND_API_KEY: ${{ secrets.USESEND_API_KEY }}
+      USESEND_DEFAULT_FROM_ADDRESS: ${{ secrets.USESEND_DEFAULT_FROM_ADDRESS }}
+      USESEND_DEFAULT_FROM_NAME: ${{ secrets.USESEND_DEFAULT_FROM_NAME }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      MAPBOX_API_KEY: ${{ secrets.MAPBOX_API_KEY }}
+      UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      SENTRY_ENVIRONMENT: ${{ secrets.SENTRY_ENVIRONMENT }}
+      SENTRY_TRACES_SAMPLE_RATE: ${{ secrets.SENTRY_TRACES_SAMPLE_RATE }}
     steps:
       - name: Checkout
-        # On main, check out the release commit semantic-release just pushed
-        # (not the pre-bump commit this push event was fired for) so the
-        # image actually contains the bumped package.json version.
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.ref }}
 
-      # Reaches the same database over Tailscale that Dokploy currently does,
-      # so `pnpm run build`'s generateStaticParams() calls resolve exactly as
-      # they do on the deployment server today. DATABASE_URL/REDIS_URL use a
-      # MagicDNS hostname (dokploy.robin-marlin.ts.net) rather than a raw
-      # tailnet IP, so this node needs to actually accept the tailnet's DNS
-      # config — --accept-dns=true is `tailscale up`'s own default, but is
-      # made explicit here since a prior run hit `getaddrinfo ENOTFOUND` for
-      # that hostname despite the tailnet join itself succeeding. If this
-      # alone doesn't resolve it, MagicDNS itself may need enabling tailnet-
-      # wide in the Tailscale admin console's DNS settings.
+      # Reaches the same database over Tailscale that Dokploy does, so migrate
+      # and generate (whose generateStaticParams/prerender queries hit the
+      # database) resolve exactly as they do on the deployment server. The
+      # DATABASE_URL/REDIS_URL hostnames are MagicDNS names, so the node must
+      # accept the tailnet's DNS config (`--accept-dns=true`, the default,
+      # made explicit here).
       - name: Connect to Tailscale
         uses: tailscale/github-action@780049a30b6ff5c378a9e7b389d15ece7a204888 # v4.1.3
         with:
@@ -230,6 +202,32 @@ jobs:
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
           args: --accept-dns=true
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Download compiled output
+        uses: actions/download-artifact@v4 # TODO: pin to a commit SHA like the other actions
+        with:
+          name: next-compile
+          path: .next
+
+      # `payload migrate` reads process.env directly. A failed migration stops
+      # the job before any image is built or pushed.
+      - name: Run database migrations
+        run: pnpm run migrate
+
+      - name: Generate (prerender)
+        run: pnpm exec next build --experimental-build-mode=generate
+
+      - name: Build Storybook
+        run: pnpm run build:storybook
+
+      - name: Assemble image contents
+        run: |
+          node scripts/assemble-images.mjs web
+          node scripts/assemble-images.mjs worker
+          node scripts/assemble-images.mjs storybook
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
@@ -241,60 +239,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Every build-time env var the Next.js build needs (per
-      # src/types/environment.ts) is written to one gitignored-by-runner file
-      # in dotenv format and mounted into the builder stage as a single
-      # BuildKit secret — see the Dockerfile's `builder` stage, which copies
-      # it to .env.production and lets @next/env's own dotenv parser read it
-      # (not shell-sourced — see that stage's comment for why). Nothing here
-      # is ARG/ENV, so no value is cached into an image layer or visible via
-      # `docker history`. Values come from whichever environment this job is
-      # bound to above.
-      - name: Write build env secret file
-        run: |
-          umask 077
-          cat > /tmp/build_env <<EOF
-          SERVER_HOST=${{ secrets.SERVER_HOST }}
-          SERVER_URL=${{ secrets.SERVER_URL }}
-          STATUS_PAGE_URL=${{ secrets.STATUS_PAGE_URL }}
-          STATUS_PAGE_HEARTBEAT_URL=${{ secrets.STATUS_PAGE_HEARTBEAT_URL }}
-          RESUME_REDIRECT_URL_BASE=${{ secrets.RESUME_REDIRECT_URL_BASE }}
-          PAYLOAD_SECRET=${{ secrets.PAYLOAD_SECRET }}
-          PREVIEW_SECRET=${{ secrets.PREVIEW_SECRET }}
-          CRON_SECRET=${{ secrets.CRON_SECRET }}
-          DATABASE_URL=${{ secrets.DATABASE_URL }}
-          REDIS_URL=${{ secrets.REDIS_URL }}
-          S3_BUCKET=${{ secrets.S3_BUCKET }}
-          S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}
-          S3_REGION=${{ secrets.S3_REGION }}
-          S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}
-          S3_ENDPOINT=${{ secrets.S3_ENDPOINT }}
-          UMAMI_USERNAME=${{ secrets.UMAMI_USERNAME }}
-          UMAMI_PASSWORD=${{ secrets.UMAMI_PASSWORD }}
-          NEXT_PUBLIC_UMAMI_URL=${{ secrets.NEXT_PUBLIC_UMAMI_URL }}
-          NEXT_PUBLIC_UMAMI_SITE_ID=${{ secrets.NEXT_PUBLIC_UMAMI_SITE_ID }}
-          USESEND_URL=${{ secrets.USESEND_URL }}
-          USESEND_API_KEY=${{ secrets.USESEND_API_KEY }}
-          USESEND_DEFAULT_FROM_ADDRESS=${{ secrets.USESEND_DEFAULT_FROM_ADDRESS }}
-          USESEND_DEFAULT_FROM_NAME=${{ secrets.USESEND_DEFAULT_FROM_NAME }}
-          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
-          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
-          MAPBOX_API_KEY=${{ secrets.MAPBOX_API_KEY }}
-          UNSPLASH_ACCESS_KEY=${{ secrets.UNSPLASH_ACCESS_KEY }}
-          SENTRY_DSN=${{ secrets.SENTRY_DSN }}
-          SENTRY_ENVIRONMENT=${{ secrets.SENTRY_ENVIRONMENT }}
-          SENTRY_TRACES_SAMPLE_RATE=${{ secrets.SENTRY_TRACES_SAMPLE_RATE }}
-          SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG=${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }}
-          EOF
-
       # main -> :latest (+ :vX.Y.Z if this push cut a release), develop -> :edge.
       # One literal tag set per branch, no arch suffix and no separate merge
       # job — amd64 is the only platform built, so the build-push-action's
-      # own tag already is the final tag. Each image name's tags are written
-      # as a step output (one per line) so the three build steps below can
-      # just interpolate them into their own `tags:` block.
+      # own tag already is the final tag.
       - name: Compute image tags
         id: tags
         env:
@@ -320,18 +268,11 @@ jobs:
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
-      # NODE_ENV mirrors the environment this job is bound to (development
-      # for develop/edge, production for main) — the Dockerfile defaults to
-      # production otherwise.
-      #
-      # provenance/sbom: false on all three builds below — build-push-action
-      # defaults provenance to true, which pushes every tag as an OCI image
-      # index (a manifest list) wrapping the actual single-platform image
-      # manifest plus a provenance attestation manifest, both untagged. That
-      # reads as "3 versions" on GHCR's package page for what is actually one
-      # image with one tag. Since this is a single-platform (amd64-only)
-      # build with no multi-arch manifest list to justify an index, disabling
-      # both makes each push a single plain manifest.
+      # provenance/sbom: false — build-push-action defaults provenance to true,
+      # which pushes every tag as an OCI image index wrapping the actual
+      # single-platform manifest plus an untagged attestation manifest, which
+      # reads as "3 versions" on GHCR's package page for what is one image with
+      # one tag. amd64 only, so a plain manifest is enough.
       - name: Build & push app image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
@@ -343,15 +284,9 @@ jobs:
           sbom: false
           tags: ${{ steps.tags.outputs.app }}
           build-args: |
-            NODE_ENV=${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
-          cache-from: type=gha,scope=app-${{ github.ref_name }}
-          cache-to: type=gha,mode=max,scope=app-${{ github.ref_name }}
-          secret-files: |
-            build_env=/tmp/build_env
+            VERSION=${{ needs.version.outputs.version }}
+            REVISION=${{ github.sha }}
 
-      # The builder stage (with .next already built) is reused verbatim for
-      # the worker target via Docker's layer cache — this does not re-run
-      # `pnpm run build`.
       - name: Build & push worker image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
@@ -363,11 +298,8 @@ jobs:
           sbom: false
           tags: ${{ steps.tags.outputs.worker }}
           build-args: |
-            NODE_ENV=${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
-          cache-from: type=gha,scope=app-${{ github.ref_name }}
-          cache-to: type=gha,mode=max,scope=app-${{ github.ref_name }}
-          secret-files: |
-            build_env=/tmp/build_env
+            VERSION=${{ needs.version.outputs.version }}
+            REVISION=${{ github.sha }}
 
       - name: Build & push storybook image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
@@ -379,8 +311,9 @@ jobs:
           provenance: false
           sbom: false
           tags: ${{ steps.tags.outputs.storybook }}
-          cache-from: type=gha,scope=storybook-${{ github.ref_name }}
-          cache-to: type=gha,mode=max,scope=storybook-${{ github.ref_name }}
+          build-args: |
+            VERSION=${{ needs.version.outputs.version }}
+            REVISION=${{ github.sha }}
 
       # Tells Dokploy to actually redeploy each app now that its image is
       # pushed — pushing to ghcr.io alone doesn't make Dokploy pull it. Each

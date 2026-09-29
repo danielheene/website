@@ -1,154 +1,61 @@
 # syntax=docker/dockerfile:1
 
-# Produces three images from one build context:
-#   - target `app`       — the Next.js server (`pnpm run start`)
-#   - target `worker`     — the Payload job runner (`pnpm run start:worker`)
-#   - target `storybook`  — the built Storybook, served statically
-#
-# `app` and `worker` share the same `builder` stage: `pnpm run build` (via
-# next.config.ts / generateStaticParams) reaches the database over Tailscale
-# during static generation, so the CI job building this image must run with
-# Tailscale connectivity and the full application env — see
-# .github/workflows/build-and-deploy.yml. The worker never re-runs the build; it reuses the
-# same .next output and just boots a different process against it.
-#
-# There is deliberately no `output: 'standalone'` in next.config.ts, so the
-# runtime stages carry the full pnpm-installed node_modules rather than a
-# traced subset — bigger image, but avoids known standalone-tracing gaps with
-# the Payload/Next combination this app uses.
+# Nothing is built or installed in here. CI produces the exact contents of each
+# image with `node scripts/assemble-images.mjs <web|worker|storybook>` (into
+# `out/<target>`) and every stage below only COPYs that directory onto a base
+# image. Targets:
+#   - `app`       the Next.js server (standalone output)
+#   - `worker`    the Payload job runner
+#   - `storybook` the built Storybook, served statically
 
-# Defaults to production; build-and-deploy.yml's build job overrides this to
-# `development` for the develop/edge branch via --build-arg. Only the app/
-# worker runtime stages actually read this ARG (see below for why the
-# builder stage does not) — declared before the first FROM so it's visible
-# everywhere, but per Docker's ARG scoping rules it must be redeclared (bare
-# `ARG NODE_ENV`) inside any stage that reads it.
-ARG NODE_ENV=production
+ARG NODE_VERSION=26
 
-# Version-tag build args, applied as OCI labels on each runtime stage below.
-# build-and-deploy.yml passes these in explicitly — the Dockerfile itself has no git or CI
-# context of its own. REVISION is always the commit build-and-deploy.yml built from
-# (accurate on every build); VERSION defaults to package.json's own version
-# field (bumped by semantic-release on main, so it's meaningful once
-# release.yml has actually retagged an image as :vX.Y.Z — an ordinary PR
-# build predates that bump and just carries whatever main's version was at
-# checkout time). Both are empty by default so a plain `docker build` with
-# no --build-arg still succeeds, just with blank label values.
+# ---- app ---------------------------------------------------------------------
+FROM node:${NODE_VERSION}-slim AS app
 ARG VERSION=""
 ARG REVISION=""
-
-# node:26-slim does not bundle corepack (dropped from the base image as of
-# Node 26), so pnpm is installed directly via npm instead — pinned to match
-# package.json's packageManager field.
-FROM node:26-slim AS base
-RUN npm install -g pnpm@11.18.0
-WORKDIR /app
-
-# ---- deps: install once, reused by every stage below ----------------------
-FROM base AS deps
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml* .npmrc* ./
-# pnpm-workspace.yaml's patchedDependencies points at this directory —
-# without it, `pnpm install` fails outright looking for the patch file.
-COPY patches ./patches
-RUN pnpm install --frozen-lockfile
-
-# ---- builder: next build only (needs DB over Tailscale) -------------------
-FROM deps AS builder
-COPY . .
-# Always production here, regardless of which NODE_ENV the runtime stages
-# below are given — `next build` calls @next/env's loadEnvConfig(dir, false,
-# ...), which always resolves mode "production" internally no matter what
-# NODE_ENV is set to, so it always reads .env (see below) as if in
-# production. Setting NODE_ENV=development for this stage doesn't change
-# that; it only makes React itself load its development bundle while
-# executing a prerender/static-export path Next's own tooling assumes runs
-# under production semantics — confirmed to cause
-# "TypeError: Cannot read properties of null (reading 'useContext')" while
-# prerendering /_global-error, and Next.js's own build output warns
-# "non-standard NODE_ENV value" as soon as it isn't "production" here.
-ENV NODE_ENV=production
-# Build-time env (DATABASE_URL, REDIS_URL, S3_*, PAYLOAD_SECRET, etc.) arrives
-# as a single BuildKit secret file in dotenv format — see
-# .github/workflows/build-and-deploy.yml's `secret-files` input — rather than as ARG/ENV,
-# so none of these values are cached into an image layer or visible via
-# `docker history`.
-#
-# It is copied to .env (not .env.production) and read by @next/env's
-# loadEnvConfig (which `next build` calls) rather than shell-sourced: a value
-# containing spaces or shell metacharacters — e.g. USESEND_DEFAULT_FROM_NAME
-# being "Mail Agent [daniel.heene.dev]" — breaks a `. file` source under dash,
-# which parses each line as a shell command rather than a plain KEY=value
-# assignment. dotenv's own parser has no such restriction, which is the whole
-# point of using the format Payload/Next already expect instead of fighting
-# it via shell semantics. `.env` is the mode-independent fallback in
-# loadEnvConfig's search order (`.env.<mode>.local`, `.env.local`,
-# `.env.<mode>`, `.env`) and is always read regardless of which mode a
-# particular loadEnvConfig call resolves — unlike `.env.production`, it isn't
-# tied to `next build` specifically always resolving mode "production"
-# internally. The file is removed immediately after use so its contents never
-# land in a layer.
-#
-# Migrations are not run here: build-and-deploy.yml applies them in a
-# dedicated `migrate` job that the build job depends on, so the image build
-# stays free of database writes.
-RUN --mount=type=secret,id=build_env,required=true \
-    cp /run/secrets/build_env .env && \
-    pnpm run build; \
-    status=$?; \
-    rm -f .env; \
-    exit $status
-
-# ---- app: Next.js server ----------------------------------------------------
-FROM base AS app
-ARG NODE_ENV
-ARG VERSION
-ARG REVISION
-ENV NODE_ENV=${NODE_ENV}
+ENV NODE_ENV=production \
+    PORT=3000 \
+    HOSTNAME=0.0.0.0
 LABEL org.opencontainers.image.title="website-app" \
       org.opencontainers.image.version="${VERSION}" \
       org.opencontainers.image.revision="${REVISION}" \
       org.opencontainers.image.source="https://github.com/danielheene/website"
-COPY --from=builder /app ./
+WORKDIR /app
+COPY --chown=node:node out/web ./
+USER node
 EXPOSE 3000
 HEALTHCHECK --interval=60s --timeout=10s --retries=3 --start-period=30s \
     CMD node -e "fetch('http://localhost:3000/api/health/app').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
-CMD ["pnpm", "run", "start"]
+CMD ["node", "server.js"]
 
-# ---- worker: Payload job runner, same build output as app -----------------
-FROM base AS worker
-ARG NODE_ENV
-ARG VERSION
-ARG REVISION
-ENV NODE_ENV=${NODE_ENV}
+# ---- worker ------------------------------------------------------------------
+FROM node:${NODE_VERSION}-slim AS worker
+ARG VERSION=""
+ARG REVISION=""
+ENV NODE_ENV=production
 LABEL org.opencontainers.image.title="website-worker" \
       org.opencontainers.image.version="${VERSION}" \
       org.opencontainers.image.revision="${REVISION}" \
       org.opencontainers.image.source="https://github.com/danielheene/website"
-COPY --from=builder /app ./
+WORKDIR /app
+COPY --chown=node:node out/worker ./
+USER node
 EXPOSE 3010
 HEALTHCHECK --interval=60s --timeout=10s --retries=3 --start-period=30s \
     CMD node -e "fetch('http://localhost:3010/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
-CMD ["pnpm", "run", "start:worker"]
+CMD ["node", "scripts/start-worker.mjs"]
 
-# ---- storybook-builder: independent build, no DB/Tailscale needed ---------
-FROM deps AS storybook-builder
-COPY . .
-RUN pnpm run build:storybook
-
-# ---- storybook: static output served via `serve` ---------------------------
-FROM base AS storybook
-ARG VERSION
-ARG REVISION
-ENV NODE_ENV=production
+# ---- storybook ---------------------------------------------------------------
+FROM caddy:2-alpine AS storybook
+ARG VERSION=""
+ARG REVISION=""
 LABEL org.opencontainers.image.title="website-storybook" \
       org.opencontainers.image.version="${VERSION}" \
       org.opencontainers.image.revision="${REVISION}" \
       org.opencontainers.image.source="https://github.com/danielheene/website"
-# npm rather than `pnpm add -g`: pnpm's global bin dir isn't on PATH by
-# default in this image, and configuring it is unnecessary for one package.
-RUN npm install -g serve
-COPY --from=storybook-builder /app/dist ./dist
+COPY out/storybook /srv
 EXPOSE 3020
 HEALTHCHECK --interval=60s --timeout=10s --retries=3 --start-period=30s \
-    CMD node -e "fetch('http://localhost:3020').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
-CMD ["serve", "dist", "-l", "3020"]
+    CMD wget -q -O /dev/null http://localhost:3020 || exit 1
+CMD ["caddy", "file-server", "--root", "/srv", "--listen", ":3020"]

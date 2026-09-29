@@ -57,7 +57,8 @@ export default defineConfig({
   webServer: process.env.E2E_NO_SERVER
     ? undefined
     : {
-        command: 'pnpm run dev:app',
+        // CI serves the assembled production output instead of a dev server.
+        command: process.env.E2E_SERVER_COMMAND ?? 'pnpm run dev:app',
         url: baseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 180_000,
