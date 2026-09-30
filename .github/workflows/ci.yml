@@ -265,6 +265,11 @@ jobs:
       - name: Seed blog content
         run: pnpm run seed:posts -- --count 2
 
+      # resume.spec.ts needs an older and a newer resume document; the seed
+      # writes them directly, without generating PDFs.
+      - name: Seed resume documents
+        run: pnpm run seed:resume-documents
+
       # Prerenders every route (PPR shells included) against the seeded database.
       - name: Generate
         run: pnpm exec next build --experimental-build-mode=generate

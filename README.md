@@ -154,6 +154,7 @@ pnpm email:dev        # React Email preview server (http://localhost:3005)
 | `pnpm seed:topics` | Seeds fixture blog topics (`--clean` to remove). |
 | `pnpm seed:posts` | Seeds fixture blog posts and media (`--clean` to remove, `--count <n>` to set quantity). |
 | `pnpm seed:pages` | Seeds fixture pages (`--clean` to remove, `--count <n>` to set quantity). |
+| `pnpm seed:resume-documents` | Seeds an older and a newer fixture resume document without PDFs (`--clean` to remove). |
 | `pnpm links:migrate` | Runs database migration for link field naming. |
 | `pnpm refs:backfill` | Rebuilds content reference index table. |
 | `pnpm test` | Runs unit tests once via Vitest. |

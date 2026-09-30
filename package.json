@@ -48,6 +48,8 @@
     "seed:pages:clean": "pnpm run _payload run scripts/seed-pages.ts -- --clean",
     "seed:posts": "pnpm run _payload run scripts/seed-posts.ts",
     "seed:posts:clean": "pnpm run _payload run scripts/seed-posts.ts -- --clean",
+    "seed:resume-documents": "pnpm run _payload run scripts/seed-resume-documents.ts",
+    "seed:resume-documents:clean": "pnpm run _payload run scripts/seed-resume-documents.ts -- --clean",
     "seed:topics": "pnpm run _payload run scripts/seed-topics.ts",
     "seed:topics:clean": "pnpm run _payload run scripts/seed-topics.ts -- --clean",
     "start:storybook": "npx serve dist -l 3020",
