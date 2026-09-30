@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/danielheene/website/compare/v1.6.1...v1.7.0) (2026-09-30)
+
+
+### Features
+
+* **resume:** derive skill tag types, relate tags to jobs and skills, cut layout shift ([#90](https://github.com/danielheene/website/issues/90)) ([2238476](https://github.com/danielheene/website/commit/2238476b96c544a6b88d52b8cf89a7d31f7f0a3e))
+
 ## [1.6.1](https://github.com/danielheene/website/compare/v1.6.0...v1.6.1) (2026-09-30)
 
 
