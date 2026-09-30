@@ -23,29 +23,6 @@ on:
         required: false
       SENTRY_PROJECT:
         required: false
-      # Read from the Testing environment by the jobs bound to it; GitHub uses
-      # the environment's value, never one passed in. Declared so the
-      # workflow's secret references validate.
-      TEST_SERVICES_HOST:
-        required: false
-      DATABASE_URL:
-        required: false
-      REDIS_URL:
-        required: false
-      S3_ENDPOINT:
-        required: false
-      S3_BUCKET:
-        required: false
-      S3_REGION:
-        required: false
-      S3_ACCESS_KEY:
-        required: false
-      S3_SECRET_KEY:
-        required: false
-      TS_OAUTH_CLIENT_ID:
-        required: false
-      TS_OAUTH_SECRET:
-        required: false
 
 permissions:
   contents: read
@@ -165,14 +142,17 @@ jobs:
       - name: Check no environment values were inlined
         run: node scripts/check-env-leak.mjs .next .env.test
 
+      # Turbopack links .next/node_modules/* into node_modules/.pnpm with
+      # relative symlinks; upload-artifact would copy the targets and lose their
+      # pnpm siblings (sharp without detect-libc), so the output travels as a tar.
+      - name: Pack compiled output
+        run: tar -cf "$RUNNER_TEMP/next-compile.tar" --exclude=.next/cache .next
+
       - name: Upload compiled output
         uses: actions/upload-artifact@v4 # TODO: pin to a commit SHA like the other actions
         with:
           name: next-compile
-          path: |
-            .next
-            !.next/cache
-          include-hidden-files: true
+          path: ${{ runner.temp }}/next-compile.tar
           retention-days: 1
           if-no-files-found: error
 
@@ -189,15 +169,21 @@ jobs:
     concurrency:
       group: ${{ github.event_name == 'pull_request' && 'e2e-testing' || format('e2e-{0}', github.run_id) }}
       cancel-in-progress: false
-    env:
-      # Set only for pull requests where the Testing environment's secrets are
-      # readable (not forks or dependabot); otherwise the job uses local containers.
-      TEST_SERVICES_HOST: ${{ github.event_name == 'pull_request' && secrets.TEST_SERVICES_HOST || '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.ref }}
+
+      # Set only for pull requests where the Testing environment's secrets are
+      # readable (not forks or dependabot); otherwise the job uses local
+      # containers. Read in a step: environment secrets reach steps, and every
+      # later step checks env.TEST_SERVICES_HOST.
+      - name: Detect Testing services
+        if: github.event_name == 'pull_request'
+        run: echo "TEST_SERVICES_HOST=$TEST_SERVICES_HOST" >> "$GITHUB_ENV"
+        env:
+          TEST_SERVICES_HOST: ${{ secrets.TEST_SERVICES_HOST }}
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -225,7 +211,10 @@ jobs:
         uses: actions/download-artifact@v4 # TODO: pin to a commit SHA like the other actions
         with:
           name: next-compile
-          path: .next
+          path: ${{ runner.temp }}
+
+      - name: Unpack compiled output
+        run: tar -xf "$RUNNER_TEMP/next-compile.tar"
 
       # .env.test is the base for every value; Testing services (below) only
       # override the connection settings.

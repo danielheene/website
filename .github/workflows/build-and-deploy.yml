@@ -212,7 +212,10 @@ jobs:
         uses: actions/download-artifact@v4 # TODO: pin to a commit SHA like the other actions
         with:
           name: next-compile
-          path: .next
+          path: ${{ runner.temp }}
+
+      - name: Unpack compiled output
+        run: tar -xf "$RUNNER_TEMP/next-compile.tar"
 
       # `payload migrate` reads process.env directly. A failed migration stops
       # the job before any image is built or pushed.
