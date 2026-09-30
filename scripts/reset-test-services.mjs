@@ -160,7 +160,8 @@ const flushRedis = async () => {
     const size = await client.dbSize()
     if (size !== 0) throw new Error(`Redis still holds ${size} keys after FLUSHALL`)
   } finally {
-    await client.destroy().catch(() => {})
+    // `destroy()` is synchronous in node-redis and returns nothing.
+    if (client.isOpen) client.destroy()
   }
 }
 
