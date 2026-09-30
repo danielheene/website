@@ -237,12 +237,14 @@ jobs:
           tags: tag:ci
           args: --accept-dns=true
 
-      # Rebuilds the Testing Mongo and Redis through Dokploy and empties the
-      # Testing bucket, so every run starts from nothing.
+      # Empties the Testing Mongo, Redis and bucket, so every run starts from
+      # nothing. The Dokploy rebuild is skipped: `mongo.rebuild` has returned
+      # a 500 and left the Testing Mongo stopped.
       - name: Reset Testing services
         if: env.DOKPLOY_API_KEY != ''
         run: node scripts/reset-test-services.mjs
         env:
+          DOKPLOY_REBUILD: 'false'
           DOKPLOY_URL: ${{ secrets.DOKPLOY_URL }}
           DOKPLOY_MONGO_ID: ${{ secrets.DOKPLOY_MONGO_ID }}
           DOKPLOY_REDIS_ID: ${{ secrets.DOKPLOY_REDIS_ID }}
