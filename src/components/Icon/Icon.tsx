@@ -3,7 +3,6 @@
 import { type ComponentPropsWithoutRef, forwardRef, type JSX } from 'react'
 
 import { addAPIProvider, Icon as IconifyIconComponent } from '@iconify/react'
-import { cn } from 'tailwind-variants'
 
 import { ICONIFY_API } from './api'
 
@@ -113,6 +112,12 @@ export type IconProps = Omit<
   name: IconName | string
 }
 
+/** The `data-*` and `aria-*` props, which Iconify forwards onto its rendered `<svg>`. */
+const pickDomAttributes = (props: Record<string, unknown>) =>
+  Object.fromEntries(
+    Object.entries(props).filter(([key]) => key.startsWith('data-') || key.startsWith('aria-')),
+  )
+
 export const Icon = forwardRef<SVGSVGElement, IconProps>(
   ({ name, className, style, ...iconBaseProps }, ref): JSX.Element => {
     const icon = ICON[name] ?? name
@@ -124,12 +129,18 @@ export const Icon = forwardRef<SVGSVGElement, IconProps>(
         style={style}
         // Icon data loads from the API after hydration; until then Iconify
         // renders an empty span, and the icon pushes its surroundings aside
-        // when it arrives (layout shift). This holds the same 1em box.
+        // when it arrives (layout shift). The placeholder is the same empty
+        // 1em <svg> Iconify renders once loaded, with the same classes and
+        // data/aria attributes, so parent selectors such as Button's
+        // `[&>svg]` sizing and `has-data-[icon=…]` padding match it too.
         fallback={
-          <span
+          <svg
             aria-hidden="true"
-            className={cn('inline-block size-[1em] shrink-0', className)}
+            width="1em"
+            height="1em"
+            className={className}
             style={style}
+            {...pickDomAttributes(iconBaseProps)}
           />
         }
         {...iconBaseProps}
