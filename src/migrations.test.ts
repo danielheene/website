@@ -3,16 +3,20 @@ import path from 'node:path'
 
 import { describe, expect, it } from 'vitest'
 
+// Lives outside src/migrations: `payload migrate` imports every .ts file in
+// that directory except index.ts, so a test there breaks every migration run.
 // Reads the registry as text: importing the migration modules would load the
 // whole Payload config graph, which this check does not need.
 const MIGRATION_FILE = /^(\d{8})_[a-z0-9_]+\.ts$/
 
-const files = readdirSync(__dirname)
+const MIGRATIONS_DIR = path.join(__dirname, 'migrations')
+
+const files = readdirSync(MIGRATIONS_DIR)
   .filter((file) => MIGRATION_FILE.test(file))
   .map((file) => path.basename(file, '.ts'))
   .sort()
 
-const registry = readFileSync(path.join(__dirname, 'index.ts'), 'utf8')
+const registry = readFileSync(path.join(MIGRATIONS_DIR, 'index.ts'), 'utf8')
 const registeredNames = [
   ...registry.matchAll(/name: '([^']+)'/g),
 ].map(([, name]) => name)
