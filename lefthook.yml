@@ -1,0 +1,24 @@
+# Git hooks (replaces Husky + lint-staged). Installed by `bun install` through
+# the `prepare` script.
+# https://lefthook.dev
+
+pre-commit:
+  commands:
+    # Format, then lint, in one command so the two never write the same file
+    # at once. --no-error-on-unmatched-pattern keeps commits of files neither
+    # tool handles (YAML, Markdown) from failing.
+    oxc:
+      glob: '*.{ts,tsx,js,jsx,mjs,cjs,json,jsonc,css}'
+      run: bun x oxfmt --no-error-on-unmatched-pattern {staged_files} && bun x oxlint --fix --no-error-on-unmatched-pattern {staged_files}
+      stage_fixed: true
+    # Keeps dependency versions within their syncpack groups and the lockfile
+    # in step with package.json.
+    package-json:
+      glob: 'package.json'
+      run: bun x syncpack format --source package.json && bun x syncpack fix --dependency-types prod,dev,peer --source package.json && bun install
+      stage_fixed: true
+
+commit-msg:
+  commands:
+    commitlint:
+      run: bun x commitlint --edit {1}

@@ -18,7 +18,7 @@ const forwarded = argv.filter((arg) => arg !== '--tunnel')
 
 /**
  *    Resolve Next's own CLI entry rather than relying on `next` being on PATH:
- *    pnpm only adds node_modules/.bin when it runs the script itself, so a bare
+ *    the package manager only adds node_modules/.bin when it runs the script, so a bare
  *    `spawn('next')` breaks when this file is invoked directly.
  */
 const require = createRequire(import.meta.url)

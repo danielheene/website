@@ -56,7 +56,7 @@ export const FieldComponent = memo(
             </div>
           ) : (
             <Fragment>
-              {/** biome-ignore lint/performance/noImgElement: <used for payload blocks> */}
+              {/** oxlint-disable-next-line nextjs/no-img-element -- used for payload blocks */}
               <img
                 className={cn([
                   'absolute w-full h-full object-contain opacity-0',

@@ -4,8 +4,8 @@
  *    resume generator.
  *
  *    Usage:
- *      pnpm seed:resume-documents        # create the two documents
- *      pnpm seed:resume-documents:clean  # remove them
+ *      bun run seed:resume-documents        # create the two documents
+ *      bun run seed:resume-documents:clean  # remove them
  *
  *    Idempotent: existing seeded documents (matched by slug) are skipped.
  */

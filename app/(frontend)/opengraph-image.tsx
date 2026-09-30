@@ -27,7 +27,7 @@ export default async function Image() {
       )}
     >
       {bgSrc && (
-        // biome-ignore lint/performance/noImgElement: Takumi/OG image rendering requires a plain <img>, not next/image
+        // oxlint-disable-next-line nextjs/no-img-element -- Takumi/OG image rendering requires a plain <img>, not next/image
         <img
           alt=""
           src={bgSrc}

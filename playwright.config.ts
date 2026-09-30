@@ -6,7 +6,7 @@ const baseURL = process.env.E2E_BASE_URL ?? `http://localhost:${PORT}`
 /**
  *    E2E configuration.
  *
- *    Env: run via `pnpm test:e2e` which loads .env.test through Node's native
+ *    Env: run via `bun run test:e2e` which loads .env.test through Node's native
  *    --env-file flag. Prerequisite: `docker compose up -d` (Mongo/Redis/S3).
  *
  *    E2E_NO_SERVER=1 skips the managed web server — used by the Docker flow
@@ -21,9 +21,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: process.env.CI
     ? [
-        [
-          'github',
-        ],
+        ['github'],
         [
           'html',
           {
@@ -31,11 +29,7 @@ export default defineConfig({
           },
         ],
       ]
-    : [
-        [
-          'list',
-        ],
-      ],
+    : [['list']],
   timeout: 30_000,
   expect: {
     timeout: 10_000,
@@ -58,7 +52,7 @@ export default defineConfig({
     ? undefined
     : {
         // CI serves the assembled production output instead of a dev server.
-        command: process.env.E2E_SERVER_COMMAND ?? 'pnpm run dev:app',
+        command: process.env.E2E_SERVER_COMMAND ?? 'bun run dev:app',
         url: baseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 180_000,

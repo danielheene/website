@@ -71,15 +71,13 @@ export const IconGrid = ({ icons, isSelected, onSelectAction, describe }: IconGr
 
   // a new result set scrolls back to the top, or the window would sit at an
   // offset the shorter list no longer has
-  // biome-ignore lint/correctness/useExhaustiveDependencies: resetting on identity change is the point
+  // oxlint-disable-next-line react/exhaustive-deps -- resetting on identity change is the point
   useEffect(() => {
     scrollRef.current?.scrollTo({
       top: 0,
     })
     setScrollTop(0)
-  }, [
-    icons,
-  ])
+  }, [icons])
 
   // cells are square, so row height follows from the measured column width
   const columnWidth =

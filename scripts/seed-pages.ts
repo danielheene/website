@@ -3,9 +3,9 @@
  *    testing.
  *
  *    Usage:
- *      pnpm seed:pages               # create 10 seed pages
- *      pnpm seed:pages -- --count 25 # create 25 seed pages
- *      pnpm seed:pages:clean         # remove all seeded pages and their media
+ *      bun run seed:pages               # create 10 seed pages
+ *      bun run seed:pages -- --count 25 # create 25 seed pages
+ *      bun run seed:pages:clean         # remove all seeded pages and their media
  *
  *    Idempotent: existing seeded pages (matched by slug) are skipped, not
  *    duplicated. See src/lib/seed/pages.ts for the actual create/delete

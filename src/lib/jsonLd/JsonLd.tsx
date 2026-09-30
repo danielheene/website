@@ -13,11 +13,7 @@ export interface JsonLdProps {
  * script tag. The result is still valid JSON — parsers treat <\/ identically.
  */
 export function JsonLd({ data }: JsonLdProps) {
-  const schemas = Array.isArray(data)
-    ? data
-    : [
-        data,
-      ]
+  const schemas = Array.isArray(data) ? data : [data]
 
   return (
     <>
@@ -25,7 +21,7 @@ export function JsonLd({ data }: JsonLdProps) {
         <script
           key={index}
           type="application/ld+json"
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: </ is escaped as <\/ to prevent </script> injection>
+          // oxlint-disable-next-line react/no-danger -- / is escaped as <\/ to prevent </script> injection
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(schema).replace(/<\//g, '<\\/'),
           }}

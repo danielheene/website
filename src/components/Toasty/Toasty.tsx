@@ -398,9 +398,7 @@ const keySequence: KeyboardEvent['key'][] = [
 
 export const initialState: State = Object.freeze<State>({
   success: false,
-  code: [
-    ...keySequence,
-  ],
+  code: [...keySequence],
   imageBlob: undefined,
   audioBuffer: undefined,
 })
@@ -410,9 +408,7 @@ export const reducer = (state: State, action: Action): State => {
     case ActionType.Reset:
       return {
         ...state,
-        code: [
-          ...initialState.code,
-        ],
+        code: [...initialState.code],
         success: initialState.success,
       }
 
@@ -497,9 +493,7 @@ export const Toasty = function Toasty(): React.JSX.Element {
         keyEventBoundRef.current = false
       }
     }
-  }, [
-    handleKeyUpEvent,
-  ])
+  }, [handleKeyUpEvent])
 
   /**
    *
@@ -523,10 +517,7 @@ export const Toasty = function Toasty(): React.JSX.Element {
           console.error('failed to load easter egg audio 😔\n', error.message)
         })
     }
-  }, [
-    audioBuffer,
-    success,
-  ])
+  }, [audioBuffer, success])
 
   /**
    *
@@ -547,10 +538,7 @@ export const Toasty = function Toasty(): React.JSX.Element {
           console.error('failed to load easter egg image 😔\n', error.message)
         })
     }
-  }, [
-    imageBlob,
-    success,
-  ])
+  }, [imageBlob, success])
 
   /**
    *
@@ -570,11 +558,7 @@ export const Toasty = function Toasty(): React.JSX.Element {
       audioBufferNode.connect(audioContextRef.current.destination)
       audioBufferNode.start(0)
     }
-  }, [
-    audioBuffer,
-    imageBlob,
-    success,
-  ])
+  }, [audioBuffer, imageBlob, success])
 
   /**
    *
@@ -584,7 +568,7 @@ export const Toasty = function Toasty(): React.JSX.Element {
   return ReactDOM.createPortal(
     <React.Fragment>
       <div className="toasty" aria-hidden={true} tabIndex={-1}>
-        {/** biome-ignore lint/performance/noImgElement: <TODO> */}
+        {/** oxlint-disable-next-line nextjs/no-img-element */}
         <img src={URL.createObjectURL(imageBlob)} alt="toasty" />
       </div>
       <style jsx>

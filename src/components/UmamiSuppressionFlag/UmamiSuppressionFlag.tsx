@@ -28,7 +28,7 @@ export const UmamiSuppressionFlag = async (): Promise<JSX.Element | null> => {
 
   return (
     <script
-      // biome-ignore lint/security/noDangerouslySetInnerHtml: static, hardcoded script body — no user input is interpolated
+      // oxlint-disable-next-line react/no-danger -- static, hardcoded script body — no user input is interpolated
       dangerouslySetInnerHTML={{
         __html: 'window.__UMAMI_SUPPRESSED__ = true;',
       }}

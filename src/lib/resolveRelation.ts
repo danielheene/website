@@ -3,7 +3,7 @@ import { getPayload } from 'payload'
 
 import { CollectionSlug, CollectionSlugValue, RegisteredCollectionSlug } from '@/types/collections'
 
-// biome-ignore lint/suspicious/noExplicitAny: matching any callable signature
+// oxlint-disable-next-line typescript/no-explicit-any -- matching any callable signature
 type AnyFunction = (...args: any[]) => any
 
 /**
@@ -121,13 +121,7 @@ export const resolveRelations = async <T>(data: T): Promise<ResolvedRelations<T>
 
     if (node && typeof node === 'object') {
       const entries = await Promise.all(
-        Object.entries(node).map(
-          async ([key, value]) =>
-            [
-              key,
-              await walk(value, seen),
-            ] as const,
-        ),
+        Object.entries(node).map(async ([key, value]) => [key, await walk(value, seen)] as const),
       )
       return Object.fromEntries(entries)
     }

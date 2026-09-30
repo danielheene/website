@@ -2,9 +2,9 @@
  *    Seeds fixture BlogTopics for local testing.
  *
  *    Usage:
- *      pnpm seed:topics               # create 6 seed topics
- *      pnpm seed:topics -- --count 10 # create 10 seed topics
- *      pnpm seed:topics:clean         # remove seeded topics not still
+ *      bun run seed:topics               # create 6 seed topics
+ *      bun run seed:topics -- --count 10 # create 10 seed topics
+ *      bun run seed:topics:clean         # remove seeded topics not still
  *                                      # referenced by a real (non-seeded) post
  *
  *    Idempotent: existing seeded topics (matched by slug) are skipped, not

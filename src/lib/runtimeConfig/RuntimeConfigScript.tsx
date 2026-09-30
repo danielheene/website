@@ -10,7 +10,7 @@ import { readRuntimeConfigFromEnv, serializeRuntimeConfig } from './index'
  */
 export const RuntimeConfigScript = (): JSX.Element => (
   <script
-    // biome-ignore lint/security/noDangerouslySetInnerHtml: serialized by serializeRuntimeConfig, which escapes '<'
+    // oxlint-disable-next-line react/no-danger -- serialized by serializeRuntimeConfig, which escapes '<'
     dangerouslySetInnerHTML={{
       __html: `window.__RUNTIME_CONFIG__=${serializeRuntimeConfig(readRuntimeConfigFromEnv())}`,
     }}

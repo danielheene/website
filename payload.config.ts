@@ -137,13 +137,9 @@ export const config = buildConfig({
   },
   bin: [],
   blocks: BLOCKS,
-  csrf: [
-    process.env.SERVER_URL,
-  ],
+  csrf: [process.env.SERVER_URL],
   cors: {
-    origins: [
-      process.env.SERVER_URL,
-    ],
+    origins: [process.env.SERVER_URL],
     headers: [],
   },
   defaultDepth: 10,
@@ -153,7 +149,7 @@ export const config = buildConfig({
   }),
   collections: COLLECTIONS,
   debug: process.env.NODE_ENV !== 'production',
-  // biome-ignore lint/correctness/useHookAtTopLevel: <useSend is a mailing service, not a React hook>
+  // oxlint-disable-next-line react/rules-of-hooks -- useSend is a mailing service, not a React hook
   email: useSendAdapter({
     apiKey: process.env.USESEND_API_KEY,
     useSendUrl: process.env.USESEND_URL,
@@ -280,11 +276,7 @@ export const config = buildConfig({
       options: {
         // 500s are captured by default; 401/403/404 are normal traffic and
         // would drown the real failures
-        captureErrors: [
-          400,
-          409,
-          500,
-        ],
+        captureErrors: [400, 409, 500],
         context: ({ defaultContext, req }) => ({
           ...defaultContext,
           tags: {
@@ -363,10 +355,7 @@ export const config = buildConfig({
               },
             },
             additionalProperties: false,
-            required: [
-              'id',
-              'label',
-            ],
+            required: ['id', 'label'],
           },
           SkillEntrySortable: {
             title: 'SkillEntrySortable',
@@ -383,10 +372,7 @@ export const config = buildConfig({
               },
             },
             additionalProperties: false,
-            required: [
-              'id',
-              'label',
-            ],
+            required: ['id', 'label'],
           },
         },
       }),

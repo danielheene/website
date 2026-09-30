@@ -1,4 +1,4 @@
-// biome-ignore-all lint: reason
+// oxlint-disable -- reason
 
 import { cache, Suspense } from 'react'
 import type { Metadata } from 'next'

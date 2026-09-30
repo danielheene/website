@@ -48,25 +48,25 @@ jobs:
       - name: Validate commit messages
         if: github.event_name == 'pull_request'
         run: >-
-          pnpm exec commitlint
+          bun x commitlint
           --from ${{ github.event.pull_request.base.sha }}
           --to ${{ github.event.pull_request.head.sha }}
           --verbose
 
       - name: Lint
-        run: pnpm run lint
+        run: bun run lint
 
       - name: Check dependency version groups
-        run: pnpm run deps:lint
+        run: bun run deps:lint
 
       # Generated files are committed; a stale one means someone changed a
-      # collection/field/block without running `pnpm generate`.
+      # collection/field/block without running `bun run generate`.
       - name: Check generated files are up to date
         run: |
           # payload.config.ts reads the environment when it loads
           # shellcheck disable=SC2046 # word splitting yields one KEY=value per word
           export $(grep -v '^#' .env.test | grep -v '^$' | xargs)
-          pnpm run generate
+          bun run generate
           git diff --exit-code -- src/types/payload.ts "app/(payload)/admin/importMap.js"
 
       - name: Lint workflows
@@ -86,7 +86,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Run unit tests with coverage
-        run: pnpm run test:coverage
+        run: bun run test:coverage
 
       - name: Upload coverage
         if: always()
@@ -117,9 +117,9 @@ jobs:
         uses: actions/cache@v4 # TODO: pin to a commit SHA like the other actions
         with:
           path: .next/cache
-          key: next-cache-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.sha }}
+          key: next-cache-${{ runner.os }}-${{ hashFiles('bun.lock') }}-${{ github.sha }}
           restore-keys: |
-            next-cache-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+            next-cache-${{ runner.os }}-${{ hashFiles('bun.lock') }}-
             next-cache-${{ runner.os }}-
 
       # `compile` never touches the database or renders a page; next.config.ts
@@ -130,7 +130,7 @@ jobs:
         run: |
           # shellcheck disable=SC2046 # word splitting yields one KEY=value per word
           export $(grep -v '^#' .env.test | grep -v '^$' | xargs)
-          pnpm exec next build --experimental-build-mode=compile
+          bun x next build --experimental-build-mode=compile
         env:
           NODE_ENV: production
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -142,9 +142,9 @@ jobs:
       - name: Check no environment values were inlined
         run: node scripts/check-env-leak.mjs .next .env.test
 
-      # Turbopack links .next/node_modules/* into node_modules/.pnpm with
-      # relative symlinks; upload-artifact would copy the targets and lose their
-      # pnpm siblings (sharp without detect-libc), so the output travels as a tar.
+      # Turbopack links .next/node_modules/* into node_modules with relative
+      # symlinks; upload-artifact would copy the targets and lose their
+      # siblings (sharp without detect-libc), so the output travels as a tar.
       - name: Pack compiled output
         run: tar -cf "$RUNNER_TEMP/next-compile.tar" --exclude=.next/cache .next
 
@@ -190,7 +190,7 @@ jobs:
 
       - name: Resolve Playwright version
         id: playwright
-        run: echo "version=$(pnpm exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+        run: echo "version=$(bun x playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright browsers
         id: playwright-cache
@@ -201,11 +201,11 @@ jobs:
 
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: pnpm exec playwright install --with-deps chromium
+        run: bun x playwright install --with-deps chromium
 
       - name: Install Playwright system dependencies
         if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: pnpm exec playwright install-deps chromium
+        run: bun x playwright install-deps chromium
 
       - name: Download compiled output
         uses: actions/download-artifact@v4 # TODO: pin to a commit SHA like the other actions
@@ -269,22 +269,22 @@ jobs:
       # which need the schema and seed documents (e.g. the `home` page)
       # that 00000001_initialize_basic_site creates.
       - name: Run database migrations
-        run: pnpm run migrate
+        run: bun run migrate
 
       # blog.spec.ts needs published posts. seed:posts creates its own topics,
       # and each post fetches one placeholder image from picsum.photos, so
       # the count stays small.
       - name: Seed blog content
-        run: pnpm run seed:posts -- --count 2
+        run: bun run seed:posts -- --count 2
 
       # resume.spec.ts needs an older and a newer resume document; the seed
       # writes them directly, without generating PDFs.
       - name: Seed resume documents
-        run: pnpm run seed:resume-documents
+        run: bun run seed:resume-documents
 
       # Prerenders every route (PPR shells included) against the seeded database.
       - name: Generate
-        run: pnpm exec next build --experimental-build-mode=generate
+        run: bun x next build --experimental-build-mode=generate
         env:
           NODE_ENV: production
 
@@ -292,7 +292,7 @@ jobs:
         run: node scripts/assemble-images.mjs web
 
       - name: Run E2E tests against the assembled output
-        run: pnpm run test:e2e
+        run: bun run test:e2e
         env:
           E2E_SERVER_COMMAND: node --env-file=.env.test out/web/server.js
           HOSTNAME: localhost

@@ -92,7 +92,7 @@ export const SelectMediaDrawer = ({
           onSelect: () => onSelectAction(doc),
           selected: value === doc.id,
           thumbnail: thumbnailSrc ? (
-            // biome-ignore lint/performance/noImgElement: a tiny admin-only picker thumbnail, not a page asset
+            // oxlint-disable-next-line nextjs/no-img-element -- a tiny admin-only picker thumbnail, not a page asset
             <img alt="" className="h-full w-full object-cover" src={thumbnailSrc} />
           ) : null,
         }

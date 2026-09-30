@@ -22,12 +22,7 @@ type CodeBlockShellProps = {
  * Component as well as from the async Server Component.
  */
 export const CodeBlockShell = ({ className, code, html }: CodeBlockShellProps): JSX.Element => (
-  <div
-    className={cn([
-      'not-prose group/code relative rounded-md border border-border',
-      className,
-    ])}
-  >
+  <div className={cn(['not-prose group/code relative rounded-md border border-border', className])}>
     <div className="absolute top-2 right-2 z-10 opacity-0 transition-opacity group-hover/code:opacity-100 focus-within:opacity-100">
       <CopyButton code={code} />
     </div>
@@ -35,7 +30,7 @@ export const CodeBlockShell = ({ className, code, html }: CodeBlockShellProps): 
     {html ? (
       <div
         className="shiki-container overflow-x-auto"
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: Shiki output is generated server-side from stored code, not user-supplied HTML
+        // oxlint-disable-next-line react/no-danger -- Shiki output is generated server-side from stored code, not user-supplied HTML
         dangerouslySetInnerHTML={{
           __html: html,
         }}

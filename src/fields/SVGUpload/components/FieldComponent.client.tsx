@@ -110,14 +110,7 @@ export const FieldComponentClient = ({
               {
                 name: 'removeAttrs',
                 params: {
-                  attrs: [
-                    'class',
-                    'style',
-                    'fill',
-                    'id',
-                    'width',
-                    'height',
-                  ],
+                  attrs: ['class', 'style', 'fill', 'id', 'width', 'height'],
                   elemSeparator: ':',
                   preserveCurrentColor: true,
                 },
@@ -144,9 +137,7 @@ export const FieldComponentClient = ({
 
       reader.readAsText(file, 'UTF-8')
     },
-    [
-      setValue,
-    ],
+    [setValue],
   )
 
   /**
@@ -169,10 +160,7 @@ export const FieldComponentClient = ({
         await handleFileChange(file)
       }
     },
-    [
-      handleEnd,
-      handleFileChange,
-    ],
+    [handleEnd, handleFileChange],
   )
 
   const logoContent = useMemo(() => {
@@ -184,10 +172,7 @@ export const FieldComponentClient = ({
           },
         }).data
       : null
-  }, [
-    value,
-    initialValue,
-  ])
+  }, [value, initialValue])
 
   const baseIconStyles = [
     'absolute left-0 top-0 right-0 bottom-0',
@@ -206,9 +191,7 @@ export const FieldComponentClient = ({
     >
       <label
         htmlFor={id}
-        className={cn([
-          'cursor-pointer',
-        ])}
+        className={cn(['cursor-pointer'])}
         onDragEnter={handleStart}
         onDragOver={handleStart}
         onDragLeave={handleEnd}
@@ -216,12 +199,7 @@ export const FieldComponentClient = ({
       >
         {!logoContent && !isUploading && (
           <Fragment>
-            <div
-              className={cn([
-                baseIconStyles,
-                '[&>svg]:opacity-10',
-              ])}
-            >
+            <div className={cn([baseIconStyles, '[&>svg]:opacity-10'])}>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <path
                   fill="currentColor"
@@ -229,12 +207,7 @@ export const FieldComponentClient = ({
                 />
               </svg>
             </div>
-            <span
-              className={cn([
-                'flex flex-row flex-nowrap',
-                'font-mono uppercase items-center',
-              ])}
-            >
+            <span className={cn(['flex flex-row flex-nowrap', 'font-mono uppercase items-center'])}>
               Click or drag the logo here.
             </span>
           </Fragment>
@@ -257,10 +230,8 @@ export const FieldComponentClient = ({
         )}
         {logoContent && !isUploading && (
           <div
-            className={cn([
-              baseIconStyles,
-            ])}
-            // biome-ignore lint/security/noDangerouslySetInnerHtml: <sanitized via 'isomorphic-dompurify'>
+            className={cn([baseIconStyles])}
+            // oxlint-disable-next-line react/no-danger -- sanitized via 'isomorphic-dompurify'
             dangerouslySetInnerHTML={{
               __html: logoContent,
             }}

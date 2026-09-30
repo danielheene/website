@@ -22,7 +22,7 @@ export default async function Image() {
       tw={`relative flex h-full w-full items-center justify-center text-neutral-100${!bgSrc ? ' bg-neutral-900' : ''}`}
     >
       {bgSrc && (
-        // biome-ignore lint/performance/noImgElement: Takumi/OG image rendering requires a plain <img>, not next/image
+        // oxlint-disable-next-line nextjs/no-img-element -- Takumi/OG image rendering requires a plain <img>, not next/image
         <img
           alt=""
           src={bgSrc}

@@ -17,10 +17,10 @@
  *    noticed. Both are stopped and the container exits non-zero, so
  *    Dokploy/Swarm restarts it either way.
  *
- *    Payload's CLI binary is spawned directly (not via `pnpm run`): pnpm's
- *    own `run` is an extra shell hop between this wrapper and the actual
+ *    Payload's CLI binary is spawned directly (not via `bun run`): the package
+ *    manager's `run` is an extra shell hop between this wrapper and the actual
  *    process, and a signal sent to that hop is not reliably forwarded to its
- *    child — confirmed by SIGTERM/SIGKILL sent to the pnpm process leaving
+ *    child — confirmed by SIGTERM/SIGKILL sent to the package manager leaving
  *    the underlying `payload` process running. Resolving the CLI entry
  *    directly (as scripts/dev.mjs already does for Next's) avoids the hop
  *    entirely, so `shutdown()` below actually reaches the process it signals.

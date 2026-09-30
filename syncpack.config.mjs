@@ -10,12 +10,12 @@
  * local workspace package, which this single-package repo does not have, so
  * matching ranges is the equivalent guarantee.
  *
- * Run `pnpm deps:lint` to check, `pnpm deps:fix` to apply.
+ * Run `bun run deps:lint` to check, `bun run deps:fix` to apply.
  *
  * @type {import('syncpack').RcFile}
  */
 export default {
-  sortPackages:true,
+  sortPackages: true,
   // Mirrors sort-package-json's own default `sortOrder`/alphabetized-content
   // list exactly (node_modules/sort-package-json's `fields` array — the
   // fields there marked `over: sortObject`/`sortDependencies`), so a
@@ -154,12 +154,8 @@ export default {
     'galleryBanner',
     'preview',
     'markdown',
-    'pnpm',
   ],
   source: ['package.json', 'apps/*/package.json', 'packages/*/package.json'],
-
-
-
 
   versionGroups: [
     /**
@@ -177,56 +173,35 @@ export default {
         // changelog-github is 0.x while the CLI is 2.x
         '@changesets/changelog-github',
       ],
-      packages: [
-        '**',
-      ],
+      packages: ['**'],
       isIgnored: true,
     },
 
     {
       label: 'Payload CMS packages share a release train',
-      dependencies: [
-        'payload',
-        '@payloadcms/**',
-      ],
-      packages: [
-        '**',
-      ],
+      dependencies: ['payload', '@payloadcms/**'],
+      packages: ['**'],
       policy: 'sameRange',
     },
 
     {
       label: 'Storybook packages share a release train',
-      dependencies: [
-        'storybook',
-        '@storybook/**',
-      ],
-      packages: [
-        '**',
-      ],
+      dependencies: ['storybook', '@storybook/**'],
+      packages: ['**'],
       policy: 'sameRange',
     },
 
     {
       label: 'Sentry packages share a release train',
-      dependencies: [
-        '@sentry/**',
-      ],
-      packages: [
-        '**',
-      ],
+      dependencies: ['@sentry/**'],
+      packages: ['**'],
       preferVersion: 'highestSemver',
     },
 
     {
       label: 'Vitest packages share a release train',
-      dependencies: [
-        'vitest',
-        '@vitest/**',
-      ],
-      packages: [
-        '**',
-      ],
+      dependencies: ['vitest', '@vitest/**'],
+      packages: ['**'],
       policy: 'sameRange',
     },
 
@@ -237,25 +212,15 @@ export default {
      */
     {
       label: 'Playwright must match the pinned browser image',
-      dependencies: [
-        'playwright',
-        '@playwright/**',
-      ],
-      packages: [
-        '**',
-      ],
+      dependencies: ['playwright', '@playwright/**'],
+      packages: ['**'],
       policy: 'sameRange',
     },
 
     {
       label: 'React and its DOM/type packages move together',
-      dependencies: [
-        'react',
-        'react-dom',
-      ],
-      packages: [
-        '**',
-      ],
+      dependencies: ['react', 'react-dom'],
+      packages: ['**'],
       policy: 'sameRange',
     },
   ],
@@ -264,37 +229,26 @@ export default {
   semverGroups: [
     {
       label: 'Playwright is pinned to a patch range to match the Docker image',
-      dependencies: [
-        'playwright',
-        '@playwright/**',
-      ],
-      packages: [
-        '**',
-      ],
+      dependencies: ['playwright', '@playwright/**'],
+      packages: ['**'],
       range: '~',
     },
     {
       label: 'Exact pins that must not become ranges',
       dependencies: [
-        // the pnpm patch is keyed to an exact version; a range would silently
+        // the bun patch (patchedDependencies) is keyed to an exact version; a range would silently
         // stop applying it
         'pdfjs-dist',
-        // pinned deliberately via resolutions to hold the v4 API
+        // pinned deliberately via overrides to hold the v4 API
         'redis',
       ],
-      packages: [
-        '**',
-      ],
+      packages: ['**'],
       range: '',
     },
     {
       label: 'Everything else uses caret ranges',
-      dependencies: [
-        '**',
-      ],
-      packages: [
-        '**',
-      ],
+      dependencies: ['**'],
+      packages: ['**'],
       range: '^',
     },
   ],

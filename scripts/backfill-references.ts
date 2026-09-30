@@ -2,7 +2,7 @@
  *    Rebuilds the references table from existing content.
  *
  *    Usage:
- *      pnpm refs:backfill
+ *      bun run refs:backfill
  *
  *    References are normally written by the `references` plugin on save,
  *    so this is only needed once after enabling it (or to repair the table).

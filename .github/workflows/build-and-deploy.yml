@@ -83,7 +83,7 @@ jobs:
       - name: Release
         id: release
         run: |
-          pnpm exec semantic-release
+          bun x semantic-release
           # Nothing further to do if this push didn't actually cut a release
           # (e.g. a docs/chore-only push that semantic-release skipped) —
           # semantic-release's own commit (if any) is HEAD after it runs,
@@ -220,13 +220,13 @@ jobs:
       # `payload migrate` reads process.env directly. A failed migration stops
       # the job before any image is built or pushed.
       - name: Run database migrations
-        run: pnpm run migrate
+        run: bun run migrate
 
       - name: Generate (prerender)
-        run: pnpm exec next build --experimental-build-mode=generate
+        run: bun x next build --experimental-build-mode=generate
 
       - name: Build Storybook
-        run: pnpm run build:storybook
+        run: bun run build:storybook
 
       - name: Assemble image contents
         run: |

@@ -45,12 +45,7 @@ export const UnsplashSearch = () => {
       if (seq !== searchSeq.current) return
 
       setResults((previous) =>
-        nextPage === 1
-          ? response.results
-          : [
-              ...previous,
-              ...response.results,
-            ],
+        nextPage === 1 ? response.results : [...previous, ...response.results],
       )
       setTotalPages(response.totalPages)
       setPage(nextPage)
@@ -79,18 +74,11 @@ export const UnsplashSearch = () => {
     }, 400)
 
     return () => clearTimeout(timeout)
-  }, [
-    query,
-    runSearch,
-  ])
+  }, [query, runSearch])
 
   const handleLoadMore = useCallback(() => {
     void runSearch(query.trim(), page + 1)
-  }, [
-    page,
-    query,
-    runSearch,
-  ])
+  }, [page, query, runSearch])
 
   const handleImport = useCallback(
     async (photoId: string) => {
@@ -118,11 +106,7 @@ export const UnsplashSearch = () => {
         setIsImporting(null)
       }
     },
-    [
-      closeModal,
-      isInDrawer,
-      onSelect,
-    ],
+    [closeModal, isInDrawer, onSelect],
   )
 
   return (
@@ -168,7 +152,7 @@ export const UnsplashSearch = () => {
                     onClick={() => handleImport(result.id)}
                     type="button"
                   >
-                    {/** biome-ignore lint/performance/noImgElement: thumbnail preview of Unsplash search results, not the imported asset, so next/image optimization isn't warranted */}
+                    {/** oxlint-disable-next-line nextjs/no-img-element -- thumbnail preview of Unsplash search results, not the imported asset, so next/image optimization isn't warranted */}
                     <img alt={result.description} loading="lazy" src={result.thumbUrl} />
                     <span className="unsplash-search-modal__credit">{result.photographerName}</span>
                     {isImporting === result.id && (

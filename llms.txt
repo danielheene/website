@@ -25,8 +25,8 @@ important file: read it first, every time.
 - [src/types/environment.ts](src/types/environment.ts): Zod schema and source of truth for all
   environment variables; validated at process start.
 - [docker-compose.yml](docker-compose.yml): Local infrastructure (MongoDB, Redis, S3-compatible
-  storage) — the app itself runs via `pnpm dev`, not as a compose service.
-- [biome.json](biome.json): Linting/formatting rules (Biome, not ESLint/Prettier).
+  storage) — the app itself runs via `bun run dev`, not as a compose service.
+- [oxlint.config.ts](oxlint.config.ts), [oxfmt.config.ts](oxfmt.config.ts): Linting/formatting rules (Oxc toolchain, not ESLint/Prettier).
 - [vitest.config.ts](vitest.config.ts) / [vitest.setup.ts](vitest.setup.ts): Unit test config
   and shared mocks (`payload`, `next/cache`, `redis`).
 - [playwright.config.ts](playwright.config.ts): E2E test config (Chromium).

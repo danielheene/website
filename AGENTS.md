@@ -20,68 +20,72 @@ Personal website + blog + resume builder for [daniel.heene.io](https://daniel.he
   Server-Sent Events (`app/(frontend)/api/sse/route.ts`).
 - **S3-compatible storage** (`@payloadcms/storage-s3`, RustFS locally via Docker) for media.
 - **Tailwind CSS 4** for styling, **Storybook** for component development.
-- **Biome** for linting/formatting (not ESLint/Prettier).
+- **Oxlint** + **Oxfmt** (the Oxc toolchain) for linting/formatting (not ESLint/Prettier/Biome).
+- **Bun** as the package manager and script runner; Node.js still runs Next, Payload, the scripts
+  and the tests.
 
 See `README.md` for setup/run instructions; this file focuses on conventions and pitfalls.
 
 ## Build, Lint, and Test Commands
 
 ```bash
-pnpm install          # install deps (pnpm only — see packageManager in package.json)
-pnpm dev              # runs Next.js dev server + Storybook in parallel
-pnpm dev:app          # Next.js dev server only
-pnpm generate         # regenerate Payload types + import map (run after changing collections/fields)
-pnpm build            # production build
-pnpm lint             # biome check (lint + format check, does NOT auto-fix)
-pnpm format           # biome format --write (auto-fixes formatting only)
-pnpm test             # unit tests (Vitest)
-pnpm deps:lint        # syncpack: dependency version groups
-pnpm test:e2e         # Playwright E2E (needs docker compose up -d)
+bun install              # install deps (Bun only — see packageManager in package.json)
+bun run dev              # runs Next.js dev server + Storybook in parallel
+bun run dev:app          # Next.js dev server only
+bun run generate         # regenerate Payload types + import map (run after changing collections/fields)
+bun run build            # production build
+bun run lint             # oxlint + oxfmt --check (does NOT auto-fix)
+bun run lint:fix         # oxlint --fix + oxfmt (auto-fixes what it can)
+bun run format           # oxfmt (formatting and import order only)
+bun run test             # unit tests (Vitest)
+bun run deps:lint        # syncpack: dependency version groups
+bun run test:e2e         # Playwright E2E (needs docker compose up -d)
 ```
 
-Environment variables come from **Doppler**, but no script wraps `doppler run`. `pnpm load-env`
+Environment variables come from **Doppler**, but no script wraps `doppler run`. `bun run load-env`
 writes the active Doppler config to `.env.local`, which Next loads on its own, so every script
 works unwrapped. Re-run it after changing anything in Doppler or switching configs — nothing
-detects drift automatically, and `pnpm load-env --check` reports it without writing. On the
+detects drift automatically, and `bun run load-env --check` reports it without writing. On the
 deployment server Dokploy supplies the environment directly.
 
-Always run `pnpm generate` after adding/renaming a collection, global, field, or block — many
+Always run `bun run generate` after adding/renaming a collection, global, field, or block — many
 files import generated types from `src/types/payload.ts` and `@/types/collections`.
 
-`pnpm lint` currently does **not** pass cleanly on `main` (baseline has pre-existing errors/
-warnings — see "Known Issues" below). Don't let pre-existing failures block your task, but do not
-introduce new lint errors, and prefer fixing lint issues in files you already touch.
+`bun run lint` fails only on errors; it prints pre-existing warnings (see "Known Issues" below).
+Don't let those block your task, but do not introduce new lint errors or warnings, and prefer
+fixing warnings in files you already touch.
 
-Commits go through Husky hooks: `pre-commit` runs `biome check --write` on
-staged files (auto-fixing and re-staging), `commit-msg` enforces Conventional
+Always spell scripts `bun run <script>`: bare `bun test` and `bun build` run Bun's own test runner
+and bundler, not the package scripts.
+
+Commits go through Lefthook (`lefthook.yml`): `pre-commit` runs `oxfmt` then `oxlint --fix` on
+staged files (re-staging the fixes), `commit-msg` enforces Conventional
 Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
 `test`, `build`, `ci`, `perf`, `style`, `revert`); scopes are unrestricted.
 
-## Code Style (enforced by `biome.json` / `.editorconfig`)
+## Code Style (enforced by `oxfmt.config.ts` / `oxlint.config.ts` / `.editorconfig`)
 
 - 2-space indentation, LF line endings, 100-char line width.
 - Single quotes for JS/TS, double quotes in JSX attributes.
-- **No semicolons** (`semicolons: "asNeeded"`, ASI style) — do not add trailing semicolons.
-- Trailing commas everywhere (`trailingCommas: "all"`).
-- Import order is auto-organized by Biome's `organizeImports` assist action, in this group order:
-  1. URL imports
-  2. Node/Bun builtins
-  3. `react*` / `next*` / `payload*` / `@payloadcms/**`
-  4. other npm packages
-  5. `@/**` path-alias imports
-  6. relative imports
-  7. style imports
-  Run `pnpm format` (or your editor's Biome integration) instead of manually sorting imports.
+- **No semicolons** (`semi: false`, ASI style) — do not add trailing semicolons.
+- Trailing commas everywhere (`trailingComma: "all"`).
+- Import order is sorted by oxfmt's `sortImports`, in this group order:
+  1. Node/Bun builtins
+  2. `react*` / `next*` / `payload*` / `@payloadcms/**`
+  3. other npm packages
+  4. `@/**` path-alias imports
+  5. relative imports
+  6. style imports
+  Run `bun run format` (or your editor's Oxc integration) instead of manually sorting imports.
 - `tsconfig.json` has `"strict": false` — do not rely on the compiler to catch null/undefined
   bugs; be explicit and defensive, especially in Payload hooks and access-control functions.
-- `import type` vs. value imports is **not** enforced (`useImportType` is off) — either style is
+- `import type` vs. value imports is **not** enforced (`typescript/consistent-type-imports` is off) — either style is
   accepted, but prefer `import type` for type-only imports for clarity when touching a file.
 
 ### Conventions to follow (not currently enforced by tooling — please don't add new inconsistencies)
 
 - **Enum-like access**: prefer dot notation (`CollectionSlug.Pages`) over bracket notation
-  (`CollectionSlug['Pages']`). Bracket notation is the single largest source of existing lint
-  noise (`lint/complexity/useLiteralKeys`); don't add more of it.
+  (`CollectionSlug['Pages']`). Bracket notation is widespread in older code; don't add more of it.
 - **Exports**: prefer named exports (`export const X = ...`) over default exports for components;
   this is the dominant pattern in `src/components/`.
 - **Barrel files**: existing `index.ts`/`index.tsx` files use either `export * from './X'` or
@@ -97,7 +101,8 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   `PDFGeneratorSettings`). When adding a new global, prefer the `XSettings` suffix pattern.
 - Avoid leftover `console.log` debug statements and large commented-out code blocks — several
   exist in the codebase (see Known Issues) but should not be added to.
-- Avoid `any`; if you must use it, add a `biome-ignore` comment with a real justification (see
+- Avoid `any`; if you must use it, add an `// oxlint-disable-next-line typescript/no-explicit-any -- <reason>` comment with a real
+  justification (see
   `src/lib/resolveRelation.ts` for a good example), not a placeholder like `<TODO>`.
 
 ## Architecture Notes
@@ -134,7 +139,7 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   which `revalidateBlogPost` invalidates.
 - **Dashboard widgets** (`src/widgets/`): async server components registered in `payload.config.ts`
   under `admin.dashboard.widgets`. Each widget has a `slug`, `Component` path, and optional
-  `minWidth`/`maxWidth`. Run `pnpm generate` after adding a new widget so its slug is included in
+  `minWidth`/`maxWidth`. Run `bun run generate` after adding a new widget so its slug is included in
   the inferred `defaultLayout` union type. Client-side widget parts live alongside as
   `*.client.tsx` files and call server actions from `src/lib/actions/` for mutations.
 - **Server actions** (`src/lib/actions/`): `'use server'` functions for admin mutations (job
@@ -179,7 +184,7 @@ instrumentation `withJobObservability` gives inline handlers, and must use `req.
   is no cron route yet. If you add one, validate this secret explicitly (ideally with
   `crypto.timingSafeEqual`, not `!==`).
 - Never commit real secrets. Configuration lives in Doppler, selected per clone with
-  `doppler setup` and written to a gitignored `.env.local` by `pnpm load-env`;
+  `doppler setup` and written to a gitignored `.env.local` by `bun run load-env`;
   `src/types/environment.ts` declares the schema and is the only place the full set of
   variables is enumerated. The one committed env file is `.env.test`, which holds dummy,
   format-valid values for E2E runs.
@@ -188,8 +193,9 @@ instrumentation `withJobObservability` gives inline handlers, and must use `req.
 
 ## Known Issues / Tech Debt (baseline, not blocking, but don't add more)
 
-- `pnpm lint` reports pre-existing errors/warnings, mostly `useLiteralKeys` (bracket vs. dot
-  access), `noExplicitAny`, `noUnusedVariables`/`noUnusedImports`.
+- `bun run lint` passes but reports pre-existing warnings, mostly `no-explicit-any`, `no-unused-vars`,
+  `no-img-element` and the React Compiler rules (`set-state-in-effect`, `purity`, `refs`), which
+  `oxlint.config.ts` keeps at `warn` until they are cleaned up.
 - Leftover debug `console.log`s (e.g. `src/collections/ResumeJobs/index.ts`,
   `src/blocks/ResumeDownloadsBlock/Renderer/Renderer.tsx`) and commented-out dead code (e.g.
   `src/collections/ResumeSkillTags/index.ts`) exist and should be cleaned up opportunistically.
@@ -198,7 +204,7 @@ instrumentation `withJobObservability` gives inline handlers, and must use `req.
 
 ## Testing
 
-- Unit tests run via **Vitest** (`pnpm test`), E2E tests via **Playwright** (`pnpm test:e2e`) —
+- Unit tests run via **Vitest** (`bun run test`), E2E tests via **Playwright** (`bun run test:e2e`) —
   see `README.md` for prerequisites. Co-locate unit tests as `*.test.ts` next to the code under
   test; E2E specs live in `e2e/*.spec.ts` (never `*.spec.ts` under `src/`).
 - Shared mocks live in `vitest.setup.ts`: `payload` (`getPayload` stubbed via `importOriginal`

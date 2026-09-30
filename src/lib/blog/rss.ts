@@ -50,7 +50,7 @@ const XML_ESCAPES: Record<string, string> = {
  * carry them (vertical tabs, stray control codes) and a single one makes the
  * whole feed unparseable.
  */
-// biome-ignore lint/suspicious/noControlCharactersInRegex: matching control characters is the point
+// oxlint-disable-next-line eslint/no-control-regex -- matching control characters is the point
 const INVALID_XML_CHARS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F￾￿]/g
 
 const stripInvalid = (value: string): string => value.replace(INVALID_XML_CHARS, '')

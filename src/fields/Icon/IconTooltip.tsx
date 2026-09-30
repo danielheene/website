@@ -27,7 +27,7 @@ export const IconTooltip = ({ label, children, className }: IconTooltipProps) =>
   const [show, setShow] = useState<boolean>(false)
 
   return (
-    // biome-ignore lint/a11y/noStaticElementInteractions: presentational hover container — the interactive element is the child button, and focus/blur bubble up from it
+    // oxlint-disable-next-line jsx-a11y/no-static-element-interactions -- presentational hover container — the interactive element is the child button, and focus/blur bubble up from it
     <div
       className={className}
       style={{

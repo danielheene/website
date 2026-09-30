@@ -19,7 +19,7 @@ import { linkConverter } from './linkConverter'
  * which ships a `.scss` import Vitest's Node transform can't load.
  */
 
-// biome-ignore lint/suspicious/noExplicitAny: converter args are structurally typed against internal Lexical node unions
+// oxlint-disable-next-line typescript/no-explicit-any -- converter args are structurally typed against internal Lexical node unions
 type ConverterArgs = any
 
 const linkNode = (fields: Record<string, unknown>, text: string) => ({
@@ -49,9 +49,7 @@ const renderNode = (node: unknown): string =>
         ...defaultJSXConverters,
         link: linkConverter,
       },
-      nodes: [
-        node,
-      ],
+      nodes: [node],
       parent: {
         type: 'root',
         children: [],

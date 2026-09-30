@@ -39,7 +39,7 @@ import { linkConverter } from './linkConverter'
 type NodeTypes = DefaultNodeTypes | SerializedBlockNode<BlockData>
 
 const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
-  // biome-ignore lint/style/noNonNullAssertion: <external code>
+  // oxlint-disable-next-line typescript/no-non-null-assertion -- external code
   const { value, relationTo } = linkNode.fields.doc!
   if (typeof value !== 'object') {
     throw new Error('Expected value to be an object')
