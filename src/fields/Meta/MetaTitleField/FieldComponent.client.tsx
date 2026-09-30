@@ -27,10 +27,7 @@ export const FieldComponentClient = ({ path, field, titlePath }: FieldComponentC
       setValue(nextValue)
       prevTitle.current = title
     })
-  }, [
-    title,
-    setValue,
-  ])
+  }, [title, setValue])
 
   return <TextField path={path} field={field} />
 }

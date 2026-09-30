@@ -4,13 +4,7 @@ import robots from './robots'
 
 const rulesFor = async (agent: string) => {
   const { rules } = await robots()
-  return (
-    Array.isArray(rules)
-      ? rules
-      : [
-          rules,
-        ]
-  ).find(({ userAgent }) =>
+  return (Array.isArray(rules) ? rules : [rules]).find(({ userAgent }) =>
     Array.isArray(userAgent) ? userAgent.includes(agent) : userAgent === agent,
   )
 }
@@ -23,18 +17,8 @@ describe('robots', () => {
   it('lets search engines render pages and load uploads', async () => {
     const rule = await rulesFor('Googlebot')
 
-    expect(rule.allow).toEqual(
-      expect.arrayContaining([
-        '/',
-        '/api/*/file/',
-      ]),
-    )
-    expect(rule.disallow).toEqual(
-      expect.arrayContaining([
-        '/admin',
-        '/api',
-      ]),
-    )
+    expect(rule.allow).toEqual(expect.arrayContaining(['/', '/api/*/file/']))
+    expect(rule.disallow).toEqual(expect.arrayContaining(['/admin', '/api']))
     expect(rule.disallow).not.toContain('/_next')
   })
 
@@ -45,12 +29,8 @@ describe('robots', () => {
   it('limits every other crawler to /llms.txt', async () => {
     const rule = await rulesFor('*')
 
-    expect(rule.allow).toEqual([
-      '/llms.txt',
-    ])
-    expect(rule.disallow).toEqual([
-      '/',
-    ])
+    expect(rule.allow).toEqual(['/llms.txt'])
+    expect(rule.disallow).toEqual(['/'])
   })
 
   it('points at the sitemap and sends no Host directive', async () => {

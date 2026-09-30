@@ -10,9 +10,7 @@ const require = createRequire(import.meta.url)
 const packageDir = (name: string) => path.dirname(require.resolve(`${name}/package.json`))
 
 export default defineConfig({
-  plugins: [
-    tsconfigPaths(),
-  ],
+  plugins: [tsconfigPaths()],
   resolve: {
     alias: {
       // tsconfig maps `react` to @types/react for editor tooling; that path
@@ -24,39 +22,16 @@ export default defineConfig({
   test: {
     environment: 'node',
     globals: false,
-    setupFiles: [
-      './vitest.setup.ts',
-    ],
-    include: [
-      'src/**/*.test.{ts,tsx}',
-      'app/**/*.test.{ts,tsx}',
-      '*.test.{ts,tsx}',
-    ],
-    exclude: [
-      'node_modules',
-      '.next',
-      'dist',
-      'e2e/**',
-    ],
+    setupFiles: ['./vitest.setup.ts'],
+    include: ['src/**/*.test.{ts,tsx}', 'app/**/*.test.{ts,tsx}', '*.test.{ts,tsx}'],
+    exclude: ['node_modules', '.next', 'dist', 'e2e/**'],
     clearMocks: true,
     restoreMocks: true,
     coverage: {
       provider: 'v8',
-      reporter: [
-        'text',
-        'html',
-        'lcov',
-      ],
-      include: [
-        'src/lib/**',
-        'src/access/**',
-        'src/fields/**/hooks/**',
-      ],
-      exclude: [
-        '**/*.test.ts',
-        '**/index.ts',
-        'src/types/**',
-      ],
+      reporter: ['text', 'html', 'lcov'],
+      include: ['src/lib/**', 'src/access/**', 'src/fields/**/hooks/**'],
+      exclude: ['**/*.test.ts', '**/index.ts', 'src/types/**'],
     },
   },
 })

@@ -58,10 +58,7 @@ describe('generateBlog', () => {
       url: 'https://x.test/blog',
       description: 'desc',
       image: 'https://x.test/og.jpg',
-      keywords: [
-        'a',
-        'b',
-      ],
+      keywords: ['a', 'b'],
     })
     expect(result.keywords).toBe('a, b')
     expect(result.image).toEqual({
@@ -229,12 +226,8 @@ describe('generateOccupation', () => {
       employer: 'ACME',
       startDate: '2020-01-01',
       endDate: '2022-01-01',
-      responsibilities: [
-        'r1',
-      ],
-      skills: [
-        's1',
-      ],
+      responsibilities: ['r1'],
+      skills: ['s1'],
     })
     expect(result.worksFor).toEqual({
       '@type': 'Organization',
@@ -245,12 +238,8 @@ describe('generateOccupation', () => {
     expect(result.roleName).toEqual({
       '@type': 'Occupation',
       name: 'E',
-      responsibilities: [
-        'r1',
-      ],
-      skills: [
-        's1',
-      ],
+      responsibilities: ['r1'],
+      skills: ['s1'],
     })
   })
 })
@@ -278,10 +267,7 @@ describe('generateSoftwareSourceCode', () => {
       author: {
         name: 'D',
       },
-      keywords: [
-        'ts',
-        'snippet',
-      ],
+      keywords: ['ts', 'snippet'],
     })
     expect(result['@type']).toBe('SoftwareSourceCode')
     expect(result.programmingLanguage).toBe('TypeScript')

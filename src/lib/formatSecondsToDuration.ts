@@ -12,11 +12,7 @@ export const formatSecondsToDuration = (seconds: number = 0) => {
   }
 
   const durationOptions = {
-    format: [
-      'hours',
-      'minutes',
-      'seconds',
-    ],
+    format: ['hours', 'minutes', 'seconds'],
     zero: false,
     delimiter: ' ',
     locale: {

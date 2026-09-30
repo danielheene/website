@@ -134,21 +134,10 @@ export const ResumeBlockField = <
   }
 }
 
-const createNameVariations = (
-  name: string,
-): [
-  string,
-  string,
-] => {
-  const dashedName = [
-    kebabCase(name.replaceAll(/(Block|-block)*$/g, '')),
-    'block',
-  ].join('-')
+const createNameVariations = (name: string): [string, string] => {
+  const dashedName = [kebabCase(name.replaceAll(/(Block|-block)*$/g, '')), 'block'].join('-')
   const pascalCaseName = upperFirst(camelCase(dashedName)) as string
-  return [
-    pascalCaseName,
-    dashedName,
-  ]
+  return [pascalCaseName, dashedName]
 }
 
 const createLabelObject = (

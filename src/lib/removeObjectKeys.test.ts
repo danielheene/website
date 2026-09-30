@@ -10,9 +10,7 @@ describe('removeObjectKeys', () => {
           a: 1,
           b: 2,
         },
-        [
-          'b',
-        ],
+        ['b'],
       ),
     ).toEqual({
       a: 1,
@@ -30,11 +28,7 @@ describe('removeObjectKeys', () => {
         },
       },
     }
-    expect(
-      removeObjectKeys(input, [
-        'id',
-      ]),
-    ).toEqual({
+    expect(removeObjectKeys(input, ['id'])).toEqual({
       a: 1,
       nested: {
         keep: true,
@@ -56,11 +50,7 @@ describe('removeObjectKeys', () => {
         },
       ],
     }
-    expect(
-      removeObjectKeys(input, [
-        'id',
-      ]),
-    ).toEqual({
+    expect(removeObjectKeys(input, ['id'])).toEqual({
       items: [
         {
           name: 'a',
@@ -85,29 +75,15 @@ describe('removeObjectKeys', () => {
   })
 
   it('passes primitives and null through unchanged', () => {
-    expect(
-      removeObjectKeys(42, [
-        'x',
-      ]),
-    ).toBe(42)
-    expect(
-      removeObjectKeys('str', [
-        'x',
-      ]),
-    ).toBe('str')
-    expect(
-      removeObjectKeys(null, [
-        'x',
-      ]),
-    ).toBeNull()
+    expect(removeObjectKeys(42, ['x'])).toBe(42)
+    expect(removeObjectKeys('str', ['x'])).toBe('str')
+    expect(removeObjectKeys(null, ['x'])).toBeNull()
     expect(
       removeObjectKeys(
         {
           a: null,
         },
-        [
-          'x',
-        ],
+        ['x'],
       ),
     ).toEqual({
       a: null,
@@ -121,9 +97,7 @@ describe('removeObjectKeys', () => {
         fn,
         drop: 1,
       },
-      [
-        'drop',
-      ],
+      ['drop'],
     )
     expect(result.fn).toBe(fn)
   })

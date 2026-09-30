@@ -66,11 +66,7 @@ export const LinkRowLabel = () => {
     return () => {
       cancelled = true
     }
-  }, [
-    relationTo,
-    docId,
-    data?.link,
-  ])
+  }, [relationTo, docId, data?.link])
 
   const link = data?.link
   const number = (rowNumber ?? 0) + 1

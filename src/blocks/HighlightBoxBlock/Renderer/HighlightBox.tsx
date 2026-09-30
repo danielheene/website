@@ -26,12 +26,7 @@ export const HighlightBox = ({
   content,
   highlightedCode,
 }: HighlightBoxProps): JSX.Element => (
-  <div
-    className={cn([
-      'rounded-lg border-l-4 border-primary bg-muted p-4',
-      className,
-    ])}
-  >
+  <div className={cn(['rounded-lg border-l-4 border-primary bg-muted p-4', className])}>
     <RichText data={content} enableGutter={false} highlightedCode={highlightedCode} />
   </div>
 )

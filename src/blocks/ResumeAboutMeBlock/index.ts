@@ -11,9 +11,7 @@ export const ResumeAboutMeBlock: Block = ResumeBlockField({
     {
       type: 'upload',
       name: 'portrait',
-      relationTo: [
-        CollectionSlug.MediaImages,
-      ],
+      relationTo: [CollectionSlug.MediaImages],
     },
   ],
 })

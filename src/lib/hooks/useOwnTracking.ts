@@ -53,12 +53,7 @@ export function useOwnTracking({
     } finally {
       setIsSaving(false)
     }
-  }, [
-    enabled,
-    isSaving,
-    refreshCookieAsync,
-    userId,
-  ])
+  }, [enabled, isSaving, refreshCookieAsync, userId])
 
   return {
     enabled,

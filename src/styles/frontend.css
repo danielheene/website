@@ -1,18 +1,18 @@
 @layer fonts, theme, base, components, utilities;
 
-@import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/preflight.css" layer(base);
-@import "tailwindcss/utilities.css" layer(utilities);
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+@import 'tailwindcss/utilities.css' layer(utilities);
 
-@import "./theme/_animations.css" layer(theme);
-@import "./theme/_aspects.css" layer(theme);
-@import "./theme/_colors.css" layer(theme);
-@import "./theme/_fonts.css" layer(theme);
-@import "./theme/_radii.css" layer(theme);
-@import "./theme/_sizes.css" layer(theme);
-@import "./theme/_shadows.css" layer(theme);
-@import "./theme/_text.css" layer(theme);
-@import "./theme/_text-shadows.css" layer(theme);
+@import './theme/_animations.css' layer(theme);
+@import './theme/_aspects.css' layer(theme);
+@import './theme/_colors.css' layer(theme);
+@import './theme/_fonts.css' layer(theme);
+@import './theme/_radii.css' layer(theme);
+@import './theme/_sizes.css' layer(theme);
+@import './theme/_shadows.css' layer(theme);
+@import './theme/_text.css' layer(theme);
+@import './theme/_text-shadows.css' layer(theme);
 
 @plugin "@tailwindcss/typography";
 
@@ -42,7 +42,7 @@
   }
 
   button:not(:disabled),
-  [role="button"]:not(:disabled) {
+  [role='button']:not(:disabled) {
     cursor: pointer;
   }
 }
@@ -95,7 +95,7 @@
       text-decoration: var(--shiki-light-text-decoration);
     }
 
-    [data-theme="dark"] & {
+    [data-theme='dark'] & {
       .shiki,
       .shiki span {
         color: var(--shiki-dark);
@@ -184,7 +184,7 @@
       @apply text-inherit text-xl font-medium leading-snug mb-0;
     }
 
-    :where(p):not(:where([class~="not-prose"], [class~="not-prose"] *)) p {
+    :where(p):not(:where([class~='not-prose'], [class~='not-prose'] *)) p {
       @apply text-inherit leading-normal my-4;
     }
 

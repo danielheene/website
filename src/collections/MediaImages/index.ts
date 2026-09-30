@@ -22,35 +22,21 @@ export const MediaImages: CollectionConfig<CollectionSlug['MediaImages']> = {
     plural: 'Images',
   },
   hooks: {
-    beforeChange: [
-      generateChecksum,
-      generateBlurDataURL,
-      generateAlt,
-    ],
+    beforeChange: [generateChecksum, generateBlurDataURL, generateAlt],
   },
   admin: {
     baseFilter: scopeMediaAssets,
     group: AdminGroup.Media,
     useAsTitle: 'filename',
-    defaultColumns: [
-      'filename',
-      'type',
-      'extension',
-      'updatedAt',
-    ],
+    defaultColumns: ['filename', 'type', 'extension', 'updatedAt'],
     disableCopyToLocale: true,
     pagination: {
       defaultLimit: 50,
-      limits: [
-        50,
-        100,
-      ],
+      limits: [50, 100],
     },
     components: {
       Description: '@/components/AdminPanel/MediaScopeTabs#MediaScopeTabs',
-      listMenuItems: [
-        '@/components/AdminPanel/UnsplashSearch#UnsplashSearch',
-      ],
+      listMenuItems: ['@/components/AdminPanel/UnsplashSearch#UnsplashSearch'],
     },
   },
 
@@ -96,9 +82,7 @@ export const MediaImages: CollectionConfig<CollectionSlug['MediaImages']> = {
       },
     ],
     adminThumbnail: 'thumbnail',
-    mimeTypes: [
-      'image/*',
-    ],
+    mimeTypes: ['image/*'],
   },
   fields: [
     {

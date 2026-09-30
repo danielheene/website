@@ -32,9 +32,7 @@ export const TemplateField = ({
   data,
   anntotation,
   overrides = {},
-  renderLocale = [
-    'en',
-  ],
+  renderLocale = ['en'],
 }: TemplateFieldProps): TextField =>
   deepMerge<TextField, TemplateFieldOverrides>(
     {

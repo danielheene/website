@@ -1,5 +1,5 @@
-import type { JSX } from 'react'
 import { Image, Link, StyleSheet, type Styles, Text, View } from '@react-pdf/renderer'
+import type { JSX } from 'react'
 
 import { mmToPt, textStyles } from '@/pdf/constants'
 import { DocumentHeader } from '@/pdf/types'
@@ -39,13 +39,7 @@ export const Header = ({
   fixed,
   style: styleFromProp = {},
 }: DocumentHeaderProps): JSX.Element => (
-  <View
-    style={[
-      style.container,
-      styleFromProp,
-    ]}
-    fixed={fixed}
-  >
+  <View style={[style.container, styleFromProp]} fixed={fixed}>
     <Image src={portraitUrl} style={style.portrait} />
     <View style={style.column}>
       <Text style={textStyles.header}>{address.street}</Text>

@@ -47,18 +47,9 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
     useAsTitle: 'title',
     pagination: {
       defaultLimit: 25,
-      limits: [
-        25,
-        50,
-        100,
-      ],
+      limits: [25, 50, 100],
     },
-    defaultColumns: [
-      'title',
-      'slug',
-      'updatedAt',
-      'status',
-    ],
+    defaultColumns: ['title', 'slug', 'updatedAt', 'status'],
     disableCopyToLocale: true,
     livePreview: {
       url: ({ data }) => generatePreviewPath(CollectionSlug.BlogPosts, data.slug),
@@ -90,13 +81,8 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
     },
   },
   hooks: {
-    beforeChange: [
-      generateReadingTime,
-      generateExcerpt,
-    ],
-    afterChange: [
-      revalidateBlogPost,
-    ],
+    beforeChange: [generateReadingTime, generateExcerpt],
+    afterChange: [revalidateBlogPost],
   },
   fields: [
     /* -------------- Main  Content -------------- */
@@ -119,9 +105,7 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
         allowEdit: true,
       },
       hasMany: true,
-      relationTo: [
-        CollectionSlug.BlogTopics,
-      ],
+      relationTo: [CollectionSlug.BlogTopics],
     },
     {
       name: 'hero',
@@ -198,15 +182,11 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
         },
         {
           label: 'Links',
-          fields: [
-            LinkGroupField(),
-          ],
+          fields: [LinkGroupField()],
         },
         {
           label: 'SEO',
-          fields: [
-            MetaField(),
-          ],
+          fields: [MetaField()],
         },
       ],
     },

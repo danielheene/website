@@ -123,9 +123,7 @@ export const useHeroSlideUploads = (mutators: HeroSlideRowMutators) => {
         mutators.setBackgroundProcessing(false)
       }
     },
-    [
-      mutators,
-    ],
+    [mutators],
   )
 
   const uploadFile = useCallback(
@@ -138,9 +136,7 @@ export const useHeroSlideUploads = (mutators: HeroSlideRowMutators) => {
         const { doc } = await uploadHeroSlideMedia(formData)
         return doc
       }),
-    [
-      runBackgroundInsert,
-    ],
+    [runBackgroundInsert],
   )
 
   const importUnsplashPhoto = useCallback(
@@ -159,9 +155,7 @@ export const useHeroSlideUploads = (mutators: HeroSlideRowMutators) => {
           blurDataURL: blurDataURL ?? undefined,
         } as MediaImage
       }),
-    [
-      runBackgroundInsert,
-    ],
+    [runBackgroundInsert],
   )
 
   return {

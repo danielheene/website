@@ -44,16 +44,11 @@ describe('paragraph', () => {
     const node = paragraph('hello') as {
       children: unknown[]
     }
-    expect(node.children).toEqual([
-      text('hello'),
-    ])
+    expect(node.children).toEqual([text('hello')])
   })
 
   it('passes an array of inline nodes through unchanged', () => {
-    const children = [
-      text('a'),
-      text('b', IS_BOLD),
-    ]
+    const children = [text('a'), text('b', IS_BOLD)]
     const node = paragraph(children) as {
       children: unknown[]
     }
@@ -100,13 +95,7 @@ describe('link', () => {
 
 describe('list', () => {
   it('builds an ordered list with tag "ol" for listType "number"', () => {
-    const node = list(
-      [
-        'one',
-        'two',
-      ],
-      'number',
-    ) as {
+    const node = list(['one', 'two'], 'number') as {
       tag: string
       children: unknown[]
     }
@@ -115,35 +104,19 @@ describe('list', () => {
   })
 
   it('builds an unordered list with tag "ul" for listType "bullet"', () => {
-    const node = list(
-      [
-        'one',
-      ],
-      'bullet',
-    ) as {
+    const node = list(['one'], 'bullet') as {
       tag: string
     }
     expect(node.tag).toBe('ul')
   })
 
   it('alternates checked/unchecked for listType "check"', () => {
-    const node = list(
-      [
-        'a',
-        'b',
-        'c',
-      ],
-      'check',
-    ) as {
+    const node = list(['a', 'b', 'c'], 'check') as {
       children: {
         checked?: boolean
       }[]
     }
-    expect(node.children.map((item) => item.checked)).toEqual([
-      true,
-      false,
-      true,
-    ])
+    expect(node.children.map((item) => item.checked)).toEqual([true, false, true])
   })
 })
 
@@ -193,17 +166,13 @@ describe('quote', () => {
       children: unknown[]
     }
     expect(node.type).toBe('quote')
-    expect(node.children).toEqual([
-      text('A quote'),
-    ])
+    expect(node.children).toEqual([text('A quote')])
   })
 })
 
 describe('root', () => {
   it('wraps the given children in a root node', () => {
-    const children = [
-      paragraph('hello'),
-    ]
+    const children = [paragraph('hello')]
     const value = root(children) as unknown as {
       root: {
         type: string
@@ -231,11 +200,7 @@ describe('createRandom / pick / pickSome / chance', () => {
 
   it('pick always returns an item from the input array', () => {
     const random = createRandom('pick-test')
-    const items = [
-      'x',
-      'y',
-      'z',
-    ] as const
+    const items = ['x', 'y', 'z'] as const
     for (let i = 0; i < 20; i += 1) {
       expect(items).toContain(pick(random, items))
     }
@@ -243,13 +208,7 @@ describe('createRandom / pick / pickSome / chance', () => {
 
   it('pickSome returns the requested count with no duplicates', () => {
     const random = createRandom('pickSome-test')
-    const items = [
-      1,
-      2,
-      3,
-      4,
-      5,
-    ]
+    const items = [1, 2, 3, 4, 5]
     const result = pickSome(random, items, 3)
     expect(result).toHaveLength(3)
     expect(new Set(result).size).toBe(3)

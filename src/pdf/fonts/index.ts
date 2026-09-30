@@ -1,7 +1,7 @@
 import { Font } from '@react-pdf/renderer'
 
-import PPFrama from '@/fonts/pp-frama/pdf'
 import PPFramaText from '@/fonts/pp-frama-text/pdf'
+import PPFrama from '@/fonts/pp-frama/pdf'
 import PPSupplyMono from '@/fonts/pp-supply-mono/pdf'
 import PPSupplySans from '@/fonts/pp-supply-sans/pdf'
 

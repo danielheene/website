@@ -120,10 +120,7 @@ const run: TaskHandler<TaskSlug['GenerateVideoThumbnails']> = async ({
     data: {
       width,
       height,
-      generatorFlags: [
-        'video-thumbnail',
-        'thumbnail',
-      ] as GeneratorFlag[],
+      generatorFlags: ['video-thumbnail', 'thumbnail'] as GeneratorFlag[],
     },
     file: {
       data: buffer,
@@ -151,9 +148,7 @@ const run: TaskHandler<TaskSlug['GenerateVideoThumbnails']> = async ({
 
   return {
     output: {
-      thumbnailIDs: [
-        id,
-      ],
+      thumbnailIDs: [id],
     },
   }
 }

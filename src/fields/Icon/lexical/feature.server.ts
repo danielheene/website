@@ -28,9 +28,7 @@ export const IconPickerFeature = createServerFeature({
 
               return `<span data-icon="${escapeHtmlAttribute(iconName)}"></span>`
             },
-            nodeTypes: [
-              ICON_NODE_TYPE,
-            ],
+            nodeTypes: [ICON_NODE_TYPE],
           },
         },
       },

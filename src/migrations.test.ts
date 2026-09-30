@@ -17,12 +17,8 @@ const files = readdirSync(MIGRATIONS_DIR)
   .sort()
 
 const registry = readFileSync(path.join(MIGRATIONS_DIR, 'index.ts'), 'utf8')
-const registeredNames = [
-  ...registry.matchAll(/name: '([^']+)'/g),
-].map(([, name]) => name)
-const importedFiles = [
-  ...registry.matchAll(/from '\.\/([^']+)'/g),
-].map(([, file]) => file)
+const registeredNames = [...registry.matchAll(/name: '([^']+)'/g)].map(([, name]) => name)
+const importedFiles = [...registry.matchAll(/from '\.\/([^']+)'/g)].map(([, file]) => file)
 
 describe('migrations registry', () => {
   it('registers every migration file, in order', () => {

@@ -41,11 +41,7 @@ export const badgeStyles = tv({
       stone: '[--badge-color:var(--color-stone-600)]',
     },
     style: {
-      solid: cn([
-        'border-(--badge-color)',
-        'bg-(--badge-color)',
-        'text-(--color-white)',
-      ]),
+      solid: cn(['border-(--badge-color)', 'bg-(--badge-color)', 'text-(--color-white)']),
       light: cn([
         'border-(--badge-color)',
         'bg-[color-mix(in_oklab,var(--badge-color)_10%,var(--color-background)_90%)]',

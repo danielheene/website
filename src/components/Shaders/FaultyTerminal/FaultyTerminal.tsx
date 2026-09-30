@@ -2,10 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 
 import { Color, Mesh, Program, Renderer, Triangle } from 'ogl'
 
-type Vec2 = [
-  number,
-  number,
-]
+type Vec2 = [number, number]
 
 export interface FaultyTerminalProps extends React.HTMLAttributes<HTMLDivElement> {
   scale?: number
@@ -234,11 +231,7 @@ void main() {
 }
 `
 
-function hexToRgb(hex: string): [
-  number,
-  number,
-  number,
-] {
+function hexToRgb(hex: string): [number, number, number] {
   let h = hex.replace('#', '').trim()
   if (h.length === 3)
     h = h
@@ -246,19 +239,12 @@ function hexToRgb(hex: string): [
       .map((c) => c + c)
       .join('')
   const num = parseInt(h, 16)
-  return [
-    ((num >> 16) & 255) / 255,
-    ((num >> 8) & 255) / 255,
-    (num & 255) / 255,
-  ]
+  return [((num >> 16) & 255) / 255, ((num >> 8) & 255) / 255, (num & 255) / 255]
 }
 
 export function FaultyTerminal({
   scale = 1,
-  gridMul = [
-    2,
-    1,
-  ],
+  gridMul = [2, 1],
   digitSize = 1.5,
   timeScale = 0.3,
   pause = false,
@@ -295,18 +281,11 @@ export function FaultyTerminal({
   const loadAnimationStartRef = useRef<number>(0)
   const timeOffsetRef = useRef<number>(Math.random() * 100)
 
-  const tintVec = useMemo(
-    () => hexToRgb(tint),
-    [
-      tint,
-    ],
-  )
+  const tintVec = useMemo(() => hexToRgb(tint), [tint])
 
   const ditherValue = useMemo(
     () => (typeof dither === 'boolean' ? (dither ? 1 : 0) : dither),
-    [
-      dither,
-    ],
+    [dither],
   )
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
@@ -379,10 +358,7 @@ export function FaultyTerminal({
           value: new Color(tintVec[0], tintVec[1], tintVec[2]),
         },
         uMouse: {
-          value: new Float32Array([
-            smoothMouseRef.current.x,
-            smoothMouseRef.current.y,
-          ]),
+          value: new Float32Array([smoothMouseRef.current.x, smoothMouseRef.current.y]),
         },
         uMouseStrength: {
           value: mouseStrength,

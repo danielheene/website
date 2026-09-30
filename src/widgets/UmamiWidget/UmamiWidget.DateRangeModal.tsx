@@ -110,11 +110,7 @@ export const DateRangeModal = ({
             }
           }
         `}</style>
-        <div
-          className={cn([
-            'modal__body flex flex-row gap-8',
-          ])}
-        >
+        <div className={cn(['modal__body flex flex-row gap-8'])}>
           <div className="flex flex-col gap-2">
             {QUICK_SELECT_CONFIG.map(({ label, variant, apply }) => (
               <Button

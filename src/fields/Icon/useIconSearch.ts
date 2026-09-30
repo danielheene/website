@@ -87,12 +87,7 @@ export const useIconSearch = ({
       controller.abort()
       clearTimeout(timer)
     }
-  }, [
-    query,
-    prefix,
-    limit,
-    enabled,
-  ])
+  }, [query, prefix, limit, enabled])
 
   return {
     icons,

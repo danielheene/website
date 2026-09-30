@@ -53,9 +53,7 @@ export const TableOfContents = ({ headings }: TableOfContentsProps) => {
       window.removeEventListener('scroll', updateActive)
       window.removeEventListener('resize', updateActive)
     }
-  }, [
-    headings,
-  ])
+  }, [headings])
 
   if (headings.length === 0) return null
 

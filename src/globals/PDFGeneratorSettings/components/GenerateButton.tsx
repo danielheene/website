@@ -57,10 +57,7 @@ const GenerateButton = () => {
     } catch (error) {
       toast.error(extractErrorMessage(error))
     }
-  }, [
-    clearFallbackTimeout,
-    router,
-  ])
+  }, [clearFallbackTimeout, router])
 
   const handleProgress = useCallback(
     (data: ResumeGenerateProgress) => {
@@ -89,11 +86,7 @@ const GenerateButton = () => {
           return
       }
     },
-    [
-      clearFallbackTimeout,
-      jobId,
-      router,
-    ],
+    [clearFallbackTimeout, jobId, router],
   )
 
   useServerSentEvents<ResumeGenerateProgress>({

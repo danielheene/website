@@ -27,11 +27,7 @@ export const EventsSection = ({ data, dataIsLoading, className }: EventsSectionP
   const contentClass = 'h-[410px]'
 
   return (
-    <Card
-      className={cn([
-        className,
-      ])}
-    >
+    <Card className={cn([className])}>
       <CardHeader>
         <CardTitle>Events</CardTitle>
         <CardPagination {...pagination} />

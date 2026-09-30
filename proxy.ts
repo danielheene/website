@@ -5,12 +5,7 @@ import { fetchRedirect } from '@/lib/redirects/redirectCache'
 import { getRuntimeConfig } from '@/lib/runtimeConfig'
 
 /** Paths that must never be redirected, regardless of stored rows. */
-const REDIRECT_EXEMPT = [
-  '/admin',
-  '/api',
-  '/_next',
-  '/next',
-]
+const REDIRECT_EXEMPT = ['/admin', '/api', '/_next', '/next']
 
 /**
  * Resolves a redirect for the current request.

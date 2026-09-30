@@ -30,10 +30,7 @@ export const register = async () => {
         }),
         // captures console.* as structured logs alongside errors
         Sentry.consoleLoggingIntegration({
-          levels: [
-            'warn',
-            'error',
-          ],
+          levels: ['warn', 'error'],
         }),
       ],
     })

@@ -11,12 +11,7 @@ vi.mock('@payload-config', () => ({
 const afterMock = vi.fn((task: () => Promise<void>) => task())
 
 vi.mock('next/server', () => ({
-  after: (...args: unknown[]) =>
-    afterMock(
-      ...(args as [
-        () => Promise<void>,
-      ]),
-    ),
+  after: (...args: unknown[]) => afterMock(...(args as [() => Promise<void>])),
 }))
 
 import { enqueueGenerateResumeDocument } from './enqueueGenerateResumeDocument'

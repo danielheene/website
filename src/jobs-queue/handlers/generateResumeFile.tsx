@@ -27,11 +27,7 @@ const run: TaskHandler<TaskSlug['GenerateResumeFile']> = async ({ input, req: { 
     collection: CollectionSlug.MediaDocuments,
     data: {
       createdAt,
-      generatorFlags: [
-        'resume-asset',
-        'thumbnail',
-        'document',
-      ],
+      generatorFlags: ['resume-asset', 'thumbnail', 'document'],
     },
     file: {
       data: Buffer.from(arrayBufferLike),

@@ -21,30 +21,18 @@ export const MediaAudios: CollectionConfig<CollectionSlug['MediaAudios']> = {
     plural: 'Audios',
   },
   hooks: {
-    beforeChange: [
-      generateChecksum,
-    ],
-    afterChange: [
-      generateThumbnail,
-    ],
+    beforeChange: [generateChecksum],
+    afterChange: [generateThumbnail],
   },
   admin: {
     baseFilter: scopeMediaAssets,
     group: AdminGroup.Media,
     useAsTitle: 'filename',
-    defaultColumns: [
-      'filename',
-      'type',
-      'extension',
-      'updatedAt',
-    ],
+    defaultColumns: ['filename', 'type', 'extension', 'updatedAt'],
     disableCopyToLocale: true,
     pagination: {
       defaultLimit: 50,
-      limits: [
-        50,
-        100,
-      ],
+      limits: [50, 100],
     },
     components: {
       Description: '@/components/AdminPanel/MediaScopeTabs#MediaScopeTabs',
@@ -59,9 +47,7 @@ export const MediaAudios: CollectionConfig<CollectionSlug['MediaAudios']> = {
   upload: {
     disableLocalStorage: true,
     withMetadata: false,
-    mimeTypes: [
-      'audio/*',
-    ],
+    mimeTypes: ['audio/*'],
   },
   fields: [
     {

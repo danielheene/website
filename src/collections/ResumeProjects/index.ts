@@ -29,9 +29,7 @@ export const ResumeProjects: CollectionConfig<CollectionSlug['ResumeProjects']> 
     unlock: authenticated,
   },
   hooks: {
-    afterOperation: [
-      generateResumeDocumentHook,
-    ],
+    afterOperation: [generateResumeDocumentHook],
   },
   admin: {
     useAsTitle: 'title',
@@ -39,10 +37,7 @@ export const ResumeProjects: CollectionConfig<CollectionSlug['ResumeProjects']> 
     disableCopyToLocale: true,
     pagination: {
       defaultLimit: 50,
-      limits: [
-        50,
-        100,
-      ],
+      limits: [50, 100],
     },
     components: {
       views: {
@@ -90,9 +85,7 @@ export const ResumeProjects: CollectionConfig<CollectionSlug['ResumeProjects']> 
     {
       type: 'relationship',
       name: 'relatedPost',
-      relationTo: [
-        CollectionSlug.BlogPosts,
-      ],
+      relationTo: [CollectionSlug.BlogPosts],
       admin: {
         appearance: 'select',
         position: 'sidebar',
@@ -102,9 +95,7 @@ export const ResumeProjects: CollectionConfig<CollectionSlug['ResumeProjects']> 
     {
       type: 'upload',
       name: 'images',
-      relationTo: [
-        CollectionSlug.MediaImages,
-      ],
+      relationTo: [CollectionSlug.MediaImages],
       hasMany: true,
       admin: {
         position: 'sidebar',

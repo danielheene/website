@@ -35,9 +35,7 @@ const buildBlogFeed = async (): Promise<string> => {
     draft: false,
     overrideAccess: false,
     limit: BLOG_FEED_SIZE,
-    sort: [
-      ...BLOG_SORT_OPTIONS.newest.sort,
-    ],
+    sort: [...BLOG_SORT_OPTIONS.newest.sort],
     // populates topics, uploads and internal links inside the content
     depth: 2,
     where: {

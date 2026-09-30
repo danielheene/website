@@ -190,20 +190,12 @@ describe('AddSlideMenu', () => {
     const fileInput = container.querySelector('input[type="file"][accept="image/*"]')
     expect(fileInput).toBeInTheDocument()
 
-    const file = new File(
-      [
-        'x',
-      ],
-      'hero.png',
-      {
-        type: 'image/png',
-      },
-    )
+    const file = new File(['x'], 'hero.png', {
+      type: 'image/png',
+    })
     fireEvent.change(fileInput as HTMLInputElement, {
       target: {
-        files: [
-          file,
-        ],
+        files: [file],
       },
     })
 
@@ -227,20 +219,12 @@ describe('AddSlideMenu', () => {
     const fileInput = container.querySelector('input[type="file"][accept="video/*"]')
     expect(fileInput).toBeInTheDocument()
 
-    const file = new File(
-      [
-        'x',
-      ],
-      'hero.mp4',
-      {
-        type: 'video/mp4',
-      },
-    )
+    const file = new File(['x'], 'hero.mp4', {
+      type: 'video/mp4',
+    })
     fireEvent.change(fileInput as HTMLInputElement, {
       target: {
-        files: [
-          file,
-        ],
+        files: [file],
       },
     })
 

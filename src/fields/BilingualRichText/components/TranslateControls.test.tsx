@@ -145,19 +145,13 @@ const renderControls = () =>
  * waiting for the render triggered by `setJobId` to have happened. */
 const onMessageFor = async (jobId: string) => {
   await waitFor(() => {
-    const call = [
-      ...sseCalls,
-    ]
+    const call = [...sseCalls]
       .reverse()
       .find((c) => c.channel === bilingualTranslateChannel(jobId) && c.onMessage)
     expect(call).toBeDefined()
   })
 
-  const call = [
-    ...sseCalls,
-  ]
-    .reverse()
-    .find((c) => c.channel === bilingualTranslateChannel(jobId))
+  const call = [...sseCalls].reverse().find((c) => c.channel === bilingualTranslateChannel(jobId))
   return call?.onMessage as (data: unknown) => void
 }
 

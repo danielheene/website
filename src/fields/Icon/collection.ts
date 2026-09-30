@@ -82,12 +82,7 @@ export const parseCollection = (prefix: string, data: CollectionResponse): IconC
 
   // an icon may be filed under several categories (43 of Material Symbols'
   // 15,463 are), so dedupe or the grid repeats them under duplicate React keys
-  const icons = [
-    ...new Set([
-      ...loose,
-      ...categories.flatMap((category) => category.icons),
-    ]),
-  ]
+  const icons = [...new Set([...loose, ...categories.flatMap((category) => category.icons)])]
 
   return {
     icons,

@@ -15,10 +15,7 @@ const meta = {
       control: {
         type: 'select',
       },
-      options: [
-        'light',
-        'dark',
-      ],
+      options: ['light', 'dark'],
     },
     setTheme: {
       control: false,

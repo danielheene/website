@@ -18,7 +18,5 @@ export const LinkGroupBlock: Block = {
       icon: '/payload/blocks/general-link-group-icon.svg',
     },
   },
-  fields: [
-    LinkGroupField(),
-  ],
+  fields: [LinkGroupField()],
 }

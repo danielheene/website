@@ -15,12 +15,7 @@ export const Header = async () => {
 
   return (
     <header id="header" className="h-20 absolute top-0 z-50 w-full">
-      <nav
-        className={cn([
-          'h-16 mt-4 container',
-          'flex flex-row justify-between items-center',
-        ])}
-      >
+      <nav className={cn(['h-16 mt-4 container', 'flex flex-row justify-between items-center'])}>
         <Link href="/" className="h-10 flex items-center" aria-label="Home">
           <Logo variant="inline" className="text-2xl text-foreground hidden md:block" />
           <Logo variant="square" className="text-2xl text-foreground block md:hidden" />

@@ -25,13 +25,7 @@ export const FieldComponent: CheckboxFieldClientComponent = ({
   })
 
   return (
-    <div
-      className={cn([
-        fieldBaseClass,
-        'toggle',
-        'flex flex-col justify-end',
-      ])}
-    >
+    <div className={cn([fieldBaseClass, 'toggle', 'flex flex-col justify-end'])}>
       <input type="checkbox" readOnly={readOnly} value={String(value)} className="hidden" />
       <Button
         type="button"

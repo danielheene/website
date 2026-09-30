@@ -9,9 +9,7 @@ import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical
  *
  *    Add a channel here before streaming it to the browser.
  */
-export const SSE_CHANNELS = [
-  'service-status',
-] as const
+export const SSE_CHANNELS = ['service-status'] as const
 
 export type SseChannel = (typeof SSE_CHANNELS)[number]
 

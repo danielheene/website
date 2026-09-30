@@ -21,11 +21,7 @@ const doc = (children: unknown[]) => ({
 
 describe('highlightRichText', () => {
   it('highlights a top-level code block', async () => {
-    const map = await highlightRichText(
-      doc([
-        codeNode('const a = 1', 'typescript'),
-      ]),
-    )
+    const map = await highlightRichText(doc([codeNode('const a = 1', 'typescript')]))
 
     expect(Object.keys(map)).toHaveLength(1)
     expect(map[codeBlockKey('const a = 1', 'typescript')]).toContain('--shiki-light')
@@ -39,9 +35,7 @@ describe('highlightRichText', () => {
           children: [
             {
               type: 'quote',
-              children: [
-                codeNode('const nested = 1', 'typescript'),
-              ],
+              children: [codeNode('const nested = 1', 'typescript')],
             },
           ],
         },
@@ -53,32 +47,20 @@ describe('highlightRichText', () => {
 
   it('de-duplicates identical blocks into a single entry', async () => {
     const map = await highlightRichText(
-      doc([
-        codeNode('const a = 1', 'typescript'),
-        codeNode('const a = 1', 'typescript'),
-      ]),
+      doc([codeNode('const a = 1', 'typescript'), codeNode('const a = 1', 'typescript')]),
     )
 
     expect(Object.keys(map)).toHaveLength(1)
   })
 
   it('keys the same code separately per language', async () => {
-    const map = await highlightRichText(
-      doc([
-        codeNode('a', 'typescript'),
-        codeNode('a', 'css'),
-      ]),
-    )
+    const map = await highlightRichText(doc([codeNode('a', 'typescript'), codeNode('a', 'css')]))
 
     expect(Object.keys(map)).toHaveLength(2)
   })
 
   it('produces keys the renderer can look up when language is omitted', async () => {
-    const map = await highlightRichText(
-      doc([
-        codeNode('const a = 1'),
-      ]),
-    )
+    const map = await highlightRichText(doc([codeNode('const a = 1')]))
 
     // the converter passes `node.fields.language`, which is undefined here —
     // both sides must resolve to the same fallback key

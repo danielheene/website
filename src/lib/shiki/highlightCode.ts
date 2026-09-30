@@ -61,9 +61,7 @@ const getHighlighter = (): Promise<Highlighter> => {
   if (!highlighterPromise) {
     highlighterPromise = createHighlighter({
       themes: Object.values(THEMES),
-      langs: [
-        ...SUPPORTED_LANGUAGES,
-      ],
+      langs: [...SUPPORTED_LANGUAGES],
     })
   }
   return highlighterPromise

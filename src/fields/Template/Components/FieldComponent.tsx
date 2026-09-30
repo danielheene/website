@@ -22,9 +22,7 @@ export const FieldComponent: TextFieldServerComponent = async (props: FieldCompo
   const {
     path,
     clientField,
-    renderLocale = [
-      'en',
-    ],
+    renderLocale = ['en'],
     data,
     siblingData,
     user,
@@ -47,9 +45,7 @@ export const FieldComponent: TextFieldServerComponent = async (props: FieldCompo
       ]
     }
     if (typeof anntotation === 'object') {
-      return [
-        anntotation,
-      ]
+      return [anntotation]
     }
     return []
   })(customAnnotationFromProps)

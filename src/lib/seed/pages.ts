@@ -124,11 +124,7 @@ const oneColumnBlock = (random: Random) => {
   if (chance(random, 0.4)) {
     const linkTarget = pick(random, LINKS)
     nodes.push(
-      paragraph([
-        text('For more detail, see '),
-        link(linkTarget.label, linkTarget.url),
-        text('.'),
-      ]),
+      paragraph([text('For more detail, see '), link(linkTarget.label, linkTarget.url), text('.')]),
     )
   }
 
@@ -136,10 +132,7 @@ const oneColumnBlock = (random: Random) => {
     nodes.push(
       list(
         pickSome(random, TAKEAWAY_ITEMS, 2 + Math.floor(random() * 2)),
-        pick(random, [
-          'bullet',
-          'number',
-        ] as const),
+        pick(random, ['bullet', 'number'] as const),
       ),
     )
   }
@@ -157,12 +150,8 @@ const oneColumnBlock = (random: Random) => {
 /** One `TwoColumnContentBlock` with a short paragraph in each column. */
 const twoColumnBlock = (random: Random) => ({
   blockType: 'TwoColumnContentBlock',
-  contentLeft: root([
-    paragraph(pick(random, BODY_PARAGRAPHS)),
-  ]),
-  contentRight: root([
-    paragraph(pick(random, BODY_PARAGRAPHS)),
-  ]),
+  contentLeft: root([paragraph(pick(random, BODY_PARAGRAPHS))]),
+  contentRight: root([paragraph(pick(random, BODY_PARAGRAPHS))]),
 })
 
 /** One `CodeBlock` from the snippet pool. */
@@ -191,15 +180,9 @@ const linkGroupBlock = (random: Random) => ({
 
 const pageBlocks = (seed: string): Page['content'] => {
   const random = createRandom(seed)
-  const builders = [
-    twoColumnBlock,
-    codeContentBlock,
-    linkGroupBlock,
-  ]
+  const builders = [twoColumnBlock, codeContentBlock, linkGroupBlock]
 
-  const blocks: Record<string, unknown>[] = [
-    oneColumnBlock(random),
-  ]
+  const blocks: Record<string, unknown>[] = [oneColumnBlock(random)]
 
   const extraCount = 1 + Math.floor(random() * 3) // 1-3 more blocks, total 2-4
   const chosen = pickSome(random, builders, Math.min(extraCount, builders.length))
@@ -240,9 +223,7 @@ const createSeedImage = async (payload: Payload, index: number): Promise<string>
     },
     data: {
       alt: `Placeholder image for seeded page ${index}`,
-      generatorFlags: [
-        'seeded-dummy',
-      ],
+      generatorFlags: ['seeded-dummy'],
     },
     file: {
       name: filename,
@@ -346,9 +327,7 @@ export const seedPages = async (
         protected: false,
         slug,
         layout: 'default',
-        generatorFlags: [
-          'seeded-dummy',
-        ],
+        generatorFlags: ['seeded-dummy'],
         hero: {
           contentType: 'title',
           slides,
@@ -386,9 +365,7 @@ export const cleanPages = async (
     collection: CollectionSlug.Pages,
     where: {
       generatorFlags: {
-        in: [
-          'seeded-dummy',
-        ],
+        in: ['seeded-dummy'],
       },
     },
     limit: 0,
@@ -438,9 +415,7 @@ export const cleanPages = async (
           },
           {
             generatorFlags: {
-              in: [
-                'seeded-dummy',
-              ],
+              in: ['seeded-dummy'],
             },
           },
         ],

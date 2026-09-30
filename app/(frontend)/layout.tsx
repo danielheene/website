@@ -1,5 +1,4 @@
 import '#frontend.css'
-
 import { JSX, ReactNode, Suspense } from 'react'
 import type { Metadata, Viewport } from 'next'
 
@@ -12,8 +11,8 @@ import { AllProviders } from '@/components/Providers'
 import { SkipToMainContent } from '@/components/SkipToMainContent'
 import { Toasty } from '@/components/Toasty'
 import { UmamiSuppressionFlag } from '@/components/UmamiSuppressionFlag'
-import PPFrama from '@/fonts/pp-frama/next'
 import PPFramaText from '@/fonts/pp-frama-text/next'
+import PPFrama from '@/fonts/pp-frama/next'
 import PPSupplyMono from '@/fonts/pp-supply-mono/next'
 import PPSupplySans from '@/fonts/pp-supply-sans/next'
 import { BLOG_FEED_PATH } from '@/lib/blog/feed'
@@ -49,12 +48,7 @@ export default async function RootLayout({
       <head>
         {/* before any client code: see RuntimeConfigScript */}
         <RuntimeConfigScript />
-        <JsonLd
-          data={[
-            personSchema,
-            webSiteSchema,
-          ]}
-        />
+        <JsonLd data={[personSchema, webSiteSchema]} />
       </head>
       <body>
         {/*

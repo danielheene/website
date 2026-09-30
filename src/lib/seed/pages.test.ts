@@ -24,16 +24,9 @@ const makePayload = (): Payload =>
 // which is slow and flaky (timeouts, rate limiting) especially in CI.
 const fetchMock = vi.fn(
   async () =>
-    new Response(
-      new Uint8Array([
-        1,
-        2,
-        3,
-      ]),
-      {
-        status: 200,
-      },
-    ),
+    new Response(new Uint8Array([1, 2, 3]), {
+      status: 200,
+    }),
 )
 
 beforeEach(() => {
@@ -190,9 +183,7 @@ describe('seedPages', () => {
       docs: [],
     })
     create.mockImplementation(async ({ collection, data }) => {
-      expect(data.generatorFlags).toEqual([
-        'seeded-dummy',
-      ])
+      expect(data.generatorFlags).toEqual(['seeded-dummy'])
       return {
         id: collection === 'images' ? 'image-1' : 'page-1',
       }
@@ -283,9 +274,7 @@ describe('cleanPages', () => {
           docs: [
             {
               id: 'image-1',
-              generatorFlags: [
-                'seeded-dummy',
-              ],
+              generatorFlags: ['seeded-dummy'],
             },
           ],
         }
@@ -302,9 +291,7 @@ describe('cleanPages', () => {
         collection: 'pages',
         where: {
           generatorFlags: {
-            in: [
-              'seeded-dummy',
-            ],
+            in: ['seeded-dummy'],
           },
         },
         trash: true,

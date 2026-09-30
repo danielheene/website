@@ -100,10 +100,7 @@ export const useIconCollection = ({
     void load()
 
     return () => controller.abort()
-  }, [
-    prefix,
-    enabled,
-  ])
+  }, [prefix, enabled])
 
   return {
     icons: collection.icons,

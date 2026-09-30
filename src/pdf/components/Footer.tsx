@@ -1,5 +1,5 @@
-import type { JSX } from 'react'
 import { Link, StyleSheet, type Styles, Text, View } from '@react-pdf/renderer'
+import type { JSX } from 'react'
 
 import { textStyles } from '@/pdf/constants'
 import { DocumentFooter } from '@/pdf/types'
@@ -24,13 +24,7 @@ export const Footer = ({
   fixed,
   style: styleFromProp = {},
 }: DocumentFooterProps): JSX.Element => (
-  <View
-    style={[
-      style.container,
-      styleFromProp,
-    ]}
-    fixed={fixed}
-  >
+  <View style={[style.container, styleFromProp]} fixed={fixed}>
     <Link style={textStyles.footerNote} src={documentUrl}>
       {generatedNotice}
     </Link>

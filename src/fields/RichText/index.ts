@@ -136,11 +136,7 @@ const markdownFeatures = [
   ...captionFeatures,
   ParagraphFeature(),
   HeadingFeature({
-    enabledHeadingSizes: [
-      'h2',
-      'h3',
-      'h4',
-    ],
+    enabledHeadingSizes: ['h2', 'h3', 'h4'],
   }),
   OrderedListFeature(),
   UnorderedListFeature(),
@@ -210,17 +206,11 @@ export const RichTextField = ({
           String.raw`[&_.rich-text-lexical\_\_wrap_.ContentEditable\_\_root]:p-2.5`,
           String.raw`[&_.rich-text-lexical\_\_wrap_.draggable-block-menu]:left-[30px]`,
 
-          [
-            'inline',
-            'caption',
-          ].includes(editorVariant) && [
+          ['inline', 'caption'].includes(editorVariant) && [
             String.raw`[&_.rich-text-lexical\_\_wrap_.ContentEditable\_\_root]:min-h-[200px]`,
           ],
 
-          [
-            'markdown',
-            'post',
-          ].includes(editorVariant) && [
+          ['markdown', 'post'].includes(editorVariant) && [
             String.raw`[&_.rich-text-lexical\_\_wrap_.ContentEditable\_\_root]:min-h-[500px]`,
           ],
         ]),

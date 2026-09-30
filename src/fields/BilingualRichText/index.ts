@@ -129,9 +129,7 @@ export const BilingualRichTextField = ({
       hideGutter: true,
     },
     hooks: {
-      afterChange: [
-        enqueueAutoTranslate,
-      ],
+      afterChange: [enqueueAutoTranslate],
     },
     fields: [
       {
@@ -146,11 +144,7 @@ export const BilingualRichTextField = ({
             ],
           ]),
         },
-        fields: [
-          enField,
-          translateControls,
-          deField,
-        ],
+        fields: [enField, translateControls, deField],
       },
     ],
   }

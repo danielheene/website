@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react'
 import type { Styles } from '@react-pdf/renderer'
 import { Text } from '@react-pdf/renderer'
+import type { ReactNode } from 'react'
 import type {
   ElementFormatType,
   SerializedEditorState,

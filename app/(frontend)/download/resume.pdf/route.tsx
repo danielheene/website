@@ -27,14 +27,9 @@ export async function GET(request: NextRequest) {
 
   const fileBuffer = await renderToBuffer(<ResumeDocument {...result.data} />)
 
-  const blob = new Blob(
-    [
-      Buffer.from(fileBuffer),
-    ],
-    {
-      type: 'application/pdf',
-    },
-  )
+  const blob = new Blob([Buffer.from(fileBuffer)], {
+    type: 'application/pdf',
+  })
   return new Response(blob, {
     status: 200,
     headers: {

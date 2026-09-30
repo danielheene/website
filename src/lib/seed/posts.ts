@@ -225,9 +225,7 @@ const lexicalArticle = ({
     nodes.push(upload('images', pick(random, imageIds)))
     if (chance(random, 0.5)) {
       nodes.push(
-        paragraph([
-          text('An embedded image node, captioned like an editor would.', IS_ITALIC),
-        ]),
+        paragraph([text('An embedded image node, captioned like an editor would.', IS_ITALIC)]),
       )
     }
   }
@@ -253,11 +251,7 @@ const lexicalArticle = ({
       nodes.push(
         list(
           pickSome(random, TAKEAWAY_ITEMS, 2 + Math.floor(random() * 3)),
-          pick(random, [
-            'bullet',
-            'number',
-            'check',
-          ] as const),
+          pick(random, ['bullet', 'number', 'check'] as const),
         ),
       )
     }
@@ -317,9 +311,7 @@ const createSeedImage = async (payload: Payload, index: number): Promise<string>
     },
     data: {
       alt: `Placeholder image for seeded post ${index}`,
-      generatorFlags: [
-        'seeded-dummy',
-      ],
+      generatorFlags: ['seeded-dummy'],
     },
     file: {
       name: filename,
@@ -354,9 +346,7 @@ const resolveTopicIds = async (payload: Payload, count: number): Promise<string[
       collection: CollectionSlug.BlogTopics,
       where: {
         generatorFlags: {
-          in: [
-            'seeded-dummy',
-          ],
+          in: ['seeded-dummy'],
         },
       },
       limit: count,
@@ -510,15 +500,9 @@ export const seedPosts = async (
         })),
         content: lexicalArticle({
           title,
-          imageIds: imageId
-            ? [
-                imageId,
-              ]
-            : [],
+          imageIds: imageId ? [imageId] : [],
         }),
-        generatorFlags: [
-          'seeded-dummy',
-        ],
+        generatorFlags: ['seeded-dummy'],
         _status: 'published',
       },
       draft: false,
@@ -549,9 +533,7 @@ export const cleanPosts = async (
     collection: CollectionSlug.BlogPosts,
     where: {
       generatorFlags: {
-        in: [
-          'seeded-dummy',
-        ],
+        in: ['seeded-dummy'],
       },
     },
     limit: 0,
@@ -601,9 +583,7 @@ export const cleanPosts = async (
           },
           {
             generatorFlags: {
-              in: [
-                'seeded-dummy',
-              ],
+              in: ['seeded-dummy'],
             },
           },
         ],

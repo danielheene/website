@@ -40,15 +40,9 @@ afterEach(() => {
   toastErrorMock.mockReset()
 })
 
-const file = new File(
-  [
-    'x',
-  ],
-  'hero.png',
-  {
-    type: 'image/png',
-  },
-)
+const file = new File(['x'], 'hero.png', {
+  type: 'image/png',
+})
 
 describe('useHeroSlideUploads', () => {
   it('adds a placeholder row and blocks the form before the upload resolves', () => {

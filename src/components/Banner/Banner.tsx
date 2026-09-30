@@ -21,37 +21,18 @@ export const BannerIconNameMap: Record<BannerProps['variant'], string> = {
 } as const
 
 export const bannerStyles = tv({
-  base: cn([
-    'block py-4 pl-16 pr-4 relative',
-    'font-medium font-pp-supply-mono',
-  ]),
+  base: cn(['block py-4 pl-16 pr-4 relative', 'font-medium font-pp-supply-mono']),
   variants: {
     variant: {
-      [BannerVariant.Neutral]: cn([
-        '[--banner-color:var(--color-neutral-700)]',
-      ]),
-      [BannerVariant.Info]: cn([
-        '[--banner-color:var(--color-info-600)]',
-      ]),
-      [BannerVariant.Success]: cn([
-        '[--banner-color:var(--color-success-600)]',
-      ]),
-      [BannerVariant.Warning]: cn([
-        '[--banner-color:var(--color-warning-700)]',
-      ]),
-      [BannerVariant.Error]: cn([
-        '[--banner-color:var(--color-error-700)]',
-      ]),
+      [BannerVariant.Neutral]: cn(['[--banner-color:var(--color-neutral-700)]']),
+      [BannerVariant.Info]: cn(['[--banner-color:var(--color-info-600)]']),
+      [BannerVariant.Success]: cn(['[--banner-color:var(--color-success-600)]']),
+      [BannerVariant.Warning]: cn(['[--banner-color:var(--color-warning-700)]']),
+      [BannerVariant.Error]: cn(['[--banner-color:var(--color-error-700)]']),
     },
     inverse: {
-      false: cn([
-        'bg-(--banner-color)',
-        'text-(--color-white)',
-      ]),
-      true: cn([
-        'bg-(--color-white)',
-        'text-(--banner-color)',
-      ]),
+      false: cn(['bg-(--banner-color)', 'text-(--color-white)']),
+      true: cn(['bg-(--color-white)', 'text-(--banner-color)']),
     },
   },
   defaultVariants: {

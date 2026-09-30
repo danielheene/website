@@ -22,9 +22,7 @@ export const Pagination = ({ page, totalPages, pageHref }: PaginationProps): JSX
   return (
     <nav
       aria-label="Pagination"
-      className={cn([
-        'col-span-full mt-8 flex items-center justify-center gap-2 font-mono',
-      ])}
+      className={cn(['col-span-full mt-8 flex items-center justify-center gap-2 font-mono'])}
     >
       {page > 1 && (
         <Button size="icon-sm" variant="outline" asChild>

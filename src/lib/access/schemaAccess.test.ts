@@ -21,11 +21,7 @@ const hasDrafts = ({ versions }: CollectionConfig | GlobalConfig): boolean =>
 const schemas = [
   // Redirects and References are registered through plugins in
   // payload.config.ts rather than COLLECTIONS
-  ...[
-    ...COLLECTIONS,
-    Redirects,
-    References,
-  ].map((config) => ({
+  ...[...COLLECTIONS, Redirects, References].map((config) => ({
     kind: 'collection',
     config,
   })),

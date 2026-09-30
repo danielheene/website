@@ -25,10 +25,7 @@ const run: TaskHandler<TaskSlug['SyncSkillSorting']> = async ({ req: { payload }
     if (configKey === 'skillTypeSortable') {
       const prevEntries: SkillTypeSortable[] = get(previousSkillSorting, configKey, [])
 
-      acc[configKey] = [
-        ...prevEntries,
-        ...skillTypeSortables,
-      ].filter(
+      acc[configKey] = [...prevEntries, ...skillTypeSortables].filter(
         (entry: SkillTypeSortable, index, array) =>
           array.findIndex((skillType) => skillType.id === entry.id) === index,
       )

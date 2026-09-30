@@ -7,11 +7,7 @@ import { LinkField, linkFeatureFields } from './index'
 
 const flatten = (fields: Field[]): Field[] =>
   fields.flatMap((field) =>
-    'fields' in field && Array.isArray(field.fields)
-      ? flatten(field.fields as Field[])
-      : [
-          field,
-        ],
+    'fields' in field && Array.isArray(field.fields) ? flatten(field.fields as Field[]) : [field],
   )
 
 const named = (name: string) =>
@@ -68,11 +64,7 @@ describe('LinkField', () => {
 
     expect(doc).toMatchObject({
       type: 'relationship',
-      relationTo: [
-        'pages',
-        'posts',
-        'topics',
-      ],
+      relationTo: ['pages', 'posts', 'topics'],
     })
     expect(doc?.admin?.components).toBeUndefined()
 

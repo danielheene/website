@@ -13,30 +13,18 @@
  * @type {import('@commitlint/types').UserConfig}
  */
 export default {
-  extends: [
-    '@commitlint/config-conventional',
-  ],
+  extends: ['@commitlint/config-conventional'],
   rules: {
     /**
      * Bodies are where the *why* lives, so the subject can stay short. 100 is
      * the conventional default; the header limit is the one that actually
      * bites, and wrapping is handled by the editor rather than a hard error.
      */
-    'body-max-line-length': [
-      0,
-      'always',
-    ],
-    'footer-max-line-length': [
-      0,
-      'always',
-    ],
+    'body-max-line-length': [0, 'always'],
+    'footer-max-line-length': [0, 'always'],
 
     /** Longer than this stops being scannable in `git log --oneline`. */
-    'header-max-length': [
-      2,
-      'always',
-      100,
-    ],
+    'header-max-length': [2, 'always', 100],
 
     'type-enum': [
       2,

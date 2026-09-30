@@ -60,38 +60,17 @@ export const Redirects: CollectionConfig = {
     useAsTitle: 'from',
     pagination: {
       defaultLimit: 25,
-      limits: [
-        25,
-        50,
-        100,
-      ],
+      limits: [25, 50, 100],
     },
-    defaultColumns: [
-      'from',
-      'type',
-      'statusCode',
-      'enabled',
-      'updatedAt',
-    ],
-    listSearchableFields: [
-      'from',
-      'toPath',
-    ],
+    defaultColumns: ['from', 'type', 'statusCode', 'enabled', 'updatedAt'],
+    listSearchableFields: ['from', 'toPath'],
     disableCopyToLocale: true,
   },
   hooks: {
-    beforeValidate: [
-      normalizeFromPath,
-    ],
-    beforeChange: [
-      preventRedirectLoops,
-    ],
-    afterChange: [
-      invalidateRedirectsAfterChange,
-    ],
-    afterDelete: [
-      invalidateRedirectsAfterDelete,
-    ],
+    beforeValidate: [normalizeFromPath],
+    beforeChange: [preventRedirectLoops],
+    afterChange: [invalidateRedirectsAfterChange],
+    afterDelete: [invalidateRedirectsAfterDelete],
   },
   fields: [
     {
@@ -155,9 +134,7 @@ export const Redirects: CollectionConfig = {
       type: 'select',
       required: true,
       defaultValue: '301',
-      options: [
-        ...REDIRECT_STATUS_CODES,
-      ],
+      options: [...REDIRECT_STATUS_CODES],
       admin: {
         position: 'sidebar',
       },

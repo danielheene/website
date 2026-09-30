@@ -66,10 +66,7 @@ describe('ErrorBoundary', () => {
     )
 
     expect(captureException).toHaveBeenCalledTimes(1)
-    const [error, context] = captureException.mock.calls[0] as [
-      Error,
-      Record<string, never>,
-    ]
+    const [error, context] = captureException.mock.calls[0] as [Error, Record<string, never>]
     expect(error.message).toBe('block failed')
     expect(context).toMatchObject({
       tags: {
@@ -85,10 +82,7 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>,
     )
 
-    const [, context] = captureException.mock.calls[0] as [
-      Error,
-      Record<string, never>,
-    ]
+    const [, context] = captureException.mock.calls[0] as [Error, Record<string, never>]
     expect(context).toMatchObject({
       tags: {
         errorBoundary: 'unnamed',

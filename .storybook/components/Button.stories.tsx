@@ -33,11 +33,7 @@ const meta = {
     type: {
       control: {
         type: 'select',
-        options: [
-          'button',
-          'submit',
-          'reset',
-        ],
+        options: ['button', 'submit', 'reset'],
         defaultValue: 'button',
       },
     },

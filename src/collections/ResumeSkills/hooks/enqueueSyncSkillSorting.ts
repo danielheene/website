@@ -14,15 +14,7 @@ import { QueueSlug, TaskSlug } from '@/types/jobs-queue'
 export const enqueueSyncSkillSorting: CollectionAfterOperationHook = async ({ operation, req }) => {
   if (req.context?.skipSyncSkillSorting) return
 
-  if (
-    ![
-      'create',
-      'update',
-      'updateByID',
-      'delete',
-      'deleteByID',
-    ].includes(operation)
-  ) {
+  if (!['create', 'update', 'updateByID', 'delete', 'deleteByID'].includes(operation)) {
     return
   }
 

@@ -32,9 +32,7 @@ export const LinkGroupField = ({ overrides = {} }: LinkGroupFieldProps = {}): Ar
           RowLabel: '@/fields/Link/components/RowLabel#LinkRowLabel',
         },
       },
-      fields: [
-        LinkField(),
-      ],
+      fields: [LinkField()],
     },
     overrides,
   )

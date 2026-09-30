@@ -24,7 +24,7 @@ export const hideVersionsTabForSingleVersion: DocumentTabCondition = ({
 }) =>
   Boolean(
     collectionConfig?.versions &&
-      typeof collectionConfig.versions === 'object' &&
-      collectionConfig.versions.maxPerDoc !== 1 &&
-      permissions?.collections?.[collectionConfig.slug]?.readVersions,
+    typeof collectionConfig.versions === 'object' &&
+    collectionConfig.versions.maxPerDoc !== 1 &&
+    permissions?.collections?.[collectionConfig.slug]?.readVersions,
   )

@@ -15,10 +15,7 @@ const meta = {
   // component's TS interface but not surfaced on their site).
   args: {
     paused: false,
-    gradientColors: [
-      '#FF9FFC',
-      '#5227FF',
-    ],
+    gradientColors: ['#FF9FFC', '#5227FF'],
     angle: 0,
     noise: 0.3,
     blindCount: 16,
@@ -193,10 +190,7 @@ const meta = {
       // reactbits.dev's control panel also lists a 'none' option, but this repo's
       // GradientBlindsProps types shineDirection as 'left' | 'right' only — anything else falls
       // back to 'left' behavior in the shader logic, so 'none' isn't a real distinct option here.
-      options: [
-        'left',
-        'right',
-      ],
+      options: ['left', 'right'],
       description: 'Which edge the shine sweep originates from.',
       table: {
         defaultValue: {
@@ -208,14 +202,7 @@ const meta = {
       control: {
         type: 'select',
       },
-      options: [
-        'normal',
-        'lighten',
-        'darken',
-        'screen',
-        'multiply',
-        'overlay',
-      ],
+      options: ['normal', 'lighten', 'darken', 'screen', 'multiply', 'overlay'],
       description:
         'CSS `mix-blend-mode` for the canvas. Defaults to `lighten`, which washes out against a light backdrop — every story here renders on a dark decorator so the effect stays visible.',
       table: {
@@ -259,12 +246,7 @@ export const DenseBlinds: Story = {
 /** A wider color stop list instead of the default two-color gradient. */
 export const MultiColor: Story = {
   args: {
-    gradientColors: [
-      '#FF9FFC',
-      '#5227FF',
-      '#22D3EE',
-      '#FACC15',
-    ],
+    gradientColors: ['#FF9FFC', '#5227FF', '#22D3EE', '#FACC15'],
   },
 }
 

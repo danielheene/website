@@ -5,10 +5,7 @@ import type { GradientBlindsProps } from './GradientBlinds'
  * hero background — pink-to-purple palette, slight angle, gentle noise.
  */
 export const defaultProps: GradientBlindsProps = {
-  gradientColors: [
-    '#FF9FFC',
-    '#5227FF',
-  ],
+  gradientColors: ['#FF9FFC', '#5227FF'],
   angle: 15,
   noise: 0.15,
   blindCount: 12,

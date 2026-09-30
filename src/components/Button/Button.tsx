@@ -74,22 +74,10 @@ export const buttonStyles = tv({
         'has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2',
       ],
 
-      'icon-xs': [
-        'size-7',
-        "[&>svg:not([class*='size-'])]:size-3.5",
-      ],
-      'icon-sm': [
-        'size-9',
-        "[&>svg:not([class*='size-'])]:size-4.5",
-      ],
-      icon: [
-        'size-10',
-        "[&>svg:not([class*='size-'])]:size-5",
-      ],
-      'icon-lg': [
-        'size-11',
-        "[&>svg:not([class*='size-'])]:size-5.5",
-      ],
+      'icon-xs': ['size-7', "[&>svg:not([class*='size-'])]:size-3.5"],
+      'icon-sm': ['size-9', "[&>svg:not([class*='size-'])]:size-4.5"],
+      icon: ['size-10', "[&>svg:not([class*='size-'])]:size-5"],
+      'icon-lg': ['size-11', "[&>svg:not([class*='size-'])]:size-5.5"],
     },
     fullWidth: {
       false: '',
@@ -104,7 +92,8 @@ export const buttonStyles = tv({
 })
 
 export interface ButtonProps
-  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'color'>,
+  extends
+    Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'color'>,
     VariantProps<typeof buttonStyles> {
   children?: ReactNode
   className?: string

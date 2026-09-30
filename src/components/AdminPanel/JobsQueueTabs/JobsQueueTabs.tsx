@@ -61,25 +61,17 @@ export const JobsQueueTabs = () => {
       const query = params.toString()
       router.push(query ? `${pathname}?${query}` : pathname)
     },
-    [
-      pathname,
-      router,
-      searchParams,
-    ],
+    [pathname, router, searchParams],
   )
 
   const selectQueue = useCallback(
     (queue: string | null) => setParam(JOBS_QUEUE_PARAM, queue),
-    [
-      setParam,
-    ],
+    [setParam],
   )
 
   const selectState = useCallback(
     (state: string | null) => setParam(JOBS_STATE_PARAM, state),
-    [
-      setParam,
-    ],
+    [setParam],
   )
 
   // Same reasoning as `MediaScopeTabs`: meaningless in a drawer or on a

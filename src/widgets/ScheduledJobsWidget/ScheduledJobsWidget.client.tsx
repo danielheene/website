@@ -78,11 +78,7 @@ export const ScheduledJobsWidgetClient = ({
           return
       }
     },
-    [
-      id,
-      isCancelling,
-      router,
-    ],
+    [id, isCancelling, router],
   )
 
   // Listens for the outcome of a manually-triggered "Run now" or "Cancel" —
@@ -104,9 +100,7 @@ export const ScheduledJobsWidgetClient = ({
   useEffect(() => {
     const poll = setInterval(() => router.refresh(), POLL_INTERVAL_MS)
     return () => clearInterval(poll)
-  }, [
-    router,
-  ])
+  }, [router])
 
   const progress = calculateJobProgress(createdAt, waitUntil, now)
   const isDue = progress >= 100
@@ -133,11 +127,7 @@ export const ScheduledJobsWidgetClient = ({
         'relative',
       ])}
     >
-      <div
-        className={cn([
-          'flex flex-col gap-1 mr-auto',
-        ])}
-      >
+      <div className={cn(['flex flex-col gap-1 mr-auto'])}>
         <span className="text-lg leading-none font-mono font-medium">
           {taskSlug ?? workflowSlug}
         </span>

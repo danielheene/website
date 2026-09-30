@@ -51,10 +51,7 @@ describe('enqueueCalculateSkillTagType', () => {
       },
     } as HookArgs)
 
-    expect(queuedTagIds(queue)).toEqual([
-      'a',
-      'c',
-    ])
+    expect(queuedTagIds(queue)).toEqual(['a', 'c'])
     expect(queue).toHaveBeenCalledWith({
       task: TaskSlug.CalculateSkillTagType,
       input: {
@@ -81,10 +78,7 @@ describe('enqueueCalculateSkillTagType', () => {
       },
     } as HookArgs)
 
-    expect(queuedTagIds(queue)).toEqual([
-      'a',
-      'b',
-    ])
+    expect(queuedTagIds(queue)).toEqual(['a', 'b'])
   })
 
   it('skips unpublished draft saves', async () => {
@@ -117,9 +111,6 @@ describe('enqueueCalculateSkillTagTypeAfterDelete', () => {
       },
     } as HookArgs)
 
-    expect(queuedTagIds(queue)).toEqual([
-      'a',
-      'b',
-    ])
+    expect(queuedTagIds(queue)).toEqual(['a', 'b'])
   })
 })

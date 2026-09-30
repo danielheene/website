@@ -29,18 +29,13 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
     update: authenticated,
   },
   hooks: {
-    afterChange: [
-      revalidateDocument,
-      generateResumeDocumentHook,
-    ],
+    afterChange: [revalidateDocument, generateResumeDocumentHook],
   },
   admin: {
     group: AdminGroup.Settings,
     components: {
       elements: {
-        beforeDocumentControls: [
-          '@/globals/PDFGeneratorSettings/components/GenerateButton',
-        ],
+        beforeDocumentControls: ['@/globals/PDFGeneratorSettings/components/GenerateButton'],
       },
     },
   },
@@ -80,9 +75,7 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
                 'Eight uppercase alphanumeric characters which also serve as a unique identifier for the document.',
             },
           },
-          renderLocale: [
-            'en',
-          ],
+          renderLocale: ['en'],
         }),
       ],
     },
@@ -118,10 +111,7 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
                 'Eight uppercase alphanumeric characters which also serve as a unique identifier for the document.',
             },
           },
-          renderLocale: [
-            'en',
-            'de',
-          ],
+          renderLocale: ['en', 'de'],
         }),
       ],
     },
@@ -174,8 +164,7 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
             () => ({
               title: 'SkillSorting',
               type: 'object',
-              properties: {
-                ...skillSortingKeys.reduce((acc, key) => {
+              properties: skillSortingKeys.reduce((acc, key) => {
                   acc[key] = {
                     type: 'array',
                     items: {
@@ -188,15 +177,12 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
 
                   return acc
                 }, {}),
-              },
               additionalProperties: false,
               required: skillSortingKeys,
             }),
           ],
           hooks: {
-            afterRead: [
-              sanitizeSkillSorting,
-            ],
+            afterRead: [sanitizeSkillSorting],
           },
           admin: {
             components: {

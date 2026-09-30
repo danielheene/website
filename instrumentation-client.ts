@@ -10,9 +10,7 @@ const initSentry = (config: RuntimeConfig): void => {
   Sentry.init({
     ...createSentryOptions(config),
 
-    integrations: [
-      Sentry.browserTracingIntegration(),
-    ],
+    integrations: [Sentry.browserTracingIntegration()],
   })
 }
 

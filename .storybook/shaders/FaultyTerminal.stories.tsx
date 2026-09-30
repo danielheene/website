@@ -41,10 +41,7 @@ const meta = {
   // built-in defaults, which differ slightly — e.g. noiseAmp).
   args: {
     scale: 1.5,
-    gridMul: [
-      2,
-      1,
-    ],
+    gridMul: [2, 1],
     digitSize: 1.2,
     timeScale: 0.5,
     pause: false,

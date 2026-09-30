@@ -60,9 +60,7 @@ export const GeneratorFlagsField = (): TextField => ({
       type: 'array',
       items: {
         type: 'string',
-        enum: [
-          ...GENERATOR_FLAGS,
-        ],
+        enum: [...GENERATOR_FLAGS],
       },
       additionalItems: false,
       required: false,
@@ -70,8 +68,6 @@ export const GeneratorFlagsField = (): TextField => ({
     }),
   ],
   hooks: {
-    beforeChange: [
-      normalizeIncomingFlags,
-    ],
+    beforeChange: [normalizeIncomingFlags],
   },
 })

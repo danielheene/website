@@ -296,19 +296,14 @@ export const referencesPlugin =
       excludeGlobals = [],
       trackCollections,
       guardedCollections,
-      nonBlockingSources = [
-        CollectionSlug.Redirects,
-      ],
+      nonBlockingSources = [CollectionSlug.Redirects],
       preventReferencedDeletes = true,
       enabled = true,
     } = options
 
     if (!enabled) return incomingConfig
 
-    const excludedCollections = new Set([
-      ...ALWAYS_EXCLUDED,
-      ...excludeCollections,
-    ])
+    const excludedCollections = new Set([...ALWAYS_EXCLUDED, ...excludeCollections])
     const excludedGlobals = new Set(excludeGlobals)
     const nonBlocking = new Set(nonBlockingSources)
 

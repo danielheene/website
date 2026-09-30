@@ -40,19 +40,9 @@ export const References: CollectionConfig = {
     useAsTitle: 'targetId',
     pagination: {
       defaultLimit: 25,
-      limits: [
-        25,
-        50,
-        100,
-      ],
+      limits: [25, 50, 100],
     },
-    defaultColumns: [
-      'targetCollection',
-      'targetId',
-      'sourceCollection',
-      'sourceId',
-      'path',
-    ],
+    defaultColumns: ['targetCollection', 'targetId', 'sourceCollection', 'sourceId', 'path'],
   },
   disableDuplicate: true,
   fields: [

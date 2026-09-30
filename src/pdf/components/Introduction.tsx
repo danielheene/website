@@ -1,5 +1,5 @@
-import { ReactNode } from 'react'
 import { Text } from '@react-pdf/renderer'
+import { ReactNode } from 'react'
 
 import { textStyles } from '@/pdf/constants'
 

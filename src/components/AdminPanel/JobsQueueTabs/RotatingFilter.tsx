@@ -49,9 +49,7 @@ export const RotatingFilter = ({
 
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [
-    isPopupOpen,
-  ])
+  }, [isPopupOpen])
 
   const handleSelect = (value: string | null) => {
     onSelect(value)

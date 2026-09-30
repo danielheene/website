@@ -31,9 +31,7 @@ describe('seedTopics', () => {
       docs: [],
     })
     create.mockImplementation(async ({ data }) => {
-      expect(data.generatorFlags).toEqual([
-        'seeded-dummy',
-      ])
+      expect(data.generatorFlags).toEqual(['seeded-dummy'])
       return {
         id: 'topic-1',
       }

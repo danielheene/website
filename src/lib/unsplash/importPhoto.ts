@@ -112,9 +112,7 @@ export const importPhoto = async ({
   const doc = await payload.create({
     collection: CollectionSlug.MediaImages,
     data: {
-      generatorFlags: [
-        'unsplash-import',
-      ],
+      generatorFlags: ['unsplash-import'],
       credits: buildCreditsValue({
         photographerName: photo.user.name,
         photographerProfileUrl: photo.user.links.html,

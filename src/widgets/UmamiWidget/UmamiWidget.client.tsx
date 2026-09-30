@@ -7,9 +7,9 @@ import { parseISO } from 'date-fns'
 
 import { Interval } from '@/lib/date'
 
-import { DateRangeModal } from './UmamiWidget.DateRangeModal'
 import type { UmamiEvent, UmamiPageViews, UmamiPath, UmamiStats } from './UmamiWidget.data'
 import { fetchEvents, fetchPageViews, fetchPaths, fetchStats } from './UmamiWidget.data'
+import { DateRangeModal } from './UmamiWidget.DateRangeModal'
 import { EventsSection } from './UmamiWidget.EventsSection'
 import { Header } from './UmamiWidget.Header'
 import { useSectionData } from './UmamiWidget.hooks'
@@ -102,10 +102,7 @@ export const UmamiWidgetClient = ({
   const [tempEndDate, setTempEndDate] = useState<Date>(effectiveEndDate)
   const [startDate, endDate] = selectedInterval
     ? selectedInterval.value
-    : [
-        effectiveStartDate,
-        effectiveEndDate,
-      ]
+    : [effectiveStartDate, effectiveEndDate]
 
   const minDate = parseISO(minDateFromProps)
   const maxDate = parseISO(maxDateFromProps)
@@ -113,47 +110,31 @@ export const UmamiWidgetClient = ({
   const umamiUrl = useMemo(() => {
     const umamiPath = `${teamId ? `/teams/${teamId}` : ''}/websites/${id}/`
     return umamiBaseUrl ? new URL(umamiPath, umamiBaseUrl).toString() : ''
-  }, [
-    id,
-    teamId,
-    umamiBaseUrl,
-  ])
+  }, [id, teamId, umamiBaseUrl])
 
   const { openModal, closeModal, isModalOpen } = useModal()
 
   const handleModalOpen = useCallback(() => {
     openModal(modalSlug)
-  }, [
-    openModal,
-  ])
+  }, [openModal])
 
   const handleConfirm = useCallback(() => {
     if (tempStartDate && tempEndDate) {
       setSelectedInterval(tempStartDate, tempEndDate)
     }
     closeModal(modalSlug)
-  }, [
-    closeModal,
-    setSelectedInterval,
-    tempEndDate,
-    tempStartDate,
-  ])
+  }, [closeModal, setSelectedInterval, tempEndDate, tempStartDate])
 
   const handleCancel = useCallback(() => {
     closeModal(modalSlug)
-  }, [
-    closeModal,
-  ])
+  }, [closeModal])
 
   const handleQuickSelect = useCallback(
     (interval: Interval) => {
       setSelectedInterval(...interval.value)
       closeModal(modalSlug)
     },
-    [
-      closeModal,
-      setSelectedInterval,
-    ],
+    [closeModal, setSelectedInterval],
   )
 
   const handleMoveInterval = useCallback(
@@ -163,11 +144,7 @@ export const UmamiWidgetClient = ({
         setSelectedInterval(...nextInterval.value)
       })
     },
-    [
-      startDate,
-      endDate,
-      setSelectedInterval,
-    ],
+    [startDate, endDate, setSelectedInterval],
   )
 
   return (

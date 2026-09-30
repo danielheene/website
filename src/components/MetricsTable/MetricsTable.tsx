@@ -34,13 +34,7 @@ const MetricsTableRow = ({
   maxValue?: number
   className?: string
 }) => {
-  const barWidth = useMemo(
-    () => (maxValue > 0 ? (value / maxValue) * 100 : 0),
-    [
-      value,
-      maxValue,
-    ],
-  )
+  const barWidth = useMemo(() => (maxValue > 0 ? (value / maxValue) * 100 : 0), [value, maxValue])
 
   return (
     <div className={cn('grid col-span-2 grid-cols-subgrid max-w-full gap-x-5', className)}>

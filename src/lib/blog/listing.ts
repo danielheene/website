@@ -26,25 +26,15 @@ export const BLOG_SORT_PARAM = 'sort'
 export const BLOG_SORT_OPTIONS = {
   newest: {
     label: 'Newest',
-    sort: [
-      '-createdAt',
-      '-id',
-    ],
+    sort: ['-createdAt', '-id'],
   },
   oldest: {
     label: 'Oldest',
-    sort: [
-      'createdAt',
-      'id',
-    ],
+    sort: ['createdAt', 'id'],
   },
   title: {
     label: 'A–Z',
-    sort: [
-      'title',
-      '-createdAt',
-      '-id',
-    ],
+    sort: ['title', '-createdAt', '-id'],
   },
 } as const satisfies Record<
   string,

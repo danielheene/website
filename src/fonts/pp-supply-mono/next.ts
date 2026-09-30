@@ -97,13 +97,7 @@ export const PPSupplyMono = localFont({
   ],
   adjustFontFallback: 'Arial',
   display: 'swap',
-  fallback: [
-    'ui-monospace',
-    'Menlo',
-    'Monaco',
-    'Consolas',
-    'Liberation Mono',
-  ],
+  fallback: ['ui-monospace', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono'],
 })
 
 export default PPSupplyMono

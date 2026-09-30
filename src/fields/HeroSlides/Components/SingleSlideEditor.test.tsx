@@ -54,16 +54,7 @@ vi.mock('@payloadcms/ui', () => ({
     replaceFieldRow: replaceFieldRowMock,
     setBackgroundProcessing: setBackgroundProcessingMock,
   }),
-  useFormFields: (
-    selector: (
-      args: [
-        FieldStateStub,
-      ],
-    ) => unknown,
-  ) =>
-    selector([
-      formFields,
-    ]),
+  useFormFields: (selector: (args: [FieldStateStub]) => unknown) => selector([formFields]),
   toast: {
     error: vi.fn(),
   },

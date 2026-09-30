@@ -22,39 +22,18 @@ export interface GradientBlindsProps {
 }
 
 const MAX_COLORS = 8
-const hexToRGB = (
-  hex: string,
-): [
-  number,
-  number,
-  number,
-] => {
+const hexToRGB = (hex: string): [number, number, number] => {
   const c = hex.replace('#', '').padEnd(6, '0')
   const r = parseInt(c.slice(0, 2), 16) / 255
   const g = parseInt(c.slice(2, 4), 16) / 255
   const b = parseInt(c.slice(4, 6), 16) / 255
-  return [
-    r,
-    g,
-    b,
-  ]
+  return [r, g, b]
 }
 const prepStops = (stops?: string[]) => {
-  const base = (
-    stops && stops.length
-      ? stops
-      : [
-          '#FF9FFC',
-          '#5227FF',
-        ]
-  ).slice(0, MAX_COLORS)
+  const base = (stops && stops.length ? stops : ['#FF9FFC', '#5227FF']).slice(0, MAX_COLORS)
   if (base.length === 1) base.push(base[0])
   while (base.length < MAX_COLORS) base.push(base[base.length - 1])
-  const arr: [
-    number,
-    number,
-    number,
-  ][] = []
+  const arr: [number, number, number][] = []
   for (let i = 0; i < MAX_COLORS; i++) arr.push(hexToRGB(base[i]))
   const count = Math.max(2, Math.min(MAX_COLORS, stops?.length ?? 2))
   return {
@@ -87,15 +66,7 @@ export const GradientBlinds: React.FC<GradientBlindsProps> = ({
   const meshRef = useRef<Mesh<Triangle> | null>(null)
   const geometryRef = useRef<Triangle | null>(null)
   const rendererRef = useRef<Renderer | null>(null)
-  const mouseTargetRef = useRef<
-    [
-      number,
-      number,
-    ]
-  >([
-    0,
-    0,
-  ])
+  const mouseTargetRef = useRef<[number, number]>([0, 0])
   const lastTimeRef = useRef<number>(0)
   const firstResizeRef = useRef<boolean>(true)
 
@@ -243,17 +214,10 @@ void main() {
     const { arr: colorArr, count: colorCount } = prepStops(gradientColors)
     const uniforms: {
       iResolution: {
-        value: [
-          number,
-          number,
-          number,
-        ]
+        value: [number, number, number]
       }
       iMouse: {
-        value: [
-          number,
-          number,
-        ]
+        value: [number, number]
       }
       iTime: {
         value: number
@@ -286,77 +250,38 @@ void main() {
         value: number
       }
       uColor0: {
-        value: [
-          number,
-          number,
-          number,
-        ]
+        value: [number, number, number]
       }
       uColor1: {
-        value: [
-          number,
-          number,
-          number,
-        ]
+        value: [number, number, number]
       }
       uColor2: {
-        value: [
-          number,
-          number,
-          number,
-        ]
+        value: [number, number, number]
       }
       uColor3: {
-        value: [
-          number,
-          number,
-          number,
-        ]
+        value: [number, number, number]
       }
       uColor4: {
-        value: [
-          number,
-          number,
-          number,
-        ]
+        value: [number, number, number]
       }
       uColor5: {
-        value: [
-          number,
-          number,
-          number,
-        ]
+        value: [number, number, number]
       }
       uColor6: {
-        value: [
-          number,
-          number,
-          number,
-        ]
+        value: [number, number, number]
       }
       uColor7: {
-        value: [
-          number,
-          number,
-          number,
-        ]
+        value: [number, number, number]
       }
       uColorCount: {
         value: number
       }
     } = {
       iResolution: {
-        value: [
-          gl.drawingBufferWidth,
-          gl.drawingBufferHeight,
-          1,
-        ],
+        value: [gl.drawingBufferWidth, gl.drawingBufferHeight, 1],
       },
       iMouse: {
-        value: [
-          0,
-          0,
-        ],
+        value: [0, 0],
       },
       iTime: {
         value: 0,
@@ -435,11 +360,7 @@ void main() {
     const resize = () => {
       const rect = container.getBoundingClientRect()
       renderer.setSize(rect.width, rect.height)
-      uniforms.iResolution.value = [
-        gl.drawingBufferWidth,
-        gl.drawingBufferHeight,
-        1,
-      ]
+      uniforms.iResolution.value = [gl.drawingBufferWidth, gl.drawingBufferHeight, 1]
 
       if (blindMinWidth && blindMinWidth > 0) {
         const maxByMinWidth = Math.max(1, Math.floor(rect.width / blindMinWidth))
@@ -454,14 +375,8 @@ void main() {
         firstResizeRef.current = false
         const cx = gl.drawingBufferWidth / 2
         const cy = gl.drawingBufferHeight / 2
-        uniforms.iMouse.value = [
-          cx,
-          cy,
-        ]
-        mouseTargetRef.current = [
-          cx,
-          cy,
-        ]
+        uniforms.iMouse.value = [cx, cy]
+        mouseTargetRef.current = [cx, cy]
       }
     }
 
@@ -479,15 +394,9 @@ void main() {
         ).dpr || 1
       const x = (e.clientX - rect.left) * scale
       const y = (rect.height - (e.clientY - rect.top)) * scale
-      mouseTargetRef.current = [
-        x,
-        y,
-      ]
+      mouseTargetRef.current = [x, y]
       if (mouseDampening <= 0) {
-        uniforms.iMouse.value = [
-          x,
-          y,
-        ]
+        uniforms.iMouse.value = [x, y]
       }
     }
     canvas.addEventListener('pointermove', onPointerMove)

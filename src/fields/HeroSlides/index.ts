@@ -113,10 +113,7 @@ export const HeroSlidesField = ({
       {
         name: 'media',
         type: 'upload',
-        relationTo: [
-          CollectionSlug.MediaImages,
-          CollectionSlug.MediaVideos,
-        ],
+        relationTo: [CollectionSlug.MediaImages, CollectionSlug.MediaVideos],
         filterOptions: ({ siblingData }) => {
           const slideType = (
             siblingData as

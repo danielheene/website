@@ -26,10 +26,7 @@ export const SectionContainer = ({
   children,
 }: SectionContainerProps) => {
   const [observerRef, isObserving, _entry] = useIntersectionObserver({
-    threshold: [
-      0.1,
-      0.25,
-    ],
+    threshold: [0.1, 0.25],
     rootMargin: '-10%',
   })
   const { setActiveAnchor } = useSectionNavigation()
@@ -38,11 +35,7 @@ export const SectionContainer = ({
 
   useEffect(() => {
     if (id && isObserving) setActiveAnchor(id)
-  }, [
-    isObserving,
-    id,
-    setActiveAnchor,
-  ])
+  }, [isObserving, id, setActiveAnchor])
 
   return (
     <section

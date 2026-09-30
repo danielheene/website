@@ -25,10 +25,7 @@ export const generateResumeFilename: TaskConfig<TaskSlug['GenerateResumeFilename
       typescriptSchema: [
         () => ({
           type: 'string',
-          enum: [
-            'en',
-            'de',
-          ],
+          enum: ['en', 'de'],
           required: true,
         }),
       ],

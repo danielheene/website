@@ -28,13 +28,7 @@ export const SerpProgressBar = ({ value, config }: SerpProgressBarProps) => {
   const { charLimit, lineWidth, font } = config
 
   const chars = value.length
-  const pixels = useMemo(
-    () => measurePixelWidth(value, font),
-    [
-      value,
-      font,
-    ],
-  )
+  const pixels = useMemo(() => measurePixelWidth(value, font), [value, font])
 
   const charRatio = chars / charLimit
   const pixelRatio = pixels / lineWidth

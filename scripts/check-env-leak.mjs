@@ -28,11 +28,7 @@ const IGNORED_KEYS = new Set([
   'SERVER_HOST',
   'USESEND_DEFAULT_FROM_ADDRESS',
 ])
-const SKIPPED_DIRS = new Set([
-  'cache',
-  'node_modules',
-  'diagnostics',
-])
+const SKIPPED_DIRS = new Set(['cache', 'node_modules', 'diagnostics'])
 const BINARY = /\.(node|png|jpe?g|gif|webp|avif|ico|woff2?|ttf|otf|mp4|webm|map)$/i
 
 const values = readFileSync(envFile, 'utf8')
@@ -41,10 +37,7 @@ const values = readFileSync(envFile, 'utf8')
   .filter((line) => line && !line.startsWith('#') && line.includes('='))
   .map((line) => {
     const index = line.indexOf('=')
-    return [
-      line.slice(0, index),
-      line.slice(index + 1),
-    ]
+    return [line.slice(0, index), line.slice(index + 1)]
   })
   .filter(([key, value]) => !IGNORED_KEYS.has(key) && value.length >= MIN_LENGTH)
 

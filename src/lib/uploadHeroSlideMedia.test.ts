@@ -34,15 +34,9 @@ describe('uploadHeroSlideMedia', () => {
       url: '/media/hero.png',
     })
 
-    const file = new File(
-      [
-        'x',
-      ],
-      'hero.png',
-      {
-        type: 'image/png',
-      },
-    )
+    const file = new File(['x'], 'hero.png', {
+      type: 'image/png',
+    })
 
     const result = await uploadHeroSlideMedia(buildFormData(file, 'image'))
 
@@ -71,15 +65,9 @@ describe('uploadHeroSlideMedia', () => {
       url: '/media/hero.mp4',
     })
 
-    const file = new File(
-      [
-        'x',
-      ],
-      'hero.mp4',
-      {
-        type: 'video/mp4',
-      },
-    )
+    const file = new File(['x'], 'hero.mp4', {
+      type: 'video/mp4',
+    })
 
     const result = await uploadHeroSlideMedia(buildFormData(file, 'video'))
 
@@ -96,15 +84,9 @@ describe('uploadHeroSlideMedia', () => {
       id: 'img-2',
     })
 
-    const file = new File(
-      [
-        'hello world',
-      ],
-      'hero.png',
-      {
-        type: 'image/png',
-      },
-    )
+    const file = new File(['hello world'], 'hero.png', {
+      type: 'image/png',
+    })
 
     await uploadHeroSlideMedia(buildFormData(file, 'image'))
 
@@ -122,15 +104,9 @@ describe('uploadHeroSlideMedia', () => {
   })
 
   it('throws when kind is neither "image" nor "video"', async () => {
-    const file = new File(
-      [
-        'x',
-      ],
-      'hero.png',
-      {
-        type: 'image/png',
-      },
-    )
+    const file = new File(['x'], 'hero.png', {
+      type: 'image/png',
+    })
 
     await expect(uploadHeroSlideMedia(buildFormData(file, 'shader'))).rejects.toThrow(
       'Unexpected upload kind: shader',

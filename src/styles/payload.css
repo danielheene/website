@@ -1,20 +1,20 @@
 @layer fonts, theme, base, components, utilities, payload-default, overrides;
-@import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/utilities.css" layer(utilities);
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
 
-@import "./theme/_animations.css" layer(theme);
-@import "./theme/_aspects.css" layer(theme);
-@import "./theme/_colors.css" layer(theme);
-@import "./theme/_fonts.css" layer(theme);
-@import "./theme/_radii.css" layer(theme);
-@import "./theme/_sizes.css" layer(theme);
-@import "./theme/_shadows.css" layer(theme);
-@import "./theme/_text-shadows.css" layer(theme);
+@import './theme/_animations.css' layer(theme);
+@import './theme/_aspects.css' layer(theme);
+@import './theme/_colors.css' layer(theme);
+@import './theme/_fonts.css' layer(theme);
+@import './theme/_radii.css' layer(theme);
+@import './theme/_sizes.css' layer(theme);
+@import './theme/_shadows.css' layer(theme);
+@import './theme/_text-shadows.css' layer(theme);
 
-@import "./payload/_app-header.css" layer(overrides);
-@import "./payload/_fields.css" layer(payload-default);
-@import "./payload/_buttons.css" layer(payload-default);
-@import "./payload/_list-header.css" layer(payload-default);
+@import './payload/_app-header.css' layer(overrides);
+@import './payload/_fields.css' layer(payload-default);
+@import './payload/_buttons.css' layer(payload-default);
+@import './payload/_list-header.css' layer(payload-default);
 
 @plugin "@tailwindcss/typography";
 

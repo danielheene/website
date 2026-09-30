@@ -79,9 +79,7 @@ const queryPublishedPosts = async ({
     overrideAccess: false,
     limit: POSTS_PER_PAGE,
     page,
-    sort: [
-      ...BLOG_SORT_OPTIONS[sort].sort,
-    ],
+    sort: [...BLOG_SORT_OPTIONS[sort].sort],
     depth: 2,
     where: {
       // already implied by authenticatedOrPublished; kept explicit so the
@@ -123,9 +121,7 @@ const PostCard = ({ post }: { post: BlogPostData }) => {
   return (
     <Link
       href={`/blog/post/${post.slug}`}
-      className={cn([
-        'group relative isolate h-80 overflow-hidden bg-background',
-      ])}
+      className={cn(['group relative isolate h-80 overflow-hidden bg-background'])}
     >
       <DuoTone>
         {heroImageUrl && (
@@ -147,11 +143,7 @@ const PostCard = ({ post }: { post: BlogPostData }) => {
           />
         )}
       </DuoTone>
-      <div
-        className={cn([
-          'absolute inset-0 size-full flex flex-col justify-between',
-        ])}
-      >
+      <div className={cn(['absolute inset-0 size-full flex flex-col justify-between'])}>
         <p
           className={cn([
             'text-background px-6 pt-2.5 pb-10 font-pp-supply-sans',
@@ -195,9 +187,7 @@ const PostCard = ({ post }: { post: BlogPostData }) => {
 const SortControl = ({ basePath, sort }: { basePath: string; sort: BlogSort }) => (
   <nav
     aria-label="Sort posts"
-    className={cn([
-      'col-span-full flex flex-wrap items-center justify-end gap-2 font-mono',
-    ])}
+    className={cn(['col-span-full flex flex-wrap items-center justify-end gap-2 font-mono'])}
   >
     {BLOG_SORTS.map((option) => (
       <Button key={option} size="sm" variant={option === sort ? 'default' : 'outline'} asChild>
@@ -235,26 +225,14 @@ const PostsGrid = async ({
   })
 
   if (totalDocs === 0) {
-    return (
-      <p
-        className={cn([
-          'text-muted-foreground',
-        ])}
-      >
-        No posts published yet.
-      </p>
-    )
+    return <p className={cn(['text-muted-foreground'])}>No posts published yet.</p>
   }
 
   // The status is already sent by the time this renders (it streams behind a
   // Suspense boundary), so an out-of-range page gets a way back, not a 404.
   if (posts.length === 0) {
     return (
-      <p
-        className={cn([
-          'col-span-full text-muted-foreground',
-        ])}
-      >
+      <p className={cn(['col-span-full text-muted-foreground'])}>
         There is no page {page}.{' '}
         <Link
           href={buildBlogListingHref(basePath, {
@@ -328,21 +306,9 @@ export const BlogListPage = async ({ topic, searchParams }: BlogListPageProps) =
           </div>
         </HeroMedia>
       )}
-      <section
-        className={cn([
-          'py-32 w-full',
-        ])}
-      >
-        <div
-          className={cn([
-            'container',
-          ])}
-        >
-          <div
-            className={cn([
-              'relative mx-auto flex max-w-7xl flex-col gap-20 lg:flex-row',
-            ])}
-          >
+      <section className={cn(['py-32 w-full'])}>
+        <div className={cn(['container'])}>
+          <div className={cn(['relative mx-auto flex max-w-7xl flex-col gap-20 lg:flex-row'])}>
             <header
               className={cn([
                 'top-10 flex h-fit flex-col items-center gap-5 text-center lg:sticky lg:max-w-80 lg:items-start lg:gap-8 lg:text-left',
@@ -358,9 +324,7 @@ export const BlogListPage = async ({ topic, searchParams }: BlogListPageProps) =
                 strokeWidth={1}
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className={cn([
-                  'lucide lucide-file-text h-full w-14',
-                ])}
+                className={cn(['lucide lucide-file-text h-full w-14'])}
                 aria-hidden="true"
               >
                 <path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" />
@@ -369,18 +333,10 @@ export const BlogListPage = async ({ topic, searchParams }: BlogListPageProps) =
                 <path d="M16 13H8" />
                 <path d="M16 17H8" />
               </svg>
-              <h1
-                className={cn([
-                  'text-4xl font-extrabold lg:text-5xl',
-                ])}
-              >
+              <h1 className={cn(['text-4xl font-extrabold lg:text-5xl'])}>
                 {topic ? topic.title : 'All Posts'}
               </h1>
-              <p
-                className={cn([
-                  'text-muted-foreground lg:text-xl',
-                ])}
-              >
+              <p className={cn(['text-muted-foreground lg:text-xl'])}>
                 Blog posts are a great way to share your knowledge and expertise with the world.
               </p>
               <div
@@ -397,11 +353,7 @@ export const BlogListPage = async ({ topic, searchParams }: BlogListPageProps) =
                 </Suspense>
               </nav>
             </header>
-            <div
-              className={cn([
-                'grid flex-1 gap-4 md:grid-cols-2',
-              ])}
-            >
+            <div className={cn(['grid flex-1 gap-4 md:grid-cols-2'])}>
               <Suspense
                 fallback={
                   <>
@@ -412,9 +364,7 @@ export const BlogListPage = async ({ topic, searchParams }: BlogListPageProps) =
                       (_, index) => (
                         <div
                           key={index}
-                          className={cn([
-                            'h-80 animate-pulse rounded-lg bg-muted',
-                          ])}
+                          className={cn(['h-80 animate-pulse rounded-lg bg-muted'])}
                         />
                       ),
                     )}

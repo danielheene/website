@@ -78,9 +78,7 @@ describe('SelectUnsplashDrawer', () => {
 
   it('debounces the search input and calls searchPhotos after 400ms', async () => {
     searchPhotosMock.mockResolvedValue({
-      results: [
-        result,
-      ],
+      results: [result],
       total: 1,
       totalPages: 1,
     })
@@ -119,9 +117,7 @@ describe('SelectUnsplashDrawer', () => {
 
   it('selects a result, which closes the drawer via the shared shell', async () => {
     searchPhotosMock.mockResolvedValue({
-      results: [
-        result,
-      ],
+      results: [result],
       total: 1,
       totalPages: 1,
     })
@@ -161,9 +157,7 @@ describe('SelectUnsplashDrawer', () => {
 
   it('disables every result while a different import is in flight', async () => {
     searchPhotosMock.mockResolvedValue({
-      results: [
-        result,
-      ],
+      results: [result],
       total: 1,
       totalPages: 1,
     })

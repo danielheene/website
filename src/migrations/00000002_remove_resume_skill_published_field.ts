@@ -90,10 +90,7 @@ export async function down({ payload, session }: MigrateDownArgs): Promise<void>
       {
         $set: {
           published: {
-            $eq: [
-              '$_status',
-              'published',
-            ],
+            $eq: ['$_status', 'published'],
           },
         },
       },
@@ -111,10 +108,7 @@ export async function down({ payload, session }: MigrateDownArgs): Promise<void>
       {
         $set: {
           'version.published': {
-            $eq: [
-              '$version._status',
-              'published',
-            ],
+            $eq: ['$version._status', 'published'],
           },
         },
       },

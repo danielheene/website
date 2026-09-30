@@ -28,19 +28,9 @@ export const Header = ({
   bookmark?: Bookmark
 }) => (
   <View style={styles.container}>
+    <Text style={[styles.interval, textStyles.jobInterval]}>{interval}</Text>
     <Text
-      style={[
-        styles.interval,
-        textStyles.jobInterval,
-      ]}
-    >
-      {interval}
-    </Text>
-    <Text
-      style={[
-        styles.title,
-        textStyles.jobTitle,
-      ]}
+      style={[styles.title, textStyles.jobTitle]}
       {...{
         bookmark,
       }}

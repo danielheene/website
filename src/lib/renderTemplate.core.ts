@@ -113,10 +113,7 @@ const TEMPLATE_FILTERS: Record<string, TemplateFilter> = {
  * themselves instead of being folded into a lowercase key that does not exist.
  */
 const TEMPLATE_FILTER_ALIASES = new Map<string, TemplateFilter>(
-  Object.entries(TEMPLATE_FILTERS).map(([name, filter]) => [
-    name.toLowerCase(),
-    filter,
-  ]),
+  Object.entries(TEMPLATE_FILTERS).map(([name, filter]) => [name.toLowerCase(), filter]),
 )
 
 /**

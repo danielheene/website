@@ -30,10 +30,7 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
     title: true,
     slug: true,
   },
-  defaultSort: [
-    'highlighted',
-    'title',
-  ],
+  defaultSort: ['highlighted', 'title'],
   disableDuplicate: true,
   admin: {
     useAsTitle: 'title',
@@ -41,26 +38,15 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
     groupBy: true,
     pagination: {
       defaultLimit: 25,
-      limits: [
-        25,
-        50,
-        100,
-      ],
+      limits: [25, 50, 100],
     },
     livePreview: {
       url: ({ data }) => generatePreviewPath(CollectionSlug.BlogTopics, data.slug),
     },
     preview: (data: Partial<CollectionData<CollectionSlug['BlogTopics']>>) =>
       generatePreviewPath(CollectionSlug.BlogTopics, data.slug),
-    listSearchableFields: [
-      'title',
-      'slug',
-    ],
-    defaultColumns: [
-      'title',
-      'slug',
-      'highlighted',
-    ],
+    listSearchableFields: ['title', 'slug'],
+    defaultColumns: ['title', 'slug', 'highlighted'],
     components: {
       listMenuItems:
         process.env.NODE_ENV !== 'production'
@@ -116,9 +102,7 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
     update: authenticated,
   },
   hooks: {
-    afterChange: [
-      revalidateBlogTopic,
-    ],
+    afterChange: [revalidateBlogTopic],
   },
   fields: [
     /* -------------- Main  Content -------------- */
@@ -206,9 +190,7 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
         },
         {
           label: 'SEO',
-          fields: [
-            MetaField(),
-          ],
+          fields: [MetaField()],
         },
       ],
     },

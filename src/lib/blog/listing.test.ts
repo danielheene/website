@@ -16,12 +16,7 @@ describe('parsePageParam', () => {
   })
 
   it('takes the first value of a repeated param', () => {
-    expect(
-      parsePageParam([
-        '3',
-        '4',
-      ]),
-    ).toBe(3)
+    expect(parsePageParam(['3', '4'])).toBe(3)
   })
 
   it('rejects anything that is not a positive integer', () => {
@@ -188,14 +183,8 @@ describe('resolveBlogListingUrl', () => {
 
   it('is idempotent', () => {
     for (const [pathname, search] of [
-      [
-        '/blog/page/4',
-        '?sort=oldest&x=a b',
-      ],
-      [
-        '/blog/react',
-        '?page=0&sort=title&page=9',
-      ],
+      ['/blog/page/4', '?sort=oldest&x=a b'],
+      ['/blog/react', '?page=0&sort=title&page=9'],
     ]) {
       const target = resolveBlogListingUrl(pathname, search)?.redirect
       expect(target).toBeTruthy()

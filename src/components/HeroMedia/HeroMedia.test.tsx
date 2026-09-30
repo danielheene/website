@@ -70,14 +70,7 @@ const shaderSlide = {
 
 describe('toSlideItems', () => {
   it('maps a populated image slide, preferring its own alt', () => {
-    expect(
-      toSlideItems(
-        [
-          imageSlide,
-        ],
-        'fallback',
-      ),
-    ).toEqual([
+    expect(toSlideItems([imageSlide], 'fallback')).toEqual([
       {
         kind: 'image',
         id: 'img-1',
@@ -116,14 +109,7 @@ describe('toSlideItems', () => {
   })
 
   it('maps a video slide and lifts its thumbnail into a poster', () => {
-    expect(
-      toSlideItems(
-        [
-          videoSlide,
-        ],
-        'fallback',
-      ),
-    ).toEqual([
+    expect(toSlideItems([videoSlide], 'fallback')).toEqual([
       {
         kind: 'video',
         id: 'vid-1',
@@ -135,14 +121,7 @@ describe('toSlideItems', () => {
   })
 
   it('maps a shader slide', () => {
-    expect(
-      toSlideItems(
-        [
-          shaderSlide,
-        ],
-        'fallback',
-      ),
-    ).toEqual([
+    expect(toSlideItems([shaderSlide], 'fallback')).toEqual([
       {
         kind: 'shader',
         id: '0',
@@ -166,19 +145,8 @@ describe('toSlideItems', () => {
 
   it('keeps mixed slide kinds in their authored order', () => {
     expect(
-      toSlideItems(
-        [
-          videoSlide,
-          imageSlide,
-          shaderSlide,
-        ],
-        'fallback',
-      ).map(({ kind }) => kind),
-    ).toEqual([
-      'video',
-      'image',
-      'shader',
-    ])
+      toSlideItems([videoSlide, imageSlide, shaderSlide], 'fallback').map(({ kind }) => kind),
+    ).toEqual(['video', 'image', 'shader'])
   })
 
   it('drops unpopulated relations, unknown collections, and empty input', () => {
@@ -288,13 +256,7 @@ describe('HeroMedia', () => {
   })
 
   it('renders a single shader slide directly (no carousel)', () => {
-    render(
-      <HeroMedia
-        slides={[
-          shaderSlide,
-        ]}
-      />,
-    )
+    render(<HeroMedia slides={[shaderSlide]} />)
 
     const shaderEl = screen.getByTestId('shader-hero-background')
     expect(shaderEl).toBeInTheDocument()
@@ -302,14 +264,7 @@ describe('HeroMedia', () => {
   })
 
   it('renders a carousel when there are two or more slides', () => {
-    render(
-      <HeroMedia
-        slides={[
-          imageSlide,
-          shaderSlide,
-        ]}
-      />,
-    )
+    render(<HeroMedia slides={[imageSlide, shaderSlide]} />)
 
     const carousel = screen.getByTestId('hero-carousel')
     expect(carousel).toHaveAttribute('data-count', '2')

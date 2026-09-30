@@ -46,9 +46,7 @@ export const SectionNavigationProvider = memo(
         setActiveAnchor(id)
         scrollingToLockRef.current = id
       },
-      [
-        setActiveAnchor,
-      ],
+      [setActiveAnchor],
     )
 
     const anchors = useMemo(
@@ -57,10 +55,7 @@ export const SectionNavigationProvider = memo(
           ...section,
           active: section.id === activeId,
         })),
-      [
-        sections,
-        activeId,
-      ],
+      [sections, activeId],
     )
 
     /**
@@ -70,9 +65,7 @@ export const SectionNavigationProvider = memo(
       () => ({
         setActiveAnchor,
       }),
-      [
-        setActiveAnchor,
-      ],
+      [setActiveAnchor],
     )
 
     return (

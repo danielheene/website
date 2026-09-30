@@ -53,9 +53,7 @@ export const useServerSentEvents = <T = unknown>({
   const onMessageRef = useRef(onMessage)
   useEffect(() => {
     onMessageRef.current = onMessage
-  }, [
-    onMessage,
-  ])
+  }, [onMessage])
 
   const reconnect = useCallback(() => {
     setReconnectToken((token) => token + 1)
@@ -133,12 +131,7 @@ export const useServerSentEvents = <T = unknown>({
       source.close()
       setStatus('closed')
     }
-  }, [
-    channel,
-    enabled,
-    reconnectToken,
-    reconnect,
-  ])
+  }, [channel, enabled, reconnectToken, reconnect])
 
   return {
     data,

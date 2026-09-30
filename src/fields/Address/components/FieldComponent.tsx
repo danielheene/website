@@ -34,9 +34,7 @@ export const FieldComponent: GroupFieldClientComponent = (props) => {
     rootRef.current.addEventListener(eventName, (event: CustomEvent) => {
       setCurrentLocale(event.detail.locale)
     })
-  }, [
-    fieldId,
-  ])
+  }, [fieldId])
 
   const modifiedField = {
     ...field,

@@ -68,12 +68,7 @@ const renderSection = (
     return `- [${escapeLinkText(entry.title)}](${url})${description}`
   })
 
-  return [
-    `## ${heading}`,
-    '',
-    ...links,
-    '',
-  ]
+  return [`## ${heading}`, '', ...links, '']
 }
 
 export async function GET() {
@@ -90,12 +85,7 @@ export async function GET() {
   const lines = [
     `# ${general.siteName ?? 'Website'}`,
     '',
-    ...(general.description
-      ? [
-          `> ${general.description}`,
-          '',
-        ]
-      : []),
+    ...(general.description ? [`> ${general.description}`, ''] : []),
     ...renderSection('Pages', CollectionSlug.Pages, pages),
     ...renderSection('Blog Posts', CollectionSlug.BlogPosts, posts),
     ...renderSection('Blog Topics', CollectionSlug.BlogTopics, topics),

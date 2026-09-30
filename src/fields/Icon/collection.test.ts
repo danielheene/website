@@ -34,16 +34,10 @@ describe('parseCollection', () => {
   it('qualifies flat sets and declares no categories', () => {
     // simple-icons/lucide/radix-icons/fad shape: everything uncategorized
     const { icons, categories } = parseCollection('simple-icons', {
-      uncategorized: [
-        'github',
-        'gitlab',
-      ],
+      uncategorized: ['github', 'gitlab'],
     })
 
-    expect(icons).toEqual([
-      'simple-icons:github',
-      'simple-icons:gitlab',
-    ])
+    expect(icons).toEqual(['simple-icons:github', 'simple-icons:gitlab'])
     expect(categories).toEqual([])
   })
 
@@ -52,19 +46,12 @@ describe('parseCollection', () => {
     const { icons, categories } = parseCollection('material-symbols', {
       uncategorized: [],
       categories: {
-        Communication: [
-          'call',
-        ],
-        Actions: [
-          'delete',
-        ],
+        Communication: ['call'],
+        Actions: ['delete'],
       },
     })
 
-    expect(categories.map((entry) => entry.label)).toEqual([
-      'Actions',
-      'Communication',
-    ])
+    expect(categories.map((entry) => entry.label)).toEqual(['Actions', 'Communication'])
     expect(icons).toHaveLength(2)
     expect(icons).toContain('material-symbols:call')
     expect(icons).toContain('material-symbols:delete')
@@ -73,23 +60,14 @@ describe('parseCollection', () => {
   it('keeps loose icons reachable through an Uncategorized bucket', () => {
     // mdi shape: 61 categories plus 2,059 icons filed under none of them
     const { icons, categories } = parseCollection('mdi', {
-      uncategorized: [
-        'loose-icon',
-      ],
+      uncategorized: ['loose-icon'],
       categories: {
-        Animal: [
-          'cat',
-        ],
+        Animal: ['cat'],
       },
     })
 
-    expect(categories.map((entry) => entry.label)).toEqual([
-      'Animal',
-      'Uncategorized',
-    ])
-    expect(categories.at(-1)?.icons).toEqual([
-      'mdi:loose-icon',
-    ])
+    expect(categories.map((entry) => entry.label)).toEqual(['Animal', 'Uncategorized'])
+    expect(categories.at(-1)?.icons).toEqual(['mdi:loose-icon'])
     // the loose icon must still be browsable without picking a category
     expect(icons).toContain('mdi:loose-icon')
   })
@@ -97,19 +75,13 @@ describe('parseCollection', () => {
   it('dedupes icons filed under more than one category', () => {
     const { icons } = parseCollection('material-symbols', {
       categories: {
-        Actions: [
-          'search',
-        ],
-        Navigation: [
-          'search',
-        ],
+        Actions: ['search'],
+        Navigation: ['search'],
       },
     })
 
     // duplicate names would collide as React keys in the grid
-    expect(icons).toEqual([
-      'material-symbols:search',
-    ])
+    expect(icons).toEqual(['material-symbols:search'])
   })
 
   it('tolerates a response missing both fields', () => {

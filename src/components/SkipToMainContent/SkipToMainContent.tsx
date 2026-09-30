@@ -17,9 +17,7 @@ export const SkipToMainContent = ({ targetId }: SkipToMainContentProps): JSX.Ele
         behavior: 'smooth',
       })
     },
-    [
-      targetId,
-    ],
+    [targetId],
   )
   return (
     <Link

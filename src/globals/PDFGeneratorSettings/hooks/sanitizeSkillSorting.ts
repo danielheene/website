@@ -33,10 +33,7 @@ export const sanitizeSkillSorting: FieldHook<
     if (configKey === 'skillTypeSortable') {
       const prevEntries: SkillTypeSortable[] = get(value, configKey, [])
 
-      skillSorting[configKey] = [
-        ...prevEntries,
-        ...skillTypeSortables,
-      ].filter(
+      skillSorting[configKey] = [...prevEntries, ...skillTypeSortables].filter(
         (entry: SkillTypeSortable, index, array) =>
           array.findIndex((skillType) => skillType.id === entry.id) === index,
       )

@@ -19,11 +19,7 @@ export const IconPickerPlugin = () => {
   const drawerSlug = useDrawerSlug('icon-picker-lexical')
 
   useEffect(() => {
-    if (
-      !editor.hasNodes([
-        IconNode,
-      ])
-    ) {
+    if (!editor.hasNodes([IconNode])) {
       throw new Error('IconPickerPlugin: IconNode is not registered on this editor')
     }
 
@@ -38,21 +34,14 @@ export const IconPickerPlugin = () => {
         }
 
         editor.update(() => {
-          $insertNodes([
-            $createIconNode(iconName),
-          ])
+          $insertNodes([$createIconNode(iconName)])
         })
         closeModal(drawerSlug)
         return true
       },
       COMMAND_PRIORITY_EDITOR,
     )
-  }, [
-    editor,
-    drawerSlug,
-    openModal,
-    closeModal,
-  ])
+  }, [editor, drawerSlug, openModal, closeModal])
 
   return (
     <IconPickerDrawer

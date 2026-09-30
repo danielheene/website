@@ -59,9 +59,7 @@ describe('TrendingBlogPostsBlockRenderer', () => {
   })
 
   it('renders the heading when provided', async () => {
-    fetchTrendingBlogPostsMock.mockResolvedValue([
-      buildPost('first-post', 'First Post'),
-    ])
+    fetchTrendingBlogPostsMock.mockResolvedValue([buildPost('first-post', 'First Post')])
 
     const element = await TrendingBlogPostsBlockRenderer({
       heading: {
@@ -183,9 +181,7 @@ describe('TrendingBlogPostsBlockRenderer', () => {
   })
 
   it('omits the heading when both en and de are empty', async () => {
-    fetchTrendingBlogPostsMock.mockResolvedValue([
-      buildPost('first-post', 'First Post'),
-    ])
+    fetchTrendingBlogPostsMock.mockResolvedValue([buildPost('first-post', 'First Post')])
 
     const element = await TrendingBlogPostsBlockRenderer({
       heading: {

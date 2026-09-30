@@ -6,10 +6,7 @@ import type { AddressData } from '@/types/payload'
 
 type Params = {
   locale: string
-  location: [
-    number,
-    number,
-  ]
+  location: [number, number]
 }
 
 export const fetchMapboxCoordinatesData = async ({

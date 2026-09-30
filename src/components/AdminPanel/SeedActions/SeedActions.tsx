@@ -82,13 +82,7 @@ export const SeedActions = ({ collectionSlug, collectionLabel }: SeedActionsProp
         toast.error(extractErrorMessage(error))
       }
     },
-    [
-      clearFallbackTimeout,
-      collectionLabel,
-      collectionSlug,
-      count,
-      router,
-    ],
+    [clearFallbackTimeout, collectionLabel, collectionSlug, count, router],
   )
 
   const handleProgress = useCallback(
@@ -123,11 +117,7 @@ export const SeedActions = ({ collectionSlug, collectionLabel }: SeedActionsProp
           return
       }
     },
-    [
-      clearFallbackTimeout,
-      jobId,
-      router,
-    ],
+    [clearFallbackTimeout, jobId, router],
   )
 
   useServerSentEvents<SeedTaskProgress>({

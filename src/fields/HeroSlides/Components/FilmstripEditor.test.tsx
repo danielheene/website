@@ -58,10 +58,7 @@ vi.mock('@payloadcms/ui', () => ({
         >,
       ],
     ) => unknown,
-  ) =>
-    selector([
-      {},
-    ]),
+  ) => selector([{}]),
   toast: {
     error: vi.fn(),
   },

@@ -193,10 +193,7 @@ describe('HeroSlidesField', () => {
 
     expect(media).toBeDefined()
     expect(media?.type).toBe('upload')
-    expect(media?.relationTo).toEqual([
-      'images',
-      'videos',
-    ])
+    expect(media?.relationTo).toEqual(['images', 'videos'])
     expect(media?.hasMany).toBeFalsy()
   })
 

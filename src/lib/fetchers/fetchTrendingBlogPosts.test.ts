@@ -75,10 +75,7 @@ describe('fetchTrendingBlogPosts', () => {
       ],
     })
     findMock.mockResolvedValue({
-      docs: [
-        docFor('foo'),
-        docFor('bar'),
-      ],
+      docs: [docFor('foo'), docFor('bar')],
     })
 
     const result = await fetchTrendingBlogPosts({
@@ -118,11 +115,7 @@ describe('fetchTrendingBlogPosts', () => {
       ],
     })
     findMock.mockResolvedValue({
-      docs: [
-        docFor('low'),
-        docFor('high'),
-        docFor('mid'),
-      ],
+      docs: [docFor('low'), docFor('high'), docFor('mid')],
     })
 
     const result = await fetchTrendingBlogPosts({
@@ -167,10 +160,7 @@ describe('fetchTrendingBlogPosts', () => {
       ],
     })
     findMock.mockResolvedValue({
-      docs: [
-        docFor('a'),
-        docFor('b'),
-      ],
+      docs: [docFor('a'), docFor('b')],
     })
 
     const result = await fetchTrendingBlogPosts({
@@ -211,10 +201,7 @@ describe('fetchTrendingBlogPosts', () => {
     })
     // 'b' has no matching document (deleted/unpublished).
     findMock.mockResolvedValue({
-      docs: [
-        docFor('a'),
-        docFor('c'),
-      ],
+      docs: [docFor('a'), docFor('c')],
     })
 
     const result = await fetchTrendingBlogPosts({
@@ -251,10 +238,7 @@ describe('fetchTrendingBlogPosts', () => {
     })
     // Query returns docs in a different order than the ranking.
     findMock.mockResolvedValue({
-      docs: [
-        docFor('c'),
-        docFor('a'),
-      ],
+      docs: [docFor('c'), docFor('a')],
     })
 
     const result = await fetchTrendingBlogPosts({
@@ -303,9 +287,7 @@ describe('fetchTrendingBlogPosts', () => {
       },
     ])
     findMock.mockResolvedValue({
-      docs: [
-        docFor('cached'),
-      ],
+      docs: [docFor('cached')],
     })
 
     const result = await fetchTrendingBlogPosts({
@@ -356,9 +338,7 @@ describe('fetchTrendingBlogPosts', () => {
       ],
     })
     findMock.mockResolvedValue({
-      docs: [
-        docFor('foo'),
-      ],
+      docs: [docFor('foo')],
     })
 
     await fetchTrendingBlogPosts({

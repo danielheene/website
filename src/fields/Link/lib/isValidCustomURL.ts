@@ -3,12 +3,7 @@
  * script-bearing (`javascript:`, `data:`) must never reach an href built from
  * editor input.
  */
-const ALLOWED_PROTOCOLS = [
-  'http:',
-  'https:',
-  'mailto:',
-  'tel:',
-]
+const ALLOWED_PROTOCOLS = ['http:', 'https:', 'mailto:', 'tel:']
 
 /**
  * Placeholder origin used to resolve relative candidates. `.invalid` is

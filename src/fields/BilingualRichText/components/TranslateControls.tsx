@@ -116,11 +116,7 @@ export const TranslateControls: UIFieldClientComponent = ({
         toast.error(extractErrorMessage(error))
       }
     },
-    [
-      collectionSlug,
-      docId,
-      path,
-    ],
+    [collectionSlug, docId, path],
   )
 
   const translate = useCallback(
@@ -142,10 +138,7 @@ export const TranslateControls: UIFieldClientComponent = ({
 
       void runTranslate(source, target, sourceValue, setIsTranslating, setJobId)
     },
-    [
-      openModal,
-      runTranslate,
-    ],
+    [openModal, runTranslate],
   )
 
   /**
@@ -173,10 +166,7 @@ export const TranslateControls: UIFieldClientComponent = ({
       )
       await reset(nextData)
     },
-    [
-      getData,
-      reset,
-    ],
+    [getData, reset],
   )
 
   /** Builds the SSE `onMessage` handler for one direction: keeps the toast
@@ -221,9 +211,7 @@ export const TranslateControls: UIFieldClientComponent = ({
             setJobId(null)
         }
       },
-    [
-      applyTranslation,
-    ],
+    [applyTranslation],
   )
 
   /**

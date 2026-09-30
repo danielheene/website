@@ -44,12 +44,7 @@ export const paragraph = (
   indent: 0,
   textFormat: 0,
   textStyle: '',
-  children:
-    typeof children === 'string'
-      ? [
-          text(children),
-        ]
-      : children,
+  children: typeof children === 'string' ? [text(children)] : children,
 })
 
 export const heading = (value: string, tag: 'h2' | 'h3' | 'h4' = 'h2') => ({
@@ -59,9 +54,7 @@ export const heading = (value: string, tag: 'h2' | 'h3' | 'h4' = 'h2') => ({
   format: '',
   indent: 0,
   tag,
-  children: [
-    text(value),
-  ],
+  children: [text(value)],
 })
 
 export const quote = (value: string) => ({
@@ -70,9 +63,7 @@ export const quote = (value: string) => ({
   direction: 'ltr',
   format: '',
   indent: 0,
-  children: [
-    text(value),
-  ],
+  children: [text(value)],
 })
 
 /**
@@ -99,9 +90,7 @@ export const link = (value: string, url: string) => ({
     url,
     text: value,
   },
-  children: [
-    text(value),
-  ],
+  children: [text(value)],
 })
 
 export const list = (
@@ -124,12 +113,7 @@ export const list = (
     indent: 0,
     value: index + 1,
     checked: listType === 'check' ? index % 2 === 0 : undefined,
-    children:
-      typeof item === 'string'
-        ? [
-            text(item),
-          ]
-        : item,
+    children: typeof item === 'string' ? [text(item)] : item,
   })),
 })
 
@@ -208,10 +192,6 @@ export const pick = <T>(random: Random, items: readonly T[]): T =>
   items[Math.floor(random() * items.length)]
 
 export const pickSome = <T>(random: Random, items: readonly T[], count: number): T[] =>
-  [
-    ...items,
-  ]
-    .sort(() => random() - 0.5)
-    .slice(0, count)
+  [...items].sort(() => random() - 0.5).slice(0, count)
 
 export const chance = (random: Random, probability: number) => random() < probability

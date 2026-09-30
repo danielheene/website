@@ -118,10 +118,7 @@ describe('referencesPlugin', () => {
   })
 
   it('guards every tracked collection by default, not only media', () => {
-    const config = applyPlugin([
-      CollectionSlug.BlogTopics,
-      CollectionSlug.MediaImages,
-    ])
+    const config = applyPlugin([CollectionSlug.BlogTopics, CollectionSlug.MediaImages])
 
     expect(hasDeleteGuard(config, CollectionSlug.MediaImages)).toBe(true)
     // the behaviour this change adds: a topic in use is protected too
@@ -129,9 +126,7 @@ describe('referencesPlugin', () => {
   })
 
   it('never guards or tracks the bookkeeping table itself', () => {
-    const config = applyPlugin([
-      CollectionSlug.DocumentReferences,
-    ])
+    const config = applyPlugin([CollectionSlug.DocumentReferences])
 
     expect(hasDeleteGuard(config, CollectionSlug.DocumentReferences)).toBe(false)
     expect(
@@ -140,26 +135,16 @@ describe('referencesPlugin', () => {
   })
 
   it('narrows the guard when guardedCollections is given', () => {
-    const config = applyPlugin(
-      [
-        CollectionSlug.BlogTopics,
-        CollectionSlug.MediaImages,
-      ],
-      {
-        guardedCollections: [
-          CollectionSlug.MediaImages,
-        ],
-      },
-    )
+    const config = applyPlugin([CollectionSlug.BlogTopics, CollectionSlug.MediaImages], {
+      guardedCollections: [CollectionSlug.MediaImages],
+    })
 
     expect(hasDeleteGuard(config, CollectionSlug.MediaImages)).toBe(true)
     expect(hasDeleteGuard(config, CollectionSlug.BlogTopics)).toBe(false)
   })
 
   it('blocks deleting a document that another document still references', async () => {
-    const config = applyPlugin([
-      CollectionSlug.BlogTopics,
-    ])
+    const config = applyPlugin([CollectionSlug.BlogTopics])
 
     await expect(
       runGuard(config, CollectionSlug.BlogTopics, [
@@ -172,9 +157,7 @@ describe('referencesPlugin', () => {
   })
 
   it('names the blocking documents by label and title rather than id', async () => {
-    const config = applyPlugin([
-      CollectionSlug.MediaImages,
-    ])
+    const config = applyPlugin([CollectionSlug.MediaImages])
 
     await expect(
       runGuard(
@@ -195,9 +178,7 @@ describe('referencesPlugin', () => {
   })
 
   it('falls back to the id when the title cannot be resolved', async () => {
-    const config = applyPlugin([
-      CollectionSlug.MediaImages,
-    ])
+    const config = applyPlugin([CollectionSlug.MediaImages])
 
     await expect(
       runGuard(config, CollectionSlug.MediaImages, [
@@ -210,9 +191,7 @@ describe('referencesPlugin', () => {
   })
 
   it('summarises the remainder past the listed limit', async () => {
-    const config = applyPlugin([
-      CollectionSlug.MediaImages,
-    ])
+    const config = applyPlugin([CollectionSlug.MediaImages])
 
     const usages = Array.from(
       {
@@ -230,9 +209,7 @@ describe('referencesPlugin', () => {
   })
 
   it('does not let a redirect pointing at a document block its deletion', async () => {
-    const config = applyPlugin([
-      CollectionSlug.BlogPosts,
-    ])
+    const config = applyPlugin([CollectionSlug.BlogPosts])
 
     await expect(
       runGuard(config, CollectionSlug.BlogPosts, [
@@ -245,9 +222,7 @@ describe('referencesPlugin', () => {
   })
 
   it('records references from an upload field nested in a block', async () => {
-    const config = applyPlugin([
-      CollectionSlug.Pages,
-    ])
+    const config = applyPlugin([CollectionSlug.Pages])
 
     const created: Record<string, unknown>[] = []
     const payload = {
@@ -312,9 +287,7 @@ describe('referencesPlugin', () => {
     }
 
     const config = referencesPlugin()({
-      collections: [
-        failing,
-      ],
+      collections: [failing],
       globals: [],
     } as unknown as Config) as Config
 
@@ -359,9 +332,7 @@ describe('referencesPlugin', () => {
   })
 
   it('still blocks when a real usage accompanies a redirect', async () => {
-    const config = applyPlugin([
-      CollectionSlug.BlogPosts,
-    ])
+    const config = applyPlugin([CollectionSlug.BlogPosts])
 
     await expect(
       runGuard(config, CollectionSlug.BlogPosts, [

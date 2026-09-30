@@ -1,5 +1,4 @@
 import type { TaskHandler } from 'payload'
-
 import { formatAdminURL } from 'payload/shared'
 
 import { wrapHandler } from '@/jobs-queue/lib/withJobObservability'

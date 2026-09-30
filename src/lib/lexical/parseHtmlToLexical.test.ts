@@ -21,10 +21,7 @@ describe('parseHtmlToLexical', () => {
     const paragraph = firstParagraph(parseHtmlToLexical('<p>Hello <strong>world</strong></p>'))
 
     expect(paragraph.type).toBe('paragraph')
-    expect(paragraph.children?.map((node) => node.text)).toEqual([
-      'Hello ',
-      'world',
-    ])
+    expect(paragraph.children?.map((node) => node.text)).toEqual(['Hello ', 'world'])
     const boldNode = paragraph.children?.[1]
     expect((boldNode?.format ?? 0) & 1).toBe(1) // IS_BOLD bit
   })

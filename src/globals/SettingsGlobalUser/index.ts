@@ -23,10 +23,7 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
     update: authenticated,
   },
   hooks: {
-    afterChange: [
-      revalidateDocument,
-      generateResumeDocumentHook,
-    ],
+    afterChange: [revalidateDocument, generateResumeDocumentHook],
   },
   admin: {
     group: AdminGroup.Settings,
@@ -57,9 +54,7 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                     {
                       name: 'regular',
                       type: 'upload',
-                      relationTo: [
-                        CollectionSlug.MediaImages,
-                      ],
+                      relationTo: [CollectionSlug.MediaImages],
                       defaultValue: null,
                       admin: {
                         width: '50%',
@@ -68,9 +63,7 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                     {
                       name: 'duotone',
                       type: 'upload',
-                      relationTo: [
-                        CollectionSlug.MediaImages,
-                      ],
+                      relationTo: [CollectionSlug.MediaImages],
                       defaultValue: null,
                       admin: {
                         width: '50%',

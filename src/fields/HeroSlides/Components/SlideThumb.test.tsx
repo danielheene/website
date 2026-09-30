@@ -25,16 +25,7 @@ const setFormFields = (next: FieldStateStub) => {
 }
 
 vi.mock('@payloadcms/ui', () => ({
-  useFormFields: (
-    selector: (
-      args: [
-        FieldStateStub,
-      ],
-    ) => unknown,
-  ) =>
-    selector([
-      formFields,
-    ]),
+  useFormFields: (selector: (args: [FieldStateStub]) => unknown) => selector([formFields]),
 }))
 
 vi.mock('@/components/Icon', () => ({

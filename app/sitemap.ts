@@ -179,10 +179,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ),
     )
 
-  return [
-    ...pageEntries,
-    ...blogEntries,
-    ...topicEntries,
-    ...postEntries,
-  ]
+  return [...pageEntries, ...blogEntries, ...topicEntries, ...postEntries]
 }

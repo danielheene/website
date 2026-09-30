@@ -35,13 +35,7 @@ export type SerializedIconNode = Spread<
 export abstract class BaseIconNode<TDecorated> extends DecoratorNode<TDecorated> {
   __iconName: string
 
-  constructor({
-    iconName,
-    key,
-  }: {
-    iconName: string
-    key?: NodeKey
-  }) {
+  constructor({ iconName, key }: { iconName: string; key?: NodeKey }) {
     super(key)
     this.__iconName = iconName
   }
@@ -55,10 +49,7 @@ export abstract class BaseIconNode<TDecorated> extends DecoratorNode<TDecorated>
    * `importJSON` produce the right node without either subclass restating them.
    */
   static clone<TNode extends BaseIconNode<unknown>>(
-    this: new (args: {
-      iconName: string
-      key?: NodeKey
-    }) => TNode,
+    this: new (args: { iconName: string; key?: NodeKey }) => TNode,
     node: TNode,
   ): TNode {
     return new this({
@@ -68,10 +59,7 @@ export abstract class BaseIconNode<TDecorated> extends DecoratorNode<TDecorated>
   }
 
   static importJSON<TNode extends BaseIconNode<unknown>>(
-    this: new (args: {
-      iconName: string
-      key?: NodeKey
-    }) => TNode,
+    this: new (args: { iconName: string; key?: NodeKey }) => TNode,
     serializedNode: SerializedIconNode,
   ): TNode {
     return new this({

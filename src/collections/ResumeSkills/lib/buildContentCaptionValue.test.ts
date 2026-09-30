@@ -67,11 +67,7 @@ describe('buildContentCaptionValue', () => {
     ])
   })
 
-  it.each([
-    undefined,
-    '',
-    '   ',
-  ])('treats %j as no caption', (caption) => {
+  it.each([undefined, '', '   '])('treats %j as no caption', (caption) => {
     const paragraph = paragraphOf(buildContentCaptionValue('TypeScript', caption))
 
     expect(paragraph.children).toHaveLength(1)
@@ -85,15 +81,10 @@ describe('buildContentCaptionValue', () => {
       children: string
     }>
     type Paragraph = ReactElement<{
-      children: [
-        Run,
-        string,
-      ]
+      children: [Run, string]
     }>
 
-    const [paragraph] = lexicalToJSX(value) as unknown as [
-      Paragraph,
-    ]
+    const [paragraph] = lexicalToJSX(value) as unknown as [Paragraph]
     const [contentRun, captionRun] = paragraph.props.children
 
     expect(contentRun.props.style).toEqual({
