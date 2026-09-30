@@ -1,6 +1,6 @@
 import type { CollectionBeforeChangeHook } from 'payload'
 
-import { fetchAnthropicImageAltText } from '@/lib/fetchAnthropicImageAltText'
+import { fetchAnthropicImageAltText } from '@/lib/anthropic/fetchImageAltText'
 
 /**
  * Generate alt text for a media image.

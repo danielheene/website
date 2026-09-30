@@ -2,10 +2,12 @@ import type { AccessArgs, CollectionConfig, FilterOptionsProps } from 'payload'
 
 import { startCase } from 'lodash-es'
 
-import { authenticated } from '@/access/authenticated'
-import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 import { BLOCK_SLUGS } from '@/blocks'
 import { revalidatePage } from '@/collections/Pages/hooks/revalidatePage'
+import {
+  hideVersionsTabForSingleVersion,
+  SINGLE_VERSION_DRAFTS,
+} from '@/collections/shared/singleVersionDrafts'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { HeroSlidesField } from '@/fields/HeroSlides'
 import { MetaField } from '@/fields/Meta'
@@ -14,6 +16,8 @@ import { RichTextField } from '@/fields/RichText'
 import { SectionGroupField } from '@/fields/SectionGroup'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
+import { authenticated } from '@/lib/access/authenticated'
+import { authenticatedOrPublished } from '@/lib/access/authenticatedOrPublished'
 import { generatePreviewPath } from '@/lib/generatePreviewPath'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
@@ -54,6 +58,14 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
   admin: {
     group: AdminGroup.General,
     useAsTitle: 'title',
+    pagination: {
+      defaultLimit: 25,
+      limits: [
+        25,
+        50,
+        100,
+      ],
+    },
     defaultColumns: [
       'title',
       'slug',
@@ -77,6 +89,15 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
               },
             ]
           : [],
+      views: {
+        edit: {
+          versions: {
+            tab: {
+              condition: hideVersionsTabForSingleVersion,
+            },
+          },
+        },
+      },
     },
   },
   fields: [
@@ -216,11 +237,5 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
     ],
   },
   trash: true,
-  versions: {
-    drafts: {
-      autosave: false,
-      schedulePublish: true,
-    },
-    maxPerDoc: 50,
-  },
+  versions: SINGLE_VERSION_DRAFTS,
 }

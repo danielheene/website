@@ -12,7 +12,7 @@ vi.mock('@ai-sdk/anthropic', () => ({
   }),
 }))
 
-const { fetchAnthropicExcerpt } = await import('./fetchAnthropicExcerpt')
+const { fetchAnthropicExcerpt } = await import('./fetchExcerpt')
 
 const paragraphDocument = (text: string) => ({
   root: {

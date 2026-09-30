@@ -23,5 +23,6 @@ export const generateReadingTime: CollectionBeforeChangeHook<BlogPostData> = asy
   return {
     ...data,
     readingTime,
+    wordCount: words.length,
   }
 }

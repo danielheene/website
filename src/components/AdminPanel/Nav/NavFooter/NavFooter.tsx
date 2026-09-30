@@ -18,7 +18,7 @@ import { cn } from 'tailwind-variants'
 
 import { Icon } from '@/components/Icon'
 import { Switch } from '@/components/Switch'
-import { useOwnTracking } from '@/hooks/use-own-tracking'
+import { useOwnTracking } from '@/lib/hooks/useOwnTracking'
 
 import './NavFooter.styles.css'
 

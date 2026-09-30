@@ -49,55 +49,77 @@ services:
       <<: *healthcheck-props
       test: [ "CMD-SHELL", "curl -f http://127.0.0.1:9000/health" ]
 
+  # Uses the AWS CLI (speaks plain S3 against RustFS) rather than MinIO's own
+  # `mc` client — minio/mc was pulled from both Docker Hub and quay.io in
+  # late 2025 when MinIO went source-only, so an `mc`-based image can no
+  # longer be pulled at all.
   create-bucket:
-    image: minio/mc:RELEASE.2025-08-13T08-35-41Z
+    image: amazon/aws-cli:2.36.49
     restart: "no"
     depends_on:
       storage:
         condition: service_healthy
     environment:
-      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
-      S3_SECRET_KEY: ${S3_SECRET_KEY}
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY}
+      AWS_DEFAULT_REGION: ${S3_REGION}
       S3_BUCKET: ${S3_BUCKET}
     configs:
       - source: cors.json
         target: /tmp/cors.json
+      - source: bucket-policy.json
+        target: /tmp/bucket-policy.json
     entrypoint:
-      - /bin/sh
+      - /bin/bash
       - -c
       - |
         set -e
 
-        until mc alias set storage http://storage:9000 $${S3_ACCESS_KEY} $${S3_SECRET_KEY}; do
+        until aws --endpoint-url http://storage:9000 s3api list-buckets >/dev/null 2>&1; do
           echo 'storage is not ready yet, retrying in 2 seconds...'
           sleep 2
         done
 
         echo 'create bucket if not exists'
-        mc mb storage/$${S3_BUCKET} --ignore-existing
+        aws --endpoint-url http://storage:9000 s3api head-bucket --bucket "$$S3_BUCKET" 2>/dev/null \
+          || aws --endpoint-url http://storage:9000 s3api create-bucket --bucket "$$S3_BUCKET"
 
         echo 'set policy PUBLIC (download only) for bucket'
-        mc anonymous set download storage/$${S3_BUCKET}
+        aws --endpoint-url http://storage:9000 s3api put-bucket-policy --bucket "$$S3_BUCKET" --policy file:///tmp/bucket-policy.json
 
         echo 'set cors rules'
-        mc cors set storage/$${S3_BUCKET} /tmp/cors.json
+        aws --endpoint-url http://storage:9000 s3api put-bucket-cors --bucket "$$S3_BUCKET" --cors-configuration file:///tmp/cors.json
 
 configs:
   cors.json:
     content: |
-      <CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2020-10-22/">
-        <CORSRule>
-          <AllowedOrigin>http://localhost:3000</AllowedOrigin>
-          <AllowedOrigin>https://daniel.heene.io</AllowedOrigin>
-          <AllowedOrigin>https://daniel.heene.dev</AllowedOrigin>
-          <AllowedOrigin>https://daniel.heene.nexus</AllowedOrigin>
-          <AllowedMethod>GET</AllowedMethod>
-          <AllowedMethod>PUT</AllowedMethod>
-          <AllowedMethod>POST</AllowedMethod>
-          <AllowedMethod>HEAD</AllowedMethod>
-          <AllowedHeader>*</AllowedHeader>
-        </CORSRule>
-      </CORSConfiguration>
+      {
+        "CORSRules": [
+          {
+            "AllowedOrigins": [
+              "http://localhost:3000",
+              "https://daniel.heene.io",
+              "https://daniel.heene.dev",
+              "https://daniel.heene.nexus"
+            ],
+            "AllowedMethods": [ "GET", "PUT", "POST", "HEAD" ],
+            "AllowedHeaders": [ "*" ]
+          }
+        ]
+      }
+  bucket-policy.json:
+    content: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": [ "s3:GetObject" ],
+            "Resource": [ "arn:aws:s3:::${S3_BUCKET}/*" ]
+          }
+        ]
+      }
 
 volumes:
   mongo-data:

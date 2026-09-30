@@ -1,7 +1,9 @@
 import { CollectionConfig } from 'payload'
 
-import { authenticated } from '@/access/authenticated'
-import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
+import {
+  hideVersionsTabForSingleVersion,
+  SINGLE_VERSION_DRAFTS,
+} from '@/collections/shared/singleVersionDrafts'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { HeroSlidesField } from '@/fields/HeroSlides'
 import { LinkGroupField } from '@/fields/LinkGroup'
@@ -9,11 +11,14 @@ import { MetaField } from '@/fields/Meta'
 import { RichTextField } from '@/fields/RichText'
 import { SlugField } from '@/fields/Slug'
 import { TitleField } from '@/fields/Title'
+import { authenticated } from '@/lib/access/authenticated'
+import { authenticatedOrPublished } from '@/lib/access/authenticatedOrPublished'
 import { generatePreviewPath } from '@/lib/generatePreviewPath'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 import { BlogPostData } from '@/types/payload'
 
+import { generateExcerpt } from './hooks/generateExcerpt'
 import { generateReadingTime } from './hooks/generateReadingTime'
 import { revalidateBlogPost } from './hooks/revalidateBlogPost'
 
@@ -40,6 +45,14 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
   admin: {
     group: AdminGroup.Blog,
     useAsTitle: 'title',
+    pagination: {
+      defaultLimit: 25,
+      limits: [
+        25,
+        50,
+        100,
+      ],
+    },
     defaultColumns: [
       'title',
       'slug',
@@ -65,11 +78,21 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
               },
             ]
           : [],
+      views: {
+        edit: {
+          versions: {
+            tab: {
+              condition: hideVersionsTabForSingleVersion,
+            },
+          },
+        },
+      },
     },
   },
   hooks: {
     beforeChange: [
       generateReadingTime,
+      generateExcerpt,
     ],
     afterChange: [
       revalidateBlogPost,
@@ -119,12 +142,41 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
     },
 
     {
-      name: 'readingTime',
-      type: 'number',
-      label: 'Estimated Reading Time (min)',
+      type: 'row',
       admin: {
-        hidden: true,
         position: 'sidebar',
+      },
+      fields: [
+        {
+          name: 'readingTime',
+          type: 'number',
+          label: 'Reading Time (min)',
+          admin: {
+            readOnly: true,
+            width: '50%',
+          },
+        },
+        {
+          name: 'wordCount',
+          type: 'number',
+          label: 'Word Count',
+          admin: {
+            readOnly: true,
+            width: '50%',
+          },
+        },
+      ],
+    },
+
+    {
+      name: 'excerpt',
+      type: 'textarea',
+      label: 'Excerpt',
+      admin: {
+        position: 'sidebar',
+        readOnly: true,
+        description:
+          'Used for post listings. Computed from the content before the Read More marker, or the first 50 words when none is set.',
       },
     },
 
@@ -162,11 +214,5 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
     GeneratorFlagsField(),
   ],
   trash: true,
-  versions: {
-    drafts: {
-      autosave: false,
-      schedulePublish: true,
-    },
-    maxPerDoc: 50,
-  },
+  versions: SINGLE_VERSION_DRAFTS,
 }

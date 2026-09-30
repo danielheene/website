@@ -102,6 +102,7 @@ export interface Config {
   };
   blocks: {
     CodeBlock: CodeBlock;
+    HighlightBoxBlock: HighlightBoxBlock;
     LinkGroupBlock: LinkGroupBlock;
     OneColumnContentBlock: OneColumnContentBlock;
     TwoColumnContentBlock: TwoColumnContentBlock;
@@ -282,6 +283,30 @@ export interface CodeBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HighlightBoxBlock".
+ */
+export interface HighlightBoxBlock {
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'HighlightBoxBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "LinkGroupBlock".
  */
 export interface LinkGroupBlock {
@@ -371,6 +396,7 @@ export interface Page {
   content?:
     | (
         | CodeBlock
+        | HighlightBoxBlock
         | LinkGroupBlock
         | OneColumnContentBlock
         | TwoColumnContentBlock
@@ -827,6 +853,11 @@ export interface BlogPostData {
       | null;
   };
   readingTime?: number | null;
+  wordCount?: number | null;
+  /**
+   * Used for post listings. Computed from the content before the Read More marker, or the first 50 words when none is set.
+   */
+  excerpt?: string | null;
   content?: {
     root: {
       type: string;
@@ -943,6 +974,7 @@ export interface Topic {
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1099,6 +1131,7 @@ export interface ResumeCustomerData {
   )[];
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1373,6 +1406,7 @@ export interface ResumeJobData {
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1384,6 +1418,7 @@ export interface ResumeSkillTagData {
   icon?: string | null;
   title: string;
   slug: string;
+  type?: SkillType;
   interval?: number | null;
   generatorFlags?: (
     | 'resume-asset'
@@ -1397,6 +1432,7 @@ export interface ResumeSkillTagData {
   )[];
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1786,6 +1822,8 @@ export interface PostsSelect<T extends boolean = true> {
             };
       };
   readingTime?: T;
+  wordCount?: T;
+  excerpt?: T;
   content?: T;
   links?:
     | T
@@ -1852,6 +1890,7 @@ export interface TopicsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2033,6 +2072,7 @@ export interface ResumeCustomersSelect<T extends boolean = true> {
   generatorFlags?: T;
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2079,6 +2119,7 @@ export interface ResumeJobsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2125,10 +2166,12 @@ export interface ResumeSkillTagsSelect<T extends boolean = true> {
   icon?: T;
   title?: T;
   slug?: T;
+  type?: T;
   interval?: T;
   generatorFlags?: T;
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3126,8 +3169,20 @@ export interface TaskSchedulePublish {
           value: string | BlogPostData;
         } | null)
       | ({
+          relationTo: 'topics';
+          value: string | Topic;
+        } | null)
+      | ({
           relationTo: 'pages';
           value: string | Page;
+        } | null)
+      | ({
+          relationTo: 'resume-customers';
+          value: string | ResumeCustomerData;
+        } | null)
+      | ({
+          relationTo: 'resume-jobs';
+          value: string | ResumeJobData;
         } | null)
       | ({
           relationTo: 'resume-projects';
@@ -3136,6 +3191,10 @@ export interface TaskSchedulePublish {
       | ({
           relationTo: 'resume-skills';
           value: string | ResumeSkillData;
+        } | null)
+      | ({
+          relationTo: 'resume-skill-tags';
+          value: string | ResumeSkillTagData;
         } | null);
     global?: string | null;
     user?: {

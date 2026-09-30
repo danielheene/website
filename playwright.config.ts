@@ -63,5 +63,14 @@ export default defineConfig({
         timeout: 180_000,
         stdout: 'pipe',
         stderr: 'pipe',
+        // next.config.ts's experimental.allowDevelopmentBuild throws unless
+        // NODE_ENV is explicitly 'development'. .env.test sets NODE_ENV=test
+        // for the rest of the suite, which `next dev` otherwise inherits
+        // as-is instead of defaulting it itself — override it for just this
+        // spawned process.
+        env: {
+          ...process.env,
+          NODE_ENV: 'development',
+        },
       },
 })

@@ -1,9 +1,14 @@
 import type { CollectionConfig } from 'payload'
 
-import { authenticated } from '@/access/authenticated'
+import {
+  hideVersionsTabForSingleVersion,
+  SINGLE_VERSION_DRAFTS,
+} from '@/collections/shared/singleVersionDrafts'
 import { BilingualRichTextField } from '@/fields/BilingualRichText'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
-import { generateResumeDocumentHook } from '@/lib/hooks/collection'
+import { authenticated } from '@/lib/access/authenticated'
+import { authenticatedOrPublished } from '@/lib/access/authenticatedOrPublished'
+import { generateResumeDocumentHook } from '@/lib/payloadHooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 
@@ -20,7 +25,7 @@ export const ResumeJobs: CollectionConfig<CollectionSlug['ResumeJobs']> = {
     interface: 'ResumeJobData',
   },
   access: {
-    read: authenticated,
+    read: authenticatedOrPublished,
     update: authenticated,
     create: authenticated,
     delete: authenticated,
@@ -36,6 +41,13 @@ export const ResumeJobs: CollectionConfig<CollectionSlug['ResumeJobs']> = {
   admin: {
     useAsTitle: 'employer',
     group: AdminGroup.Resume,
+    pagination: {
+      defaultLimit: 50,
+      limits: [
+        50,
+        100,
+      ],
+    },
     defaultColumns: [
       'employer',
       'title',
@@ -44,6 +56,17 @@ export const ResumeJobs: CollectionConfig<CollectionSlug['ResumeJobs']> = {
       'interval',
     ],
     disableCopyToLocale: true,
+    components: {
+      views: {
+        edit: {
+          versions: {
+            tab: {
+              condition: hideVersionsTabForSingleVersion,
+            },
+          },
+        },
+      },
+    },
   },
   defaultSort: [
     'startDate',
@@ -190,5 +213,5 @@ export const ResumeJobs: CollectionConfig<CollectionSlug['ResumeJobs']> = {
     GeneratorFlagsField(),
   ],
   trash: true,
-  versions: false,
+  versions: SINGLE_VERSION_DRAFTS,
 }

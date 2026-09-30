@@ -2,8 +2,8 @@ import type { FieldHookArgs } from 'payload'
 
 import { isEqual } from 'lodash-es'
 
-import { fetchMapboxAddressData } from '@/lib/fetchMapboxAddressData'
-import { fetchMapboxCoordinatesData } from '@/lib/fetchMapboxCoordinatesData'
+import { fetchMapboxAddressData } from '@/lib/mapbox/fetchAddressData'
+import { fetchMapboxCoordinatesData } from '@/lib/mapbox/fetchCoordinatesData'
 import type { AddressData } from '@/types/payload'
 
 type BilingualAddress = {

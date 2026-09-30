@@ -20,7 +20,7 @@ export const LinkGroupBlockRenderer = ({
         className,
       ])}
     >
-      {links.map(({ id, link }) => (
+      {(links ?? []).map(({ id, link }) => (
         <li key={id}>
           <CMSLink {...link} />
         </li>

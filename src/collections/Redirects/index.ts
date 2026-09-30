@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
-import { anyone } from '@/access/anyone'
-import { authenticated } from '@/access/authenticated'
+import { anyone } from '@/lib/access/anyone'
+import { authenticated } from '@/lib/access/authenticated'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 
@@ -58,6 +58,14 @@ export const Redirects: CollectionConfig = {
   admin: {
     group: AdminGroup.Settings,
     useAsTitle: 'from',
+    pagination: {
+      defaultLimit: 25,
+      limits: [
+        25,
+        50,
+        100,
+      ],
+    },
     defaultColumns: [
       'from',
       'type',

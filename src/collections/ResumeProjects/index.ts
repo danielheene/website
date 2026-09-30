@@ -1,10 +1,14 @@
 import { CollectionConfig } from 'payload'
 
-import { authenticated } from '@/access/authenticated'
-import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
+import {
+  hideVersionsTabForSingleVersion,
+  SINGLE_VERSION_DRAFTS,
+} from '@/collections/shared/singleVersionDrafts'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { RichTextField } from '@/fields/RichText'
-import { generateResumeDocumentHook } from '@/lib/hooks/collection'
+import { authenticated } from '@/lib/access/authenticated'
+import { authenticatedOrPublished } from '@/lib/access/authenticatedOrPublished'
+import { generateResumeDocumentHook } from '@/lib/payloadHooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 
@@ -33,6 +37,24 @@ export const ResumeProjects: CollectionConfig<CollectionSlug['ResumeProjects']> 
     useAsTitle: 'title',
     group: AdminGroup.Resume,
     disableCopyToLocale: true,
+    pagination: {
+      defaultLimit: 50,
+      limits: [
+        50,
+        100,
+      ],
+    },
+    components: {
+      views: {
+        edit: {
+          versions: {
+            tab: {
+              condition: hideVersionsTabForSingleVersion,
+            },
+          },
+        },
+      },
+    },
   },
   disableBulkEdit: true,
   disableDuplicate: true,
@@ -93,11 +115,5 @@ export const ResumeProjects: CollectionConfig<CollectionSlug['ResumeProjects']> 
     GeneratorFlagsField(),
   ],
   trash: true,
-  versions: {
-    drafts: {
-      autosave: false,
-      schedulePublish: true,
-    },
-    maxPerDoc: 50,
-  },
+  versions: SINGLE_VERSION_DRAFTS,
 }

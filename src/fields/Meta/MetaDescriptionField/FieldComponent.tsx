@@ -2,7 +2,7 @@ import type { TextFieldServerComponent, TextFieldServerProps } from 'payload'
 
 import { get } from 'lodash-es'
 
-import { fetchAnthropicMetaDescription } from '@/lib/fetchAnthropicMetaDescription'
+import { fetchAnthropicMetaDescription } from '@/lib/anthropic/fetchMetaDescription'
 import { generateContentURL } from '@/lib/generateContentURL'
 
 import { FieldComponentClient } from './FieldComponent.client'

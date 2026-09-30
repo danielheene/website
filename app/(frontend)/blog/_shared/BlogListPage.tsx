@@ -176,6 +176,16 @@ const PostCard = ({ post }: { post: BlogPostData }) => {
           >
             {post.title}
           </h2>
+          {post.excerpt && (
+            <p
+              className={cn([
+                'text-background/80 mt-1 line-clamp-2 text-sm font-normal',
+                'dark:text-foreground/80',
+              ])}
+            >
+              {post.excerpt}
+            </p>
+          )}
         </header>
       </div>
     </Link>

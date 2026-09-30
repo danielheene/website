@@ -4,15 +4,15 @@ import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintex
 
 import { truncate } from 'lodash-es'
 
-import { authenticated } from '@/access/authenticated'
-import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
+import { hideVersionsTabForSingleVersion } from '@/collections/shared/singleVersionDrafts'
 import { BilingualRichTextField } from '@/fields/BilingualRichText'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
-import { generateResumeDocumentHook } from '@/lib/hooks/collection'
-import { translate } from '@/lib/i18n'
+import { SkillTypeField } from '@/fields/SkillType'
+import { authenticated } from '@/lib/access/authenticated'
+import { authenticatedOrPublished } from '@/lib/access/authenticatedOrPublished'
+import { generateResumeDocumentHook } from '@/lib/payloadHooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
-import { SKILL_TYPE } from '@/types/select-options'
 
 import { enqueueSyncSkillSorting } from './hooks/enqueueSyncSkillSorting'
 
@@ -47,6 +47,24 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
       'type',
     ],
     disableCopyToLocale: true,
+    pagination: {
+      defaultLimit: 50,
+      limits: [
+        50,
+        100,
+      ],
+    },
+    components: {
+      views: {
+        edit: {
+          versions: {
+            tab: {
+              condition: hideVersionsTabForSingleVersion,
+            },
+          },
+        },
+      },
+    },
   },
   // defaultPopulate: {
   //   content: {
@@ -116,18 +134,13 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
     },
 
     /* -------------- Sidebar Content -------------- */
-    {
-      name: 'type',
-      type: 'select',
-      interfaceName: 'SkillType',
-      options: Object.values(SKILL_TYPE).map((skillType) => ({
-        label: translate('en', `skill.type.${skillType}`),
-        value: skillType,
-      })),
-      admin: {
-        position: 'sidebar',
+    SkillTypeField({
+      overrides: {
+        admin: {
+          position: 'sidebar',
+        },
       },
-    },
+    }),
     {
       type: 'relationship',
       name: 'skillTags',

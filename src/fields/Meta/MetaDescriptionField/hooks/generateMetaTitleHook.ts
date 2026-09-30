@@ -1,6 +1,6 @@
 import type { FieldHook } from 'payload'
 
-import { fetchAnthropicMetaDescription } from '@/lib/fetchAnthropicMetaDescription'
+import { fetchAnthropicMetaDescription } from '@/lib/anthropic/fetchMetaDescription'
 import { generateContentURL } from '@/lib/generateContentURL'
 
 export const generateMetaDescriptionHook =

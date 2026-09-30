@@ -165,35 +165,32 @@ export default async (phase, { defaultConfig }) => {
     /**
      *    Environment Variables
      *
-     *    Anything listed here is INLINED into the compiled bundle by Next and
-     *    can no longer be changed by the runtime environment.
-     *
-     *    These three are structurally build-time and cannot be made runtime,
-     *    which is worth stating plainly because it is not obvious:
+     *    Anything listed here is inlined into the compiled bundle and can't
+     *    be changed by the runtime environment afterward. These five are
+     *    structurally build-time:
      *
      *      - SENTRY_DSN      → instrumentation-client.ts calls Sentry.init at
      *                          module scope, before any component renders.
      *      - SENTRY_RELEASE  → same module-scope Sentry.init call reads this
      *                          to tag client events with the release. It must
      *                          reach the browser bundle the same way the DSN
-     *                          does, and must be byte-identical to the
-     *                          `release.name` given to withSentryConfig below
-     *                          — that's the value CI's release object is
-     *                          created under.
+     *                          does, and must match `release.name` given to
+     *                          withSentryConfig below byte-for-byte — that's
+     *                          the value CI's release object is created under.
      *      - SERVER_URL      → read by robots.ts and the root layout's
      *                          metadataBase, both of which are prerendered.
      *      - STATUS_PAGE_URL → reaches ServiceStatus through the Footer, which
      *                          renders inside the prerendered shell.
      *      - RESUME_REDIRECT_URL_BASE → read by generateResumeDocumentRedirectURL
-     *                          to generate a redirect URL for a resume document.
+     *                          to build a resume document's redirect URL.
      *
-     *    With `cacheComponents: true` nearly every route has a shell rendered
-     *    at build time, so a process.env read on the server is captured into
-     *    that shell and served from cache — moving the read up the tree does
-     *    not change this. All three are public values (a DSN ships to the
-     *    browser SDK; the other two are this site's own addresses), so the
-     *    cost is that images are environment-specific, not that anything
-     *    secret is baked in.
+     *    With `cacheComponents: true`, nearly every route has a shell
+     *    rendered at build time, so a server-side process.env read gets
+     *    captured into that shell and served from cache — moving the read up
+     *    the tree doesn't change this. All five are public values (a DSN
+     *    ships to the browser SDK; the rest are this site's own addresses),
+     *    so the cost is that a build is environment-specific, not that
+     *    anything secret is baked in.
      *
      *    Everything else — every secret and all server-only config — is read
      *    from the container environment at boot and is genuinely runtime.

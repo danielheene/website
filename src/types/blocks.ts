@@ -31,6 +31,7 @@ export const BlockSlug = {
   TwoColumnContent: 'TwoColumnContentBlock',
   Code: 'CodeBlock',
   LinkGroup: 'LinkGroupBlock',
+  HighlightBox: 'HighlightBoxBlock',
 
   /* blog related blocks */
   TrendingBlogPosts: 'TrendingBlogPostsBlock',

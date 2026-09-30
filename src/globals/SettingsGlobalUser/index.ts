@@ -1,11 +1,11 @@
 import type { GlobalConfig } from 'payload'
 
-import { authenticated } from '@/access/authenticated'
 import { AddressField } from '@/fields/Address'
 import { IconField } from '@/fields/Icon'
 import { SectionGroupField } from '@/fields/SectionGroup'
-import { generateResumeDocumentHook } from '@/lib/hooks/global'
+import { authenticated } from '@/lib/access/authenticated'
 import { translate } from '@/lib/i18n'
+import { generateResumeDocumentHook } from '@/lib/payloadHooks/global'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 import { GlobalSlug } from '@/types/globals'

@@ -22,6 +22,8 @@ import { cn } from 'tailwind-variants'
 // import { BannerBlock } from '@/blocks/Banner/Component'
 // import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { CodeBlockShell } from '@/blocks/CodeBlock/Renderer/CodeBlockShell'
+import { HighlightBox } from '@/blocks/HighlightBoxBlock/Renderer/HighlightBox'
+import { LinkGroupBlockRenderer } from '@/blocks/LinkGroupBlock/Renderer'
 import { Columns } from '@/blocks/TwoColumnContentBlock/Renderer/Columns'
 import { Icon } from '@/components/Icon'
 import { ImageMedia } from '@/components/ImageMedia'
@@ -168,6 +170,13 @@ const buildJsxConverters =
           />
         )
       },
+      /**
+       * WordPress-style "more" marker inserted by ReadMoreFeature. It only
+       * defines where `generateExcerpt` cuts the post for listings — the
+       * published page renders the content continuously, same as WordPress
+       * itself, so this renders nothing.
+       */
+      readMore: () => null,
       blocks: {
         // Shiki is server-only, so highlighting is resolved ahead of render by
         // `highlightRichText` and looked up here. A miss (a caller that did not
@@ -186,6 +195,12 @@ const buildJsxConverters =
         // editor variant, which has no BlocksFeature and so cannot contain
         // code blocks; nothing needs pre-highlighting here.
         [BlockSlug.TwoColumnContent]: ({ node }) => <Columns {...node.fields} />,
+        [BlockSlug.LinkGroup]: ({ node }) => <LinkGroupBlockRenderer {...node.fields} />,
+        // Uses the sync `HighlightBox`, not an async Server Component — this
+        // converter runs on the client. Its content uses the `markdown`
+        // editor variant, which has no BlocksFeature and so cannot contain
+        // code blocks; nothing needs pre-highlighting here.
+        [BlockSlug.HighlightBox]: ({ node }) => <HighlightBox {...node.fields} />,
         // banner: ({ node }) => <BannerBlock className="col-start-2 mb-4" {...node.fields} />,
         // mediaBlock: ({ node }) => (
         //   <MediaBlock

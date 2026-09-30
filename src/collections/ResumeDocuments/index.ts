@@ -2,11 +2,11 @@ import { CollectionConfig, JSONField } from 'payload'
 
 import { cn } from 'tailwind-variants'
 
-import { authenticated } from '@/access/authenticated'
-import { forbidden } from '@/access/forbidden'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { SectionGroupField } from '@/fields/SectionGroup'
 import { TitleField } from '@/fields/Title'
+import { authenticated } from '@/lib/access/authenticated'
+import { forbidden } from '@/lib/access/forbidden'
 import { generateContentURL } from '@/lib/generateContentURL'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
