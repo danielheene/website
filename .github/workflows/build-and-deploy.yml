@@ -258,6 +258,7 @@ jobs:
           else
             names="edge"
           fi
+          # shellcheck disable=SC2001 # sed prefixes every line; ${var//} cannot
           {
             echo "app<<EOF"
             echo "$names" | sed "s#^#${IMAGE_BASE}/app:#"

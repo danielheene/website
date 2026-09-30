@@ -87,6 +87,7 @@ jobs:
       - name: Check generated files are up to date
         run: |
           # payload.config.ts reads the environment when it loads
+          # shellcheck disable=SC2046 # word splitting yields one KEY=value per word
           export $(grep -v '^#' .env.test | grep -v '^$' | xargs)
           pnpm run generate
           git diff --exit-code -- src/types/payload.ts "app/(payload)/admin/importMap.js"
@@ -150,6 +151,7 @@ jobs:
       # upload source maps.
       - name: Compile
         run: |
+          # shellcheck disable=SC2046 # word splitting yields one KEY=value per word
           export $(grep -v '^#' .env.test | grep -v '^$' | xargs)
           pnpm exec next build --experimental-build-mode=compile
         env:
