@@ -46,6 +46,7 @@ import { UnsplashSearch as UnsplashSearch_5e5cb6c43e4b5799bbd5217d983bc5d0 } fro
 import { MediaScopeTabs as MediaScopeTabs_4629bc42a060e6d23d7d57d776e5da7b } from '@/components/AdminPanel/MediaScopeTabs'
 import { default as default_390597f1ad60ab95e5b4fbebc846ccb5 } from '@/fields/SVGUpload/components/FieldComponent'
 import { default as default_ee50e315ea91373bea7c5cab35816793 } from '@/fields/BilingualRichText/components/TranslateControls'
+import { TitleCell as TitleCell_3a407bf736e5866813b6184057396d3e } from '@/collections/ResumeSkills/components/TitleCell'
 import { Cell as Cell_822978a92ed8f57ad8d5da5db15f09dd } from '@/fields/SkillType/components/Cell'
 import { FieldComponent as FieldComponent_413a10a2944a606962b03541e8b89884 } from '@/fields/SkillType/components/FieldComponent'
 import { TitleCell as TitleCell_eab0adc6b2c3bb5719752856cbc2ffde } from '@/collections/ResumeSkillTags/components/TitleCell'
@@ -133,6 +134,7 @@ export const importMap = {
   "@/components/AdminPanel/MediaScopeTabs#MediaScopeTabs": MediaScopeTabs_4629bc42a060e6d23d7d57d776e5da7b,
   "@/fields/SVGUpload/components/FieldComponent#default": default_390597f1ad60ab95e5b4fbebc846ccb5,
   "@/fields/BilingualRichText/components/TranslateControls#default": default_ee50e315ea91373bea7c5cab35816793,
+  "@/collections/ResumeSkills/components/TitleCell#TitleCell": TitleCell_3a407bf736e5866813b6184057396d3e,
   "@/fields/SkillType/components/Cell#Cell": Cell_822978a92ed8f57ad8d5da5db15f09dd,
   "@/fields/SkillType/components/FieldComponent#FieldComponent": FieldComponent_413a10a2944a606962b03541e8b89884,
   "@/collections/ResumeSkillTags/components/TitleCell#TitleCell": TitleCell_eab0adc6b2c3bb5719752856cbc2ffde,

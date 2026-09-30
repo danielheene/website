@@ -76,6 +76,16 @@
     @apply font-mono;
   }
 
+  /* The skill's content is its title, so it takes all remaining width. */
+  .collection-list--resume-skills .cell-title {
+    @apply font-sans;
+    width: 100%;
+
+    a {
+      text-decoration: none;
+    }
+  }
+
   /* Matches the Payload admin form-input look (see the formInput mixin in
    * @payloadcms/ui/dist/scss/vars.scss) for plain inputs and selects that
    * live outside a Payload field wrapper, such as the icon picker search
