@@ -59,7 +59,7 @@ export const ResumeDownloadsBlockClientRenderer = ({
         </div>
         <div className="absolute right-1/2 bottom-0 mr-6 h-min w-[110%] max-w-md translate-x-1/2 md:-right-36 md:mr-0 md:w-3/4 md:max-w-xl md:translate-x-0 lg:mt-auto xl:relative xl:right-0 xl:h-full xl:w-full xl:max-w-full">
           <div className="relative aspect-8/5 h-full min-h-[16rem] w-full">
-            {thumbnails_en
+            {[...thumbnails_en]
               .reverse()
               .map(
                 (thumbnail, index) =>
