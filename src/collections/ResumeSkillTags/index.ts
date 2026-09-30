@@ -113,6 +113,43 @@ export const ResumeSkillTags: CollectionConfig<CollectionSlug['ResumeSkillTags']
       },
     },
 
+    {
+      name: 'relatedJobs',
+      label: 'Related Jobs',
+      type: 'join',
+      collection: CollectionSlug.ResumeJobs,
+      on: 'skillTags',
+      admin: {
+        allowCreate: false,
+        defaultColumns: [
+          'employer',
+          'title',
+          'startDate',
+          'endDate',
+        ],
+        disableGroupBy: true,
+        disableListColumn: true,
+        disableListFilter: true,
+      },
+    },
+    {
+      name: 'relatedSkills',
+      label: 'Related Skills',
+      type: 'join',
+      collection: CollectionSlug.ResumeSkills,
+      on: 'skillTags',
+      admin: {
+        allowCreate: false,
+        defaultColumns: [
+          'title',
+          'type',
+        ],
+        disableGroupBy: true,
+        disableListColumn: true,
+        disableListFilter: true,
+      },
+    },
+
     GeneratorFlagsField(),
   ],
   versions: SINGLE_VERSION_DRAFTS,
