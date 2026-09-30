@@ -201,3 +201,83 @@
     }
   }
 }
+
+/*
+ * View transitions: route navigations crossfade the `page-content` block
+ * rendered by the frontend layout. The rest of the page (root) switches
+ * without animation, and the header (absolutely positioned over the page) gets its own group so the content
+ * snapshot does not paint over it mid-fade. Only opacity animates: pages
+ * differ in height, so morphing the group's size would stretch the snapshot.
+ */
+#header {
+  view-transition-name: site-header;
+}
+
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-old(root),
+::view-transition-new(root),
+::view-transition-group(site-header),
+::view-transition-old(site-header),
+::view-transition-new(site-header),
+::view-transition-group(.page-transition) {
+  animation: none;
+}
+
+::view-transition-old(site-header) {
+  display: none;
+}
+
+::view-transition-old(.page-transition) {
+  animation: page-fade-out 150ms ease-out both;
+}
+
+::view-transition-new(.page-transition) {
+  animation: page-fade-in 200ms ease-out 50ms both;
+}
+
+@keyframes page-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/*
+ * Reveal on scroll, driven by `useReveal` / <Reveal>. Scoped under
+ * [data-reveal] so nothing is hidden before the hook runs (or without JS).
+ * Only opacity and transform animate, so it stays on the compositor. Stagger
+ * is capped at 8 steps so items far down a long list do not wait seconds.
+ * Per-container knobs: --reveal-transform, --reveal-stagger, --reveal-duration.
+ */
+[data-reveal] [data-reveal-item] {
+  opacity: 0;
+  transform: var(--reveal-transform, translateY(1rem));
+  transition:
+    opacity var(--reveal-duration, 600ms) cubic-bezier(0.16, 1, 0.3, 1),
+    transform var(--reveal-duration, 600ms) cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: calc(min(var(--reveal-index, 0), 8) * var(--reveal-stagger, 60ms));
+}
+
+[data-reveal='visible'] [data-reveal-item] {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(.page-transition),
+  ::view-transition-new(.page-transition) {
+    animation: none;
+  }
+
+  [data-reveal] [data-reveal-item] {
+    transition: none;
+  }
+}

@@ -1,5 +1,5 @@
 import '#frontend.css'
-import { JSX, ReactNode, Suspense } from 'react'
+import { JSX, ReactNode, Suspense, ViewTransition } from 'react'
 import type { Metadata, Viewport } from 'next'
 
 import { cn } from 'tailwind-variants'
@@ -71,7 +71,15 @@ export default async function RootLayout({
         <AllProviders>
           <SkipToMainContent targetId="main-content" />
           <Header />
-          {children}
+          {/*
+            Route navigations crossfade this block; header and footer stay put
+            (see "View transitions" in frontend.css). It lives in the layout, so
+            a navigation updates it rather than remounting it: the animation
+            has to go on `update`, not `share`.
+          */}
+          <ViewTransition name="page-content" update="page-transition" default="none">
+            <div id="main-content">{children}</div>
+          </ViewTransition>
           <Footer />
         </AllProviders>
         <Toasty />
