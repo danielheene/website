@@ -167,7 +167,7 @@ jobs:
     env:
       # Set only for pull requests where the Testing environment's secrets are
       # readable (not forks or dependabot); otherwise the job uses local containers.
-      DOKPLOY_API_KEY: ${{ github.event_name == 'pull_request' && secrets.DOKPLOY_API_KEY || '' }}
+      TEST_SERVICES_HOST: ${{ github.event_name == 'pull_request' && secrets.TEST_SERVICES_HOST || '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -208,7 +208,7 @@ jobs:
         run: grep -v '^#' .env.test | grep -v '^$' >> "$GITHUB_ENV"
 
       - name: Use Testing services
-        if: env.DOKPLOY_API_KEY != ''
+        if: env.TEST_SERVICES_HOST != ''
         run: |
           {
             echo "DATABASE_URL=${DATABASE_URL_TESTING}"
@@ -229,7 +229,7 @@ jobs:
           S3_SECRET_KEY_TESTING: ${{ secrets.S3_SECRET_KEY }}
 
       - name: Connect to Tailscale
-        if: env.DOKPLOY_API_KEY != ''
+        if: env.TEST_SERVICES_HOST != ''
         uses: tailscale/github-action@780049a30b6ff5c378a9e7b389d15ece7a204888 # v4.1.3
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
@@ -241,18 +241,14 @@ jobs:
       # nothing. The Dokploy rebuild is skipped: `mongo.rebuild` has returned
       # a 500 and left the Testing Mongo stopped.
       - name: Reset Testing services
-        if: env.DOKPLOY_API_KEY != ''
+        if: env.TEST_SERVICES_HOST != ''
         run: node scripts/reset-test-services.mjs
         env:
           DOKPLOY_REBUILD: 'false'
-          DOKPLOY_URL: ${{ secrets.DOKPLOY_URL }}
-          DOKPLOY_MONGO_ID: ${{ secrets.DOKPLOY_MONGO_ID }}
-          DOKPLOY_REDIS_ID: ${{ secrets.DOKPLOY_REDIS_ID }}
-          TEST_SERVICES_HOST: ${{ secrets.TEST_SERVICES_HOST }}
 
       # Forks and dependabot cannot reach the Testing services.
       - name: Start local services (Mongo, Redis, S3)
-        if: env.DOKPLOY_API_KEY == ''
+        if: env.TEST_SERVICES_HOST == ''
         run: docker compose up -d --wait
 
       # The smoke tests hit the CMS-driven homepage and admin login screen,
