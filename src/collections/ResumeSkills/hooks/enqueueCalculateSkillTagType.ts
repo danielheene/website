@@ -1,10 +1,22 @@
-import type { CollectionAfterChangeHook } from 'payload'
+import type { CollectionAfterChangeHook, CollectionAfterDeleteHook, PayloadRequest } from 'payload'
 
 import { difference, get, union } from 'lodash-es'
 
 import { isUnpublishedDraftSave } from '@/collections/shared/isUnpublishedDraftSave'
 import { QueueSlug, TaskSlug } from '@/types/jobs-queue'
 import type { ResumeSkillData } from '@/types/payload'
+
+const queueForTags = async (req: PayloadRequest, skillTagIds: string[]) => {
+  for (const skillTagId of skillTagIds) {
+    await req.payload.jobs.queue({
+      task: TaskSlug.CalculateSkillTagType,
+      input: {
+        skillTagId,
+      },
+      queue: QueueSlug.HookHandler,
+    })
+  }
+}
 
 /**
  * Re-resolves the type of every skill tag a skill change can affect (see
@@ -33,15 +45,22 @@ export const enqueueCalculateSkillTagType: CollectionAfterChangeHook<ResumeSkill
     ? union(prevTags, nextTags)
     : union(difference(prevTags, nextTags), difference(nextTags, prevTags))
 
-  for (const skillTagId of changedTags) {
-    await req.payload.jobs.queue({
-      task: TaskSlug.CalculateSkillTagType,
-      input: {
-        skillTagId,
-      },
-      queue: QueueSlug.HookHandler,
-    })
-  }
+  await queueForTags(req, changedTags)
+
+  return doc
+}
+
+/**
+ * A permanent delete (e.g. emptying the trash) never reaches `afterChange`, so
+ * the tags the deleted skill carried are re-resolved from here.
+ */
+export const enqueueCalculateSkillTagTypeAfterDelete: CollectionAfterDeleteHook<
+  ResumeSkillData
+> = async ({ doc, req }) => {
+  await queueForTags(
+    req,
+    get(doc, 'skillTags', []).map(({ value }) => String(value)),
+  )
 
   return doc
 }
