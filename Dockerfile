@@ -9,7 +9,7 @@
 # next.config.ts / generateStaticParams) reaches the database over Tailscale
 # during static generation, so the CI job building this image must run with
 # Tailscale connectivity and the full application env — see
-# .github/workflows/ci.yml. The worker never re-runs the build; it reuses the
+# .github/workflows/build-and-deploy.yml. The worker never re-runs the build; it reuses the
 # same .next output and just boots a different process against it.
 #
 # There is deliberately no `output: 'standalone'` in next.config.ts, so the
@@ -17,7 +17,7 @@
 # traced subset — bigger image, but avoids known standalone-tracing gaps with
 # the Payload/Next combination this app uses.
 
-# Defaults to production; ci-release.yml's build job overrides this to
+# Defaults to production; build-and-deploy.yml's build job overrides this to
 # `development` for the develop/edge branch via --build-arg. Only the app/
 # worker runtime stages actually read this ARG (see below for why the
 # builder stage does not) — declared before the first FROM so it's visible
@@ -26,8 +26,8 @@
 ARG NODE_ENV=production
 
 # Version-tag build args, applied as OCI labels on each runtime stage below.
-# ci.yml passes these in explicitly — the Dockerfile itself has no git or CI
-# context of its own. REVISION is always the commit ci.yml built from
+# build-and-deploy.yml passes these in explicitly — the Dockerfile itself has no git or CI
+# context of its own. REVISION is always the commit build-and-deploy.yml built from
 # (accurate on every build); VERSION defaults to package.json's own version
 # field (bumped by semantic-release on main, so it's meaningful once
 # release.yml has actually retagged an image as :vX.Y.Z — an ordinary PR
@@ -69,7 +69,7 @@ COPY . .
 ENV NODE_ENV=production
 # Build-time env (DATABASE_URL, REDIS_URL, S3_*, PAYLOAD_SECRET, etc.) arrives
 # as a single BuildKit secret file in dotenv format — see
-# .github/workflows/ci.yml's `secret-files` input — rather than as ARG/ENV,
+# .github/workflows/build-and-deploy.yml's `secret-files` input — rather than as ARG/ENV,
 # so none of these values are cached into an image layer or visible via
 # `docker history`.
 #
@@ -88,12 +88,9 @@ ENV NODE_ENV=production
 # internally. The file is removed immediately after use so its contents never
 # land in a layer.
 #
-# TEMPORARY: `payload migrate` is skipped here (plain `pnpm run build`
-# instead of `pnpm run ci`) to isolate whether `next build` itself works
-# cleanly in this container from whatever payload migrate's own CLI does
-# differently. Restore `pnpm run ci` (migrate && build) once this is
-# confirmed, so real future migrations actually run as part of the image
-# build again.
+# Migrations are not run here: build-and-deploy.yml applies them in a
+# dedicated `migrate` job that the build job depends on, so the image build
+# stays free of database writes.
 RUN --mount=type=secret,id=build_env,required=true \
     cp /run/secrets/build_env .env && \
     pnpm run build; \
