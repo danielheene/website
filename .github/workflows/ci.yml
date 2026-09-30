@@ -117,10 +117,13 @@ jobs:
         uses: actions/cache@v4 # TODO: pin to a commit SHA like the other actions
         with:
           path: .next/cache
-          key: next-cache-${{ runner.os }}-${{ hashFiles('bun.lock') }}-${{ github.sha }}
+          # `bun-` keeps caches built against pnpm's node_modules/.pnpm layout
+          # from being restored: their module paths no longer exist, and a
+          # build started from one hung until the job timed out.
+          key: next-cache-bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}-${{ github.sha }}
           restore-keys: |
-            next-cache-${{ runner.os }}-${{ hashFiles('bun.lock') }}-
-            next-cache-${{ runner.os }}-
+            next-cache-bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}-
+            next-cache-bun-${{ runner.os }}-
 
       # `compile` never touches the database or renders a page; next.config.ts
       # only needs a schema-valid environment, which .env.test provides. The

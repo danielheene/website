@@ -165,18 +165,18 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
               title: 'SkillSorting',
               type: 'object',
               properties: skillSortingKeys.reduce((acc, key) => {
-                  acc[key] = {
-                    type: 'array',
-                    items: {
-                      $ref:
-                        key === 'skillTypeSortable'
-                          ? '#/definitions/SkillTypeSortable'
-                          : '#/definitions/SkillEntrySortable',
-                    },
-                  }
+                acc[key] = {
+                  type: 'array',
+                  items: {
+                    $ref:
+                      key === 'skillTypeSortable'
+                        ? '#/definitions/SkillTypeSortable'
+                        : '#/definitions/SkillEntrySortable',
+                  },
+                }
 
-                  return acc
-                }, {}),
+                return acc
+              }, {}),
               additionalProperties: false,
               required: skillSortingKeys,
             }),
