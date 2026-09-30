@@ -1,3 +1,10 @@
+## [1.6.1](https://github.com/danielheene/website/compare/v1.6.0...v1.6.1) (2026-09-30)
+
+
+### Bug Fixes
+
+* **storybook:** use react-docgen, which works with TypeScript 7 ([#87](https://github.com/danielheene/website/issues/87)) ([5090105](https://github.com/danielheene/website/commit/5090105e62cdb582a3c390b4092e0639528a3dba))
+
 # [1.6.0](https://github.com/danielheene/website/compare/v1.5.0...v1.6.0) (2026-09-28)
 
 
