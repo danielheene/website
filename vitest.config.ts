@@ -29,6 +29,7 @@ export default defineConfig({
     ],
     include: [
       'src/**/*.test.{ts,tsx}',
+      'app/**/*.test.{ts,tsx}',
       '*.test.{ts,tsx}',
     ],
     exclude: [
