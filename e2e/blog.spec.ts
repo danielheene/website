@@ -22,8 +22,18 @@ test.describe('blog', () => {
     const title = (await card.locator('h2').innerText()).trim()
     await card.click()
 
-    await expect(page).toHaveURL(/\/blog\/post\/.+/)
-    await expect(page.locator('h1')).toContainText(title)
+    // Under `next dev` the first visit compiles the post route before the
+    // client navigation commits.
+    await expect(page).toHaveURL(/\/blog\/post\/.+/, {
+      timeout: 30_000,
+    })
+    // After the client navigation Next keeps the listing in the DOM, hidden;
+    // a role query skips it.
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+      }),
+    ).toContainText(title)
     await expect(page.locator('article')).not.toBeEmpty()
   })
 })
