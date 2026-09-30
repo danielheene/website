@@ -77,7 +77,6 @@ import { Nav as Nav_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminP
 import { Icon as Icon_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { Logo as Logo_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { ImportExportProvider as ImportExportProvider_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
-import { AdminErrorBoundary as AdminErrorBoundary_e5a9e14bdbe97e70ba60697217fe7688 } from '@payloadcms/plugin-sentry/client'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 import { StatusBannersWidget as StatusBannersWidget_520e3069c7e11d3b5b05991c8b487452 } from '@/widgets/StatusBannersWidget'
 import { ScheduledJobsWidget as ScheduledJobsWidget_5a82a9e565d2b9686dc0a96e9db621b7 } from '@/widgets/ScheduledJobsWidget'
@@ -165,7 +164,6 @@ export const importMap = {
   "@/components/AdminPanel#Icon": Icon_a316a6ec12a12cd0fe58ccec01a444ca,
   "@/components/AdminPanel#Logo": Logo_a316a6ec12a12cd0fe58ccec01a444ca,
   "@payloadcms/plugin-import-export/rsc#ImportExportProvider": ImportExportProvider_cdf7e044479f899a31f804427d568b36,
-  "@payloadcms/plugin-sentry/client#AdminErrorBoundary": AdminErrorBoundary_e5a9e14bdbe97e70ba60697217fe7688,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
   "@/widgets/StatusBannersWidget#StatusBannersWidget": StatusBannersWidget_520e3069c7e11d3b5b05991c8b487452,
   "@/widgets/ScheduledJobsWidget#ScheduledJobsWidget": ScheduledJobsWidget_5a82a9e565d2b9686dc0a96e9db621b7,
