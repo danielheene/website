@@ -72,6 +72,27 @@ jobs:
       - name: Lint workflows
         run: docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.7 -color
 
+  # Static security analysis beyond Biome's rules: Node.js sinks (child
+  # processes, fs paths, eval), TypeScript and React patterns. Accepted
+  # findings are marked in place with `// nosemgrep: <rule>` and a reason.
+  semgrep:
+    name: Semgrep
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Scan
+        run: >-
+          docker run --rm -v "$PWD:/src" -w /src semgrep/semgrep:1.177.0
+          semgrep scan
+          --config p/nodejs --config p/typescript --config p/react
+          --metrics=off --error
+          --exclude node_modules --exclude .next --exclude out
+
   test:
     name: Unit Tests
     runs-on: ubuntu-24.04

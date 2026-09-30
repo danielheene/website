@@ -113,7 +113,7 @@ export function LogoCarouselTile({
       )}
       // biome-ignore lint/security/noDangerouslySetInnerHtml: <sanitized server-side by sanitizeSvg — on write via the ResumeCustomers beforeChange hook, and again in ResumeCustomersBlock/Renderer before reaching this component>
       dangerouslySetInnerHTML={{
-        __html: svg,
+        __html: svg, // nosemgrep: react-dangerouslysetinnerhtml -- reviewed, see biome-ignore above
       }}
     />
   )

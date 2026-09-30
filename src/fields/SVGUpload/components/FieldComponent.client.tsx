@@ -262,7 +262,7 @@ export const FieldComponentClient = ({
             ])}
             // biome-ignore lint/security/noDangerouslySetInnerHtml: <sanitized via 'isomorphic-dompurify'>
             dangerouslySetInnerHTML={{
-              __html: logoContent,
+              __html: logoContent, // nosemgrep: react-dangerouslysetinnerhtml -- reviewed, see biome-ignore above
             }}
           />
         )}

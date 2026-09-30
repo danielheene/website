@@ -78,6 +78,19 @@
           "level": "off"
         }
       },
+      "security": {
+        "noSecrets": {
+          "level": "error",
+          "options": {
+            "entropyThreshold": 80
+          }
+        }
+      },
+      "nursery": {
+        "noImpliedEval": "error",
+        "noUnsafeIframeSandbox": "error",
+        "useIframeSandbox": "error"
+      },
       "suspicious": {
         "noArrayIndexKey": "off",
         "noUselessEscapeInString": "off"
