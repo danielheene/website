@@ -78,13 +78,14 @@ describe('heading', () => {
 })
 
 describe('link', () => {
-  it("builds lexical's stock link-field shape with doc set to null", () => {
+  it('builds the LinkFeature field shape with doc set to null and the label as text', () => {
     const node = link('Docs', 'https://example.com') as {
       fields: {
         linkType: string
         url: string
         doc: null
         newTab: boolean
+        text: string
       }
     }
     expect(node.fields).toEqual({
@@ -92,6 +93,7 @@ describe('link', () => {
       doc: null,
       newTab: true,
       url: 'https://example.com',
+      text: 'Docs',
     })
   })
 })

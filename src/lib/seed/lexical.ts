@@ -76,13 +76,12 @@ export const quote = (value: string) => ({
 })
 
 /**
- * Link node using lexical's own stock link fields. `RichTextField`'s
- * `LinkFeature` (src/fields/RichText/index.ts) no longer swaps in
- * `LinkField`'s fields, so a link node's `fields` here is lexical's native
- * `{ linkType, doc, url, newTab }` shape — no `label`, no icon fields; the
- * link's visible text is just its `children`, same as a human selecting text
- * and clicking "link" in the editor. This helper always builds a custom-URL
- * link, so `linkType` is always `'custom'`.
+ * Custom-URL link node. `RichTextField`'s `LinkFeature`
+ * (src/fields/RichText/index.ts) uses `linkFeatureFields` from
+ * `src/fields/Link`, so a link node's `fields` are
+ * `{ linkType, doc, url, newTab, text }`, and `text` (the label) is required.
+ * The visible text is still the node's `children`; `text` repeats it, as the
+ * editor does when a link is created from selected text.
  *
  * `doc` still has to be sent as `null` explicitly rather than omitted,
  * mirroring what the editor itself writes for a custom-URL link.
@@ -98,6 +97,7 @@ export const link = (value: string, url: string) => ({
     doc: null,
     newTab: true,
     url,
+    text: value,
   },
   children: [
     text(value),
