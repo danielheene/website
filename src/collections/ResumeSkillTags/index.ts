@@ -99,6 +99,8 @@ export const ResumeSkillTags: CollectionConfig<CollectionSlug['ResumeSkillTags']
       overrides: {
         admin: {
           position: 'sidebar',
+          description:
+            'Resolved from the skills using this tag. Set by hand only for tags no skill uses.',
         },
       },
     }),
@@ -107,6 +109,13 @@ export const ResumeSkillTags: CollectionConfig<CollectionSlug['ResumeSkillTags']
       type: 'number',
       name: 'interval',
       label: 'Employment (months)',
+      defaultValue: 0,
+      hooks: {
+        // tags created before this default, or never counted yet, read as 0 rather than empty
+        afterRead: [
+          ({ value }) => value ?? 0,
+        ],
+      },
       admin: {
         readOnly: true,
         position: 'sidebar',

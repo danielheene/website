@@ -4,6 +4,7 @@ import { TaskSlugValue } from '@/types/jobs-queue'
 import { autoTranslateBilingualField } from './autoTranslateBilingualField'
 import { buildLocalizedResumeData } from './buildLocalizedResumeData'
 import { calculateSkillTagInterval } from './calculateSkillTagInterval'
+import { calculateSkillTagType } from './calculateSkillTagType'
 import { createResumeDocument } from './createResumeDocument'
 import { generateDocumentThumbnails } from './generateDocumentThumbnails'
 import { generateLocalizedResumeDocument } from './generateLocalizedResumeDocument'
@@ -24,6 +25,7 @@ export const TASKS = [
   generateDocumentThumbnails,
   generateVideoThumbnails,
   calculateSkillTagInterval,
+  calculateSkillTagType,
   generateLocalizedResumeDocument,
   generateResumeFilename,
   buildLocalizedResumeData,

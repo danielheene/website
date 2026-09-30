@@ -202,6 +202,7 @@ export interface Config {
       generateDocumentThumbnails: TaskGenerateDocumentThumbnails;
       generateVideoThumbnails: TaskGenerateVideoThumbnails;
       calculateSkillTagInterval: TaskCalculateSkillTagInterval;
+      calculateSkillTagType: TaskCalculateSkillTagType;
       generateLocalizedResumeDocument: TaskGenerateLocalizedResumeDocument;
       generateResumeFilename: TaskGenerateResumeFilename;
       buildLocalizedResumeData: TaskBuildLocalizedResumeData;
@@ -1255,6 +1256,7 @@ export interface PayloadJob {
           | 'generateDocumentThumbnails'
           | 'generateVideoThumbnails'
           | 'calculateSkillTagInterval'
+          | 'calculateSkillTagType'
           | 'generateLocalizedResumeDocument'
           | 'generateResumeFilename'
           | 'buildLocalizedResumeData'
@@ -1308,6 +1310,7 @@ export interface PayloadJob {
         | 'generateDocumentThumbnails'
         | 'generateVideoThumbnails'
         | 'calculateSkillTagInterval'
+        | 'calculateSkillTagType'
         | 'generateLocalizedResumeDocument'
         | 'generateResumeFilename'
         | 'buildLocalizedResumeData'
@@ -1504,8 +1507,8 @@ export interface ResumeSkillData {
     | 'unsplash-import'
     | 'seeded-dummy'
   )[];
-  updatedAt: string;
   createdAt: string;
+  updatedAt: string;
   deletedAt?: string | null;
   _status?: ('draft' | 'published') | null;
 }
@@ -2166,8 +2169,8 @@ export interface ResumeSkillsSelect<T extends boolean = true> {
   type?: T;
   skillTags?: T;
   generatorFlags?: T;
-  updatedAt?: T;
   createdAt?: T;
+  updatedAt?: T;
   deletedAt?: T;
   _status?: T;
 }
@@ -2901,6 +2904,18 @@ export interface TaskCalculateSkillTagInterval {
   };
   output: {
     interval?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCalculateSkillTagType".
+ */
+export interface TaskCalculateSkillTagType {
+  input: {
+    skillTagId: string;
+  };
+  output: {
+    type?: string | null;
   };
 }
 /**

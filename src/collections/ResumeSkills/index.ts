@@ -14,6 +14,7 @@ import { generateResumeDocumentHook } from '@/lib/payloadHooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 
+import { enqueueCalculateSkillTagType } from './hooks/enqueueCalculateSkillTagType'
 import { enqueueSyncSkillSorting } from './hooks/enqueueSyncSkillSorting'
 
 /**
@@ -51,7 +52,9 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
     delete: authenticated,
   },
   hooks: {
-    afterChange: [],
+    afterChange: [
+      enqueueCalculateSkillTagType,
+    ],
     afterOperation: [
       generateResumeDocumentHook,
       enqueueSyncSkillSorting,
