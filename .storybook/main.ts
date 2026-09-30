@@ -47,12 +47,9 @@ export default defineMain({
     '@storybook/addon-mcp',
   ],
   typescript: {
-    reactDocgen: 'react-docgen-typescript',
-    reactDocgenTypescriptOptions: {
-      tsconfigPath: './tsconfig.json',
-      shouldExtractLiteralValuesFromEnum: true,
-      propFilter: (prop) => !!prop.parent?.fileName?.includes('node_modules'),
-    },
+    // react-docgen-typescript needs the TypeScript JS API (`ts.sys`), which
+    // TypeScript 7 no longer ships; react-docgen parses with Babel instead.
+    reactDocgen: 'react-docgen',
   },
   async viteFinal(config) {
     const existingOnwarn = config.build?.rollupOptions?.onwarn
