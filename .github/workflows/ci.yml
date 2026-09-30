@@ -23,6 +23,29 @@ on:
         required: false
       SENTRY_PROJECT:
         required: false
+      # Read from the Testing environment by the jobs bound to it; GitHub uses
+      # the environment's value, never one passed in. Declared so the
+      # workflow's secret references validate.
+      TEST_SERVICES_HOST:
+        required: false
+      DATABASE_URL:
+        required: false
+      REDIS_URL:
+        required: false
+      S3_ENDPOINT:
+        required: false
+      S3_BUCKET:
+        required: false
+      S3_REGION:
+        required: false
+      S3_ACCESS_KEY:
+        required: false
+      S3_SECRET_KEY:
+        required: false
+      TS_OAUTH_CLIENT_ID:
+        required: false
+      TS_OAUTH_SECRET:
+        required: false
 
 permissions:
   contents: read
@@ -293,11 +316,11 @@ jobs:
         run: |
           node scripts/assemble-images.mjs worker
           (cd out/worker && exec node scripts/start-worker.mjs > "$RUNNER_TEMP/worker.log" 2>&1) &
-          for i in $(seq 1 30); do
+          for _ in $(seq 1 30); do
             curl -fsS http://localhost:3010/health > /dev/null && break
             sleep 5
           done
-          for i in $(seq 1 30); do
+          for _ in $(seq 1 30); do
             grep -q '^Ping' "$RUNNER_TEMP/worker.log" && { echo "worker ran a job"; exit 0; }
             sleep 5
           done
