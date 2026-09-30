@@ -3,6 +3,7 @@
 import { type ComponentPropsWithoutRef, forwardRef, type JSX } from 'react'
 
 import { addAPIProvider, Icon as IconifyIconComponent } from '@iconify/react'
+import { cn } from 'tailwind-variants'
 
 import { ICONIFY_API } from './api'
 
@@ -113,8 +114,26 @@ export type IconProps = Omit<
 }
 
 export const Icon = forwardRef<SVGSVGElement, IconProps>(
-  ({ name, ...iconBaseProps }, ref): JSX.Element => {
+  ({ name, className, style, ...iconBaseProps }, ref): JSX.Element => {
     const icon = ICON[name] ?? name
-    return <IconifyIconComponent ref={ref} icon={icon} {...iconBaseProps} />
+    return (
+      <IconifyIconComponent
+        ref={ref}
+        icon={icon}
+        className={className}
+        style={style}
+        // Icon data loads from the API after hydration; until then Iconify
+        // renders an empty span, and the icon pushes its surroundings aside
+        // when it arrives (layout shift). This holds the same 1em box.
+        fallback={
+          <span
+            aria-hidden="true"
+            className={cn('inline-block size-[1em] shrink-0', className)}
+            style={style}
+          />
+        }
+        {...iconBaseProps}
+      />
+    )
   },
 )

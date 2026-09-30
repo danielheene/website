@@ -95,7 +95,7 @@ export const PPSupplyMono = localFont({
       style: 'italic',
     },
   ],
-  adjustFontFallback: false,
+  adjustFontFallback: 'Arial',
   display: 'swap',
   fallback: [
     'ui-monospace',

@@ -1,5 +1,6 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import Link from 'next/link'
 import type { CollectionSlug } from 'payload'
 import { useListDrawerContext } from '@payloadcms/ui'
@@ -10,7 +11,7 @@ import { Icon } from '@/components/Icon'
 
 type TitleCellClientProps = {
   icon?: string
-  titleValue: string
+  titleValue: ReactNode
   collectionSlug: CollectionSlug
   doc: Record<string, unknown>
   docID: string

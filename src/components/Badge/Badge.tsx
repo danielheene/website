@@ -5,36 +5,40 @@ import { cn, tv, VariantProps } from 'tailwind-variants'
 
 export const badgeStyles = tv({
   base: cn([
-    'flex items-center px-2 py-1 w-fit',
+    'flex items-center px-[0.5em] py-[0.25em] w-fit',
     'font-medium font-mono select-none',
-    'border ',
+    'border whitespace-nowrap',
   ]),
   variants: {
     color: {
-      neutral: cn([
-        '[--badge-color:var(--color-neutral-600)]',
-        // 'dark:[--badge-color:var(--color-neutral-400)]',
-      ]),
-      primary: cn([
-        '[--badge-color:var(--color-primary-600)]',
-        // 'dark:[--badge-color:var(--color-primary-400)]',
-      ]),
-      info: cn([
-        '[--badge-color:var(--color-info-600)]',
-        // 'dark:[--badge-color:var(--color-info-400)]',
-      ]),
-      success: cn([
-        '[--badge-color:var(--color-success-600)]',
-        // 'dark:[--badge-color:var(--color-success-400)]',
-      ]),
-      warning: cn([
-        '[--badge-color:var(--color-warning-700)]',
-        // 'dark:[--badge-color:var(--color-warning-400)]',
-      ]),
-      error: cn([
-        '[--badge-color:var(--color-error-700)]',
-        // 'dark:[--badge-color:var(--color-error-400)]',
-      ]),
+      neutral: '[--badge-color:var(--color-neutral-600)]',
+      primary: '[--badge-color:var(--color-primary-600)]',
+      info: '[--badge-color:var(--color-info-600)]',
+      success: '[--badge-color:var(--color-success-600)]',
+      warning: '[--badge-color:var(--color-warning-700)]',
+      error: '[--badge-color:var(--color-error-600)]',
+      secondary: '[--badge-color:var(--color-secondary-700)]',
+      red: '[--badge-color:var(--color-red-600)]',
+      orange: '[--badge-color:var(--color-orange-700)]',
+      amber: '[--badge-color:var(--color-amber-700)]',
+      yellow: '[--badge-color:var(--color-yellow-700)]',
+      lime: '[--badge-color:var(--color-lime-700)]',
+      green: '[--badge-color:var(--color-green-700)]',
+      emerald: '[--badge-color:var(--color-emerald-600)]',
+      teal: '[--badge-color:var(--color-teal-600)]',
+      cyan: '[--badge-color:var(--color-cyan-600)]',
+      sky: '[--badge-color:var(--color-sky-600)]',
+      blue: '[--badge-color:var(--color-blue-600)]',
+      indigo: '[--badge-color:var(--color-indigo-600)]',
+      violet: '[--badge-color:var(--color-violet-600)]',
+      purple: '[--badge-color:var(--color-purple-600)]',
+      fuchsia: '[--badge-color:var(--color-fuchsia-600)]',
+      pink: '[--badge-color:var(--color-pink-600)]',
+      rose: '[--badge-color:var(--color-rose-600)]',
+      slate: '[--badge-color:var(--color-slate-600)]',
+      gray: '[--badge-color:var(--color-gray-600)]',
+      zinc: '[--badge-color:var(--color-zinc-600)]',
+      stone: '[--badge-color:var(--color-stone-600)]',
     },
     style: {
       solid: cn([

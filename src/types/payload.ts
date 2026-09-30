@@ -144,6 +144,10 @@ export interface Config {
     topics: {
       relatedPosts: 'posts';
     };
+    'resume-skill-tags': {
+      relatedJobs: 'resume-jobs';
+      relatedSkills: 'resume-skills';
+    };
   };
   collectionsSelect: {
     posts: PostsSelect<false> | PostsSelect<true>;
@@ -198,6 +202,7 @@ export interface Config {
       generateDocumentThumbnails: TaskGenerateDocumentThumbnails;
       generateVideoThumbnails: TaskGenerateVideoThumbnails;
       calculateSkillTagInterval: TaskCalculateSkillTagInterval;
+      calculateSkillTagType: TaskCalculateSkillTagType;
       generateLocalizedResumeDocument: TaskGenerateLocalizedResumeDocument;
       generateResumeFilename: TaskGenerateResumeFilename;
       buildLocalizedResumeData: TaskBuildLocalizedResumeData;
@@ -1251,6 +1256,7 @@ export interface PayloadJob {
           | 'generateDocumentThumbnails'
           | 'generateVideoThumbnails'
           | 'calculateSkillTagInterval'
+          | 'calculateSkillTagType'
           | 'generateLocalizedResumeDocument'
           | 'generateResumeFilename'
           | 'buildLocalizedResumeData'
@@ -1304,6 +1310,7 @@ export interface PayloadJob {
         | 'generateDocumentThumbnails'
         | 'generateVideoThumbnails'
         | 'calculateSkillTagInterval'
+        | 'calculateSkillTagType'
         | 'generateLocalizedResumeDocument'
         | 'generateResumeFilename'
         | 'buildLocalizedResumeData'
@@ -1420,6 +1427,16 @@ export interface ResumeSkillTagData {
   slug: string;
   type?: SkillType;
   interval?: number | null;
+  relatedJobs?: {
+    docs?: (string | ResumeJobData)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  relatedSkills?: {
+    docs?: (string | ResumeSkillData)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   generatorFlags?: (
     | 'resume-asset'
     | 'thumbnail'
@@ -1432,54 +1449,6 @@ export interface ResumeSkillTagData {
   )[];
   updatedAt: string;
   createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "resume-projects".
- */
-export interface ResumeProjectData {
-  id: string;
-  scope?: string | null;
-  title?: string | null;
-  description?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  relatedPost?: {
-    relationTo: 'posts';
-    value: string | BlogPostData;
-  } | null;
-  images?:
-    | {
-        relationTo: 'images';
-        value: string | MediaImage;
-      }[]
-    | null;
-  generatorFlags?: (
-    | 'resume-asset'
-    | 'thumbnail'
-    | 'document'
-    | 'audio-thumbnail'
-    | 'video-thumbnail'
-    | 'document-thumbnail'
-    | 'unsplash-import'
-    | 'seeded-dummy'
-  )[];
-  updatedAt: string;
-  createdAt: string;
-  deletedAt?: string | null;
   _status?: ('draft' | 'published') | null;
 }
 /**
@@ -1526,6 +1495,54 @@ export interface ResumeSkillData {
     | {
         relationTo: 'resume-skill-tags';
         value: string | ResumeSkillTagData;
+      }[]
+    | null;
+  generatorFlags?: (
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'unsplash-import'
+    | 'seeded-dummy'
+  )[];
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resume-projects".
+ */
+export interface ResumeProjectData {
+  id: string;
+  scope?: string | null;
+  title?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  relatedPost?: {
+    relationTo: 'posts';
+    value: string | BlogPostData;
+  } | null;
+  images?:
+    | {
+        relationTo: 'images';
+        value: string | MediaImage;
       }[]
     | null;
   generatorFlags?: (
@@ -2152,8 +2169,8 @@ export interface ResumeSkillsSelect<T extends boolean = true> {
   type?: T;
   skillTags?: T;
   generatorFlags?: T;
-  updatedAt?: T;
   createdAt?: T;
+  updatedAt?: T;
   deletedAt?: T;
   _status?: T;
 }
@@ -2168,6 +2185,8 @@ export interface ResumeSkillTagsSelect<T extends boolean = true> {
   slug?: T;
   type?: T;
   interval?: T;
+  relatedJobs?: T;
+  relatedSkills?: T;
   generatorFlags?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -2885,6 +2904,18 @@ export interface TaskCalculateSkillTagInterval {
   };
   output: {
     interval?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCalculateSkillTagType".
+ */
+export interface TaskCalculateSkillTagType {
+  input: {
+    skillTagId: string;
+  };
+  output: {
+    type?: string | null;
   };
 }
 /**

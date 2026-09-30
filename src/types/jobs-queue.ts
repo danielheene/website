@@ -8,6 +8,7 @@ export const TaskSlug = {
   GenerateDocumentThumbnails: 'generateDocumentThumbnails',
   GenerateVideoThumbnails: 'generateVideoThumbnails',
   CalculateSkillTagInterval: 'calculateSkillTagInterval',
+  CalculateSkillTagType: 'calculateSkillTagType',
   GenerateLocalizedResumeDocument: 'generateLocalizedResumeDocument',
   GenerateResumeFilename: 'generateResumeFilename',
   BuildLocalizedResumeData: 'buildLocalizedResumeData',

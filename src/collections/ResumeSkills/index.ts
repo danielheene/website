@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, Field } from 'payload'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintext'
 
@@ -14,7 +14,27 @@ import { generateResumeDocumentHook } from '@/lib/payloadHooks/collection'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 
+import { enqueueCalculateSkillTagType } from './hooks/enqueueCalculateSkillTagType'
 import { enqueueSyncSkillSorting } from './hooks/enqueueSyncSkillSorting'
+
+/**
+ * The list view offers only title, type and status. `id` stays selectable:
+ * declaring it would turn it into a custom, editor-supplied ID.
+ */
+const withoutListColumn = <T extends Field>(field: T): T => ({
+  ...field,
+  admin: {
+    ...field.admin,
+    disableListColumn: true,
+  },
+})
+
+/** Payload's own timestamp fields, which it only adds when a collection doesn't declare them. */
+const TIMESTAMP_FIELDS = [
+  'createdAt',
+  'updatedAt',
+  'deletedAt',
+] as const
 
 export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
   slug: CollectionSlug.ResumeSkills,
@@ -32,7 +52,9 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
     delete: authenticated,
   },
   hooks: {
-    afterChange: [],
+    afterChange: [
+      enqueueCalculateSkillTagType,
+    ],
     afterOperation: [
       generateResumeDocumentHook,
       enqueueSyncSkillSorting,
@@ -45,6 +67,7 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
     defaultColumns: [
       'title',
       'type',
+      '_status',
     ],
     disableCopyToLocale: true,
     pagination: {
@@ -85,14 +108,16 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
   },
   fields: [
     /* -------------- Main  Content -------------- */
-    BilingualRichTextField({
-      name: 'content',
-      label: 'Content',
-      editorVariant: 'inline',
+    withoutListColumn(
+      BilingualRichTextField({
+        name: 'content',
+        label: 'Content',
+        editorVariant: 'inline',
 
-      layout: 'row',
-      required: true,
-    }),
+        layout: 'row',
+        required: true,
+      }),
+    ),
 
     /* -------------- Virtual Fields -------------- */
     {
@@ -102,6 +127,9 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
       admin: {
         hidden: true,
         readOnly: true,
+        components: {
+          Cell: '@/collections/ResumeSkills/components/TitleCell#TitleCell',
+        },
         disableListFilter: false,
         disableListColumn: false,
         disableGroupBy: true,
@@ -149,6 +177,7 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
       ],
       hasMany: true,
       admin: {
+        disableListColumn: true,
         appearance: 'select',
         position: 'sidebar',
         allowCreate: true,
@@ -205,7 +234,21 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
     //   },
     // },
 
-    GeneratorFlagsField(),
+    withoutListColumn(GeneratorFlagsField()),
+
+    /* ------------ Timestamps (declared only to drop their list columns) ------------ */
+    ...TIMESTAMP_FIELDS.map(
+      (name): Field => ({
+        name,
+        type: 'date',
+        index: true,
+        admin: {
+          hidden: true,
+          disableBulkEdit: true,
+          disableListColumn: true,
+        },
+      }),
+    ),
   ],
   trash: true,
   versions: {
