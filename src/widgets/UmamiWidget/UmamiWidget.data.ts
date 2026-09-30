@@ -9,16 +9,21 @@ let token: string | null = null
 let tokenPromise: Promise<string | null> | null = null
 
 const login = async (): Promise<string | null> => {
-  const response = await fetch(`${getRuntimeConfig().umamiUrl}/api/auth/login`, {
-    method: 'POST',
-    body: JSON.stringify({
-      username: process.env.UMAMI_USERNAME,
-      password: process.env.UMAMI_PASSWORD,
-    }),
-  })
+  try {
+    const response = await fetch(`${getRuntimeConfig().umamiUrl}/api/auth/login`, {
+      method: 'POST',
+      body: JSON.stringify({
+        username: process.env.UMAMI_USERNAME,
+        password: process.env.UMAMI_PASSWORD,
+      }),
+    })
 
-  const data = await response.json()
-  token = data.token as string
+    const data = await response.json()
+    token = (data.token as string) ?? null
+  } catch (error) {
+    console.error('Error logging in to Umami:', error)
+    token = null
+  }
   return token
 }
 
@@ -74,20 +79,28 @@ const fetcher = async <T extends object>(url: URL | string): Promise<T | null> =
   const cached = await get<T>(url.toString())
   if (cached) return cached
 
+  // An unreachable Umami must not take the admin dashboard down with it:
+  // every widget handles `null`.
   const token = await getToken()
+  if (!token) return null
 
-  const response = await fetch(url, {
-    headers: {
-      Accept: 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  })
+  try {
+    const response = await fetch(url, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
 
-  const json: T = await response.json()
-  if ('error' in json) return null
+    const json: T = await response.json()
+    if ('error' in json) return null
 
-  await set(url.toString(), json as T, CACHE_TTL_SECONDS)
-  return json
+    await set(url.toString(), json as T, CACHE_TTL_SECONDS)
+    return json
+  } catch (error) {
+    console.error('Error fetching Umami data:', error)
+    return null
+  }
 }
 
 const buildApiUrl = (
