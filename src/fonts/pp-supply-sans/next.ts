@@ -95,7 +95,7 @@ export const PPSupplySans = localFont({
       style: 'italic',
     },
   ],
-  adjustFontFallback: false,
+  adjustFontFallback: 'Arial',
   display: 'swap',
   fallback: [
     'ui-sans-serif',
