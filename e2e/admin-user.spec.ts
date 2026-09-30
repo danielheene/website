@@ -15,16 +15,22 @@ const password = process.env.E2E_ADMIN_PASSWORD ?? 'e2e-admin-password-123'
 
 /**
  *    Payload renders each field with the id `field-<path>`. Comparing the full
- *    set (not just the known extras) also catches any custom field added to
- *    the Users collection later without a condition.
+ *    set of visible fields (not just the known extras) also catches any custom
+ *    field added to the Users collection later without a condition. Hidden
+ *    inputs are ignored: create-first-user always includes `createdAt` and
+ *    `updatedAt` as `<input type="hidden">`.
  */
 const expectOnlyFields = async (page: Page, expected: string[]) => {
+  // Submitting before hydration silently does nothing.
+  await page.waitForLoadState('networkidle')
   const form = page.locator('form')
   await expect(form.locator('#field-email')).toBeVisible()
 
   const ids = await form
     .locator('[id^="field-"]')
-    .evaluateAll((elements) => elements.map((element) => element.id))
+    .evaluateAll((elements) =>
+      elements.filter((element) => element.checkVisibility()).map((element) => element.id),
+    )
 
   expect(ids.sort()).toEqual(expected.map((path) => `field-${path}`).sort())
 }
