@@ -23,9 +23,10 @@ import * as Sentry from '@sentry/nextjs'
  * the call site.
  *
  * `string`-path handlers (Payload's alternative to inline functions, used to
- * avoid bundling a task's/workflow's dependencies into the Next.js app) pass
- * through unwrapped — there is nothing to instrument until Payload resolves
- * them.
+ * keep a task's/workflow's dependencies out of the Next.js app) pass through
+ * unwrapped here, because Payload only resolves them at run time. Their
+ * modules wrap themselves with {@link wrapHandler} instead — see
+ * `src/jobs-queue/handlers/`.
  */
 // TaskHandler and WorkflowHandler have incompatible arg/return shapes (and
 // WorkflowConfig's handler can also be a WorkflowJSON step array, not just a
@@ -54,6 +55,59 @@ type LooseJobConfig = {
 // biome-ignore lint/suspicious/noExplicitAny: see above
 type AnySlug = any
 
+/**
+ * Instruments one handler function. Used for inline handlers (through
+ * {@link withJobObservability}) and by every module in `src/jobs-queue/handlers/`,
+ * whose handler Payload loads from a path.
+ */
+export const wrapHandler = <H extends (args: never) => unknown>(
+  fallbackSlug: string,
+  handler: H,
+): H => {
+  const inner = handler as unknown as NonNullable<Exclude<LooseJobConfig['handler'], string>>
+
+  const wrapped: typeof inner = async (args) => {
+    const { job } = args
+    const jobSlug = String(job.taskSlug ?? job.workflowSlug ?? fallbackSlug)
+    const kind = job.taskSlug ? 'task' : 'workflow'
+
+    return Sentry.startSpan(
+      {
+        name: `job.${kind}/${jobSlug}`,
+        // 'task': Sentry's documented op for background/scheduled work —
+        // 'queue.process' is for message-queue consumers, which this isn't.
+        op: 'task',
+        attributes: {
+          'job.id': String(job.id),
+          'job.kind': kind,
+          'job.slug': jobSlug,
+          'job.workflow_slug': job.workflowSlug ? String(job.workflowSlug) : undefined,
+        },
+      },
+      async () => {
+        try {
+          return await inner(args)
+        } catch (err) {
+          Sentry.captureException(err, {
+            tags: {
+              'job.kind': kind,
+              'job.slug': jobSlug,
+            },
+            extra: {
+              jobId: job.id,
+              workflowSlug: job.workflowSlug,
+              input: args.input,
+            },
+          })
+          throw err
+        }
+      },
+    )
+  }
+
+  return wrapped as unknown as H
+}
+
 export const withJobObservability = <T extends TaskConfig<AnySlug> | WorkflowConfig<AnySlug>>(
   jobConfig: T,
 ): T => {
@@ -63,47 +117,8 @@ export const withJobObservability = <T extends TaskConfig<AnySlug> | WorkflowCon
     return jobConfig
   }
 
-  const wrapped: LooseJobConfig = {
-    ...(jobConfig as unknown as LooseJobConfig),
-    handler: async (args) => {
-      const { job } = args
-      const jobSlug = String(job.taskSlug ?? job.workflowSlug ?? jobConfig.slug)
-      const kind = job.taskSlug ? 'task' : 'workflow'
-
-      return Sentry.startSpan(
-        {
-          name: `job.${kind}/${jobSlug}`,
-          // 'task': Sentry's documented op for background/scheduled work —
-          // 'queue.process' is for message-queue consumers, which this isn't.
-          op: 'task',
-          attributes: {
-            'job.id': String(job.id),
-            'job.kind': kind,
-            'job.slug': jobSlug,
-            'job.workflow_slug': job.workflowSlug ? String(job.workflowSlug) : undefined,
-          },
-        },
-        async () => {
-          try {
-            return await handler(args)
-          } catch (err) {
-            Sentry.captureException(err, {
-              tags: {
-                'job.kind': kind,
-                'job.slug': jobSlug,
-              },
-              extra: {
-                jobId: job.id,
-                workflowSlug: job.workflowSlug,
-                input: args.input,
-              },
-            })
-            throw err
-          }
-        },
-      )
-    },
-  }
-
-  return wrapped as unknown as T
+  return {
+    ...jobConfig,
+    handler: wrapHandler(jobConfig.slug, handler),
+  } as unknown as T
 }

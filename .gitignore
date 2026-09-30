@@ -46,3 +46,6 @@ certificates
 .junie
 .worktrees
 .kilo
+
+# assembled Docker image contents (scripts/assemble-images.mjs)
+/out

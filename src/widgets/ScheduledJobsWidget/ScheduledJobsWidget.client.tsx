@@ -59,6 +59,12 @@ export const ScheduledJobsWidgetClient = ({
           })
           router.refresh()
           return
+        case 'queued':
+          toast('Queued, the worker runs it shortly', {
+            id,
+          })
+          router.refresh()
+          return
         case 'cancelled':
           toast('Cancelled', {
             id,

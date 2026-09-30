@@ -141,7 +141,7 @@ pnpm email:dev        # React Email preview server (http://localhost:3005)
 | `pnpm generate:importmap` | Regenerates Payload admin component import map. |
 | `pnpm payload` | Wrapper to execute Payload CLI commands. |
 | `pnpm migrate` | Runs database migrations via Payload CLI. |
-| `pnpm ci` | CI sequence: runs database migrations and production build. |
+| `pnpm ci` | Local convenience: runs database migrations and a full production build (CI itself runs the steps separately). |
 | `pnpm lint` | Runs `biome check` (code quality, linting, and format checks). |
 | `pnpm format` | Runs `biome format --write` to auto-fix code formatting. |
 | `pnpm typecheck` | Runs TypeScript typechecker (`tsc --noEmit`). |
@@ -154,6 +154,7 @@ pnpm email:dev        # React Email preview server (http://localhost:3005)
 | `pnpm seed:topics` | Seeds fixture blog topics (`--clean` to remove). |
 | `pnpm seed:posts` | Seeds fixture blog posts and media (`--clean` to remove, `--count <n>` to set quantity). |
 | `pnpm seed:pages` | Seeds fixture pages (`--clean` to remove, `--count <n>` to set quantity). |
+| `pnpm seed:resume-documents` | Seeds an older and a newer fixture resume document without PDFs (`--clean` to remove). |
 | `pnpm links:migrate` | Runs database migration for link field naming. |
 | `pnpm refs:backfill` | Rebuilds content reference index table. |
 | `pnpm test` | Runs unit tests once via Vitest. |
@@ -368,15 +369,19 @@ pnpm seed:pages:clean     # Removes seeded pages
 
 ## CI / CD & Deployment
 
-The deployment pipeline is configured in `.github/workflows/ci-release.yml`:
+Everything is built in CI; Docker images only `COPY` finished output (no `pnpm`, installs or builds inside an image). The checks live in `.github/workflows/ci.yml` and are reused by pull requests (`lint-and-test.yml`) and pushes (`build-and-deploy.yml`).
 
-- **Pull Requests** (against `main` or `develop`):
-  1. **Lint Check**: Validates commit messages with `commitlint`, executes `biome check`, and runs `syncpack` (`deps:lint`).
-  2. **Unit Tests**: Runs `vitest run --coverage`.
-- **Pushes to `develop` / `main`**:
-  1. **Semantic Versioning** (`main` only): Computes semver bump and generates tag/changelog via `semantic-release`.
-  2. **Docker Builds**: Builds multi-target images (`app`, `worker`, `storybook` in `Dockerfile`) for `linux/amd64` and pushes them to GitHub Container Registry (`ghcr.io/danielheene/website/*`).
-  3. **Dokploy Deployment**: Triggers automated deployment webhook on the production server.
+- **`ci.yml`** (pull requests and pushes):
+  1. **Lint**: `commitlint` (PRs), `biome check`, `syncpack`, a check that the committed generated files match `pnpm generate`, and `actionlint`.
+  2. **Unit Tests**: `vitest run --coverage`.
+  3. **Compile**: `next build --experimental-build-mode=compile` with `.env.test` values. It needs no database and must not inline any environment-specific value; `scripts/check-env-leak.mjs` fails the job if a `.env.test` value ends up in `.next`.
+  4. **E2E** (environment `Testing`): resets the shared Testing services (Mongo and Redis rebuilt through Dokploy, S3 bucket emptied; `scripts/reset-test-services.mjs`), migrates, seeds, runs `next build --experimental-build-mode=generate` (prerender/PPR), assembles `out/web` and runs Playwright against `node out/web/server.js`. Forks and dependabot cannot read the Testing secrets and use local containers (`docker compose`) instead.
+- **Pushes to `develop` / `main`** (`build-and-deploy.yml`):
+  1. **Semantic Versioning** (`main` only): semver bump and tag/changelog via `semantic-release`.
+  2. **CI**: the jobs above.
+  3. **Deploy** (environment `Production` on `main`, `Development` on `develop`): downloads the tested compile, runs `pnpm run migrate` against the target database, runs `--experimental-build-mode=generate` with that environment's values, assembles `out/{web,worker,storybook}` (`scripts/assemble-images.mjs`), builds the COPY-only images (`app`, `worker`, `storybook` in `Dockerfile`) for `linux/amd64`, pushes them to `ghcr.io/danielheene/website/*` and triggers the Dokploy redeploy webhooks.
+
+Environment-specific values the browser needs (site URL, status page, Umami, Sentry DSN/environment) are read at runtime through `src/lib/runtimeConfig`, never through static `process.env.NEXT_PUBLIC_*` references or `next.config.ts` `env`, so one compile can be deployed to any environment.
 
 ---
 

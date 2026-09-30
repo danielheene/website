@@ -7,6 +7,7 @@ import { secondsToMilliseconds } from 'date-fns'
 import { cn } from 'tailwind-variants'
 
 import { Badge, type BadgeProps } from '@/components/Badge'
+import { getRuntimeConfig } from '@/lib/runtimeConfig'
 import { type OverallStatus, OverallStatusCode } from '@/lib/uptime-kuma'
 
 interface ServiceStatusProps {
@@ -57,7 +58,7 @@ export const ServiceStatusClient = ({
           className,
         ])}
       >
-        <Link href={process.env.STATUS_PAGE_URL} target="_blank" rel="noopener noreferrer">
+        <Link href={getRuntimeConfig().statusPageUrl} target="_blank" rel="noopener noreferrer">
           {status.code !== OverallStatusCode.NoServices && (
             <span
               className={cn([

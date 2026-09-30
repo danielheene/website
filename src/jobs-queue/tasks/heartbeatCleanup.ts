@@ -1,8 +1,6 @@
 import { TaskConfig } from 'payload'
 
-import { subDays } from 'date-fns'
-
-import { CollectionSlug } from '@/types/collections'
+import { handlerPath } from '@/jobs-queue/lib/handlerPath'
 import { QueueSlug, TaskSlug } from '@/types/jobs-queue'
 
 export const heartbeatCleanup: TaskConfig<TaskSlug['HeartbeatCleanup']> = {
@@ -14,29 +12,5 @@ export const heartbeatCleanup: TaskConfig<TaskSlug['HeartbeatCleanup']> = {
       queue: QueueSlug.Heartbeat,
     },
   ],
-  handler: async ({ req: { payload } }) => {
-    console.log('Ping')
-
-    await payload.db.deleteMany({
-      collection: CollectionSlug.PayloadJobs,
-      where: {
-        and: [
-          {
-            taskSlug: {
-              equals: TaskSlug.HeartbeatPing,
-            },
-          },
-          {
-            updatedAt: {
-              less_than: subDays(new Date(), 7).toISOString(),
-            },
-          },
-        ],
-      },
-    })
-
-    return {
-      output: {},
-    }
-  },
+  handler: handlerPath('heartbeatCleanup.ts'),
 }

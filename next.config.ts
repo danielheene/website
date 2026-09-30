@@ -11,8 +11,8 @@ import { envSchema } from '@/types/environment'
 
 import { name as packageName, version as packageVersion } from './package.json'
 
-const sentryEnvironment = process.env.SENTRY_ENVIRONMENT || 'unknown'
-const sentryRelease = `${packageName}@${packageVersion}-${sentryEnvironment}`
+// Identical for every environment, so a single compile can be deployed anywhere.
+const sentryRelease = `${packageName}@${packageVersion}`
 
 let server: ChildProcess | null = null
 const createTunnel = (token: string) =>
@@ -127,13 +127,15 @@ export default async (phase, { defaultConfig }) => {
     reactStrictMode: true,
     cacheComponents: true,
 
+    // The web image contains only .next/standalone (see scripts/assemble-images.mjs).
+    output: 'standalone',
+
     compiler: {
       define: {},
       defineServer: {},
     },
 
     experimental: {
-      allowDevelopmentBuild: true,
       appNewScrollHandler: true,
       turbopackServerFastRefresh: true,
       serverActions: {
@@ -165,43 +167,16 @@ export default async (phase, { defaultConfig }) => {
     /**
      *    Environment Variables
      *
-     *    Anything listed here is inlined into the compiled bundle and can't
-     *    be changed by the runtime environment afterward. These five are
-     *    structurally build-time:
-     *
-     *      - SENTRY_DSN      → instrumentation-client.ts calls Sentry.init at
-     *                          module scope, before any component renders.
-     *      - SENTRY_RELEASE  → same module-scope Sentry.init call reads this
-     *                          to tag client events with the release. It must
-     *                          reach the browser bundle the same way the DSN
-     *                          does, and must match `release.name` given to
-     *                          withSentryConfig below byte-for-byte — that's
-     *                          the value CI's release object is created under.
-     *      - SERVER_URL      → read by robots.ts and the root layout's
-     *                          metadataBase, both of which are prerendered.
-     *      - STATUS_PAGE_URL → reaches ServiceStatus through the Footer, which
-     *                          renders inside the prerendered shell.
-     *      - RESUME_REDIRECT_URL_BASE → read by generateResumeDocumentRedirectURL
-     *                          to build a resume document's redirect URL.
-     *
-     *    With `cacheComponents: true`, nearly every route has a shell
-     *    rendered at build time, so a server-side process.env read gets
-     *    captured into that shell and served from cache — moving the read up
-     *    the tree doesn't change this. All five are public values (a DSN
-     *    ships to the browser SDK; the rest are this site's own addresses),
-     *    so the cost is that a build is environment-specific, not that
-     *    anything secret is baked in.
-     *
-     *    Everything else — every secret and all server-only config — is read
-     *    from the container environment at boot and is genuinely runtime.
+     *    Only values that are identical in every environment may be inlined
+     *    here, because the compiled output is built once (see
+     *    `next build --experimental-build-mode=compile`) and deployed to
+     *    several. Environment-specific public values (site URL, status page,
+     *    Umami, Sentry DSN/environment, ...) are read at runtime through
+     *    `@/lib/runtimeConfig` instead; do not add them here or reference
+     *    `process.env.NEXT_PUBLIC_*` statically.
      */
     env: {
-      SERVER_URL: process.env.SERVER_URL,
-      STATUS_PAGE_URL: process.env.STATUS_PAGE_URL,
-      RESUME_REDIRECT_URL_BASE: process.env.RESUME_REDIRECT_URL_BASE,
-      SENTRY_DSN: process.env.SENTRY_DSN,
       SENTRY_RELEASE: sentryRelease,
-      SENTRY_ENVIRONMENT: sentryEnvironment,
     },
 
     /**
@@ -343,19 +318,6 @@ export default async (phase, { defaultConfig }) => {
         },
       ]
     },
-
-    async rewrites() {
-      const rewrites = []
-
-      if (process.env.NEXT_PUBLIC_UMAMI_URL) {
-        rewrites.push({
-          source: '/stats/:match*',
-          destination: `${process.env.NEXT_PUBLIC_UMAMI_URL}/:match*`,
-        })
-      }
-
-      return rewrites
-    },
   }
 
   const configWithPayload = withPayload(nextConfig, {
@@ -383,7 +345,7 @@ export default async (phase, { defaultConfig }) => {
     },
 
     release: {
-      name: process.env.SENTRY_RELEASE,
+      name: sentryRelease,
     },
   })
 }

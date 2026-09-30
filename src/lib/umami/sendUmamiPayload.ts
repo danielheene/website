@@ -1,3 +1,5 @@
+import { getRuntimeConfig } from '@/lib/runtimeConfig'
+
 import type { UmamiSendPayload } from './Umami.types'
 
 // `navigator.sendBeacon` rejects payloads over ~64KB. Use a slightly
@@ -43,7 +45,7 @@ export const sendUmamiPayload = async (payload: UmamiSendPayload): Promise<void>
   // analytics hosts/paths. On the server there is no origin to resolve a
   // relative URL against and no rewrite applies to a raw server fetch, so
   // the absolute Umami URL is used instead.
-  const url = isBrowser() ? '/stats/api/send' : `${process.env.NEXT_PUBLIC_UMAMI_URL}/api/send`
+  const url = isBrowser() ? '/stats/api/send' : `${getRuntimeConfig().umamiUrl}/api/send`
   const body = JSON.stringify(payload)
 
   try {

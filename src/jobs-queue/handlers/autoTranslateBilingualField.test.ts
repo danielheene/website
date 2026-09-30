@@ -14,7 +14,7 @@ vi.mock('@/lib/RedisHandler', () => ({
   publish: (...args: unknown[]) => publishMock(...args),
 }))
 
-const { autoTranslateBilingualField } = await import('./autoTranslateBilingualField')
+const { handler: autoTranslateBilingualField } = await import('./autoTranslateBilingualField')
 
 const paragraph = (text: string) => ({
   root: {
@@ -63,7 +63,7 @@ const req = {
 
 const runHandler = (input: Record<string, unknown>) =>
   // biome-ignore lint/suspicious/noExplicitAny: test-only loose call into the handler
-  (autoTranslateBilingualField.handler as any)({
+  (autoTranslateBilingualField as any)({
     input,
     job: {
       id: 'job-1',

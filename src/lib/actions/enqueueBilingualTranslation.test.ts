@@ -95,22 +95,13 @@ describe('enqueueBilingualTranslation', () => {
     })
   })
 
-  it('triggers the job to run via after(), passing the queued job id', async () => {
-    await enqueueBilingualTranslation(baseArgs)
-
-    expect(afterMock).toHaveBeenCalledTimes(1)
-    expect(runByIDMock).toHaveBeenCalledWith({
-      id: 'job-1',
-    })
-  })
-
-  it('logs rather than throwing when the triggered run fails', async () => {
-    runByIDMock.mockRejectedValueOnce(new Error('worker busy'))
-
+  it('only queues the job: running it is left to the worker', async () => {
     await expect(enqueueBilingualTranslation(baseArgs)).resolves.toEqual({
       jobId: 'job-1',
     })
-    expect(loggerErrorMock).toHaveBeenCalledWith(expect.stringContaining('worker busy'))
+
+    expect(afterMock).not.toHaveBeenCalled()
+    expect(runByIDMock).not.toHaveBeenCalled()
   })
 
   it('queues without a docId for a not-yet-saved document', async () => {

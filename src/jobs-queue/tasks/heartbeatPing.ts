@@ -1,5 +1,6 @@
 import { TaskConfig } from 'payload'
 
+import { handlerPath } from '@/jobs-queue/lib/handlerPath'
 import { QueueSlug, TaskSlug } from '@/types/jobs-queue'
 
 export const heartbeatPing: TaskConfig<TaskSlug['HeartbeatPing']> = {
@@ -11,10 +12,5 @@ export const heartbeatPing: TaskConfig<TaskSlug['HeartbeatPing']> = {
       queue: QueueSlug.Heartbeat,
     },
   ],
-  handler: async () => {
-    console.log('Ping')
-    return {
-      output: {},
-    }
-  },
+  handler: handlerPath('heartbeatPing.ts'),
 }

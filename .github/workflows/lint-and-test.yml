@@ -1,122 +1,24 @@
 name: Lint & Test
 
-# PR gate only: lint + test. Nothing is built or pushed here — that's
-# build-and-deploy.yml, triggered separately on push to main/develop.
+# PR gate only. The checks themselves live in ci.yml, which build-and-deploy.yml
+# also runs before shipping; nothing is built into an image or pushed here.
 on:
   pull_request:
     branches:
       - main
       - develop
 
-# Both jobs only checkout, install, and run lint/tests — neither needs to
-# write anything, so GITHUB_TOKEN is scoped down to read-only.
 permissions:
   contents: read
 
+# A newer push to the same PR supersedes the run in progress.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  lint:
-    name: Lint
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          # commitlint needs the range between base and head
-          fetch-depth: 0
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
-
-      - name: Setup Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: 26
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Validate commit messages
-        run: >-
-          pnpm exec commitlint
-          --from ${{ github.event.pull_request.base.sha }}
-          --to ${{ github.event.pull_request.head.sha }}
-          --verbose
-
-      - name: Lint
-        run: pnpm run lint
-
-      - name: Check dependency version groups
-        run: pnpm run deps:lint
-
-  test:
-    name: Unit Tests
-    runs-on: ubuntu-24.04
-    timeout-minutes: 20
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
-
-      - name: Setup Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: 26
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Run unit tests with coverage
-        run: pnpm run test:coverage
-
-  e2e:
-    name: E2E Tests
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
-
-      - name: Setup Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: 26
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps chromium
-
-      # docker-compose.yml interpolates S3_ACCESS_KEY/S3_SECRET_KEY/S3_BUCKET
-      # from the shell environment — .env.test is the single source of truth
-      # for those (and for everything test:e2e itself loads via --env-file).
-      - name: Load .env.test into job environment
-        run: grep -v '^#' .env.test | grep -v '^$' >> "$GITHUB_ENV"
-
-      - name: Start local services (Mongo, Redis, S3)
-        run: docker compose up -d --wait
-
-      # The smoke tests hit the CMS-driven homepage and admin login screen,
-      # which need the schema and seed documents (e.g. the `home` page)
-      # that 00000001_initialize_basic_site creates — without this the DB
-      # is empty and every page-rendering assertion 404s.
-      - name: Run database migrations
-        run: pnpm run migrate
-
-      # blog.spec.ts needs published posts. seed:posts creates its own topics,
-      # and each post fetches one placeholder image from picsum.photos, so
-      # the count stays small.
-      - name: Seed blog content
-        run: pnpm run seed:posts -- --count 2
-
-      - name: Run E2E tests
-        run: pnpm run test:e2e
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read

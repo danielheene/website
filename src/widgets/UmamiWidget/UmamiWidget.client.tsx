@@ -62,6 +62,9 @@ interface UmamiWidgetClientProps {
   id: string | null
   name: string | null
   teamId: string | null
+  // Passed by the server: the admin layout does not render `RuntimeConfigScript`,
+  // so the browser has no runtime config on first render.
+  umamiBaseUrl?: string
 }
 
 export const UmamiWidgetClient = ({
@@ -73,6 +76,7 @@ export const UmamiWidgetClient = ({
   id,
   name,
   teamId,
+  umamiBaseUrl,
 }: UmamiWidgetClientProps) => {
   const effectiveStartDate = startDateFromProps
     ? parseISO(startDateFromProps)
@@ -108,10 +112,11 @@ export const UmamiWidgetClient = ({
 
   const umamiUrl = useMemo(() => {
     const umamiPath = `${teamId ? `/teams/${teamId}` : ''}/websites/${id}/`
-    return new URL(umamiPath, process.env.NEXT_PUBLIC_UMAMI_URL).toString()
+    return umamiBaseUrl ? new URL(umamiPath, umamiBaseUrl).toString() : ''
   }, [
     id,
     teamId,
+    umamiBaseUrl,
   ])
 
   const { openModal, closeModal, isModalOpen } = useModal()

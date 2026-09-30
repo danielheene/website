@@ -97,7 +97,7 @@ describe('enqueueAutoTranslate', () => {
     })
   })
 
-  it('triggers the queued job to run immediately rather than waiting for the next autoRun poll', async () => {
+  it('only queues the job: running it is left to the worker', async () => {
     await runHook({
       ...baseArgs,
       value: {
@@ -110,38 +110,8 @@ describe('enqueueAutoTranslate', () => {
       },
     })
 
-    // The hook's own `await` only covers `queue()` — `runByID` is fired via
-    // an un-awaited `.then()` so it doesn't block the save response. Give
-    // that microtask a tick to run before asserting on it.
-    await vi.waitFor(() => {
-      expect(runByIDMock).toHaveBeenCalledWith({
-        id: 'job-1',
-      })
-    })
-  })
-
-  it('logs (and does not throw) when the immediate run fails', async () => {
-    runByIDMock.mockRejectedValueOnce(new Error('worker unavailable'))
-
-    await expect(
-      runHook({
-        ...baseArgs,
-        value: {
-          en: paragraph('Hello'),
-          de: paragraph(''),
-        },
-        previousValue: {
-          en: paragraph(''),
-          de: paragraph(''),
-        },
-      }),
-    ).resolves.toBeDefined()
-
-    await vi.waitFor(() => {
-      expect(loggerErrorMock).toHaveBeenCalledWith(
-        expect.stringContaining('Failed running auto-translate job job-1'),
-      )
-    })
+    expect(queueMock).toHaveBeenCalledTimes(1)
+    expect(runByIDMock).not.toHaveBeenCalled()
   })
 
   it('enqueues a de->en job when German is populated and English is empty (and was empty before)', async () => {

@@ -57,20 +57,12 @@ export default defineConfig({
   webServer: process.env.E2E_NO_SERVER
     ? undefined
     : {
-        command: 'pnpm run dev:app',
+        // CI serves the assembled production output instead of a dev server.
+        command: process.env.E2E_SERVER_COMMAND ?? 'pnpm run dev:app',
         url: baseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 180_000,
         stdout: 'pipe',
         stderr: 'pipe',
-        // next.config.ts's experimental.allowDevelopmentBuild throws unless
-        // NODE_ENV is explicitly 'development'. .env.test sets NODE_ENV=test
-        // for the rest of the suite, which `next dev` otherwise inherits
-        // as-is instead of defaulting it itself — override it for just this
-        // spawned process.
-        env: {
-          ...process.env,
-          NODE_ENV: 'development',
-        },
       },
 })

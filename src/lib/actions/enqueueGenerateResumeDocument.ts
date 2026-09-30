@@ -1,6 +1,5 @@
 'use server'
 
-import { after } from 'next/server'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
@@ -13,7 +12,6 @@ import {
   subMilliseconds,
 } from 'date-fns'
 
-import { extractErrorMessage } from '@/lib/extractErrorMessage'
 import { generateResumeDocumentCustomId } from '@/lib/generateResumeDocumentCustomId'
 import { CollectionSlug } from '@/types/collections'
 import { GlobalSlug } from '@/types/globals'
@@ -84,22 +82,6 @@ export const enqueueGenerateResumeDocument = async (
   payload.logger.info(
     `Enqueued job ${job.id} at ${formatDate(job.waitUntil, 'yyyy-MM-dd HH:mm:ss')}`,
   )
-
-  if (forceNow) {
-    // Kicks the job off immediately rather than waiting for the next
-    // `autoRun` poll, same as `enqueueSeedCollection` — run via `after()` so
-    // it keeps executing once this action's response (with the job id) has
-    // already gone back to the client to open its SSE subscription.
-    after(async () => {
-      try {
-        await payload.jobs.runByID({
-          id: job.id,
-        })
-      } catch (error) {
-        payload.logger.error(`Failed running job ${job.id}: ${extractErrorMessage(error)}`)
-      }
-    })
-  }
 
   return {
     jobId: String(job.id),

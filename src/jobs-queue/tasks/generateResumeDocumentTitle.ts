@@ -1,6 +1,6 @@
 import { TaskConfig } from 'payload'
 
-import { renderTemplate } from '@/lib/renderTemplate'
+import { handlerPath } from '@/jobs-queue/lib/handlerPath'
 import { TaskSlug } from '@/types/jobs-queue'
 
 export const generateResumeDocumentTitle: TaskConfig<TaskSlug['GenerateResumeDocumentTitle']> = {
@@ -26,31 +26,5 @@ export const generateResumeDocumentTitle: TaskConfig<TaskSlug['GenerateResumeDoc
       required: true,
     },
   ],
-  handler: async ({ input, req: { payload } }) => {
-    'use server'
-
-    const { documentTitleTemplate, customId } = input
-
-    payload.logger.info('Generating document title')
-
-    const { result, error } = await renderTemplate({
-      template: documentTitleTemplate,
-      data: {
-        customId,
-      },
-      locale: 'en',
-    })
-
-    if (error) {
-      throw new Error(error)
-    }
-
-    payload.logger.info(`Successfully generated document title: ${result}`)
-
-    return {
-      output: {
-        documentTitle: result,
-      },
-    }
-  },
+  handler: handlerPath('generateResumeDocumentTitle.ts'),
 }

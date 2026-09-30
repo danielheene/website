@@ -16,6 +16,8 @@ export const fetchResumeJobs = async (locale: BilingualLanguage = 'en') => {
     draft: false,
     pagination: false,
     limit: 0,
+    // Latest position first, on the website and in the PDF.
+    sort: '-startDate',
   })
 
   return await resolveRelations(reduceDataToBilingualLanguage(docs, locale))

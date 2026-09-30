@@ -1,14 +1,4 @@
-node_modules
-.next
-dist
-.git
-.github
-.storybook-static
-coverage
-playwright-report
-test-results
-*.log
-.env
-.env.*
-!.env.example
-.DS_Store
+# Images are assembled outside Docker (scripts/assemble-images.mjs); only the
+# assembled directories may enter the build context.
+*
+!out

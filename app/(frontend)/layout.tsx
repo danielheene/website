@@ -19,6 +19,7 @@ import PPSupplySans from '@/fonts/pp-supply-sans/next'
 import { BLOG_FEED_PATH } from '@/lib/blog/feed'
 import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fetchers'
 import { generatePersonSchema, generateWebSiteSchema, JsonLd } from '@/lib/jsonLd'
+import { RuntimeConfigScript } from '@/lib/runtimeConfig/RuntimeConfigScript'
 
 export default async function RootLayout({
   children,
@@ -46,6 +47,8 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        {/* before any client code: see RuntimeConfigScript */}
+        <RuntimeConfigScript />
         <JsonLd
           data={[
             personSchema,

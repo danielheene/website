@@ -23,13 +23,3 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-
-  - package-ecosystem: "docker"
-    directory: "/web"
-    schedule:
-      interval: "daily"
-
-  - package-ecosystem: "docker"
-    directory: "/storybook"
-    schedule:
-      interval: "daily"

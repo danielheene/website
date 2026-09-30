@@ -6,10 +6,11 @@
  * server-side `fetch` would receive a stub function rather than this string.
  * The cached `/api/icons/collection` route imports it from here.
  *
- * Written as a full `process.env.NEXT_PUBLIC_*` member expression rather than
- * destructured or dynamically indexed: the bundler inlines public env vars by
- * matching that exact form, so anything cleverer resolves to `undefined` in the
- * browser. The fallback keeps the previous hard-coded origin working when the
- * variable is unset.
+ * Read through the runtime config rather than a static
+ * `process.env.NEXT_PUBLIC_*` reference, which the bundler would inline at
+ * compile time. The fallback is the production origin, so the browser still
+ * works if the config script has not run yet.
  */
-export const ICONIFY_API = process.env.NEXT_PUBLIC_ICONIFY_API || 'https://icons.heene.io'
+import { getRuntimeConfig } from '@/lib/runtimeConfig'
+
+export const ICONIFY_API = getRuntimeConfig().iconifyApi || 'https://icons.heene.io'

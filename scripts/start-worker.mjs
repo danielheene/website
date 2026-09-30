@@ -44,7 +44,9 @@ const jobRunner = spawn(
     payloadCli,
     'jobs:run',
     '--cron',
-    '* * * * *',
+    // every 5 seconds: the web app only enqueues jobs, so this is how quickly
+    // a manual action (seed, translate, "generate now") starts running
+    '*/5 * * * * *',
     '--all-queues',
     '--handle-schedules',
     '--limit',
