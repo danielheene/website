@@ -64,9 +64,7 @@ export const FilmstripEditor = (props: ArrayFieldClientProps) => {
     if (!emblaApi) return
     setCanScrollPrev(emblaApi.canScrollPrev())
     setCanScrollNext(emblaApi.canScrollNext())
-  }, [
-    emblaApi,
-  ])
+  }, [emblaApi])
 
   useEffect(() => {
     if (!emblaApi) return
@@ -77,10 +75,7 @@ export const FilmstripEditor = (props: ArrayFieldClientProps) => {
       emblaApi.off('select', onEmblaSelect)
       emblaApi.off('reInit', onEmblaSelect)
     }
-  }, [
-    emblaApi,
-    onEmblaSelect,
-  ])
+  }, [emblaApi, onEmblaSelect])
 
   return (
     <div className="flex flex-col gap-3">

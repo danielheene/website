@@ -8,15 +8,7 @@ export const generateResumeDocumentHook: CollectionAfterOperationHook = async ({
 }): Promise<void> => {
   if (req.context?.skipGenerateResumeDocumentHook) return
 
-  if (
-    [
-      'create',
-      'update',
-      'updateByID',
-      'delete',
-      'deleteByID',
-    ].includes(operation)
-  ) {
+  if (['create', 'update', 'updateByID', 'delete', 'deleteByID'].includes(operation)) {
     await enqueueGenerateResumeDocument()
   }
 }

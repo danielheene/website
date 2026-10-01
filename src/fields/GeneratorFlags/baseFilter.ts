@@ -45,9 +45,7 @@ export const buildMediaScopeWhere = (scope: MediaScope): Where | null => {
 
   return {
     generatorFlags: {
-      [scope === MediaScope.Generated ? 'in' : 'not_in']: [
-        ...GENERATED_ASSET_FLAGS,
-      ],
+      [scope === MediaScope.Generated ? 'in' : 'not_in']: [...GENERATED_ASSET_FLAGS],
     },
   }
 }

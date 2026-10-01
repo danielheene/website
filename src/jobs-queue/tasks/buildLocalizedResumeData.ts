@@ -15,10 +15,7 @@ export const buildLocalizedResumeData: TaskConfig<TaskSlug['BuildLocalizedResume
       typescriptSchema: [
         () => ({
           type: 'string',
-          enum: [
-            'en',
-            'de',
-          ],
+          enum: ['en', 'de'],
           required: true,
         }),
       ],

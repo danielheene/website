@@ -43,11 +43,7 @@ const baseArgs = {
     routeParams: {},
   },
   operation: 'update' as const,
-  path: [
-    'tasks',
-    0,
-    'task',
-  ],
+  path: ['tasks', 0, 'task'],
   collection: {
     slug: 'resume-jobs',
   },
@@ -64,7 +60,7 @@ beforeEach(() => {
   loggerErrorMock.mockReset()
 })
 
-// biome-ignore lint/suspicious/noExplicitAny: loose call into the hook for tests
+// oxlint-disable-next-line typescript/no-explicit-any -- loose call into the hook for tests
 const runHook = (overrides: Record<string, unknown>) => (enqueueAutoTranslate as any)(overrides)
 
 describe('enqueueAutoTranslate', () => {

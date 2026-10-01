@@ -7,6 +7,7 @@ import {
   SerpProgressBar,
   type SerpProgressBarConfig,
 } from '@/fields/Meta/components/SerpProgressBar'
+
 import '@/fields/Meta/components/SerpProgressBar.styles.css'
 
 type FieldComponentClientProps = {

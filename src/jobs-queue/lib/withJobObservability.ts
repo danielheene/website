@@ -52,7 +52,7 @@ type LooseJobConfig = {
 // which differs per array element — `AnySlug` is what lets a single wrapper
 // apply across every task and workflow without forcing each one's exact slug
 // type into the signature.
-// biome-ignore lint/suspicious/noExplicitAny: see above
+// oxlint-disable-next-line typescript/no-explicit-any -- see above
 type AnySlug = any
 
 /**

@@ -24,14 +24,10 @@ const NavEntries = (): ArrayField => ({
     },
   },
   hooks: {
-    afterRead: [
-      async ({ value = [] }) => value,
-    ],
+    afterRead: [async ({ value = [] }) => value],
   },
   interfaceName: 'NavEntries',
-  fields: [
-    ...LinkField().fields,
-  ],
+  fields: [...LinkField().fields],
 })
 
 export const SiteSettingsDefaults: Pick<GlobalData<GlobalSlug['SiteSettings']>, 'general'> = {
@@ -53,10 +49,7 @@ export const SiteSettings: GlobalConfig = {
     update: authenticated,
   },
   hooks: {
-    afterChange: [
-      revalidateDocument,
-      generateResumeDocumentHook,
-    ],
+    afterChange: [revalidateDocument, generateResumeDocumentHook],
   },
   admin: {
     group: AdminGroup.Settings,
@@ -141,9 +134,7 @@ export const SiteSettings: GlobalConfig = {
                   description:
                     'This template is used for generating the title tag value on each page. ' +
                     'Title refers to the actual document title which is suffixed with siteName.',
-                  renderLocale: [
-                    'en',
-                  ],
+                  renderLocale: ['en'],
                   data: {
                     title: 'Lorem ipsum dolor sit amet',
                   },
@@ -227,9 +218,7 @@ export const SiteSettings: GlobalConfig = {
                 {
                   name: 'mainNavigation',
                   label: 'Main Navigation',
-                  fields: [
-                    NavEntries(),
-                  ],
+                  fields: [NavEntries()],
                 },
               ],
             },
@@ -304,9 +293,7 @@ export const SiteSettings: GlobalConfig = {
                 {
                   name: 'legalPages',
                   label: 'Legal Pages',
-                  fields: [
-                    NavEntries(),
-                  ],
+                  fields: [NavEntries()],
                 },
               ],
             },

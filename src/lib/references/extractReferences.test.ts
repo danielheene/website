@@ -57,10 +57,7 @@ describe('extractReferences', () => {
     })
 
     expect(references).toHaveLength(2)
-    expect(references.map(({ value }) => value)).toEqual([
-      'img-a',
-      'vid-a',
-    ])
+    expect(references.map(({ value }) => value)).toEqual(['img-a', 'vid-a'])
     expect(references[0].path).toBe('layout.0.items.0.media')
   })
 
@@ -124,10 +121,7 @@ describe('extractReferences', () => {
       },
     })
 
-    expect(references.map(({ relationTo }) => relationTo)).toEqual([
-      'topics',
-      'users',
-    ])
+    expect(references.map(({ relationTo }) => relationTo)).toEqual(['topics', 'users'])
   })
 
   it('restricts results to the collections named in `only`', () => {
@@ -145,9 +139,7 @@ describe('extractReferences', () => {
         ],
       },
       {
-        only: [
-          'images',
-        ],
+        only: ['images'],
       },
     )
 
@@ -222,10 +214,7 @@ describe('extractReferences', () => {
       },
     )
 
-    expect(references.map(({ value }) => value)).toEqual([
-      'post-1',
-      'post-2',
-    ])
+    expect(references.map(({ value }) => value)).toEqual(['post-1', 'post-2'])
   })
 
   it('resolves a populated monomorphic relationship to its id', () => {
@@ -273,9 +262,7 @@ describe('extractReferences', () => {
             name: 'content',
             type: 'blocks',
             blocks: [],
-            blockReferences: [
-              'HeroBlock',
-            ],
+            blockReferences: ['HeroBlock'],
           },
         ] as never,
         blocks: [
@@ -356,9 +343,7 @@ describe('extractReferences', () => {
             name: 'content',
             type: 'blocks',
             blocks: [],
-            blockReferences: [
-              'SelfBlock',
-            ],
+            blockReferences: ['SelfBlock'],
           },
         ] as never,
         blocks: [
@@ -374,9 +359,7 @@ describe('extractReferences', () => {
                 name: 'nested',
                 type: 'blocks',
                 blocks: [],
-                blockReferences: [
-                  'SelfBlock',
-                ],
+                blockReferences: ['SelfBlock'],
               },
             ],
           },
@@ -404,9 +387,7 @@ describe('extractReferences', () => {
               name: 'content',
               type: 'blocks',
               blocks: [],
-              blockReferences: [
-                'MissingBlock',
-              ],
+              blockReferences: ['MissingBlock'],
             },
           ] as never,
           blocks: [] as never,
@@ -439,10 +420,7 @@ describe('extractReferences', () => {
       },
     })
 
-    expect(references.map(({ value }) => value)).toEqual([
-      'vid-1',
-      'thumb-1',
-    ])
+    expect(references.map(({ value }) => value)).toEqual(['vid-1', 'thumb-1'])
   })
 
   it('handles empty, null and primitive input', () => {

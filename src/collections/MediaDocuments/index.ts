@@ -22,29 +22,17 @@ export const MediaDocuments: CollectionConfig<CollectionSlug['MediaDocuments']> 
     plural: 'Documents',
   },
   hooks: {
-    beforeChange: [
-      generateChecksum,
-    ],
-    afterChange: [
-      generateThumbnails,
-    ],
+    beforeChange: [generateChecksum],
+    afterChange: [generateThumbnails],
   },
   admin: {
     baseFilter: scopeMediaAssets,
     group: AdminGroup.Media,
     useAsTitle: 'filename',
-    defaultColumns: [
-      'filename',
-      'type',
-      'extension',
-      'updatedAt',
-    ],
+    defaultColumns: ['filename', 'type', 'extension', 'updatedAt'],
     pagination: {
       defaultLimit: 50,
-      limits: [
-        50,
-        100,
-      ],
+      limits: [50, 100],
     },
     components: {
       Description: '@/components/AdminPanel/MediaScopeTabs#MediaScopeTabs',
@@ -61,9 +49,7 @@ export const MediaDocuments: CollectionConfig<CollectionSlug['MediaDocuments']> 
     withMetadata: false,
     hideRemoveFile: true,
     displayPreview: true,
-    mimeTypes: [
-      'application/pdf',
-    ],
+    mimeTypes: ['application/pdf'],
     adminThumbnail: ({ doc }) => {
       if (Array.isArray(doc.thumbnails) && doc.thumbnails.length > 0) {
         const thumbnailFilename = String(doc.filename).replace(/\.[^/.]+$/, '-1-thumbnail.png')
@@ -133,9 +119,7 @@ export const MediaDocuments: CollectionConfig<CollectionSlug['MediaDocuments']> 
     },
     MediaField({
       name: 'thumbnails',
-      relationTo: [
-        CollectionSlug.MediaImages,
-      ],
+      relationTo: [CollectionSlug.MediaImages],
       hasMany: true,
       readOnly: true,
       allowCreate: false,

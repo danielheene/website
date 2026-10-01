@@ -94,12 +94,7 @@ export const resolveIconName = (value: string): string =>
  * different icons.
  */
 const ALIAS_BY_ICON_NAME = new Map<string, IconAlias>(
-  (
-    Object.entries(ICON_ALIASES) as [
-      IconAlias,
-      string,
-    ][]
-  ).map(([alias, iconName]) => [
+  (Object.entries(ICON_ALIASES) as [IconAlias, string][]).map(([alias, iconName]) => [
     iconName,
     alias,
   ]),

@@ -84,9 +84,7 @@ export const ResumeChecksumValidatorClient = ({ searchChecksum }: ChecksumValida
         })
       })()
     },
-    [
-      searchChecksum,
-    ],
+    [searchChecksum],
   )
 
   const handleDrop = useCallback(
@@ -95,18 +93,14 @@ export const ResumeChecksumValidatorClient = ({ searchChecksum }: ChecksumValida
       setDragActive(false)
       validateProvidedFile(event.dataTransfer.files[0])
     },
-    [
-      validateProvidedFile,
-    ],
+    [validateProvidedFile],
   )
 
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       validateProvidedFile(event.target.files?.[0])
     },
-    [
-      validateProvidedFile,
-    ],
+    [validateProvidedFile],
   )
 
   const reset = useCallback(() => {

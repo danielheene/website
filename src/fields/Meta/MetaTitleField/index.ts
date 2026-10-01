@@ -26,8 +26,6 @@ export const MetaTitleField = ({ titlePath }: MetaTitleFieldProps): TextField =>
     },
   },
   hooks: {
-    beforeValidate: [
-      generateMetaTitleHook(titlePath),
-    ],
+    beforeValidate: [generateMetaTitleHook(titlePath)],
   },
 })

@@ -41,10 +41,7 @@ export function useSectionData<T>(
     return () => {
       isCancelled = true
     }
-  }, [
-    selectedInterval,
-    fetchFn,
-  ])
+  }, [selectedInterval, fetchFn])
 
   return {
     data,

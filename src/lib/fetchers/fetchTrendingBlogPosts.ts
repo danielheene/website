@@ -89,12 +89,7 @@ const resolveToBlogPosts = async (ranked: RankedSlug[]): Promise<TrendingBlogPos
       },
     })
 
-    const postsBySlug = new Map(
-      docs.map((doc) => [
-        doc.slug,
-        doc,
-      ]),
-    )
+    const postsBySlug = new Map(docs.map((doc) => [doc.slug, doc]))
 
     return ranked.flatMap(({ slug, views }) => {
       const post = postsBySlug.get(slug)

@@ -113,12 +113,8 @@ export const seedTopics = async (
         title,
         slug,
         featured,
-        generatorFlags: [
-          'seeded-dummy',
-        ],
-        content: root([
-          paragraph(`Posts about ${title}.`),
-        ]) as unknown as Topic['content'],
+        generatorFlags: ['seeded-dummy'],
+        content: root([paragraph(`Posts about ${title}.`)]) as unknown as Topic['content'],
       },
     })
 
@@ -148,9 +144,7 @@ export const cleanTopics = async (
     collection: CollectionSlug.BlogTopics,
     where: {
       generatorFlags: {
-        in: [
-          'seeded-dummy',
-        ],
+        in: ['seeded-dummy'],
       },
     },
     limit: 0,
@@ -179,9 +173,7 @@ export const cleanTopics = async (
           equals: topic.id,
         },
         generatorFlags: {
-          not_in: [
-            'seeded-dummy',
-          ],
+          not_in: ['seeded-dummy'],
         },
       },
       limit: 0,

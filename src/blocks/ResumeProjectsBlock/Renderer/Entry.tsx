@@ -20,11 +20,7 @@ export const Entry = memo(function ResumeProjectsSectionEntry({
   scope,
 }: ResumeProjectsSectionEntryProps) {
   return (
-    <article
-      className={cn([
-        'grid grid-cols-12 gap-4',
-      ])}
-    >
+    <article className={cn(['grid grid-cols-12 gap-4'])}>
       <div
         className={cn([
           'col-span-12 md:col-span-7 lg:col-span-6 flex flex-col',

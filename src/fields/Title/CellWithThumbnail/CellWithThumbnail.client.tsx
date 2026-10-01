@@ -52,19 +52,12 @@ export const CellWithThumbnailClient = ({
               docID,
             })
           }
-          className={cn([
-            sharedStyles,
-          ])}
+          className={cn([sharedStyles])}
         >
           {innerContent}
         </button>
       ) : (
-        <Link
-          href={`/admin/collections/${collectionSlug}/${docID}`}
-          className={cn([
-            sharedStyles,
-          ])}
-        >
+        <Link href={`/admin/collections/${collectionSlug}/${docID}`} className={cn([sharedStyles])}>
           {innerContent}
         </Link>
       )}

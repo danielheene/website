@@ -62,9 +62,7 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
     delete: forbidden,
   },
   hooks: {
-    afterChange: [
-      revalidateLatestResumeDocument,
-    ],
+    afterChange: [revalidateLatestResumeDocument],
   },
   admin: {
     useAsTitle: 'title',
@@ -76,22 +74,14 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
           slug: data?.slug,
         }),
     },
-    defaultColumns: [
-      'title',
-      'slug',
-      'createdAt',
-    ],
+    defaultColumns: ['title', 'slug', 'createdAt'],
     disableCopyToLocale: true,
     pagination: {
       defaultLimit: 100,
-      limits: [
-        100,
-      ],
+      limits: [100],
     },
   },
-  defaultSort: [
-    '-createdAt',
-  ],
+  defaultSort: ['-createdAt'],
   fields: [
     TitleField({
       listViewThumbnailPath: 'thumbnails_en.0.value',
@@ -163,9 +153,7 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
           type: 'upload',
           name: 'document_en',
           label: 'EN',
-          relationTo: [
-            CollectionSlug.MediaDocuments,
-          ],
+          relationTo: [CollectionSlug.MediaDocuments],
           admin: {
             ...adminDefaults,
             ...uploadDefaults,
@@ -175,9 +163,7 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
           type: 'upload',
           name: 'document_de',
           label: 'DE',
-          relationTo: [
-            CollectionSlug.MediaDocuments,
-          ],
+          relationTo: [CollectionSlug.MediaDocuments],
           admin: {
             ...adminDefaults,
             ...uploadDefaults,
@@ -199,9 +185,7 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
               type: 'upload',
               name: 'thumbnails_en',
               label: 'EN',
-              relationTo: [
-                CollectionSlug.MediaImages,
-              ],
+              relationTo: [CollectionSlug.MediaImages],
               hasMany: true,
               admin: {
                 ...adminDefaults,
@@ -213,9 +197,7 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
               type: 'upload',
               name: 'thumbnails_de',
               label: 'DE',
-              relationTo: [
-                CollectionSlug.MediaImages,
-              ],
+              relationTo: [CollectionSlug.MediaImages],
               hasMany: true,
               admin: {
                 ...adminDefaults,

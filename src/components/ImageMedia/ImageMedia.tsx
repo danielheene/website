@@ -9,7 +9,8 @@ import { type ClassValue, cn } from 'tailwind-variants'
 import type { MediaImage } from '@/types/payload'
 
 export interface ImageMediaProps
-  extends Omit<
+  extends
+    Omit<
       ImageProps,
       'className' | 'alt' | 'src' | 'blurDataURL' | 'placeholder' | 'width' | 'height' | 'onLoad'
     >,
@@ -57,40 +58,25 @@ export const ImageMedia = ({
       setLoaded(true)
       onLoadAction(_event)
     },
-    [
-      onLoadAction,
-    ],
+    [onLoadAction],
   )
 
   const aspectRatio = useMemo(() => {
     if (fill) return 'auto'
     return `${Math.round(width / height)}`
-  }, [
-    width,
-    height,
-    fill,
-  ])
+  }, [width, height, fill])
 
   // NOTE: this is used by the browser to determine which image to download at different screen sizes
   const sizes = sizesFromProps
     ? sizesFromProps
-    : [
-        '(max-width: 768px) 100vw',
-        '(max-width: 1200px) 50vw',
-        '33vw',
-      ].join(', ')
+    : ['(max-width: 768px) 100vw', '(max-width: 1200px) 50vw', '33vw'].join(', ')
 
   return (
     <div
       style={{
         aspectRatio,
       }}
-      className={cn([
-        'contents',
-        !fill && 'relative',
-        className,
-        loaded && loadedClassName,
-      ])}
+      className={cn(['contents', !fill && 'relative', className, loaded && loadedClassName])}
     >
       <NextImage
         alt={alt}

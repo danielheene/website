@@ -12,8 +12,10 @@ import {
 import type { ClassValue } from 'tailwind-variants'
 import { cn } from 'tailwind-variants'
 
-export interface VideoMediaProps
-  extends Omit<VideoHTMLAttributes<HTMLVideoElement>, 'className' | 'poster' | 'src' | 'onLoad'> {
+export interface VideoMediaProps extends Omit<
+  VideoHTMLAttributes<HTMLVideoElement>,
+  'className' | 'poster' | 'src' | 'onLoad'
+> {
   /** Absolute URL of the video file. */
   url: string
   /** Poster frame, produced by the GenerateVideoThumbnails task. */
@@ -57,17 +59,12 @@ export const VideoMedia = ({
       setLoaded(true)
       onLoadAction(event)
     },
-    [
-      onLoadAction,
-    ],
+    [onLoadAction],
   )
 
   const aspectRatio = useMemo(
     () => (width && height ? `${Math.round(width / height)}` : undefined),
-    [
-      width,
-      height,
-    ],
+    [width, height],
   )
 
   return (
@@ -75,17 +72,10 @@ export const VideoMedia = ({
       style={{
         aspectRatio,
       }}
-      className={cn([
-        'relative overflow-hidden',
-        className,
-        loaded && loadedClassName,
-      ])}
+      className={cn(['relative overflow-hidden', className, loaded && loadedClassName])}
     >
       <video
-        className={cn([
-          'block h-full w-full object-cover',
-          videoClassName,
-        ])}
+        className={cn(['block h-full w-full object-cover', videoClassName])}
         controls={controls}
         preload={preload}
         onCanPlay={handleLoadedData}

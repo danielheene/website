@@ -35,9 +35,7 @@ export const LabelComponent: GroupFieldLabelClientComponent = ({ field, path }) 
     if (!renderFieldsRef.current) {
       renderFieldsRef.current = document.querySelector(`#${fieldId} .render-fields`)
     }
-  }, [
-    fieldId,
-  ])
+  }, [fieldId])
 
   /**
    * dispatches event with locale detail on the root node to trigger re-render with the selected locale
@@ -64,9 +62,7 @@ export const LabelComponent: GroupFieldLabelClientComponent = ({ field, path }) 
       renderFieldsRef.current.style.width = ''
       renderFieldsRef.current.style.height = ''
     }, 1000)
-  }, [
-    locale,
-  ])
+  }, [locale])
 
   /**
    * save the current selected locale to preferences to allow consistency
@@ -76,10 +72,7 @@ export const LabelComponent: GroupFieldLabelClientComponent = ({ field, path }) 
       setLocale(locale)
       setPreference(preferenceKey, locale)
     },
-    [
-      preferenceKey,
-      setPreference,
-    ],
+    [preferenceKey, setPreference],
   )
 
   /**
@@ -89,10 +82,7 @@ export const LabelComponent: GroupFieldLabelClientComponent = ({ field, path }) 
     getPreference<BilingualLanguage>(preferenceKey).then((storedLocale) =>
       setLocale(storedLocale ?? 'en'),
     )
-  }, [
-    getPreference,
-    preferenceKey,
-  ])
+  }, [getPreference, preferenceKey])
 
   return (
     <div className="flex items-center justify-between gap-8 w-full">
@@ -101,14 +91,9 @@ export const LabelComponent: GroupFieldLabelClientComponent = ({ field, path }) 
         {locale && (
           <span className="opacity-60 text-sm mb-1">
             -{' '}
-            {new Intl.DisplayNames(
-              [
-                'en',
-              ],
-              {
-                type: 'language',
-              },
-            ).of(locale)}
+            {new Intl.DisplayNames(['en'], {
+              type: 'language',
+            }).of(locale)}
           </span>
         )}
       </h3>

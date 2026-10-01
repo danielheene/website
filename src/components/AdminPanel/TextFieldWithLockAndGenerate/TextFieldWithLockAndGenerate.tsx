@@ -65,11 +65,7 @@ export const TextFieldWithLockAndGenerate: React.FC<TextFieldWithLockAndGenerate
         if (nextValue && nextValue !== value) setValue(nextValue)
       })
     },
-    [
-      setValue,
-      value,
-      generateFunction,
-    ],
+    [setValue, value, generateFunction],
   )
 
   return (

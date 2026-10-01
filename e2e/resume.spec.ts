@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 /**
  *    Resume document pages. Needs the fixture documents from
- *    `pnpm run seed:resume-documents` (CI runs it before the suite): an older
+ *    `bun run seed:resume-documents` (CI runs it before the suite): an older
  *    and a newer one, so the older page shows the "newer version" banner.
  *
  *    Headings are queried by role: after a client navigation Next keeps the

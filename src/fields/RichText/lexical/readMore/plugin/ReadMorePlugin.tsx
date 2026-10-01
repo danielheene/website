@@ -18,11 +18,7 @@ export const ReadMorePlugin = () => {
   const [editor] = useLexicalComposerContext()
 
   useEffect(() => {
-    if (
-      !editor.hasNodes([
-        ReadMoreNode,
-      ])
-    ) {
+    if (!editor.hasNodes([ReadMoreNode])) {
       throw new Error('ReadMorePlugin: ReadMoreNode is not registered on this editor')
     }
 
@@ -41,9 +37,7 @@ export const ReadMorePlugin = () => {
       },
       COMMAND_PRIORITY_EDITOR,
     )
-  }, [
-    editor,
-  ])
+  }, [editor])
 
   return null
 }

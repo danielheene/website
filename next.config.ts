@@ -19,19 +19,9 @@ const createTunnel = (token: string) =>
   new Promise<ChildProcess | null>((resolve) => {
     // No `shell: true`: the token is passed as its own argv entry rather than
     // concatenated into a command string, which also silences DEP0190.
-    const childProcess = spawn(
-      'npx',
-      [
-        'wrangler',
-        'tunnel',
-        'run',
-        '--token',
-        token,
-      ],
-      {
-        stdio: 'ignore',
-      },
-    )
+    const childProcess = spawn('npx', ['wrangler', 'tunnel', 'run', '--token', token], {
+      stdio: 'ignore',
+    })
 
     /**
      *    Reap the tunnel with the dev server. Without this every `next dev`
@@ -68,7 +58,7 @@ const createTunnel = (token: string) =>
 
 export default async (phase, { defaultConfig }) => {
   /**
-   *    The tunnel is opt-in via `pnpm dev --tunnel`, which scripts/dev.mjs
+   *    The tunnel is opt-in via `bun run dev --tunnel`, which scripts/dev.mjs
    *    translates into DEV_TUNNEL=1. Having the credentials in .env.local is
    *    no longer enough to start it — otherwise every `next dev` opens a
    *    public tunnel as a side effect of the file being present.
@@ -227,30 +217,9 @@ export default async (phase, { defaultConfig }) => {
      * Defines supported image formats, responsive breakpoints, and security policies for image handling.
      */
     images: {
-      formats: [
-        'image/webp',
-        'image/avif',
-      ],
-      deviceSizes: [
-        640,
-        750,
-        828,
-        1080,
-        1200,
-        1920,
-        2048,
-        3840,
-      ],
-      imageSizes: [
-        16,
-        32,
-        48,
-        64,
-        96,
-        128,
-        256,
-        384,
-      ],
+      formats: ['image/webp', 'image/avif'],
+      deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+      imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
       remotePatterns: [
         new URL('http://localhost:3000/**'),
         new URL('https://daniel.heene.io/**'),

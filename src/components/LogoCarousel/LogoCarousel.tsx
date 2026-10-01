@@ -23,9 +23,7 @@ export const LogoCarousel = ({ className, entries }: LogoCarouselProps) => {
       axis: 'y',
       startIndex: 1,
     },
-    [
-      Autoplay(),
-    ],
+    [Autoplay()],
   )
 
   const getRowKey = (entries: LogoCarouselProps['entries']): string => {
@@ -46,9 +44,7 @@ export const LogoCarousel = ({ className, entries }: LogoCarouselProps) => {
           return previousValue
         }, [])
         .filter((row) => row.length === 2),
-    [
-      entries,
-    ],
+    [entries],
   )
 
   return (
@@ -69,11 +65,7 @@ export const LogoCarousel = ({ className, entries }: LogoCarouselProps) => {
       ])}
       ref={emblaRef}
     >
-      <div
-        className={cn([
-          'flex flex-col w-full shrink-0 grow-0 direction-reverse',
-        ])}
-      >
+      <div className={cn(['flex flex-col w-full shrink-0 grow-0 direction-reverse'])}>
         {rows.filter(Boolean).map((row) => (
           <LogoCarouselRow key={getRowKey(row)} entries={row} />
         ))}
@@ -84,11 +76,7 @@ export const LogoCarousel = ({ className, entries }: LogoCarouselProps) => {
 
 export function LogoCarouselRow({ entries }: { entries: LogoCarouselProps['entries'] }) {
   return (
-    <div
-      className={cn([
-        'flex flex-row shrink-0 grow-0 my-3 gap-6',
-      ])}
-    >
+    <div className={cn(['flex flex-row shrink-0 grow-0 my-3 gap-6'])}>
       {entries.map((item) => (
         <LogoCarouselTile key={item.id} {...item} />
       ))}
@@ -102,7 +90,7 @@ export function LogoCarouselTile({
   title,
 }: LogoCarouselProps['entries'][number]): JSX.Element {
   return (
-    // biome-ignore lint/a11y/useAriaPropsSupportedByRole: <TODO>
+    // oxlint-disable-next-line jsx-a11y/role-supports-aria-props
     <div
       key={id}
       aria-label={title}
@@ -111,7 +99,7 @@ export function LogoCarouselTile({
         'fill-primary bg-white',
         '*:w-full *:h-full *:object-contain *:object-center',
       )}
-      // biome-ignore lint/security/noDangerouslySetInnerHtml: <sanitized server-side by sanitizeSvg — on write via the ResumeCustomers beforeChange hook, and again in ResumeCustomersBlock/Renderer before reaching this component>
+      // oxlint-disable-next-line react/no-danger -- sanitized server-side by sanitizeSvg — on write via the ResumeCustomers beforeChange hook, and again in ResumeCustomersBlock/Renderer before reaching this component
       dangerouslySetInnerHTML={{
         __html: svg,
       }}

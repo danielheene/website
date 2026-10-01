@@ -174,9 +174,7 @@ function mapAddresses(addresses: SendEmailOptions['to']): useSendEmailOptions['t
     return addresses.map((address) => (typeof address === 'string' ? address : address.address))
   }
 
-  return [
-    addresses.address,
-  ]
+  return [addresses.address]
 }
 
 function mapAttachments(

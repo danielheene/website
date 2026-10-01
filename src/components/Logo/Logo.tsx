@@ -16,8 +16,10 @@ export enum LogoVariant {
   Initials = 'initials',
 }
 
-interface LogoProps
-  extends Omit<SVGAttributes<SVGElement>, 'width' | 'height' | 'viewBox' | 'xlmns'> {
+interface LogoProps extends Omit<
+  SVGAttributes<SVGElement>,
+  'width' | 'height' | 'viewBox' | 'xlmns'
+> {
   color?: `${LogoColor}`
   variant?: `${LogoVariant}`
   className?: string
@@ -44,11 +46,7 @@ export const Logo = ({
         blink && '[&>.bar]:animate-blink',
         classNameProp,
       ]),
-    [
-      classNameProp,
-      blink,
-      color,
-    ],
+    [classNameProp, blink, color],
   )
 
   const { width, height } = useMemo(() => {
@@ -66,12 +64,9 @@ export const Logo = ({
       width: 2296,
       height: 257,
     }
-  }, [
-    variant,
-  ])
+  }, [variant])
 
   return (
-    // biome-ignore lint/a11y/noSvgWithoutTitle: <TODO>
     <svg
       {...externalSVGProps}
       className={className}

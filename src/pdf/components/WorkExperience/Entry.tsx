@@ -1,5 +1,5 @@
-import { ReactNode } from 'react'
 import { StyleSheet, Styles, View } from '@react-pdf/renderer'
+import { ReactNode } from 'react'
 
 const styles = StyleSheet.create({
   container: {

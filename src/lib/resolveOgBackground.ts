@@ -20,10 +20,7 @@ type OgBackground =
  * when the primary array yields nothing renderable.
  */
 export function resolveOgBackground(slides: unknown, fallbackSlides?: unknown): OgBackground {
-  for (const source of [
-    slides,
-    fallbackSlides,
-  ]) {
+  for (const source of [slides, fallbackSlides]) {
     const [firstSlide] = toSlideItems(source, '')
     if (firstSlide?.kind === 'image')
       return {

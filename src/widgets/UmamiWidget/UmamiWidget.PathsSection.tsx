@@ -27,11 +27,7 @@ export const PathsSection = ({ data, dataIsLoading, className }: PathsSectionPro
   const contentClass = 'h-[410px]'
 
   return (
-    <Card
-      className={cn([
-        className,
-      ])}
-    >
+    <Card className={cn([className])}>
       <CardHeader>
         <CardTitle>Paths</CardTitle>
         <CardPagination {...pagination} />

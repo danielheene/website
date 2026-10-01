@@ -15,9 +15,7 @@ const IconToolbarIcon = () => <Icon name="material-symbols:add-reaction-outline"
  * the toolbar/slash-menu entries that open it.
  */
 export const IconPickerFeatureClient = createClientFeature({
-  nodes: [
-    IconNode,
-  ],
+  nodes: [IconNode],
   plugins: [
     {
       Component: IconPickerPlugin,
@@ -32,12 +30,7 @@ export const IconPickerFeatureClient = createClientFeature({
           {
             Icon: IconToolbarIcon,
             key: 'icon',
-            keywords: [
-              'icon',
-              'iconify',
-              'emoji',
-              'symbol',
-            ],
+            keywords: ['icon', 'iconify', 'emoji', 'symbol'],
             label: 'Icon',
             onSelect: ({ editor }) => {
               editor.dispatchCommand(INSERT_ICON_COMMAND, undefined)

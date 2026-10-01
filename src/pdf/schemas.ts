@@ -22,17 +22,11 @@ export const documentHeaderSchema = z.strictObject({
   }),
   telephone: z.object({
     label: z.string(),
-    href: z.templateLiteral([
-      'tel:',
-      z.e164(),
-    ]),
+    href: z.templateLiteral(['tel:', z.e164()]),
   }),
   email: z.object({
     label: z.email(),
-    href: z.templateLiteral([
-      'mailto:',
-      z.email(),
-    ]),
+    href: z.templateLiteral(['mailto:', z.email()]),
   }),
   website: z.object({
     label: z.hostname().regex(z.regexes.domain),
@@ -54,10 +48,7 @@ export const documentFooterSchema = z.strictObject({
   generatedNotice: z.string(),
   documentUrl: z.url(),
   renderPagination: z.function({
-    input: z.tuple([
-      z.string(),
-      z.string(),
-    ]),
+    input: z.tuple([z.string(), z.string()]),
     output: z.string(),
   }),
 })
@@ -117,20 +108,12 @@ export const documentSectionSchema = z.union([
 
 export const documentSchema = z.strictObject({
   isPreview: z.boolean().default(false),
-  locale: z
-    .literal([
-      'en',
-      'de',
-    ])
-    .default('en'),
+  locale: z.literal(['en', 'de']).default('en'),
   document: z.strictObject({
     author: z.string(),
     title: z.string(),
     creationDate: z.date(),
-    language: z.literal([
-      'en_EN',
-      'de_DE',
-    ]),
+    language: z.literal(['en_EN', 'de_DE']),
   }),
   header: documentHeaderSchema,
   footer: documentFooterSchema,

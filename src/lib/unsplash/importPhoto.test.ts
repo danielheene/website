@@ -47,11 +47,7 @@ const photoDetailResponse = () => ({
 
 describe('importPhoto', () => {
   it('downloads the full image, pings the download endpoint, and creates a MediaImages doc', async () => {
-    const imageBytes = new Uint8Array([
-      1,
-      2,
-      3,
-    ])
+    const imageBytes = new Uint8Array([1, 2, 3])
 
     fetchMock.mockImplementation(async (url: string) => {
       if (String(url).includes('/photos/abc123') && !String(url).includes('download')) {
@@ -75,12 +71,7 @@ describe('importPhoto', () => {
           ok: true,
           status: 200,
           arrayBuffer: async () => imageBytes.buffer,
-          headers: new Map([
-            [
-              'content-type',
-              'image/jpeg',
-            ],
-          ]),
+          headers: new Map([['content-type', 'image/jpeg']]),
         }
       }
       throw new Error(`Unexpected fetch to ${url}`)
@@ -100,9 +91,7 @@ describe('importPhoto', () => {
     expect(payloadCreateMock).toHaveBeenCalledTimes(1)
     const [call] = payloadCreateMock.mock.calls
     expect(call[0].collection).toBe('images')
-    expect(call[0].data.generatorFlags).toEqual([
-      'unsplash-import',
-    ])
+    expect(call[0].data.generatorFlags).toEqual(['unsplash-import'])
     // The link text lives in the node's `children`, not `fields.text` (which
     // exists only to satisfy `linkFeatureFields`' validation) — the
     // photographer link is the credits paragraph's first child. See

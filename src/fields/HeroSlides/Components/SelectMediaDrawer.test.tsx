@@ -63,10 +63,7 @@ describe('SelectMediaDrawer', () => {
         initialParams: expect.objectContaining({
           where: {
             generatorFlags: {
-              not_in: expect.arrayContaining([
-                'thumbnail',
-                'resume-asset',
-              ]),
+              not_in: expect.arrayContaining(['thumbnail', 'resume-asset']),
             },
           },
         }),
@@ -117,9 +114,7 @@ describe('SelectMediaDrawer', () => {
     usePayloadAPIMock.mockReturnValue([
       {
         data: {
-          docs: [
-            doc,
-          ],
+          docs: [doc],
         },
         isLoading: false,
         isError: false,
@@ -159,9 +154,7 @@ describe('SelectMediaDrawer', () => {
     usePayloadAPIMock.mockReturnValue([
       {
         data: {
-          docs: [
-            doc,
-          ],
+          docs: [doc],
         },
         isLoading: false,
         isError: false,

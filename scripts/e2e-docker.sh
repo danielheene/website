@@ -6,7 +6,7 @@ set -euo pipefail
 #
 #    Prerequisites:
 #      docker compose up -d      (Mongo/Redis/S3)
-#      pnpm run dev:app          (Next.js on the host, port 3000)
+#      bun run dev:app          (Next.js on the host, port 3000)
 #
 #    The image tag MUST match the @playwright/test version in package.json —
 #    bump them together, otherwise browser revisions mismatch.

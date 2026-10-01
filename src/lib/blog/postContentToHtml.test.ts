@@ -41,9 +41,7 @@ const link = (fields: object, label = 'label') => ({
   type: 'link',
   version: 3,
   fields,
-  children: [
-    text(label),
-  ],
+  children: [text(label)],
   direction: 'ltr',
   format: '',
   indent: 0,

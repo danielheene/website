@@ -153,11 +153,7 @@ export const useHeroSlideFieldEditor = (props: ArrayFieldClientProps) => {
           // Remove/Replace still work, so this isn't fatal.
         })
     }
-  }, [
-    mediaByRow,
-    thumbnailCache,
-    cacheThumbnail,
-  ])
+  }, [mediaByRow, thumbnailCache, cacheThumbnail])
 
   const addRow = useCallback(
     (args: { rowIndex: number; subFieldState: FormState }) =>
@@ -166,11 +162,7 @@ export const useHeroSlideFieldEditor = (props: ArrayFieldClientProps) => {
         path,
         schemaPath,
       }),
-    [
-      addFieldRow,
-      path,
-      schemaPath,
-    ],
+    [addFieldRow, path, schemaPath],
   )
   const replaceRow = useCallback(
     (args: { rowIndex: number; subFieldState: FormState }) =>
@@ -179,11 +171,7 @@ export const useHeroSlideFieldEditor = (props: ArrayFieldClientProps) => {
         path,
         schemaPath,
       }),
-    [
-      replaceFieldRow,
-      path,
-      schemaPath,
-    ],
+    [replaceFieldRow, path, schemaPath],
   )
   const removeRow = useCallback(
     (args: { rowIndex: number }) =>
@@ -191,10 +179,7 @@ export const useHeroSlideFieldEditor = (props: ArrayFieldClientProps) => {
         ...args,
         path,
       }),
-    [
-      removeFieldRow,
-      path,
-    ],
+    [removeFieldRow, path],
   )
   const moveRow = useCallback(
     (fromIndex: number, toIndex: number) =>
@@ -203,10 +188,7 @@ export const useHeroSlideFieldEditor = (props: ArrayFieldClientProps) => {
         moveToIndex: toIndex,
         path,
       }),
-    [
-      moveFieldRow,
-      path,
-    ],
+    [moveFieldRow, path],
   )
 
   const { importingId, pendingRowIndex, importUnsplashPhoto, uploadFile } = useHeroSlideUploads({
@@ -225,10 +207,7 @@ export const useHeroSlideFieldEditor = (props: ArrayFieldClientProps) => {
         subFieldState: imageSubFieldState(doc),
       })
     },
-    [
-      addRow,
-      cacheThumbnail,
-    ],
+    [addRow, cacheThumbnail],
   )
   const insertVideo = useCallback(
     (rowIndex: number, doc: MediaVideo) => {
@@ -238,10 +217,7 @@ export const useHeroSlideFieldEditor = (props: ArrayFieldClientProps) => {
         subFieldState: videoSubFieldState(doc),
       })
     },
-    [
-      addRow,
-      cacheThumbnail,
-    ],
+    [addRow, cacheThumbnail],
   )
   const insertShader = useCallback(
     (rowIndex: number, key: ShaderPresetKey) =>
@@ -249,9 +225,7 @@ export const useHeroSlideFieldEditor = (props: ArrayFieldClientProps) => {
         rowIndex,
         subFieldState: shaderSubFieldState(key),
       }),
-    [
-      addRow,
-    ],
+    [addRow],
   )
   const replaceWithImage = useCallback(
     (rowIndex: number, doc: MediaImage) => {
@@ -261,10 +235,7 @@ export const useHeroSlideFieldEditor = (props: ArrayFieldClientProps) => {
         subFieldState: imageSubFieldState(doc),
       })
     },
-    [
-      replaceRow,
-      cacheThumbnail,
-    ],
+    [replaceRow, cacheThumbnail],
   )
   const replaceWithVideo = useCallback(
     (rowIndex: number, doc: MediaVideo) => {
@@ -274,10 +245,7 @@ export const useHeroSlideFieldEditor = (props: ArrayFieldClientProps) => {
         subFieldState: videoSubFieldState(doc),
       })
     },
-    [
-      replaceRow,
-      cacheThumbnail,
-    ],
+    [replaceRow, cacheThumbnail],
   )
   const replaceWithShader = useCallback(
     (rowIndex: number, key: ShaderPresetKey) =>
@@ -285,9 +253,7 @@ export const useHeroSlideFieldEditor = (props: ArrayFieldClientProps) => {
         rowIndex,
         subFieldState: shaderSubFieldState(key),
       }),
-    [
-      replaceRow,
-    ],
+    [replaceRow],
   )
 
   return {

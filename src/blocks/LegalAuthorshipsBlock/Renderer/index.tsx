@@ -23,11 +23,7 @@ export const LegalAuthorshipsBlockRenderer = async (): Promise<JSX.Element | nul
     <section>
       <h2 className="text-3xl font-mono font-semibold mb-4">Attributions / Resource Credits</h2>
 
-      <ul
-        className={cn([
-          'flex flex-col gap-6 list-none p-0 m-0',
-        ])}
-      >
+      <ul className={cn(['flex flex-col gap-6 list-none p-0 m-0'])}>
         {credits.map((credit) => (
           <li key={`${credit.collection}:${credit.id}`} className="flex flex-row gap-4 items-start">
             <div className="relative shrink-0 w-24 aspect-4/3 overflow-hidden bg-muted flex items-center justify-center">

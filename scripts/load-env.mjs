@@ -4,7 +4,7 @@
  *    Materialises .env.local from the active Doppler config.
  *
  *    Next loads .env.local automatically, so once this has run the package
- *    scripts need no `doppler run --` wrapper: `pnpm dev`, `pnpm payload` and
+ *    scripts need no `doppler run --` wrapper: `bun run dev`, `bun run migrate` and
  *    the rest pick the environment up on their own. Re-run it whenever the
  *    Doppler config changes, or after switching configs with
  *    `doppler setup --config <name>`.
@@ -42,27 +42,13 @@ const fail = (message) => {
  */
 let secrets
 try {
-  secrets = execFileSync(
-    'doppler',
-    [
-      'secrets',
-      'download',
-      '--no-file',
-      '--format',
-      'env',
-    ],
-    {
-      cwd: projectRoot,
-      encoding: 'utf8',
-      // stderr is inherited so Doppler's own diagnostics (not logged in, no
-      // config selected, network failure) reach the terminal unmangled.
-      stdio: [
-        'ignore',
-        'pipe',
-        'inherit',
-      ],
-    },
-  )
+  secrets = execFileSync('doppler', ['secrets', 'download', '--no-file', '--format', 'env'], {
+    cwd: projectRoot,
+    encoding: 'utf8',
+    // stderr is inherited so Doppler's own diagnostics (not logged in, no
+    // config selected, network failure) reach the terminal unmangled.
+    stdio: ['ignore', 'pipe', 'inherit'],
+  })
 } catch (error) {
   if (error.code === 'ENOENT') {
     fail('the `doppler` CLI is not on PATH — see https://docs.doppler.com/docs/install-cli')
@@ -76,22 +62,11 @@ if (!secrets.trim()) {
 
 let config = 'unknown'
 try {
-  const raw = execFileSync(
-    'doppler',
-    [
-      'configure',
-      '--json',
-    ],
-    {
-      cwd: projectRoot,
-      encoding: 'utf8',
-      stdio: [
-        'ignore',
-        'pipe',
-        'ignore',
-      ],
-    },
-  )
+  const raw = execFileSync('doppler', ['configure', '--json'], {
+    cwd: projectRoot,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'ignore'],
+  })
   const scoped = JSON.parse(raw)[projectRoot] ?? {}
   config = `${scoped['enclave.project'] ?? '?'}/${scoped['enclave.config'] ?? '?'}`
 } catch {

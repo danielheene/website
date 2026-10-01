@@ -62,7 +62,7 @@ const req = {
 }
 
 const runHandler = (input: Record<string, unknown>) =>
-  // biome-ignore lint/suspicious/noExplicitAny: test-only loose call into the handler
+  // oxlint-disable-next-line typescript/no-explicit-any -- test-only loose call into the handler
   (autoTranslateBilingualField as any)({
     input,
     job: {

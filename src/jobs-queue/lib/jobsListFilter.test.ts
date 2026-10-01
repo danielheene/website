@@ -31,17 +31,7 @@ describe('resolveJobQueue', () => {
   })
 
   it('falls back to null for absent, unknown, or non-string values', () => {
-    for (const value of [
-      undefined,
-      null,
-      '',
-      'nope',
-      [
-        QueueSlug.Default,
-      ],
-      1,
-      true,
-    ]) {
+    for (const value of [undefined, null, '', 'nope', [QueueSlug.Default], 1, true]) {
       expect(resolveJobQueue(value)).toBeNull()
     }
   })
@@ -55,14 +45,7 @@ describe('resolveJobState', () => {
   })
 
   it('falls back to null for absent, unknown, or non-string values', () => {
-    for (const value of [
-      undefined,
-      null,
-      '',
-      'nope',
-      1,
-      true,
-    ]) {
+    for (const value of [undefined, null, '', 'nope', 1, true]) {
       expect(resolveJobState(value)).toBeNull()
     }
   })

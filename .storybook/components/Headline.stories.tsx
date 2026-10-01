@@ -14,12 +14,7 @@ const meta = {
       control: {
         type: 'select',
       },
-      options: [
-        'default',
-        'page-title',
-        'section',
-        'subline',
-      ],
+      options: ['default', 'page-title', 'section', 'subline'],
       table: {
         defaultValue: {
           summary: 'default',
@@ -30,12 +25,7 @@ const meta = {
       control: {
         type: 'select',
       },
-      options: [
-        undefined,
-        'h2',
-        'h3',
-        'h4',
-      ],
+      options: [undefined, 'h2', 'h3', 'h4'],
     },
   },
 } satisfies Meta<typeof Headline>

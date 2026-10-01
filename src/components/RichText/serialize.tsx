@@ -1,4 +1,4 @@
-// biome-ignore-all lint: <external code>
+// oxlint-disable -- external code
 
 import React, { Fragment, type JSX } from 'react'
 import type { DefaultNodeTypes, SerializedBlockNode } from '@payloadcms/richtext-lexical'

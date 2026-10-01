@@ -31,30 +31,17 @@ export const ResumeJobs: CollectionConfig<CollectionSlug['ResumeJobs']> = {
     delete: authenticated,
   },
   hooks: {
-    afterChange: [
-      enqueueCalculateSkillTagInterval,
-    ],
-    afterOperation: [
-      generateResumeDocumentHook,
-    ],
+    afterChange: [enqueueCalculateSkillTagInterval],
+    afterOperation: [generateResumeDocumentHook],
   },
   admin: {
     useAsTitle: 'employer',
     group: AdminGroup.Resume,
     pagination: {
       defaultLimit: 50,
-      limits: [
-        50,
-        100,
-      ],
+      limits: [50, 100],
     },
-    defaultColumns: [
-      'employer',
-      'title',
-      'startDate',
-      'endDate',
-      'interval',
-    ],
+    defaultColumns: ['employer', 'title', 'startDate', 'endDate', 'interval'],
     disableCopyToLocale: true,
     components: {
       views: {
@@ -68,9 +55,7 @@ export const ResumeJobs: CollectionConfig<CollectionSlug['ResumeJobs']> = {
       },
     },
   },
-  defaultSort: [
-    'startDate',
-  ],
+  defaultSort: ['startDate'],
   // defaultPopulate: {
   //   employer: true,
   //   title: true,
@@ -181,18 +166,14 @@ export const ResumeJobs: CollectionConfig<CollectionSlug['ResumeJobs']> = {
         position: 'sidebar',
       },
       hooks: {
-        beforeChange: [
-          calculateJobInterval,
-        ],
+        beforeChange: [calculateJobInterval],
       },
     },
 
     {
       type: 'relationship',
       name: 'skillTags',
-      relationTo: [
-        CollectionSlug.ResumeSkillTags,
-      ],
+      relationTo: [CollectionSlug.ResumeSkillTags],
       // filterOptions: () => {
       //   return {
       //     _status: {

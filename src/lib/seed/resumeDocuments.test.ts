@@ -36,9 +36,7 @@ describe('seedResumeDocuments', () => {
 
     expect(result.created).toBe(SEEDED_RESUME_DOCUMENTS.length)
     const [older, newer] = create.mock.calls.map(([{ data }]) => data)
-    expect(older.generatorFlags).toEqual([
-      'seeded-dummy',
-    ])
+    expect(older.generatorFlags).toEqual(['seeded-dummy'])
     expect(newer.createdAt).toBe(now.toISOString())
     expect(new Date(older.createdAt).getTime()).toBeLessThan(now.getTime())
   })

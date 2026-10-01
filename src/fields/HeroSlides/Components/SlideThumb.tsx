@@ -109,7 +109,7 @@ export const SlideThumb = ({
         </DuoTone>
       ) : thumbnail.kind === 'image-url' ? (
         <DuoTone contained className="h-full w-full">
-          {/* biome-ignore lint/performance/noImgElement: a tiny admin-only picker thumbnail, not a page asset */}
+          {/* oxlint-disable-next-line nextjs/no-img-element -- a tiny admin-only picker thumbnail, not a page asset */}
           <img alt="" className="h-full w-full object-cover" src={thumbnail.url} />
         </DuoTone>
       ) : thumbnail.kind === 'video-url' ? (

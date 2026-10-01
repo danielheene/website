@@ -3,17 +3,14 @@
 import { type JSX } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { formatAdminURL } from 'payload/shared'
+import { useConfig, useNav } from '@payloadcms/ui'
+
+import './NavLink.styles.css'
 
 import { cn } from 'tailwind-variants'
 
 import { Icon } from '@/components/Icon'
-
-import './NavLink.styles.css'
-
-import { useConfig, useNav } from '@payloadcms/ui'
-
-import { formatAdminURL } from 'payload/shared'
-
 import { Tooltip } from '@/components/Tooltip'
 import { AdminNavigationTypeValue } from '@/types/admin-panel'
 import { CollectionSlugValue } from '@/types/collections'
@@ -46,11 +43,7 @@ export const NavLink = ({ slug, type, label, icon }: NavLinkProps): JSX.Element 
   return (
     <Tooltip content={label} hidden={navOpen} side="right" align="center">
       <Link
-        className={cn([
-          'nav-link',
-          navOpen && 'nav-link--open',
-          active && 'nav-link--active',
-        ])}
+        className={cn(['nav-link', navOpen && 'nav-link--open', active && 'nav-link--active'])}
         href={href}
         prefetch={false}
       >

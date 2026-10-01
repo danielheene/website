@@ -35,9 +35,7 @@ export async function isTrackingSuppressed(): Promise<boolean> {
     }
 
     const { payload } = await jwtVerify(token, getSecretKey(), {
-      algorithms: [
-        'HS256',
-      ],
+      algorithms: ['HS256'],
     })
 
     const enableOwnTracking = payload.enableOwnTracking

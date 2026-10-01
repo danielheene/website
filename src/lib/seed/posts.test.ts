@@ -25,16 +25,9 @@ const makePayload = (): Payload =>
 // which is slow and flaky (timeouts, rate limiting) especially in CI.
 const fetchMock = vi.fn(
   async () =>
-    new Response(
-      new Uint8Array([
-        1,
-        2,
-        3,
-      ]),
-      {
-        status: 200,
-      },
-    ),
+    new Response(new Uint8Array([1, 2, 3]), {
+      status: 200,
+    }),
 )
 
 beforeEach(() => {
@@ -62,9 +55,7 @@ describe('seedPosts', () => {
           id: 'topic-1',
         }
       }
-      expect(data.generatorFlags).toEqual([
-        'seeded-dummy',
-      ])
+      expect(data.generatorFlags).toEqual(['seeded-dummy'])
       heroes.push(data.hero)
       return {
         id: 'post-1',
@@ -82,10 +73,7 @@ describe('seedPosts', () => {
           }[]
         }
       ).slides
-      expect([
-        'image',
-        'shader',
-      ]).toContain(slide.slideType)
+      expect(['image', 'shader']).toContain(slide.slideType)
       if (slide.slideType === 'image') {
         expect(slide).toEqual({
           slideType: 'image',
@@ -300,20 +288,11 @@ describe('seedPosts', () => {
     // one that must top up beyond the single pre-existing topic.
     await seedPosts(makePayload(), 3)
 
-    expect(postTopicCounts).toEqual([
-      1,
-      1,
-      2,
-    ])
+    expect(postTopicCounts).toEqual([1, 1, 2])
   })
 
   it('rotates through the resolved topic pool so posts do not all get the same topic', async () => {
-    const poolIds = [
-      'topic-a',
-      'topic-b',
-      'topic-c',
-      'topic-d',
-    ]
+    const poolIds = ['topic-a', 'topic-b', 'topic-c', 'topic-d']
 
     find.mockImplementation(async ({ collection, where }) => {
       if (collection === 'topics' && where?.generatorFlags) {
@@ -462,9 +441,7 @@ describe('cleanPosts', () => {
           docs: [
             {
               id: 'image-1',
-              generatorFlags: [
-                'seeded-dummy',
-              ],
+              generatorFlags: ['seeded-dummy'],
             },
           ],
         }

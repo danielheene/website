@@ -31,9 +31,7 @@ export const ContactForm = () => {
     if (state.status === 'success') {
       formRef.current?.reset()
     }
-  }, [
-    state.status,
-  ])
+  }, [state.status])
 
   return (
     <form

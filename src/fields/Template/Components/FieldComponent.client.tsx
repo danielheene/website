@@ -34,9 +34,7 @@ export const FieldComponentClient = ({
   path,
   annotations,
   data = {},
-  renderLocale = [
-    'en',
-  ],
+  renderLocale = ['en'],
   validate,
 }: FieldComponentClientProps): JSX.Element => {
   const { label: labelFromProps, admin } = field
@@ -77,10 +75,7 @@ export const FieldComponentClient = ({
         setTemplate(event.target.value)
       }
     },
-    [
-      setTemplate,
-      template,
-    ],
+    [setTemplate, template],
   )
 
   useEffect(() => {
@@ -119,18 +114,9 @@ export const FieldComponentClient = ({
           prevTemplateDataRef.current = currentData
         })
     }
-  }, [
-    template,
-    data,
-    renderLocale,
-  ])
+  }, [template, data, renderLocale])
 
-  const styles = useMemo(
-    () => mergeFieldStyles(field),
-    [
-      field,
-    ],
-  )
+  const styles = useMemo(() => mergeFieldStyles(field), [field])
 
   const { i18n } = useTranslation()
   const label = getTranslation(labelFromProps, i18n)
@@ -152,10 +138,7 @@ export const FieldComponentClient = ({
       style={styles}
     >
       <header
-        className={cn([
-          `${fieldBaseClass}__header`,
-          'flex flex-col gap-[calc(var(--base)/4)]',
-        ])}
+        className={cn([`${fieldBaseClass}__header`, 'flex flex-col gap-[calc(var(--base)/4)]'])}
       >
         <Collapsible.Root open={collapsibleOpen} onOpenChange={setCollapsibleOpen}>
           <header
@@ -178,9 +161,7 @@ export const FieldComponentClient = ({
                 <FieldDescription
                   description={descriptionFromProps}
                   path={path}
-                  className={cn([
-                    'mb-0',
-                  ])}
+                  className={cn(['mb-0'])}
                 />
               }
             />
@@ -205,10 +186,7 @@ export const FieldComponentClient = ({
           </header>
 
           <Collapsible.Content
-            className={cn([
-              collapsibleOpen ? 'max-h-none' : 'max-h-0',
-              'overflow-hidden',
-            ])}
+            className={cn([collapsibleOpen ? 'max-h-none' : 'max-h-0', 'overflow-hidden'])}
             forceMount
           >
             <div

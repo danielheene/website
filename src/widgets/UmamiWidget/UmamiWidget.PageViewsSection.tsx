@@ -64,17 +64,10 @@ export const PageViewsSection = ({ data, dataIsLoading, className }: PageViewsSe
       return views.map((view, i) => Object.assign({}, view, visitors[i]))
     }
     return null
-  }, [
-    data,
-  ])
+  }, [data])
 
   return (
-    <Card
-      className={cn([
-        'h-[550px] max-h-[550px] flex flex-col',
-        className,
-      ])}
-    >
+    <Card className={cn(['h-[550px] max-h-[550px] flex flex-col', className])}>
       <CardHeader>
         <CardTitle>Pageviews</CardTitle>
         {/* Two series, so a legend stays present — the dependable identity
@@ -160,12 +153,7 @@ export const PageViewsSection = ({ data, dataIsLoading, className }: PageViewsSe
                 fill={visitorsColor}
                 stroke="var(--color-card)"
                 strokeWidth={2}
-                radius={[
-                  4,
-                  4,
-                  0,
-                  0,
-                ]}
+                radius={[4, 4, 0, 0]}
               />
             </BarChart>
           )}

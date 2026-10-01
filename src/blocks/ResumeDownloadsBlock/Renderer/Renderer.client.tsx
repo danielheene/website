@@ -59,23 +59,25 @@ export const ResumeDownloadsBlockClientRenderer = ({
         </div>
         <div className="absolute right-1/2 bottom-0 mr-6 h-min w-[110%] max-w-md translate-x-1/2 md:-right-36 md:mr-0 md:w-3/4 md:max-w-xl md:translate-x-0 lg:mt-auto xl:relative xl:right-0 xl:h-full xl:w-full xl:max-w-full">
           <div className="relative aspect-8/5 h-full min-h-[16rem] w-full">
-            {thumbnails_en.reverse().map(
-              (thumbnail, index) =>
-                index <= 3 && (
-                  <ResumePreviewImage
-                    {...thumbnail}
-                    key={thumbnail.id}
-                    className={cn([
-                      index === 0 &&
-                        'translate-x-[-24%] md:max-xl:translate-x-[-8%] translate-y-[24%] md:max-xl:translate-y-[16%] -rotate-30',
-                      index === 1 &&
-                        'translate-x-[-12%] md:max-xl:translate-x-[-4%] translate-y-[12%] md:max-xl:translate-y-[8%] -rotate-15',
-                      index === 2 &&
-                        'translate-x-[-6%] md:max-xl:translate-x-[-2%] translate-y-[6%] md:max-xl:translate-y-[4%] -rotate-7.5',
-                    ])}
-                  />
-                ),
-            )}
+            {thumbnails_en
+              .reverse()
+              .map(
+                (thumbnail, index) =>
+                  index <= 3 && (
+                    <ResumePreviewImage
+                      {...thumbnail}
+                      key={thumbnail.id}
+                      className={cn([
+                        index === 0 &&
+                          'translate-x-[-24%] md:max-xl:translate-x-[-8%] translate-y-[24%] md:max-xl:translate-y-[16%] -rotate-30',
+                        index === 1 &&
+                          'translate-x-[-12%] md:max-xl:translate-x-[-4%] translate-y-[12%] md:max-xl:translate-y-[8%] -rotate-15',
+                        index === 2 &&
+                          'translate-x-[-6%] md:max-xl:translate-x-[-2%] translate-y-[6%] md:max-xl:translate-y-[4%] -rotate-7.5',
+                      ])}
+                    />
+                  ),
+              )}
           </div>
         </div>
       </div>

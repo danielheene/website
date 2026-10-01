@@ -6,7 +6,4 @@
  * A topic using one of these slugs would be permanently unreachable, so
  * BlogTopics rejects them at validation time.
  */
-export const RESERVED_TOPIC_SLUGS = [
-  'page',
-  'post',
-]
+export const RESERVED_TOPIC_SLUGS = ['page', 'post']

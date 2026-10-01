@@ -69,12 +69,7 @@ describe('isHeroMedia', () => {
 
 describe('isHeroMediaArray', () => {
   it('accepts non-empty arrays of hero media', () => {
-    expect(
-      isHeroMediaArray([
-        image,
-        video,
-      ]),
-    ).toBe(true)
+    expect(isHeroMediaArray([image, video])).toBe(true)
   })
 
   it('rejects empty arrays', () => {
@@ -82,12 +77,7 @@ describe('isHeroMediaArray', () => {
   })
 
   it('rejects arrays containing non-hero media', () => {
-    expect(
-      isHeroMediaArray([
-        image,
-        doc,
-      ]),
-    ).toBe(false)
+    expect(isHeroMediaArray([image, doc])).toBe(false)
   })
 })
 

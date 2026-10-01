@@ -13,7 +13,7 @@ import { migrateLinkFieldNaming } from './migrateLinkFieldNaming'
  * known-object test fixtures.
  */
 type JSONObject = {
-  // biome-ignore lint/suspicious/noExplicitAny: recursive JSON shape for test-only chained property access, see comment above
+  // oxlint-disable-next-line typescript/no-explicit-any -- recursive JSON shape for test-only chained property access, see comment above
   [key: string]: any
 }
 

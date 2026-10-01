@@ -44,18 +44,14 @@ export abstract class BaseReadMoreNode<TDecorated> extends DecoratorNode<TDecora
   }
 
   static clone<TNode extends BaseReadMoreNode<unknown>>(
-    this: new (
-      key?: NodeKey,
-    ) => TNode,
+    this: new (key?: NodeKey) => TNode,
     node: TNode,
   ): TNode {
     return new this(node.__key)
   }
 
   static importJSON<TNode extends BaseReadMoreNode<unknown>>(
-    this: new (
-      key?: NodeKey,
-    ) => TNode,
+    this: new (key?: NodeKey) => TNode,
   ): TNode {
     return new this()
   }
@@ -70,9 +66,7 @@ export abstract class BaseReadMoreNode<TDecorated> extends DecoratorNode<TDecora
   }
 
   static importDOM<TNode extends BaseReadMoreNode<unknown>>(
-    this: new (
-      key?: NodeKey,
-    ) => TNode,
+    this: new (key?: NodeKey) => TNode,
   ): DOMConversionMap {
     return {
       hr: (node) =>

@@ -66,7 +66,7 @@ export const Info: Story = {
   },
 }
 
-// biome-ignore lint/suspicious/noShadowRestrictedNames: <Name of Story>
+// oxlint-disable-next-line eslint/no-shadow-restricted-names -- Name of Story
 export const Error: Story = {
   args: {
     variant: BannerVariant.Error,

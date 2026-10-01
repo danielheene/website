@@ -71,10 +71,7 @@ export const SingleSlideEditor = (props: ArrayFieldClientProps) => {
 
   const thumbnail = useMemo(
     () => resolveSlideThumbnail(data, thumbnailCache),
-    [
-      data,
-      thumbnailCache,
-    ],
+    [data, thumbnailCache],
   )
 
   return (
@@ -95,7 +92,7 @@ export const SingleSlideEditor = (props: ArrayFieldClientProps) => {
         </DuoTone>
       ) : thumbnail.kind === 'image-url' ? (
         <DuoTone contained className="h-full w-full">
-          {/* biome-ignore lint/performance/noImgElement: a small admin-only sidebar preview, not a page asset */}
+          {/* oxlint-disable-next-line nextjs/no-img-element -- a small admin-only sidebar preview, not a page asset */}
           <img alt="" className="h-full w-full object-cover" src={thumbnail.url} />
         </DuoTone>
       ) : thumbnail.kind === 'video-url' ? (

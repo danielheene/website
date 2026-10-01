@@ -28,20 +28,9 @@ export interface GrainientProps {
   className?: string
 }
 
-const hexToRgb = (
-  hex: string,
-): [
-  number,
-  number,
-  number,
-] => {
+const hexToRgb = (hex: string): [number, number, number] => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-  if (!result)
-    return [
-      1,
-      1,
-      1,
-    ]
+  if (!result) return [1, 1, 1]
   return [
     parseInt(result[1], 16) / 255,
     parseInt(result[2], 16) / 255,
@@ -204,10 +193,7 @@ export const Grainient: React.FC<GrainientProps> = ({
           value: 0,
         },
         iResolution: {
-          value: new Float32Array([
-            1,
-            1,
-          ]),
+          value: new Float32Array([1, 1]),
         },
         uTimeSpeed: {
           value: 0.25,
@@ -258,34 +244,19 @@ export const Grainient: React.FC<GrainientProps> = ({
           value: 1.0,
         },
         uCenterOffset: {
-          value: new Float32Array([
-            0,
-            0,
-          ]),
+          value: new Float32Array([0, 0]),
         },
         uZoom: {
           value: 0.9,
         },
         uColor1: {
-          value: new Float32Array([
-            1,
-            1,
-            1,
-          ]),
+          value: new Float32Array([1, 1, 1]),
         },
         uColor2: {
-          value: new Float32Array([
-            1,
-            1,
-            1,
-          ]),
+          value: new Float32Array([1, 1, 1]),
         },
         uColor3: {
-          value: new Float32Array([
-            1,
-            1,
-            1,
-          ]),
+          value: new Float32Array([1, 1, 1]),
         },
       },
     })
@@ -411,10 +382,7 @@ export const Grainient: React.FC<GrainientProps> = ({
     u.uContrast.value = contrast
     u.uGamma.value = gamma
     u.uSaturation.value = saturation
-    u.uCenterOffset.value = new Float32Array([
-      centerX,
-      centerY,
-    ])
+    u.uCenterOffset.value = new Float32Array([centerX, centerY])
     u.uZoom.value = zoom
     u.uColor1.value = new Float32Array(hexToRgb(color1))
     u.uColor2.value = new Float32Array(hexToRgb(color2))

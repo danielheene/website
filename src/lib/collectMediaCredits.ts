@@ -252,9 +252,7 @@ export const collectMediaCredits = async (): Promise<MediaCredit[]> => {
   const credits: MediaCredit[] = []
 
   await Promise.all(
-    [
-      ...idsByCollection.entries(),
-    ].map(async ([collection, ids]) => {
+    [...idsByCollection.entries()].map(async ([collection, ids]) => {
       const needsThumbnailRelation =
         collection === CollectionSlug.MediaVideos || collection === CollectionSlug.MediaDocuments
 
@@ -262,9 +260,7 @@ export const collectMediaCredits = async (): Promise<MediaCredit[]> => {
         collection,
         where: {
           id: {
-            in: [
-              ...ids,
-            ],
+            in: [...ids],
           },
         },
         select: {
@@ -314,9 +310,7 @@ export const collectMediaCredits = async (): Promise<MediaCredit[]> => {
           filename: doc.filename ?? '',
           credits: doc.credits as DefaultTypedEditorState,
           thumbnailUrl: resolveThumbnailUrl(collection, doc),
-          usages: [
-            ...usages.values(),
-          ].sort((a, b) => a.label.localeCompare(b.label)),
+          usages: [...usages.values()].sort((a, b) => a.label.localeCompare(b.label)),
         })
       }
     }),

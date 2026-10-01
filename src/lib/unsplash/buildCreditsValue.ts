@@ -59,9 +59,7 @@ const linkNode = (text: string, url: string) => ({
     newTab: true,
     text,
   },
-  children: [
-    textNode(text),
-  ],
+  children: [textNode(text)],
 })
 
 /**

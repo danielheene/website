@@ -33,7 +33,7 @@
     }
   }
 
-  [data-lexical-editor="true"] {
+  [data-lexical-editor='true'] {
     flex-grow: 1;
     /* min-height: 300px; */
     padding-left: var(--lexical-spacing-x);
@@ -43,7 +43,7 @@
       display: none;
     }
 
-    [data-lexical-decorator="true"] {
+    [data-lexical-decorator='true'] {
       width: 100%;
 
       .collapsible__toggle-wrap .btn {

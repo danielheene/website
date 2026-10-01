@@ -19,9 +19,9 @@
   .template-default--nav-open {
     --nav-column-width: calc(var(--nav-width-open) + var(--nav-rail-width) + var(--nav-spacing));
     @apply translate-x-0;
-    grid-template-columns: calc(var(--nav-width-open) + var(--nav-rail-width) + var(--nav-spacing)) var(
-        --content-width
-      );
+    grid-template-columns: calc(
+        var(--nav-width-open) + var(--nav-rail-width) + var(--nav-spacing)
+      ) var(--content-width);
   }
 
   #nav-toggler {

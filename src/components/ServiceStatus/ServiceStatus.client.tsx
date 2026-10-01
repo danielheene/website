@@ -41,9 +41,7 @@ export const ServiceStatusClient = ({
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current)
     }
-  }, [
-    fetchStatus,
-  ])
+  }, [fetchStatus])
 
   return (
     status && (

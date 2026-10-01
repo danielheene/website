@@ -18,10 +18,7 @@ import {
   subMonths,
 } from 'date-fns'
 
-export type IntervalValue = [
-  Date,
-  Date,
-]
+export type IntervalValue = [Date, Date]
 
 class IntervalError extends Error {
   constructor(interval: unknown) {
@@ -94,10 +91,7 @@ export class Interval {
   }
 
   public get ISOStringValue() {
-    return [
-      this.#value[0].toISOString(),
-      this.#value[1].toISOString(),
-    ]
+    return [this.#value[0].toISOString(), this.#value[1].toISOString()]
   }
 
   public get startDate(): Date {
@@ -175,9 +169,7 @@ export class Interval {
   static mergeIntervals(intervals: Interval[]): Interval[] {
     intervals.sort((a, b) => a.startTime - b.startTime)
 
-    const result: Interval[] = [
-      intervals[0],
-    ]
+    const result: Interval[] = [intervals[0]]
 
     for (let i = 1; i < intervals.length; i++) {
       if (intervals[i].startTime <= result[result.length - 1].endTime) {

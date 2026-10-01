@@ -59,9 +59,7 @@ export const resolveRedirect = async ({
   let statusCode = 301
   let resolved: string | null = null
 
-  const seen = new Set<string>([
-    current,
-  ])
+  const seen = new Set<string>([current])
 
   for (let hop = 0; hop < MAX_HOPS; hop++) {
     const { docs } = await payload.find({

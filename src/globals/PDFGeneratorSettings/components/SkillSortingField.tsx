@@ -84,10 +84,7 @@ function Sortable<EntryType extends SkillTypeSortable | SkillEntrySortable>({
 
       handleEntryMove(arrNewValuePos)
     },
-    [
-      entries,
-      handleEntryMove,
-    ],
+    [entries, handleEntryMove],
   )
 
   const handleDragStart = useCallback(({ event: _event, id }) => {
@@ -99,9 +96,7 @@ function Sortable<EntryType extends SkillTypeSortable | SkillEntrySortable>({
       moveArrayItem(moveFromIndex, moveToIndex)
       setIsDraggingItem(null)
     },
-    [
-      moveArrayItem,
-    ],
+    [moveArrayItem],
   )
 
   return (
@@ -119,11 +114,7 @@ function Sortable<EntryType extends SkillTypeSortable | SkillEntrySortable>({
         onDragEnd={handleDragEnd}
         onDragStart={handleDragStart}
         droppableRef={droppableRef}
-        className={cn([
-          fieldBaseClass,
-          'skill-sort',
-          'flex flex-col gap-2',
-        ])}
+        className={cn([fieldBaseClass, 'skill-sort', 'flex flex-col gap-2'])}
       >
         {entries.map((entry, index) => {
           const { id, label } = entry

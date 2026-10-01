@@ -1,18 +1,28 @@
 name: Setup
-description: Install pnpm, Node.js and the locked dependencies (pnpm store cached).
+description: Install Bun, Node.js and the locked dependencies (Bun cache restored).
 
 runs:
   using: composite
   steps:
-    - name: Setup pnpm
-      uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+    # Bun installs the dependencies; Node.js still runs Next, Payload, the
+    # scripts and the tests, so both are set up.
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+      with:
+        bun-version-file: package.json
 
     - name: Setup Node.js
       uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
       with:
         node-version: 26
-        cache: pnpm
+
+    - name: Cache Bun packages
+      uses: actions/cache@v4 # TODO: pin to a commit SHA like the other actions
+      with:
+        path: ~/.bun/install/cache
+        key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+        restore-keys: bun-${{ runner.os }}-
 
     - name: Install dependencies
       shell: bash
-      run: pnpm install --frozen-lockfile
+      run: bun install --frozen-lockfile

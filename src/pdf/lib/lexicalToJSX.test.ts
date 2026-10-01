@@ -66,31 +66,17 @@ describe('lexicalToJSX', () => {
 
   it('renders a plain paragraph as a single unstyled Text with the raw string as its only run', () => {
     const [paragraph] = lexicalToJSX(
-      asValue(
-        doc([
-          paragraphNode([
-            textNode('Hello world'),
-          ]),
-        ]),
-      ),
+      asValue(doc([paragraphNode([textNode('Hello world')])])),
     ) as unknown as TextEl[]
 
     expect(paragraph.type).toBe('TEXT')
     expect(paragraph.props.style).toBeUndefined()
-    expect(paragraph.props.children).toEqual([
-      'Hello world',
-    ])
+    expect(paragraph.props.children).toEqual(['Hello world'])
   })
 
   it('wraps a bold run in a nested Text with fontWeight 500', () => {
     const [paragraph] = lexicalToJSX(
-      asValue(
-        doc([
-          paragraphNode([
-            textNode('bold', IS_BOLD),
-          ]),
-        ]),
-      ),
+      asValue(doc([paragraphNode([textNode('bold', IS_BOLD)])])),
     ) as unknown as TextEl[]
 
     const [run] = paragraph.props.children as unknown as TextEl[]
@@ -103,13 +89,7 @@ describe('lexicalToJSX', () => {
 
   it('wraps an italic run in a nested Text with fontStyle italic', () => {
     const [paragraph] = lexicalToJSX(
-      asValue(
-        doc([
-          paragraphNode([
-            textNode('italic', IS_ITALIC),
-          ]),
-        ]),
-      ),
+      asValue(doc([paragraphNode([textNode('italic', IS_ITALIC)])])),
     ) as unknown as TextEl[]
 
     const [run] = paragraph.props.children as unknown as TextEl[]
@@ -120,13 +100,7 @@ describe('lexicalToJSX', () => {
 
   it('combines bold and italic on the same run', () => {
     const [paragraph] = lexicalToJSX(
-      asValue(
-        doc([
-          paragraphNode([
-            textNode('bold italic', IS_BOLD | IS_ITALIC),
-          ]),
-        ]),
-      ),
+      asValue(doc([paragraphNode([textNode('bold italic', IS_BOLD | IS_ITALIC)])])),
     ) as unknown as TextEl[]
 
     const [run] = paragraph.props.children as unknown as TextEl[]
@@ -138,13 +112,7 @@ describe('lexicalToJSX', () => {
 
   it('maps underline to textDecoration underline', () => {
     const [paragraph] = lexicalToJSX(
-      asValue(
-        doc([
-          paragraphNode([
-            textNode('underlined', IS_UNDERLINE),
-          ]),
-        ]),
-      ),
+      asValue(doc([paragraphNode([textNode('underlined', IS_UNDERLINE)])])),
     ) as unknown as TextEl[]
 
     const [run] = paragraph.props.children as unknown as TextEl[]
@@ -155,13 +123,7 @@ describe('lexicalToJSX', () => {
 
   it('maps strikethrough to textDecoration line-through', () => {
     const [paragraph] = lexicalToJSX(
-      asValue(
-        doc([
-          paragraphNode([
-            textNode('struck', IS_STRIKETHROUGH),
-          ]),
-        ]),
-      ),
+      asValue(doc([paragraphNode([textNode('struck', IS_STRIKETHROUGH)])])),
     ) as unknown as TextEl[]
 
     const [run] = paragraph.props.children as unknown as TextEl[]
@@ -172,13 +134,7 @@ describe('lexicalToJSX', () => {
 
   it('combines underline and strikethrough into one textDecoration value', () => {
     const [paragraph] = lexicalToJSX(
-      asValue(
-        doc([
-          paragraphNode([
-            textNode('both', IS_UNDERLINE | IS_STRIKETHROUGH),
-          ]),
-        ]),
-      ),
+      asValue(doc([paragraphNode([textNode('both', IS_UNDERLINE | IS_STRIKETHROUGH)])])),
     ) as unknown as TextEl[]
 
     const [run] = paragraph.props.children as unknown as TextEl[]
@@ -188,42 +144,15 @@ describe('lexicalToJSX', () => {
   })
 
   it.each([
-    [
-      'left',
-      'left',
-    ],
-    [
-      'start',
-      'left',
-    ],
-    [
-      'center',
-      'center',
-    ],
-    [
-      'right',
-      'right',
-    ],
-    [
-      'end',
-      'right',
-    ],
-    [
-      'justify',
-      'justify',
-    ],
+    ['left', 'left'],
+    ['start', 'left'],
+    ['center', 'center'],
+    ['right', 'right'],
+    ['end', 'right'],
+    ['justify', 'justify'],
   ])('maps paragraph alignment %s to textAlign %s', (lexicalAlign, textAlign) => {
     const [paragraph] = lexicalToJSX(
-      asValue(
-        doc([
-          paragraphNode(
-            [
-              textNode('aligned'),
-            ],
-            lexicalAlign,
-          ),
-        ]),
-      ),
+      asValue(doc([paragraphNode([textNode('aligned')], lexicalAlign)])),
     ) as unknown as TextEl[]
 
     expect(paragraph.props.style).toEqual({
@@ -233,16 +162,7 @@ describe('lexicalToJSX', () => {
 
   it('leaves the paragraph style undefined when no alignment is set', () => {
     const [paragraph] = lexicalToJSX(
-      asValue(
-        doc([
-          paragraphNode(
-            [
-              textNode('unaligned'),
-            ],
-            '',
-          ),
-        ]),
-      ),
+      asValue(doc([paragraphNode([textNode('unaligned')], '')])),
     ) as unknown as TextEl[]
 
     expect(paragraph.props.style).toBeUndefined()
@@ -252,18 +172,8 @@ describe('lexicalToJSX', () => {
     const result = lexicalToJSX(
       asValue(
         doc([
-          paragraphNode(
-            [
-              textNode('left'),
-            ],
-            'left',
-          ),
-          paragraphNode(
-            [
-              textNode('right'),
-            ],
-            'right',
-          ),
+          paragraphNode([textNode('left')], 'left'),
+          paragraphNode([textNode('right')], 'right'),
         ]),
       ),
     ) as unknown as TextEl[]
@@ -278,13 +188,7 @@ describe('lexicalToJSX', () => {
   })
 
   it('renders an empty paragraph as a Text with no children', () => {
-    const [paragraph] = lexicalToJSX(
-      asValue(
-        doc([
-          paragraphNode([]),
-        ]),
-      ),
-    ) as unknown as TextEl[]
+    const [paragraph] = lexicalToJSX(asValue(doc([paragraphNode([])]))) as unknown as TextEl[]
 
     expect(paragraph.type).toBe('TEXT')
     expect(paragraph.props.children).toEqual([])
@@ -310,8 +214,6 @@ describe('lexicalToJSX', () => {
     ) as unknown as TextEl[]
 
     expect(result).toHaveLength(1)
-    expect(result[0].props.children).toEqual([
-      'kept',
-    ])
+    expect(result[0].props.children).toEqual(['kept'])
   })
 })

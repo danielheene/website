@@ -116,9 +116,7 @@ describe('searchPhotos', () => {
       ok: false,
       status: 403,
       json: async () => ({
-        errors: [
-          'Rate Limit Exceeded',
-        ],
+        errors: ['Rate Limit Exceeded'],
       }),
     })
 

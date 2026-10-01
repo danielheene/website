@@ -21,17 +21,9 @@ const ADDRESS_TEXT_KEYS: (keyof AddressData)[] = [
 ]
 
 const REQUIRED_GROUPS: (keyof AddressData)[][] = [
-  [
-    'street',
-  ],
-  [
-    'postCode',
-    'place',
-  ],
-  [
-    'countryCode',
-    'countryName',
-  ],
+  ['street'],
+  ['postCode', 'place'],
+  ['countryCode', 'countryName'],
 ]
 
 function hasRequiredFields(data: AddressData): boolean {
@@ -47,7 +39,7 @@ function addressTextChanged(prev: AddressData, next: AddressData): boolean {
 export const syncBilingualAddress = async ({
   value,
   previousValue,
-  // biome-ignore lint/suspicious/noExplicitAny: Payload FieldHookArgs parent/sibling doc types are not worth narrowing here
+  // oxlint-disable-next-line typescript/no-explicit-any -- Payload FieldHookArgs parent/sibling doc types are not worth narrowing here
 }: FieldHookArgs<any, BilingualAddress, any>): Promise<BilingualAddress> => {
   if (!value || !previousValue) return value
 

@@ -21,9 +21,7 @@ const ReadMoreToolbarIcon = () => <Icon name="material-symbols:content-cut-round
  * marker at the cursor.
  */
 export const ReadMoreFeatureClient = createClientFeature({
-  nodes: [
-    ReadMoreNode,
-  ],
+  nodes: [ReadMoreNode],
   plugins: [
     {
       Component: ReadMorePlugin,
@@ -36,13 +34,7 @@ export const ReadMoreFeatureClient = createClientFeature({
         {
           Icon: ReadMoreToolbarIcon,
           key: 'readMore',
-          keywords: [
-            'more',
-            'read more',
-            'excerpt',
-            'teaser',
-            'cut',
-          ],
+          keywords: ['more', 'read more', 'excerpt', 'teaser', 'cut'],
           label: 'Read More',
           onSelect: ({ editor }) => {
             editor.dispatchCommand(INSERT_READ_MORE_COMMAND, undefined)

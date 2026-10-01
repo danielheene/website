@@ -1,5 +1,5 @@
-import type { ReactNode } from 'react'
 import { StyleSheet, View } from '@react-pdf/renderer'
+import type { ReactNode } from 'react'
 
 import { sizes } from '@/pdf/constants'
 

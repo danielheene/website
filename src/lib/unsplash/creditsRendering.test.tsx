@@ -35,7 +35,7 @@ import { buildCreditsValue } from './buildCreditsValue'
  * Payload converter stack; the two are not expected to diverge.
  */
 
-// biome-ignore lint/suspicious/noExplicitAny: converter args are structurally typed against internal Lexical node unions
+// oxlint-disable-next-line typescript/no-explicit-any -- converter args are structurally typed against internal Lexical node unions
 type ConverterArgs = any
 
 const renderCredits = (value: ReturnType<typeof buildCreditsValue>): string =>

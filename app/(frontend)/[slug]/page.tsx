@@ -53,10 +53,7 @@ type PageProps = {
 }
 
 export default async function Page({ params }: PageProps) {
-  const [{ isEnabled: draft }, { slug = 'home' }] = await Promise.all([
-    draftMode(),
-    params,
-  ])
+  const [{ isEnabled: draft }, { slug = 'home' }] = await Promise.all([draftMode(), params])
 
   const page: CollectionData<CollectionSlug['Pages']> = await queryPageBySlug(slug)
   if (!page) notFound()

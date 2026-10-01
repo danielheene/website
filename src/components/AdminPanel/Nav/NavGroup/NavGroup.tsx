@@ -1,8 +1,9 @@
+import { cn } from 'tailwind-variants'
+
 import { AdminNavigationEntry } from '@/types/admin-panel'
 
-import { NavLink } from '../NavLink'
 import './NavGroup.styles.css'
-import { cn } from 'tailwind-variants'
+import { NavLink } from '../NavLink'
 
 export type NavGroupProps = {
   label: string | false

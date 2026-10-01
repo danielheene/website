@@ -47,9 +47,7 @@ export const FooterThemeSwitcher = ({
 
   const selectedThemes = useMemo(
     () => themeConfigs.filter(({ key }) => options.includes(key)),
-    [
-      options,
-    ],
+    [options],
   )
 
   if (!mounted) return null

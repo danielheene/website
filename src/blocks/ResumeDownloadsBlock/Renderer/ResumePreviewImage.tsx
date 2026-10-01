@@ -5,8 +5,10 @@ import { ClassValue, cn } from 'tailwind-variants'
 import { ImageMedia } from '@/components/ImageMedia'
 import { MediaImage } from '@/types/payload'
 
-interface ResumePreviewImageProps
-  extends Pick<MediaImage, 'width' | 'height' | 'url' | 'blurDataURL'> {
+interface ResumePreviewImageProps extends Pick<
+  MediaImage,
+  'width' | 'height' | 'url' | 'blurDataURL'
+> {
   className: ClassValue
 }
 

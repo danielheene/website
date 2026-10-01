@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { handler as generateLocalizedResumeDocument } from './generateLocalizedResumeDocument'
 
-// biome-ignore lint/suspicious/noExplicitAny: the mocked args are a subset of TaskHandlerArgs
+// oxlint-disable-next-line typescript/no-explicit-any -- the mocked args are a subset of TaskHandlerArgs
 const handler = generateLocalizedResumeDocument as (args: any) => Promise<any>
 
 const makePayloadStub = () => ({
@@ -40,10 +40,7 @@ describe('generateLocalizedResumeDocument', () => {
         resumeFileChecksum: 'checksum-1',
       })),
       generateDocumentThumbnails: vi.fn(async () => ({
-        thumbnailIDs: [
-          'thumb-1',
-          'thumb-2',
-        ],
+        thumbnailIDs: ['thumb-1', 'thumb-2'],
       })),
     }
 
@@ -51,14 +48,14 @@ describe('generateLocalizedResumeDocument', () => {
       job: {
         id: 'job-1',
       },
-      // biome-ignore lint/suspicious/noExplicitAny: mocked subset of Payload's TaskHandlerArgs
+      // oxlint-disable-next-line typescript/no-explicit-any -- mocked subset of Payload's TaskHandlerArgs
       tasks: tasks as any,
       input: makeInput(),
       req: {
         payload,
-        // biome-ignore lint/suspicious/noExplicitAny: mocked subset of Payload's req
+        // oxlint-disable-next-line typescript/no-explicit-any -- mocked subset of Payload's req
       } as any,
-      // biome-ignore lint/suspicious/noExplicitAny: mocked subset of Payload's TaskHandlerArgs
+      // oxlint-disable-next-line typescript/no-explicit-any -- mocked subset of Payload's TaskHandlerArgs
     } as any)
 
     expect(tasks.generateResumeFilename).toHaveBeenCalledWith(
@@ -107,10 +104,7 @@ describe('generateLocalizedResumeDocument', () => {
       output: {
         resumeFileId: 'file-1',
         resumeFileChecksum: 'checksum-1',
-        resumeThumbnailIds: [
-          'thumb-1',
-          'thumb-2',
-        ],
+        resumeThumbnailIds: ['thumb-1', 'thumb-2'],
         resumeDocumentData: {
           document: {
             title: 'Resume',
@@ -138,14 +132,14 @@ describe('generateLocalizedResumeDocument', () => {
         job: {
           id: 'job-1',
         },
-        // biome-ignore lint/suspicious/noExplicitAny: mocked subset of Payload's TaskHandlerArgs
+        // oxlint-disable-next-line typescript/no-explicit-any -- mocked subset of Payload's TaskHandlerArgs
         tasks: tasks as any,
         input: makeInput(),
         req: {
           payload,
-          // biome-ignore lint/suspicious/noExplicitAny: mocked subset of Payload's req
+          // oxlint-disable-next-line typescript/no-explicit-any -- mocked subset of Payload's req
         } as any,
-        // biome-ignore lint/suspicious/noExplicitAny: mocked subset of Payload's TaskHandlerArgs
+        // oxlint-disable-next-line typescript/no-explicit-any -- mocked subset of Payload's TaskHandlerArgs
       } as any),
     ).rejects.toThrow('boom')
 

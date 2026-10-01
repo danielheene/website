@@ -127,10 +127,7 @@ export const AddressField = ({
     name,
     label: label ?? startCase(name),
     description,
-    fields: [
-      'en',
-      'de',
-    ].map((locale) => ({
+    fields: ['en', 'de'].map((locale) => ({
       name: locale,
       type: 'group',
       interfaceName: 'AddressData',
@@ -145,9 +142,7 @@ export const AddressField = ({
     })),
     overrides: {
       hooks: {
-        beforeChange: [
-          syncBilingualAddress,
-        ],
+        beforeChange: [syncBilingualAddress],
       },
       admin: {
         className: '[&_header]:w-full',

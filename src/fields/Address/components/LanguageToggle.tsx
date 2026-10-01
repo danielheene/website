@@ -13,10 +13,7 @@ export const LanguageToggle = ({ currentLanguage, setLanguage }: LanguageToggleP
         'btn btn--style-secondary h-8 w-12 p-0 m-0 bg-white text-primary font-mono relative',
       )}
       onClick={() => {
-        const nextLocale = [
-          'en',
-          'de',
-        ].find((locale) => locale !== currentLanguage)
+        const nextLocale = ['en', 'de'].find((locale) => locale !== currentLanguage)
         setLanguage(nextLocale)
       }}
     >

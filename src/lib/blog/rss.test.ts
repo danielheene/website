@@ -65,10 +65,7 @@ describe('buildRssFeed', () => {
         pubDate: '2026-09-01T08:30:00.000Z',
         description: 'Intro',
         contentHtml: '<p>Body</p>',
-        categories: [
-          'React',
-          'Next.js',
-        ],
+        categories: ['React', 'Next.js'],
         creator: 'Jane Doe',
       },
     ])

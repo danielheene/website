@@ -94,9 +94,7 @@ describe('generatePersonSchema', () => {
         },
       }),
     )
-    expect(result.sameAs).toEqual([
-      'https://github.test',
-    ])
+    expect(result.sameAs).toEqual(['https://github.test'])
     expect(result.worksFor).toEqual({
       '@type': 'Organization',
       name: 'Self',

@@ -64,9 +64,7 @@ const stripHtml = (html: string): string =>
 export const parseHtmlToLexical = (html: string): SerializedEditorState => {
   try {
     const editor = createHeadlessEditor({
-      nodes: [
-        LinkNode,
-      ],
+      nodes: [LinkNode],
     })
 
     const dom = new JSDOM(html)

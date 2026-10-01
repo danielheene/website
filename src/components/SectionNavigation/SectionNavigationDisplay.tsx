@@ -41,9 +41,7 @@ export const SectionNavigationDisplay = ({
         }
       }
     },
-    [
-      setScrollingToAnchor,
-    ],
+    [setScrollingToAnchor],
   )
 
   return (

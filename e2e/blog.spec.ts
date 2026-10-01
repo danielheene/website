@@ -2,8 +2,8 @@ import { expect, test } from '@playwright/test'
 
 /**
  *    Content-level blog checks. Needs published posts in the database — CI
- *    runs `pnpm run seed:posts` before the suite; locally run
- *    `pnpm run seed:posts -- --count 2` first.
+ *    runs `bun run seed:posts` before the suite; locally run
+ *    `bun run seed:posts -- --count 2` first.
  */
 test.describe('blog', () => {
   test('listing shows a post with title and excerpt', async ({ page }) => {

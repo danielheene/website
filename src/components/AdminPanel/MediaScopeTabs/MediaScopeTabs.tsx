@@ -69,12 +69,7 @@ export const MediaScopeTabs = () => {
       const query = params.toString()
       router.push(query ? `${pathname}?${query}` : pathname)
     },
-    [
-      active,
-      pathname,
-      router,
-      searchParams,
-    ],
+    [active, pathname, router, searchParams],
   )
 
   /**

@@ -14,12 +14,7 @@ export const LinkGroupBlockRenderer = ({
   links,
 }: LinkGroupBlockRendererProps): JSX.Element => {
   return (
-    <ul
-      className={cn([
-        'flex gap-4',
-        className,
-      ])}
-    >
+    <ul className={cn(['flex gap-4', className])}>
       {(links ?? []).map(({ id, link }) => (
         <li key={id}>
           <CMSLink {...link} />

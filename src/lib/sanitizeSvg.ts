@@ -19,15 +19,7 @@ export const sanitizeSvg = (svg: string): string =>
       svg: true,
       svgFilters: true,
     },
-    FORBID_TAGS: [
-      'script',
-      'foreignObject',
-      'iframe',
-      'embed',
-      'object',
-      'animate',
-      'set',
-    ],
+    FORBID_TAGS: ['script', 'foreignObject', 'iframe', 'embed', 'object', 'animate', 'set'],
     FORBID_ATTR: [
       'onload',
       'onerror',

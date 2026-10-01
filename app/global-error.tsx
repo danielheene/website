@@ -23,9 +23,7 @@ export default function GlobalError({
 }) {
   useEffect(() => {
     Sentry.captureException(error)
-  }, [
-    error,
-  ])
+  }, [error])
 
   return (
     <html lang="en">

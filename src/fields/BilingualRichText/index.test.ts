@@ -65,21 +65,14 @@ describe('BilingualRichTextField', () => {
       layout: 'row',
     })
 
-    for (const field of [
-      columnField,
-      rowField,
-    ]) {
+    for (const field of [columnField, rowField]) {
       expect(field.type).toBe('group')
       expect(field.name).toBe('task')
       expect(field.fields).toHaveLength(1)
       expect(field.fields[0].type).toBe('row')
 
       const inner = innerRowFields(field)
-      expect(fieldNames(inner)).toEqual([
-        'en',
-        'taskTranslateControls',
-        'de',
-      ])
+      expect(fieldNames(inner)).toEqual(['en', 'taskTranslateControls', 'de'])
       expect(inner[0].type).toBe('richText')
       expect(inner[1].type).toBe('ui')
       expect(inner[2].type).toBe('richText')
@@ -132,7 +125,7 @@ describe('BilingualRichTextField', () => {
     const enValidate = (inner[0] as RichTextField).validate
     const deValidate = (inner[2] as RichTextField).validate
 
-    // biome-ignore lint/suspicious/noExplicitAny: minimal stand-in for ValidateOptions — only siblingData is read
+    // oxlint-disable-next-line typescript/no-explicit-any -- minimal stand-in for ValidateOptions — only siblingData is read
     const withSiblingData = (siblingData: Record<string, unknown>): any => ({
       siblingData,
     })
@@ -227,9 +220,7 @@ describe('BilingualRichTextField', () => {
     // type doesn't exist in this payload version; enqueueAutoTranslate itself
     // is typed FieldHook<AnyDocWithID, BilingualValue> (see its own file).
     const afterChange = field.hooks?.afterChange as FieldHook[] | undefined
-    expect(afterChange).toEqual([
-      enqueueAutoTranslate,
-    ])
+    expect(afterChange).toEqual([enqueueAutoTranslate])
   })
 
   it('merges caller overrides.en onto the base English field overrides (caller wins)', () => {

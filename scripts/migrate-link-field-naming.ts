@@ -8,7 +8,7 @@
  *      reference               ->  doc
  *
  *    Usage:
- *      pnpm links:migrate
+ *      bun run links:migrate
  *
  *    Run this once, immediately after deploying the `LinkField` rename — the
  *    schema change and this script are one unit of work, not independently

@@ -40,8 +40,5 @@ export const SHADER_PRESETS: ShaderPreset[] = SHADER_PRESET_META.map((meta) => (
 }))
 
 export const SHADER_PRESET_MAP: Record<ShaderPresetKey, ShaderPreset> = Object.fromEntries(
-  SHADER_PRESETS.map((preset) => [
-    preset.key,
-    preset,
-  ]),
+  SHADER_PRESETS.map((preset) => [preset.key, preset]),
 ) as Record<ShaderPresetKey, ShaderPreset>

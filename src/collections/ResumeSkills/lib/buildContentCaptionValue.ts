@@ -36,9 +36,7 @@ export const buildContentCaptionValue = (
   content: string,
   caption?: string,
 ): SerializedEditorState => {
-  const children = [
-    textRun(content, IS_BOLD),
-  ]
+  const children = [textRun(content, IS_BOLD)]
 
   if (caption?.trim()) {
     children.push(textRun(` - ${caption}`))

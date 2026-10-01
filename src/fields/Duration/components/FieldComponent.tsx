@@ -55,10 +55,7 @@ export const FieldComponent: NumberFieldClientComponent = ({
     if (localValue || !isNumber(fieldValue)) return
 
     setLocalValue(prettyMs(fieldValue))
-  }, [
-    fieldValue,
-    localValue,
-  ])
+  }, [fieldValue, localValue])
 
   useEffect(() => {
     if (!throttledLocalValue) return
@@ -69,17 +66,9 @@ export const FieldComponent: NumberFieldClientComponent = ({
       const message = extractErrorMessage(error)
       toast.error(`Invalid duration format: ${message}`)
     }
-  }, [
-    setFieldValue,
-    throttledLocalValue,
-  ])
+  }, [setFieldValue, throttledLocalValue])
 
-  const styles = useMemo(
-    () => mergeFieldStyles(field),
-    [
-      field,
-    ],
-  )
+  const styles = useMemo(() => mergeFieldStyles(field), [field])
   const placeholder = getTranslation(placeholderFromProps, i18n)
 
   return (

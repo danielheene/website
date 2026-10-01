@@ -22,30 +22,18 @@ export const MediaVideos: CollectionConfig<CollectionSlug['MediaVideos']> = {
     plural: 'Videos',
   },
   hooks: {
-    beforeChange: [
-      generateChecksum,
-    ],
-    afterChange: [
-      generateThumbnail,
-    ],
+    beforeChange: [generateChecksum],
+    afterChange: [generateThumbnail],
   },
   admin: {
     baseFilter: scopeMediaAssets,
     group: AdminGroup.Media,
     useAsTitle: 'filename',
-    defaultColumns: [
-      'filename',
-      'type',
-      'extension',
-      'updatedAt',
-    ],
+    defaultColumns: ['filename', 'type', 'extension', 'updatedAt'],
     disableCopyToLocale: true,
     pagination: {
       defaultLimit: 50,
-      limits: [
-        50,
-        100,
-      ],
+      limits: [50, 100],
     },
     components: {
       Description: '@/components/AdminPanel/MediaScopeTabs#MediaScopeTabs',
@@ -60,9 +48,7 @@ export const MediaVideos: CollectionConfig<CollectionSlug['MediaVideos']> = {
   upload: {
     disableLocalStorage: true,
     withMetadata: false,
-    mimeTypes: [
-      'video/*',
-    ],
+    mimeTypes: ['video/*'],
     adminThumbnail: ({ doc }) => {
       if (Array.isArray(doc.thumbnails) && doc.thumbnails.length > 0) {
         const thumbnailFilename = String(doc.filename).replace(/\.[^/.]+$/, '-thumbnail.png')
@@ -102,9 +88,7 @@ export const MediaVideos: CollectionConfig<CollectionSlug['MediaVideos']> = {
 
     MediaField({
       name: 'thumbnails',
-      relationTo: [
-        CollectionSlug.MediaImages,
-      ],
+      relationTo: [CollectionSlug.MediaImages],
       hasMany: true,
       readOnly: true,
       allowCreate: false,

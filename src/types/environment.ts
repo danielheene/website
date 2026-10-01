@@ -12,13 +12,7 @@ const emptyAsUndefined = <T extends z.ZodType>(schema: T) =>
   z.preprocess((value) => (value === '' ? undefined : value), schema.optional())
 
 export const envSchema = z.object({
-  NODE_ENV: z
-    .enum([
-      'development',
-      'production',
-      'test',
-    ])
-    .default('development'),
+  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 
   SERVER_HOST: z.string().trim().min(1),
   SERVER_URL: z.url(),
@@ -36,12 +30,7 @@ export const envSchema = z.object({
   PREVIEW_SECRET: z.string(),
   CRON_SECRET: z.string(),
 
-  PAYLOAD_JOBS_ENABLE_APP_WORKERS: z
-    .enum([
-      'true',
-      'false',
-    ])
-    .default('false'),
+  PAYLOAD_JOBS_ENABLE_APP_WORKERS: z.enum(['true', 'false']).default('false'),
 
   DATABASE_URL: z.string(),
   REDIS_URL: z.string(),

@@ -92,18 +92,10 @@ export const StatsSection = ({ data, dataIsLoading, className }: StatsSectionPro
           change: computeChange(rawValue, rawPrevValue, higherIsBetter),
         }
       })
-  }, [
-    data,
-    dataIsLoading,
-  ])
+  }, [data, dataIsLoading])
 
   return (
-    <div
-      className={cn([
-        'grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5 h-40',
-        className,
-      ])}
-    >
+    <div className={cn(['grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5 h-40', className])}>
       {stats.map((stat, index) => (
         <StatCard key={index} {...stat} />
       ))}

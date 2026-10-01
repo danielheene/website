@@ -123,71 +123,19 @@ describe('renderTemplateCore', () => {
     })
 
     it.each([
-      [
-        'trimStart',
-        '  spaced  ',
-        'spaced  ',
-      ],
-      [
-        'trimEnd',
-        '  spaced  ',
-        '  spaced',
-      ],
-      [
-        'camelCase',
-        'About Us',
-        'aboutUs',
-      ],
-      [
-        'snakeCase',
-        'About Us',
-        'about_us',
-      ],
-      [
-        'kebabCase',
-        'About Us',
-        'about-us',
-      ],
-      [
-        'startCase',
-        'about us',
-        'About Us',
-      ],
-      [
-        'upperCase',
-        'about us',
-        'ABOUT US',
-      ],
-      [
-        'upperFirst',
-        'about us',
-        'About us',
-      ],
-      [
-        'lowerCase',
-        'About Us',
-        'about us',
-      ],
-      [
-        'lowerFirst',
-        'About Us',
-        'about Us',
-      ],
-      [
-        'toLower',
-        'About US',
-        'about us',
-      ],
-      [
-        'toUpper',
-        'About Us',
-        'ABOUT US',
-      ],
-      [
-        'pascalCase',
-        'about us',
-        'AboutUs',
-      ],
+      ['trimStart', '  spaced  ', 'spaced  '],
+      ['trimEnd', '  spaced  ', '  spaced'],
+      ['camelCase', 'About Us', 'aboutUs'],
+      ['snakeCase', 'About Us', 'about_us'],
+      ['kebabCase', 'About Us', 'about-us'],
+      ['startCase', 'about us', 'About Us'],
+      ['upperCase', 'about us', 'ABOUT US'],
+      ['upperFirst', 'about us', 'About us'],
+      ['lowerCase', 'About Us', 'about us'],
+      ['lowerFirst', 'About Us', 'about Us'],
+      ['toLower', 'About US', 'about us'],
+      ['toUpper', 'About Us', 'ABOUT US'],
+      ['pascalCase', 'about us', 'AboutUs'],
     ])('resolves the documented filter %s', async (filter, input, expected) => {
       const { result, error } = await render(`{title | ${filter}}`, {
         title: input,
@@ -198,18 +146,9 @@ describe('renderTemplateCore', () => {
     })
 
     it.each([
-      [
-        'MM',
-        '08',
-      ],
-      [
-        'dd',
-        '13',
-      ],
-      [
-        'yyyy',
-        '2026',
-      ],
+      ['MM', '08'],
+      ['dd', '13'],
+      ['yyyy', '2026'],
     ])('keeps the exact-match date filter %s working', async (filter, expected) => {
       const { result, error } = await render(`{when | ${filter}}`, {
         when: '2026-08-13',

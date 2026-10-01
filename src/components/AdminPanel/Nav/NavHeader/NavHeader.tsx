@@ -1,7 +1,6 @@
 'use client'
 
 import './NavHeader.styles.css'
-
 import { useNav } from '@payloadcms/ui'
 
 import { Logo } from '@/components/Logo'

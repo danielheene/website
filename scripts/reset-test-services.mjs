@@ -53,18 +53,9 @@ const allowed = need('TEST_SERVICES_HOST')
   .filter(Boolean)
 
 for (const [name, value] of [
-  [
-    'DATABASE_URL',
-    databaseUrl,
-  ],
-  [
-    'REDIS_URL',
-    redisUrl,
-  ],
-  [
-    'S3_ENDPOINT',
-    s3Endpoint,
-  ],
+  ['DATABASE_URL', databaseUrl],
+  ['REDIS_URL', redisUrl],
+  ['S3_ENDPOINT', s3Endpoint],
 ]) {
   if (!allowed.includes(hostOf(value))) {
     fail(`${name} does not point at an allowed test host; refusing to reset anything`)
@@ -82,10 +73,7 @@ const rebuild = async (service, idName) => {
   }
 
   // Dokploy documents both `/api/mongo.rebuild` and `/api/mongo/rebuild`.
-  for (const url of [
-    `${base}/api/${service}.rebuild`,
-    `${base}/api/${service}/rebuild`,
-  ]) {
+  for (const url of [`${base}/api/${service}.rebuild`, `${base}/api/${service}/rebuild`]) {
     const response = await fetch(url, {
       method: 'POST',
       headers,
@@ -118,12 +106,7 @@ const retryUntilReady = async (label, attempt) => {
 // mongosh and aws echo connection strings and keys in their errors; the
 // message ends up in the CI log.
 const redact = (text) =>
-  [
-    databaseUrl,
-    redisUrl,
-    process.env.S3_ACCESS_KEY,
-    process.env.S3_SECRET_KEY,
-  ]
+  [databaseUrl, redisUrl, process.env.S3_ACCESS_KEY, process.env.S3_SECRET_KEY]
     .filter(Boolean)
     .reduce((message, secret) => message.replaceAll(secret, '***'), text)
 
@@ -168,14 +151,7 @@ const flushRedis = async () => {
 const emptyBucket = () => {
   const result = spawnSync(
     'aws',
-    [
-      's3',
-      'rm',
-      `s3://${s3Bucket}`,
-      '--recursive',
-      '--endpoint-url',
-      s3Endpoint,
-    ],
+    ['s3', 'rm', `s3://${s3Bucket}`, '--recursive', '--endpoint-url', s3Endpoint],
     {
       encoding: 'utf8',
       env: {
@@ -190,10 +166,7 @@ const emptyBucket = () => {
 }
 
 if (process.env.DOKPLOY_REBUILD !== 'false') {
-  await Promise.all([
-    rebuild('mongo', 'DOKPLOY_MONGO_ID'),
-    rebuild('redis', 'DOKPLOY_REDIS_ID'),
-  ])
+  await Promise.all([rebuild('mongo', 'DOKPLOY_MONGO_ID'), rebuild('redis', 'DOKPLOY_REDIS_ID')])
   await sleep(REBUILD_SETTLE_MS)
 }
 

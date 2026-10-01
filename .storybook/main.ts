@@ -36,9 +36,7 @@ export default defineMain({
       files: '*.@(mdx|tsx)',
     },
   ],
-  staticDirs: [
-    '../public',
-  ],
+  staticDirs: ['../public'],
   addons: [
     '@storybook/addon-a11y',
     '@storybook/addon-docs',

@@ -61,9 +61,7 @@ export const ResumePreviewCarousel = ({ items, className }: ResumePreviewCarouse
     return () => {
       emblaApi.off('select', onSelect)
     }
-  }, [
-    emblaApi,
-  ])
+  }, [emblaApi])
 
   return (
     <div className={cn('relative h-full w-full overflow-hidden', className)}>

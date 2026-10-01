@@ -149,12 +149,7 @@ export const extractReferences = (
   const allowed = only ? new Set(only) : null
   const monomorphic = collectMonomorphicTargets(
     fields,
-    new Map(
-      (blocks ?? []).map((block) => [
-        block.slug,
-        block,
-      ]),
-    ),
+    new Map((blocks ?? []).map((block) => [block.slug, block])),
   )
   const found = new Map<string, DocumentReference>()
 
@@ -215,7 +210,5 @@ export const extractReferences = (
 
   walk(data, '')
 
-  return [
-    ...found.values(),
-  ]
+  return [...found.values()]
 }

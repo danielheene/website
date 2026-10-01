@@ -98,11 +98,7 @@ const linkTargetRow: Field = {
       },
       label: 'Document',
       maxDepth: 1,
-      relationTo: [
-        CollectionSlug.Pages,
-        CollectionSlug.BlogPosts,
-        CollectionSlug.BlogTopics,
-      ],
+      relationTo: [CollectionSlug.Pages, CollectionSlug.BlogPosts, CollectionSlug.BlogTopics],
       validate: (
         value: unknown,
         {

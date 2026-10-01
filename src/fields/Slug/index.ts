@@ -21,9 +21,7 @@ export const SlugField = ({ fieldToUse, overrides = {} }: SlugFieldProps): TextF
       label: 'Slug', // force label, as label is also used in list views
       required: true, // even when generated automatically, prevent nullable type
       hooks: {
-        beforeValidate: [
-          generateSlugHook(fieldToUse),
-        ],
+        beforeValidate: [generateSlugHook(fieldToUse)],
       },
       admin: {
         placeholder: 'Slug',

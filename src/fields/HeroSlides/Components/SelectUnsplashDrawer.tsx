@@ -57,12 +57,7 @@ export const SelectUnsplashDrawer = ({
       if (seq !== searchSeq.current) return
 
       setResults((previous) =>
-        nextPage === 1
-          ? response.results
-          : [
-              ...previous,
-              ...response.results,
-            ],
+        nextPage === 1 ? response.results : [...previous, ...response.results],
       )
       setTotalPages(response.totalPages)
       setPage(nextPage)
@@ -91,18 +86,11 @@ export const SelectUnsplashDrawer = ({
     }, 400)
 
     return () => clearTimeout(timeout)
-  }, [
-    query,
-    runSearch,
-  ])
+  }, [query, runSearch])
 
   const handleLoadMore = useCallback(() => {
     void runSearch(query.trim(), page + 1)
-  }, [
-    page,
-    query,
-    runSearch,
-  ])
+  }, [page, query, runSearch])
 
   if (isConfigured === false) {
     return (
@@ -143,7 +131,7 @@ export const SelectUnsplashDrawer = ({
         onSelect: () => onSelectAction(result),
         disabled: importingId !== null,
         thumbnail: (
-          // biome-ignore lint/performance/noImgElement: thumbnail preview of Unsplash search results, not the imported asset, so next/image optimization isn't warranted
+          // oxlint-disable-next-line nextjs/no-img-element -- thumbnail preview of Unsplash search results, not the imported asset, so next/image optimization isn't warranted
           <img
             alt={result.description}
             className="h-full w-full object-cover"

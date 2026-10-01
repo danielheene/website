@@ -73,17 +73,12 @@ export const highlightRichText = async (data: unknown): Promise<HighlightedCodeM
   if (found.size === 0) return {}
 
   const entries = await Promise.all(
-    [
-      ...found,
-    ].map(async ([key, { code, language }]) => {
+    [...found].map(async ([key, { code, language }]) => {
       const html = await highlightCodeCached({
         code,
         language: language ?? undefined,
       })
-      return [
-        key,
-        html,
-      ] as const
+      return [key, html] as const
     }),
   )
 

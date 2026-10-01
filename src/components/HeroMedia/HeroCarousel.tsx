@@ -64,9 +64,7 @@ export const HeroCarousel = ({ items, className }: HeroCarouselProps) => {
     return () => {
       emblaApi.off('select', onSelect)
     }
-  }, [
-    emblaApi,
-  ])
+  }, [emblaApi])
 
   /**
    * Pause the fixed-delay autoplay while a video slide is active; videos own
@@ -84,11 +82,7 @@ export const HeroCarousel = ({ items, className }: HeroCarouselProps) => {
     } else {
       autoplay.play()
     }
-  }, [
-    emblaApi,
-    items,
-    selected,
-  ])
+  }, [emblaApi, items, selected])
 
   /** Called by a video slide when it ends; advances to the next slide. */
   const handleVideoHandoff = useCallback(
@@ -102,10 +96,7 @@ export const HeroCarousel = ({ items, className }: HeroCarouselProps) => {
       handedOver.current = index
       emblaApi.scrollNext()
     },
-    [
-      emblaApi,
-      items.length,
-    ],
+    [emblaApi, items.length],
   )
 
   return (

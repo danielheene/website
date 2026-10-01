@@ -75,9 +75,7 @@ export const seedResumeDocuments = async (
         title,
         slug,
         createdAt: new Date(now.getTime() - ageInDays * DAY_MS).toISOString(),
-        generatorFlags: [
-          'seeded-dummy',
-        ],
+        generatorFlags: ['seeded-dummy'],
       },
     })
 
@@ -100,9 +98,7 @@ export const cleanResumeDocuments = async (
     collection: CollectionSlug.ResumeDocuments,
     where: {
       generatorFlags: {
-        in: [
-          'seeded-dummy',
-        ],
+        in: ['seeded-dummy'],
       },
     },
     limit: 0,

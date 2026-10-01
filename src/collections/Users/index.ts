@@ -26,11 +26,7 @@ export const Users: CollectionConfig = {
     group: AdminGroup.Settings,
     pagination: {
       defaultLimit: 25,
-      limits: [
-        25,
-        50,
-        100,
-      ],
+      limits: [25, 50, 100],
     },
   },
   fields: [
@@ -44,9 +40,7 @@ export const Users: CollectionConfig = {
     {
       type: 'upload',
       name: 'avatar',
-      relationTo: [
-        CollectionSlug.MediaImages,
-      ],
+      relationTo: [CollectionSlug.MediaImages],
       admin: {
         condition: showUnlessCreatingFirstUser,
       },
@@ -65,9 +59,7 @@ export const Users: CollectionConfig = {
     },
   ],
   hooks: {
-    afterChange: [
-      loginAfterCreate,
-    ],
+    afterChange: [loginAfterCreate],
   },
   auth: {
     tokenExpiration: hoursToSeconds(24 * 14),

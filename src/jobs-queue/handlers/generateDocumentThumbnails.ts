@@ -44,10 +44,7 @@ const run: TaskHandler<TaskSlug['GenerateDocumentThumbnails']> = async ({
     }
   }
 
-  const generatorFlags = [
-    'document-thumbnail',
-    'thumbnail',
-  ] as GeneratorFlag[]
+  const generatorFlags = ['document-thumbnail', 'thumbnail'] as GeneratorFlag[]
   const filenameBase = document?.filename?.replace(/\.[^/.]+$/, '')
   if (filenameBase.toLowerCase().includes('resume')) generatorFlags.push('resume-asset')
 

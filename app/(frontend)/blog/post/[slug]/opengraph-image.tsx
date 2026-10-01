@@ -42,7 +42,7 @@ export default async function Image({ params }: Props) {
   return new ImageResponse(
     <div tw="relative flex h-full w-full flex-col items-start justify-end px-16 pb-20 text-neutral-100">
       {bgSrc && (
-        // biome-ignore lint/performance/noImgElement: Takumi/OG image rendering requires a plain <img>, not next/image
+        // oxlint-disable-next-line nextjs/no-img-element -- Takumi/OG image rendering requires a plain <img>, not next/image
         <img
           alt=""
           src={bgSrc}

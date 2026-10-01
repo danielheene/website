@@ -36,45 +36,37 @@ const expectOnlyFields = async (page: Page, expected: string[]) => {
 }
 
 // Serial: the login test signs in with the user the first test creates.
-test.describe
-  .serial('admin user', () => {
-    test('/admin/create-first-user hides the extra user fields', async ({ page }) => {
-      await page.goto('/admin/create-first-user')
-      await page.waitForURL(/\/admin\/(create-first-user|login)/)
-      test.skip(page.url().includes('/admin/login'), 'a user already exists')
+test.describe.serial('admin user', () => {
+  test('/admin/create-first-user hides the extra user fields', async ({ page }) => {
+    await page.goto('/admin/create-first-user')
+    await page.waitForURL(/\/admin\/(create-first-user|login)/)
+    test.skip(page.url().includes('/admin/login'), 'a user already exists')
 
-      await expectOnlyFields(page, [
-        'email',
-        'password',
-        'confirm-password',
-      ])
+    await expectOnlyFields(page, ['email', 'password', 'confirm-password'])
 
-      await page.locator('#field-email').fill(email)
-      await page.locator('#field-password').fill(password)
-      await page.locator('#field-confirm-password').fill(password)
-      await page.locator('form button[type="submit"]').click()
+    await page.locator('#field-email').fill(email)
+    await page.locator('#field-password').fill(password)
+    await page.locator('#field-confirm-password').fill(password)
+    await page.locator('form button[type="submit"]').click()
 
-      // loginAfterCreate signs the new user in and Payload leaves the view.
-      await expect(page).not.toHaveURL(/create-first-user/)
-    })
-
-    test('/admin/login hides the extra user fields', async ({ page }) => {
-      await page.goto('/admin/login')
-
-      await expectOnlyFields(page, [
-        'email',
-        'password',
-      ])
-
-      await page.locator('#field-email').fill(email)
-      await page.locator('#field-password').fill(password)
-      await page.locator('form button[type="submit"]').click()
-      await expect(page).not.toHaveURL(/\/admin\/login/)
-
-      // Signed in, the condition lets the fields render: they are hidden on
-      // purpose, not missing from the collection.
-      await page.goto('/admin/account')
-      await expect(page.locator('#field-name')).toBeVisible()
-      await expect(page.locator('#field-enableOwnTracking')).toBeVisible()
-    })
+    // loginAfterCreate signs the new user in and Payload leaves the view.
+    await expect(page).not.toHaveURL(/create-first-user/)
   })
+
+  test('/admin/login hides the extra user fields', async ({ page }) => {
+    await page.goto('/admin/login')
+
+    await expectOnlyFields(page, ['email', 'password'])
+
+    await page.locator('#field-email').fill(email)
+    await page.locator('#field-password').fill(password)
+    await page.locator('form button[type="submit"]').click()
+    await expect(page).not.toHaveURL(/\/admin\/login/)
+
+    // Signed in, the condition lets the fields render: they are hidden on
+    // purpose, not missing from the collection.
+    await page.goto('/admin/account')
+    await expect(page.locator('#field-name')).toBeVisible()
+    await expect(page.locator('#field-enableOwnTracking')).toBeVisible()
+  })
+})

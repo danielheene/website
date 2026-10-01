@@ -33,9 +33,7 @@ export const Header = ({ queues, selectedQueue, onSelectQueue, onMoveQueue }: He
 
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [
-    isPopupOpen,
-  ])
+  }, [isPopupOpen])
 
   const handleSelect = (queue: string | null) => {
     onSelectQueue(queue)
@@ -44,12 +42,7 @@ export const Header = ({ queues, selectedQueue, onSelectQueue, onMoveQueue }: He
 
   return (
     <>
-      <div
-        className={cn([
-          'flex flex-col',
-          'font-mono',
-        ])}
-      >
+      <div className={cn(['flex flex-col', 'font-mono'])}>
         <div className="text-xs md:text-sm lg:text-md text-muted-foreground">
           Scheduled Jobs Controls:
         </div>

@@ -25,9 +25,7 @@ export const ReadMoreFeature = createServerFeature({
         converters: {
           html: {
             converter: () => '',
-            nodeTypes: [
-              READ_MORE_NODE_TYPE,
-            ],
+            nodeTypes: [READ_MORE_NODE_TYPE],
           },
         },
       },

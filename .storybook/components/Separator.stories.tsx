@@ -14,10 +14,7 @@ const meta = {
       control: {
         type: 'select',
       },
-      options: [
-        'horizontal',
-        'vertical',
-      ],
+      options: ['horizontal', 'vertical'],
       table: {
         defaultValue: {
           summary: 'horizontal',

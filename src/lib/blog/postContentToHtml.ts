@@ -79,18 +79,11 @@ const withProtocol = (url: string | null | undefined, protocols: string[]): stri
  * protection.
  */
 const safeHref = (url: string | null | undefined): string | null =>
-  withProtocol(url, [
-    'http:',
-    'https:',
-    'mailto:',
-  ])
+  withProtocol(url, ['http:', 'https:', 'mailto:'])
 
 /** Media sources are fetched, never navigated to: http(s) only. */
 const safeMediaUrl = (url: string | null | undefined): string | null =>
-  withProtocol(url, [
-    'http:',
-    'https:',
-  ])
+  withProtocol(url, ['http:', 'https:'])
 
 const linkHref = (fields: LinkFieldDataLean | undefined): string | null => {
   const target = resolveLinkTarget(fields)
@@ -193,10 +186,7 @@ const converters: HTMLConvertersFunction = ({ defaultConverters }) => ({
     },
     // columns collapse to consecutive sections — a reader has no grid
     [BlockSlug.TwoColumnContent]: ({ node }) =>
-      [
-        node.fields?.contentLeft,
-        node.fields?.contentRight,
-      ]
+      [node.fields?.contentLeft, node.fields?.contentRight]
         .map((column: RichTextData) => postContentToHtml(column))
         .filter(Boolean)
         .map((html) => `<div>${html}</div>`)

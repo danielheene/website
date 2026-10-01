@@ -33,9 +33,7 @@ describe('resolveMediaScope', () => {
       '',
       'nope',
       // Repeated query params arrive as arrays.
-      [
-        MediaScope.All,
-      ],
+      [MediaScope.All],
       1,
       true,
     ]) {
@@ -48,9 +46,7 @@ describe('scopeMediaAssets', () => {
   it('hides generated assets by default', () => {
     expect(scopeMediaAssets(withScope())).toEqual({
       generatorFlags: {
-        not_in: [
-          ...GENERATED_ASSET_FLAGS,
-        ],
+        not_in: [...GENERATED_ASSET_FLAGS],
       },
     })
   })
@@ -62,9 +58,7 @@ describe('scopeMediaAssets', () => {
   it('shows only generated assets for the generated scope', () => {
     expect(scopeMediaAssets(withScope(MediaScope.Generated))).toEqual({
       generatorFlags: {
-        in: [
-          ...GENERATED_ASSET_FLAGS,
-        ],
+        in: [...GENERATED_ASSET_FLAGS],
       },
     })
   })

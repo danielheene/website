@@ -72,9 +72,7 @@ export function NavFooter({ avatarSrc, email, name, enableOwnTracking, userId }:
       syncDropdownPosition()
       setDropdownIsOpen((state) => !state)
     },
-    [
-      syncDropdownPosition,
-    ],
+    [syncDropdownPosition],
   )
 
   const handleOutsideClick = useCallback((event: MouseEvent) => {
@@ -95,10 +93,7 @@ export function NavFooter({ avatarSrc, email, name, enableOwnTracking, userId }:
     return () => {
       window.removeEventListener('click', handleOutsideClick)
     }
-  }, [
-    dropdownIsOpen,
-    handleOutsideClick,
-  ])
+  }, [dropdownIsOpen, handleOutsideClick])
 
   // The trigger moves when the nav rail opens/collapses or the viewport changes.
   useEffect(() => {
@@ -110,10 +105,7 @@ export function NavFooter({ avatarSrc, email, name, enableOwnTracking, userId }:
     return () => {
       window.removeEventListener('resize', syncDropdownPosition)
     }
-  }, [
-    dropdownIsOpen,
-    syncDropdownPosition,
-  ])
+  }, [dropdownIsOpen, syncDropdownPosition])
 
   const initials = useMemo(() => {
     if (name === '') return ''
@@ -121,9 +113,7 @@ export function NavFooter({ avatarSrc, email, name, enableOwnTracking, userId }:
 
     const [first, last] = name.split(' ')
     return `${first[0]}${last[0]}`.toUpperCase()
-  }, [
-    name,
-  ])
+  }, [name])
 
   const avatarComponent = useMemo(
     () =>
@@ -138,11 +128,7 @@ export function NavFooter({ avatarSrc, email, name, enableOwnTracking, userId }:
       ) : (
         <div className="nav-footer__avatar-fallback">{initials}</div>
       ),
-    [
-      avatarSrc,
-      name,
-      initials,
-    ],
+    [avatarSrc, name, initials],
   )
 
   const nameComponent = useMemo(
@@ -152,10 +138,7 @@ export function NavFooter({ avatarSrc, email, name, enableOwnTracking, userId }:
         <span className="nav-footer__email">{email}</span>
       </div>
     ),
-    [
-      name,
-      email,
-    ],
+    [name, email],
   )
 
   return (
@@ -168,10 +151,7 @@ export function NavFooter({ avatarSrc, email, name, enableOwnTracking, userId }:
             onClick={handleButtonClick}
             aria-expanded={dropdownIsOpen}
             aria-haspopup="menu"
-            className={cn([
-              'nav-footer__trigger',
-              dropdownIsOpen && 'nav-footer__trigger--active',
-            ])}
+            className={cn(['nav-footer__trigger', dropdownIsOpen && 'nav-footer__trigger--active'])}
           >
             {avatarComponent}
             {nameComponent}

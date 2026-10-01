@@ -30,7 +30,7 @@ const createReq = () => {
 const queuedTagIds = (queue: ReturnType<typeof vi.fn>) =>
   queue.mock.calls.map(([args]) => args.input.skillTagId).sort()
 
-// biome-ignore lint/suspicious/noExplicitAny: hooks only read the fields these tests pass
+// oxlint-disable-next-line typescript/no-explicit-any -- hooks only read the fields these tests pass
 type HookArgs = any
 
 describe('enqueueCalculateSkillTagType', () => {
@@ -51,10 +51,7 @@ describe('enqueueCalculateSkillTagType', () => {
       },
     } as HookArgs)
 
-    expect(queuedTagIds(queue)).toEqual([
-      'a',
-      'c',
-    ])
+    expect(queuedTagIds(queue)).toEqual(['a', 'c'])
     expect(queue).toHaveBeenCalledWith({
       task: TaskSlug.CalculateSkillTagType,
       input: {
@@ -81,10 +78,7 @@ describe('enqueueCalculateSkillTagType', () => {
       },
     } as HookArgs)
 
-    expect(queuedTagIds(queue)).toEqual([
-      'a',
-      'b',
-    ])
+    expect(queuedTagIds(queue)).toEqual(['a', 'b'])
   })
 
   it('skips unpublished draft saves', async () => {
@@ -117,9 +111,6 @@ describe('enqueueCalculateSkillTagTypeAfterDelete', () => {
       },
     } as HookArgs)
 
-    expect(queuedTagIds(queue)).toEqual([
-      'a',
-      'b',
-    ])
+    expect(queuedTagIds(queue)).toEqual(['a', 'b'])
   })
 })

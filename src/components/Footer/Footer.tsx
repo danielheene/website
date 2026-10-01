@@ -85,11 +85,7 @@ export const Footer = async () => {
   // data to what `NavEntry` describes; the cast just tells TypeScript that,
   // same as the `LinkFieldDataLean` casts in `RichText/serialize.tsx`.
   const navGroups = (
-    [
-      column1,
-      column2,
-      column3,
-    ] as {
+    [column1, column2, column3] as {
       isActive?: boolean | null
       title?: string | null
       entries?: NavEntry[] | null
@@ -123,19 +119,8 @@ export const Footer = async () => {
         </div>
 
         <div className="mt-8 flex flex-col justify-between gap-4 border-t py-8 md:flex-row md:items-center md:text-left">
-          <FooterThemeSwitcher
-            options={[
-              'light',
-              'system',
-              'dark',
-            ]}
-          />{' '}
-          <FooterThemeSwitcher
-            options={[
-              'light',
-              'dark',
-            ]}
-          />
+          <FooterThemeSwitcher options={['light', 'system', 'dark']} />{' '}
+          <FooterThemeSwitcher options={['light', 'dark']} />
           <FooterLegalLinks entries={legalPages.entries} />
         </div>
       </section>

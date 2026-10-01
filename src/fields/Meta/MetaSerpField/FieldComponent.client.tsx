@@ -65,12 +65,7 @@ export const FieldComponentClient = ({
         } as CSSProperties
       }
     >
-      <div
-        className={cn([
-          'w-fit',
-          'group/serp',
-        ])}
-      >
+      <div className={cn(['w-fit', 'group/serp'])}>
         <div className="flex justify-start items-center gap-3 w-fit">
           {faviconUrl && (
             <div
@@ -89,7 +84,7 @@ export const FieldComponentClient = ({
                 'overflow-hidden',
               ])}
             >
-              {/** biome-ignore lint/performance/noImgElement: favicon needs natural image loading */}
+              {/** oxlint-disable-next-line nextjs/no-img-element -- favicon needs natural image loading */}
               <img className="block aspect-square h-full w-full" src={faviconUrl} alt="" />
             </div>
           )}
@@ -101,12 +96,7 @@ export const FieldComponentClient = ({
                 lineHeight: 'var(--serp-site-name-line-height)',
                 color: 'var(--serp-site-name-color)',
               }}
-              className={cn([
-                'line-clamp-1',
-                'w-[400px]',
-                'lg:w-[600px]',
-                'overflow-hidden',
-              ])}
+              className={cn(['line-clamp-1', 'w-[400px]', 'lg:w-[600px]', 'overflow-hidden'])}
             >
               {siteName}
             </span>
@@ -117,12 +107,7 @@ export const FieldComponentClient = ({
                 lineHeight: 'var(--serp-page-url-line-height)',
                 color: 'var(--serp-page-url-color)',
               }}
-              className={cn([
-                'line-clamp-1',
-                'w-[400px]',
-                'lg:w-[600px]',
-                'overflow-hidden',
-              ])}
+              className={cn(['line-clamp-1', 'w-[400px]', 'lg:w-[600px]', 'overflow-hidden'])}
             >
               {pageUrl}
             </span>
@@ -157,12 +142,7 @@ export const FieldComponentClient = ({
           color: 'var(--serp-description-color)',
           height: 'calc(var(--serp-description-line-height) * 2)',
         }}
-        className={cn([
-          'line-clamp-2',
-          'w-[540px]',
-          'lg:w-[600px]',
-          'overflow-hidden',
-        ])}
+        className={cn(['line-clamp-2', 'w-[540px]', 'lg:w-[600px]', 'overflow-hidden'])}
       >
         {description}
       </p>

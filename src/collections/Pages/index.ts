@@ -36,10 +36,7 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
     title: true,
     slug: true,
   },
-  defaultSort: [
-    'title',
-    'slug',
-  ],
+  defaultSort: ['title', 'slug'],
   disableDuplicate: true,
   access: {
     create: authenticated,
@@ -60,18 +57,9 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
     useAsTitle: 'title',
     pagination: {
       defaultLimit: 25,
-      limits: [
-        25,
-        50,
-        100,
-      ],
+      limits: [25, 50, 100],
     },
-    defaultColumns: [
-      'title',
-      'slug',
-      'status',
-      'updatedAt',
-    ],
+    defaultColumns: ['title', 'slug', 'status', 'updatedAt'],
     livePreview: {
       url: ({ data }) => generatePreviewPath(CollectionSlug.Pages, data.slug),
     },
@@ -222,9 +210,7 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
         },
         {
           label: 'SEO',
-          fields: [
-            MetaField(),
-          ],
+          fields: [MetaField()],
         },
       ],
     },
@@ -232,9 +218,7 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
     GeneratorFlagsField(),
   ],
   hooks: {
-    afterChange: [
-      revalidatePage,
-    ],
+    afterChange: [revalidatePage],
   },
   trash: true,
   versions: SINGLE_VERSION_DRAFTS,

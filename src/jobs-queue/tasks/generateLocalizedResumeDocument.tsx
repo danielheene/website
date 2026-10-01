@@ -31,10 +31,7 @@ export const generateLocalizedResumeDocument: TaskConfig<
       typescriptSchema: [
         () => ({
           type: 'string',
-          enum: [
-            'en',
-            'de',
-          ],
+          enum: ['en', 'de'],
           required: true,
         }),
       ],

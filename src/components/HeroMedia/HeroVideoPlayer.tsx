@@ -27,7 +27,7 @@ export const HeroVideoPlayer = ({
   return (
     <>
       {blurDataURL && (
-        // biome-ignore lint/performance/noImgElement: base64 data URI, not optimisable
+        // oxlint-disable-next-line nextjs/no-img-element -- base64 data URI, not optimisable
         <img
           alt=""
           aria-hidden
@@ -40,7 +40,7 @@ export const HeroVideoPlayer = ({
         />
       )}
       {poster && (
-        // biome-ignore lint/performance/noImgElement: needs inline opacity transition
+        // oxlint-disable-next-line nextjs/no-img-element -- needs inline opacity transition
         <img
           alt=""
           aria-hidden

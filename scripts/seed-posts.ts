@@ -3,13 +3,13 @@
  *    generated article) for local testing.
  *
  *    Usage:
- *      pnpm seed:posts               # create 10 seed posts
- *      pnpm seed:posts -- --count 25 # create 25 seed posts
- *      pnpm seed:posts:clean         # remove all seeded posts and their media
+ *      bun run seed:posts               # create 10 seed posts
+ *      bun run seed:posts -- --count 25 # create 25 seed posts
+ *      bun run seed:posts:clean         # remove all seeded posts and their media
  *
  *    Idempotent: existing seeded posts (matched by slug) are skipped, not
  *    duplicated. Creates its own seeded topics if too few exist — running
- *    this alone (without pnpm seed:topics first) is fully supported. See
+ *    this alone (without bun run seed:topics first) is fully supported. See
  *    src/lib/seed/posts.ts for the actual create/delete logic.
  */
 import config from '@payload-config'

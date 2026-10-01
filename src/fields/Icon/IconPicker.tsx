@@ -17,9 +17,7 @@ import { useIconCollection } from './useIconCollection'
 import { MIN_QUERY_LENGTH, useIconSearch } from './useIconSearch'
 
 /** Every alias, flattened in the order its group declares. */
-const ALL_FAVORITES: IconAlias[] = FAVORITE_GROUPS.flatMap((group) => [
-  ...group.aliases,
-])
+const ALL_FAVORITES: IconAlias[] = FAVORITE_GROUPS.flatMap((group) => [...group.aliases])
 
 /** The favorites tab, plus one tab per favorite collection. */
 const FAVORITES_TAB = 'favorites'
@@ -96,12 +94,10 @@ export const IconPicker = ({
   })
 
   // a category from the previous collection has no meaning in this one
-  // biome-ignore lint/correctness/useExhaustiveDependencies: reset is keyed on the collection, not the categories
+  // oxlint-disable-next-line react/exhaustive-deps -- reset is keyed on the collection, not the categories
   useEffect(() => {
     setCategory(ALL_CATEGORIES)
-  }, [
-    browsePrefix,
-  ])
+  }, [browsePrefix])
 
   /**
    * A stored `simple-icons:github` and the alias `github` are the same icon, so
@@ -147,12 +143,7 @@ export const IconPicker = ({
       : null
 
   return (
-    <div
-      className={cn([
-        'flex h-full w-full flex-col gap-3',
-        className,
-      ])}
-    >
+    <div className={cn(['flex h-full w-full flex-col gap-3', className])}>
       {collectionTabs.length > 0 && (
         <div className="flex flex-wrap items-center gap-1" role="tablist" aria-label="Icon source">
           <TabButton
@@ -261,10 +252,7 @@ const TabButton = ({
     role="tab"
     aria-selected={active}
     onClick={onClick}
-    className={cn([
-      'payload-pill',
-      active && 'payload-pill--active',
-    ])}
+    className={cn(['payload-pill', active && 'payload-pill--active'])}
   >
     {label}
   </button>

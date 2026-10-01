@@ -23,12 +23,7 @@ const meta = {
       control: {
         type: 'select',
       },
-      options: [
-        'top',
-        'right',
-        'bottom',
-        'left',
-      ],
+      options: ['top', 'right', 'bottom', 'left'],
       table: {
         defaultValue: {
           summary: 'top',
@@ -39,11 +34,7 @@ const meta = {
       control: {
         type: 'select',
       },
-      options: [
-        'start',
-        'center',
-        'end',
-      ],
+      options: ['start', 'center', 'end'],
       table: {
         defaultValue: {
           summary: 'center',

@@ -51,9 +51,7 @@ export const ProtectedField = ({
         disableBulkEdit: true,
       },
       hooks: {
-        beforeChange: [
-          preserveProtected,
-        ],
+        beforeChange: [preserveProtected],
       },
     },
     overrides,

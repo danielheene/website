@@ -30,24 +30,17 @@ export const SkillChart = memo(function SkillChart({
       skillTags
         .sort(({ interval: aTime }, { interval: bTime }) => bTime - aTime)
         .slice(0, maxSkillsToShow),
-    [
-      skillTags,
-      maxSkillsToShow,
-    ],
+    [skillTags, maxSkillsToShow],
   )
 
   const largestSkillTime = useMemo(
     () => renderedSkills.reduce((prev, { interval: curr }) => (curr > prev ? curr : prev), 0),
-    [
-      renderedSkills,
-    ],
+    [renderedSkills],
   )
 
   const calculateSkillWidth = useCallback(
     (time: number) => `${Math.round((time / largestSkillTime) * 100)}%`,
-    [
-      largestSkillTime,
-    ],
+    [largestSkillTime],
   )
 
   const nextTransitionWhen = useCallback((whenStage: number) => {

@@ -35,15 +35,9 @@ export const ResumeCustomers: CollectionConfig<CollectionSlug['ResumeCustomers']
     useAsTitle: 'title',
     pagination: {
       defaultLimit: 50,
-      limits: [
-        50,
-        100,
-      ],
+      limits: [50, 100],
     },
-    defaultColumns: [
-      'title',
-      'slug',
-    ],
+    defaultColumns: ['title', 'slug'],
     components: {
       views: {
         edit: {

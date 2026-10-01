@@ -9,7 +9,7 @@
  *
  *    web        needs `.next/standalone` (run `next build` compile + generate first)
  *    worker     needs network access to install production dependencies
- *    storybook  needs `dist/` (pnpm run build:storybook)
+ *    storybook  needs `dist/` (bun run build:storybook)
  */
 
 import { spawnSync } from 'node:child_process'
@@ -60,8 +60,8 @@ const assemblers = {
   worker: () => {
     for (const entry of [
       'package.json',
-      'pnpm-lock.yaml',
-      'pnpm-workspace.yaml',
+      'bun.lock',
+      'bunfig.toml',
       'patches',
       'tsconfig.json',
       'payload.config.ts',
@@ -71,20 +71,11 @@ const assemblers = {
     ]) {
       copy(entry)
     }
-    // --ignore-scripts: the root `prepare` script (husky) is a devDependency,
+    // --ignore-scripts: the root `prepare` script (lefthook) is a devDependency,
     // and every runtime dependency here ships prebuilt binaries.
-    run(
-      'pnpm',
-      [
-        'install',
-        '--prod',
-        '--frozen-lockfile',
-        '--ignore-scripts',
-      ],
-      {
-        cwd: out,
-      },
-    )
+    run('bun', ['install', '--production', '--frozen-lockfile', '--ignore-scripts'], {
+      cwd: out,
+    })
   },
 
   storybook: () => {
@@ -92,7 +83,8 @@ const assemblers = {
   },
 }
 
-if (!Object.hasOwn(assemblers, target)) fail(`unknown target "${target}" (expected web, worker or storybook)`)
+if (!Object.hasOwn(assemblers, target))
+  fail(`unknown target "${target}" (expected web, worker or storybook)`)
 
 rmSync(out, {
   recursive: true,

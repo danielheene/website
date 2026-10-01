@@ -60,10 +60,7 @@ export const HeroSlide = ({
   useEffect(() => {
     if (item.kind !== 'video') return
     if (!isActive) setVideoReady(false)
-  }, [
-    isActive,
-    item.kind,
-  ])
+  }, [isActive, item.kind])
 
   /**
    * Restart a video whenever its slide becomes active, and pause it when it
@@ -88,12 +85,7 @@ export const HeroSlide = ({
     played?.catch(() => {
       onHandoff(index)
     })
-  }, [
-    index,
-    isActive,
-    item.kind,
-    onHandoff,
-  ])
+  }, [index, isActive, item.kind, onHandoff])
 
   /**
    * Fires `onHandoff` when the video ends so the full clip plays before the
@@ -112,13 +104,7 @@ export const HeroSlide = ({
     return () => {
       video.removeEventListener('ended', onEnded)
     }
-  }, [
-    index,
-    isActive,
-    item.kind,
-    loop,
-    onHandoff,
-  ])
+  }, [index, isActive, item.kind, loop, onHandoff])
 
   return (
     <div aria-hidden={!isActive} className="relative h-full w-full shrink-0 grow-0 basis-full">
@@ -136,7 +122,7 @@ export const HeroSlide = ({
         <>
           {/* Blur placeholder: base64 data URI — not optimisable by next/image. */}
           {item.blurDataURL && (
-            // biome-ignore lint/performance/noImgElement: base64 data URI, not a URL
+            // oxlint-disable-next-line nextjs/no-img-element -- base64 data URI, not a URL
             <img
               alt=""
               aria-hidden
@@ -150,7 +136,7 @@ export const HeroSlide = ({
           )}
           {/* Poster image: full-res thumbnail fades out once the video can play. */}
           {item.poster && (
-            // biome-ignore lint/performance/noImgElement: needs inline opacity transition
+            // oxlint-disable-next-line nextjs/no-img-element -- needs inline opacity transition
             <img
               alt=""
               aria-hidden

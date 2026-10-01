@@ -33,11 +33,7 @@ const withoutListColumn = <T extends Field>(field: T): T => ({
 })
 
 /** Payload's own timestamp fields, which it only adds when a collection doesn't declare them. */
-const TIMESTAMP_FIELDS = [
-  'createdAt',
-  'updatedAt',
-  'deletedAt',
-] as const
+const TIMESTAMP_FIELDS = ['createdAt', 'updatedAt', 'deletedAt'] as const
 
 export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
   slug: CollectionSlug.ResumeSkills,
@@ -55,33 +51,19 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
     delete: authenticated,
   },
   hooks: {
-    afterChange: [
-      enqueueCalculateSkillTagType,
-    ],
-    afterDelete: [
-      enqueueCalculateSkillTagTypeAfterDelete,
-    ],
-    afterOperation: [
-      generateResumeDocumentHook,
-      enqueueSyncSkillSorting,
-    ],
+    afterChange: [enqueueCalculateSkillTagType],
+    afterDelete: [enqueueCalculateSkillTagTypeAfterDelete],
+    afterOperation: [generateResumeDocumentHook, enqueueSyncSkillSorting],
   },
   admin: {
     useAsTitle: 'title',
     group: AdminGroup.Resume,
     groupBy: true,
-    defaultColumns: [
-      'title',
-      'type',
-      '_status',
-    ],
+    defaultColumns: ['title', 'type', '_status'],
     disableCopyToLocale: true,
     pagination: {
       defaultLimit: 50,
-      limits: [
-        50,
-        100,
-      ],
+      limits: [50, 100],
     },
     components: {
       views: {
@@ -178,9 +160,7 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
     {
       type: 'relationship',
       name: 'skillTags',
-      relationTo: [
-        CollectionSlug.ResumeSkillTags,
-      ],
+      relationTo: [CollectionSlug.ResumeSkillTags],
       hasMany: true,
       admin: {
         disableListColumn: true,
@@ -243,18 +223,16 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
     withoutListColumn(GeneratorFlagsField()),
 
     /* ------------ Timestamps (declared only to drop their list columns) ------------ */
-    ...TIMESTAMP_FIELDS.map(
-      (name): Field => ({
-        name,
-        type: 'date',
-        index: true,
-        admin: {
-          hidden: true,
-          disableBulkEdit: true,
-          disableListColumn: true,
-        },
-      }),
-    ),
+    ...TIMESTAMP_FIELDS.map((name): Field => ({
+      name,
+      type: 'date',
+      index: true,
+      admin: {
+        hidden: true,
+        disableBulkEdit: true,
+        disableListColumn: true,
+      },
+    })),
   ],
   trash: true,
   versions: {

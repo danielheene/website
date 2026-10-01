@@ -75,18 +75,8 @@ export const AddSlideMenu = ({
   // which sets state, which re-renders, forever (only observable once a
   // caller actually passes `open`, since `forceOpen`'s effect is a no-op
   // otherwise). Must stay referentially stable across renders.
-  const handleToggleClose = useCallback(
-    () => onOpenChange?.(false),
-    [
-      onOpenChange,
-    ],
-  )
-  const handleToggleOpen = useCallback(
-    () => onOpenChange?.(true),
-    [
-      onOpenChange,
-    ],
-  )
+  const handleToggleClose = useCallback(() => onOpenChange?.(false), [onOpenChange])
+  const handleToggleOpen = useCallback(() => onOpenChange?.(true), [onOpenChange])
 
   return (
     <>

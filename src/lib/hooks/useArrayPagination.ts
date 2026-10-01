@@ -22,9 +22,7 @@ export const useArrayPagination = <T>(
       setOffset(0)
       prevData.current = data
     }
-  }, [
-    data,
-  ])
+  }, [data])
 
   const { hasPrevPage, hasNextPage, content } = useMemo(() => {
     const chunks: T[][] = chunk(data, size)
@@ -33,11 +31,7 @@ export const useArrayPagination = <T>(
       hasNextPage: offset < chunks.length - 1 && chunks.length > 1,
       content: Array.isArray(chunks[offset]) ? chunks[offset] : [],
     }
-  }, [
-    offset,
-    data,
-    size,
-  ])
+  }, [offset, data, size])
 
   const setNextPage = () => setOffset(offset + 1)
   const setPrevPage = () => setOffset(offset - 1)

@@ -13,9 +13,7 @@ import { ICONIFY_API } from './api'
 export { ICONIFY_API }
 
 addAPIProvider('', {
-  resources: [
-    ICONIFY_API,
-  ],
+  resources: [ICONIFY_API],
 })
 
 export const BRAND_ICON = {

@@ -12,7 +12,7 @@ vi.mock('@sentry/nextjs', () => ({
 
 import { withJobObservability } from './withJobObservability'
 
-// biome-ignore lint/suspicious/noExplicitAny: TaskConfig/WorkflowConfig's handler/job types are too broad to model exactly in a unit test
+// oxlint-disable-next-line typescript/no-explicit-any -- TaskConfig/WorkflowConfig's handler/job types are too broad to model exactly in a unit test
 const makeJobConfig = (slug: string, handler: (args: any) => Promise<any>): any => ({
   slug,
   handler,
@@ -49,7 +49,7 @@ describe('withJobObservability', () => {
       handler: '@/some/path#handler',
     }
 
-    // biome-ignore lint/suspicious/noExplicitAny: exercising the string-handler branch
+    // oxlint-disable-next-line typescript/no-explicit-any -- exercising the string-handler branch
     const wrapped = withJobObservability(jobConfig as any)
 
     expect(wrapped.handler).toBe('@/some/path#handler')
@@ -64,7 +64,7 @@ describe('withJobObservability', () => {
     }))
     const wrapped = withJobObservability(makeJobConfig('SomeTask', handler))
 
-    // biome-ignore lint/suspicious/noExplicitAny: TaskConfig's handler type is too broad here
+    // oxlint-disable-next-line typescript/no-explicit-any -- TaskConfig's handler type is too broad here
     const result = await (wrapped.handler as any)(makeTaskArgs())
 
     expect(result).toEqual({
@@ -92,7 +92,7 @@ describe('withJobObservability', () => {
     const handler = vi.fn(async () => undefined)
     const wrapped = withJobObservability(makeJobConfig('SomeWorkflow', handler))
 
-    // biome-ignore lint/suspicious/noExplicitAny: WorkflowConfig's handler type is too broad here
+    // oxlint-disable-next-line typescript/no-explicit-any -- WorkflowConfig's handler type is too broad here
     await (wrapped.handler as any)(makeWorkflowArgs())
 
     expect(startSpan).toHaveBeenCalledWith(
@@ -117,7 +117,7 @@ describe('withJobObservability', () => {
     const wrapped = withJobObservability(makeJobConfig('SomeTask', handler))
 
     await expect(
-      // biome-ignore lint/suspicious/noExplicitAny: TaskConfig's handler type is too broad here
+      // oxlint-disable-next-line typescript/no-explicit-any -- TaskConfig's handler type is too broad here
       (wrapped.handler as any)(makeTaskArgs()),
     ).rejects.toThrow('boom')
 

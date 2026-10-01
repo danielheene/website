@@ -32,9 +32,7 @@ export const ResumeSkillTags: CollectionConfig<CollectionSlug['ResumeSkillTags']
     readVersions: authenticated,
   },
   hooks: {
-    afterOperation: [
-      generateResumeDocumentHook,
-    ],
+    afterOperation: [generateResumeDocumentHook],
   },
   orderable: true,
   admin: {
@@ -42,17 +40,9 @@ export const ResumeSkillTags: CollectionConfig<CollectionSlug['ResumeSkillTags']
     group: AdminGroup.Resume,
     pagination: {
       defaultLimit: 50,
-      limits: [
-        50,
-        100,
-      ],
+      limits: [50, 100],
     },
-    defaultColumns: [
-      'title',
-      'slug',
-      'type',
-      'interval',
-    ],
+    defaultColumns: ['title', 'slug', 'type', 'interval'],
     disableCopyToLocale: true,
     components: {
       views: {
@@ -112,9 +102,7 @@ export const ResumeSkillTags: CollectionConfig<CollectionSlug['ResumeSkillTags']
       defaultValue: 0,
       hooks: {
         // tags created before this default, or never counted yet, read as 0 rather than empty
-        afterRead: [
-          ({ value }) => value ?? 0,
-        ],
+        afterRead: [({ value }) => value ?? 0],
       },
       admin: {
         readOnly: true,
@@ -130,12 +118,7 @@ export const ResumeSkillTags: CollectionConfig<CollectionSlug['ResumeSkillTags']
       on: 'skillTags',
       admin: {
         allowCreate: false,
-        defaultColumns: [
-          'employer',
-          'title',
-          'startDate',
-          'endDate',
-        ],
+        defaultColumns: ['employer', 'title', 'startDate', 'endDate'],
         disableGroupBy: true,
         disableListColumn: true,
         disableListFilter: true,
@@ -149,10 +132,7 @@ export const ResumeSkillTags: CollectionConfig<CollectionSlug['ResumeSkillTags']
       on: 'skillTags',
       admin: {
         allowCreate: false,
-        defaultColumns: [
-          'title',
-          'type',
-        ],
+        defaultColumns: ['title', 'type'],
         disableGroupBy: true,
         disableListColumn: true,
         disableListFilter: true,
