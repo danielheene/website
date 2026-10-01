@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/danielheene/website/compare/v1.8.0...v1.9.0) (2026-10-01)
+
+
+### Features
+
+* **blog:** hand-written rich-text excerpts with a Claude fallback ([#96](https://github.com/danielheene/website/issues/96)) ([7bb2bd3](https://github.com/danielheene/website/commit/7bb2bd36ae16947f7158c53819f0b51671f544a9))
+
 # [1.8.0](https://github.com/danielheene/website/compare/v1.7.1...v1.8.0) (2026-10-01)
 
 
