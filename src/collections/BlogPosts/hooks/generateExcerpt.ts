@@ -62,39 +62,39 @@ const toPlainText = (data: SerializedEditorState): string =>
     .trim()
 
 /**
- * Computes the post's excerpt for listings — everything before a ReadMore
- * marker (see `@/fields/RichText/lexical/readMore`), or the first 50 words
- * of the whole post when no marker was inserted, mirroring how WordPress
- * falls back to an automatic excerpt when no "more" tag or manual excerpt
- * exists.
+ * The listing excerpt for a post body: everything before a ReadMore marker
+ * (see `@/fields/RichText/lexical/readMore`), or the first 50 words of the
+ * whole post when no marker was inserted, mirroring how WordPress falls back
+ * to an automatic excerpt when no "more" tag or manual excerpt exists.
+ * Returns `undefined` when there is no content to derive it from.
  */
-export const generateExcerpt: CollectionBeforeChangeHook<BlogPostData> = async ({ data }) => {
-  const content = data.content
+export const computeExcerpt = (
+  content: SerializedEditorState | null | undefined,
+): string | undefined => {
   const children = content?.root?.children as SerializedLexicalNode[] | undefined
-  if (!children) return data
+  if (!children) return undefined
 
   const markerIndex = children.findIndex((node) => node.type === READ_MORE_NODE_TYPE)
 
   if (markerIndex !== -1) {
-    const excerptState: SerializedEditorState = {
+    return toPlainText({
       ...content,
       root: {
         ...content.root,
         children: children.slice(0, markerIndex),
       },
-    }
-
-    return {
-      ...data,
-      excerpt: toPlainText(excerptState),
-    }
+    })
   }
 
   const words = toPlainText(content).split(' ').filter(Boolean)
-  const excerpt =
-    words.length <= FALLBACK_EXCERPT_WORD_COUNT
-      ? words.join(' ')
-      : `${words.slice(0, FALLBACK_EXCERPT_WORD_COUNT).join(' ')}…`
+  return words.length <= FALLBACK_EXCERPT_WORD_COUNT
+    ? words.join(' ')
+    : `${words.slice(0, FALLBACK_EXCERPT_WORD_COUNT).join(' ')}…`
+}
+
+export const generateExcerpt: CollectionBeforeChangeHook<BlogPostData> = async ({ data }) => {
+  const excerpt = computeExcerpt(data.content as SerializedEditorState | undefined)
+  if (excerpt === undefined) return data
 
   return {
     ...data,
