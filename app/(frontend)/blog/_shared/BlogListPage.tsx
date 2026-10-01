@@ -17,6 +17,7 @@ import { toSlideItems } from '@/components/HeroMedia/toSlideItems'
 import { ImageMedia } from '@/components/ImageMedia'
 import { PageContainer } from '@/components/PageContainer'
 import { Pagination } from '@/components/Pagination'
+import { Reveal } from '@/components/Reveal'
 import {
   BLOG_PATH,
   BLOG_SORT_OPTIONS,
@@ -98,6 +99,10 @@ const queryPublishedPosts = async ({
   })
 }
 
+// The Suspense fallback and the streamed grid share it, so the skeletons line
+// up with the cards that replace them.
+const POSTS_GRID_CLASS = cn(['grid gap-4 md:grid-cols-2'])
+
 const PostCard = ({ post }: { post: BlogPostData }) => {
   // Only the card's first slide is shown — a fixed-size card can't depict a
   // carousel. A video slide's poster stands in for its thumbnail, same as
@@ -121,6 +126,7 @@ const PostCard = ({ post }: { post: BlogPostData }) => {
   return (
     <Link
       href={`/blog/post/${post.slug}`}
+      data-reveal-item
       className={cn(['group relative isolate h-80 overflow-hidden bg-background'])}
     >
       <DuoTone>
@@ -247,7 +253,7 @@ const PostsGrid = async ({
   }
 
   return (
-    <>
+    <Reveal className={POSTS_GRID_CLASS}>
       {totalDocs > 1 && <SortControl basePath={basePath} sort={sort} />}
       {posts.map((post) => (
         <PostCard key={post.id} post={post as BlogPostData} />
@@ -262,7 +268,7 @@ const PostsGrid = async ({
           })
         }
       />
-    </>
+    </Reveal>
   )
 }
 
@@ -353,10 +359,10 @@ export const BlogListPage = async ({ topic, searchParams }: BlogListPageProps) =
                 </Suspense>
               </nav>
             </header>
-            <div className={cn(['grid flex-1 gap-4 md:grid-cols-2'])}>
+            <div className={cn(['flex-1'])}>
               <Suspense
                 fallback={
-                  <>
+                  <div className={POSTS_GRID_CLASS}>
                     {Array.from(
                       {
                         length: 4,
@@ -368,7 +374,7 @@ export const BlogListPage = async ({ topic, searchParams }: BlogListPageProps) =
                         />
                       ),
                     )}
-                  </>
+                  </div>
                 }
               >
                 <PostsGrid topicId={topic?.id} basePath={basePath} searchParams={searchParams} />
