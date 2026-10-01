@@ -1,3 +1,15 @@
+# [1.8.0](https://github.com/danielheene/website/compare/v1.7.1...v1.8.0) (2026-10-01)
+
+
+### Bug Fixes
+
+* recompute stale rich-text blog excerpts and stop mutating resume thumbnails ([#94](https://github.com/danielheene/website/issues/94)) ([e24130f](https://github.com/danielheene/website/commit/e24130f9171ee4e5f676054f755717c0d1efdbd0))
+
+
+### Features
+
+* **frontend:** crossfade page navigations and reveal content on scroll ([#95](https://github.com/danielheene/website/issues/95)) ([be95001](https://github.com/danielheene/website/commit/be9500172756d2ebdf3c6f391773e940ba46e797))
+
 ## [1.7.1](https://github.com/danielheene/website/compare/v1.7.0...v1.7.1) (2026-10-01)
 
 
