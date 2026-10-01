@@ -68,6 +68,7 @@
     "@emnapi/runtime": "^2.0.0-alpha",
     "dompurify": "^3.4.16",
     "pdfjs-dist": "5.4.296",
+    "postcss-merge-rules": "9.0.4",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "redis": "6.2.1",
