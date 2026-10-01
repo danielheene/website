@@ -37,6 +37,35 @@ const paragraphState = (text: string) => ({
   },
 })
 
+type DriverModel = MigrateUpArgs['payload']['db']['collections'][string]
+
+/** Removes top-level Read More nodes from the rich-text value at `path`. */
+const pullReadMore = async (
+  model: DriverModel,
+  path: string,
+  session: MigrateUpArgs['session'],
+): Promise<number> => {
+  const { modifiedCount } = await model.collection.updateMany(
+    {
+      [`${path}.root.children.type`]: READ_MORE_NODE_TYPE,
+    },
+    // The driver's `$pull` typing cannot follow a computed key into the
+    // nested array, so the update document is typed as the call expects.
+    {
+      $pull: {
+        [`${path}.root.children`]: {
+          type: READ_MORE_NODE_TYPE,
+        },
+      },
+    } as Parameters<typeof model.collection.updateMany>[1],
+    {
+      session,
+    },
+  )
+
+  return modifiedCount
+}
+
 /**
  * Blog post excerpts are written by hand now, in a rich-text field, instead of
  * being computed from the content into plain text.
@@ -45,8 +74,9 @@ const paragraphState = (text: string) => ({
  *   single paragraph, so the computed excerpts stay as a starting point to
  *   edit. Blank ones are removed.
  * - The Read More marker that set where the computed excerpt ended is gone
- *   from the editor, so its nodes are pulled from the post content; the
- *   editor fails on node types it has no feature for.
+ *   from the editor, so its nodes are pulled from the post content, and from
+ *   the custom page hero content, which used the same editor; the editor
+ *   fails on node types it has no feature for.
  *
  * Updates go through the native driver collections so no hooks or
  * validation run, and in particular no excerpt generation is queued.
@@ -106,26 +136,24 @@ export async function up({ payload, session }: MigrateUpArgs): Promise<void> {
       )
     }
 
-    const { modifiedCount } = await model.collection.updateMany(
-      {
-        [`${prefix}content.root.children.type`]: READ_MORE_NODE_TYPE,
-      },
-      // The driver's `$pull` typing cannot follow a computed key into the
-      // nested array, so the update document is typed as the call expects.
-      {
-        $pull: {
-          [`${prefix}content.root.children`]: {
-            type: READ_MORE_NODE_TYPE,
-          },
-        },
-      } as Parameters<typeof model.collection.updateMany>[1],
-      {
-        session,
-      },
-    )
+    const modifiedCount = await pullReadMore(model, `${prefix}content`, session)
 
     payload.logger.info(
       `[posts] converted ${plain.length} plain-text excerpt(s) and removed Read More markers from ${modifiedCount} document(s) in ${model.collection.collectionName}`,
+    )
+  }
+
+  for (const model of [
+    payload.db.collections[CollectionSlug.Pages],
+    payload.db.versions[CollectionSlug.Pages],
+  ]) {
+    if (!model) continue
+
+    const prefix = model === payload.db.versions[CollectionSlug.Pages] ? 'version.' : ''
+    const modifiedCount = await pullReadMore(model, `${prefix}hero.content`, session)
+
+    payload.logger.info(
+      `[pages] removed Read More markers from ${modifiedCount} document(s) in ${model.collection.collectionName}`,
     )
   }
 }
