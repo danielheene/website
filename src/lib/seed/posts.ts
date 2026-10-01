@@ -294,6 +294,22 @@ const lexicalArticle = ({
   return root(nodes) as unknown as BlogPostData['content']
 }
 
+/**
+ * A hand-written-looking excerpt, so seeded posts never queue the
+ * Claude-backed `generateBlogPostExcerpt` task (CI has no API key).
+ */
+const lexicalExcerpt = (title: string) => {
+  const random = createRandom(`${title}:excerpt`)
+
+  return root([
+    paragraph([
+      text(`${pick(random, INTROS)} A look at `),
+      text(title, IS_ITALIC),
+      text(' and the decisions that shaped it.'),
+    ]),
+  ]) as unknown as BlogPostData['excerpt']
+}
+
 const createSeedImage = async (payload: Payload, index: number): Promise<string> => {
   const filename = `${SEED_PREFIX}-post-${index}.jpg`
   const source = `https://picsum.photos/seed/${SEED_PREFIX}-post-${index}/1600/900`
@@ -486,7 +502,6 @@ export const seedPosts = async (
       collection: CollectionSlug.BlogPosts,
       context: {
         skipRevalidate: true,
-        skipGenerateExcerpt: true,
       },
       data: {
         title,
@@ -502,6 +517,7 @@ export const seedPosts = async (
           title,
           imageIds: imageId ? [imageId] : [],
         }),
+        excerpt: lexicalExcerpt(title),
         generatorFlags: ['seeded-dummy'],
         _status: 'published',
       },

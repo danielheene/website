@@ -18,7 +18,7 @@ import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 import { BlogPostData } from '@/types/payload'
 
-import { generateExcerpt } from './hooks/generateExcerpt'
+import { enqueueGenerateExcerpt } from './hooks/enqueueGenerateExcerpt'
 import { generateReadingTime } from './hooks/generateReadingTime'
 import { revalidateBlogPost } from './hooks/revalidateBlogPost'
 
@@ -81,8 +81,8 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
     },
   },
   hooks: {
-    beforeChange: [generateReadingTime, generateExcerpt],
-    afterChange: [revalidateBlogPost],
+    beforeChange: [generateReadingTime],
+    afterChange: [revalidateBlogPost, enqueueGenerateExcerpt],
   },
   fields: [
     /* -------------- Main  Content -------------- */
@@ -152,24 +152,12 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
       ],
     },
 
-    {
-      name: 'excerpt',
-      type: 'textarea',
-      label: 'Excerpt',
-      admin: {
-        position: 'sidebar',
-        readOnly: true,
-        description:
-          'Used for post listings. Computed from the content before the Read More marker, or the first 50 words when none is set.',
-      },
-    },
-
     /* -------------- Content -------------- */
     {
       type: 'tabs',
       tabs: [
         {
-          label: 'Content',
+          label: 'Article',
           fields: [
             RichTextField({
               name: 'content',
@@ -181,11 +169,24 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
           ],
         },
         {
-          label: 'Links',
-          fields: [LinkGroupField()],
+          label: 'Excerpt & Links',
+          fields: [
+            RichTextField({
+              name: 'excerpt',
+              editorVariant: 'excerpt',
+              overrides: {
+                label: 'Excerpt',
+                admin: {
+                  description:
+                    'Shown on post listings. When a post is published without one, Claude writes it from the article.',
+                },
+              },
+            }),
+            LinkGroupField(),
+          ],
         },
         {
-          label: 'SEO',
+          label: 'Search Preview',
           fields: [MetaField()],
         },
       ],

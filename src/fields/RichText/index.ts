@@ -29,7 +29,6 @@ import { cn } from 'tailwind-variants'
 
 import { IconPickerFeature } from '@/fields/Icon/lexical/feature.server'
 import { linkFeatureFields } from '@/fields/Link'
-import { ReadMoreFeature } from '@/fields/RichText/lexical/readMore/feature.server'
 import { BlockSlug } from '@/types/blocks'
 
 const defaultAdminConfig: LexicalFieldAdminProps = {
@@ -115,6 +114,18 @@ const inlineFeatures = [
   AlignFeature(),
 ]
 
+/**
+ * Blog post excerpts: plain paragraphs with the four basic text formats and
+ * nothing else, so a teaser always renders the same on listing cards.
+ */
+const excerptFeatures = [
+  ...rootFeatures,
+  BoldFeature(),
+  ItalicFeature(),
+  UnderlineFeature(),
+  StrikethroughFeature(),
+]
+
 const captionFeatures = [
   ...inlineFeatures,
   // `linkFeatureFields` mirrors `LinkField`'s own rows (`linkType`/`newTab`,
@@ -162,10 +173,9 @@ const postFeatures = [
   IndentFeature(),
   EXPERIMENTAL_TableFeature(),
   IconPickerFeature(),
-  ReadMoreFeature(),
 ]
 
-export type RichTextEditorVariant = 'inline' | 'caption' | 'markdown' | 'post'
+export type RichTextEditorVariant = 'inline' | 'excerpt' | 'caption' | 'markdown' | 'post'
 export type RichTextFieldOverrides = Partial<Omit<PayloadRichTextField, 'name' | 'type' | 'editor'>>
 
 type RichTextFieldProps = {
@@ -188,8 +198,11 @@ export const RichTextField = ({
       admin: {
         className: cn([
           'bg-(--theme-elevation-0)',
-          String.raw`[&_.rich-text-lexical\_\_label-row]:hidden`,
-          String.raw`[&_.rich-text-lexical\_\_label-row]:border-none`,
+          // The excerpt sits above other fields in its tab, so it keeps its label.
+          editorVariant !== 'excerpt' && [
+            String.raw`[&_.rich-text-lexical\_\_label-row]:hidden`,
+            String.raw`[&_.rich-text-lexical\_\_label-row]:border-none`,
+          ],
           String.raw`[&_.rich-text-lexical\_\_wrap_.fixed-toolbar]:top-0`,
           // String.raw`[&_.rich-text-lexical\_\_wrap_.fixed-toolbar]:border-[0_0_1px_0]`,
           String.raw`[&_.rich-text-lexical\_\_wrap]:h-full`,
@@ -205,6 +218,10 @@ export const RichTextField = ({
           String.raw`[&_.rich-text-lexical\_\_wrap_.editor-container]:grow`,
           String.raw`[&_.rich-text-lexical\_\_wrap_.ContentEditable\_\_root]:p-2.5`,
           String.raw`[&_.rich-text-lexical\_\_wrap_.draggable-block-menu]:left-[30px]`,
+
+          editorVariant === 'excerpt' && [
+            String.raw`[&_.rich-text-lexical\_\_wrap_.ContentEditable\_\_root]:min-h-[120px]`,
+          ],
 
           ['inline', 'caption'].includes(editorVariant) && [
             String.raw`[&_.rich-text-lexical\_\_wrap_.ContentEditable\_\_root]:min-h-[200px]`,
@@ -308,6 +325,14 @@ function createRichTextEditor(variant: RichTextEditorVariant) {
           indent: '',
         },
       },
+      admin: {
+        ...defaultAdminConfig,
+      },
+    })
+  }
+  if (variant === 'excerpt') {
+    return lexicalEditor({
+      features: excerptFeatures,
       admin: {
         ...defaultAdminConfig,
       },
