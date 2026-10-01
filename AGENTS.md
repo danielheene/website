@@ -199,6 +199,9 @@ instrumentation `withJobObservability` gives inline handlers, and must use `req.
 - Leftover debug `console.log`s (e.g. `src/collections/ResumeJobs/index.ts`,
   `src/blocks/ResumeDownloadsBlock/Renderer/Renderer.tsx`) and commented-out dead code (e.g.
   `src/collections/ResumeSkillTags/index.ts`) exist and should be cleaned up opportunistically.
+- `package.json` `overrides` pins `postcss-merge-rules` to `9.0.4`: `9.0.6` throws
+  `RangeError: Invalid string length` while cssnano minifies Payload's admin CSS in the
+  production build. Lift the pin once a newer release builds cleanly (`bun run build`).
 - No app-level rate limiting exists on public API routes.
 - No shared logging abstraction — error logging is ad hoc `console.error` calls.
 

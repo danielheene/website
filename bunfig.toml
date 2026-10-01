@@ -2,3 +2,9 @@
 # One flat node_modules, as Next, Payload and Storybook expect to resolve their
 # peers from the project root.
 linker = "hoisted"
+# Matches pnpm 11's default: a published version must be a day old before it is
+# installed, which keeps freshly compromised releases out of the lockfile.
+# pnpm's exemptions were pinned to single versions that have long since aged
+# past the floor; Bun's minimumReleaseAgeExcludes can only exempt a package
+# for good, so none are carried over.
+minimumReleaseAge = 86400
