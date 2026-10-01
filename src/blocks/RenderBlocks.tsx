@@ -7,19 +7,17 @@ import { CodeBlockRenderer } from './CodeBlock/Renderer'
 import { LegalAuthorshipsBlockRenderer } from './LegalAuthorshipsBlock/Renderer'
 import { LegalPublisherBlockRenderer } from './LegalPublisherBlock/Renderer'
 import { LinkGroupBlockRenderer } from './LinkGroupBlock/Renderer'
-import { OneColumnContentBlockRenderer } from './OneColumnContentBlock/Renderer'
 import { ResumeAboutMeBlockRenderer } from './ResumeAboutMeBlock/Renderer'
 import { ResumeContactBlockRenderer } from './ResumeContactBlock/Renderer'
 import { ResumeCustomersBlockRenderer } from './ResumeCustomersBlock/Renderer'
 import { ResumeDownloadsBlockRenderer } from './ResumeDownloadsBlock/Renderer'
 import { ResumeExperienceBlockRenderer } from './ResumeExperienceBlock/Renderer'
 import { ResumeProjectsBlockRenderer } from './ResumeProjectsBlock/Renderer'
+import { RichTextBlockRenderer } from './RichTextBlock/Renderer'
 import { TrendingBlogPostsBlockRenderer } from './TrendingBlogPostsBlock/Renderer'
-import { TwoColumnContentBlockRenderer } from './TwoColumnContentBlock/Renderer'
 
 const blockComponentMap = {
-  [BlockSlug.OneColumnContent]: OneColumnContentBlockRenderer,
-  [BlockSlug.TwoColumnContent]: TwoColumnContentBlockRenderer,
+  [BlockSlug.RichText]: RichTextBlockRenderer,
   [BlockSlug.LinkGroup]: LinkGroupBlockRenderer,
   [BlockSlug.Code]: CodeBlockRenderer,
   [BlockSlug.TrendingBlogPosts]: TrendingBlogPostsBlockRenderer,

@@ -4,20 +4,20 @@ import { cn } from 'tailwind-variants'
 
 import RichText from '@/components/RichText'
 import { highlightRichText } from '@/lib/shiki/highlightRichText'
-import type { OneColumnContentBlock } from '@/types/payload'
+import type { RichTextBlock } from '@/types/payload'
 
-type OneColumnContentBlockRendererProps = {
+type RichTextBlockRendererProps = {
   className?: string
-} & OneColumnContentBlock
+} & RichTextBlock
 
 /**
  * Server Component so code blocks can be highlighted before `RichText` — a
  * Client Component — renders them.
  */
-export const OneColumnContentBlockRenderer = async ({
+export const RichTextBlockRenderer = async ({
   className,
   content,
-}: OneColumnContentBlockRendererProps): Promise<JSX.Element> => (
+}: RichTextBlockRendererProps): Promise<JSX.Element> => (
   <div className={cn(className)}>
     <RichText
       data={content}

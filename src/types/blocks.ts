@@ -27,7 +27,7 @@ export type BlockGroupValue = BlockGroup[BlockGroupKey] & string
  */
 export const BlockSlug = {
   /* general blocks */
-  OneColumnContent: 'OneColumnContentBlock',
+  RichText: 'RichTextBlock',
   TwoColumnContent: 'TwoColumnContentBlock',
   Code: 'CodeBlock',
   LinkGroup: 'LinkGroupBlock',

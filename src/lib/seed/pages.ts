@@ -110,8 +110,8 @@ const CODE_SNIPPETS: {
   },
 ]
 
-/** One `OneColumnContentBlock` with 2-3 paragraphs and, sometimes, a heading/list/quote. */
-const oneColumnBlock = (random: Random) => {
+/** One `RichTextBlock` with 2-3 paragraphs and, sometimes, a heading/list/quote. */
+const richTextBlock = (random: Random) => {
   const nodes: Record<string, unknown>[] = []
 
   if (chance(random, 0.5)) {
@@ -142,16 +142,30 @@ const oneColumnBlock = (random: Random) => {
   }
 
   return {
-    blockType: 'OneColumnContentBlock',
+    blockType: 'RichTextBlock',
     content: root(nodes),
   }
 }
 
-/** One `TwoColumnContentBlock` with a short paragraph in each column. */
+/**
+ * One `RichTextBlock` holding a Lexical `TwoColumnContentBlock` with a short
+ * paragraph in each column — columns only exist inside the editor.
+ */
 const twoColumnBlock = (random: Random) => ({
-  blockType: 'TwoColumnContentBlock',
-  contentLeft: root([paragraph(pick(random, BODY_PARAGRAPHS))]),
-  contentRight: root([paragraph(pick(random, BODY_PARAGRAPHS))]),
+  blockType: 'RichTextBlock',
+  content: root([
+    {
+      type: 'block',
+      version: 2,
+      format: '',
+      fields: {
+        blockType: 'TwoColumnContentBlock',
+        blockName: '',
+        contentLeft: root([paragraph(pick(random, BODY_PARAGRAPHS))]),
+        contentRight: root([paragraph(pick(random, BODY_PARAGRAPHS))]),
+      },
+    },
+  ]),
 })
 
 /** One `CodeBlock` from the snippet pool. */
@@ -182,7 +196,7 @@ const pageBlocks = (seed: string): Page['content'] => {
   const random = createRandom(seed)
   const builders = [twoColumnBlock, codeContentBlock, linkGroupBlock]
 
-  const blocks: Record<string, unknown>[] = [oneColumnBlock(random)]
+  const blocks: Record<string, unknown>[] = [richTextBlock(random)]
 
   const extraCount = 1 + Math.floor(random() * 3) // 1-3 more blocks, total 2-4
   const chosen = pickSome(random, builders, Math.min(extraCount, builders.length))
@@ -191,11 +205,11 @@ const pageBlocks = (seed: string): Page['content'] => {
     blocks.push(build(random))
   }
 
-  // top up with a second OneColumnContentBlock if fewer builders existed
+  // top up with a second RichTextBlock if fewer builders existed
   // than the target extra count (keeps the 2-4 range even as the builder
   // pool is small)
   while (blocks.length < 1 + extraCount) {
-    blocks.push(oneColumnBlock(random))
+    blocks.push(richTextBlock(random))
   }
 
   return blocks as unknown as Page['content']

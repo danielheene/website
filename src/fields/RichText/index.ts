@@ -157,6 +157,17 @@ const markdownFeatures = [
   UploadFeature(),
 ]
 
+/**
+ * Page content: everything `markdown` offers plus the two-column layout,
+ * whose columns are `markdown` editors themselves — so columns cannot nest.
+ */
+const contentFeatures = [
+  ...markdownFeatures,
+  BlocksFeature({
+    blocks: [BlockSlug.TwoColumnContent],
+  }),
+]
+
 const postFeatures = [
   ...markdownFeatures,
   RelationshipFeature(),
@@ -175,7 +186,13 @@ const postFeatures = [
   IconPickerFeature(),
 ]
 
-export type RichTextEditorVariant = 'inline' | 'excerpt' | 'caption' | 'markdown' | 'post'
+export type RichTextEditorVariant =
+  | 'inline'
+  | 'excerpt'
+  | 'caption'
+  | 'markdown'
+  | 'content'
+  | 'post'
 export type RichTextFieldOverrides = Partial<Omit<PayloadRichTextField, 'name' | 'type' | 'editor'>>
 
 type RichTextFieldProps = {
@@ -227,7 +244,7 @@ export const RichTextField = ({
             String.raw`[&_.rich-text-lexical\_\_wrap_.ContentEditable\_\_root]:min-h-[200px]`,
           ],
 
-          ['markdown', 'post'].includes(editorVariant) && [
+          ['markdown', 'content', 'post'].includes(editorVariant) && [
             String.raw`[&_.rich-text-lexical\_\_wrap_.ContentEditable\_\_root]:min-h-[500px]`,
           ],
         ]),
@@ -351,6 +368,15 @@ function createRichTextEditor(variant: RichTextEditorVariant) {
       features: markdownFeatures,
       admin: {
         ...defaultAdminConfig,
+      },
+    })
+  }
+  if (variant === 'content') {
+    return lexicalEditor({
+      features: contentFeatures,
+      admin: {
+        ...defaultAdminConfig,
+        hideDraggableBlockElement: false,
       },
     })
   }

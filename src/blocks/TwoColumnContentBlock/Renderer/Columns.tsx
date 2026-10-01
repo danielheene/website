@@ -4,24 +4,26 @@ import { cn } from 'tailwind-variants'
 
 import RichText from '@/components/RichText'
 import type { HighlightedCodeMap } from '@/lib/shiki/codeBlockKey'
-import type { TwoColumnContentBlock } from '@/types/payload'
+import type { RichTextBlock } from '@/types/payload'
 
 /**
- * Only the fields actually rendered, rather than the full block type — the
- * `RichText` converter receives `node.fields`, which omits `blockType`.
+ * Payload generates no interface for a block that only Lexical references, so
+ * the columns are typed as the rich-text value they hold.
  */
 type ColumnsProps = {
   className?: string
+  contentLeft?: RichTextBlock['content']
+  contentRight?: RichTextBlock['content']
   highlightedLeft?: HighlightedCodeMap
   highlightedRight?: HighlightedCodeMap
-} & Pick<TwoColumnContentBlock, 'contentLeft' | 'contentRight'>
+}
 
 /**
- * Presentational two-column layout.
+ * Two-column layout for the Lexical-only Two-Column block.
  *
- * Synchronous and free of server-only imports, so it can be used both by the
- * async Server Component wrapper and as a `RichText` block converter — the
- * latter runs on the client, where `async` components cannot render.
+ * Synchronous and free of server-only imports: it renders as a `RichText`
+ * block converter, which runs on the client, where `async` components cannot
+ * render.
  */
 export const Columns = ({
   className,
@@ -30,12 +32,8 @@ export const Columns = ({
   highlightedLeft,
   highlightedRight,
 }: ColumnsProps): JSX.Element => (
-  <div className={cn('grid', className)}>
-    <div className={cn('col-span-12 md:col-span-6')}>
-      <RichText data={contentLeft} enableGutter={false} highlightedCode={highlightedLeft} />
-    </div>
-    <div className={cn('col-span-12 md:col-span-6')}>
-      <RichText data={contentRight} enableGutter={false} highlightedCode={highlightedRight} />
-    </div>
+  <div className={cn('grid grid-cols-1 gap-x-8 md:grid-cols-2', className)}>
+    <RichText data={contentLeft} enableGutter={false} highlightedCode={highlightedLeft} />
+    <RichText data={contentRight} enableGutter={false} highlightedCode={highlightedRight} />
   </div>
 )

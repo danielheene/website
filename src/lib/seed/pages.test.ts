@@ -194,7 +194,7 @@ describe('seedPages', () => {
     expect(create).toHaveBeenCalledTimes(2)
   })
 
-  it('gives each page 2-4 content blocks, at least one OneColumnContentBlock', async () => {
+  it('gives each page 2-4 content blocks, at least one RichTextBlock', async () => {
     find.mockResolvedValue({
       docs: [],
     })
@@ -203,17 +203,10 @@ describe('seedPages', () => {
         expect(data.content.length).toBeGreaterThanOrEqual(2)
         expect(data.content.length).toBeLessThanOrEqual(4)
         expect(
-          data.content.some(
-            (block: { blockType: string }) => block.blockType === 'OneColumnContentBlock',
-          ),
+          data.content.some((block: { blockType: string }) => block.blockType === 'RichTextBlock'),
         ).toBe(true)
         for (const block of data.content) {
-          expect([
-            'OneColumnContentBlock',
-            'TwoColumnContentBlock',
-            'CodeBlock',
-            'LinkGroupBlock',
-          ]).toContain(block.blockType)
+          expect(['RichTextBlock', 'CodeBlock', 'LinkGroupBlock']).toContain(block.blockType)
         }
       }
       return {
