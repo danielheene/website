@@ -1,6 +1,7 @@
 import type { BlockSlug as RegisteredBlockSlug } from 'payload'
 
 import { CodeBlock } from '@/blocks/CodeBlock'
+import { FeatureCardsBlock } from '@/blocks/FeatureCardsBlock'
 import { HighlightBoxBlock } from '@/blocks/HighlightBoxBlock'
 import { LegalAuthorshipsBlock } from '@/blocks/LegalAuthorshipsBlock'
 import { LegalPublisherBlock } from '@/blocks/LegalPublisherBlock'
@@ -19,6 +20,7 @@ import { BlockSlug } from '@/types/blocks'
 export const BLOCKS = [
   /* general blocks */
   CodeBlock,
+  FeatureCardsBlock,
   HighlightBoxBlock,
   LinkGroupBlock,
   RichTextBlock,
