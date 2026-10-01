@@ -1,3 +1,10 @@
+## [1.7.1](https://github.com/danielheene/website/compare/v1.7.0...v1.7.1) (2026-10-01)
+
+
+### Bug Fixes
+
+* address Kilo review follow-ups from [#90](https://github.com/danielheene/website/issues/90) ([#91](https://github.com/danielheene/website/issues/91)) ([e51e71e](https://github.com/danielheene/website/commit/e51e71e82297945990c32ede4a4c80c8df9827cc))
+
 # [1.7.0](https://github.com/danielheene/website/compare/v1.6.1...v1.7.0) (2026-09-30)
 
 
