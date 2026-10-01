@@ -6,6 +6,7 @@ import { buildLocalizedResumeData } from './buildLocalizedResumeData'
 import { calculateSkillTagInterval } from './calculateSkillTagInterval'
 import { calculateSkillTagType } from './calculateSkillTagType'
 import { createResumeDocument } from './createResumeDocument'
+import { generateBlogPostExcerpt } from './generateBlogPostExcerpt'
 import { generateDocumentThumbnails } from './generateDocumentThumbnails'
 import { generateLocalizedResumeDocument } from './generateLocalizedResumeDocument'
 import { generateResumeDocumentTitle } from './generateResumeDocumentTitle'
@@ -26,6 +27,7 @@ export const TASKS = [
   generateVideoThumbnails,
   calculateSkillTagInterval,
   calculateSkillTagType,
+  generateBlogPostExcerpt,
   generateLocalizedResumeDocument,
   generateResumeFilename,
   buildLocalizedResumeData,

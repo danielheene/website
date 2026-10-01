@@ -203,6 +203,7 @@ export interface Config {
       generateVideoThumbnails: TaskGenerateVideoThumbnails;
       calculateSkillTagInterval: TaskCalculateSkillTagInterval;
       calculateSkillTagType: TaskCalculateSkillTagType;
+      generateBlogPostExcerpt: TaskGenerateBlogPostExcerpt;
       generateLocalizedResumeDocument: TaskGenerateLocalizedResumeDocument;
       generateResumeFilename: TaskGenerateResumeFilename;
       buildLocalizedResumeData: TaskBuildLocalizedResumeData;
@@ -859,11 +860,25 @@ export interface BlogPostData {
   };
   readingTime?: number | null;
   wordCount?: number | null;
-  /**
-   * Used for post listings. Computed from the content before the Read More marker, or the first 50 words when none is set.
-   */
-  excerpt?: string | null;
   content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Shown on post listings. When a post is published without one, Claude writes it from the article.
+   */
+  excerpt?: {
     root: {
       type: string;
       children: {
@@ -1257,6 +1272,7 @@ export interface PayloadJob {
           | 'generateVideoThumbnails'
           | 'calculateSkillTagInterval'
           | 'calculateSkillTagType'
+          | 'generateBlogPostExcerpt'
           | 'generateLocalizedResumeDocument'
           | 'generateResumeFilename'
           | 'buildLocalizedResumeData'
@@ -1311,6 +1327,7 @@ export interface PayloadJob {
         | 'generateVideoThumbnails'
         | 'calculateSkillTagInterval'
         | 'calculateSkillTagType'
+        | 'generateBlogPostExcerpt'
         | 'generateLocalizedResumeDocument'
         | 'generateResumeFilename'
         | 'buildLocalizedResumeData'
@@ -1840,8 +1857,8 @@ export interface PostsSelect<T extends boolean = true> {
       };
   readingTime?: T;
   wordCount?: T;
-  excerpt?: T;
   content?: T;
+  excerpt?: T;
   links?:
     | T
     | {
@@ -2916,6 +2933,18 @@ export interface TaskCalculateSkillTagType {
   };
   output: {
     type?: string | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskGenerateBlogPostExcerpt".
+ */
+export interface TaskGenerateBlogPostExcerpt {
+  input: {
+    postId: string;
+  };
+  output: {
+    generated?: boolean | null;
   };
 }
 /**

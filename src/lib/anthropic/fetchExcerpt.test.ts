@@ -105,4 +105,15 @@ describe('fetchAnthropicExcerpt', () => {
     expect(root.children[0].children[0].text).toBe('A short summary.')
     expect(JSON.stringify(result)).not.toMatch(/```/)
   })
+
+  it('unwraps links, which the excerpt editor cannot hold, keeping their text', async () => {
+    generateTextMock.mockResolvedValue({
+      text: '<p>Read the <a href="https://example.com">full guide</a> first.</p>',
+    })
+
+    const result = await fetchAnthropicExcerpt(paragraphDocument('Some content here.') as never)
+
+    expect(JSON.stringify(result)).not.toMatch(/"type":"link"/)
+    expect(JSON.stringify(result)).toMatch(/full guide/)
+  })
 })

@@ -43,7 +43,8 @@ export const fetchAnthropicExcerpt = async (
       Write a concise, engaging excerpt (2-3 sentences) summarizing the
       following blog post HTML, suitable for a preview card and meta
       description. Return only the excerpt as a single HTML <p> tag, no
-      explanation, no code fences, no surrounding <html>/<body> tags.
+      explanation, no code fences, no surrounding <html>/<body> tags. Use no
+      links; <strong> and <em> are the only tags allowed inside the <p>.
     `,
     prompt: html,
   })
@@ -51,6 +52,9 @@ export const fetchAnthropicExcerpt = async (
   const stripped = excerptHtml
     .replace(/^\s*```(?:html)?\s*\n?/i, '')
     .replace(/\n?\s*```\s*$/, '')
+    // The excerpt editor has no link feature, so a link would fail validation
+    // on save; keep its text only.
+    .replace(/<\/?a\b[^>]*>/gi, '')
     .trim()
 
   return parseHtmlToLexical(stripped)

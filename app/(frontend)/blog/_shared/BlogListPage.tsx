@@ -18,6 +18,7 @@ import { ImageMedia } from '@/components/ImageMedia'
 import { PageContainer } from '@/components/PageContainer'
 import { Pagination } from '@/components/Pagination'
 import { Reveal } from '@/components/Reveal'
+import { RichText } from '@/components/RichText'
 import {
   BLOG_PATH,
   BLOG_SORT_OPTIONS,
@@ -27,6 +28,7 @@ import {
   POSTS_PER_PAGE,
   parseBlogListingParams,
 } from '@/lib/blog/listing'
+import { isEmptyValue } from '@/lib/lexical/isEmptyValue'
 import { CollectionSlug } from '@/types/collections'
 import type { BlogPostData, Topic } from '@/types/payload'
 
@@ -174,15 +176,19 @@ const PostCard = ({ post }: { post: BlogPostData }) => {
           >
             {post.title}
           </h2>
-          {post.excerpt && (
-            <p
+          {!isEmptyValue(post.excerpt) && (
+            <RichText
+              data={post.excerpt}
+              enableGutter={false}
+              enableProse={false}
               className={cn([
                 'text-background/80 mt-1 line-clamp-2 text-sm font-normal',
                 'dark:text-foreground/80',
+                // Paragraphs run on as one text so the two-line clamp applies
+                // across all of them.
+                "[&_p]:inline [&_p:not(:last-child)]:after:content-['_']",
               ])}
-            >
-              {post.excerpt}
-            </p>
+            />
           )}
         </header>
       </div>
