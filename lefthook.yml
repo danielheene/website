@@ -12,10 +12,12 @@ pre-commit:
       run: bun x oxfmt --no-error-on-unmatched-pattern {staged_files} && bun x oxlint --fix --no-error-on-unmatched-pattern {staged_files}
       stage_fixed: true
     # Keeps dependency versions within their syncpack groups and the lockfile
-    # in step with package.json.
+    # in step with package.json. stage_fixed only re-stages files the glob
+    # matched, so the lockfile `bun install` rewrites is added explicitly;
+    # otherwise CI's `bun install --frozen-lockfile` fails on the commit.
     package-json:
       glob: 'package.json'
-      run: bun x syncpack format --source package.json && bun x syncpack fix --dependency-types prod,dev,peer --source package.json && bun install
+      run: bun x syncpack format --source package.json && bun x syncpack fix --dependency-types prod,dev,peer --source package.json && bun install && git add bun.lock
       stage_fixed: true
 
 commit-msg:

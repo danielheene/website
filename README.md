@@ -99,7 +99,7 @@ Or run services independently:
 ```bash
 bun run dev:app          # Next.js dev server only (http://localhost:3000)
 bun run dev:storybook    # Storybook only (http://localhost:6006)
-bun run email:dev        # React Email preview server (http://localhost:3005)
+bun run dev:email        # React Email preview server (http://localhost:3005)
 ```
 
 #### Application Endpoints
@@ -133,13 +133,13 @@ bun run email:dev        # React Email preview server (http://localhost:3005)
 | `bun run build` | Production build (compiles Next.js bundle with Sentry release tagging). |
 | `bun run build:storybook` | Builds static Storybook documentation into `dist/`. |
 | `bun run start:storybook` | Serves the static Storybook build on port 3020. |
-| `bun run start` | Starts the production Next.js application server. |
+| `bun run start:app` | Starts the production Next.js application server. |
 | `bun run start:worker` | Runs standalone background jobs worker and health monitoring server. |
 | `bun run load-env` | Writes `.env.local` from active Doppler config (`--check` validates drift). |
 | `bun run generate` | Runs `generate:types` and `generate:importmap` in parallel. |
 | `bun run generate:types` | Generates TypeScript types for Payload collections and globals (`src/types/payload.ts`). |
 | `bun run generate:importmap` | Regenerates Payload admin component import map. |
-| `bun run payload` | Wrapper to execute Payload CLI commands. |
+| `bun run _payload` | Wrapper to execute Payload CLI commands (used by `migrate`, `generate` and the other scripts). |
 | `bun run migrate` | Runs database migrations via Payload CLI. |
 | `bun run ci` | Local convenience: runs database migrations and a full production build (CI itself runs the steps separately). |
 | `bun run lint` | Runs `oxlint` and `oxfmt --check` (linting and format checks). |
@@ -151,7 +151,7 @@ bun run email:dev        # React Email preview server (http://localhost:3005)
 | `bun run deps:update` | Updates dependency versions using Syncpack. |
 | `bun run chore:format` | Formats `package.json` field order using Syncpack. |
 | `bun run chore:reinstall` | Cleans `node_modules` and `bun.lock`, then runs fresh `bun install`. |
-| `bun run email:dev` | Starts React Email development server on port 3005 (`src/emails`). |
+| `bun run dev:email` | Starts React Email development server on port 3005 (`src/emails`). |
 | `bun run seed:topics` | Seeds fixture blog topics (`--clean` to remove). |
 | `bun run seed:posts` | Seeds fixture blog posts and media (`--clean` to remove, `--count <n>` to set quantity). |
 | `bun run seed:pages` | Seeds fixture pages (`--clean` to remove, `--count <n>` to set quantity). |

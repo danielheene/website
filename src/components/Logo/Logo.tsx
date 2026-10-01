@@ -67,7 +67,6 @@ export const Logo = ({
   }, [variant])
 
   return (
-    // oxlint-disable-next-line
     <svg
       {...externalSVGProps}
       className={className}

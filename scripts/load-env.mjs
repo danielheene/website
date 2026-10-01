@@ -4,7 +4,7 @@
  *    Materialises .env.local from the active Doppler config.
  *
  *    Next loads .env.local automatically, so once this has run the package
- *    scripts need no `doppler run --` wrapper: `bun run dev`, `bun run payload` and
+ *    scripts need no `doppler run --` wrapper: `bun run dev`, `bun run migrate` and
  *    the rest pick the environment up on their own. Re-run it whenever the
  *    Doppler config changes, or after switching configs with
  *    `doppler setup --config <name>`.

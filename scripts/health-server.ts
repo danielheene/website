@@ -2,7 +2,7 @@
  *    Standalone HTTP health server for the `worker` container.
  *
  *    Usage:
- *      bun run payload run scripts/health-server.ts
+ *      bun run _payload run scripts/health-server.ts
  *
  *    `payload jobs:run` (see `start:worker`) is a CLI loop with no HTTP
  *    listener of its own, so a container `HEALTHCHECK` has nothing to curl
