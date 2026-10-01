@@ -30,7 +30,7 @@ const createReq = () => {
 const queuedTagIds = (queue: ReturnType<typeof vi.fn>) =>
   queue.mock.calls.map(([args]) => args.input.skillTagId).sort()
 
-// biome-ignore lint/suspicious/noExplicitAny: hooks only read the fields these tests pass
+// oxlint-disable-next-line typescript/no-explicit-any -- hooks only read the fields these tests pass
 type HookArgs = any
 
 describe('enqueueCalculateSkillTagType', () => {
