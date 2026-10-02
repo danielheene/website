@@ -69,7 +69,6 @@ export const ResumePreviewCarousel = ({ items, className }: ResumePreviewCarouse
         <div className="flex h-full w-full">
           {items.map((item, index) => (
             <HeroSlide
-              fadeMs={FADE_MS}
               index={index}
               isActive={index === selected}
               item={item}
