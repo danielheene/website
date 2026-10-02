@@ -4,7 +4,14 @@ import { createClient } from 'redis'
 
 export type RedisListener = (message: string) => void
 
-type RedisClient = ReturnType<typeof createClient>
+const createRedisClient = () =>
+  createClient({
+    url: process.env.REDIS_URL,
+  })
+
+// The concrete client type: `ReturnType<typeof createClient>` is the fully
+// generic one, which neither a connected client nor `get`'s string result fits.
+type RedisClient = ReturnType<typeof createRedisClient>
 
 let client: RedisClient | null = null
 let clientPromise: Promise<RedisClient> | null = null
@@ -27,9 +34,7 @@ export const getClient = async (): Promise<RedisClient> => {
   if (client) return client
 
   if (!clientPromise) {
-    clientPromise = createClient({
-      url: process.env.REDIS_URL,
-    })
+    clientPromise = createRedisClient()
       .on('error', (err) => console.error('Redis Client Error', err))
       .connect()
       .then((connectedClient) => {
@@ -53,7 +58,7 @@ export const get = async <T extends object | string>(key: string): Promise<T | n
   const redis = await getClient()
   const data = await redis.get(key)
 
-  if (!data) return null
+  if (!data || typeof data !== 'string') return null
 
   try {
     return JSON.parse(data) as T

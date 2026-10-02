@@ -16,6 +16,7 @@ export const fetchResumeSkillTags = async (locale: BilingualLanguage = 'en') => 
     draft: false,
     pagination: false,
     limit: 0,
+    joins: false,
   })
 
   return await resolveRelations(reduceDataToBilingualLanguage(docs, locale))

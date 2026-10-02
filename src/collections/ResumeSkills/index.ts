@@ -125,8 +125,7 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
       },
       hooks: {
         afterRead: [
-          ({ siblingData, data }) => {
-            console.log('data', data?.content)
+          ({ siblingData }) => {
             const content = (
               siblingData as
                 | {

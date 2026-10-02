@@ -105,11 +105,19 @@ export const resolveRelations = async <T>(data: T): Promise<ResolvedRelations<T>
           value: null,
         }
 
+      /**
+       * Join fields are reverse lookups (a skill tag's jobs and skills), which
+       * point back at the documents being walked. Populating them made the
+       * walk fan out combinatorially until prerendering /resume timed out,
+       * and nothing reads them through this helper. Payload types `joins` as
+       * `never` for a slug union, hence the cast.
+       */
       const value = await payload
         .findByID({
           collection: node.relationTo,
           id: node.value as string | number,
-        })
+          joins: false,
+        } as Parameters<typeof payload.findByID>[0])
         .catch(() => null)
 
       return {
