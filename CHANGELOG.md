@@ -1,3 +1,10 @@
+## [1.10.1](https://github.com/danielheene/website/compare/v1.10.0...v1.10.1) (2026-10-02)
+
+
+### Bug Fixes
+
+* make the full production build pass again ([#99](https://github.com/danielheene/website/issues/99)) ([c0b6325](https://github.com/danielheene/website/commit/c0b63251885313bff725577c1066eea3d049a4d5))
+
 # [1.10.0](https://github.com/danielheene/website/compare/v1.9.0...v1.10.0) (2026-10-02)
 
 
