@@ -101,7 +101,7 @@ export function LogoCarouselTile({
       )}
       // oxlint-disable-next-line react/no-danger -- sanitized server-side by sanitizeSvg — on write via the ResumeCustomers beforeChange hook, and again in ResumeCustomersBlock/Renderer before reaching this component
       dangerouslySetInnerHTML={{
-        __html: svg,
+        __html: svg, // nosemgrep: react-dangerouslysetinnerhtml -- reviewed, see the oxlint-disable reason above
       }}
     />
   )
