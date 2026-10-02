@@ -47,7 +47,7 @@ export const BLOCKS = [
 export const BLOCK_SLUGS = BLOCKS.map((block) => block.slug) as RegisteredBlockSlug[]
 
 /** Blocks that only exist inside a rich-text editor, never as a page section. */
-export const LEXICAL_ONLY_BLOCK_SLUGS: string[] = [BlockSlug.TwoColumnContent]
+export const LEXICAL_ONLY_BLOCK_SLUGS: RegisteredBlockSlug[] = [BlockSlug.TwoColumnContent]
 
 export const PAGE_BLOCK_SLUGS = BLOCK_SLUGS.filter(
   (slug) => !LEXICAL_ONLY_BLOCK_SLUGS.includes(slug),
