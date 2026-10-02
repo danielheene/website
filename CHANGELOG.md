@@ -1,3 +1,15 @@
+# [1.11.0](https://github.com/danielheene/website/compare/v1.10.1...v1.11.0) (2026-10-02)
+
+
+### Bug Fixes
+
+* **migrations:** create the missing latest version for drafts documents ([#101](https://github.com/danielheene/website/issues/101)) ([eeb5150](https://github.com/danielheene/website/commit/eeb515060ec8428aad2782ff6cc3859742957cc5)), closes [#88](https://github.com/danielheene/website/issues/88)
+
+
+### Features
+
+* **blocks:** add a Feature Cards block for teaser sections ([#100](https://github.com/danielheene/website/issues/100)) ([eacf6a3](https://github.com/danielheene/website/commit/eacf6a35762bd7cf53d653e1416e4f38f93faa70)), closes [resume/latest#validate](https://github.com/resume/latest/issues/validate)
+
 ## [1.10.1](https://github.com/danielheene/website/compare/v1.10.0...v1.10.1) (2026-10-02)
 
 
