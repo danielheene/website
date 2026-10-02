@@ -4,6 +4,7 @@ import * as migration_00000003_backfill_draft_status from './00000003_backfill_d
 import * as migration_00000004_recompute_stale_excerpts from './00000004_recompute_stale_excerpts'
 import * as migration_00000005_manual_rich_text_excerpts from './00000005_manual_rich_text_excerpts'
 import * as migration_00000006_rich_text_page_blocks from './00000006_rich_text_page_blocks'
+import * as migration_00000007_backfill_draft_versions from './00000007_backfill_draft_versions'
 
 export const migrations = [
   {
@@ -35,5 +36,10 @@ export const migrations = [
     up: migration_00000006_rich_text_page_blocks.up,
     down: migration_00000006_rich_text_page_blocks.down,
     name: '00000006_rich_text_page_blocks',
+  },
+  {
+    up: migration_00000007_backfill_draft_versions.up,
+    down: migration_00000007_backfill_draft_versions.down,
+    name: '00000007_backfill_draft_versions',
   },
 ]
