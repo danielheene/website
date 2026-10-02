@@ -102,6 +102,7 @@ export interface Config {
   };
   blocks: {
     CodeBlock: CodeBlock;
+    FeatureCardsBlock: FeatureCardsBlock;
     HighlightBoxBlock: HighlightBoxBlock;
     LinkGroupBlock: LinkGroupBlock;
     RichTextBlock: RichTextBlock;
@@ -289,10 +290,46 @@ export interface CodeBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "HighlightBoxBlock".
+ * via the `definition` "FeatureCardsBlock".
  */
-export interface HighlightBoxBlock {
-  content?: {
+export interface FeatureCardsBlock {
+  /**
+   * Optional heading shown above the cards.
+   */
+  heading?: string | null;
+  cards?:
+    | {
+        /**
+         * On wide screens. Cards stack on phones.
+         */
+        size: 'third' | 'half' | 'twoThirds' | 'full';
+        color: 'primary' | 'rose' | 'violet' | 'sky' | 'teal' | 'amber';
+        /**
+         * Line breaks are kept.
+         */
+        title: string;
+        text?: string | null;
+        /**
+         * Optional screenshot, shown bleeding off the bottom-right corner of the card.
+         */
+        image?: (string | null) | MediaImage;
+        link: LinkFieldData;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'FeatureCardsBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "images".
+ */
+export interface MediaImage {
+  id: string;
+  checksum?: string | null;
+  alt?: string | null;
+  credits?: {
     root: {
       type: string;
       children: {
@@ -307,24 +344,40 @@ export interface HighlightBoxBlock {
     };
     [k: string]: unknown;
   } | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'HighlightBoxBlock';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "LinkGroupBlock".
- */
-export interface LinkGroupBlock {
-  links?:
-    | {
-        link: LinkFieldData;
-        id?: string | null;
-      }[]
-    | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'LinkGroupBlock';
+  blurDataURL?: string | null;
+  generatorFlags?: (
+    | 'resume-asset'
+    | 'thumbnail'
+    | 'document'
+    | 'audio-thumbnail'
+    | 'video-thumbnail'
+    | 'document-thumbnail'
+    | 'unsplash-import'
+    | 'seeded-dummy'
+  )[];
+  prefix?: string | null;
+  _objectKey?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -402,6 +455,7 @@ export interface Page {
   content?:
     | (
         | CodeBlock
+        | FeatureCardsBlock
         | HighlightBoxBlock
         | LinkGroupBlock
         | RichTextBlock
@@ -438,64 +492,6 @@ export interface Page {
   createdAt: string;
   deletedAt?: string | null;
   _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "images".
- */
-export interface MediaImage {
-  id: string;
-  checksum?: string | null;
-  alt?: string | null;
-  credits?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  blurDataURL?: string | null;
-  generatorFlags?: (
-    | 'resume-asset'
-    | 'thumbnail'
-    | 'document'
-    | 'audio-thumbnail'
-    | 'video-thumbnail'
-    | 'document-thumbnail'
-    | 'unsplash-import'
-    | 'seeded-dummy'
-  )[];
-  prefix?: string | null;
-  _objectKey?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-  sizes?: {
-    thumbnail?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -548,6 +544,45 @@ export interface MediaVideo {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HighlightBoxBlock".
+ */
+export interface HighlightBoxBlock {
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'HighlightBoxBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LinkGroupBlock".
+ */
+export interface LinkGroupBlock {
+  links?:
+    | {
+        link: LinkFieldData;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'LinkGroupBlock';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

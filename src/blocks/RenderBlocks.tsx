@@ -4,6 +4,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { type BlockData, BlockSlug, RegisteredBlockSlug } from '@/types/blocks'
 
 import { CodeBlockRenderer } from './CodeBlock/Renderer'
+import { FeatureCardsBlockRenderer } from './FeatureCardsBlock/Renderer'
 import { LegalAuthorshipsBlockRenderer } from './LegalAuthorshipsBlock/Renderer'
 import { LegalPublisherBlockRenderer } from './LegalPublisherBlock/Renderer'
 import { LinkGroupBlockRenderer } from './LinkGroupBlock/Renderer'
@@ -20,6 +21,7 @@ const blockComponentMap = {
   [BlockSlug.RichText]: RichTextBlockRenderer,
   [BlockSlug.LinkGroup]: LinkGroupBlockRenderer,
   [BlockSlug.Code]: CodeBlockRenderer,
+  [BlockSlug.FeatureCards]: FeatureCardsBlockRenderer,
   [BlockSlug.TrendingBlogPosts]: TrendingBlogPostsBlockRenderer,
   [BlockSlug.LegalPublisher]: LegalPublisherBlockRenderer,
   [BlockSlug.LegalAuthorships]: LegalAuthorshipsBlockRenderer,
