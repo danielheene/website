@@ -3,12 +3,17 @@ import type { Block } from 'payload'
 import { RichTextField } from '@/fields/RichText'
 import { BlockGroup, BlockSlug } from '@/types/blocks'
 
-export const OneColumnContentBlock: Block = {
-  slug: BlockSlug.OneColumnContent,
-  interfaceName: BlockSlug.OneColumnContent,
+/**
+ * General-purpose page text. Multi-column layouts are inserted from inside the
+ * editor (the `content` variant's Two-Column block) instead of being separate
+ * page blocks, so a section can mix full-width and column text.
+ */
+export const RichTextBlock: Block = {
+  slug: BlockSlug.RichText,
+  interfaceName: BlockSlug.RichText,
   labels: {
-    singular: 'One-Column Content',
-    plural: 'One-Column Content',
+    singular: 'Rich Text',
+    plural: 'Rich Text',
   },
   admin: {
     group: BlockGroup.General,
@@ -21,7 +26,7 @@ export const OneColumnContentBlock: Block = {
   fields: [
     RichTextField({
       name: 'content',
-      editorVariant: 'markdown',
+      editorVariant: 'content',
       overrides: {
         label: false,
       },

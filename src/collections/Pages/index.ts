@@ -2,7 +2,7 @@ import type { AccessArgs, CollectionConfig, FilterOptionsProps } from 'payload'
 
 import { startCase } from 'lodash-es'
 
-import { BLOCK_SLUGS } from '@/blocks'
+import { PAGE_BLOCK_SLUGS } from '@/blocks'
 import { revalidatePage } from '@/collections/Pages/hooks/revalidatePage'
 import {
   hideVersionsTabForSingleVersion,
@@ -197,7 +197,7 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
               type: 'blocks',
               label: false,
               blocks: [],
-              blockReferences: BLOCK_SLUGS,
+              blockReferences: PAGE_BLOCK_SLUGS,
               minRows: 1,
               filterOptions: ({ data }: FilterOptionsProps<Page>) => getFilteredBlocks(data),
               admin: {

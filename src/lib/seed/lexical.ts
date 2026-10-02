@@ -149,7 +149,7 @@ export const codeBlock = (
 /**
  * Wraps nodes in a Lexical root. Returned loosely typed — callers cast the
  * result to whichever field's generated rich-text type they're assigning it
- * to (e.g. `root(nodes) as unknown as OneColumnContentBlock['content']`).
+ * to (e.g. `root(nodes) as unknown as RichTextBlock['content']`).
  * Payload's generated rich-text type demands exact literal unions for
  * `direction`/`format` that every node builder above would otherwise have
  * to restate.
