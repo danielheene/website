@@ -32,7 +32,7 @@ export const CodeBlockShell = ({ className, code, html }: CodeBlockShellProps): 
         className="shiki-container overflow-x-auto"
         // oxlint-disable-next-line react/no-danger -- Shiki output is generated server-side from stored code, not user-supplied HTML
         dangerouslySetInnerHTML={{
-          __html: html,
+          __html: html, // nosemgrep: react-dangerouslysetinnerhtml -- reviewed, see the oxlint-disable reason above
         }}
       />
     ) : (

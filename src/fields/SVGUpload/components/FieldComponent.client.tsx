@@ -233,7 +233,7 @@ export const FieldComponentClient = ({
             className={cn([baseIconStyles])}
             // oxlint-disable-next-line react/no-danger -- sanitized via 'isomorphic-dompurify'
             dangerouslySetInnerHTML={{
-              __html: logoContent,
+              __html: logoContent, // nosemgrep: react-dangerouslysetinnerhtml -- reviewed, see the oxlint-disable reason above
             }}
           />
         )}

@@ -41,6 +41,14 @@ export default defineConfig({
     'react/exhaustive-deps': 'warn',
     'react/jsx-key': 'error',
     'react/no-danger-with-children': 'error',
+
+    // Security rules (Biome's noImpliedEval and iframe sandbox rules). There is
+    // no Oxlint rule for hardcoded secrets; the Semgrep CI job scans for them.
+    'eslint/no-eval': 'error',
+    'eslint/no-new-func': 'error',
+    'eslint/no-implied-eval': 'error',
+    'react/iframe-missing-sandbox': 'error',
+    'react/jsx-no-script-url': 'error',
     'react/button-has-type': 'warn',
     'nextjs/no-img-element': 'warn',
     'eslint/no-debugger': 'error',
