@@ -59,22 +59,25 @@ const FeatureCardItem = ({ size, color, title, text, image, link }: FeatureCard)
 
       <div
         className={cn([
-          'relative flex flex-col gap-4 p-8 sm:p-10',
+          // Not positioned: the link's stretched ::after must resolve against the card.
+          'flex flex-col gap-4 p-8 sm:p-10',
           sideImage && 'lg:my-auto lg:max-w-[55%]',
         ])}
       >
         <h3 className="text-3xl leading-tight font-semibold text-balance whitespace-pre-line sm:text-4xl">
           {title}
         </h3>
-        {text && <p className="max-w-md text-base text-white/80 text-pretty">{text}</p>}
+        {text && (
+          <p className="max-w-md text-base text-white/80 text-pretty whitespace-pre-line">{text}</p>
+        )}
         {link && (
           <CMSLink
             {...link}
             variant="link"
             className={cn([
               'mt-2 self-start [--button-text-color:var(--color-white)]!',
-              // Stretches the click target over the whole card.
-              "after:absolute after:inset-0 after:content-['']",
+              // Stretches the click target over the whole card, image included.
+              "after:absolute after:inset-0 after:z-10 after:content-['']",
             ])}
           />
         )}
