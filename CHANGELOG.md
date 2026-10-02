@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/danielheene/website/compare/v1.9.0...v1.10.0) (2026-10-02)
+
+
+### Features
+
+* **blocks:** replace column page blocks with a Rich Text block ([#97](https://github.com/danielheene/website/issues/97)) ([b3fdf21](https://github.com/danielheene/website/commit/b3fdf214175acccbde77b35be51273385dda6450))
+
 # [1.9.0](https://github.com/danielheene/website/compare/v1.8.0...v1.9.0) (2026-10-01)
 
 
