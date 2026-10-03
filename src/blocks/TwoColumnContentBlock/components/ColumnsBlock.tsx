@@ -38,8 +38,12 @@ export const ColumnsBlock = () => {
       {isEditable && (
         <div
           className={cn([
-            'absolute -top-3 right-2 z-10 opacity-0 transition-opacity',
-            'group-hover/columns:opacity-100 group-focus-within/columns:opacity-100',
+            'absolute -top-3 right-2 z-10 transition-opacity',
+            // Hidden means unclickable too, so a stray click near the block
+            // above can't delete this one.
+            'pointer-events-none opacity-0',
+            'group-hover/columns:pointer-events-auto group-hover/columns:opacity-100',
+            'group-focus-within/columns:pointer-events-auto group-focus-within/columns:opacity-100',
           ])}
         >
           <RemoveButton />
