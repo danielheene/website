@@ -9,6 +9,7 @@ import { Reveal } from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
 import { generateExperienceInterval, ReducedToBilingualLanguage } from '@/lib/i18n'
+import { isEmptyValue } from '@/lib/lexical/isEmptyValue'
 import { ResolvedRelations } from '@/lib/resolveRelation'
 import { ResumeExperienceBlock, ResumeJobData, ResumeSkillTagData } from '@/types/payload'
 
@@ -102,7 +103,8 @@ export const ResumeExperienceBlockClientRenderer = ({
                     {Array.isArray(tasks) && tasks.length > 0 && (
                       <ul>
                         {tasks
-                          .filter(({ task }) => typeof task === 'string' && task !== '')
+                          // `task` is rich text, not a string
+                          .filter(({ task }) => !isEmptyValue(task))
                           .map(({ task, id }) => (
                             <li key={id}>
                               <RichText data={task} enableGutter={false} className="w-full" />

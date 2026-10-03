@@ -4,6 +4,7 @@ import { cn } from 'tailwind-variants'
 
 import type { ReducedToBilingualLanguage } from '@/lib/i18n'
 import { generateExperienceInterval } from '@/lib/i18n'
+import { isEmptyValue } from '@/lib/lexical/isEmptyValue'
 import type { ResumeJobData } from '@/types/payload'
 
 export const JobEntry = ({
@@ -41,7 +42,8 @@ export const JobEntry = ({
       {Array.isArray(tasks) && tasks.length > 0 && (
         <ul>
           {tasks
-            .filter(({ task }) => typeof task === 'string' && task !== '')
+            // `task` is rich text, not a string
+            .filter(({ task }) => !isEmptyValue(task))
             .map(({ task, id }) => (
               <li key={id}>
                 {convertLexicalToPlaintext({
