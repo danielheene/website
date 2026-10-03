@@ -94,6 +94,20 @@ jobs:
           else
             echo "released=false" >> "$GITHUB_OUTPUT"
           fi
+
+      # develop only cuts release candidates while it contains every main
+      # release, and each main release adds a commit develop lacks. Fast-forward
+      # develop when it has nothing of its own; otherwise leave it for a manual
+      # update rather than failing the main release.
+      - name: Fast-forward develop to main
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git fetch origin develop
+          if git merge-base --is-ancestor origin/develop HEAD; then
+            git push origin HEAD:refs/heads/develop
+          else
+            echo "::warning::develop has commits not on main; update it by hand so it keeps cutting release candidates"
+          fi
         env:
           # @semantic-release/git's push and @semantic-release/github's
           # release creation both need to run as the App identity — the
