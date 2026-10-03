@@ -3,7 +3,15 @@
  * @type {import('semantic-release').GlobalConfig}
  */
 export default {
-  branches: ['main'],
+  branches: [
+    'main',
+    // develop cuts release candidates (e.g. 1.13.0-rc.1) ahead of the next main release
+    {
+      name: 'develop',
+      prerelease: 'rc',
+      channel: 'rc',
+    },
+  ],
   plugins: [
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',

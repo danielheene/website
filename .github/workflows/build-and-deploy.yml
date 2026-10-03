@@ -1,6 +1,7 @@
 name: Build & Deploy
 
-# Push pipeline only: bump version (main only) -> build & tag & deploy.
+# Push pipeline only: bump version -> build & tag & deploy. main cuts releases,
+# develop cuts release candidates (X.Y.Z-rc.N, see release.config.mjs).
 # main and develop are the only two branches this workflow ever runs on, so
 # `environment:` and image tags are static literals per job, never computed
 # from a branch-name expression. PR-time lint/test lives in lint-and-test.yml.
@@ -32,9 +33,8 @@ jobs:
     name: Bump version
     permissions:
       contents: write
-    # Only main cuts a release; develop never gets a semver bump.
+    # main cuts a release, develop a release candidate (X.Y.Z-rc.N).
     if: >-
-      github.ref == 'refs/heads/main' &&
       !contains(github.event.head_commit.message, '[skip ci]')
     runs-on: ubuntu-24.04
     timeout-minutes: 10
@@ -101,23 +101,38 @@ jobs:
           # secrets.GITHUB_TOKEN is not.
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
+      # develop only cuts release candidates while it contains every main
+      # release, and each main release adds a commit develop lacks. Fast-forward
+      # develop when it has nothing of its own; otherwise leave it for a manual
+      # update rather than failing the main release.
+      - name: Fast-forward develop to main
+        if: github.ref == 'refs/heads/main'
+        run: |
+          # Never fails the main release: anything that goes wrong here only
+          # means develop needs a manual update.
+          if git fetch origin develop &&
+            git merge-base --is-ancestor origin/develop HEAD &&
+            git push origin HEAD:refs/heads/develop; then
+            echo "develop fast-forwarded to main"
+          else
+            echo "::warning::could not fast-forward develop to main; update it by hand so it keeps cutting release candidates"
+          fi
+
   # The same checks as pull requests (lint, unit tests, one environment-agnostic
   # compile, E2E against the assembled output). See ci.yml.
   ci:
     name: CI
     needs: version
-    # develop has no version job to depend on (skipped entirely, not
-    # failed/cancelled) — always() plus explicit failure()/cancelled() checks
-    # is what lets this job run on develop pushes as well as on main pushes
-    # that didn't cut a release (a docs/chore-only push, or a [skip ci]
-    # commit re-triggering this workflow).
+    # The version job is skipped (not failed/cancelled) for a [skip ci]
+    # commit re-triggering this workflow — always() plus explicit
+    # failure()/cancelled() checks is what lets this job run then too.
     if: |
       always() &&
       !contains(needs.version.result, 'failure') && !contains(needs.version.result, 'cancelled')
     uses: ./.github/workflows/ci.yml
     with:
-      # main: the release commit semantic-release just pushed, so the version
-      # compiled into the output matches the tag
+      # the release commit semantic-release just pushed (if any), so the
+      # version compiled into the output matches the tag
       ref: ${{ github.ref }}
     secrets:
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -244,7 +259,8 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # main -> :latest (+ :vX.Y.Z if this push cut a release), develop -> :edge.
+      # main -> :latest, develop -> :edge, each plus :vX.Y.Z / :vX.Y.Z-rc.N if
+      # this push cut a release.
       # One literal tag set per branch, no arch suffix and no separate merge
       # job — amd64 is the only platform built, so the build-push-action's
       # own tag already is the final tag.
@@ -255,11 +271,11 @@ jobs:
         run: |
           if [ "${{ github.ref }}" = "refs/heads/main" ]; then
             names="latest"
-            if [ -n "$RELEASE_VERSION" ]; then
-              names="$(printf '%s\n%s' "$names" "$RELEASE_VERSION")"
-            fi
           else
             names="edge"
+          fi
+          if [ -n "$RELEASE_VERSION" ]; then
+            names="$(printf '%s\n%s' "$names" "$RELEASE_VERSION")"
           fi
           # shellcheck disable=SC2001 # sed prefixes every line; ${var//} cannot
           {
