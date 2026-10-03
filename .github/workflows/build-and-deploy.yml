@@ -94,6 +94,12 @@ jobs:
           else
             echo "released=false" >> "$GITHUB_OUTPUT"
           fi
+        env:
+          # @semantic-release/git's push and @semantic-release/github's
+          # release creation both need to run as the App identity — the
+          # App token is what's actually allowed through main's ruleset,
+          # secrets.GITHUB_TOKEN is not.
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
       # develop only cuts release candidates while it contains every main
       # release, and each main release adds a commit develop lacks. Fast-forward
@@ -102,18 +108,15 @@ jobs:
       - name: Fast-forward develop to main
         if: github.ref == 'refs/heads/main'
         run: |
-          git fetch origin develop
-          if git merge-base --is-ancestor origin/develop HEAD; then
-            git push origin HEAD:refs/heads/develop
+          # Never fails the main release: anything that goes wrong here only
+          # means develop needs a manual update.
+          if git fetch origin develop &&
+            git merge-base --is-ancestor origin/develop HEAD &&
+            git push origin HEAD:refs/heads/develop; then
+            echo "develop fast-forwarded to main"
           else
-            echo "::warning::develop has commits not on main; update it by hand so it keeps cutting release candidates"
+            echo "::warning::could not fast-forward develop to main; update it by hand so it keeps cutting release candidates"
           fi
-        env:
-          # @semantic-release/git's push and @semantic-release/github's
-          # release creation both need to run as the App identity — the
-          # App token is what's actually allowed through main's ruleset,
-          # secrets.GITHUB_TOKEN is not.
-          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
   # The same checks as pull requests (lint, unit tests, one environment-agnostic
   # compile, E2E against the assembled output). See ci.yml.
