@@ -17,6 +17,12 @@ export const fetchResumeSkillTags = async (locale: BilingualLanguage = 'en') => 
     pagination: false,
     limit: 0,
     joins: false,
+    // runs with overrideAccess, so never-published drafts must be excluded here
+    where: {
+      _status: {
+        equals: 'published',
+      },
+    },
   })
 
   return await resolveRelations(reduceDataToBilingualLanguage(docs, locale))
