@@ -17,6 +17,10 @@ export const TwoColumnContentBlock: Block = {
       thumbnail: '/payload/blocks/general-two-column-thumbnail.svg',
       icon: '/payload/blocks/general-two-column-icon.svg',
     },
+    components: {
+      // Renders the columns inline, without the block's collapsible header.
+      Block: '@/blocks/TwoColumnContentBlock/components/ColumnsBlock#ColumnsBlock',
+    },
   },
   fields: [
     {
