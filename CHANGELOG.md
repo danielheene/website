@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/danielheene/website/compare/v1.11.0...v1.12.0) (2026-10-03)
+
+
+### Features
+
+* **blocks:** render two-column blocks inline in the editor ([#103](https://github.com/danielheene/website/issues/103)) ([2bff85d](https://github.com/danielheene/website/commit/2bff85d68aca3a1c594b36bc27dc49fc160a563f))
+
 # [1.11.0](https://github.com/danielheene/website/compare/v1.10.1...v1.11.0) (2026-10-02)
 
 
