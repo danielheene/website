@@ -25,12 +25,26 @@ declare global {
 // Dynamic lookup on purpose: `process.env[name]` is never inlined at build time.
 const readEnv = (name: string): string | undefined => process.env[name] || undefined
 
+// Localhost URLs in env files are format-valid placeholders (e.g. .env.test).
+// Treat them as unset so consumers don't attempt real network calls to them.
+const readExternalUrl = (name: string): string | undefined => {
+  const value = readEnv(name)
+  if (!value) return undefined
+  try {
+    const { hostname } = new URL(value)
+    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1') return undefined
+  } catch {
+    return undefined
+  }
+  return value
+}
+
 export const readRuntimeConfigFromEnv = (): RuntimeConfig => ({
   serverUrl: readEnv('SERVER_URL'),
-  statusPageUrl: readEnv('STATUS_PAGE_URL'),
-  umamiUrl: readEnv('NEXT_PUBLIC_UMAMI_URL'),
+  statusPageUrl: readExternalUrl('STATUS_PAGE_URL'),
+  umamiUrl: readExternalUrl('NEXT_PUBLIC_UMAMI_URL'),
   umamiSiteId: readEnv('NEXT_PUBLIC_UMAMI_SITE_ID'),
-  iconifyApi: readEnv('NEXT_PUBLIC_ICONIFY_API'),
+  iconifyApi: readExternalUrl('NEXT_PUBLIC_ICONIFY_API'),
   sentryDsn: readEnv('SENTRY_DSN'),
   sentryEnvironment: readEnv('SENTRY_ENVIRONMENT'),
 })
