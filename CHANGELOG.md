@@ -1,3 +1,10 @@
+## [1.12.2](https://github.com/danielheene/website/compare/v1.12.1...v1.12.2) (2026-10-09)
+
+
+### Bug Fixes
+
+* **umami:** restore /stats rewrite dropped during env-agnostic refactor ([#106](https://github.com/danielheene/website/issues/106)) ([8b412c1](https://github.com/danielheene/website/commit/8b412c138f4cec48f4c34ee18cde6d5270c62f92))
+
 ## [1.12.1](https://github.com/danielheene/website/compare/v1.12.0...v1.12.1) (2026-10-09)
 
 
