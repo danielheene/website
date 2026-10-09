@@ -274,20 +274,6 @@ export default async (phase, { defaultConfig }) => {
     //   return config
     // },
 
-    async rewrites() {
-      // Proxy browser-side Umami analytics requests through /stats so the
-      // outgoing host is the site's own domain rather than the Umami server,
-      // keeping it out of ad-blocker filter lists. Only wired when the URL is
-      // set — if it isn't, the route simply doesn't exist and the client's
-      // sendUmamiPayload calls fail silently.
-      // Read dynamically (not NEXT_PUBLIC_* static ref) so one compiled output
-      // works across environments. This function runs at server startup, not at
-      // build time, so the env value is always fresh.
-      const umamiUrl = process.env['NEXT_PUBLIC_UMAMI_URL']
-      if (!umamiUrl) return []
-      return [{ source: '/stats/:match*', destination: `${umamiUrl}/:match*` }]
-    },
-
     async headers() {
       return [
         {
