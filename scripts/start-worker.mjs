@@ -38,10 +38,21 @@ const require = createRequire(import.meta.url)
 const payloadPkgRoot = path.dirname(path.dirname(require.resolve('payload')))
 const payloadCli = path.join(payloadPkgRoot, 'bin.js')
 
+// --import tsx/esm: registers tsx as a persistent ESM loader so that Payload's
+// dynamicImport() — which uses eval('import(...)') to hide the call from
+// bundler static analysis — can load the .ts handler files at run time.
+// --disable-transpile: skips Payload bin.js's own tsx registration, which
+// would crash on Node ≥ 26 because tsx 4.22.4's module.register() and
+// module.registerHooks() paths are both broken there when tsx is already active.
+const tsxArgs = ['--import', 'tsx/esm']
+const payloadArgs = ['--disable-transpile']
+
 const jobRunner = spawn(
   process.execPath,
   [
+    ...tsxArgs,
     payloadCli,
+    ...payloadArgs,
     'jobs:run',
     '--cron',
     // every 5 seconds: the web app only enqueues jobs, so this is how quickly
@@ -57,9 +68,13 @@ const jobRunner = spawn(
   },
 )
 
-const healthServer = spawn(process.execPath, [payloadCli, 'run', 'scripts/health-server.ts'], {
-  stdio: 'inherit',
-})
+const healthServer = spawn(
+  process.execPath,
+  [...tsxArgs, payloadCli, ...payloadArgs, 'run', 'scripts/health-server.ts'],
+  {
+    stdio: 'inherit',
+  },
+)
 
 const children = [jobRunner, healthServer]
 let shuttingDown = false
