@@ -20,8 +20,7 @@ const login = async (): Promise<string | null> => {
 
     const data = await response.json()
     token = (data.token as string) ?? null
-  } catch (error) {
-    console.error('Error logging in to Umami:', error)
+  } catch {
     token = null
   }
   return token
@@ -40,8 +39,7 @@ const verify = async (): Promise<boolean> => {
     })
 
     return response.ok
-  } catch (error) {
-    console.error('Error verifying token:', error)
+  } catch {
     return false
   }
 }
@@ -97,8 +95,7 @@ const fetcher = async <T extends object>(url: URL | string): Promise<T | null> =
 
     await set(url.toString(), json as T, CACHE_TTL_SECONDS)
     return json
-  } catch (error) {
-    console.error('Error fetching Umami data:', error)
+  } catch {
     return null
   }
 }
