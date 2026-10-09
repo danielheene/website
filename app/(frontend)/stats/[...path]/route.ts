@@ -28,16 +28,20 @@ export async function POST(
   const headers = new Headers(req.headers)
   headers.delete('host')
 
-  const upstream = await fetch(destination, {
-    method: 'POST',
-    headers,
-    body: req.body,
-    // @ts-ignore -- duplex is required for streaming request bodies in Node fetch
-    duplex: 'half',
-  })
+  try {
+    const upstream = await fetch(destination, {
+      method: 'POST',
+      headers,
+      body: req.body,
+      // @ts-ignore -- duplex is required for streaming request bodies in Node fetch
+      duplex: 'half',
+    })
 
-  return new NextResponse(upstream.body, {
-    status: upstream.status,
-    headers: upstream.headers,
-  })
+    return new NextResponse(upstream.body, {
+      status: upstream.status,
+      headers: upstream.headers,
+    })
+  } catch {
+    return new NextResponse(null, { status: 502 })
+  }
 }
