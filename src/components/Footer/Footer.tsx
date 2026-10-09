@@ -11,7 +11,7 @@ import type { LinkFieldDataLean, NavEntry } from '@/fields/Link/lib/resolveLinkT
 import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fetchers'
 
 import { FooterSocialLinks } from './FooterSocialLinks'
-import { FooterThemeSwitcher } from './FooterThemeSwitcher'
+import { FooterThemeSwitch } from './FooterThemeSwitch'
 
 export const Footer = async () => {
   const {
@@ -119,8 +119,7 @@ export const Footer = async () => {
         </div>
 
         <div className="mt-8 flex flex-col justify-between gap-4 border-t py-8 md:flex-row md:items-center md:text-left">
-          <FooterThemeSwitcher options={['light', 'system', 'dark']} />{' '}
-          <FooterThemeSwitcher options={['light', 'dark']} />
+          <FooterThemeSwitch />
           <FooterLegalLinks entries={legalPages.entries} />
         </div>
       </section>

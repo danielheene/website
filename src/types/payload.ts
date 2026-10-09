@@ -996,6 +996,7 @@ export interface Topic {
  * via the `definition` "TwoColumnContentBlock".
  */
 export interface TwoColumnContentBlock {
+  verticalAlignment?: ('start' | 'center' | 'end') | null;
   contentLeft?: {
     root: {
       type: string;

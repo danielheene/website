@@ -127,7 +127,7 @@ export default async (phase, { defaultConfig }) => {
 
     experimental: {
       appNewScrollHandler: true,
-      turbopackServerFastRefresh: true,
+      turbopackServerFastRefresh: false,
       serverActions: {
         bodySizeLimit: '10mb',
       },

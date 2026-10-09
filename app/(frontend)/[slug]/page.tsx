@@ -8,10 +8,12 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 
 import { RenderBlocks } from '@/blocks/RenderBlocks'
+import { ArticleSidebar } from '@/components/ArticleSidebar'
 import { Headline } from '@/components/Headline'
 import { HeroMedia } from '@/components/HeroMedia'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PageContainer } from '@/components/PageContainer'
+import { extractHeadings } from '@/lib/extractHeadings'
 import { extractSections } from '@/lib/extractSections'
 import { generateMeta } from '@/lib/generateMeta'
 import { placeholderParams } from '@/lib/placeholderParams'
@@ -59,6 +61,15 @@ export default async function Page({ params }: PageProps) {
   if (!page) notFound()
 
   const { title, layout, hero, content } = page
+
+  const legalHeadings =
+    layout === 'legal'
+      ? (content ?? []).flatMap((block) => {
+          const lexical = (block as { content?: unknown }).content
+          return extractHeadings(lexical)
+        })
+      : []
+
   return (
     <PageContainer layout={layout} sections={extractSections(content)}>
       <HeroMedia
@@ -79,7 +90,18 @@ export default async function Page({ params }: PageProps) {
           </div>
         )}
       </HeroMedia>
-      <RenderBlocks blocks={content} />
+      {layout === 'legal' ? (
+        <div className="container py-20">
+          <div className="mx-auto grid w-full max-w-7xl lg:grid-cols-12 gap-16 items-start">
+            <div className="min-w-0 lg:col-span-8 [&_h2]:scroll-mt-24 [&_h3]:scroll-mt-24 [&_h4]:scroll-mt-24">
+              <RenderBlocks blocks={content} />
+            </div>
+            <ArticleSidebar headings={legalHeadings} className="lg:col-span-4 w-auto" />
+          </div>
+        </div>
+      ) : (
+        <RenderBlocks blocks={content} />
+      )}
 
       {draft && <LivePreviewListener />}
     </PageContainer>

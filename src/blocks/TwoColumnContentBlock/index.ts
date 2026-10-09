@@ -24,6 +24,17 @@ export const TwoColumnContentBlock: Block = {
   },
   fields: [
     {
+      name: 'verticalAlignment',
+      type: 'select',
+      label: false,
+      defaultValue: 'start',
+      options: [
+        { label: 'Vertical Align: Top', value: 'start' },
+        { label: 'Vertical Align: Center', value: 'center' },
+        { label: 'Vertical Align: End', value: 'end' },
+      ],
+    },
+    {
       type: 'row',
       admin: {
         className: '*:mb-0',

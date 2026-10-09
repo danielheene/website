@@ -16,8 +16,6 @@
 @import './payload/_buttons.css' layer(payload-default);
 @import './payload/_list-header.css' layer(payload-default);
 
-@plugin "@tailwindcss/typography";
-
 @custom-variant light (&:where(.light, .light *, [data-theme="light"], [data-theme="light"] *));
 @custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
 

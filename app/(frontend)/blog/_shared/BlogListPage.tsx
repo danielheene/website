@@ -10,8 +10,6 @@ import { cn } from 'tailwind-variants'
 
 import { Button } from '@/components/Button'
 import { DuoTone } from '@/components/DuoTone'
-import { Headline } from '@/components/Headline'
-import { HeroMedia } from '@/components/HeroMedia'
 import { SHADER_PRESET_MAP } from '@/components/HeroMedia/shaderPresets'
 import { toSlideItems } from '@/components/HeroMedia/toSlideItems'
 import { ImageMedia } from '@/components/ImageMedia'
@@ -260,7 +258,11 @@ const PostsGrid = async ({
 
   return (
     <Reveal className={POSTS_GRID_CLASS}>
-      {totalDocs > 1 && <SortControl basePath={basePath} sort={sort} />}
+      {totalDocs > 1 ? (
+        <SortControl basePath={basePath} sort={sort} />
+      ) : (
+        <div className={cn(['col-span-full h-9'])} aria-hidden />
+      )}
       {posts.map((post) => (
         <PostCard key={post.id} post={post as BlogPostData} />
       ))}
@@ -296,61 +298,27 @@ export interface BlogListPageProps {
  */
 export const BlogListPage = async ({ topic, searchParams }: BlogListPageProps) => {
   const basePath = topic ? `${BLOG_PATH}/${topic.slug}` : BLOG_PATH
-  const hasTopicHero = toSlideItems(topic?.hero?.slides, topic?.title ?? '').length > 0
-
   return (
     <PageContainer>
-      {hasTopicHero && (
-        <HeroMedia
-          className="border-b-2 border-b-primary"
-          fallbackAlt={topic?.title}
-          slides={topic?.hero?.slides}
-        >
-          <div className="pt-40 pb-20">
-            <div className="container">
-              <Headline
-                variant="page-title"
-                className="text-balance text-foreground textshadow-lg shadow-primary/75"
-              >
-                {topic?.title}
-              </Headline>
-            </div>
-          </div>
-        </HeroMedia>
-      )}
-      <section className={cn(['py-32 w-full'])}>
+      <section className={cn(['w-full py-32'])}>
         <div className={cn(['container'])}>
-          <div className={cn(['relative mx-auto flex max-w-7xl flex-col gap-20 lg:flex-row'])}>
+          <div className={cn(['mx-auto grid w-full max-w-7xl gap-16 lg:grid-cols-12'])}>
             <header
               className={cn([
-                'top-10 flex h-fit flex-col items-center gap-5 text-center lg:sticky lg:max-w-80 lg:items-start lg:gap-8 lg:text-left',
+                'top-10 flex h-fit flex-col items-center gap-5 text-center lg:col-span-4 lg:sticky lg:items-start lg:gap-8 lg:text-left',
               ])}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width={24}
-                height={24}
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={1}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className={cn(['lucide lucide-file-text h-full w-14'])}
-                aria-hidden="true"
-              >
-                <path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" />
-                <path d="M14 2v5a1 1 0 0 0 1 1h5" />
-                <path d="M10 9H8" />
-                <path d="M16 13H8" />
-                <path d="M16 17H8" />
-              </svg>
-              <h1 className={cn(['text-4xl font-extrabold lg:text-5xl'])}>
+              <h1 className={cn(['text-4xl font-extrabold lg:text-5xl font-mono'])}>
                 {topic ? topic.title : 'All Posts'}
               </h1>
-              <p className={cn(['text-muted-foreground lg:text-xl'])}>
-                Blog posts are a great way to share your knowledge and expertise with the world.
-              </p>
+              {topic?.content && !isEmptyValue(topic.content) && (
+                <RichText
+                  data={topic.content}
+                  enableGutter={false}
+                  enableProse={false}
+                  className={cn(['text-muted-foreground lg:text-xl'])}
+                />
+              )}
               <div
                 data-orientation="horizontal"
                 role="none"
@@ -365,7 +333,7 @@ export const BlogListPage = async ({ topic, searchParams }: BlogListPageProps) =
                 </Suspense>
               </nav>
             </header>
-            <div className={cn(['flex-1'])}>
+            <div className={cn(['lg:col-span-8'])}>
               <Suspense
                 fallback={
                   <div className={POSTS_GRID_CLASS}>
