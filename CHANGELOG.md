@@ -1,3 +1,10 @@
+# [1.13.0](https://github.com/danielheene/website/compare/v1.12.3...v1.13.0) (2026-10-09)
+
+
+### Features
+
+* **ui:** blog layout, prose styles, ThemeSwitch refactor, two-column alignment ([#110](https://github.com/danielheene/website/issues/110)) ([ff11d33](https://github.com/danielheene/website/commit/ff11d33fd71578e2660800e8bceee9416bdc226c))
+
 ## [1.12.3](https://github.com/danielheene/website/compare/v1.12.2...v1.12.3) (2026-10-09)
 
 
