@@ -21,36 +21,50 @@ export const BannerIconNameMap: Record<BannerProps['variant'], string> = {
 } as const
 
 export const bannerStyles = tv({
-  base: cn(['block py-4 pl-16 pr-4 relative', 'font-medium font-pp-supply-mono']),
+  base: [
+    'block py-4 pl-16 pr-4 relative',
+    'font-medium font-pp-supply-mono',
+    '[&>svg]:text-[2rem] [&>svg]:leading-[2rem] [&>svg]:absolute [&>svg]:left-4',
+  ],
   variants: {
     variant: {
-      [BannerVariant.Neutral]: cn(['[--banner-color:var(--color-neutral-700)]']),
-      [BannerVariant.Info]: cn(['[--banner-color:var(--color-info-600)]']),
-      [BannerVariant.Success]: cn(['[--banner-color:var(--color-success-600)]']),
-      [BannerVariant.Warning]: cn(['[--banner-color:var(--color-warning-700)]']),
-      [BannerVariant.Error]: cn(['[--banner-color:var(--color-error-700)]']),
+      [BannerVariant.Neutral]: ['[--banner-color:var(--color-neutral-700)]'],
+      [BannerVariant.Info]: ['[--banner-color:var(--color-info-600)]'],
+      [BannerVariant.Success]: ['[--banner-color:var(--color-success-600)]'],
+      [BannerVariant.Warning]: ['[--banner-color:var(--color-warning-700)]'],
+      [BannerVariant.Error]: ['[--banner-color:var(--color-error-700)]'],
     },
     inverse: {
-      false: cn(['bg-(--banner-color)', 'text-(--color-white)']),
-      true: cn(['bg-(--color-white)', 'text-(--banner-color)']),
+      false: ['bg-(--banner-color)', 'text-(--color-white)'],
+      true: ['bg-(--color-white)', 'text-(--banner-color)'],
+    },
+    vAlignIcon: {
+      true: ['[&>svg]:top-1/2 [&>svg]:translate-y-[-50%]'],
+      false: ['[&>svg]:top-4 '],
+    },
+    rotateIcon: {
+      true: ['[&>svg]:animate-spin'],
+      false: [],
     },
   },
   defaultVariants: {
     inverse: false,
+    vAlignIcon: false,
+    rotateIcon: false,
   },
 })
 
 interface BannerProps extends VariantProps<typeof bannerStyles> {
   className?: string
   customIcon?: string
-  rotateIcon?: boolean
   children?: React.ReactNode
 }
 
 export const Banner = ({
   className,
   customIcon = '',
-  rotateIcon = false,
+  vAlignIcon,
+  rotateIcon,
   children,
   variant = BannerVariant.Neutral,
   inverse = false,
@@ -59,16 +73,12 @@ export const Banner = ({
     className={bannerStyles({
       variant,
       inverse,
+      vAlignIcon,
+      rotateIcon,
       class: className,
     })}
   >
-    <Icon
-      name={customIcon || BannerIconNameMap[variant]}
-      className={cn([
-        'text-[2rem] leading-[2rem] absolute top-4 left-4',
-        rotateIcon && 'animate-spin',
-      ])}
-    />
+    <Icon name={customIcon || BannerIconNameMap[variant]} />
     <div className="py-1 font-semibold font-mono -tracking-tight">{children}</div>
   </div>
 )

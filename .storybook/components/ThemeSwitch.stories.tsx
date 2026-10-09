@@ -2,11 +2,11 @@ import { useState } from 'react'
 
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import { ThemeToggleIconButton } from '@/components/ThemeToggle'
+import { ThemeSwitch } from '@/components/ThemeSwitch'
 
 const meta = {
-  title: 'ThemeToggleIconButton',
-  component: ThemeToggleIconButton,
+  title: 'ThemeSwitch',
+  component: ThemeSwitch,
   args: {
     theme: 'light',
   },
@@ -15,13 +15,13 @@ const meta = {
       control: {
         type: 'select',
       },
-      options: ['light', 'dark'],
+      options: ['light', 'system', 'dark'],
     },
     setTheme: {
       control: false,
     },
   },
-} satisfies Meta<typeof ThemeToggleIconButton>
+} satisfies Meta<typeof ThemeSwitch>
 
 export default meta
 
@@ -57,7 +57,7 @@ export const Interactive: Story = {
     },
   },
   render: () => {
-    const [theme, setTheme] = useState('light')
-    return <ThemeToggleIconButton theme={theme} setTheme={setTheme} />
+    const [theme, setTheme] = useState('system')
+    return <ThemeSwitch theme={theme} setTheme={setTheme} />
   },
 }

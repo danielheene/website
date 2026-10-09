@@ -49,20 +49,19 @@ export const StatusBannerItem = ({ id, jobName, waitUntil }: StatusBannerItemPro
   }
 
   return (
-    <Banner variant="warning">
-      <div className="flex flex-col gap-3 flex-1 min-w-0">
+    <Banner variant="warning" vAlignIcon>
+      <div className="flex flex-row gap-4 space-between justif flex-1 min-w-0">
         <div className="flex flex-col gap-0.5">
-          <span className="text-sm font-mono font-medium leading-tight">
+          <span className="text-lg font-mono font-medium leading-tight">
             {startCase(jobName)}: detected as stale job
           </span>
-          <span className="text-xs font-mono opacity-60 leading-none">
+          <span className="text-md font-mono opacity-60 leading-none">
             Due {overdueLabel} — stuck in queue
           </span>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-4">
           <Button
             type="button"
-            size="xs"
             variant="outline"
             onClick={handleReschedule}
             disabled={isPending}
@@ -72,7 +71,6 @@ export const StatusBannerItem = ({ id, jobName, waitUntil }: StatusBannerItemPro
           </Button>
           <Button
             type="button"
-            size="xs"
             variant="destructive"
             onClick={handleDelete}
             disabled={isPending}

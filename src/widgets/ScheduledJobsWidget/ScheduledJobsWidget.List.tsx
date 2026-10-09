@@ -66,18 +66,20 @@ export const ScheduledJobsWidgetList = ({ jobs }: ScheduledJobsWidgetListProps) 
         />
       </div>
 
-      {visibleJobs.length > 0 ? (
-        visibleJobs.map((job) => <ScheduledJobsWidgetClient key={job.id} {...job} />)
-      ) : (
-        <div
-          className={cn(['bg-card border-border border flex items-center gap-4 p-4 opacity-60'])}
-        >
-          <Icon name="success" className="size-8 text-[32px]" />
-          <span className="text-lg font-mono">
-            {selectedQueue ? `No scheduled jobs in "${selectedQueue}"` : 'No scheduled jobs'}
-          </span>
-        </div>
-      )}
+      <div className="flex flex-col gap-4">
+        {visibleJobs.length > 0 ? (
+          visibleJobs.map((job) => <ScheduledJobsWidgetClient key={job.id} {...job} />)
+        ) : (
+          <div
+            className={cn(['bg-card border-border border flex items-center gap-4 p-4 opacity-60'])}
+          >
+            <Icon name="success" className="size-8 text-[32px]" />
+            <span className="text-lg font-mono">
+              {selectedQueue ? `No scheduled jobs in "${selectedQueue}"` : 'No scheduled jobs'}
+            </span>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

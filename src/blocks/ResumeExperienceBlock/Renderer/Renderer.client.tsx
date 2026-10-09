@@ -101,16 +101,22 @@ export const ResumeExperienceBlockClientRenderer = ({
                       </time>
                     </header>
                     {Array.isArray(tasks) && tasks.length > 0 && (
-                      <ul>
+                      <div className="flex flex-col gap-4">
                         {tasks
-                          // `task` is rich text, not a string
                           .filter(({ task }) => !isEmptyValue(task))
                           .map(({ task, id }) => (
-                            <li key={id}>
-                              <RichText data={task} enableGutter={false} className="w-full" />
-                            </li>
+                            <RichText
+                              key={id}
+                              data={task}
+                              enableGutter={false}
+                              className={cn([
+                                'w-full pl-4 light relative',
+                                '[&>p]:py-0 [&>p]:my-0',
+                                'before:block before:w-2 before:h-2 before:rounded-full before:absolute before:left-0 before:top-[0.65rem] before:bg-primary',
+                              ])}
+                            />
                           ))}
-                      </ul>
+                      </div>
                     )}
                     {/*<RichText data={content} enableGutter={false} className="w-full" />*/}
                     {/*{technologies.length > 0 && (*/}

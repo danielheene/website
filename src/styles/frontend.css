@@ -14,8 +14,6 @@
 @import './theme/_text.css' layer(theme);
 @import './theme/_text-shadows.css' layer(theme);
 
-@plugin "@tailwindcss/typography";
-
 @custom-variant light (&:where(.light, .light *, [data-theme="light"], [data-theme="light"] *));
 @custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
 @custom-variant primary (&:where(.primary, .primary *));
@@ -137,77 +135,244 @@
   }
 }
 
-@layer utilities {
+@layer components {
   /**
-   * Maps the typography plugin's palette onto the design tokens, so prose
-   * follows the theme instead of the plugin's stock grays.
-   *
-   * There is deliberately no `--tw-prose-invert-*` block: `[data-theme="dark"]`
-   * redefines the tokens below, so these values already flip with the theme.
-   * The invert palette only applies under the separate `prose-invert` class,
-   * which nothing here uses.
-   *
-   * Links map to `--foreground` rather than `--primary` on purpose — the `a`
-   * rule above distinguishes links by weight, not color.
+   * Prose styles — replaces @tailwindcss/typography. All rules are scoped so
+   * that `not-prose` descendants are unaffected. Colors read from the shadcn
+   * design tokens so light/dark switching is automatic.
    */
   .prose {
-    --tw-prose-body: var(--foreground);
-    --tw-prose-headings: var(--primary);
-    --tw-prose-lead: var(--muted-foreground);
-    --tw-prose-links: var(--foreground);
-    --tw-prose-bold: var(--foreground);
-    --tw-prose-counters: var(--muted-foreground);
-    --tw-prose-bullets: var(--primary);
-    --tw-prose-hr: var(--border);
-    --tw-prose-quotes: var(--foreground);
-    --tw-prose-quote-borders: var(--border);
-    --tw-prose-captions: var(--muted-foreground);
-    --tw-prose-kbd: var(--foreground);
-    --tw-prose-kbd-shadows: color-mix(in oklab, var(--foreground) 10%, transparent);
-    --tw-prose-code: var(--foreground);
-    --tw-prose-pre-code: var(--card-foreground);
-    --tw-prose-pre-bg: var(--card);
-    --tw-prose-th-borders: var(--border);
-    --tw-prose-td-borders: var(--border);
-  }
+    @apply text-base leading-relaxed text-foreground;
+    max-width: 65ch;
 
-  .prose {
-    @apply text-foreground leading-normal;
-
-    h2 {
-      @apply text-inherit text-4xl font-mono font-bold leading-normal mb-1;
+    /* headings */
+    :where(h1, h2, h3, h4, h5, h6):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply font-mono font-bold text-foreground mt-8 mb-3 leading-tight;
     }
 
-    h3 {
-      @apply text-inherit text-3xl font-mono font-semibold leading-snug mb-0;
+    :where(h1):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply text-4xl;
     }
 
-    h4 {
-      @apply text-inherit text-3xl font-bold leading-snug mb-0;
+    :where(h2):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply text-3xl;
     }
 
-    h5 {
-      @apply text-inherit text-2xl font-semibold leading-snug mb-0;
+    :where(h3):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply text-2xl font-semibold;
     }
 
-    h6 {
-      @apply text-inherit text-xl font-medium leading-snug mb-0;
+    :where(h4):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply text-xl font-semibold;
     }
 
-    :where(p):not(:where([class~='not-prose'], [class~='not-prose'] *)) p {
-      @apply text-inherit leading-normal my-4;
+    :where(h5):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply text-lg font-medium;
     }
 
-    a {
-      @apply text-inherit font-semibold hover:underline;
+    :where(h6):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply text-base font-medium;
     }
 
-    ul {
-      @apply list-disc pl-6;
+    /* paragraphs */
+    :where(p):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply my-5 leading-relaxed;
     }
 
-    li {
-      @apply leading-snug my-3 first:mt-0 last:mb-0 marker:text-primary;
+    /* lead paragraph */
+    :where(.lead):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply text-xl text-muted-foreground;
+    }
+
+    /* links */
+    :where(a):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply font-semibold underline underline-offset-4 decoration-border transition-colors hover:decoration-primary;
+    }
+
+    /* strong / em */
+    :where(strong):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply font-bold text-foreground;
+    }
+
+    :where(em):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply italic;
+    }
+
+    /* lists */
+    :where(ul):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply list-disc pl-6 my-5;
+    }
+
+    :where(ol):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply list-decimal pl-6 my-5;
+    }
+
+    :where(li):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply my-2 leading-relaxed;
+    }
+
+    :where(ul > li):not(:where([class~='not-prose'], [class~='not-prose'] *))::marker {
+      color: var(--primary);
+    }
+
+    :where(ol > li):not(:where([class~='not-prose'], [class~='not-prose'] *))::marker {
+      color: var(--muted-foreground);
+    }
+
+    /* hr */
+    :where(hr):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply border-border my-8;
+    }
+
+    /* blockquote */
+    :where(blockquote):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply border-l-2 border-primary pl-4 my-6 italic text-muted-foreground;
+
+      p::before,
+      p::after {
+        content: none;
+      }
+    }
+
+    /* inline code */
+    :where(code):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply font-mono text-sm text-foreground bg-muted rounded px-1.5 py-0.5;
+
+      &::before,
+      &::after {
+        content: none;
+      }
+    }
+
+    /* pre / fenced code blocks */
+    :where(pre):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply bg-card text-card-foreground rounded-md border border-border overflow-x-auto my-6 text-sm;
+
+      code {
+        @apply bg-transparent p-0 text-inherit rounded-none;
+      }
+    }
+
+    /* figures */
+    :where(figure):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply my-8;
+    }
+
+    :where(figcaption):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply text-sm text-muted-foreground mt-2;
+    }
+
+    /* images */
+    :where(img, video):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply rounded-md;
+    }
+
+    /* kbd */
+    :where(kbd):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply font-mono text-sm text-foreground rounded border border-border px-1.5 py-0.5;
+      box-shadow: 0 1px 0 color-mix(in oklab, var(--foreground) 10%, transparent);
+    }
+
+    /* tables */
+    :where(table):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply w-full text-sm my-6;
+    }
+
+    :where(thead):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply border-b border-border;
+    }
+
+    :where(thead th):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply font-mono font-semibold text-foreground px-3 py-2 text-left;
+    }
+
+    :where(tbody tr):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply border-b border-border last:border-0;
+    }
+
+    :where(tbody td):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply px-3 py-2 align-top;
+    }
+
+    /* ── Lexical checklist ──────────────────────────────────────────────── */
+    :where(ul.list-check):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    :where(.list-item-checkbox):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply my-1 flex items-center gap-2 leading-relaxed;
+
+      input[type='checkbox'] {
+        @apply h-4 w-4 shrink-0 cursor-default rounded accent-primary;
+      }
+
+      label {
+        @apply cursor-default;
+      }
+    }
+
+    :where(.list-item-checkbox-checked):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      label {
+        @apply line-through text-muted-foreground;
+      }
+    }
+
+    /* nested list items (Lexical sets list-style-type:none inline) */
+    :where(.nestedListItem):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      list-style: none;
+
+      > ul,
+      > ol {
+        @apply my-1 pl-4;
+      }
+    }
+
+    /* ── Lexical ordered-list depth cycling ─────────────────────────────── */
+    :where(ol.list-number):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      list-style-type: decimal;
+    }
+
+    :where(ol.list-number ol.list-number):not(
+      :where([class~='not-prose'], [class~='not-prose'] *)
+    ) {
+      list-style-type: lower-alpha;
+    }
+
+    :where(ol.list-number ol.list-number ol.list-number):not(
+      :where([class~='not-prose'], [class~='not-prose'] *)
+    ) {
+      list-style-type: lower-roman;
+    }
+
+    :where(ol.list-number ol.list-number ol.list-number ol.list-number):not(
+      :where([class~='not-prose'], [class~='not-prose'] *)
+    ) {
+      list-style-type: upper-alpha;
+    }
+
+    :where(ol.list-number ol.list-number ol.list-number ol.list-number ol.list-number):not(
+      :where([class~='not-prose'], [class~='not-prose'] *)
+    ) {
+      list-style-type: upper-roman;
+    }
+
+    /* ── Lexical text format spans ──────────────────────────────────────── */
+    /* strikethrough and underline are applied as inline styles by the
+       Lexical converter, so no class rules are needed for those. */
+
+    /* sub/sup sizing adjustment */
+    :where(sub, sup):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      @apply text-xs;
+    }
+
+    /* first/last child spacing reset */
+    :where(> :first-child):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      margin-top: 0;
+    }
+
+    :where(> :last-child):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+      margin-bottom: 0;
     }
   }
 }

@@ -2,7 +2,7 @@
 
 import { useBlockComponentContext } from '@payloadcms/richtext-lexical/client'
 import { useLexicalEditable } from '@payloadcms/richtext-lexical/lexical/react/useLexicalEditable'
-import { RenderFields } from '@payloadcms/ui'
+import { RenderFields, useDocumentForm, useField, useForm } from '@payloadcms/ui'
 
 import { cn } from 'tailwind-variants'
 
@@ -16,8 +16,11 @@ import { cn } from 'tailwind-variants'
  * would only repeat the same two editors.
  */
 export const ColumnsBlock = () => {
-  const { formSchema, RemoveButton } = useBlockComponentContext()
+  const { formSchema } = useBlockComponentContext()
   const isEditable = useLexicalEditable()
+  const { value } = useField({ path: 'verticalAlignment' })
+
+  console.log(formSchema, value)
 
   return (
     <div
@@ -30,25 +33,17 @@ export const ColumnsBlock = () => {
         String.raw`[&_.editor-container]:flex [&_.editor-container]:flex-col`,
         String.raw`[&_.editor-scroller]:flex [&_.editor-scroller]:grow [&_.editor-scroller]:flex-col`,
         String.raw`[&_.editor]:flex [&_.editor]:grow [&_.editor]:flex-col`,
+
         String.raw`[&_.ContentEditable\_\_root]:grow`,
         // A lower floor than the full-width editor's 500px.
+        String.raw`[&_.ContentEditable\_\_root]:flex`,
+        String.raw`[&_.ContentEditable\_\_root]:flex-col`,
         String.raw`[&_.ContentEditable\_\_root]:min-h-37.5!`,
+        value === 'start' && String.raw`[&_.ContentEditable\_\_root]:justify-start`,
+        value === 'center' && String.raw`[&_.ContentEditable\_\_root]:justify-center`,
+        value === 'end' && String.raw`[&_.ContentEditable\_\_root]:justify-end`,
       ])}
     >
-      {isEditable && (
-        <div
-          className={cn([
-            'absolute top-1 right-1 z-10 transition-opacity',
-            // Kept inside the block and unclickable while hidden, so a stray click
-            // on the content above can't delete it.
-            'pointer-events-none opacity-0',
-            'group-hover/columns:pointer-events-auto group-hover/columns:opacity-100',
-            'group-focus-within/columns:pointer-events-auto group-focus-within/columns:opacity-100',
-          ])}
-        >
-          <RemoveButton />
-        </div>
-      )}
       <RenderFields
         fields={formSchema}
         forceRender

@@ -13,7 +13,9 @@ import { format } from 'date-fns'
 
 import { ArticleSidebar } from '@/components/ArticleSidebar'
 import { HeroMedia } from '@/components/HeroMedia'
+import { CMSLink } from '@/components/Link'
 import { RichText } from '@/components/RichText'
+import type { LinkFieldDataLean } from '@/fields/Link/lib/resolveLinkTarget'
 import { extractHeadings } from '@/lib/extractHeadings'
 import { generateMeta } from '@/lib/generateMeta'
 import { reduceDataToBilingualLanguage } from '@/lib/i18n'
@@ -64,7 +66,7 @@ export default async function Page({ params: paramsPromise }: PageProps) {
   })
   if (!post) return notFound()
 
-  const { title, content, hero, createdAt, updatedAt, topics } = post
+  const { title, content, hero, createdAt, updatedAt, topics, links } = post
   const baseUrl = process.env.SERVER_URL || 'https://danielheene.de'
   const postUrl = `${baseUrl}/posts/${slug}`
 
@@ -161,7 +163,7 @@ export default async function Page({ params: paramsPromise }: PageProps) {
                   <div className="flex items-center justify-center gap-2.5 font-mono text-sm text-foreground/60">
                     <time dateTime={createdAt}>{format(createdAt, 'MMMM d, yyyy')}</time>
                   </div>
-                  <h1 className="text-[2.5rem] leading-[1.1] font-semibold text-balance md:text-6xl lg:text-7xl">
+                  <h1 className="text-[2.5rem] leading-[1.1] font-semibold font-mono text-balance md:text-6xl lg:text-7xl">
                     {title}
                   </h1>
                   {post.meta?.description && (
@@ -189,9 +191,9 @@ export default async function Page({ params: paramsPromise }: PageProps) {
           </HeroMedia>
 
           <div className="container pt-20">
-            <div className="mx-auto flex w-full max-w-5xl items-start justify-between gap-16">
+            <div className="mx-auto grid w-full max-w-7xl lg:grid-cols-12 gap-16 items-start">
               {/* scroll-mt keeps TOC anchor targets clear of the fixed header */}
-              <article className="w-full min-w-0 max-w-[46rem] [&_h2]:scroll-mt-24 [&_h3]:scroll-mt-24 [&_h4]:scroll-mt-24">
+              <article className="min-w-0 lg:col-span-8 [&_h2]:scroll-mt-24 [&_h3]:scroll-mt-24 [&_h4]:scroll-mt-24">
                 {content ? (
                   // RichText is a Client Component that calls randomUUID(), which
                   // Cache Components requires to sit behind a Suspense boundary
@@ -207,7 +209,32 @@ export default async function Page({ params: paramsPromise }: PageProps) {
                 )}
               </article>
 
-              <ArticleSidebar headings={headings} />
+              <ArticleSidebar
+                headings={headings}
+                className="lg:col-span-4 w-auto"
+                sections={
+                  links && links.length > 0
+                    ? [
+                        {
+                          title: 'Links',
+                          children: (
+                            <ul className="flex flex-col gap-1">
+                              {links.map(({ id, link }) => (
+                                <li key={id}>
+                                  <CMSLink
+                                    {...(link as LinkFieldDataLean)}
+                                    className="text-muted-foreground no-underline transition-colors hover:text-foreground hover:underline"
+                                    variant="link"
+                                  />
+                                </li>
+                              ))}
+                            </ul>
+                          ),
+                        },
+                      ]
+                    : []
+                }
+              />
             </div>
           </div>
         </section>
