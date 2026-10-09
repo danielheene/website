@@ -1,3 +1,10 @@
+## [1.12.1](https://github.com/danielheene/website/compare/v1.12.0...v1.12.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* **jobs:** load .ts handlers on Node 26 via --import tsx/esm ([#105](https://github.com/danielheene/website/issues/105)) ([409b554](https://github.com/danielheene/website/commit/409b5540fe7adeef1516260afde13e0cc3582f2f))
+
 # [1.12.0](https://github.com/danielheene/website/compare/v1.11.0...v1.12.0) (2026-10-03)
 
 
