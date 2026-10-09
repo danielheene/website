@@ -28,13 +28,19 @@ export async function POST(
   const headers = new Headers(req.headers)
   headers.delete('host')
 
-  const upstream = await fetch(destination, {
-    method: 'POST',
-    headers,
-    body: req.body,
-    // @ts-ignore -- duplex is required for streaming request bodies in Node fetch
-    duplex: 'half',
-  })
+  let upstream: Response
+  try {
+    upstream = await fetch(destination, {
+      method: 'POST',
+      headers,
+      body: req.body,
+      // @ts-ignore -- duplex is required for streaming request bodies in Node fetch
+      duplex: 'half',
+    })
+  } catch {
+    // Umami unreachable (e.g. in E2E/test environments) — fail silently.
+    return new NextResponse(null, { status: 204 })
+  }
 
   return new NextResponse(upstream.body, {
     status: upstream.status,
