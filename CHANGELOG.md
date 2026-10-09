@@ -1,3 +1,10 @@
+## [1.12.3](https://github.com/danielheene/website/compare/v1.12.2...v1.12.3) (2026-10-09)
+
+
+### Bug Fixes
+
+* **umami:** drop console.error noise from Umami unreachable paths ([#109](https://github.com/danielheene/website/issues/109)) ([4b352f0](https://github.com/danielheene/website/commit/4b352f04335581355c12a60c1cf83ee804dbc632))
+
 ## [1.12.2](https://github.com/danielheene/website/compare/v1.12.1...v1.12.2) (2026-10-09)
 
 
