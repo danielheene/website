@@ -104,6 +104,12 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
 - Avoid `any`; if you must use it, add an `// oxlint-disable-next-line typescript/no-explicit-any -- <reason>` comment with a real
   justification (see
   `src/lib/resolveRelation.ts` for a good example), not a placeholder like `<TODO>`.
+- **Comment style**: a single non-obvious fact anchored to one specific line stays a plain `//`
+  right above that line — don't promote it to JSDoc just because it's explanatory. Reserve a
+  leading `/** ... */` block for when the explanation genuinely spans multiple lines or applies to
+  the whole function/conditional block, not a single statement. Either way, keep it short and
+  precise: state the fact (the why/constraint/mechanism) and stop — no restating what the code
+  already says, no narrative padding.
 
 ## Architecture Notes
 

@@ -8,6 +8,7 @@ import { cn } from 'tailwind-variants'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/AdminPanel/Card'
 import { Skeleton } from '@/components/Skeleton'
 
+import { SECTION_CONTENT_HEIGHT_CLASS } from './UmamiWidget.constants'
 import type { UmamiPageViews } from './UmamiWidget.data'
 
 interface CustomTooltipProps {
@@ -67,7 +68,7 @@ export const PageViewsSection = ({ data, dataIsLoading, className }: PageViewsSe
   }, [data])
 
   return (
-    <Card className={cn(['h-[550px] max-h-[550px] flex flex-col', className])}>
+    <Card className={cn([className])}>
       <CardHeader>
         <CardTitle>Pageviews</CardTitle>
         {/* Two series, so a legend stays present — the dependable identity
@@ -87,13 +88,10 @@ export const PageViewsSection = ({ data, dataIsLoading, className }: PageViewsSe
           ))}
         </ul>
       </CardHeader>
-      <CardContent className="grow flex flex-col">
-        {/* `position: absolute` here would ignore CardContent's own px-6
-            padding (inset values resolve against the border box, not the
-            padding box, for an absolutely positioned child) — a plain flex
-            child respects it instead, matching Paths'/Events' own
-            MetricsTable, which sits in normal flow for the same reason. */}
-        <div className="grow min-h-0">
+      <CardContent>
+        {/* Matches Paths'/Events' own content height so all three cards in
+            the row line up — PageViews has no natural height of its own. */}
+        <div className={SECTION_CONTENT_HEIGHT_CLASS}>
           {!data || dataIsLoading ? (
             <Skeleton className="w-full h-full" />
           ) : (

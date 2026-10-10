@@ -1,13 +1,12 @@
-import { TaskConfig } from 'payload'
+import type { TaskConfig } from 'payload'
 
 import { handlerPath } from '@/jobs-queue/lib/handlerPath'
-import { GlobalSlug } from '@/types/globals'
 import { TaskSlug } from '@/types/jobs-queue'
 
 /**
  * Reconciles the PDF Builder's persisted skill sorting order against the current
  * Resume Skills collection, merging in any skill (or skill type) that has no
- * saved position yet, and writes the result back to the {@link GlobalSlug.PDFGeneratorSettings}
+ * saved position yet, and writes the result back to the PDFGeneratorSettings
  * global.
  *
  * This used to run as an `afterRead` hook on the `skillSorting` field, which

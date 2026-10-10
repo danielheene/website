@@ -1,9 +1,7 @@
-import { TaskConfig } from 'payload'
+import type { TaskConfig } from 'payload'
 
 import { handlerPath } from '@/jobs-queue/lib/handlerPath'
 import { TaskSlug } from '@/types/jobs-queue'
-
-export type { AutoTranslateBilingualFieldProgress } from '@/lib/sse/channels'
 
 /**
  * Background task backing `BilingualRichTextField`'s translate buttons and
@@ -41,12 +39,8 @@ export const autoTranslateBilingualField: TaskConfig<TaskSlug['AutoTranslateBili
     // queues a 'manual' one client-side; without a shared key those two
     // would race as independent jobs instead of the second one superseding
     // the first.
-    // exclusive: true matches every other task in this repo (see
-    // generateDocumentThumbnails.ts, generateVideoThumbnails.ts,
-    // generateLocalizedResumeDocument.tsx) — without it, two jobs sharing
-    // this key could run concurrently instead of one waiting for the
-    // other, which would let a stale in-flight job's result land after a
-    // newer one's.
+    // exclusive: a stale in-flight job must finish before a newer one
+    // starts, or its result could land last.
     key: ({ input }) =>
       [
         TaskSlug.AutoTranslateBilingualField,
@@ -63,6 +57,13 @@ export const autoTranslateBilingualField: TaskConfig<TaskSlug['AutoTranslateBili
       name: 'mode',
       type: 'text',
       required: true,
+      typescriptSchema: [
+        () => ({
+          type: 'string',
+          enum: ['auto', 'manual'],
+          required: true,
+        }),
+      ],
     },
     {
       name: 'collectionSlug',
@@ -86,11 +87,25 @@ export const autoTranslateBilingualField: TaskConfig<TaskSlug['AutoTranslateBili
       name: 'sourceLanguage',
       type: 'text',
       required: true,
+      typescriptSchema: [
+        () => ({
+          type: 'string',
+          enum: ['en', 'de'],
+          required: true,
+        }),
+      ],
     },
     {
       name: 'targetLanguage',
       type: 'text',
       required: true,
+      typescriptSchema: [
+        () => ({
+          type: 'string',
+          enum: ['en', 'de'],
+          required: true,
+        }),
+      ],
     },
     {
       name: 'sourceValue',

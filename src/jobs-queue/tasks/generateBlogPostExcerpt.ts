@@ -1,4 +1,4 @@
-import { TaskConfig } from 'payload'
+import type { TaskConfig } from 'payload'
 
 import { handlerPath } from '@/jobs-queue/lib/handlerPath'
 import { TaskSlug } from '@/types/jobs-queue'

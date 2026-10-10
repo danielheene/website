@@ -73,14 +73,41 @@ export const CodeBlock: Block = {
       label: false,
       required: true,
       admin: {
+        /**
+         * Static default language for first paint
+         *
+         * `CodeFieldComponent` overrides this per-field, from the
+         * sibling `language` select.
+         */
+        language: FALLBACK_LANGUAGE,
+        components: {
+          Field: {
+            path: '@/blocks/CodeBlock/CodeFieldComponent',
+            exportName: 'CodeFieldComponent',
+          },
+        },
         editorOptions: {
           fontSize: 16,
+          fontFamily: 'var(--font-mono)',
+          /**
+           * Match Payload's height formula
+           *
+           * Payload sizes the editor from `lines * 18 + padding`.
+           * `wordWrap: 'off'` keeps one logical line = one visual line;
+           * `ignoreHorizontalScrollbarInContentHeight` keeps the overflow
+           * scrollbar from pushing content past that computed height.
+           */
+          lineHeight: 18,
           padding: {
             top: 12,
             bottom: 12,
           },
+          wordWrap: 'off',
+          scrollbar: {
+            alwaysConsumeMouseWheel: false,
+            ignoreHorizontalScrollbarInContentHeight: true,
+          },
         },
-        language: 'typescript',
         editorProps: {},
       },
     },

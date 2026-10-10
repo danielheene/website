@@ -1,6 +1,5 @@
 import type { TaskHandler } from 'payload'
 
-import { wrapHandler } from '@/jobs-queue/lib/withJobObservability'
 import { resolveSkillTagType } from '@/lib/resolveSkillTagType'
 import { CollectionSlug } from '@/types/collections'
 import { TaskSlug } from '@/types/jobs-queue'
@@ -15,7 +14,6 @@ const run: TaskHandler<TaskSlug['CalculateSkillTagType']> = async ({
     collection: CollectionSlug.ResumeSkills,
     draft: false,
     pagination: false,
-    limit: undefined,
     depth: 0,
     select: {
       type: true,
@@ -66,4 +64,4 @@ const run: TaskHandler<TaskSlug['CalculateSkillTagType']> = async ({
   }
 }
 
-export const handler = wrapHandler(TaskSlug.CalculateSkillTagType, run)
+export const handler = run

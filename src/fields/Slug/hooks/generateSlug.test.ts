@@ -12,13 +12,14 @@ const run = (
 ) => generateSlugHook(fieldToUse)(args as never)
 
 describe('generateSlugHook', () => {
-  it('generates a slug from the source field on create', () => {
+  it('generates a slug from the source field on create when published', () => {
     expect(
       run('title', {
         operation: 'create',
         value: '',
         data: {
           title: 'Hello World',
+          _status: 'published',
         },
       }),
     ).toBe('hello-world')
@@ -33,9 +34,47 @@ describe('generateSlugHook', () => {
           meta: {
             title: 'Nested Title',
           },
+          _status: 'published',
         },
       }),
     ).toBe('nested-title')
+  })
+
+  it('generates a slug on update when published and slug is not provided yet', () => {
+    expect(
+      run('title', {
+        operation: 'update',
+        value: '',
+        data: {
+          title: 'Published On Update',
+          _status: 'published',
+        },
+      }),
+    ).toBe('published-on-update')
+  })
+
+  it('does not generate a slug on draft create or update', () => {
+    expect(
+      run('title', {
+        operation: 'create',
+        value: '',
+        data: {
+          title: 'Draft Post',
+          _status: 'draft',
+        },
+      }),
+    ).toBe('')
+
+    expect(
+      run('title', {
+        operation: 'update',
+        value: '',
+        data: {
+          title: 'Draft Post',
+          _status: 'draft',
+        },
+      }),
+    ).toBe('')
   })
 
   it('keeps an existing value on create', () => {
@@ -45,21 +84,23 @@ describe('generateSlugHook', () => {
         value: 'custom-slug',
         data: {
           title: 'Hello',
+          _status: 'published',
         },
       }),
     ).toBe('custom-slug')
   })
 
-  it('never regenerates on update', () => {
+  it('keeps an existing value on update and does not regenerate when slug is already set', () => {
     expect(
       run('title', {
         operation: 'update',
-        value: '',
+        value: 'existing-slug',
         data: {
-          title: 'Hello',
+          title: 'New Title',
+          _status: 'published',
         },
       }),
-    ).toBe('')
+    ).toBe('existing-slug')
   })
 
   it('returns the original value when the source field is missing or not a string', () => {
@@ -67,7 +108,9 @@ describe('generateSlugHook', () => {
       run('title', {
         operation: 'create',
         value: '',
-        data: {},
+        data: {
+          _status: 'published',
+        },
       }),
     ).toBe('')
     expect(
@@ -76,8 +119,19 @@ describe('generateSlugHook', () => {
         value: '',
         data: {
           title: 42,
+          _status: 'published',
         },
       }),
     ).toBe('')
+  })
+
+  it('handles missing or undefined data safely', () => {
+    expect(
+      run('title', {
+        operation: 'create',
+        value: 'original',
+        data: undefined,
+      }),
+    ).toBe('original')
   })
 })

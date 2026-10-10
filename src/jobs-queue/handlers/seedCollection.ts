@@ -1,33 +1,32 @@
 import type { Payload, TaskHandler } from 'payload'
 
-import { wrapHandler } from '@/jobs-queue/lib/withJobObservability'
 import { extractErrorMessage } from '@/lib/extractErrorMessage'
 import { publish } from '@/lib/RedisHandler'
 import { cleanPages, type SeedProgress, seedPages } from '@/lib/seed/pages'
 import { cleanPosts, seedPosts } from '@/lib/seed/posts'
+import type { SeedableCollection } from '@/lib/seed/seedableCollection'
 import { cleanTopics, seedTopics } from '@/lib/seed/topics'
 import { seedTaskChannel } from '@/lib/sse/channels'
 import { TaskSlug } from '@/types/jobs-queue'
+
+type SeedRoutine = {
+  seed: (
+    payload: Payload,
+    count: number,
+    onProgress: (progress: SeedProgress) => void,
+  ) => Promise<Record<string, number>>
+  clean: (
+    payload: Payload,
+    onProgress: (progress: SeedProgress) => void,
+  ) => Promise<Record<string, number>>
+}
 
 /**
  * One seed/clean routine per seedable collection, each reporting progress
  * the same way (`SeedProgress`) and resolving to a label → count bag for
  * the success toast (see `SeedTaskProgress['counts']`).
  */
-const SEED_ROUTINES: Record<
-  string,
-  {
-    seed: (
-      payload: Payload,
-      count: number,
-      onProgress: (progress: SeedProgress) => void,
-    ) => Promise<Record<string, number>>
-    clean: (
-      payload: Payload,
-      onProgress: (progress: SeedProgress) => void,
-    ) => Promise<Record<string, number>>
-  }
-> = {
+const SEED_ROUTINES: Record<SeedableCollection, SeedRoutine> = {
   pages: {
     seed: async (payload, count, onProgress) => {
       const { created } = await seedPages(payload, count, onProgress)
@@ -89,17 +88,9 @@ const run: TaskHandler<TaskSlug['SeedCollection']> = async ({ input, job, req })
     })
   }
 
-  const routine = SEED_ROUTINES[input.collection]
-  if (!routine) {
-    const message = `Unknown seedable collection: "${input.collection}"`
-    await publish(channel, {
-      status: 'error',
-      message,
-    })
-    throw new Error(message)
-  }
-
   try {
+    const routine = SEED_ROUTINES[input.collection]
+
     let counts: Record<string, number>
     if (input.mode === 'seed') {
       counts = await routine.seed(payload, input.count ?? 1, onProgress)
@@ -126,4 +117,4 @@ const run: TaskHandler<TaskSlug['SeedCollection']> = async ({ input, job, req })
   }
 }
 
-export const handler = wrapHandler(TaskSlug.SeedCollection, run)
+export const handler = run

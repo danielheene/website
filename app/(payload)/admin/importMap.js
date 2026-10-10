@@ -12,6 +12,7 @@ import { IndentFeatureClient as IndentFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { default as default_9b6261ce8a0d1158d29e3a547520dffd } from '@/fields/Icon/Field'
 import { LinkRowLabel as LinkRowLabel_0f3bb2957bbfa728452ec162697d8241 } from '@/fields/Link/components/RowLabel'
+import { CodeFieldComponent as CodeFieldComponent_8a58ceb860509c570f26b22a1191b33c } from '@/blocks/CodeBlock/CodeFieldComponent'
 import { FixedToolbarFeatureClient as FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
@@ -78,6 +79,7 @@ import { Nav as Nav_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminP
 import { Icon as Icon_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { Logo as Logo_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { ImportExportProvider as ImportExportProvider_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
+import { AdminErrorBoundary as AdminErrorBoundary_e5a9e14bdbe97e70ba60697217fe7688 } from '@payloadcms/plugin-sentry/client'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 import { StatusBannersWidget as StatusBannersWidget_520e3069c7e11d3b5b05991c8b487452 } from '@/widgets/StatusBannersWidget'
 import { ScheduledJobsWidget as ScheduledJobsWidget_5a82a9e565d2b9686dc0a96e9db621b7 } from '@/widgets/ScheduledJobsWidget'
@@ -100,6 +102,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BlocksFeatureClient": BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/fields/Icon/Field#default": default_9b6261ce8a0d1158d29e3a547520dffd,
   "@/fields/Link/components/RowLabel#LinkRowLabel": LinkRowLabel_0f3bb2957bbfa728452ec162697d8241,
+  "@/blocks/CodeBlock/CodeFieldComponent#CodeFieldComponent": CodeFieldComponent_8a58ceb860509c570f26b22a1191b33c,
   "@payloadcms/richtext-lexical/client#FixedToolbarFeatureClient": FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
@@ -166,6 +169,7 @@ export const importMap = {
   "@/components/AdminPanel#Icon": Icon_a316a6ec12a12cd0fe58ccec01a444ca,
   "@/components/AdminPanel#Logo": Logo_a316a6ec12a12cd0fe58ccec01a444ca,
   "@payloadcms/plugin-import-export/rsc#ImportExportProvider": ImportExportProvider_cdf7e044479f899a31f804427d568b36,
+  "@payloadcms/plugin-sentry/client#AdminErrorBoundary": AdminErrorBoundary_e5a9e14bdbe97e70ba60697217fe7688,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
   "@/widgets/StatusBannersWidget#StatusBannersWidget": StatusBannersWidget_520e3069c7e11d3b5b05991c8b487452,
   "@/widgets/ScheduledJobsWidget#ScheduledJobsWidget": ScheduledJobsWidget_5a82a9e565d2b9686dc0a96e9db621b7,
