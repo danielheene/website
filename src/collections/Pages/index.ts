@@ -173,7 +173,7 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
               editorVariant: 'post',
               overrides: {
                 admin: {
-                  condition: ({ hero }) => hero.contentType === 'custom',
+                  condition: (_, siblingData) => siblingData?.contentType === 'custom',
                   disableListColumn: true,
                   disableListFilter: true,
                   disableGroupBy: true,
@@ -183,7 +183,7 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
             {
               type: 'row',
               admin: {
-                condition: ({ hero }) => hero.contentType === 'custom',
+                condition: (_, siblingData) => siblingData?.contentType === 'custom',
               },
               fields: [],
             },

@@ -1,4 +1,4 @@
-import { cache } from 'react'
+import { cache, Suspense } from 'react'
 import type { Metadata } from 'next'
 import { cacheLife, cacheTag } from 'next/cache'
 import { draftMode } from 'next/headers'
@@ -13,10 +13,13 @@ import { Headline } from '@/components/Headline'
 import { HeroMedia } from '@/components/HeroMedia'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PageContainer } from '@/components/PageContainer'
+import { RichText } from '@/components/RichText'
 import { extractHeadings } from '@/lib/extractHeadings'
 import { extractSections } from '@/lib/extractSections'
 import { generateMeta } from '@/lib/generateMeta'
+import { isEmptyValue } from '@/lib/lexical/isEmptyValue'
 import { placeholderParams } from '@/lib/placeholderParams'
+import { highlightRichText } from '@/lib/shiki/highlightRichText'
 import { CollectionData, CollectionSlug } from '@/types/collections'
 
 export async function generateStaticParams() {
@@ -70,6 +73,11 @@ export default async function Page({ params }: PageProps) {
         })
       : []
 
+  const useCustomHeroContent = hero?.contentType === 'custom' && !isEmptyValue(hero.content)
+  const highlightedHeroCode = useCustomHeroContent
+    ? await highlightRichText(hero?.content)
+    : undefined
+
   return (
     <PageContainer layout={layout} sections={extractSections(content)}>
       <HeroMedia
@@ -77,17 +85,34 @@ export default async function Page({ params }: PageProps) {
         fallbackAlt={title || 'Hero Image'}
         slides={hero?.slides}
       >
-        {title && (
+        {useCustomHeroContent ? (
           <div className="pt-40 pb-20">
             <div className="container">
-              <Headline
-                variant="page-title"
-                className="text-balance text-foreground textshadow-lg shadow-primary/75"
-              >
-                {title}
-              </Headline>
+              {/* RichText is a Client Component that calls randomUUID(), which
+                  Cache Components requires to sit behind a Suspense boundary. */}
+              <Suspense fallback={<div className="h-24 animate-pulse rounded-lg bg-muted" />}>
+                <RichText
+                  data={hero.content}
+                  enableGutter={false}
+                  highlightedCode={highlightedHeroCode}
+                  className="text-balance text-foreground textshadow-lg shadow-primary/75"
+                />
+              </Suspense>
             </div>
           </div>
+        ) : (
+          title && (
+            <div className="pt-40 pb-20">
+              <div className="container">
+                <Headline
+                  variant="page-title"
+                  className="text-balance text-foreground textshadow-lg shadow-primary/75"
+                >
+                  {title}
+                </Headline>
+              </div>
+            </div>
+          )
         )}
       </HeroMedia>
       {layout === 'legal' ? (
