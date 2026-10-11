@@ -94,8 +94,9 @@ export default async function Page({ params }: PageProps) {
                 <RichText
                   data={hero.content}
                   enableGutter={false}
+                  enableProse={false}
                   highlightedCode={highlightedHeroCode}
-                  className="text-balance text-foreground textshadow-lg shadow-primary/75"
+                  className="font-mono text-balance text-6xl leading-tight text-foreground textshadow-lg shadow-primary/75 [&_h1]:text-6xl [&_h2]:text-5xl [&_h3]:text-3xl"
                 />
               </Suspense>
             </div>
