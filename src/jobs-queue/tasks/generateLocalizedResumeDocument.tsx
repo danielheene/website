@@ -1,15 +1,16 @@
-import { TaskConfig } from 'payload'
+import type { TaskConfig } from 'payload'
 
 import { handlerPath } from '@/jobs-queue/lib/handlerPath'
 import { TaskSlug } from '@/types/jobs-queue'
 
 /**
  * Orchestrates the steps needed to generate one localized resume document.
- * Each step below is its own top-level task (own slug, own file) rather than
- * an inline sub-step here — a crash surfaces with the specific task's slug
- * instead of collapsing into one large handler, and no task passes a large
- * blob (the rendered PDF buffer) through its input/output; that stays local
- * to GenerateResumeFile.
+ * Each step runs as its own top-level task (own slug, own file) rather than
+ * an inline sub-step, so a crash surfaces with that task's slug instead of
+ * collapsing into one large handler. Steps run in
+ * `handlers/generateLocalizedResumeDocument.tsx`; no task passes the
+ * rendered PDF buffer through its input/output — that stays local to
+ * GenerateResumeFile.
  */
 
 export const generateLocalizedResumeDocument: TaskConfig<

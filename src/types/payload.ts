@@ -997,6 +997,7 @@ export interface Topic {
  */
 export interface TwoColumnContentBlock {
   verticalAlignment?: ('start' | 'center' | 'end') | null;
+  orderMobile?: ('normal' | 'reversed') | null;
   contentLeft?: {
     root: {
       type: string;
@@ -3030,7 +3031,6 @@ export interface TaskGenerateResumeFilename {
 export interface TaskBuildLocalizedResumeData {
   input: {
     locale: 'en' | 'de';
-    filename: string;
     createdAt: string;
     documentSlug: string;
   };
@@ -3063,7 +3063,6 @@ export interface TaskGenerateResumeFile {
       | number
       | boolean
       | null;
-    locale: string;
   };
   output: {
     resumeFileId: string;
@@ -3076,12 +3075,12 @@ export interface TaskGenerateResumeFile {
  */
 export interface TaskAutoTranslateBilingualField {
   input: {
-    mode: string;
+    mode: 'auto' | 'manual';
     collectionSlug: string;
     docId?: string | null;
     path: string;
-    sourceLanguage: string;
-    targetLanguage: string;
+    sourceLanguage: 'en' | 'de';
+    targetLanguage: 'en' | 'de';
     sourceValue:
       | {
           [k: string]: unknown;
@@ -3168,8 +3167,8 @@ export interface TaskHeartbeatPing {
  */
 export interface TaskSeedCollection {
   input: {
-    collection: string;
-    mode: string;
+    collection: 'pages' | 'posts' | 'topics';
+    mode: 'seed' | 'clean';
     count?: number | null;
   };
   output?: unknown;

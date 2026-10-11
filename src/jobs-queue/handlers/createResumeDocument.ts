@@ -1,7 +1,7 @@
 import type { TaskHandler } from 'payload'
 import { formatAdminURL } from 'payload/shared'
 
-import { wrapHandler } from '@/jobs-queue/lib/withJobObservability'
+import { toMediaImageRelations } from '@/jobs-queue/lib/thumbnails'
 import { CollectionSlug } from '@/types/collections'
 import { TaskSlug } from '@/types/jobs-queue'
 
@@ -35,19 +35,13 @@ const run: TaskHandler<TaskSlug['CreateResumeDocument']> = async ({ input, req: 
         value: resumeFileIdEn,
       },
       checksum_en: resumeFileChecksumEn,
-      thumbnails_en: resumeThumbnailIdsEn.map((id) => ({
-        relationTo: CollectionSlug.MediaImages,
-        value: id,
-      })),
+      thumbnails_en: toMediaImageRelations(resumeThumbnailIdsEn),
       document_de: {
         relationTo: CollectionSlug.MediaDocuments,
         value: resumeFileIdDe,
       },
       checksum_de: resumeFileChecksumDe,
-      thumbnails_de: resumeThumbnailIdsDe.map((id) => ({
-        relationTo: CollectionSlug.MediaImages,
-        value: id,
-      })),
+      thumbnails_de: toMediaImageRelations(resumeThumbnailIdsDe),
       data_en: resumeDocumentDataEn,
       data_de: resumeDocumentDataDe,
     },
@@ -68,4 +62,4 @@ const run: TaskHandler<TaskSlug['CreateResumeDocument']> = async ({ input, req: 
   }
 }
 
-export const handler = wrapHandler(TaskSlug.CreateResumeDocument, run)
+export const handler = run

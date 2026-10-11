@@ -4,7 +4,6 @@ import { Merge } from 'type-fest'
 import { z } from 'zod'
 
 import {
-  documentFooterSchema,
   documentHeaderSchema,
   documentSchema,
   documentSectionSchema,
@@ -34,7 +33,6 @@ export type Bookmark =
       }
     >
 
-export type DocumentFooter = z.infer<typeof documentFooterSchema>
 export type DocumentHeader = z.infer<typeof documentHeaderSchema>
 export type IntroductionSection = z.infer<typeof introductionSectionSchema>
 export type LanguageSection = z.infer<typeof languageSectionSchema>

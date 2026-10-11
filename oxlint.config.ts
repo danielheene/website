@@ -11,7 +11,17 @@ import { defineConfig } from 'oxlint'
  * types domains, with the same rules switched off or down to warnings.
  */
 export default defineConfig({
-  plugins: ['eslint', 'typescript', 'unicorn', 'oxc', 'react', 'jsx-a11y', 'nextjs', 'import'],
+  plugins: [
+    'eslint',
+    'typescript',
+    'unicorn',
+    'oxc',
+    'react',
+    'react-perf',
+    'jsx-a11y',
+    'nextjs',
+    'import',
+  ],
   categories: {
     correctness: 'error',
   },
@@ -77,7 +87,7 @@ export default defineConfig({
     // checks). Each still flags code on main, so they warn rather than fail CI
     // and are follow-ups, not part of the migration.
     'eslint/no-unused-vars': [
-      'warn',
+      'error',
       {
         args: 'after-used',
         argsIgnorePattern: '^_',

@@ -14,7 +14,7 @@ import { SkillEntry } from '@/pdf/components/SkillEntry'
 import { WorkExperience } from '@/pdf/components/WorkExperience'
 import { sizes, textStyles } from '@/pdf/constants'
 import { lexicalToJSX } from '@/pdf/lib/lexicalToJSX'
-import { DocumentFooter, DocumentHeader, DocumentSection, DocumentSectionType } from '@/pdf/types'
+import { DocumentHeader, DocumentSection, DocumentSectionType } from '@/pdf/types'
 
 const hyphenateEN = createHyphenator(enPattern as unknown as PatternsDefinition, {
   async: false,
@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
 interface ResumeDocumentProps {
   isPreview: boolean
   locale: BilingualLanguage
+  documentUrl: string
   document: {
     title: string
     author: string
@@ -72,16 +73,15 @@ interface ResumeDocumentProps {
     creationDate: Date
   }
   header: DocumentHeader
-  footer: DocumentFooter
   sections: DocumentSection[]
 }
 
 export const ResumeDocument = ({
-  isPreview,
+  // isPreview,
   locale,
+  documentUrl,
   document,
   header,
-  footer,
   sections,
 }: ResumeDocumentProps) => {
   Font.registerHyphenationCallback((word) => {
@@ -184,7 +184,7 @@ export const ResumeDocument = ({
             return null
           })}
         </View>
-        <Footer {...footer} style={styles.footer} fixed />
+        <Footer locale={locale} documentUrl={documentUrl} style={styles.footer} fixed />
       </Page>
     </Document>
   )

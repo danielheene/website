@@ -13,6 +13,7 @@ import { MetricsTable } from '@/components/MetricsTable'
 import { Skeleton } from '@/components/Skeleton'
 import { useArrayPagination } from '@/lib/hooks/useArrayPagination'
 
+import { LIST_PAGE_SIZE, SECTION_CONTENT_HEIGHT_CLASS } from './UmamiWidget.constants'
 import type { UmamiPath } from './UmamiWidget.data'
 
 interface PathsSectionProps {
@@ -22,9 +23,9 @@ interface PathsSectionProps {
 }
 
 export const PathsSection = ({ data, dataIsLoading, className }: PathsSectionProps) => {
-  const { content, ...pagination } = useArrayPagination(data || [], 10)
+  const { content, ...pagination } = useArrayPagination(data || [], LIST_PAGE_SIZE)
   const maxMetricValue = Math.max(...(data?.map(({ y }) => y) || []), 0)
-  const contentClass = 'h-[410px]'
+  const contentClass = SECTION_CONTENT_HEIGHT_CLASS
 
   return (
     <Card className={cn([className])}>

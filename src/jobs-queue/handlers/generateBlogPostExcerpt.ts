@@ -1,7 +1,6 @@
 import type { TaskHandler } from 'payload'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 
-import { wrapHandler } from '@/jobs-queue/lib/withJobObservability'
 import { fetchAnthropicExcerpt } from '@/lib/anthropic/fetchExcerpt'
 import { isEmptyValue } from '@/lib/lexical/isEmptyValue'
 import { CollectionSlug } from '@/types/collections'
@@ -74,4 +73,4 @@ const run: TaskHandler<TaskSlug['GenerateBlogPostExcerpt']> = async ({
   }
 }
 
-export const handler = wrapHandler(TaskSlug.GenerateBlogPostExcerpt, run)
+export const handler = run

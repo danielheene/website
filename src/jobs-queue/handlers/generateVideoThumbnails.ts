@@ -2,33 +2,29 @@ import type { TaskHandler } from 'payload'
 
 import { registerMediabunnyServer } from '@mediabunny/server'
 import { createCanvas } from '@napi-rs/canvas'
-import { isString } from 'lodash-es'
 import { ALL_FORMATS, BufferSource, Input, type VideoSample, VideoSampleSink } from 'mediabunny'
 
 import type { GeneratorFlag } from '@/fields/GeneratorFlags'
-import { wrapHandler } from '@/jobs-queue/lib/withJobObservability'
+import {
+  deleteThumbnails,
+  stripExtension,
+  toMediaImageRelations,
+} from '@/jobs-queue/lib/thumbnails'
 import { CollectionSlug } from '@/types/collections'
 import { TaskSlug } from '@/types/jobs-queue'
 
-let registered = false
+registerMediabunnyServer()
 
-if (!registered) {
-  registerMediabunnyServer()
-  registered = true
-}
-
-export type ExtractThumbnailProps = {
+type ExtractThumbnailProps = {
   data: Buffer
   timestampInSeconds: number
-  signal?: AbortSignal
 }
 
 /** Decodes a single frame of `data` at the given timestamp. */
-export async function extractThumbnail({
+const extractThumbnail = async ({
   data,
   timestampInSeconds,
-  signal,
-}: ExtractThumbnailProps): Promise<VideoSample> {
+}: ExtractThumbnailProps): Promise<VideoSample> => {
   using input = new Input({
     formats: ALL_FORMATS,
     source: new BufferSource(data),
@@ -37,9 +33,6 @@ export async function extractThumbnail({
   const videoTrack = await input.getPrimaryVideoTrack()
   if (!videoTrack) {
     throw new Error('No video track found in the input')
-  }
-  if (signal?.aborted) {
-    throw new Error('Aborted')
   }
 
   const sink = new VideoSampleSink(videoTrack)
@@ -65,7 +58,6 @@ const sampleToPng = async (sample: VideoSample) => {
     format: 'RGBA',
   })
   context.putImageData(imageData, 0, 0)
-  sample.close()
 
   return {
     width,
@@ -74,6 +66,15 @@ const sampleToPng = async (sample: VideoSample) => {
   }
 }
 
+/**
+ * Decodes one frame of a video and attaches it as its thumbnail.
+ *
+ * Like `generateDocumentThumbnails`, the old thumbnail is deleted before
+ * the new one is created: `MediaVideos`' `adminThumbnail` builds its
+ * preview URL from a fixed filename pattern, so the new file must land on
+ * that exact name. The delete is best-effort so a failure there can't
+ * block regeneration.
+ */
 const run: TaskHandler<TaskSlug['GenerateVideoThumbnails']> = async ({
   input: { videoId, timestampInSeconds },
   req: { payload },
@@ -90,8 +91,8 @@ const run: TaskHandler<TaskSlug['GenerateVideoThumbnails']> = async ({
     },
   })
 
-  // the upload lives in S3, so the frame is decoded from a fetched copy
-  // rather than from req.file (unavailable outside the upload request)
+  // The upload lives in S3, so the frame is decoded from a fetched copy
+  // rather than from req.file (unavailable outside the upload request).
   const response = await fetch(video.url)
   if (!response.ok) {
     throw new Error(`Failed to fetch video ${videoId}: HTTP ${response.status}`)
@@ -102,25 +103,29 @@ const run: TaskHandler<TaskSlug['GenerateVideoThumbnails']> = async ({
     data,
     timestampInSeconds: timestampInSeconds ?? 0,
   })
-  const { width, height, buffer } = await sampleToPng(sample)
+  const { width, height, buffer } = await sampleToPng(sample).finally(() => sample.close())
 
-  /* when creating thumbnails was successful, delete old ones */
+  // Deleted before creating the replacement: `adminThumbnail` on this
+  // collection builds the preview URL from a fixed filename pattern
+  // (`<filename>-thumbnail.png`), so the new thumbnail must land on that
+  // exact name rather than whatever `getSafeFileName` renames it to if
+  // the old file is still there. Best-effort — a failed delete must not
+  // block regenerating the thumbnail.
   if (Array.isArray(video.thumbnails) && video.thumbnails.length > 0) {
-    for (const { relationTo, value } of video.thumbnails) {
-      await payload.delete({
-        collection: relationTo,
-        id: isString(value) ? value : value.id,
-      })
+    try {
+      await deleteThumbnails(payload, video.thumbnails)
+    } catch (error) {
+      payload.logger.error(`Failed to delete old video thumbnail: ${error}`)
     }
   }
 
-  const filenameBase = video?.filename?.replace(/\.[^/.]+$/, '')
+  const filenameBase = stripExtension(video.filename ?? String(videoId))
   const { id } = await payload.create({
     collection: CollectionSlug.MediaImages,
     data: {
       width,
       height,
-      generatorFlags: ['video-thumbnail', 'thumbnail'] as GeneratorFlag[],
+      generatorFlags: ['video-thumbnail', 'thumbnail'] satisfies GeneratorFlag[],
     },
     file: {
       data: buffer,
@@ -134,12 +139,7 @@ const run: TaskHandler<TaskSlug['GenerateVideoThumbnails']> = async ({
     collection: CollectionSlug.MediaVideos,
     id: videoId,
     data: {
-      thumbnails: [
-        {
-          relationTo: CollectionSlug.MediaImages,
-          value: id,
-        },
-      ],
+      thumbnails: toMediaImageRelations([id]),
     },
     context: {
       skipGenerateVideoThumbnails: true,
@@ -153,4 +153,4 @@ const run: TaskHandler<TaskSlug['GenerateVideoThumbnails']> = async ({
   }
 }
 
-export const handler = wrapHandler(TaskSlug.GenerateVideoThumbnails, run)
+export const handler = run

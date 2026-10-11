@@ -2,7 +2,7 @@ import path from 'node:path'
 import * as process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
-import { buildConfig, type CollectionConfig } from 'payload'
+import { buildConfig } from 'payload'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { redisKVAdapter } from '@payloadcms/kv-redis'
 import { importExportPlugin } from '@payloadcms/plugin-import-export'
@@ -11,6 +11,7 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { s3Storage } from '@payloadcms/storage-s3'
 
 import * as Sentry from '@sentry/nextjs'
+import { captureException as captureExceptionFromNode } from '@sentry/node'
 import sharp from 'sharp'
 
 import { BLOCKS } from '@/blocks'
@@ -20,7 +21,7 @@ import { scopeJobsList } from '@/jobs-queue/lib/jobsListFilter'
 import { TASKS } from '@/jobs-queue/tasks'
 import { WORKFLOWS } from '@/jobs-queue/workflows'
 import { authenticated } from '@/lib/access/authenticated'
-import { SENTRY_ENABLED } from '@/lib/sentry/options'
+import { SENTRY_ENABLED, sharedSentryOptions } from '@/lib/sentry/options'
 import { useSendAdapter } from '@/lib/useSendAdapter'
 import { redirectsPlugin } from '@/plugins/redirects'
 import { referencesPlugin } from '@/plugins/references'
@@ -30,6 +31,26 @@ import { SKILL_TYPE } from '@/types/select-options'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
+/**
+ * Patch `Sentry.captureException` for `sentryPlugin`
+ *
+ * Outside Next's bundler, `@sentry/nextjs` resolves to a CJS build whose
+ * `export * from '@sentry/node'` leaves `captureException` undefined.
+ * `@sentry/node` resolves it correctly in every context.
+ */
+const SentryForPlugin = { ...Sentry, captureException: captureExceptionFromNode }
+
+/**
+ * Init Sentry outside the Next.js runtime
+ *
+ * `instrumentation.ts` only runs inside Next.js. The job worker
+ * (`scripts/start-worker.mjs`) loads this config via plain `tsx/esm`, so
+ * `NEXT_RUNTIME` is unset there and `Sentry.init` never ran.
+ */
+if (SENTRY_ENABLED && !process.env.NEXT_RUNTIME) {
+  Sentry.init(sharedSentryOptions)
+}
 
 export const config = buildConfig({
   admin: {
@@ -272,7 +293,7 @@ export const config = buildConfig({
      */
     sentryPlugin({
       enabled: SENTRY_ENABLED,
-      Sentry,
+      Sentry: SentryForPlugin,
       options: {
         // 500s are captured by default; 401/403/404 are normal traffic and
         // would drown the real failures

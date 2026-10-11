@@ -1,18 +1,30 @@
 import type { TaskHandler } from 'payload'
 
-import { isString } from 'lodash-es'
 import { PDFParse } from 'pdf-parse'
 
 import type { GeneratorFlag } from '@/fields/GeneratorFlags'
-import { wrapHandler } from '@/jobs-queue/lib/withJobObservability'
+import {
+  deleteThumbnails,
+  stripExtension,
+  toMediaImageRelations,
+} from '@/jobs-queue/lib/thumbnails'
 import { CollectionSlug } from '@/types/collections'
 import { TaskSlug } from '@/types/jobs-queue'
 
+/**
+ * Renders a PDF document's pages to thumbnail images and attaches them.
+ *
+ * Old thumbnails are deleted before the new ones are created: `MediaDocuments`'
+ * `adminThumbnail` builds its preview URL from a fixed filename pattern, so
+ * the new files must land on those exact names, not whatever
+ * `getSafeFileName` renames them to if the old ones are still there. The
+ * delete is best-effort so a failure there can't block regeneration.
+ */
 const run: TaskHandler<TaskSlug['GenerateDocumentThumbnails']> = async ({
   input: { documentId, maxThumbnails },
   req: { payload },
 }) => {
-  console.log('Generating thumbnail for document:', documentId)
+  payload.logger.info(`Generating thumbnails for document: ${documentId}`)
 
   const document = await payload.findByID({
     collection: CollectionSlug.MediaDocuments,
@@ -30,28 +42,31 @@ const run: TaskHandler<TaskSlug['GenerateDocumentThumbnails']> = async ({
     url: document.url,
   })
 
-  const { pages: thumbnails } = await parser.getScreenshot({
-    first: maxThumbnails,
-  })
+  const { pages: thumbnails } = await (async () => {
+    try {
+      return await parser.getScreenshot({ first: maxThumbnails })
+    } finally {
+      await parser.destroy()
+    }
+  })()
 
-  /* when creating thumbnails was successful, delete old ones */
   if (Array.isArray(document.thumbnails) && document.thumbnails.length > 0) {
-    for (const { relationTo, value } of document.thumbnails) {
-      await payload.delete({
-        collection: relationTo,
-        id: isString(value) ? value : value.id,
-      })
+    try {
+      await deleteThumbnails(payload, document.thumbnails)
+    } catch (error) {
+      payload.logger.error(`Failed to delete old document thumbnails: ${error}`)
     }
   }
 
-  const generatorFlags = ['document-thumbnail', 'thumbnail'] as GeneratorFlag[]
-  const filenameBase = document?.filename?.replace(/\.[^/.]+$/, '')
-  if (filenameBase.toLowerCase().includes('resume')) generatorFlags.push('resume-asset')
+  const filenameBase = stripExtension(document.filename ?? String(documentId))
+  const generatorFlags: GeneratorFlag[] = [
+    'document-thumbnail',
+    'thumbnail',
+    ...(filenameBase.toLowerCase().includes('resume') ? (['resume-asset'] as const) : []),
+  ]
 
-  /* create image documents from new thumbnails */
   const ids: string[] = []
-  let index = 0
-  for (const thumbnail of thumbnails) {
+  for (const [index, thumbnail] of thumbnails.entries()) {
     const { id } = await payload.create({
       collection: CollectionSlug.MediaImages,
       data: {
@@ -61,7 +76,7 @@ const run: TaskHandler<TaskSlug['GenerateDocumentThumbnails']> = async ({
       },
       file: {
         data: Buffer.from(thumbnail.data),
-        name: `${filenameBase}-${++index}.png`,
+        name: `${filenameBase}-${index + 1}.png`,
         mimetype: 'image/png',
         size: Buffer.byteLength(thumbnail.data),
       },
@@ -69,15 +84,11 @@ const run: TaskHandler<TaskSlug['GenerateDocumentThumbnails']> = async ({
     ids.push(id)
   }
 
-  /* update document with new thumbnails */
   await payload.update({
     collection: CollectionSlug.MediaDocuments,
     id: documentId,
     data: {
-      thumbnails: ids.map((id) => ({
-        relationTo: CollectionSlug.MediaImages,
-        value: id,
-      })),
+      thumbnails: toMediaImageRelations(ids),
     },
     context: {
       skipGenerateDocumentThumbnails: true,
@@ -91,4 +102,4 @@ const run: TaskHandler<TaskSlug['GenerateDocumentThumbnails']> = async ({
   }
 }
 
-export const handler = wrapHandler(TaskSlug.GenerateDocumentThumbnails, run)
+export const handler = run

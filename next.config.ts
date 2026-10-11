@@ -56,7 +56,7 @@ const createTunnel = (token: string) =>
     })
   })
 
-export default async (phase, { defaultConfig }) => {
+export default async (phase, { defaultConfig: _defaultConfig }) => {
   /**
    *    The tunnel is opt-in via `bun run dev --tunnel`, which scripts/dev.mjs
    *    translates into DEV_TUNNEL=1. Having the credentials in .env.local is
@@ -127,7 +127,7 @@ export default async (phase, { defaultConfig }) => {
 
     experimental: {
       appNewScrollHandler: true,
-      turbopackServerFastRefresh: false,
+      turbopackServerFastRefresh: true,
       serverActions: {
         bodySizeLimit: '10mb',
       },

@@ -24,20 +24,41 @@ export const TwoColumnContentBlock: Block = {
   },
   fields: [
     {
-      name: 'verticalAlignment',
-      type: 'select',
-      label: false,
-      defaultValue: 'start',
-      options: [
-        { label: 'Vertical Align: Top', value: 'start' },
-        { label: 'Vertical Align: Center', value: 'center' },
-        { label: 'Vertical Align: End', value: 'end' },
+      type: 'row',
+      fields: [
+        {
+          name: 'verticalAlignment',
+          type: 'select',
+          label: false,
+          defaultValue: 'start',
+          options: [
+            { label: 'Vertical Align: Top', value: 'start' },
+            { label: 'Vertical Align: Center', value: 'center' },
+            { label: 'Vertical Align: End', value: 'end' },
+          ],
+          admin: {
+            width: '50%',
+          },
+        },
+        {
+          name: 'orderMobile',
+          type: 'select',
+          label: false,
+          defaultValue: 'normal',
+          options: [
+            { label: 'Order Mobile: Normal', value: 'normal' },
+            { label: 'Order Mobile: Reversed', value: 'reversed' },
+          ],
+          admin: {
+            width: '50%',
+          },
+        },
       ],
     },
     {
       type: 'row',
       admin: {
-        className: '*:mb-0',
+        className: 'lg:*:mb-0',
       },
       fields: [
         RichTextField({

@@ -1,8 +1,8 @@
 import { Link, StyleSheet, type Styles, Text, View } from '@react-pdf/renderer'
 import type { JSX } from 'react'
 
+import { type BilingualLanguage, translate } from '@/lib/i18n'
 import { textStyles } from '@/pdf/constants'
-import { DocumentFooter } from '@/pdf/types'
 
 const style = StyleSheet.create({
   container: {
@@ -13,25 +13,29 @@ const style = StyleSheet.create({
 })
 
 type DocumentFooterProps = {
+  locale: BilingualLanguage
+  documentUrl: string
   fixed?: boolean
   style?: Styles[string]
-} & DocumentFooter
+}
 
 export const Footer = ({
-  renderPagination,
-  generatedNotice,
+  locale,
   documentUrl,
   fixed,
   style: styleFromProp = {},
 }: DocumentFooterProps): JSX.Element => (
   <View style={[style.container, styleFromProp]} fixed={fixed}>
     <Link style={textStyles.footerNote} src={documentUrl}>
-      {generatedNotice}
+      {translate(locale, 'document.footer.generatedNotice', { documentUrl })}
     </Link>
     <Text
       style={textStyles.footerPagination}
       render={({ pageNumber, totalPages }) =>
-        renderPagination(String(pageNumber), String(totalPages))
+        translate(locale, 'document.footer.pagination', {
+          pageNumber: String(pageNumber),
+          totalPages: String(totalPages),
+        })
       }
     />
   </View>

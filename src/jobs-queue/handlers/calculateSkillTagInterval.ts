@@ -1,6 +1,5 @@
 import type { TaskHandler } from 'payload'
 
-import { wrapHandler } from '@/jobs-queue/lib/withJobObservability'
 import { Interval } from '@/lib/date'
 import { CollectionSlug } from '@/types/collections'
 import { TaskSlug } from '@/types/jobs-queue'
@@ -15,7 +14,6 @@ const run: TaskHandler<TaskSlug['CalculateSkillTagInterval']> = async ({
     collection: CollectionSlug.ResumeJobs,
     draft: false,
     pagination: false,
-    limit: undefined,
     depth: 0,
     select: {
       startDate: true,
@@ -77,4 +75,4 @@ const run: TaskHandler<TaskSlug['CalculateSkillTagInterval']> = async ({
   }
 }
 
-export const handler = wrapHandler(TaskSlug.CalculateSkillTagInterval, run)
+export const handler = run

@@ -1,16 +1,13 @@
 import { renderToBuffer } from '@react-pdf/renderer'
 import type { TaskHandler } from 'payload'
 
-import * as Sentry from '@sentry/nextjs'
-
-import { wrapHandler } from '@/jobs-queue/lib/withJobObservability'
 import { ResumeDocument } from '@/pdf'
 import { DocumentData } from '@/pdf/types'
 import { CollectionSlug } from '@/types/collections'
 import { TaskSlug } from '@/types/jobs-queue'
 
 const run: TaskHandler<TaskSlug['GenerateResumeFile']> = async ({ input, req: { payload } }) => {
-  const { filename, createdAt, resumeDocumentData, locale } = input
+  const { filename, createdAt, resumeDocumentData } = input
 
   payload.logger.info(`Rendering resume PDF: ${filename}`)
 
@@ -42,16 +39,6 @@ const run: TaskHandler<TaskSlug['GenerateResumeFile']> = async ({ input, req: { 
 
   payload.logger.info(`Uploaded resume file: ${filename}`)
 
-  // Business KPI, not a span metric: tracks how generated-resume PDF size
-  // trends over time per locale. Duration/success are already covered by
-  // withJobObservability's span on this task.
-  Sentry.metrics.distribution('resume.file.size_bytes', fileSizeBytes, {
-    unit: 'byte',
-    attributes: {
-      locale,
-    },
-  })
-
   return {
     output: {
       resumeFileId: id,
@@ -60,4 +47,4 @@ const run: TaskHandler<TaskSlug['GenerateResumeFile']> = async ({ input, req: { 
   }
 }
 
-export const handler = wrapHandler(TaskSlug.GenerateResumeFile, run)
+export const handler = run

@@ -2,7 +2,7 @@
 
 import { useBlockComponentContext } from '@payloadcms/richtext-lexical/client'
 import { useLexicalEditable } from '@payloadcms/richtext-lexical/lexical/react/useLexicalEditable'
-import { RenderFields, useDocumentForm, useField, useForm } from '@payloadcms/ui'
+import { RenderFields, useField } from '@payloadcms/ui'
 
 import { cn } from 'tailwind-variants'
 
@@ -33,7 +33,6 @@ export const ColumnsBlock = () => {
         String.raw`[&_.editor-container]:flex [&_.editor-container]:flex-col`,
         String.raw`[&_.editor-scroller]:flex [&_.editor-scroller]:grow [&_.editor-scroller]:flex-col`,
         String.raw`[&_.editor]:flex [&_.editor]:grow [&_.editor]:flex-col`,
-
         String.raw`[&_.ContentEditable\_\_root]:grow`,
         // A lower floor than the full-width editor's 500px.
         String.raw`[&_.ContentEditable\_\_root]:flex`,

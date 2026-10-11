@@ -77,8 +77,8 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
     defaultColumns: ['title', 'slug', 'createdAt'],
     disableCopyToLocale: true,
     pagination: {
-      defaultLimit: 100,
-      limits: [100],
+      defaultLimit: 25,
+      limits: [25],
     },
   },
   defaultSort: ['-createdAt'],
@@ -154,6 +154,7 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
           name: 'document_en',
           label: 'EN',
           relationTo: [CollectionSlug.MediaDocuments],
+          maxDepth: 0,
           admin: {
             ...adminDefaults,
             ...uploadDefaults,
@@ -164,6 +165,7 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
           name: 'document_de',
           label: 'DE',
           relationTo: [CollectionSlug.MediaDocuments],
+          maxDepth: 0,
           admin: {
             ...adminDefaults,
             ...uploadDefaults,
@@ -186,6 +188,7 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
               name: 'thumbnails_en',
               label: 'EN',
               relationTo: [CollectionSlug.MediaImages],
+              maxDepth: 0,
               hasMany: true,
               admin: {
                 ...adminDefaults,
@@ -198,6 +201,7 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
               name: 'thumbnails_de',
               label: 'DE',
               relationTo: [CollectionSlug.MediaImages],
+              maxDepth: 0,
               hasMany: true,
               admin: {
                 ...adminDefaults,

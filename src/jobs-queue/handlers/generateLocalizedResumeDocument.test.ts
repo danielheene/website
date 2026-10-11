@@ -73,10 +73,13 @@ describe('generateLocalizedResumeDocument', () => {
       expect.objectContaining({
         input: expect.objectContaining({
           locale: 'en',
-          filename: 'resume-en',
           documentSlug: 'resume-slug',
         }),
       }),
+    )
+    // oxlint-disable-next-line typescript/no-explicit-any -- mock.calls args are typed from the zero-arg stub above
+    expect((tasks.buildLocalizedResumeData.mock.calls[0] as any)[1].input).not.toHaveProperty(
+      'filename',
     )
     expect(tasks.generateResumeFile).toHaveBeenCalledWith(
       'BuildResumeFile:en',
@@ -91,6 +94,8 @@ describe('generateLocalizedResumeDocument', () => {
         }),
       }),
     )
+    // oxlint-disable-next-line typescript/no-explicit-any -- mock.calls args are typed from the zero-arg stub above
+    expect((tasks.generateResumeFile.mock.calls[0] as any)[1].input).not.toHaveProperty('locale')
     expect(tasks.generateDocumentThumbnails).toHaveBeenCalledWith(
       'BuildResumeThumbnails:en',
       expect.objectContaining({

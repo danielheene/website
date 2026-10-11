@@ -22,7 +22,9 @@ const lookupRedirect = async (request: NextRequest) => {
   if (REDIRECT_EXEMPT.some((prefix) => pathname.startsWith(prefix))) return null
 
   try {
-    return await fetchRedirect(pathname)
+    const redirect = await fetchRedirect(pathname)
+    if (redirect && redirect.destination !== pathname) return redirect
+    return null
   } catch {
     return null
   }

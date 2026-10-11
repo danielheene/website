@@ -1,40 +1,17 @@
-import { WorkflowConfig } from 'payload'
+import type { WorkflowConfig } from 'payload'
 
 import { handlerPath } from '@/jobs-queue/lib/handlerPath'
 import { QueueSlug, WorkflowSlug } from '@/types/jobs-queue'
 
 /**
- * Workflow configuration for generating a complete resume document with localized versions.
+ * Generate Resume Document
  *
- * This workflow orchestrates the entire resume document generation process, including:
- * - Generating a document title from a template
- * - Creating localized versions (English and German) of the resume document
- * - Generating thumbnails for each localized version
- * - Creating and persisting the final resume document record with all associated files
- *
- * The workflow uses a queue-based execution model with concurrency control to ensure
- * only one generation process runs at a time, superseding any existing workflows with
- * the same slug. All generated documents are stored with checksums for integrity verification.
- *
- * Every step is its own top-level task (own slug, own file, under
- * src/jobs-queue/tasks/) rather than an inline sub-step here — each runs through
- * withTaskObservability (applied once, to every entry in TASKS), so a failure
- * surfaces in Sentry with the specific task's span/slug/job-id context instead
- * of collapsing into one large workflow handler.
- *
- * Required input parameters:
- * - documentTitleTemplate: Template string for generating the document title
- * - filenameTemplate: Template string for generating output filenames
- * - customId: Eight-character id (see `@/lib/nanoid`'s `customId` generator)
- *   used for tracking and coordinating subtasks, and directly as the
- *   document's slug — no separate title-to-slug step needed, since the two
- *   are otherwise unrelated values.
- *
- * The workflow produces a ResumeDocument containing:
- * - Localized PDF documents for EN and DE
- * - Document thumbnails for both locales
- * - Checksums for file integrity
- * - Structured resume data in JSON format for each locale
+ * Only one run is active at a time — `supersedes` cancels an older run in
+ * favor of a newer one — and each step is its own top-level task (own slug,
+ * own file) rather than an inline sub-step here, so a failure surfaces with
+ * that task's slug/job-id instead of collapsing into one workflow handler.
+ * `customId` is a 5-letter id from `generateResumeId`, used directly as the
+ * document's slug. Steps live in `handlers/generateResumeDocument.tsx`.
  */
 
 export const generateResumeDocument: WorkflowConfig<WorkflowSlug['GenerateResumeDocument']> = {

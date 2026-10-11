@@ -1,6 +1,7 @@
 import type { TaskConfig } from 'payload'
 
 import { handlerPath } from '@/jobs-queue/lib/handlerPath'
+import { SEEDABLE_COLLECTIONS } from '@/lib/seed/seedableCollection'
 import { TaskSlug } from '@/types/jobs-queue'
 
 /**
@@ -23,11 +24,25 @@ export const seedCollection: TaskConfig<TaskSlug['SeedCollection']> = {
       name: 'collection',
       type: 'text',
       required: true,
+      typescriptSchema: [
+        () => ({
+          type: 'string',
+          enum: [...SEEDABLE_COLLECTIONS],
+          required: true,
+        }),
+      ],
     },
     {
       name: 'mode',
       type: 'text',
       required: true,
+      typescriptSchema: [
+        () => ({
+          type: 'string',
+          enum: ['seed', 'clean'],
+          required: true,
+        }),
+      ],
     },
     {
       name: 'count',

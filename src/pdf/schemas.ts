@@ -44,15 +44,6 @@ export const documentHeaderSchema = z.strictObject({
   }),
 })
 
-export const documentFooterSchema = z.strictObject({
-  generatedNotice: z.string(),
-  documentUrl: z.url(),
-  renderPagination: z.function({
-    input: z.tuple([z.string(), z.string()]),
-    output: z.string(),
-  }),
-})
-
 export const introductionSectionSchema = z.strictObject({
   type: z.literal(DocumentSectionType.Introduction),
   data: z.object({
@@ -109,6 +100,7 @@ export const documentSectionSchema = z.union([
 export const documentSchema = z.strictObject({
   isPreview: z.boolean().default(false),
   locale: z.literal(['en', 'de']).default('en'),
+  documentUrl: z.url(),
   document: z.strictObject({
     author: z.string(),
     title: z.string(),
@@ -116,6 +108,5 @@ export const documentSchema = z.strictObject({
     language: z.literal(['en_EN', 'de_DE']),
   }),
   header: documentHeaderSchema,
-  footer: documentFooterSchema,
   sections: z.array(documentSectionSchema),
 })
