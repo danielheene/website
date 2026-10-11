@@ -11,7 +11,7 @@ export const Card = ({ className, ...props }: React.ComponentProps<'div'>) => {
     <div
       className={cn(
         'bg-card text-card-foreground flex flex-col gap-5 rounded-xl border border-border py-5',
-        'col-span-full lg:col-span-2 h-full',
+        'h-full',
         className,
       )}
       {...props}

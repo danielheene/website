@@ -12,6 +12,8 @@ interface TooltipProps extends TooltipContentProps {
   onOpenChange?: (open: boolean) => void
   side?: 'top' | 'right' | 'bottom' | 'left'
   align?: 'start' | 'center' | 'end'
+  delayDuration?: number
+  skipDelayDuration?: number
 }
 
 export const Tooltip = ({
@@ -21,10 +23,12 @@ export const Tooltip = ({
   defaultOpen,
   onOpenChange,
   className,
+  delayDuration,
+  skipDelayDuration,
   ...props
 }: TooltipProps): JSX.Element => {
   return (
-    <TooltipPrimitive.Provider>
+    <TooltipPrimitive.Provider delayDuration={delayDuration} skipDelayDuration={skipDelayDuration}>
       <TooltipPrimitive.Root open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
         <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
         <TooltipPrimitive.Portal>
@@ -39,7 +43,7 @@ export const Tooltip = ({
               'data-[state=delayed-open]:data-[side=left]:animate-slideRightAndFade',
               'data-[state=delayed-open]:data-[side=right]:animate-slideLeftAndFade',
               'data-[state=delayed-open]:data-[side=top]:animate-slideDownAndFade',
-              '[&>span>svg]:fill-sidebar-accent-foreground',
+              '[&>span>svg]:fill-sidebar-accent-foreground z-999999',
               className,
             ])}
             {...props}

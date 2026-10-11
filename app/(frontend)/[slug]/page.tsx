@@ -81,12 +81,13 @@ export default async function Page({ params }: PageProps) {
   return (
     <PageContainer layout={layout} sections={extractSections(content)}>
       <HeroMedia
+        align={useCustomHeroContent ? 'center' : 'bottom'}
         className="border-b-2 border-b-primary"
         fallbackAlt={title || 'Hero Image'}
         slides={hero?.slides}
       >
         {useCustomHeroContent ? (
-          <div className="pt-40 pb-20">
+          <div className="py-20">
             <div className="container">
               {/* RichText is a Client Component that calls randomUUID(), which
                   Cache Components requires to sit behind a Suspense boundary. */}
@@ -96,7 +97,7 @@ export default async function Page({ params }: PageProps) {
                   enableGutter={false}
                   enableProse={false}
                   highlightedCode={highlightedHeroCode}
-                  className="font-mono text-balance text-6xl leading-tight text-foreground textshadow-lg shadow-primary/75 [&_h1]:text-6xl [&_h2]:text-5xl [&_h3]:text-3xl"
+                  className="font-mono text-balance text-4xl leading-tight text-foreground textshadow-lg shadow-primary/75 [&_h1]:text-4xl [&_h2]:text-3xl [&_h3]:text-2xl [&_p]:text-4xl"
                 />
               </Suspense>
             </div>

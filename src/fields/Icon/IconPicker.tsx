@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Button } from '@payloadcms/ui'
 
+import { isEqual } from 'lodash-es'
 import { cn } from 'tailwind-variants'
 
 import {
@@ -19,7 +20,7 @@ import { MIN_QUERY_LENGTH, useIconSearch } from './useIconSearch'
 /** Every alias, flattened in the order its group declares. */
 const ALL_FAVORITES: IconAlias[] = FAVORITE_GROUPS.flatMap((group) => [...group.aliases])
 
-/** The favorites tab, plus one tab per favorite collection. */
+/** The favorite tab, plus one tab per favorite collection. */
 const FAVORITES_TAB = 'favorites'
 
 /** Category filter value meaning "every category in this collection". */
@@ -41,7 +42,7 @@ export interface IconPickerProps {
  * Searchable icon grid shared by the Payload field and the Lexical toolbar, so
  * both behave identically.
  *
- * Resting state is the favorites list (aliases, no prefix). The favorite
+ * Resting state is the favorite list (aliases, no prefix). The favorite
  * collections sit alongside it as tabs that list their icons without requiring
  * a search, and a query long enough to be meaningful searches all of Iconify.
  */
@@ -60,12 +61,13 @@ export const IconPicker = ({
   const isSearching = trimmed.length >= MIN_QUERY_LENGTH
 
   // a field pinned to one collection has no tabs to offer
-  const collectionTabs = prefix ? [] : FAVORITE_COLLECTIONS
+  const collectionTabs = (prefix ? [] : FAVORITE_COLLECTIONS) as { prefix: string; label: string }[]
   const activeCollection = collectionTabs.find((collection) => collection.prefix === tab)
   const showingFavorites = tab === FAVORITES_TAB && !activeCollection
 
   /** The collection being browsed: an active tab, or a field pinned by `prefix`. */
   const browsePrefix = activeCollection?.prefix ?? prefix
+  const prevBrowsePrefixRef = useRef<string>(browsePrefix)
 
   const {
     icons: searchIcons,
@@ -93,10 +95,11 @@ export const IconPicker = ({
     enabled: !isSearching && Boolean(browsePrefix),
   })
 
-  // a category from the previous collection has no meaning in this one
-  // oxlint-disable-next-line react/exhaustive-deps -- reset is keyed on the collection, not the categories
   useEffect(() => {
-    setCategory(ALL_CATEGORIES)
+    if (!isEqual(prevBrowsePrefixRef.current, browsePrefix)) {
+      prevBrowsePrefixRef.current = browsePrefix
+      setCategory(ALL_CATEGORIES)
+    }
   }, [browsePrefix])
 
   /**

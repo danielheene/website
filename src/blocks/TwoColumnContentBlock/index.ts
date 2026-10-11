@@ -63,7 +63,7 @@ export const TwoColumnContentBlock: Block = {
       fields: [
         RichTextField({
           name: 'contentLeft',
-          editorVariant: 'markdown',
+          editorVariant: 'post',
           overrides: {
             label: false,
             admin: {
@@ -73,7 +73,7 @@ export const TwoColumnContentBlock: Block = {
         }),
         RichTextField({
           name: 'contentRight',
-          editorVariant: 'markdown',
+          editorVariant: 'post',
           overrides: {
             label: false,
             admin: {

@@ -6,10 +6,10 @@ import { Bar, BarChart, Tooltip, XAxis, YAxis } from 'recharts'
 import { cn } from 'tailwind-variants'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/AdminPanel/Card'
-import { Skeleton } from '@/components/Skeleton'
 
 import { SECTION_CONTENT_HEIGHT_CLASS } from './UmamiWidget.constants'
 import type { UmamiPageViews } from './UmamiWidget.data'
+import { GhostBarChart } from './UmamiWidget.GhostBarChart'
 
 interface CustomTooltipProps {
   active?: boolean
@@ -73,38 +73,45 @@ export const PageViewsSection = ({ data, dataIsLoading, className }: PageViewsSe
         <CardTitle>Pageviews</CardTitle>
         {/* Two series, so a legend stays present — the dependable identity
             channel a reader can rely on instead of matching colors by eye. */}
-        <ul className="flex items-center gap-4">
-          {SERIES.map((series) => (
-            <li key={series.dataKey} className="flex items-center gap-2">
-              <span
-                className="size-2.5 shrink-0 rounded-full"
-                style={{
-                  backgroundColor: series.color,
-                }}
-                aria-hidden="true"
-              />
-              <span className="text-muted-foreground text-xs">{series.label}</span>
-            </li>
-          ))}
-        </ul>
+        {!dataIsLoading && (
+          <ul className="flex items-center gap-4">
+            {SERIES.map((series) => (
+              <li key={series.dataKey} className="flex items-center gap-2">
+                <span
+                  className="size-2.5 shrink-0 rounded-full"
+                  style={{
+                    backgroundColor: series.color,
+                  }}
+                  aria-hidden="true"
+                />
+                <span className="text-muted-foreground text-xs font-mono">{series.label}</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </CardHeader>
       <CardContent>
         {/* Matches Paths'/Events' own content height so all three cards in
             the row line up — PageViews has no natural height of its own. */}
         <div className={SECTION_CONTENT_HEIGHT_CLASS}>
           {!data || dataIsLoading ? (
-            <Skeleton className="w-full h-full" />
+            <GhostBarChart className="w-full h-full" />
           ) : (
             <BarChart
               responsive
               data={refinedData}
-              // Recharts' accessibilityLayer gives the chart's SVG surface
-              // tabIndex=0, which puts a browser focus ring on it whenever
-              // any part of it is clicked (bars, axis ticks, anywhere).
-              // `:focus-visible` isn't reliable enough here to tell a real
-              // keyboard Tab-focus apart from a click on a `role="application"`
-              // element across browsers, so the ring is dropped unconditionally.
-              className="w-full h-full [&_.recharts-surface]:outline-none [&_.recharts-surface]:focus:outline-none"
+              // Recharts' accessibilityLayer makes the SVG surface
+              // tabIndex=0/role="application", which draws a native browser
+              // focus ring on click that `outline: none` alone can't suppress
+              // (Chromium paints it outside the normal outline/box-shadow box
+              // model for this role). Disabled rather than fought with CSS.
+              accessibilityLayer={false}
+              // Recharts still gives its internal `<g>` layers (e.g.
+              // `.recharts-zIndex-layer_*`) `tabindex="-1"`, which is not
+              // Tab-reachable but IS click-focusable, so Chromium's default
+              // focus ring still paints on them unless outline is unset
+              // directly on every `[tabindex]` element, not just the surface.
+              className="w-full h-full [&_.recharts-cartesian-axis-tick-value]:text-[10px] [&_.recharts-cartesian-axis-tick-value]:font-mono **:[[tabindex]]:outline-none"
               margin={{
                 top: 24,
                 right: 24,
@@ -122,9 +129,12 @@ export const PageViewsSection = ({ data, dataIsLoading, className }: PageViewsSe
                     day: 'numeric',
                   })
                 }}
-                className="text-xs"
+                tick={{ fill: 'var(--color-muted-foreground)' }}
+                angle={35}
+                textAnchor="start"
+                height={40}
               />
-              <YAxis width="auto" />
+              <YAxis width="auto" tick={{ fill: 'var(--color-muted-foreground)' }} />
               <Tooltip
                 content={<CustomTooltip />}
                 cursor={{
@@ -133,24 +143,13 @@ export const PageViewsSection = ({ data, dataIsLoading, className }: PageViewsSe
                 }}
               />
               {/* pageviews as the stack base (a pageview implies a session, so
-                  it is always >= visitors), visitors stacked above it — the
-                  2px surface gap between segments is the separator, not a
-                  stroke, per the design system's mark spec. */}
-              <Bar
-                dataKey="pageviews"
-                name="Pageviews"
-                stackId="views"
-                fill={pageviewsColor}
-                stroke="var(--color-card)"
-                strokeWidth={2}
-              />
+                  it is always >= visitors), visitors stacked above it. */}
+              <Bar dataKey="pageviews" name="Pageviews" stackId="views" fill={pageviewsColor} />
               <Bar
                 dataKey="visitors"
                 name="Visitors"
                 stackId="views"
                 fill={visitorsColor}
-                stroke="var(--color-card)"
-                strokeWidth={2}
                 radius={[4, 4, 0, 0]}
               />
             </BarChart>
@@ -171,19 +170,20 @@ function CustomTooltip({ active, label, payload }: CustomTooltipProps) {
   })
 
   return (
-    <div className="rounded-lg border bg-background px-3 py-2 text-xs shadow-xl">
+    <div className="rounded-lg bg-background px-3 py-2 text-xs font-mono shadow-xl">
       <div className="font-medium mb-2">{formattedDate}</div>
       {payload.map((item) => (
         <div key={item.dataKey} className="flex items-center gap-2">
           <div
-            className="size-2.5 rounded-full"
+            className="size-2.5 shrink-0 rounded-full"
             style={{
               backgroundColor: item.dataKey === 'pageviews' ? pageviewsColor : visitorsColor,
             }}
           />
           <span className="text-muted-foreground">
-            {item.dataKey === 'pageviews' ? 'Pageviews' : 'Visitors'}: {item.value.toLocaleString()}
+            {item.dataKey === 'pageviews' ? 'Pageviews' : 'Visitors'}
           </span>
+          <span className="text-muted-foreground ml-auto">{item.value.toLocaleString()}</span>
         </div>
       ))}
     </div>

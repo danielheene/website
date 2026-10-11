@@ -16,6 +16,7 @@ export const Skeleton = ({ ref, className, noPulse, ...props }: SkeletonProps) =
         'skeleton',
         'bg-accent relative rounded-xs overflow-hidden',
         !noPulse && 'animate-pulse',
+        className,
       ])}
       {...props}
     />

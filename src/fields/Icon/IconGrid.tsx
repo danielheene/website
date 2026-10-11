@@ -2,32 +2,20 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
+import { isEqual } from 'lodash-es'
 import { cn } from 'tailwind-variants'
 
 import { Icon, type IconName } from '@/components/Icon'
+import { Tooltip } from '@/components/Tooltip'
 
-import { IconTooltip } from './IconTooltip'
-
-/**
- * Minimum edge of one icon button, in px (2rem at the admin's 16px root).
- *
- * The grid packs as many whole columns of at least this size as the drawer is
- * wide, so buttons grow to fill the row rather than shrinking below a
- * comfortable hit target.
- */
-const MIN_CELL_PX = 40
-
-/** Gap between cells, in px — kept in sync with the `gap-1` class below. */
+const MIN_CELL_PX = 50
 const GAP_PX = 8
-
-/** Rows rendered above and below the viewport, to cover fast scrolling. */
 const OVERSCAN_ROWS = 4
 
 export interface IconGridProps {
   icons: string[]
   isSelected: (icon: string) => boolean
   onSelectAction: (icon: string) => void
-  /** Title/label for a candidate, e.g. showing the alias behind a full name. */
   describe?: (icon: string) => string
 }
 
@@ -37,12 +25,13 @@ export interface IconGridProps {
  * Collections run to 15,463 icons (`material-symbols`), and every `<Icon />`
  * resolves its own SVG through Iconify — so mounting the whole set would issue
  * thousands of requests and stall the browser. Windowing keeps the DOM at the
- * couple of hundred cells actually on screen while the full list stays
+ * couple of a hundred cells actually on screen while the full list stays
  * scrollable, which is what lets the picker offer a complete collection instead
  * of an arbitrary first slice.
  */
 export const IconGrid = ({ icons, isSelected, onSelectAction, describe }: IconGridProps) => {
   const scrollRef = useRef<HTMLDivElement>(null)
+  const prevIconsRef = useRef<string[]>(icons)
   const [scrollTop, setScrollTop] = useState<number>(0)
   const [viewportHeight, setViewportHeight] = useState<number>(0)
   const [viewportWidth, setViewportWidth] = useState<number>(0)
@@ -71,12 +60,14 @@ export const IconGrid = ({ icons, isSelected, onSelectAction, describe }: IconGr
 
   // a new result set scrolls back to the top, or the window would sit at an
   // offset the shorter list no longer has
-  // oxlint-disable-next-line react/exhaustive-deps -- resetting on identity change is the point
   useEffect(() => {
-    scrollRef.current?.scrollTo({
-      top: 0,
-    })
-    setScrollTop(0)
+    if (!isEqual(prevIconsRef.current, icons)) {
+      prevIconsRef.current = icons
+      scrollRef.current?.scrollTo({
+        top: 0,
+      })
+      setScrollTop(0)
+    }
   }, [icons])
 
   // cells are square, so row height follows from the measured column width
@@ -107,12 +98,9 @@ export const IconGrid = ({ icons, isSelected, onSelectAction, describe }: IconGr
         }}
       >
         <div
+          className={cn(['absolute left-0 right-0', 'grid'])}
           style={{
-            position: 'absolute',
             top: firstRow * rowHeight,
-            left: 0,
-            right: 0,
-            display: 'grid',
             gridTemplateColumns: `repeat(${columns}, minmax(${MIN_CELL_PX}px, 1fr))`,
             gap: GAP_PX,
           }}
@@ -122,28 +110,23 @@ export const IconGrid = ({ icons, isSelected, onSelectAction, describe }: IconGr
             const label = describe?.(candidate) ?? candidate
 
             return (
-              // the tooltip wrapper is the grid cell, so it carries the sizing
-              // and the button fills it
-              <IconTooltip key={candidate} label={label} className="aspect-square w-full min-w-8">
+              <Tooltip key={candidate} delayDuration={350} content={label}>
                 <button
                   type="button"
                   aria-label={label}
                   aria-pressed={selected}
                   onClick={() => onSelectAction(candidate)}
                   className={cn([
-                    'flex w-full cursor-pointer items-center justify-center rounded-md border text-foreground transition-colors',
+                    'flex w-full items-center justify-center',
+                    'aspect-square border-none p-0 m-0',
+                    'cursor-pointer text-foreground transition-colors',
                     'hover:bg-accent hover:text-accent-foreground',
                     'focus-visible:ring-2 focus-visible:ring-ring',
-                    // selection is the border only — no fill, no colour shift —
-                    // so the icon renders exactly as it does everywhere else.
-                    // The transparent border is always present, so colouring it
-                    // shifts nothing.
-                    selected ? 'border-primary' : 'border-transparent',
                   ])}
                 >
-                  <Icon name={candidate as IconName} className="size-5 text-[20px]" />
+                  <Icon name={candidate as IconName} className="size-[65%]" />
                 </button>
-              </IconTooltip>
+              </Tooltip>
             )
           })}
         </div>

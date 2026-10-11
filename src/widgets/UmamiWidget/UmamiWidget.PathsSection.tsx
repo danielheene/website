@@ -10,11 +10,11 @@ import {
   CardTitle,
 } from '@/components/AdminPanel/Card'
 import { MetricsTable } from '@/components/MetricsTable'
-import { Skeleton } from '@/components/Skeleton'
 import { useArrayPagination } from '@/lib/hooks/useArrayPagination'
 
 import { LIST_PAGE_SIZE, SECTION_CONTENT_HEIGHT_CLASS } from './UmamiWidget.constants'
 import type { UmamiPath } from './UmamiWidget.data'
+import { GhostRows } from './UmamiWidget.GhostRows'
 
 interface PathsSectionProps {
   data: UmamiPath[] | null
@@ -31,11 +31,11 @@ export const PathsSection = ({ data, dataIsLoading, className }: PathsSectionPro
     <Card className={cn([className])}>
       <CardHeader>
         <CardTitle>Paths</CardTitle>
-        <CardPagination {...pagination} />
+        {!dataIsLoading && <CardPagination {...pagination} />}
       </CardHeader>
       <CardContent>
         {!content || dataIsLoading ? (
-          <Skeleton className={contentClass} />
+          <GhostRows rows={LIST_PAGE_SIZE} className={contentClass} />
         ) : (
           <MetricsTable data={content} maxValue={maxMetricValue} className={contentClass} />
         )}

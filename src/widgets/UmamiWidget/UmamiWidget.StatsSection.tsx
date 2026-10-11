@@ -95,7 +95,7 @@ export const StatsSection = ({ data, dataIsLoading, className }: StatsSectionPro
   }, [data, dataIsLoading])
 
   return (
-    <div className={cn(['grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5 h-40', className])}>
+    <div className={cn(['flex flex-col gap-4 lg:flex-row', className])}>
       {stats.map((stat, index) => (
         <StatCard key={index} {...stat} />
       ))}
@@ -155,19 +155,24 @@ interface StatCardProps {
 
 function StatCard({ title, value, change, icon }: StatCardProps) {
   return (
-    <Card className="overflow-hidden col-span-1 md:col-span-1 lg:col-span-1 h-40">
-      <CardHeader>
+    <Card className="overflow-hidden h-14 py-0 flex-row items-center lg:h-40 lg:py-5 lg:flex-col lg:items-stretch lg:flex-1">
+      <CardHeader className="h-auto px-4 shrink-0 basis-[50%] lg:h-9 lg:px-5 lg:basis-auto">
         <CardTitle>{title}</CardTitle>
-        <Icon name={icon} className="text-2xl text-muted-foreground" />
+        <Icon name={icon} className="hidden text-2xl text-muted-foreground lg:block lg:shrink" />
       </CardHeader>
-      <CardContent>
+      <CardContent className="h-auto px-4 flex-row items-center justify-between grow lg:h-100 lg:px-5 lg:flex-col lg:items-stretch lg:justify-start lg:grow-0">
         {value && change ? (
           <>
-            <div className="h-10 flex items-center text-4xl font-mono font-bold">{value}</div>
-            <ChangeBadge change={change} />
+            <div className="basis-[60%] flex items-center text-xl font-mono font-bold lg:basis-auto lg:h-10 lg:text-4xl">
+              {value}
+            </div>
+            <ChangeBadge
+              change={change}
+              className="basis-[40%] justify-end lg:basis-auto lg:justify-start"
+            />
           </>
         ) : (
-          <Skeleton className="h-15" />
+          <Skeleton className="h-7 w-24 lg:h-15 lg:w-auto" />
         )}
       </CardContent>
     </Card>
@@ -180,7 +185,7 @@ const CHANGE_ICON: Record<ChangeDirection, IconName> = {
   flat: 'trending-flat',
 }
 
-function ChangeBadge({ change }: { change: Change }) {
+function ChangeBadge({ change, className }: { change: Change; className?: string }) {
   const { percent, direction, isGood } = change
 
   return (
@@ -192,10 +197,15 @@ function ChangeBadge({ change }: { change: Change }) {
           : direction === 'flat'
             ? 'text-muted-foreground'
             : 'text-destructive',
+        className,
       ])}
       title="vs. previous period"
     >
-      <Icon name={CHANGE_ICON[direction]} className="text-base" aria-hidden="true" />
+      <Icon
+        name={CHANGE_ICON[direction]}
+        className="hidden text-base lg:block"
+        aria-hidden="true"
+      />
       <span>{percent === null ? '—' : `${percent > 0 ? '+' : ''}${percent.toFixed(1)}%`}</span>
     </div>
   )

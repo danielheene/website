@@ -1,3 +1,5 @@
+import { ReactNode } from 'react'
+
 import { cn } from 'tailwind-variants'
 
 import { DuoTone } from '@/components/DuoTone'
@@ -9,17 +11,11 @@ import { ShaderHeroBackground } from './ShaderHeroBackground'
 import { toSlideItems } from './toSlideItems'
 
 export interface HeroMediaProps {
-  /** The whole `hero.slides` array value: `{ slideType, media, shader }[]`. */
   slides: unknown
-  /** Falls back to this when an asset carries no alt text of its own. */
   fallbackAlt?: string
-  /**
-   * Where the overlaid `children` sit. Page and post heroes hang their titles
-   * off the bottom edge; a standalone screen like 404 centres instead.
-   */
   align?: 'bottom' | 'center'
   className?: string
-  children?: React.ReactNode
+  children?: ReactNode
 }
 
 /**

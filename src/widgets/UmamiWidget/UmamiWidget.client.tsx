@@ -148,7 +148,7 @@ export const UmamiWidgetClient = ({
   )
 
   return (
-    <div className="grid grid-cols-12 gap-4">
+    <div className="grid grid-cols-12 gap-4 pb-8">
       <div className="col-span-12 flex flex-row justify-between items-center py-4">
         <Header
           domain={domain}
@@ -188,17 +188,17 @@ export const UmamiWidgetClient = ({
       <PageViewsSection
         data={pageViews.data}
         dataIsLoading={pageViews.isLoading}
-        className="col-span-10 lg:col-span-6"
+        className="col-span-12 2xl:col-span-6"
       />
       <PathsSection
         data={paths.data}
         dataIsLoading={paths.isLoading}
-        className="col-span-12 lg:col-span-3"
+        className="col-span-12 xl:col-span-6 2xl:col-span-3"
       />
       <EventsSection
         data={events.data}
         dataIsLoading={events.isLoading}
-        className="col-span-12 lg:col-span-3"
+        className="col-span-12 xl:col-span-6 2xl:col-span-3"
       />
     </div>
   )

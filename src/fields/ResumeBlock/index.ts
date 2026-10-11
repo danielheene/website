@@ -115,7 +115,7 @@ export const ResumeBlockField = <
           },
           RichTextField({
             name: 'caption',
-            editorVariant: 'inline',
+            editorVariant: 'minimal',
             overrides: {
               label: false,
               admin: {
