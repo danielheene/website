@@ -9,11 +9,17 @@ name: Build & Deploy
 # Images are tagged `latest` (production) or `edge` (development) — one tag
 # per branch, no per-SHA intermediate tags and no separate promote/retag
 # step: each push builds and pushes the final tag directly.
+#
+# workflow_dispatch is a manual re-run of the same pipeline on an existing
+# branch tip (e.g. to recover from a run that a [skip ci] push never
+# triggered) — not a way to run this on any other branch. Every job still
+# keys off github.ref, so a dispatch run must be started on main or develop.
 on:
   push:
     branches:
       - main
       - develop
+  workflow_dispatch: {}
 
 # Each job asks for what it needs.
 permissions:
