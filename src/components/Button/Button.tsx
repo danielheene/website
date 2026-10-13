@@ -58,7 +58,7 @@ export const buttonStyles = tv({
         '[--button-text-color:var(--color-foreground)] hover:[--button-text-color:var(--color-foreground)]',
         '[--button-background-color:var(--color-transparent)] hover:[--button-background-color:var(--color-transparent)]',
         '[--button-border-color:var(--color-transparent)] hover:[--button-border-color:var(--color-transparent)] border-none',
-        'normal-case underline underline-offset-4 hover:underline px-0!',
+        'normal-case underline underline-offset-4 hover:underline px-0! min-h-auto!',
       ],
     },
     size: {

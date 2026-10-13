@@ -13,6 +13,7 @@ import {
   RichText as ConvertRichText,
   type JSXConvertersFunction,
   LinkJSXConverter,
+  ListJSXConverter,
 } from '@payloadcms/richtext-lexical/react'
 
 import { cn } from 'tailwind-variants'
@@ -39,7 +40,6 @@ import { linkConverter } from './linkConverter'
 type NodeTypes = DefaultNodeTypes | SerializedBlockNode<BlockData>
 
 const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
-  // oxlint-disable-next-line typescript/no-non-null-assertion -- external code
   const { value, relationTo } = linkNode.fields.doc!
   if (typeof value !== 'object') {
     throw new Error('Expected value to be an object')
@@ -61,11 +61,53 @@ const buildJsxConverters =
      */
     const headingIds = new Map<string, number>()
 
+    // Document-order counter for checklist item input/label ids — the same
+    // scheme as `headingIds` above, reset per render. Payload's own
+    // `ListJSXConverter.listitem` generates these with `uuidv4()` on every
+    // render, which is random and mismatches between server and client
+    // hydration; a counter is deterministic for the same document.
+    let checklistItemIndex = 0
+
     return {
       ...defaultConverters,
       ...LinkJSXConverter({
         internalDocToHref,
       }),
+      ...ListJSXConverter,
+      listitem: (args) => {
+        const { node, parent } = args
+        if ('listType' in parent && parent.listType === 'check') {
+          const id = `checklist-item-${checklistItemIndex++}`
+          const hasSubLists = node.children.some((child) => child.type === 'list')
+          const children = args.nodesToJSX({ nodes: node.children })
+
+          return (
+            <li
+              aria-checked={node.checked ? 'true' : 'false'}
+              className={`list-item-checkbox${node.checked ? ' list-item-checkbox-checked' : ' list-item-checkbox-unchecked'}${hasSubLists ? ' nestedListItem' : ''}`}
+              // oxlint-disable-next-line jsx-a11y/no-noninteractive-element-to-interactive-role -- matches Payload's own ListJSXConverter, which this overrides for stable hydration ids
+              role="checkbox"
+              style={{ listStyleType: 'none' }}
+              tabIndex={-1}
+              value={node.value}
+            >
+              {hasSubLists ? (
+                children
+              ) : (
+                <>
+                  <input checked={node.checked} id={id} readOnly type="checkbox" />
+                  <label htmlFor={id}>{children}</label>
+                  <br />
+                </>
+              )}
+            </li>
+          )
+        }
+
+        return typeof ListJSXConverter.listitem === 'function'
+          ? ListJSXConverter.listitem(args)
+          : ListJSXConverter.listitem
+      },
       link: linkConverter,
       /**
        * The default upload converter only handles Payload's built-in `media`

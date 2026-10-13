@@ -2,10 +2,6 @@ import type { JSX, ReactNode } from 'react'
 
 import { cn } from 'tailwind-variants'
 
-import type { ExtractedHeading } from '@/lib/extractHeadings'
-
-import { TableOfContents } from './TableOfContents'
-
 export interface ArticleSidebarSection {
   /** Heading shown above the section; omit for an unlabelled block. */
   title?: string
@@ -13,11 +9,6 @@ export interface ArticleSidebarSection {
 }
 
 export interface ArticleSidebarProps {
-  headings: ExtractedHeading[]
-  /**
-   * Additional sections rendered below the table of contents — the extension
-   * point for related links, source repositories, downloads and the like.
-   */
   sections?: ArticleSidebarSection[]
   className?: string
 }
@@ -27,12 +18,9 @@ export interface ArticleSidebarProps {
  * the full width and the table of contents would only add noise.
  */
 export const ArticleSidebar = ({
-  headings,
-  sections = [],
   className,
+  sections = [],
 }: ArticleSidebarProps): JSX.Element | null => {
-  if (headings.length === 0 && sections.length === 0) return null
-
   return (
     <aside
       className={cn([
@@ -40,8 +28,6 @@ export const ArticleSidebar = ({
         className,
       ])}
     >
-      <TableOfContents headings={headings} />
-
       {sections.map(({ title, children }, index) => (
         <section key={title ?? index}>
           {title && (

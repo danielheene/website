@@ -77,9 +77,11 @@ export default async function RootLayout({
             a navigation updates it rather than remounting it: the animation
             has to go on `update`, not `share`.
           */}
-          <ViewTransition name="page-content" update="page-transition" default="none">
-            <div id="main-content">{children}</div>
-          </ViewTransition>
+          <Suspense fallback={null}>
+            <ViewTransition name="page-content" update="page-transition" default="none">
+              <div id="main-content">{children}</div>
+            </ViewTransition>
+          </Suspense>
           <Footer />
         </AllProviders>
         <Toasty />

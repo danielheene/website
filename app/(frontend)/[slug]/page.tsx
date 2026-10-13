@@ -8,7 +8,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 
 import { RenderBlocks } from '@/blocks/RenderBlocks'
-import { ArticleSidebar } from '@/components/ArticleSidebar'
+import { ArticleSidebar, TableOfContents } from '@/components/ArticleSidebar'
 import { Headline } from '@/components/Headline'
 import { HeroMedia } from '@/components/HeroMedia'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
@@ -123,7 +123,16 @@ export default async function Page({ params }: PageProps) {
             <div className="min-w-0 lg:col-span-8 [&_h2]:scroll-mt-24 [&_h3]:scroll-mt-24 [&_h4]:scroll-mt-24">
               <RenderBlocks blocks={content} />
             </div>
-            <ArticleSidebar headings={legalHeadings} className="lg:col-span-4 w-auto" />
+            <ArticleSidebar
+              className="lg:col-span-4 w-auto"
+              sections={[
+                legalHeadings &&
+                  legalHeadings.length > 0 && {
+                    title: 'On This Page',
+                    children: <TableOfContents headings={legalHeadings} />,
+                  },
+              ]}
+            />
           </div>
         </div>
       ) : (

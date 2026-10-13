@@ -13,6 +13,16 @@
 export type PageLayout = ('default' | 'home' | 'resume' | 'legal') | null;
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LinkGroupData".
+ */
+export type LinkGroupData =
+  | {
+      link: LinkFieldData;
+      id?: string | null;
+    }[]
+  | null;
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "SkillType".
  */
 export type SkillType =
@@ -599,12 +609,7 @@ export interface HighlightBoxBlock {
  * via the `definition` "LinkGroupBlock".
  */
 export interface LinkGroupBlock {
-  links?:
-    | {
-        link: LinkFieldData;
-        id?: string | null;
-      }[]
-    | null;
+  links?: LinkGroupData;
   id?: string | null;
   blockName?: string | null;
   blockType: 'LinkGroupBlock';
@@ -913,12 +918,7 @@ export interface BlogPostData {
     };
     [k: string]: unknown;
   } | null;
-  links?:
-    | {
-        link: LinkFieldData;
-        id?: string | null;
-      }[]
-    | null;
+  links?: LinkGroupData;
   /**
    * This field group contains meta information for SEO purposes.
    * It includes fields for title, description, and SERP optimization.
@@ -1920,12 +1920,7 @@ export interface PostsSelect<T extends boolean = true> {
   wordCount?: T;
   content?: T;
   excerpt?: T;
-  links?:
-    | T
-    | {
-        link?: T | LinkFieldDataSelect<T>;
-        id?: T;
-      };
+  links?: T | LinkGroupDataSelect<T>;
   meta?:
     | T
     | {
@@ -1937,6 +1932,14 @@ export interface PostsSelect<T extends boolean = true> {
   createdAt?: T;
   deletedAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LinkGroupData_select".
+ */
+export interface LinkGroupDataSelect<T extends boolean = true> {
+  link?: T | LinkFieldDataSelect<T>;
+  id?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

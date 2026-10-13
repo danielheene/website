@@ -11,11 +11,10 @@ import { getPayload } from 'payload'
 
 import { format } from 'date-fns'
 
-import { ArticleSidebar } from '@/components/ArticleSidebar'
+import { ArticleSidebar, TableOfContents } from '@/components/ArticleSidebar'
+import { LinkList } from '@/components/ArticleSidebar/LinkList'
 import { HeroMedia } from '@/components/HeroMedia'
-import { CMSLink } from '@/components/Link'
 import { RichText } from '@/components/RichText'
-import type { LinkFieldDataLean } from '@/fields/Link/lib/resolveLinkTarget'
 import { extractHeadings } from '@/lib/extractHeadings'
 import { generateMeta } from '@/lib/generateMeta'
 import { reduceDataToBilingualLanguage } from '@/lib/i18n'
@@ -24,6 +23,7 @@ import { placeholderParams } from '@/lib/placeholderParams'
 import { resolveRelations } from '@/lib/resolveRelation'
 import { highlightRichText } from '@/lib/shiki/highlightRichText'
 import { CollectionData, CollectionSlug } from '@/types/collections'
+import { LinkGroupData } from '@/types/payload'
 
 import { size } from './opengraph-image'
 
@@ -87,17 +87,6 @@ export default async function Page({ params: paramsPromise }: PageProps) {
     height: size.height,
     alt: title,
   }
-  //
-  // // Extract keywords from tags
-  // const postTags = tags
-  //   ? tags.map((tag) => (typeof tag === 'object' ? (tag as BlogTopic).title : '')).filter(Boolean)
-  //   : undefined
-
-  // Get category name for breadcrumb
-  // const category =
-  //   typeof categories === 'object' ? (categories as BlogCategory) : null
-  // const categoryName = category?.title || 'Blog'
-  // const categorySlug = category?.slug || ''
 
   // Generate BlogPosting schema
   const blogPostingSchema = generateBlogPosting({
@@ -159,8 +148,8 @@ export default async function Page({ params: paramsPromise }: PageProps) {
                     )}
                   </ol>
                 </nav>
-                <div className="flex w-full max-w-5xl  flex-col gap-5">
-                  <div className="flex items-center justify-center gap-2.5 font-mono text-sm text-foreground/60">
+                <div className="flex w-full max-w-5xl  flex-col gap-5 text-white">
+                  <div className="flex items-center justify-center gap-2.5 font-mono font-semibold text-sm text-white/80">
                     <time dateTime={createdAt}>{format(createdAt, 'MMMM d, yyyy')}</time>
                   </div>
                   <h1 className="text-[2.5rem] leading-[1.1] font-semibold font-mono text-balance md:text-6xl lg:text-7xl">
@@ -210,30 +199,20 @@ export default async function Page({ params: paramsPromise }: PageProps) {
               </article>
 
               <ArticleSidebar
-                headings={headings}
                 className="lg:col-span-4 w-auto"
-                sections={
-                  links && links.length > 0
-                    ? [
-                        {
-                          title: 'Links',
-                          children: (
-                            <ul className="flex flex-col gap-1">
-                              {links.map(({ id, link }) => (
-                                <li key={id}>
-                                  <CMSLink
-                                    {...(link as LinkFieldDataLean)}
-                                    className="text-muted-foreground no-underline transition-colors hover:text-foreground hover:underline"
-                                    variant="link"
-                                  />
-                                </li>
-                              ))}
-                            </ul>
-                          ),
-                        },
-                      ]
-                    : []
-                }
+                sections={[
+                  headings &&
+                    headings.length > 0 && {
+                      title: 'On This Page',
+                      children: <TableOfContents headings={headings} />,
+                    },
+
+                  links &&
+                    links.length > 0 && {
+                      title: 'Links',
+                      children: <LinkList links={links as LinkGroupData} />,
+                    },
+                ].filter(Boolean)}
               />
             </div>
           </div>
