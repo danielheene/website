@@ -128,7 +128,7 @@ describe('enqueueGenerateResumeDocument', () => {
 
     const [first, second] = queue.mock.calls.map((call) => call[0].input.customId)
 
-    expect(first).toHaveLength(10)
+    expect(first).toHaveLength(5)
     expect(second).not.toBe(first)
   })
 

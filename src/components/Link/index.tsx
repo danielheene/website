@@ -1,12 +1,13 @@
-import type React from 'react'
+import React, { JSX } from 'react'
 import Link from 'next/link'
 
+import { cn } from 'tailwind-variants'
+
 import { Button, ButtonProps } from '@/components/Button'
-import { Icon } from '@/components/Icon'
 import { resolveLinkProps } from '@/fields/Link/lib/resolveLinkProps'
 import type { LinkFieldDataLean } from '@/fields/Link/lib/resolveLinkTarget'
 
-type CMSLinkType = LinkFieldDataLean & {
+export interface CMSLinkProps extends LinkFieldDataLean {
   /**
    * Rendered inline content for the link — used by the RichText `link`
    * converter (`serialize.tsx`) to pass through the selection's actual
@@ -20,7 +21,7 @@ type CMSLinkType = LinkFieldDataLean & {
   variant?: ButtonProps['variant']
 }
 
-export const CMSLink: React.FC<CMSLinkType> = (props) => {
+export const CMSLink = (props: CMSLinkProps): JSX.Element => {
   const {
     children,
     className,
@@ -35,24 +36,18 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   const linkProps = resolveLinkProps(props)
   if (!linkProps) return null
 
-  const hasIcon = Boolean(iconBefore || iconAfter)
-  const content = children ?? text
-
   return (
     <Button
       className={className}
       size={size}
       variant={variant}
-      startIcon={!iconOnly && iconBefore ? iconBefore : undefined}
+      startIcon={iconBefore ? iconBefore : undefined}
       endIcon={!iconOnly && iconAfter ? iconAfter : undefined}
-      {...(hasIcon && iconOnly
-        ? {
-            'aria-label': text,
-          }
-        : {})}
       asChild
     >
-      <Link {...linkProps}>{iconOnly ? iconBefore && <Icon name={iconBefore} /> : content}</Link>
+      <Link {...linkProps}>
+        <span className={cn([iconOnly && 'sr-only'])}>{children ?? text}</span>
+      </Link>
     </Button>
   )
 }

@@ -4,9 +4,9 @@ import Link from 'next/link'
 import { cn } from 'tailwind-variants'
 
 import type { FeatureCardColor, FeatureCardSize } from '@/blocks/FeatureCardsBlock'
+import { Button } from '@/components/Button'
 import { Headline } from '@/components/Headline'
 import { ImageMedia } from '@/components/ImageMedia'
-import { CMSLink } from '@/components/Link'
 import { Reveal } from '@/components/Reveal'
 import { resolveLinkProps } from '@/fields/Link/lib/resolveLinkProps'
 import type { FeatureCardsBlock } from '@/types/payload'
@@ -97,7 +97,17 @@ const FeatureCardItem = ({ size, color, title, text, image, link }: FeatureCard)
         {text && (
           <p className="max-w-md text-base text-white/90 text-pretty whitespace-pre-line">{text}</p>
         )}
-        {link && <CMSLink {...link} variant="inverse" className={cn(['mt-2 self-start'])} />}
+        {link && (
+          <Button
+            variant="inverse"
+            className={cn(['mt-2 self-start'])}
+            startIcon={link.iconBefore}
+            endIcon={link.iconAfter}
+            asChild
+          >
+            <span>{link.text}</span>
+          </Button>
+        )}
       </div>
 
       {media?.url && (
