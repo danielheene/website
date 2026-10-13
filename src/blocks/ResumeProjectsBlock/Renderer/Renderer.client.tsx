@@ -19,7 +19,7 @@ interface ResumeProjectsBlockClientRendererProps extends ResumeProjectsBlock {
 }
 
 export const ResumeProjectsBlockClientRenderer = ({
-  blockType,
+  blockType: _blockType,
   caption,
   title,
   projects,

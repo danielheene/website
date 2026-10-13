@@ -24,11 +24,11 @@ interface ResumeDownloadsBlockClientRendererProps extends ResumeDownloadsBlock {
 export const ResumeDownloadsBlockClientRenderer = ({
   title,
   caption,
-  blockType,
+  blockType: _blockType,
   document_en,
   document_de,
   thumbnails_en,
-  thumbnails_de,
+  thumbnails_de: _thumbnails_de,
 }: ResumeDownloadsBlockClientRendererProps): JSX.Element => (
   <SectionContainer title={title} variant="default">
     <div className="container">

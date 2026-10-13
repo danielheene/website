@@ -6,7 +6,7 @@ import { getPayload } from 'payload'
 import { extractErrorMessage } from '@/lib/extractErrorMessage'
 import { BilingualLanguage, reduceDataToBilingualLanguage } from '@/lib/i18n'
 import { resolveRelations } from '@/lib/resolveRelation'
-import { GlobalData, GlobalSlugValue, RegisteredGlobalSlug } from '@/types/globals'
+import { GlobalData, RegisteredGlobalSlug } from '@/types/globals'
 
 /**
  * Fetches global data for a specific global slug from the KV store. If the data is not found in the KV store,

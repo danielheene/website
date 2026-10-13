@@ -5,7 +5,7 @@ import { MediaAudio } from '@/types/payload'
 export const generateThumbnail: CollectionAfterChangeHook<MediaAudio> = async ({
   context,
   doc,
-  req,
+  req: _req,
   previousDoc,
   operation,
 }) => {

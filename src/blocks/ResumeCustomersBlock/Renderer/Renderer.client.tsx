@@ -13,7 +13,7 @@ interface ResumeCustomersBlockClientRendererProps extends ResumeCustomersBlock {
 }
 
 export const ResumeCustomersBlockClientRenderer = ({
-  blockType,
+  blockType: _blockType,
   title,
   caption,
   logos,

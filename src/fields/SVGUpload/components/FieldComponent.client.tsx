@@ -16,7 +16,7 @@ interface FieldComponentClientProps extends UIFieldClientProps {
 export const FieldComponentClient = ({
   initialValue,
   path,
-  field,
+  field: _field,
 }: FieldComponentClientProps): JSX.Element => {
   const id = useId()
 

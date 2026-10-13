@@ -15,7 +15,7 @@ interface ResumeContactBlockClientRendererProps extends ResumeContactBlock {
 }
 
 export const ResumeContactBlockClientRenderer = ({
-  blockType,
+  blockType: _blockType,
   title,
   caption,
 }: ResumeContactBlockClientRendererProps) => (
