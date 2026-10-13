@@ -25,26 +25,14 @@ interface CacheEntry {
 }
 
 /**
- * Checks whether a published page exists for `slug`, memoizing the result —
- * including misses — in Redis.
- *
- * `proxy.ts` calls this for every request that would otherwise fall through
- * to the `[slug]` catch-all route, so the miss path is the hot one. It exists
- * because `notFound()` thrown from inside `[slug]/page.tsx` can no longer
- * change the response status once Cache Components has streamed that route's
- * static shell as a 200 — see the "Calling notFound() after streaming has
- * started" section of Next's own `notFound()` docs. Checking existence here,
- * before the response starts streaming, is what lets an unknown path return a
- * real 404.
+ * De-dupes concurrent lookups for the same slug within this process — a burst
+ * of requests for the same unknown slug (a scanner, a broken client retry
+ * loop) would otherwise all miss the Redis cache together and each run the
+ * same `payload.count()` before the first one finishes populating it.
  */
-export const pageSlugExists = async (slug: string): Promise<boolean> => {
-  const cacheKey = cacheKeyFor(slug)
-  const cached = await get<CacheEntry>(cacheKey)
+const inFlight = new Map<string, Promise<boolean>>()
 
-  if (cached) {
-    return cached.exists
-  }
-
+const queryPageSlugExists = async (slug: string): Promise<boolean> => {
   const payload = await getPayload({
     config,
   })
@@ -65,7 +53,7 @@ export const pageSlugExists = async (slug: string): Promise<boolean> => {
   const exists = totalDocs > 0
 
   await set(
-    cacheKey,
+    cacheKeyFor(slug),
     {
       exists,
     } satisfies CacheEntry,
@@ -73,6 +61,38 @@ export const pageSlugExists = async (slug: string): Promise<boolean> => {
   )
 
   return exists
+}
+
+/**
+ * Checks whether a published page exists for `slug`, memoizing the result —
+ * including misses — in Redis.
+ *
+ * `proxy.ts` calls this for every request that would otherwise fall through
+ * to the `[slug]` catch-all route, so the miss path is the hot one. It exists
+ * because `notFound()` thrown from inside `[slug]/page.tsx` can no longer
+ * change the response status once Cache Components has streamed that route's
+ * static shell as a 200 — see the "Calling notFound() after streaming has
+ * started" section of Next's own `notFound()` docs. Checking existence here,
+ * before the response starts streaming, is what lets an unknown path return a
+ * real 404.
+ */
+export const pageSlugExists = async (slug: string): Promise<boolean> => {
+  const cached = await get<CacheEntry>(cacheKeyFor(slug))
+  if (cached) {
+    return cached.exists
+  }
+
+  const pending = inFlight.get(slug)
+  if (pending) {
+    return pending
+  }
+
+  const query = queryPageSlugExists(slug).finally(() => {
+    inFlight.delete(slug)
+  })
+  inFlight.set(slug, query)
+
+  return query
 }
 
 /**
