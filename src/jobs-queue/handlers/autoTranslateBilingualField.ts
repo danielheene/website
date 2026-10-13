@@ -19,10 +19,7 @@ type DocLookup = {
   path: string
 }
 
-/**
- * Re-checks whether someone (the user, another job) already filled the
- * target between enqueue and this run.
- */
+/** Check whether the target was filled between enqueue and this run. */
 const isTargetPopulated = async (
   { payload, collectionSlug, docId, path }: DocLookup,
   targetLanguage: string,
@@ -41,7 +38,6 @@ const isTargetPopulated = async (
   return !isEmptyValue(currentTarget)
 }
 
-/** Writes a completed translation back into the target field and saves it. */
 const writeTranslation = async (
   { payload, collectionSlug, docId, path }: DocLookup,
   targetLanguage: string,

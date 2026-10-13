@@ -61,6 +61,7 @@ export const config = buildConfig({
         Logo: '@/components/AdminPanel#Logo',
       },
       Nav: '@/components/AdminPanel#Nav',
+      providers: ['@/components/AdminPanel#TooltipProvider'],
     },
     dashboard: {
       widgets: [

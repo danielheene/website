@@ -20,7 +20,7 @@ import { MIN_QUERY_LENGTH, useIconSearch } from './useIconSearch'
 /** Every alias, flattened in the order its group declares. */
 const ALL_FAVORITES: IconAlias[] = FAVORITE_GROUPS.flatMap((group) => [...group.aliases])
 
-/** The favorite tab, plus one tab per favorite collection. */
+/** The favorites tab, plus one tab per favorite collection. */
 const FAVORITES_TAB = 'favorites'
 
 /** Category filter value meaning "every category in this collection". */
@@ -42,7 +42,7 @@ export interface IconPickerProps {
  * Searchable icon grid shared by the Payload field and the Lexical toolbar, so
  * both behave identically.
  *
- * Resting state is the favorite list (aliases, no prefix). The favorite
+ * Resting state is the favorites list (aliases, no prefix). The favorite
  * collections sit alongside it as tabs that list their icons without requiring
  * a search, and a query long enough to be meaningful searches all of Iconify.
  */

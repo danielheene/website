@@ -299,11 +299,36 @@ export interface FeatureCardsBlock {
   heading?: string | null;
   cards?:
     | {
-        /**
-         * On wide screens. Cards stack on phones.
-         */
         size: 'third' | 'half' | 'twoThirds' | 'full';
-        color: 'primary' | 'rose' | 'violet' | 'sky' | 'teal' | 'amber';
+        color:
+          | 'primary'
+          | 'secondary'
+          | 'slate'
+          | 'gray'
+          | 'zinc'
+          | 'neutral'
+          | 'stone'
+          | 'red'
+          | 'orange'
+          | 'amber'
+          | 'yellow'
+          | 'lime'
+          | 'green'
+          | 'emerald'
+          | 'teal'
+          | 'cyan'
+          | 'sky'
+          | 'blue'
+          | 'indigo'
+          | 'violet'
+          | 'purple'
+          | 'fuchsia'
+          | 'pink'
+          | 'rose'
+          | 'info'
+          | 'success'
+          | 'warning'
+          | 'error';
         /**
          * Line breaks are kept.
          */

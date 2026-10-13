@@ -20,8 +20,6 @@ export const ColumnsBlock = () => {
   const isEditable = useLexicalEditable()
   const { value } = useField({ path: 'verticalAlignment' })
 
-  console.log(formSchema, value)
-
   return (
     <div
       className={cn([

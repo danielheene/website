@@ -28,7 +28,6 @@ export const buildResumeDocumentData = async (
   const { name } = await fetchGlobalUserSettings(locale)
 
   return documentSchema.safeParse({
-    isPreview: false,
     locale: locale,
     documentUrl,
     document: {

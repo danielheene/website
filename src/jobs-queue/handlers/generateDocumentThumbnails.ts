@@ -12,7 +12,7 @@ import { CollectionSlug } from '@/types/collections'
 import { TaskSlug } from '@/types/jobs-queue'
 
 /**
- * Renders a PDF document's pages to thumbnail images and attaches them.
+ * Render a PDF document's pages to thumbnail images and attach them.
  *
  * Old thumbnails are deleted before the new ones are created: `MediaDocuments`'
  * `adminThumbnail` builds its preview URL from a fixed filename pattern, so

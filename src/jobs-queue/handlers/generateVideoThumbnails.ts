@@ -67,7 +67,7 @@ const sampleToPng = async (sample: VideoSample) => {
 }
 
 /**
- * Decodes one frame of a video and attaches it as its thumbnail.
+ * Decode one frame of a video and attach it as its thumbnail.
  *
  * Like `generateDocumentThumbnails`, the old thumbnail is deleted before
  * the new one is created: `MediaVideos`' `adminThumbnail` builds its
@@ -105,12 +105,7 @@ const run: TaskHandler<TaskSlug['GenerateVideoThumbnails']> = async ({
   })
   const { width, height, buffer } = await sampleToPng(sample).finally(() => sample.close())
 
-  // Deleted before creating the replacement: `adminThumbnail` on this
-  // collection builds the preview URL from a fixed filename pattern
-  // (`<filename>-thumbnail.png`), so the new thumbnail must land on that
-  // exact name rather than whatever `getSafeFileName` renames it to if
-  // the old file is still there. Best-effort — a failed delete must not
-  // block regenerating the thumbnail.
+  // fixed thumbnail filename — see JSDoc
   if (Array.isArray(video.thumbnails) && video.thumbnails.length > 0) {
     try {
       await deleteThumbnails(payload, video.thumbnails)

@@ -7,7 +7,7 @@ interface GhostRowsProps {
   className?: string
 }
 
-/** Pulsing placeholder rows matching `MetricsTable`'s row height (40px incl. `gap-y-3`). */
+/** Pulsing placeholder rows matching `MetricsTable`'s row height. */
 export const GhostRows = ({ rows, className }: GhostRowsProps) => {
   return (
     <div className={cn(['flex flex-col gap-y-3', className])}>

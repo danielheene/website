@@ -155,21 +155,31 @@ interface StatCardProps {
 
 function StatCard({ title, value, change, icon }: StatCardProps) {
   return (
-    <Card className="overflow-hidden h-14 py-0 flex-row items-center lg:h-40 lg:py-5 lg:flex-col lg:items-stretch lg:flex-1">
+    <Card className="relative overflow-hidden h-14 py-0 flex-row items-center lg:h-40 lg:py-5 lg:flex-col lg:items-stretch lg:flex-1">
+      <Icon
+        name={icon}
+        className={cn([
+          'hidden lg:block h-[150%] w-auto aspect-square',
+          'absolute right-2/5 top-1/7 z-[0]',
+          '[&>path]:fill-white/2',
+        ])}
+      />
       <CardHeader className="h-auto px-4 shrink-0 basis-[50%] lg:h-9 lg:px-5 lg:basis-auto">
         <CardTitle>{title}</CardTitle>
-        <Icon name={icon} className="hidden text-2xl text-muted-foreground lg:block lg:shrink" />
       </CardHeader>
-      <CardContent className="h-auto px-4 flex-row items-center justify-between grow lg:h-100 lg:px-5 lg:flex-col lg:items-stretch lg:justify-start lg:grow-0">
+      <CardContent
+        className={cn([
+          'h-auto lg:h-auto px-4 lg:px-5',
+          'flex-row items-center justify-between grow',
+          'lg:flex-col lg:items-stretch lg:justify-start lg:grow-0',
+        ])}
+      >
         {value && change ? (
           <>
-            <div className="basis-[60%] flex items-center text-xl font-mono font-bold lg:basis-auto lg:h-10 lg:text-4xl">
+            <div className="basis-[60%] justify-end flex items-center text-xl font-mono font-bold lg:basis-auto lg:h-10 lg:text-4xl">
               {value}
             </div>
-            <ChangeBadge
-              change={change}
-              className="basis-[40%] justify-end lg:basis-auto lg:justify-start"
-            />
+            <ChangeBadge change={change} className="basis-[40%] justify-end lg:basis-auto" />
           </>
         ) : (
           <Skeleton className="h-7 w-24 lg:h-15 lg:w-auto" />

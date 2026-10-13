@@ -12,10 +12,12 @@ import { NavHeader } from './NavHeader'
 
 interface NavClientProps {
   navigationConfig: AdminNavigationGroup[]
-  // The nav footer depends on the resolved user (avatar/email/name), fetched
-  // server-side; passed as children so `Nav.tsx` can wrap just that part in
-  // `Suspense` while this shell (and the grid column it occupies) renders
-  // immediately.
+  /**
+   * Render the user-dependent footer slot
+   *
+   * Passed as a node so `Nav.tsx` can wrap only the user-resolving part in
+   * `Suspense`; the nav shell and its grid column render immediately.
+   */
   footer: React.ReactNode
 }
 

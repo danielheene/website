@@ -1,5 +1,7 @@
 import type { Block } from 'payload'
 
+import { cn } from 'tailwind-variants'
+
 import { RichTextField } from '@/fields/RichText'
 import { BlockGroup, BlockSlug } from '@/types/blocks'
 
@@ -25,6 +27,9 @@ export const TwoColumnContentBlock: Block = {
   fields: [
     {
       type: 'row',
+      admin: {
+        className: cn(['[&>.render-fields]:mb-1']),
+      },
       fields: [
         {
           name: 'verticalAlignment',

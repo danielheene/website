@@ -3,9 +3,8 @@ import Link from 'next/link'
 
 import { Button, ButtonProps } from '@/components/Button'
 import { Icon } from '@/components/Icon'
+import { resolveLinkProps } from '@/fields/Link/lib/resolveLinkProps'
 import type { LinkFieldDataLean } from '@/fields/Link/lib/resolveLinkTarget'
-import { CUSTOM_URL_SLUG, resolveLinkTarget } from '@/fields/Link/lib/resolveLinkTarget'
-import { generateContentURL } from '@/lib/generateContentURL'
 
 type CMSLinkType = LinkFieldDataLean & {
   /**
@@ -29,33 +28,12 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     iconBefore,
     iconOnly,
     text,
-    newTab,
     size,
     variant = 'link',
   } = props
 
-  const target = resolveLinkTarget(props)
-
-  if (!target) return null
-
-  const href =
-    target.relationTo === CUSTOM_URL_SLUG
-      ? target.value
-      : typeof target.value === 'object' && target.value.slug
-        ? generateContentURL({
-            collection: target.relationTo,
-            slug: target.value.slug,
-          })
-        : null
-
-  if (!href) return null
-
-  const newTabProps = newTab
-    ? {
-        rel: 'noopener noreferrer',
-        target: '_blank',
-      }
-    : {}
+  const linkProps = resolveLinkProps(props)
+  if (!linkProps) return null
 
   const hasIcon = Boolean(iconBefore || iconAfter)
   const content = children ?? text
@@ -74,9 +52,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
         : {})}
       asChild
     >
-      <Link href={href} {...newTabProps}>
-        {iconOnly ? iconBefore && <Icon name={iconBefore} /> : content}
-      </Link>
+      <Link {...linkProps}>{iconOnly ? iconBefore && <Icon name={iconBefore} /> : content}</Link>
     </Button>
   )
 }

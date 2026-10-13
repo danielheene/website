@@ -91,8 +91,6 @@ export const PageViewsSection = ({ data, dataIsLoading, className }: PageViewsSe
         )}
       </CardHeader>
       <CardContent>
-        {/* Matches Paths'/Events' own content height so all three cards in
-            the row line up — PageViews has no natural height of its own. */}
         <div className={SECTION_CONTENT_HEIGHT_CLASS}>
           {!data || dataIsLoading ? (
             <GhostBarChart className="w-full h-full" />
@@ -100,17 +98,9 @@ export const PageViewsSection = ({ data, dataIsLoading, className }: PageViewsSe
             <BarChart
               responsive
               data={refinedData}
-              // Recharts' accessibilityLayer makes the SVG surface
-              // tabIndex=0/role="application", which draws a native browser
-              // focus ring on click that `outline: none` alone can't suppress
-              // (Chromium paints it outside the normal outline/box-shadow box
-              // model for this role). Disabled rather than fought with CSS.
+              // accessibilityLayer's role="application" surface paints a native focus ring on click that CSS can't suppress
               accessibilityLayer={false}
-              // Recharts still gives its internal `<g>` layers (e.g.
-              // `.recharts-zIndex-layer_*`) `tabindex="-1"`, which is not
-              // Tab-reachable but IS click-focusable, so Chromium's default
-              // focus ring still paints on them unless outline is unset
-              // directly on every `[tabindex]` element, not just the surface.
+              // internal <g> layers keep tabindex="-1" (click-focusable), so unset outline on every [tabindex]
               className="w-full h-full [&_.recharts-cartesian-axis-tick-value]:text-[10px] [&_.recharts-cartesian-axis-tick-value]:font-mono **:[[tabindex]]:outline-none"
               margin={{
                 top: 24,

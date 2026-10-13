@@ -17,8 +17,10 @@ const mergeSkillTypes = (prevEntries: SkillTypeSortable[]): SkillTypeSortable[] 
   )
 
 /**
- * Update labels for existing entries from current skills, then append new ones.
- * Also prunes entries whose skill no longer exists in the collection at all.
+ * Merge current skills into the saved skill order
+ *
+ * Updates labels of existing entries, appends new skills and prunes entries
+ * whose skill no longer exists.
  */
 const mergeSkillEntries = (
   prevEntries: SkillEntrySortable[],

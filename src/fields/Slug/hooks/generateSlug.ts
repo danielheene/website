@@ -5,7 +5,7 @@ import { get } from 'lodash-es'
 import { generateSlug } from '@/lib/generateSlug'
 
 /**
- * Generates a slug from the specified source field if no slug is set.
+ * Generate a slug from the specified source field if no slug is set.
  *
  * Runs only on published documents to prevent premature slug generation
  * during drafts, avoiding unnecessary URL changes and redirects.

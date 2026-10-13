@@ -14,6 +14,9 @@
 @import './theme/_text.css' layer(theme);
 @import './theme/_text-shadows.css' layer(theme);
 
+@plugin 'tw-easing-gradients';
+@plugin '@toolwind/corner-shape';
+
 @custom-variant light (&:where(.light, .light *, [data-theme="light"], [data-theme="light"] *));
 @custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
 @custom-variant primary (&:where(.primary, .primary *));
@@ -27,7 +30,7 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border corner-squircle outline-ring/50;
   }
 
   html,
@@ -236,7 +239,7 @@
 
     /* inline code */
     :where(code):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply font-mono text-sm text-foreground bg-muted rounded px-1.5 py-0.5;
+      @apply font-mono text-sm text-foreground bg-muted rounded-md px-1.5 py-0.5;
 
       &::before,
       &::after {
@@ -269,7 +272,7 @@
 
     /* kbd */
     :where(kbd):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-      @apply font-mono text-sm text-foreground rounded border border-border px-1.5 py-0.5;
+      @apply font-mono text-sm text-foreground rounded-md border border-border px-1.5 py-0.5;
       box-shadow: 0 1px 0 color-mix(in oklab, var(--foreground) 10%, transparent);
     }
 
@@ -304,7 +307,7 @@
       @apply my-1 flex items-center gap-2 leading-relaxed;
 
       input[type='checkbox'] {
-        @apply h-4 w-4 shrink-0 cursor-default rounded accent-primary;
+        @apply h-4 w-4 shrink-0 cursor-default rounded-md accent-primary;
       }
 
       label {

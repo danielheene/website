@@ -149,57 +149,45 @@ function createRichTextEditor({
       FixedToolbarFeature({
         applyToFocusedEditor: true,
         customGroups: {
-          /**
-           * text: paragraph, headings, ordered list, unordered list, check list, blockquote
-           */
+          // paragraph, headings, ordered/unordered/check list, blockquote
           text: {
             type: 'dropdown',
             order: 10,
             maxActiveItems: 1,
           },
 
-          /**
-           * format: bold, italic, underline, strikethrough, superscript, subscript, inline code
-           */
+          // bold, italic, underline, strikethrough, superscript, subscript, inline code
           format: {
             type: 'buttons',
             order: 20,
           },
 
-          /**
-           * alignment: left, center, right, justify
-           */
+          // left, center, right, justify
           align: {
-            type: 'buttons',
+            type: 'dropdown',
             order: 30,
           },
 
-          /**
-           * indentation: increase, decrease
-           */
+          // increase, decrease
           indent: {
             type: 'buttons',
             order: 40,
           },
 
-          /**
-           * features: links, blockquote, hr, code
-           */
+          // links, blockquote, hr, code
           features: {
             type: 'buttons',
             order: 45,
           },
 
-          /**
-           * custom blocks:
-           */
+          // custom blocks
           add: {
-            type: 'buttons',
+            type: 'dropdown',
             order: 50,
           },
 
           blocks: {
-            type: 'buttons',
+            type: 'dropdown',
             order: 55,
           },
         },
@@ -218,6 +206,7 @@ function createRichTextEditor({
       LinkFeature({
         fields: () => linkFeatureFields,
       }),
+      IconPickerFeature(),
     ]
   }
 
@@ -249,91 +238,11 @@ function createRichTextEditor({
       }),
       IndentFeature(),
       EXPERIMENTAL_TableFeature(),
-      IconPickerFeature(),
     ]
   }
 
   return lexicalEditor({
     features,
-    // lexical: {
-    //   // disableEvents: true,
-    //   namespace: 'de',
-    //   theme: {
-    //     blockCursor: '',
-    //     characterLimit: '',
-    //     code: '',
-    //     codeHighlight: undefined,
-    //     hashtag: '',
-    //     specialText: '',
-    //     heading: {
-    //       h1: '',
-    //       h2: '',
-    //       h3: '',
-    //       h4: '',
-    //       h5: '',
-    //       h6: '',
-    //     },
-    //     hr: '',
-    //     hrSelected: '',
-    //     image: '',
-    //     link: '',
-    //     list: {
-    //       ul: '',
-    //       ulDepth: [],
-    //       ol: '',
-    //       olDepth: [],
-    //       checklist: '',
-    //       listitem: '',
-    //       listitemChecked: '',
-    //       listitemUnchecked: '',
-    //       nested: {
-    //         list: '',
-    //         listitem: '',
-    //       },
-    //     },
-    //     ltr: '',
-    //     mark: '',
-    //     markOverlap: '',
-    //     paragraph: '',
-    //     quote: '',
-    //     root: '',
-    //     rtl: '',
-    //     tab: '',
-    //     table: '',
-    //     tableAddColumns: '',
-    //     tableAddRows: '',
-    //     tableCellActionButton: '',
-    //     tableCellActionButtonContainer: '',
-    //     tableCellSelected: '',
-    //     tableCell: '',
-    //     tableCellHeader: '',
-    //     tableCellResizer: '',
-    //     tableRow: '',
-    //     tableScrollableWrapper: '',
-    //     tableSelected: '',
-    //     tableSelection: '',
-    //     text: {
-    //       base: '',
-    //       bold: '',
-    //       code: '',
-    //       highlight: '',
-    //       italic: '',
-    //       lowercase: '',
-    //       uppercase: '',
-    //       capitalize: '',
-    //       strikethrough: '',
-    //       subscript: '',
-    //       superscript: '',
-    //       underline: '',
-    //       underlineStrikethrough: '',
-    //     },
-    //     embedBlock: {
-    //       base: '',
-    //       focus: '',
-    //     },
-    //     indent: '',
-    //   },
-    // },
     admin: {
       hideGutter: true,
       hideInsertParagraphAtEnd: true,

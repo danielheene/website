@@ -98,7 +98,6 @@ export const documentSectionSchema = z.union([
 ])
 
 export const documentSchema = z.strictObject({
-  isPreview: z.boolean().default(false),
   locale: z.literal(['en', 'de']).default('en'),
   documentUrl: z.url(),
   document: z.strictObject({

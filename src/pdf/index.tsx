@@ -63,7 +63,6 @@ const styles = StyleSheet.create({
 })
 
 interface ResumeDocumentProps {
-  isPreview: boolean
   locale: BilingualLanguage
   documentUrl: string
   document: {
@@ -77,7 +76,6 @@ interface ResumeDocumentProps {
 }
 
 export const ResumeDocument = ({
-  // isPreview,
   locale,
   documentUrl,
   document,

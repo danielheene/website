@@ -26,7 +26,8 @@ export const RichTextBlock: Block = {
   fields: [
     RichTextField({
       name: 'content',
-      editorVariant: 'content',
+      editorVariant: 'post',
+      modifyBlocks: (blocks) => [...blocks, BlockSlug.TwoColumnContent],
       overrides: {
         label: false,
       },
