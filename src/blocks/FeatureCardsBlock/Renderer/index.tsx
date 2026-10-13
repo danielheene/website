@@ -38,7 +38,7 @@ const COLOR_CLASSES: Record<FeatureCardColor, string> = {
   green: 'from-green-400 via-green-600 to-green-950 text-white',
   emerald: 'from-emerald-400 via-emerald-600 to-emerald-950 text-white',
   teal: 'from-teal-400 via-teal-600 to-teal-950 text-white',
-  cyan: 'from-cyan-400 via-cyan-600 to-cyan-950text-black',
+  cyan: 'from-cyan-400 via-cyan-600 to-cyan-950 text-black',
   sky: 'from-blue-400 via-blue-600 to-blue-950 text-black',
   blue: 'from-blue-400 via-blue-600 to-blue-950 text-white',
   indigo: 'from-indigo-400 via-indigo-600 to-indigo-950 text-white',
