@@ -22,6 +22,7 @@ export const Switch = ({
   const [localChecked, setLocalChecked] = useState(false)
 
   const checked = typeof checkedFromProps !== 'undefined' ? checkedFromProps : localChecked
+
   const setChecked =
     typeof onCheckedChangeFromProps === 'function' ? onCheckedChangeFromProps : setLocalChecked
 
@@ -29,10 +30,10 @@ export const Switch = ({
     <SwitchPrimitives.Root
       ref={ref as Ref<HTMLButtonElement>}
       className={cn([
-        'peer inline-flex p-0 h-6 w-11 shrink-0',
+        'peer inline-flex h-6 w-11 shrink-0 p-0',
         'cursor-pointer items-center rounded-full border-2 border-transparent transition-colors',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-        'disabled:cursor-not-allowed disabled:opacity-50 ',
+        'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none',
+        'disabled:cursor-not-allowed disabled:opacity-50',
         'data-[state=checked]:bg-primary data-[state=unchecked]:bg-input',
         className,
       ])}
@@ -45,7 +46,7 @@ export const Switch = ({
       <span tabIndex={0} role="switch" aria-checked={checked}>
         <SwitchPrimitives.Thumb
           className={cn([
-            'block h-5 w-5 rounded-full bg-background',
+            'block size-5 rounded-full bg-background',
             'pointer-events-none shadow-lg ring-0',
             'transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0',
           ])}

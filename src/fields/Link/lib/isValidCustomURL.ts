@@ -37,6 +37,7 @@ export const isValidCustomURL = (value: unknown): boolean => {
   if (typeof value !== 'string') return false
 
   const candidate = value.trim()
+
   if (!candidate) return false
 
   try {

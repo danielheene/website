@@ -49,6 +49,7 @@ export const rescheduleJob = async (
   } catch (error) {
     const message = extractErrorMessage(error)
     payload.logger.error(`Failed rescheduling job ${jobId}: ${message}`)
+
     return {
       ok: false,
       error: message,

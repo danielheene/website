@@ -79,7 +79,9 @@ const runGuard = async (
 
   const findByID = vi.fn(async ({ collection, id }: { collection: string; id: string }) => {
     const title = titles[`${collection}:${id}`]
+
     if (!title) throw new Error('not found')
+
     return {
       title,
     }
@@ -225,10 +227,12 @@ describe('referencesPlugin', () => {
     const config = applyPlugin([CollectionSlug.Pages])
 
     const created: Record<string, unknown>[] = []
+
     const payload = {
       delete: vi.fn().mockResolvedValue({}),
       create: vi.fn(async ({ data }: { data: Record<string, unknown> }) => {
         created.push(data)
+
         return data
       }),
       logger: {
@@ -292,10 +296,12 @@ describe('referencesPlugin', () => {
     } as unknown as Config) as Config
 
     const created: Record<string, unknown>[] = []
+
     const payload = {
       delete: vi.fn().mockResolvedValue({}),
       create: vi.fn(async ({ data }: { data: Record<string, unknown> }) => {
         created.push(data)
+
         return data
       }),
       logger: {
@@ -305,6 +311,7 @@ describe('referencesPlugin', () => {
     }
 
     const hooks = findCollection(config, CollectionSlug.Pages)?.hooks?.afterChange ?? []
+
     const args = {
       doc: {
         id: 'page-1',

@@ -44,9 +44,11 @@ export const FieldComponent: TextFieldServerComponent = async (props: FieldCompo
         }),
       ]
     }
+
     if (typeof anntotation === 'object') {
       return [anntotation]
     }
+
     return []
   })(customAnnotationFromProps)
 
@@ -60,11 +62,15 @@ export const FieldComponent: TextFieldServerComponent = async (props: FieldCompo
             payload,
           })
         : data
+
     const parsed = z.record(z.string(), z.string()).safeParse(nextData)
+
     if (!parsed.success) {
       console.error(z.prettifyError(parsed.error))
+
       return {}
     }
+
     return parsed.data
   })(customDataFromProps)
 

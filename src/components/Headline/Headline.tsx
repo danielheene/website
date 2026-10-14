@@ -19,8 +19,11 @@ export const Headline = memo(function Headline({
 }: HeadlineProps) {
   const Comp = useMemo(() => {
     if (variant === 'page-title') return as ?? 'h1'
+
     if (variant === 'section') return as ?? 'h2'
+
     if (variant === 'subline') return as ?? 'h3'
+
     return 'h3'
   }, [as, variant])
 

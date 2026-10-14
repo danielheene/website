@@ -63,11 +63,13 @@ export const FieldComponentClient = ({
       reader.addEventListener('load', async (event: ProgressEvent<FileReader>) => {
         if (!event.target?.result) {
           toast.error('Uploaded file seems to be empty. Please try again.')
+
           return
         }
 
         try {
           const svg = event.target.result.toString()
+
           const { data } = optimize(svg, {
             js2svg: {
               indent: 2,
@@ -184,9 +186,9 @@ export const FieldComponentClient = ({
   return (
     <div
       className={cn([
-        'flex flex-col justify-center items-center',
-        'overflow-hidden aspect-3-2 relative w-full',
-        'bg-card border border-border',
+        'flex flex-col items-center justify-center',
+        'relative aspect-3-2 w-full overflow-hidden',
+        'border border-border bg-card',
       ])}
     >
       <label
@@ -207,7 +209,7 @@ export const FieldComponentClient = ({
                 />
               </svg>
             </div>
-            <span className={cn(['flex flex-row flex-nowrap', 'font-mono uppercase items-center'])}>
+            <span className={cn(['flex flex-row flex-nowrap', 'items-center font-mono uppercase'])}>
               Click or drag the logo here.
             </span>
           </Fragment>
@@ -216,8 +218,8 @@ export const FieldComponentClient = ({
           <span
             className={cn([
               baseIconStyles,
-              '[&>svg]:opacity-10 [&>svg]:animate-spin [&>svg]:origin-center',
-              '[&>svg]:w-[50%] [&>svg]:max-w-[50%] [&>svg]:h-[50%] [&>svg]:max-h-[50%]',
+              '[&>svg]:origin-center [&>svg]:animate-spin [&>svg]:opacity-10',
+              '[&>svg]:size-[50%] [&>svg]:max-h-[50%] [&>svg]:max-w-[50%]',
             ])}
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

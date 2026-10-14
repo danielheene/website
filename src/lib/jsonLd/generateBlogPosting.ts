@@ -80,13 +80,21 @@ export function generateBlogPosting(data: BlogPostingData): WithContext<BlogPost
   }
 
   if (data.alternativeHeadline) blogPosting.alternativeHeadline = data.alternativeHeadline
+
   if (data.description) blogPosting.description = data.description
+
   if (data.abstract) blogPosting.abstract = data.abstract
+
   if (data.dateModified) blogPosting.dateModified = data.dateModified
+
   if (author) blogPosting.author = author
+
   if (data.keywords && data.keywords.length > 0) blogPosting.keywords = data.keywords.join(', ')
+
   if (data.articleSection) blogPosting.articleSection = data.articleSection
+
   if (data.articleBody) blogPosting.articleBody = data.articleBody
+
   if (data.timeRequired) blogPosting.timeRequired = data.timeRequired
 
   if (data.audio) {

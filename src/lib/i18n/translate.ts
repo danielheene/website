@@ -197,6 +197,7 @@ export const translate = (
 
   if (!template) {
     console.warn(`Missing translation for key ${key}`)
+
     return key
   }
 

@@ -73,6 +73,7 @@ const POST_TITLES = [
 const postTitleFor = (index: number): string => {
   const base = POST_TITLES[(index - 1) % POST_TITLES.length]
   const cycle = Math.floor((index - 1) / POST_TITLES.length)
+
   return cycle === 0 ? base : `${base} (${cycle + 1})`
 }
 
@@ -223,6 +224,7 @@ const lexicalArticle = ({
 
   if (imageIds.length > 0 && chance(random, 0.8)) {
     nodes.push(upload('images', pick(random, imageIds)))
+
     if (chance(random, 0.5)) {
       nodes.push(
         paragraph([text('An embedded image node, captioned like an editor would.', IS_ITALIC)]),
@@ -315,6 +317,7 @@ const createSeedImage = async (payload: Payload, index: number): Promise<string>
   const source = `https://picsum.photos/seed/${SEED_PREFIX}-post-${index}/1600/900`
 
   const response = await fetch(source)
+
   if (!response.ok) throw new Error(`Failed to download placeholder image: HTTP ${response.status}`)
 
   const data = Buffer.from(await response.arrayBuffer())
@@ -369,12 +372,14 @@ const resolveTopicIds = async (payload: Payload, count: number): Promise<string[
       pagination: false,
       trash: true,
     })
+
     return docs.map((topic) => String(topic.id))
   }
 
   let ids = await findSeededTopics()
 
   const MAX_ATTEMPTS = 10
+
   for (let attempt = 1; ids.length < count && attempt <= MAX_ATTEMPTS; attempt += 1) {
     // Request more than the raw shortfall each attempt: seedTopics may skip
     // pool slots that already exist (possibly outside the `count` we can
@@ -456,6 +461,7 @@ export const seedPosts = async (
 
     let imageId: string | undefined
     let slides: BlogPostData['hero']['slides']
+
     if (useShader) {
       slides = [
         {
@@ -485,6 +491,7 @@ export const seedPosts = async (
 
     const topicCount = Math.min(1 + (index % 3 === 0 ? 1 : 0), availableTopicIds.length)
     const offset = availableTopicIds.length > 0 ? index % availableTopicIds.length : 0
+
     const topicIds = Array.from(
       {
         length: topicCount,
@@ -558,6 +565,7 @@ export const cleanPosts = async (
   })
 
   const mediaIds = new Set<string>()
+
   for (const post of posts) {
     for (const slide of post.hero?.slides ?? []) {
       if (slide.media?.relationTo === 'images') {
@@ -568,6 +576,7 @@ export const cleanPosts = async (
   }
 
   let deleted = 0
+
   for (const [index, post] of posts.entries()) {
     onProgress?.({
       step: `Deleting ${post.slug}`,
@@ -587,6 +596,7 @@ export const cleanPosts = async (
   }
 
   let deletedMedia = 0
+
   for (const mediaId of mediaIds) {
     const { docs: seededMedia } = await payload.find({
       collection: CollectionSlug.MediaImages,

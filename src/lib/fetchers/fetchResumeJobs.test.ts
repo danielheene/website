@@ -15,6 +15,7 @@ describe('fetchResumeJobs', () => {
     const findMock = vi.fn(async () => ({
       docs: [],
     }))
+
     vi.mocked(getPayload).mockResolvedValueOnce({
       find: findMock,
     } as unknown as Awaited<ReturnType<typeof getPayload>>)

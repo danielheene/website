@@ -12,6 +12,7 @@ type FieldComponentClientProps = {
 
 export const FieldComponentClient = ({ path, field, titlePath }: FieldComponentClientProps) => {
   const prevTitle = useRef<string>(null)
+
   const { value: title } = useField<string>({
     path: titlePath,
   })

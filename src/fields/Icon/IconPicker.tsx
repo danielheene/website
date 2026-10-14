@@ -107,6 +107,7 @@ export const IconPicker = ({
    * compare on the resolved name to avoid showing neither as selected.
    */
   const selectedIconName = value ? resolveIconName(value) : undefined
+
   const isSelected = (candidate: string) =>
     Boolean(selectedIconName) && resolveIconName(candidate) === selectedIconName
 
@@ -122,15 +123,19 @@ export const IconPicker = ({
   const results: string[] = (() => {
     // a query always searches Iconify, whichever tab is open
     if (isSearching) return searchIcons
+
     // at rest, favorites are local and collections list in full — the grid
     // windows itself, so a 15k set costs no more to show than a small one
     if (showingFavorites) return ALL_FAVORITES
+
     return browseIcons
   })()
 
   const emptyHint = (() => {
     if (loading || results.length > 0) return null
+
     if (isSearching) return 'No icons found.'
+
     return 'No icons available.'
   })()
 
@@ -146,7 +151,7 @@ export const IconPicker = ({
       : null
 
   return (
-    <div className={cn(['flex h-full w-full flex-col gap-3', className])}>
+    <div className={cn(['flex size-full flex-col gap-3', className])}>
       {collectionTabs.length > 0 && (
         <div className="flex flex-wrap items-center gap-1" role="tablist" aria-label="Icon source">
           <TabButton
@@ -225,6 +230,7 @@ export const IconPicker = ({
           }
           describe={(candidate) => {
             const alias = showingFavorites ? candidate : findIconAlias(candidate)
+
             return alias && alias !== candidate ? `${alias} (${candidate})` : candidate
           }}
         />

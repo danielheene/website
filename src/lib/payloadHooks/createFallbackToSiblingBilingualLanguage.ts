@@ -10,6 +10,7 @@ export const createFallbackToSiblingBilingualLanguage = (locale: 'en' | 'de'): F
     const valueIsMissing = !value || value.trim() === ''
 
     if (valueIsMissing && siblingHasValue) return siblingData[locale]
+
     return value
   }
 }

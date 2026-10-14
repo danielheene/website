@@ -13,13 +13,16 @@ export async function GET(request: NextRequest) {
   const locale = localeParam === 'de' ? 'de' : 'en'
 
   const resumeSlug = await generateResumeId()
+
   const result = await buildResumeDocumentData({
     documentUrl: generateResumeDocumentRedirectURL(resumeSlug),
     creationDate: new Date(),
     locale,
   })
+
   if (!result.success) {
     const prettyErrors = z.prettifyError(result.error)
+
     return new Response(prettyErrors, {
       status: 404,
     })
@@ -30,6 +33,7 @@ export async function GET(request: NextRequest) {
   const blob = new Blob([Buffer.from(fileBuffer)], {
     type: 'application/pdf',
   })
+
   return new Response(blob, {
     status: 200,
     headers: {

@@ -23,7 +23,7 @@ export const Image = memo(function ResumeProjectsSectionImage({
   return (
     <div
       className={cn([
-        'col-span-12 md:col-span-4 lg:col-span-5 relative mt-16 md:mt-0',
+        'relative col-span-12 mt-16 md:col-span-4 md:mt-0 lg:col-span-5',
         odd ? 'md:order-1' : 'md:order-2 md:col-start-9 lg:col-start-8',
       ])}
     >
@@ -36,9 +36,9 @@ export const Image = memo(function ResumeProjectsSectionImage({
             : undefined
         }
         className={cn([
-          'relative bg-card border-4 border-primary rounded-sm',
+          'relative rounded-sm border-4 border-primary bg-card',
           'transition-all duration-300 ease-in-out',
-          'md:max-h-none md:h-full w-full md:w-auto overflow-hidden',
+          'w-full overflow-hidden md:h-full md:max-h-none md:w-auto',
           showImage ? 'max-h-[1000px]' : 'max-h-40',
           isReady ? 'opacity-100' : 'opacity-0',
           odd ? 'md:float-right' : 'md:float-left',
@@ -50,7 +50,7 @@ export const Image = memo(function ResumeProjectsSectionImage({
           height={image.height}
           width={image.width}
           loading="lazy"
-          className="absolute -top-1 -left-1 -right-1 -bottom-1 w-auto h-auto"
+          className="absolute -top-1 -right-1 -bottom-1 -left-1 size-auto"
           // imgClassName="object-cover object-top md:object-contain md:object-center"
           onLoadAction={() => setIsReady(true)}
         />
@@ -60,9 +60,9 @@ export const Image = memo(function ResumeProjectsSectionImage({
         type="button"
         className={cn([
           'md:hidden',
-          'relative z-10 w-10 h-10 mx-auto -mt-5',
+          'relative z-10 mx-auto -mt-5 size-10',
           'flex items-center justify-center text-3xl leading-none',
-          'text-primary-foreground bg-primary rounded-full hover:bg-primary-800',
+          'rounded-full bg-primary text-primary-foreground hover:bg-primary-800',
           'transition-all duration-300 ease-in-out',
           showImage ? 'rotate-180' : 'rotate-0',
         ])}

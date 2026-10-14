@@ -34,6 +34,7 @@ export const uploadHeroSlideMedia = async (
   if (!(file instanceof File)) {
     throw new Error('No file was provided.')
   }
+
   if (kind !== 'image' && kind !== 'video') {
     throw new Error(`Unexpected upload kind: ${String(kind)}`)
   }

@@ -112,6 +112,7 @@ const describeUsages = async (
             })
 
             const value = (doc as Record<string, unknown> | null)?.[titleField]
+
             if (typeof value === 'string' && value.trim()) title = value.trim()
           } catch {
             // fall through to the id
@@ -120,11 +121,13 @@ const describeUsages = async (
       }
 
       const name = title ?? sourceId
+
       return path ? `${label} "${name}" (${path})` : `${label} "${name}"`
     }),
   )
 
   const remainder = usages.length - listed.length
+
   return remainder > 0 ? `${described.join(', ')} and ${remainder} more` : described.join(', ')
 }
 

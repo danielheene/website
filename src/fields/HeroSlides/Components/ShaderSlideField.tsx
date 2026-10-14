@@ -11,6 +11,7 @@ import { SHADER_COMPONENTS } from './shaderComponents'
 const ShaderPickerDrawer = dynamic(() => import('./ShaderPickerDrawer'), {
   ssr: false,
 })
+
 const ShaderPreviewCanvas = dynamic(() => import('./ShaderPreviewCanvas'), {
   ssr: false,
 })
@@ -27,6 +28,7 @@ const HeroSlideShaderField = ({ path, field, readOnly }: SelectFieldClientProps)
   const { value, setValue, showError, errorMessage } = useField<ShaderPresetKey>({
     path,
   })
+
   const { openModal } = useModal()
   const drawerSlug = useDrawerSlug(`hero-shader-picker-${path}`)
 
@@ -40,7 +42,7 @@ const HeroSlideShaderField = ({ path, field, readOnly }: SelectFieldClientProps)
         {selectedPreset ? (
           <div className="h-16 w-24 overflow-hidden rounded-md border border-input">
             <ShaderPreviewCanvas
-              className="h-full w-full"
+              className="size-full"
               entry={SHADER_COMPONENTS[selectedPreset.key]}
             />
           </div>

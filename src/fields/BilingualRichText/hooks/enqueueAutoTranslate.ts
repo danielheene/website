@@ -39,11 +39,14 @@ export const enqueueAutoTranslate: FieldHook<AnyDocWithID, BilingualValue> = asy
   context,
 }) => {
   if (context?.skipAutoTranslate) return value
+
   if (!collection?.slug) return value // globals aren't supported here
+
   if (operation !== 'create' && operation !== 'update') return value
 
   // afterChange runs after the write, so a create already has its id.
   const docId = data?.id ?? req.routeParams?.id
+
   if (!docId) return value
 
   const shouldFill = (source: BilingualLanguageValue, target: BilingualLanguageValue): boolean =>
@@ -76,9 +79,11 @@ export const enqueueAutoTranslate: FieldHook<AnyDocWithID, BilingualValue> = asy
     })
 
   const jobs: Promise<unknown>[] = []
+
   if (shouldFill(BilingualLanguage.English, BilingualLanguage.German)) {
     jobs.push(enqueue(BilingualLanguage.English, BilingualLanguage.German))
   }
+
   if (shouldFill(BilingualLanguage.German, BilingualLanguage.English)) {
     jobs.push(enqueue(BilingualLanguage.German, BilingualLanguage.English))
   }

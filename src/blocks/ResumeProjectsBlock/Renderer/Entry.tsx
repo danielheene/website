@@ -23,7 +23,7 @@ export const Entry = memo(function ResumeProjectsSectionEntry({
     <article className={cn(['grid grid-cols-12 gap-4'])}>
       <div
         className={cn([
-          'col-span-12 md:col-span-7 lg:col-span-6 flex flex-col',
+          'col-span-12 flex flex-col md:col-span-7 lg:col-span-6',
           index % 2 ? 'md:order-2 md:col-start-6 lg:col-start-7' : 'md:order-1',
         ])}
       >
@@ -33,12 +33,12 @@ export const Entry = memo(function ResumeProjectsSectionEntry({
           </Headline>
         )}
         {title && (
-          <Headline variant="section" className="text-3xl text-primary line-height-1">
+          <Headline variant="section" className="line-height-1 text-3xl text-primary">
             {title}
           </Headline>
         )}
         {description && (
-          <RichText data={description} enableGutter={false} className="mt-16 order-3" />
+          <RichText data={description} enableGutter={false} className="order-3 mt-16" />
         )}
       </div>
       {images?.[0]?.value && <Image image={images[0].value} odd={!!(index % 2)} />}

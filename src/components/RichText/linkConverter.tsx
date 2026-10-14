@@ -27,6 +27,7 @@ export const linkConverter: JSXConverters<SerializedLinkNode>['link'] = ({ node,
   // (which only reads `doc`/`url`), not close enough for a direct
   // assignment, hence the `unknown` hop.
   const fields = node.fields as unknown as LinkFieldDataLean | undefined
+
   const children = nodesToJSX({
     nodes: node.children,
   })

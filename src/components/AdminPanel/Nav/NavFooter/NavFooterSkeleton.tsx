@@ -6,7 +6,7 @@ export const NavFooterSkeleton = () => {
     <footer className="nav-footer">
       <div className="nav-footer__trigger-wrapper">
         <div className="nav-footer__trigger">
-          <Skeleton className="size-10 rounded-md shrink-0" />
+          <Skeleton className="size-10 shrink-0 rounded-md" />
           <div className="nav-footer__identity gap-1">
             <Skeleton className="h-3.5 w-20" />
             <Skeleton className="h-3 w-28" />

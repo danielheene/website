@@ -45,12 +45,15 @@ const isId = (value: unknown): value is string | number =>
 /** Resolves either a bare id or a populated document to its id. */
 const toId = (value: unknown): string | null => {
   if (isId(value)) return String(value)
+
   if (value && typeof value === 'object' && 'id' in value) {
     const { id } = value as {
       id?: unknown
     }
+
     return isId(id) ? String(id) : null
   }
+
   return null
 }
 
@@ -77,6 +80,7 @@ const collectMonomorphicTargets = (
 ): Map<string, string> => {
   const walkBlock = (block: Block | string): void => {
     const resolved = typeof block === 'string' ? blocks.get(block) : block
+
     if (!resolved?.fields) return
 
     // a slug can appear under several fields; only its first visit adds anything
@@ -102,11 +106,13 @@ const collectMonomorphicTargets = (
     if ('fields' in field && Array.isArray(field.fields)) {
       collectMonomorphicTargets(field.fields as Field[], blocks, target, seen)
     }
+
     if ('blocks' in field && Array.isArray(field.blocks)) {
       for (const block of field.blocks) {
         walkBlock(block as Block | string)
       }
     }
+
     /**
      *    Blocks defined once on the config and referenced by slug. The field's
      *    own `blocks` array is typically empty in that case, so skipping these
@@ -117,6 +123,7 @@ const collectMonomorphicTargets = (
         walkBlock(block as Block | string)
       }
     }
+
     if ('tabs' in field && Array.isArray(field.tabs)) {
       for (const tab of field.tabs) {
         if (tab && typeof tab === 'object' && 'fields' in tab) {
@@ -147,15 +154,18 @@ export const extractReferences = (
 ): DocumentReference[] => {
   const { only, fields, blocks } = options
   const allowed = only ? new Set(only) : null
+
   const monomorphic = collectMonomorphicTargets(
     fields,
     new Map((blocks ?? []).map((block) => [block.slug, block])),
   )
+
   const found = new Map<string, DocumentReference>()
 
   const add = (relationTo: string, id: string, path: string) => {
     if (allowed && !allowed.has(relationTo)) return
     const key = `${relationTo}:${id}`
+
     // keep the first path seen; it is the most stable for reporting
     if (!found.has(key)) {
       found.set(key, {
@@ -170,6 +180,7 @@ export const extractReferences = (
     // monomorphic relationship: a bare id whose field config names the target
     if (isId(node) && fieldName && monomorphic.has(fieldName)) {
       add(monomorphic.get(fieldName) as string, String(node), path)
+
       return
     }
 
@@ -179,6 +190,7 @@ export const extractReferences = (
       node.forEach((item, index) => {
         walk(item, joinPath(path, index), fieldName)
       })
+
       return
     }
 
@@ -187,12 +199,15 @@ export const extractReferences = (
     // polymorphic shape: { relationTo: 'images', value: <id | doc> }
     if (typeof record.relationTo === 'string') {
       const id = toId(record.value)
+
       if (id) {
         add(record.relationTo, id, path)
+
         // a populated value may itself embed further references
         if (record.value && typeof record.value === 'object') {
           walk(record.value, joinPath(path, 'value'))
         }
+
         return
       }
     }
@@ -200,6 +215,7 @@ export const extractReferences = (
     // a populated monomorphic relation arrives as the document itself
     if (fieldName && monomorphic.has(fieldName) && isId(record.id)) {
       add(monomorphic.get(fieldName) as string, String(record.id), path)
+
       return
     }
 

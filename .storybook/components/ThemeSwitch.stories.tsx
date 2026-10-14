@@ -58,6 +58,7 @@ export const Interactive: Story = {
   },
   render: () => {
     const [theme, setTheme] = useState('system')
+
     return <ThemeSwitch theme={theme} setTheme={setTheme} />
   },
 }

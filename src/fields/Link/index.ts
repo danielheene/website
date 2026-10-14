@@ -10,6 +10,7 @@ import { CollectionSlug } from '@/types/collections'
 import { LinkFieldData } from '@/types/payload'
 
 type LinkFieldOverrides = Partial<Omit<GroupField, 'name' | 'type' | 'fields'>>
+
 type LinkFieldConfig = {
   overrides?: LinkFieldOverrides
 }
@@ -130,6 +131,7 @@ const linkTargetRow: Field = {
         },
       ) => {
         if (resolveLinkTypeMode(siblingData) !== 'custom') return true
+
         if (!value) return 'Enter a custom URL.'
 
         return isValidCustomURL(value)
@@ -174,6 +176,7 @@ const linkTextRow = ({ withIcons }: { withIcons: boolean }): Field => ({
                 beforeChange: [
                   async ({ value, siblingData }) => {
                     if (!value || siblingData?.iconOnly) return null
+
                     return value
                   },
                 ],
@@ -221,8 +224,11 @@ export const LinkField = ({ overrides = {} }: LinkFieldConfig = {}): GroupField 
             LinkFieldData
           >) => {
             if (value.linkType === 'internal') delete value.url
+
             if (value.linkType === 'custom') delete value.doc
+
             if (value.iconOnly) delete value.iconAfter
+
             return value
           },
         ],

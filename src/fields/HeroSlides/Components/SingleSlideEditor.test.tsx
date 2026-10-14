@@ -10,6 +10,7 @@ import { SingleSlideEditor } from './SingleSlideEditor'
 type Row = {
   id: string
 }
+
 type FieldStateStub = Record<
   string,
   {
@@ -82,15 +83,18 @@ vi.mock('next/dynamic', () => ({
       const [Component, setComponent] = React.useState<React.ComponentType<
         Record<string, unknown>
       > | null>(null)
+
       React.useEffect(() => {
         let cancelled = false
         void loader().then((mod) => {
           if (!cancelled) setComponent(() => mod.default)
         })
+
         return () => {
           cancelled = true
         }
       }, [])
+
       return Component ? <Component {...props} /> : null
     }
   },

@@ -74,7 +74,7 @@ export const HeroMedia = ({
             />
           ) : (
             <ShaderHeroBackground
-              className="absolute inset-0 h-full w-full"
+              className="absolute inset-0 size-full"
               presetKey={items[0].presetKey}
             />
           )}

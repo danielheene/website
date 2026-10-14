@@ -38,6 +38,7 @@ export const ServiceStatusClient = ({
     }
 
     if (!timeoutRef.current) updateData()
+
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current)
     }
@@ -60,9 +61,9 @@ export const ServiceStatusClient = ({
           {status.code !== OverallStatusCode.NoServices && (
             <span
               className={cn([
-                'relative inline-flex w-2 h-2',
-                'before:inline-flex before:w-2 before:h-2 before:bg-current before:rounded-full',
-                'after:inline-flex after:absolute after:w-full after:h-full after:bg-current after:rounded-full after:animate-ping after:opacity-75',
+                'relative inline-flex size-2',
+                'before:inline-flex before:size-2 before:rounded-full before:bg-current',
+                'after:absolute after:inline-flex after:size-full after:animate-ping after:rounded-full after:bg-current after:opacity-75',
               ])}
             />
           )}

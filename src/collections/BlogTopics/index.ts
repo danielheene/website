@@ -130,6 +130,7 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
           if (typeof value === 'string' && RESERVED_TOPIC_SLUGS.includes(value)) {
             return `"${value}" is reserved by the blog routes — choose another slug.`
           }
+
           return true
         },
       },

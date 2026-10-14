@@ -19,7 +19,9 @@ export const BlockGroup = {
 } as const
 
 export type BlockGroup = typeof BlockGroup
+
 export type BlockGroupKey = keyof BlockGroup & string
+
 export type BlockGroupValue = BlockGroup[BlockGroupKey] & string
 
 /**
@@ -51,10 +53,13 @@ export const BlockSlug = {
 } as const
 
 export type BlockSlug = typeof BlockSlug
+
 export type BlockSlugKey = keyof BlockSlug & string
+
 export type BlockSlugValue = BlockSlug[BlockSlugKey] & string
 
 export type { BlockSlug as RegisteredBlockSlug } from 'payload'
+
 export type BlockData<
   T extends RegisteredBlockSlug = RegisteredBlockSlug & string,
   L extends BilingualLanguage = 'en',

@@ -37,17 +37,26 @@ export function generatePersonSchema(
   }
 
   if (data.jobTitle) person.jobTitle = data.jobTitle
+
   if (data.url) person.url = data.url
+
   if (data.email) person.email = data.email
+
   if (data.telephone) person.telephone = data.telephone
+
   // if (data.description) person.description = data.description
   if (data.sameAs && Array.isArray(data.sameAs) && data.sameAs.length > 0) {
     person.sameAs = data.sameAs.map(({ url }) => url)
   }
+
   if (data.duns) person.duns = data.duns
+
   if (data.birthDate) person.birthDate = data.birthDate
+
   if (data.gender) person.gender = data.gender
+
   if (data.vatID) person.vatID = data.vatID
+
   if (data.taxID) person.taxID = data.taxID
 
   if (data.address) {

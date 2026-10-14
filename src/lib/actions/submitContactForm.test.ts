@@ -21,6 +21,7 @@ const findGlobal = vi.fn(
     firstName: OWNER_FIRST_NAME,
   }),
 )
+
 const sendEmail = vi.fn(async (_options: SendEmailOptions) => ({}))
 const loggerError = vi.fn()
 
@@ -50,11 +51,13 @@ const initialState: ContactFormState = {
 
 const formData = (fields: Partial<Record<'name' | 'email' | 'message' | 'company', string>>) => {
   const data = new FormData()
+
   for (const [key, value] of Object.entries(fields)) {
     if (value !== undefined) {
       data.set(key, value)
     }
   }
+
   return data
 }
 

@@ -10,7 +10,7 @@ export const LanguageToggle = ({ currentLanguage, setLanguage }: LanguageToggleP
     <button
       type="button"
       className={cn(
-        'btn btn--style-secondary h-8 w-12 p-0 m-0 bg-white text-primary font-mono relative',
+        'btn btn--style-secondary relative m-0 h-8 w-12 bg-white p-0 font-mono text-primary',
       )}
       onClick={() => {
         const nextLocale = ['en', 'de'].find((locale) => locale !== currentLanguage)
@@ -27,14 +27,14 @@ export const LanguageToggle = ({ currentLanguage, setLanguage }: LanguageToggleP
       </span>
       <span
         className={cn([
-          'absolute left-1/2 top-1/2 px-1',
-          '-translate-1/2 bg-white rotate-30',
-          "before:content-[''] before:block before:w-[2px] before:h-[1.25em] before:bg-primary",
+          'absolute top-1/2 left-1/2 px-1',
+          '-translate-1/2 rotate-30 bg-white',
+          "before:block before:h-[1.25em] before:w-[2px] before:bg-primary before:content-['']",
         ])}
       />
       <span
         className={cn([
-          'absolute bottom-0 right-0.5',
+          'absolute right-0.5 bottom-0',
           currentLanguage === 'de' ? 'text-primary' : 'text-gray-400',
         ])}
       >

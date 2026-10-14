@@ -60,6 +60,7 @@ export const syncBilingualAddress = async ({
           location: value.en.location,
         }),
       ])
+
       return {
         en,
         de,
@@ -67,14 +68,17 @@ export const syncBilingualAddress = async ({
     } catch (error) {
       console.error('Error reverse-geocoding address:', error)
     }
+
     return value
   }
 
   // Use whichever locale changed as the source of truth for both
   const sourceLocale = enChanged ? 'en' : deChanged ? 'de' : null
+
   if (!sourceLocale) return value
 
   const source = value[sourceLocale]
+
   if (!hasRequiredFields(source)) return value
 
   try {
@@ -88,6 +92,7 @@ export const syncBilingualAddress = async ({
         ...source,
       }),
     ])
+
     return {
       en,
       de,

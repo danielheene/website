@@ -14,7 +14,7 @@ const initialState: ContactFormState = {
 const inputStyles = cn(
   'w-full rounded-none border border-border bg-transparent px-4 py-3',
   'text-base placeholder:text-muted-foreground',
-  'outline-none transition-colors',
+  'transition-colors outline-none',
   'focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30',
   'aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20',
 )
@@ -38,10 +38,10 @@ export const ContactForm = () => {
       ref={formRef}
       action={formAction}
       noValidate
-      className="col-span-12 md:col-start-3 md:col-span-8 my-8 flex flex-col gap-6 text-left"
+      className="col-span-12 my-8 flex flex-col gap-6 text-left md:col-span-8 md:col-start-3"
     >
       <div className="flex flex-col gap-2">
-        <label htmlFor={nameId} className="text-sm font-mono uppercase tracking-wide">
+        <label htmlFor={nameId} className="font-mono text-sm tracking-wide uppercase">
           Name
         </label>
         <input
@@ -63,7 +63,7 @@ export const ContactForm = () => {
       </div>
 
       <div className="flex flex-col gap-2">
-        <label htmlFor={emailId} className="text-sm font-mono uppercase tracking-wide">
+        <label htmlFor={emailId} className="font-mono text-sm tracking-wide uppercase">
           Email
         </label>
         <input
@@ -85,7 +85,7 @@ export const ContactForm = () => {
       </div>
 
       <div className="flex flex-col gap-2">
-        <label htmlFor={messageId} className="text-sm font-mono uppercase tracking-wide">
+        <label htmlFor={messageId} className="font-mono text-sm tracking-wide uppercase">
           Message
         </label>
         <textarea
@@ -111,7 +111,7 @@ export const ContactForm = () => {
         for naive bots that fill in every input they find. Any value here
         makes submitContactForm silently no-op.
       */}
-      <div aria-hidden="true" className="absolute left-[-9999px] top-auto h-0 w-0 overflow-hidden">
+      <div aria-hidden="true" className="absolute top-auto left-[-9999px] size-0 overflow-hidden">
         <label htmlFor={companyId}>Company</label>
         <input id={companyId} name="company" type="text" tabIndex={-1} autoComplete="off" />
       </div>

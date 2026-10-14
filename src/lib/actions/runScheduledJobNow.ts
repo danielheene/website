@@ -42,6 +42,7 @@ export const runScheduledJobNow = async (jobId: string): Promise<void> => {
     const progress: ScheduledJobActionProgress = {
       status: 'queued',
     }
+
     await publish(channel, progress)
   } catch (error) {
     const message = extractErrorMessage(error)
@@ -50,6 +51,7 @@ export const runScheduledJobNow = async (jobId: string): Promise<void> => {
       status: 'error',
       message,
     }
+
     await publish(channel, progress)
 
     payload.logger.error(`Failed running job ${jobId} now: ${message}`)

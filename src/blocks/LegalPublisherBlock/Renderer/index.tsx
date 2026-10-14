@@ -13,6 +13,7 @@ export const LegalPublisherBlockRenderer = async () => {
     telephone: telephoneRaw,
     vatID,
   } = await fetchGlobalUserSettingsCached('en')
+
   const telephone = parsePhoneNumber(telephoneRaw)
 
   return (
@@ -20,7 +21,7 @@ export const LegalPublisherBlockRenderer = async () => {
       <address
         className={cn([
           'flex flex-col gap-4',
-          'text-foreground not-italic font-mono text-lg leading-snug',
+          'font-mono text-lg leading-snug text-foreground not-italic',
           '[&_strong]:font-bold',
         ])}
       >
@@ -35,13 +36,13 @@ export const LegalPublisherBlockRenderer = async () => {
           {address.countryName}
         </p>
         <p>
-          <Button variant="link" asChild className="no-underline h-auto">
+          <Button variant="link" asChild className="h-auto no-underline">
             <a href={`mailto:${email}`}>
               <Icon name="mail" data-icon="inline-start" /> {email}
             </a>
           </Button>
           <br />
-          <Button variant="link" asChild className="no-underline h-auto">
+          <Button variant="link" asChild className="h-auto no-underline">
             <a href={telephone.getURI()}>
               <Icon name="phone" data-icon="inline-start" />
               {telephone.formatInternational()}
@@ -55,7 +56,7 @@ export const LegalPublisherBlockRenderer = async () => {
         )}
       </address>
 
-      <p className="py-4 block text-sm opacity-80">
+      <p className="block py-4 text-sm opacity-80">
         This Legal Notice complies with the German laws under § 5 DDG and § 55 RStV.
       </p>
     </section>

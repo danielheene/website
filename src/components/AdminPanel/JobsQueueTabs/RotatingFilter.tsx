@@ -48,6 +48,7 @@ export const RotatingFilter = ({
     }
 
     document.addEventListener('mousedown', handleClickOutside)
+
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [isPopupOpen])
 
@@ -59,6 +60,7 @@ export const RotatingFilter = ({
   const move = (direction: 1 | -1) => {
     if (selected === null) {
       handleSelect(direction === 1 ? options[0] : options[options.length - 1])
+
       return
     }
 
@@ -67,6 +69,7 @@ export const RotatingFilter = ({
 
     if (nextIndex < 0 || nextIndex >= options.length) {
       handleSelect(null)
+
       return
     }
 

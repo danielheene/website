@@ -1,8 +1,15 @@
 export * from './fetchGlobalUserSettings'
+
 export * from './fetchPDFGeneratorSettings'
+
 export * from './fetchResumeCustomers'
+
 export * from './fetchResumeJobs'
+
 export * from './fetchResumeProjects'
+
 export * from './fetchResumeSkills'
+
 export * from './fetchResumeSkillTags'
+
 export * from './fetchSiteSettings'

@@ -16,6 +16,7 @@ const findByID = vi.fn(async () => ({
   completedAt: null,
   hasError: false,
 }))
+
 const update = vi.fn(async () => ({}))
 const logError = vi.fn()
 const publishMock = vi.fn()

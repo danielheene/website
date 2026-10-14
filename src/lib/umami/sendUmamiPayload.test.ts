@@ -40,10 +40,12 @@ describe('sendUmamiPayload', () => {
 
     it('falls back to fetch with keepalive when sendBeacon is unavailable', async () => {
       vi.stubGlobal('navigator', {})
+
       const fetchMock = vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
       })
+
       vi.stubGlobal('fetch', fetchMock)
 
       await sendUmamiPayload({
@@ -76,10 +78,12 @@ describe('sendUmamiPayload', () => {
       vi.stubGlobal('navigator', {
         sendBeacon,
       })
+
       const fetchMock = vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
       })
+
       vi.stubGlobal('fetch', fetchMock)
 
       const largeValue = 'a'.repeat(70_000)
@@ -128,6 +132,7 @@ describe('sendUmamiPayload', () => {
         ok: true,
         status: 200,
       })
+
       vi.stubGlobal('fetch', fetchMock)
 
       await sendUmamiPayload({

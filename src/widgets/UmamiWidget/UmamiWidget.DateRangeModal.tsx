@@ -88,7 +88,7 @@ export const DateRangeModal = ({
     >
       <div className="modal__container flex flex-col gap-8 bg-background p-6">
         <header className="modal__header">
-          <h3 className="font-mono font-medium mb-2 tracking-tight">Select Date Range</h3>
+          <h3 className="mb-2 font-mono font-medium tracking-tight">Select Date Range</h3>
         </header>
 
         <style>{`

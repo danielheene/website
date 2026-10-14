@@ -19,7 +19,9 @@ export const enqueueGenerateExcerpt: CollectionAfterChangeHook<BlogPostData> = a
   req,
 }) => {
   if (doc._status !== 'published' || doc.deletedAt) return doc
+
   if (!isEmptyValue(doc.excerpt as SerializedEditorState | undefined)) return doc
+
   if (isEmptyValue(doc.content as SerializedEditorState | undefined)) return doc
 
   await req.payload.jobs.queue({

@@ -65,7 +65,7 @@ export const BetweenContent: Story = {
     <div className="w-80">
       <div className="space-y-1">
         <h4 className="font-medium">Section title</h4>
-        <p className="text-muted-foreground text-sm">A short description of the section.</p>
+        <p className="text-sm text-muted-foreground">A short description of the section.</p>
       </div>
       <Separator className="my-4" />
       <div className="flex h-5 items-center gap-4 text-sm">

@@ -9,6 +9,7 @@ import { useHeroSlideFieldEditor } from './useHeroSlideFieldEditor'
 type Row = {
   id: string
 }
+
 type FieldStateStub = Record<
   string,
   {

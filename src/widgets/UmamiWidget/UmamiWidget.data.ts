@@ -23,6 +23,7 @@ const login = async (): Promise<string | null> => {
   } catch {
     token = null
   }
+
   return token
 }
 
@@ -75,11 +76,13 @@ const CACHE_TTL_SECONDS = hoursToSeconds(2)
 
 const fetcher = async <T extends object>(url: URL | string): Promise<T | null> => {
   const cached = await get<T>(url.toString())
+
   if (cached) return cached
 
   // An unreachable Umami must not take the admin dashboard down with it:
   // every widget handles `null`.
   const token = await getToken()
+
   if (!token) return null
 
   try {
@@ -91,9 +94,11 @@ const fetcher = async <T extends object>(url: URL | string): Promise<T | null> =
     })
 
     const json: T = await response.json()
+
     if ('error' in json) return null
 
     await set(url.toString(), json as T, CACHE_TTL_SECONDS)
+
     return json
   } catch {
     return null
@@ -145,7 +150,9 @@ export type UmamiWebsite = {
   updatedAt: string | null
   deletedAt: string | null
 }
+
 export type UmamiStatsParams = Pick<AllApiParams, 'startAt' | 'endAt' | 'unit'>
+
 export type UmamiStats = {
   pageviews: number
   visitors: number
@@ -160,11 +167,17 @@ export type UmamiStats = {
     totaltime: number
   }
 }
+
 export type UmamiEventsParams = Pick<AllApiParams, 'startAt' | 'endAt'>
+
 export type UmamiEvent = Metric
+
 export type UmamiPathsParams = Pick<AllApiParams, 'startAt' | 'endAt'>
+
 export type UmamiPath = Metric
+
 export type UmamiPageViewsParams = Pick<AllApiParams, 'startAt' | 'endAt' | 'timezone' | 'unit'>
+
 export type UmamiPageViews = {
   pageviews: Metric[]
   sessions: Metric[]
@@ -172,6 +185,7 @@ export type UmamiPageViews = {
 
 export const fetchWebsite = async () => {
   const url = buildApiUrl('')
+
   return await fetcher<UmamiWebsite>(url)
 }
 
@@ -185,6 +199,7 @@ export const fetchStats = async ({
     endAt,
     unit,
   })
+
   return await fetcher<UmamiStats>(url)
 }
 
@@ -197,6 +212,7 @@ export const fetchEvents = async ({
     endAt,
     type: 'event',
   })
+
   return await fetcher<UmamiEvent[]>(url)
 }
 
@@ -209,6 +225,7 @@ export const fetchPaths = async ({
     endAt,
     type: 'path',
   })
+
   return await fetcher<UmamiPath[]>(url)
 }
 
@@ -224,5 +241,6 @@ export const fetchPageViews = async ({
     timezone,
     unit,
   })
+
   return await fetcher<UmamiPageViews>(url)
 }

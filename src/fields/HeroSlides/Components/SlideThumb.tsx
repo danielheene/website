@@ -94,30 +94,30 @@ export const SlideThumb = ({
   return (
     <div className="group relative aspect-video w-[450px] shrink-0 grow-0 basis-[450px] overflow-hidden rounded-md border border-input bg-black/5">
       {isPending ? (
-        <div className="flex h-full w-full items-center justify-center">
+        <div className="flex size-full items-center justify-center">
           <Icon
             className="animate-spin text-xl text-muted-foreground"
             name="material-symbols:progress-activity"
           />
         </div>
       ) : thumbnail.kind === 'shader' ? (
-        <DuoTone contained className="h-full w-full">
+        <DuoTone contained className="size-full">
           <ShaderPreviewCanvas
-            className="h-full w-full"
+            className="size-full"
             entry={SHADER_COMPONENTS[thumbnail.presetKey]}
           />
         </DuoTone>
       ) : thumbnail.kind === 'image-url' ? (
-        <DuoTone contained className="h-full w-full">
+        <DuoTone contained className="size-full">
           {/* oxlint-disable-next-line nextjs/no-img-element -- a tiny admin-only picker thumbnail, not a page asset */}
-          <img alt="" className="h-full w-full object-cover" src={thumbnail.url} />
+          <img alt="" className="size-full object-cover" src={thumbnail.url} />
         </DuoTone>
       ) : thumbnail.kind === 'video-url' ? (
-        <DuoTone contained className="h-full w-full">
+        <DuoTone contained className="size-full">
           {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
           <video
             autoPlay
-            className="h-full w-full object-cover"
+            className="size-full object-cover"
             loop
             muted
             playsInline
@@ -125,7 +125,7 @@ export const SlideThumb = ({
           />
         </DuoTone>
       ) : (
-        <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+        <div className="flex size-full items-center justify-center text-xs text-muted-foreground">
           Empty
         </div>
       )}

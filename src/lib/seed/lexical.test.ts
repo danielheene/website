@@ -44,14 +44,17 @@ describe('paragraph', () => {
     const node = paragraph('hello') as {
       children: unknown[]
     }
+
     expect(node.children).toEqual([text('hello')])
   })
 
   it('passes an array of inline nodes through unchanged', () => {
     const children = [text('a'), text('b', IS_BOLD)]
+
     const node = paragraph(children) as {
       children: unknown[]
     }
+
     expect(node.children).toBe(children)
   })
 })
@@ -61,6 +64,7 @@ describe('heading', () => {
     const node = heading('Title') as {
       tag: string
     }
+
     expect(node.tag).toBe('h2')
   })
 
@@ -68,6 +72,7 @@ describe('heading', () => {
     const node = heading('Title', 'h4') as {
       tag: string
     }
+
     expect(node.tag).toBe('h4')
   })
 })
@@ -83,6 +88,7 @@ describe('link', () => {
         text: string
       }
     }
+
     expect(node.fields).toEqual({
       linkType: 'custom',
       doc: null,
@@ -99,6 +105,7 @@ describe('list', () => {
       tag: string
       children: unknown[]
     }
+
     expect(node.tag).toBe('ol')
     expect(node.children).toHaveLength(2)
   })
@@ -107,6 +114,7 @@ describe('list', () => {
     const node = list(['one'], 'bullet') as {
       tag: string
     }
+
     expect(node.tag).toBe('ul')
   })
 
@@ -116,6 +124,7 @@ describe('list', () => {
         checked?: boolean
       }[]
     }
+
     expect(node.children.map((item) => item.checked)).toEqual([true, false, true])
   })
 })
@@ -129,6 +138,7 @@ describe('codeBlock', () => {
         blockType: string
       }
     }
+
     expect(node.fields).toMatchObject({
       blockType: 'CodeBlock',
       language: 'typescript',
@@ -165,6 +175,7 @@ describe('quote', () => {
       type: string
       children: unknown[]
     }
+
     expect(node.type).toBe('quote')
     expect(node.children).toEqual([text('A quote')])
   })
@@ -173,12 +184,14 @@ describe('quote', () => {
 describe('root', () => {
   it('wraps the given children in a root node', () => {
     const children = [paragraph('hello')]
+
     const value = root(children) as unknown as {
       root: {
         type: string
         children: unknown[]
       }
     }
+
     expect(value.root.type).toBe('root')
     expect(value.root.children).toBe(children)
   })
@@ -201,6 +214,7 @@ describe('createRandom / pick / pickSome / chance', () => {
   it('pick always returns an item from the input array', () => {
     const random = createRandom('pick-test')
     const items = ['x', 'y', 'z'] as const
+
     for (let i = 0; i < 20; i += 1) {
       expect(items).toContain(pick(random, items))
     }
@@ -212,6 +226,7 @@ describe('createRandom / pick / pickSome / chance', () => {
     const result = pickSome(random, items, 3)
     expect(result).toHaveLength(3)
     expect(new Set(result).size).toBe(3)
+
     for (const value of result) {
       expect(items).toContain(value)
     }

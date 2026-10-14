@@ -43,12 +43,15 @@ export const submitContactForm = async (
 
   if (!parsed.success) {
     const fieldErrors: ContactFormState['fieldErrors'] = {}
+
     for (const issue of parsed.error.issues) {
       const key = issue.path[0]
+
       if (key === 'name' || key === 'email' || key === 'message') {
         fieldErrors[key] = issue.message
       }
     }
+
     return {
       status: 'error',
       message: 'Please check the highlighted fields.',
@@ -77,6 +80,7 @@ export const submitContactForm = async (
 
     if (!recipientEmail) {
       payload.logger.error('Contact form submitted but no recipient email is configured.')
+
       return {
         status: 'error',
         message: 'Sorry, the contact form is currently unavailable. Please try again later.',
@@ -139,6 +143,7 @@ export const submitContactForm = async (
     const payload = await getPayload({
       config,
     })
+
     payload.logger.error(`Failed to send contact form email: ${extractErrorMessage(error)}`)
 
     return {

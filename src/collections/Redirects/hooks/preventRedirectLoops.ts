@@ -34,6 +34,7 @@ export const preventRedirectLoops: CollectionBeforeChangeHook = async ({
   // walk the chain from the new target; if it returns to `from`, adding this
   // row would close a cycle
   let current = toPath
+
   for (let hop = 0; hop < MAX_CHAIN_DEPTH; hop++) {
     const { docs } = await payload.find({
       collection: CollectionSlug.Redirects,
@@ -59,6 +60,7 @@ export const preventRedirectLoops: CollectionBeforeChangeHook = async ({
     })
 
     const next = docs[0]
+
     if (!next || next.type !== 'custom' || typeof next.toPath !== 'string') return data
 
     if (next.toPath === from) {

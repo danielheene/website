@@ -38,6 +38,7 @@ export const FieldComponentClient = ({
   validate,
 }: FieldComponentClientProps): JSX.Element => {
   const { label: labelFromProps, admin } = field
+
   const {
     description: descriptionFromProps,
     placeholder: placeholderFromProps,
@@ -71,6 +72,7 @@ export const FieldComponentClient = ({
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement, HTMLInputElement>) => {
       event.preventDefault()
+
       if (template !== event.target.value) {
         setTemplate(event.target.value)
       }
@@ -144,7 +146,7 @@ export const FieldComponentClient = ({
           <header
             className={cn([
               `${fieldBaseClass}__header`,
-              'relative flex flex-col gap-1 pr-10 mb-3.5',
+              'relative mb-3.5 flex flex-col gap-1 pr-10',
               '[&_.field-label]:text-xl [&_.field-label]:text-(--theme-text)',
               '[&_.field-label]:font-mono [&_.field-label]:leading-relaxed',
               '[&_.field-description]:m-0 [&_.field-description]:text-(--theme-elevation-400)',
@@ -195,19 +197,19 @@ export const FieldComponentClient = ({
                 collapsibleOpen ? 'animate-slide-down' : 'animate-slide-up',
               ])}
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
                 {annotations.map((annotationCol, key) => (
                   <div key={key}>
                     {annotationCol.map(({ label, entries }, index) => (
                       <div
                         key={index}
-                        className="inline-grid grid-cols-[min-content_auto] w-full py-2"
+                        className="inline-grid w-full grid-cols-[min-content_auto] py-2"
                       >
                         <header className="col-span-2">
                           <span
                             className={cn([
-                              'block pb-0.5 mb-2 border-b border-primary/50',
-                              'text-sm text-left text-primary font-mono font-medium',
+                              'mb-2 block border-b border-primary/50 pb-0.5',
+                              'text-left font-mono text-sm font-medium text-primary',
                             ])}
                           >
                             {label}
@@ -219,10 +221,10 @@ export const FieldComponentClient = ({
                             key={index}
                             className={cn([
                               'col-span-2 grid grid-cols-subgrid gap-6',
-                              'text-xs py-0.5',
+                              'py-0.5 text-xs',
                             ])}
                           >
-                            <div className="font-medium tracking-tighter font-mono">{key}</div>
+                            <div className="font-mono font-medium tracking-tighter">{key}</div>
                             <div>{value}</div>
                           </div>
                         ))}
@@ -262,12 +264,12 @@ export const FieldComponentClient = ({
         />
         <div
           className={cn([
-            'grid gap-4 mt-4',
+            'mt-4 grid gap-4',
             renderedResults.length > 1 ? 'grid-cols-2' : 'grid-cols-1',
           ])}
         >
           {renderedResults.map((result, index) => (
-            <input value={result} key={index} className="font-mono col-span-1" readOnly />
+            <input value={result} key={index} className="col-span-1 font-mono" readOnly />
           ))}
         </div>
       </div>

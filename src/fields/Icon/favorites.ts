@@ -42,6 +42,7 @@ export const FAVORITE_COLLECTIONS = [
 }[]
 
 export type FavoriteCollection = (typeof FAVORITE_COLLECTIONS)[number]
+
 export type FavoriteCollectionPrefix = FavoriteCollection['prefix']
 
 /**
@@ -112,8 +113,10 @@ export const findIconAlias = (iconName: string): IconAlias | undefined =>
  */
 export const describeIcon = (value: string): string => {
   const alias = isIconAlias(value) ? value : findIconAlias(value)
+
   if (!alias) return value
 
   const resolved = resolveIconName(alias)
+
   return resolved === alias ? alias : `${alias} (${resolved})`
 }

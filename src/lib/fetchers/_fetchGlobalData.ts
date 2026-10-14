@@ -26,11 +26,13 @@ export const fetchGlobalData = async <T extends RegisteredGlobalSlug>(
   })
 
   let data: string = await payload.kv.get(globalSlug)
+
   if (!data) {
     const rawData = await payload.findGlobal({
       slug: globalSlug,
       draft: false,
     })
+
     const enhancedData = await resolveRelations(rawData)
     data = JSON.stringify(enhancedData)
     await payload.kv.set(globalSlug, data)
@@ -71,5 +73,6 @@ export const updateGlobalData = async <T extends RegisteredGlobalSlug>(
   globalSlug: T,
 ): Promise<GlobalData<T>> => {
   await invalidateGlobalData(globalSlug)
+
   return await fetchGlobalData(globalSlug)
 }

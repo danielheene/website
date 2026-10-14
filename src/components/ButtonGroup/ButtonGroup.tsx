@@ -50,6 +50,7 @@ export const ButtonGroup = ({
 )
 
 const ButtonGroupSlot = createSlot<HTMLDivElement, ComponentProps<'div'>>('button-group')
+
 export const ButtonGroupText = ({
   className,
   asChild = false,

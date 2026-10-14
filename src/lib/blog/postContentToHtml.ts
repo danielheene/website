@@ -60,6 +60,7 @@ type UploadValue = {
 /** Resolves `url` against SERVER_URL; unparsable values are dropped. */
 export const toAbsoluteUrl = (url: string | null | undefined): string | null => {
   if (!url) return null
+
   try {
     return new URL(url, process.env.SERVER_URL).toString()
   } catch {
@@ -70,6 +71,7 @@ export const toAbsoluteUrl = (url: string | null | undefined): string | null => 
 /** Absolute URL restricted to the given protocols, or null. */
 const withProtocol = (url: string | null | undefined, protocols: string[]): string | null => {
   const absolute = toAbsoluteUrl(url)
+
   return absolute && protocols.includes(new URL(absolute).protocol) ? absolute : null
 }
 
@@ -87,6 +89,7 @@ const safeMediaUrl = (url: string | null | undefined): string | null =>
 
 const linkHref = (fields: LinkFieldDataLean | undefined): string | null => {
   const target = resolveLinkTarget(fields)
+
   if (!target) return null
 
   if (target.relationTo === CUSTOM_URL_SLUG) return safeHref(target.value)
@@ -130,9 +133,11 @@ const autolinkConverter: HTMLConverter<NodeOf<'autolink'>> = ({ node, nodesToHTM
  */
 const uploadConverter: HTMLConverter<NodeOf<'upload'>> = ({ node }) => {
   const value = node.value as unknown as UploadValue | string | undefined
+
   if (!value || typeof value !== 'object') return ''
 
   const src = safeMediaUrl(value.url)
+
   if (!src) return ''
 
   const size = [
@@ -142,6 +147,7 @@ const uploadConverter: HTMLConverter<NodeOf<'upload'>> = ({ node }) => {
 
   if (node.relationTo === CollectionSlug.MediaVideos) {
     const poster = safeMediaUrl(value.thumbnails?.[0]?.value?.url)
+
     return `<video src="${escapeHTML(src)}" controls preload="none"${
       poster ? ` poster="${escapeHTML(poster)}"` : ''
     }${size}></video>`
@@ -180,6 +186,7 @@ const converters: HTMLConvertersFunction = ({ defaultConverters }) => ({
   blocks: {
     [BlockSlug.Code]: ({ node }) => {
       const language = node.fields?.language
+
       return `<pre><code${
         language ? ` class="language-${escapeHTML(language)}"` : ''
       }>${escapeHTML(node.fields?.code ?? '')}</code></pre>`
@@ -199,6 +206,7 @@ const converters: HTMLConvertersFunction = ({ defaultConverters }) => ({
       )
         .map(({ link }) => {
           const href = linkHref(link)
+
           return href && link?.text
             ? `<li>${anchor(href, escapeHTML(link.text), link.newTab)}</li>`
             : ''

@@ -67,12 +67,15 @@ const unwrapTwoColumn = (block: PageBlock): PageBlock | undefined => {
 
 const toRichText = (block: PageBlock): PageBlock => {
   if (block.blockType === ONE_COLUMN) return { ...block, blockType: RICH_TEXT }
+
   if (block.blockType === TWO_COLUMN) return wrapTwoColumn(block)
+
   return block
 }
 
 const fromRichText = (block: PageBlock): PageBlock => {
   if (block.blockType !== RICH_TEXT) return block
+
   return unwrapTwoColumn(block) ?? { ...block, blockType: ONE_COLUMN }
 }
 

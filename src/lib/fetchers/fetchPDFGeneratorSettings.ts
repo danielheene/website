@@ -24,6 +24,7 @@ export const fetchPDFGeneratorSettingsCached = async (locale: BilingualLanguage 
   'use cache'
   cacheLife('max')
   cacheTag(GlobalSlug.PDFGeneratorSettings)
+
   return await fetchPDFGeneratorSettings(locale)
 }
 

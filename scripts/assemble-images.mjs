@@ -30,6 +30,7 @@ const NOT_SHIPPED = /\.(test|spec|stories)\.(ts|tsx|mdx)$/
 
 const copy = (from, to = from) => {
   const source = path.join(root, from)
+
   if (!existsSync(source)) fail(`missing ${from}`)
   cpSync(source, path.join(out, to), {
     recursive: true,
@@ -43,6 +44,7 @@ const run = (command, args, options = {}) => {
     stdio: 'inherit',
     ...options,
   })
+
   if (result.status !== 0) fail(`${command} ${args.join(' ')} failed`)
 }
 
@@ -52,6 +54,7 @@ const assemblers = {
   web: () => {
     copy('.next/standalone', '.')
     copy('.next/static', '.next/static')
+
     if (existsSync(path.join(root, 'public'))) copy('public')
   },
 
@@ -71,6 +74,7 @@ const assemblers = {
     ]) {
       copy(entry)
     }
+
     // --ignore-scripts: the root `prepare` script (lefthook) is a devDependency,
     // and every runtime dependency here ships prebuilt binaries.
     run('bun', ['install', '--production', '--frozen-lockfile', '--ignore-scripts'], {
@@ -90,8 +94,11 @@ rmSync(out, {
   recursive: true,
   force: true,
 })
+
 mkdirSync(out, {
   recursive: true,
 })
+
 assemblers[target]()
+
 console.info(`[assemble-images] out/${target} ready`)

@@ -45,14 +45,17 @@ const run: TaskHandler<TaskSlug['GenerateBlogPostExcerpt']> = async ({
   }
 
   if (post._status !== 'published') return skip('latest version is not published')
+
   if (!isEmptyValue(post.excerpt as SerializedEditorState | undefined)) {
     return skip('it already has an excerpt')
   }
 
   const content = post.content as SerializedEditorState | undefined
+
   if (isEmptyValue(content)) return skip('it has no content')
 
   const excerpt = await fetchAnthropicExcerpt(content)
+
   if (!excerpt || isEmptyValue(excerpt)) return skip('no excerpt was generated')
 
   await payload.update({

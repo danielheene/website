@@ -45,15 +45,19 @@ export function resolveOverallStatusCode(heartbeats: Heartbeat[]): OverallStatus
   if (statuses.length === 0) {
     return OverallStatusCode.NoServices
   }
+
   if (statuses.every((status) => status === HeartbeatStatusCode.Down)) {
     return OverallStatusCode.AllDown
   }
+
   if (statuses.some((status) => status === HeartbeatStatusCode.Down)) {
     return OverallStatusCode.PartialDown
   }
+
   if (statuses.some((status) => status === HeartbeatStatusCode.Maintenance)) {
     return OverallStatusCode.Maintenance
   }
+
   return OverallStatusCode.AllUp
 }
 

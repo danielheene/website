@@ -12,6 +12,7 @@ import { BlogPostData } from '@/types/payload'
 import { getToken } from '@/widgets/UmamiWidget/UmamiWidget.data'
 
 const BLOG_POST_PATH_PREFIX = '/blog/post/'
+
 // Intentionally shorter than the admin widget's 2h TTL (UmamiWidget.data.ts)
 // so "trending" reflects more recent popularity shifts.
 const CACHE_TTL_SECONDS = minutesToSeconds(45)
@@ -45,10 +46,12 @@ const buildApiUrl = (startAt: Date, endAt: Date) => {
 
 const fetcher = async (url: URL | string): Promise<Metric[] | null> => {
   const cached = await get<Metric[]>(url.toString())
+
   if (cached) return cached
 
   try {
     const token = await getToken()
+
     if (!token) return null
 
     const response = await fetch(url, {
@@ -59,12 +62,15 @@ const fetcher = async (url: URL | string): Promise<Metric[] | null> => {
     })
 
     const json = await response.json()
+
     if (!Array.isArray(json)) return null
 
     await set(url.toString(), json as Metric[], CACHE_TTL_SECONDS)
+
     return json as Metric[]
   } catch (error) {
     console.error('Error fetching trending blog posts:', error)
+
     return null
   }
 }
@@ -93,6 +99,7 @@ const resolveToBlogPosts = async (ranked: RankedSlug[]): Promise<TrendingBlogPos
 
     return ranked.flatMap(({ slug, views }) => {
       const post = postsBySlug.get(slug)
+
       return post
         ? [
             {
@@ -105,6 +112,7 @@ const resolveToBlogPosts = async (ranked: RankedSlug[]): Promise<TrendingBlogPos
     })
   } catch (error) {
     console.error('Error resolving trending blog posts:', error)
+
     return null
   }
 }

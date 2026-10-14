@@ -7,7 +7,7 @@ export const FieldComponent = async ({ value }: CheckboxFieldServerProps) => {
     <div
       className={cn([
         'flex items-center justify-center',
-        'h-10 w-full my-6 font-mono font-[500] tracking-wider uppercase',
+        'my-6 h-10 w-full font-mono font-[500] tracking-wider uppercase',
         'border border-destructive/40 text-destructive',
       ])}
     >

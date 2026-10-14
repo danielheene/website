@@ -23,6 +23,7 @@ interface CustomTooltipProps {
 }
 
 const pageviewsColor = 'var(--color-primary)'
+
 // Primary lightened toward white in OKLCH — same hue, continuously tunable
 // rather than pinned to a ramp step (40% lands at roughly the same lightness
 // as primary-300). Verified against a colorblind-separation check (protan
@@ -58,12 +59,15 @@ export const PageViewsSection = ({ data, dataIsLoading, className }: PageViewsSe
         date: x,
         pageviews: y,
       }))
+
       const visitors = data.sessions.map(({ x, y }) => ({
         date: x,
         visitors: y,
       }))
+
       return views.map((view, i) => Object.assign({}, view, visitors[i]))
     }
+
     return null
   }, [data])
 
@@ -84,7 +88,7 @@ export const PageViewsSection = ({ data, dataIsLoading, className }: PageViewsSe
                   }}
                   aria-hidden="true"
                 />
-                <span className="text-muted-foreground text-xs font-mono">{series.label}</span>
+                <span className="font-mono text-xs text-muted-foreground">{series.label}</span>
               </li>
             ))}
           </ul>
@@ -93,7 +97,7 @@ export const PageViewsSection = ({ data, dataIsLoading, className }: PageViewsSe
       <CardContent>
         <div className={SECTION_CONTENT_HEIGHT_CLASS}>
           {!data || dataIsLoading ? (
-            <GhostBarChart className="w-full h-full" />
+            <GhostBarChart className="size-full" />
           ) : (
             <BarChart
               responsive
@@ -101,7 +105,7 @@ export const PageViewsSection = ({ data, dataIsLoading, className }: PageViewsSe
               // accessibilityLayer's role="application" surface paints a native focus ring on click that CSS can't suppress
               accessibilityLayer={false}
               // internal <g> layers keep tabindex="-1" (click-focusable), so unset outline on every [tabindex]
-              className="w-full h-full [&_.recharts-cartesian-axis-tick-value]:text-[10px] [&_.recharts-cartesian-axis-tick-value]:font-mono **:[[tabindex]]:outline-none"
+              className="size-full [&_.recharts-cartesian-axis-tick-value]:font-mono [&_.recharts-cartesian-axis-tick-value]:text-[10px] **:[[tabindex]]:outline-none"
               margin={{
                 top: 24,
                 right: 24,
@@ -114,6 +118,7 @@ export const PageViewsSection = ({ data, dataIsLoading, className }: PageViewsSe
                 dataKey="date"
                 tickFormatter={(value) => {
                   const date = new Date(value)
+
                   return date.toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
@@ -153,6 +158,7 @@ export const PageViewsSection = ({ data, dataIsLoading, className }: PageViewsSe
 function CustomTooltip({ active, label, payload }: CustomTooltipProps) {
   if (!active || !payload?.length) return null
   const date = new Date(label || '')
+
   const formattedDate = date.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
@@ -160,8 +166,8 @@ function CustomTooltip({ active, label, payload }: CustomTooltipProps) {
   })
 
   return (
-    <div className="rounded-lg bg-background px-3 py-2 text-xs font-mono shadow-xl">
-      <div className="font-medium mb-2">{formattedDate}</div>
+    <div className="rounded-lg bg-background px-3 py-2 font-mono text-xs shadow-xl">
+      <div className="mb-2 font-medium">{formattedDate}</div>
       {payload.map((item) => (
         <div key={item.dataKey} className="flex items-center gap-2">
           <div
@@ -173,7 +179,7 @@ function CustomTooltip({ active, label, payload }: CustomTooltipProps) {
           <span className="text-muted-foreground">
             {item.dataKey === 'pageviews' ? 'Pageviews' : 'Visitors'}
           </span>
-          <span className="text-muted-foreground ml-auto">{item.value.toLocaleString()}</span>
+          <span className="ml-auto text-muted-foreground">{item.value.toLocaleString()}</span>
         </div>
       ))}
     </div>

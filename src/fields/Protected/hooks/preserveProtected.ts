@@ -14,5 +14,6 @@ import type { FieldHook, TypeWithID } from 'payload'
  */
 export const preserveProtected: FieldHook<TypeWithID, boolean> = ({ operation, previousValue }) => {
   if (operation === 'update') return previousValue ?? false
+
   return false
 }

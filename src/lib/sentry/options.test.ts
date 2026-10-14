@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
  */
 const loadOptions = async () => {
   vi.resetModules()
+
   return import('./options')
 }
 
@@ -70,6 +71,7 @@ describe('tracesSampler', () => {
 
   it('ignores out-of-range and non-numeric values', async () => {
     vi.stubEnv('SENTRY_ENVIRONMENT', 'production')
+
     for (const value of ['2', '-1', 'abc']) {
       vi.stubEnv('SENTRY_TRACES_SAMPLE_RATE', value)
       const { sharedSentryOptions } = await loadOptions()

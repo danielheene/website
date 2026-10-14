@@ -17,6 +17,7 @@ const toastErrorMock = vi.fn()
 const openModalMock = vi.fn()
 const enqueueBilingualTranslationMock = vi.fn()
 const resetMock = vi.fn()
+
 const documentInfoMock = vi.fn(() => ({
   id: undefined as string | undefined,
   collectionSlug: undefined as string | undefined,
@@ -28,6 +29,7 @@ type SseCall = {
   enabled?: boolean
   onMessage?: (data: unknown) => void
 }
+
 const sseCalls: SseCall[] = []
 
 // The real Icon loads its SVG through Iconify's async loader, whose timer can
@@ -94,6 +96,7 @@ vi.mock('@/lib/actions/enqueueBilingualTranslation', () => ({
 vi.mock('@/components/hooks/use-server-sent-events', () => ({
   useServerSentEvents: (opts: SseCall) => {
     sseCalls.push(opts)
+
     return {
       data: null,
       status: 'closed',
@@ -148,10 +151,12 @@ const onMessageFor = async (jobId: string) => {
     const call = [...sseCalls]
       .reverse()
       .find((c) => c.channel === bilingualTranslateChannel(jobId) && c.onMessage)
+
     expect(call).toBeDefined()
   })
 
   const call = [...sseCalls].reverse().find((c) => c.channel === bilingualTranslateChannel(jobId))
+
   return call?.onMessage as (data: unknown) => void
 }
 
@@ -250,9 +255,11 @@ describe('TranslateControls', () => {
     renderControls()
 
     fireEvent.click(screen.getByLabelText('Translate English to German'))
+
     const [confirmButton] = within(
       screen.getByTestId('modal-task.translateControls-confirm-en-de'),
     ).getAllByRole('button')
+
     fireEvent.click(confirmButton)
 
     await waitFor(() => {

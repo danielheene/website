@@ -15,6 +15,7 @@ interface PageContainerProps {
    */
   sections?: ExtractedSection[]
 }
+
 export const PageContainer = ({
   layout: _layout = 'default',
   sections,

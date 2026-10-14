@@ -42,6 +42,7 @@ describe('reduceDataToBilingualLanguage', () => {
       },
       plain: 'untouched',
     }
+
     expect(reduceDataToBilingualLanguage(input, 'de')).toEqual({
       meta: {
         description: 'hallo',
@@ -61,6 +62,7 @@ describe('reduceDataToBilingualLanguage', () => {
         },
       ],
     }
+
     expect(reduceDataToBilingualLanguage(input, 'de')).toEqual({
       items: [
         {
@@ -77,6 +79,7 @@ describe('reduceDataToBilingualLanguage', () => {
         other: 'x',
       },
     }
+
     expect(reduceDataToBilingualLanguage(input, 'en')).toEqual({
       mixed: {
         en: 'A',

@@ -43,6 +43,7 @@ const IconFieldComponent = ({
   const { value, setValue, showError, errorMessage } = useField<string>({
     path,
   })
+
   const { openModal } = useModal()
   // scoped per field path so two icon fields on one document never share a drawer
   const drawerSlug = useDrawerSlug(`icon-picker-${path}`)
@@ -61,7 +62,7 @@ const IconFieldComponent = ({
           disabled={readOnly}
           onClick={() => openModal(drawerSlug)}
           aria-label={accessibleName}
-          className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-md border border-input bg-(--theme-input-bg) transition-colors hover:border-primary hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-md border border-input bg-(--theme-input-bg) transition-colors hover:border-primary hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
         >
           {value ? (
             <Icon name={value as IconName} className="size-6 text-[24px]" />

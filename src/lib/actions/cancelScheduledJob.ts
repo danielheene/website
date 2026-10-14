@@ -40,6 +40,7 @@ export const cancelScheduledJob = async (jobId: string): Promise<void> => {
     const progress: ScheduledJobActionProgress = {
       status: 'cancelled',
     }
+
     await publish(channel, progress)
   } catch (error) {
     const message = extractErrorMessage(error)
@@ -48,6 +49,7 @@ export const cancelScheduledJob = async (jobId: string): Promise<void> => {
       status: 'error',
       message,
     }
+
     await publish(channel, progress)
 
     payload.logger.error(`Failed cancelling job ${jobId}: ${message}`)

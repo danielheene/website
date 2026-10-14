@@ -73,6 +73,7 @@ export async function GET(req: NextRequest): Promise<Response> {
       },
       'Error verifying token for live preview',
     )
+
     return new Response('You are not allowed to preview this page', {
       status: 403,
     })
@@ -82,6 +83,7 @@ export async function GET(req: NextRequest): Promise<Response> {
 
   if (!user) {
     draft.disable()
+
     return new Response('You are not allowed to preview this page', {
       status: 403,
     })

@@ -49,6 +49,7 @@ const topicFor = (
 } => {
   const base = TOPICS[(index - 1) % TOPICS.length]
   const cycle = Math.floor((index - 1) / TOPICS.length)
+
   return cycle === 0
     ? base
     : {

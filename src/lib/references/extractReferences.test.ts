@@ -30,6 +30,7 @@ describe('extractReferences', () => {
         },
       },
     })
+
     expect(reference.value).toBe('img-2')
   })
 

@@ -43,12 +43,13 @@ export const ThemeSwitch = ({
   )
 
   if (!mounted) return null
+
   return (
     <div
       className={cn([
         '[--button-size:--spacing(8)]',
         'flex flex-row gap-0.5',
-        'relative box-content bg-background border-2 border-background rounded-full w-fit',
+        'relative box-content w-fit rounded-full border-2 border-background bg-background',
         'outline-2 outline-accent',
         className,
       ])}

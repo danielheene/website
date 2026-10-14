@@ -45,6 +45,7 @@ export default async function Page({ params, searchParams }: PageProps<'/blog/[s
   if (RESERVED_TOPIC_SLUGS.includes(slug)) notFound()
 
   const topic = await queryPublishedTopicBySlug(slug)
+
   if (!topic) notFound()
 
   return <BlogListPage topic={topic} searchParams={searchParams} />
@@ -52,6 +53,7 @@ export default async function Page({ params, searchParams }: PageProps<'/blog/[s
 
 export async function generateMetadata({ params }: PageProps<'/blog/[slug]'>): Promise<Metadata> {
   const { slug } = await params
+
   if (RESERVED_TOPIC_SLUGS.includes(slug)) {
     return {
       title: 'Blog',
@@ -59,6 +61,7 @@ export async function generateMetadata({ params }: PageProps<'/blog/[slug]'>): P
   }
 
   const topic = await queryPublishedTopicBySlug(slug)
+
   return generateMeta({
     doc: topic,
   })

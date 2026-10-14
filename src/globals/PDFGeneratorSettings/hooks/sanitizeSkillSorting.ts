@@ -43,6 +43,7 @@ export const sanitizeSkillSorting: FieldHook<
 
     const prevEntries: SkillEntrySortable[] = get(value, configKey, [])
     const currentTypeSkills = skills.filter(({ type }) => type === configKey)
+
     const currentTypeMap = new Map(
       currentTypeSkills.map(({ id, content }) => [
         String(id),
@@ -57,7 +58,9 @@ export const sanitizeSkillSorting: FieldHook<
 
     for (const entry of prevEntries) {
       const strId = String(entry.id)
+
       if (seen.has(strId)) continue
+
       if (!publishedSkillIds.has(strId)) continue
       seen.add(strId)
       merged.push({
@@ -68,6 +71,7 @@ export const sanitizeSkillSorting: FieldHook<
 
     for (const { id, content } of currentTypeSkills) {
       const strId = String(id)
+
       if (seen.has(strId)) continue
       seen.add(strId)
       merged.push({

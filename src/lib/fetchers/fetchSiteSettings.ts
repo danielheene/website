@@ -23,6 +23,7 @@ export const fetchSiteSettingsCached = async (locale: BilingualLanguage = 'en') 
   'use cache'
   cacheLife('max')
   cacheTag(GlobalSlug.SiteSettings)
+
   return await fetchSiteSettings(locale)
 }
 

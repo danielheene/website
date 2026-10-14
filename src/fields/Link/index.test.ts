@@ -55,9 +55,11 @@ describe('LinkField', () => {
 
   it('doc is shown only when linkType resolves to internal', () => {
     const doc = named('doc')
+
     if (!doc) {
       throw new Error('doc field not found')
     }
+
     const { condition } = doc.admin as {
       condition: (data: unknown, siblingData: Record<string, unknown>) => boolean
     }
@@ -90,9 +92,11 @@ describe('LinkField', () => {
 
   it('url is shown only when linkType resolves to custom', () => {
     const url = named('url')
+
     if (!url) {
       throw new Error('url field not found')
     }
+
     const { condition } = url.admin as {
       condition: (data: unknown, siblingData: Record<string, unknown>) => boolean
     }
@@ -116,9 +120,11 @@ describe('LinkField', () => {
   it('doc and url each validate only when they are the active mode', () => {
     const doc = named('doc')
     const url = named('url')
+
     if (!doc) {
       throw new Error('doc field not found')
     }
+
     if (!url) {
       throw new Error('url field not found')
     }
@@ -133,6 +139,7 @@ describe('LinkField', () => {
         siblingData: Record<string, unknown>
       },
     ) => string | true
+
     const urlValidate = (
       url as {
         validate: unknown
@@ -207,9 +214,11 @@ describe('LinkField', () => {
 
   it('iconAfter is hidden when iconOnly is checked', () => {
     const iconAfter = named('iconAfter')
+
     if (!iconAfter) {
       throw new Error('iconAfter field not found')
     }
+
     const { condition } = iconAfter.admin as {
       condition: (data: unknown, siblingData: Record<string, unknown>) => boolean
     }

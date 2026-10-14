@@ -51,6 +51,7 @@ export const enqueueCalculateSkillTagInterval: CollectionAfterChangeHook<ResumeJ
     if (req.context && req.context.skipGenerateResumeDocumentHook !== false) {
       req.context.skipGenerateResumeDocumentHook = true
     }
+
     return doc
   }
 

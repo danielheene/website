@@ -51,6 +51,7 @@ describe('isTrackingSuppressed', () => {
       },
       TEST_SECRET,
     )
+
     mockGet.mockReturnValue({
       value: token,
     })
@@ -66,6 +67,7 @@ describe('isTrackingSuppressed', () => {
       },
       TEST_SECRET,
     )
+
     mockGet.mockReturnValue({
       value: token,
     })
@@ -81,6 +83,7 @@ describe('isTrackingSuppressed', () => {
       },
       TEST_SECRET,
     )
+
     mockGet.mockReturnValue({
       value: token,
     })
@@ -95,6 +98,7 @@ describe('isTrackingSuppressed', () => {
       },
       WRONG_SECRET,
     )
+
     mockGet.mockReturnValue({
       value: token,
     })
@@ -110,6 +114,7 @@ describe('isTrackingSuppressed', () => {
       TEST_SECRET,
       -60,
     )
+
     mockGet.mockReturnValue({
       value: token,
     })

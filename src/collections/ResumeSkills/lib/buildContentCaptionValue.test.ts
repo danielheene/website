@@ -80,6 +80,7 @@ describe('buildContentCaptionValue', () => {
       style?: Record<string, unknown>
       children: string
     }>
+
     type Paragraph = ReactElement<{
       children: [Run, string]
     }>

@@ -21,13 +21,16 @@ export const FieldComponent: UIFieldServerComponent = async ({
   const {
     general: { siteName },
   } = await fetchSiteSettings()
+
   const pageUrl = generateContentURL({
     collection: collectionSlug,
     slug: get(data, slugPath),
   })
+
   const faviconUrl = generateContentURL({
     path: '/favicon.svg',
   })
+
   return (
     <FieldComponentClient
       field={clientField}

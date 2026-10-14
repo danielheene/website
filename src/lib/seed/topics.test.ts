@@ -32,6 +32,7 @@ describe('seedTopics', () => {
     })
     create.mockImplementation(async ({ data }) => {
       expect(data.generatorFlags).toEqual(['seeded-dummy'])
+
       return {
         id: 'topic-1',
       }
@@ -54,6 +55,7 @@ describe('seedTopics', () => {
           ],
         }
       }
+
       return {
         docs: [],
       }
@@ -95,6 +97,7 @@ describe('cleanTopics', () => {
           ],
         }
       }
+
       if (collection === 'posts') {
         // no post references this topic
         return {
@@ -102,6 +105,7 @@ describe('cleanTopics', () => {
           docs: [],
         }
       }
+
       return {
         docs: [],
       }
@@ -131,12 +135,14 @@ describe('cleanTopics', () => {
           ],
         }
       }
+
       if (collection === 'posts') {
         // Simulates a real, hand-authored post that references this
         // seeded topic — the topic must survive Clean. `topics` is stored
         // as `{ relationTo, value }` wrapper objects, so the match reaches
         // into `.value` rather than `contains` against the bare id.
         expect(where?.['topics.value']?.equals).toBe('topic-1')
+
         return {
           totalDocs: 1,
           docs: [
@@ -146,6 +152,7 @@ describe('cleanTopics', () => {
           ],
         }
       }
+
       return {
         docs: [],
       }
@@ -174,6 +181,7 @@ describe('cleanTopics', () => {
           ],
         }
       }
+
       if (collection === 'posts') {
         // The pre-check finds nothing for either topic — the reference
         // only surfaces once the delete actually runs (e.g. a race, or a
@@ -183,6 +191,7 @@ describe('cleanTopics', () => {
           docs: [],
         }
       }
+
       return {
         docs: [],
       }
@@ -194,6 +203,7 @@ describe('cleanTopics', () => {
           'Cannot delete: still used by 1 document — Post "Test" (topics.0). Remove the reference there first.',
         )
       }
+
       return {}
     })
 

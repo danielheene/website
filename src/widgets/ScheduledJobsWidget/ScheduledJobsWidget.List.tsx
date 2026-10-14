@@ -37,6 +37,7 @@ export const ScheduledJobsWidgetList = ({ jobs }: ScheduledJobsWidgetListProps) 
   const handleMoveQueue = (direction: 1 | -1) => {
     if (selectedQueue === null) {
       setSelectedQueue(direction === 1 ? ALL_QUEUES[0] : ALL_QUEUES[ALL_QUEUES.length - 1])
+
       return
     }
 
@@ -47,6 +48,7 @@ export const ScheduledJobsWidgetList = ({ jobs }: ScheduledJobsWidgetListProps) 
     // wrapping, so the cycle is All -> queue 1 -> ... -> queue N -> All.
     if (nextIndex < 0 || nextIndex >= ALL_QUEUES.length) {
       setSelectedQueue(null)
+
       return
     }
 
@@ -57,7 +59,7 @@ export const ScheduledJobsWidgetList = ({ jobs }: ScheduledJobsWidgetListProps) 
 
   return (
     <div className="pb-12">
-      <div className="flex flex-row justify-between items-center py-8">
+      <div className="flex flex-row items-center justify-between py-8">
         <Header
           queues={ALL_QUEUES}
           selectedQueue={selectedQueue}
@@ -71,10 +73,10 @@ export const ScheduledJobsWidgetList = ({ jobs }: ScheduledJobsWidgetListProps) 
           visibleJobs.map((job) => <ScheduledJobsWidgetClient key={job.id} {...job} />)
         ) : (
           <div
-            className={cn(['bg-card border-border border flex items-center gap-4 p-4 opacity-60'])}
+            className={cn(['flex items-center gap-4 border border-border bg-card p-4 opacity-60'])}
           >
             <Icon name="success" className="size-8 text-[32px]" />
-            <span className="text-lg font-mono">
+            <span className="font-mono text-lg">
               {selectedQueue ? `No scheduled jobs in "${selectedQueue}"` : 'No scheduled jobs'}
             </span>
           </div>

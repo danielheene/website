@@ -98,6 +98,7 @@ export abstract class BaseIconNode<TDecorated> extends DecoratorNode<TDecorated>
   createDOM(_config: EditorConfig): HTMLElement {
     const element = document.createElement('span')
     element.className = 'lexical-icon'
+
     return element
   }
 
@@ -108,6 +109,7 @@ export abstract class BaseIconNode<TDecorated> extends DecoratorNode<TDecorated>
   exportDOM(): DOMExportOutput {
     const element = document.createElement('span')
     element.setAttribute('data-icon', this.__iconName)
+
     return {
       element,
     }

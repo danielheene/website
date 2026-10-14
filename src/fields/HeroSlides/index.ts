@@ -59,6 +59,7 @@ export const HeroSlidesField = ({
   position,
 }: HeroSlidesFieldOptions): ArrayField => {
   const resolvedPosition = position ?? (editorVariant === 'single' ? 'sidebar' : undefined)
+
   return {
     name,
     type: 'array',

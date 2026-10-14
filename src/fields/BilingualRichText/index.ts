@@ -137,7 +137,7 @@ export const BilingualRichTextField = ({
         admin: {
           className: cn([
             '[&.field-type.row>.render-fields]:flex [&.field-type.row>.render-fields]:flex-col',
-            '[&.field-type.row>.render-fields]:justify-between [&.field-type.row>.render-fields]:gap-y- 0',
+            '[&.field-type.row>.render-fields]:gap-y- 0 [&.field-type.row>.render-fields]:justify-between',
             layout === 'row' && [
               '[&.field-type.row>.render-fields]:md:grid',
               '[&.field-type.row>.render-fields]:md:grid-cols-[1fr_max-content_1fr]',

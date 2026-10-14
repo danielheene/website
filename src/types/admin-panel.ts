@@ -10,7 +10,9 @@ export const AdminGroup = {
 } as const
 
 export type AdminGroup = typeof AdminGroup
+
 export type AdminGroupKey = keyof AdminGroup & string
+
 export type AdminGroupValue = AdminGroup[AdminGroupKey] & string
 
 export const AdminNavigationType = {
@@ -19,7 +21,9 @@ export const AdminNavigationType = {
 } as const
 
 export type AdminNavigationType = typeof AdminNavigationType
+
 export type AdminNavigationTypeKey = keyof AdminNavigationType & string
+
 export type AdminNavigationTypeValue = AdminNavigationType[AdminNavigationTypeKey] & string
 
 export type AdminNavigationGroup = {

@@ -40,7 +40,7 @@ export const EmailLayout = ({ children, previewText, siteName, siteUrl }: EmailL
               {siteName}
             </Link>
           </Section>
-          <Section className="px-8 py-8">{children}</Section>
+          <Section className="p-8">{children}</Section>
           <Hr className="mx-8 my-0 border-neutral-200" />
           <Section className="px-8 py-6">
             <Text className="m-0 text-xs text-neutral-400">

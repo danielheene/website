@@ -77,30 +77,30 @@ export const SingleSlideEditor = (props: ArrayFieldClientProps) => {
   return (
     <div className="group relative aspect-video w-full overflow-hidden rounded-md border border-input bg-black/5">
       {isPending ? (
-        <div className="flex h-full w-full items-center justify-center">
+        <div className="flex size-full items-center justify-center">
           <Icon
             className="animate-spin text-xl text-muted-foreground"
             name="material-symbols:progress-activity"
           />
         </div>
       ) : thumbnail.kind === 'shader' ? (
-        <DuoTone contained className="h-full w-full">
+        <DuoTone contained className="size-full">
           <ShaderPreviewCanvas
-            className="h-full w-full"
+            className="size-full"
             entry={SHADER_COMPONENTS[thumbnail.presetKey]}
           />
         </DuoTone>
       ) : thumbnail.kind === 'image-url' ? (
-        <DuoTone contained className="h-full w-full">
+        <DuoTone contained className="size-full">
           {/* oxlint-disable-next-line nextjs/no-img-element -- a small admin-only sidebar preview, not a page asset */}
-          <img alt="" className="h-full w-full object-cover" src={thumbnail.url} />
+          <img alt="" className="size-full object-cover" src={thumbnail.url} />
         </DuoTone>
       ) : thumbnail.kind === 'video-url' ? (
-        <DuoTone contained className="h-full w-full">
+        <DuoTone contained className="size-full">
           {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
           <video
             autoPlay
-            className="h-full w-full object-cover"
+            className="size-full object-cover"
             loop
             muted
             playsInline
@@ -108,7 +108,7 @@ export const SingleSlideEditor = (props: ArrayFieldClientProps) => {
           />
         </DuoTone>
       ) : !hasRow ? (
-        <div className="flex h-full w-full items-center justify-center">
+        <div className="flex size-full items-center justify-center">
           <AddSlideMenu
             disabled={importingId !== null}
             importingId={importingId}
@@ -135,7 +135,7 @@ export const SingleSlideEditor = (props: ArrayFieldClientProps) => {
           />
         </div>
       ) : (
-        <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+        <div className="flex size-full items-center justify-center text-xs text-muted-foreground">
           Empty
         </div>
       )}

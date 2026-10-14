@@ -30,6 +30,7 @@ export const fetchResumeSkillsCached = async (locale: BilingualLanguage = 'en') 
   'use cache'
   cacheLife('max')
   cacheTag(CollectionSlug.ResumeSkills)
+
   return await fetchResumeSkills(locale)
 }
 

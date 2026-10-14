@@ -31,12 +31,14 @@ const fetchPhotoDetail = async (photoId: string, accessKey: string): Promise<Uns
   const response = await fetch(`${UNSPLASH_API_BASE}/photos/${photoId}`, {
     headers: unsplashHeaders(accessKey),
   })
+
   const body = await response.json()
 
   if (!response.ok) {
     const message = Array.isArray(body?.errors)
       ? body.errors.join(', ')
       : `Failed to load Unsplash photo ${photoId} (${response.status}).`
+
     throw new Error(message)
   }
 
@@ -56,6 +58,7 @@ const triggerDownloadTracking = async (
   const response = await fetch(downloadLocation, {
     headers: unsplashHeaders(accessKey),
   })
+
   if (!response.ok) {
     throw new Error(`Failed to register Unsplash download (${response.status}).`)
   }
@@ -68,6 +71,7 @@ const downloadImageBytes = async (
   mimetype: string
 }> => {
   const response = await fetch(url)
+
   if (!response.ok) {
     throw new Error(`Failed to download the Unsplash image (${response.status}).`)
   }
@@ -94,6 +98,7 @@ export const importPhoto = async ({
   photoId: string
 }): Promise<UnsplashImportResult> => {
   const accessKey = process.env.UNSPLASH_ACCESS_KEY
+
   if (!accessKey) {
     throw new Error('UNSPLASH_ACCESS_KEY is not configured.')
   }

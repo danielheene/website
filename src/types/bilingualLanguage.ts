@@ -4,7 +4,9 @@ export const BilingualLanguage = {
 } as const
 
 export type BilingualLanguage = typeof BilingualLanguage
+
 export type BilingualLanguageKey = keyof BilingualLanguage
+
 export type BilingualLanguageValue = BilingualLanguage[BilingualLanguageKey]
 
 export const BilingualLanguageLabel = {
@@ -13,5 +15,7 @@ export const BilingualLanguageLabel = {
 } as const
 
 export type BilingualLanguageLabel = typeof BilingualLanguageLabel
+
 export type BilingualLanguageLabelKey = keyof BilingualLanguageLabel
+
 export type BilingualLanguageLabelValue = BilingualLanguageLabel[BilingualLanguageLabelKey]

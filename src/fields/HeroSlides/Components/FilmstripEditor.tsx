@@ -71,6 +71,7 @@ export const FilmstripEditor = (props: ArrayFieldClientProps) => {
     onEmblaSelect()
     emblaApi.on('select', onEmblaSelect)
     emblaApi.on('reInit', onEmblaSelect)
+
     return () => {
       emblaApi.off('select', onEmblaSelect)
       emblaApi.off('reInit', onEmblaSelect)

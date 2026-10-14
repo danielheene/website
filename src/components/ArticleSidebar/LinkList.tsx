@@ -14,7 +14,7 @@ export const LinkList = ({ links }: LinkListProps) => (
         <CMSLink
           {...link}
           className={cn([
-            '-ml-px pl-3! border-l py-1 text-sm leading-snug no-underline! transition-colors',
+            '-ml-px border-l py-1 pl-3! text-sm leading-snug no-underline! transition-colors',
             'border-transparent text-muted-foreground hover:text-foreground',
           ])}
         />

@@ -21,9 +21,11 @@ const RESERVED_TOP_LEVEL_SEGMENTS = new Set(['admin', 'api', 'blog', 'download',
  */
 const isUnknownSlugCandidate = (pathname: string): string | null => {
   const segments = pathname.split('/').filter(Boolean)
+
   if (segments.length !== 1) return null
 
   const [slug] = segments
+
   // A dotted last segment (favicon.ico, robots.txt, ...) is a static file
   // under `public/`, never a page slug.
   if (RESERVED_TOP_LEVEL_SEGMENTS.has(slug) || slug.includes('.')) return null
@@ -47,7 +49,9 @@ const lookupRedirect = async (request: NextRequest) => {
 
   try {
     const redirect = await fetchRedirect(pathname)
+
     if (redirect && redirect.destination !== pathname) return redirect
+
     return null
   } catch {
     return null
@@ -74,15 +78,19 @@ const rewriteToUmami = (request: NextRequest): NextResponse | null => {
 
 export default async function proxy(request: NextRequest) {
   const stats = rewriteToUmami(request)
+
   if (stats) return stats
 
   const redirect = await lookupRedirect(request)
+
   if (redirect) {
     const destination = new URL(redirect.destination, request.url)
+
     // preserve the incoming query string unless the target defines its own
     if (!redirect.destination.includes('?')) {
       destination.search = request.nextUrl.search
     }
+
     return NextResponse.redirect(destination, redirect.statusCode)
   }
 
@@ -93,6 +101,7 @@ export default async function proxy(request: NextRequest) {
    * boundary, where it can no longer change the response status.
    */
   const listing = resolveBlogListingUrl(request.nextUrl.pathname, request.nextUrl.search)
+
   if (listing?.redirect) {
     return NextResponse.redirect(new URL(listing.redirect, request.url), 308)
   }
@@ -111,11 +120,13 @@ export default async function proxy(request: NextRequest) {
    */
   const isDraftRequest = request.cookies.has('__prerender_bypass')
   const slugCandidate = isDraftRequest ? null : isUnknownSlugCandidate(request.nextUrl.pathname)
+
   if (slugCandidate && !(await pageSlugExists(slugCandidate))) {
     return new NextResponse(null, { status: 404 })
   }
 
   const response = NextResponse.next()
+
   // alternative sort orders duplicate the default listing's content
   if (listing && !listing.indexable) {
     response.headers.set('X-Robots-Tag', 'noindex, follow')

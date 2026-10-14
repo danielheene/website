@@ -5,6 +5,7 @@ import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fe
 import { resolveOgBackground } from '@/lib/resolveOgBackground'
 
 export const alt = 'Website'
+
 export const size = {
   width: 1200,
   height: 630,
@@ -14,6 +15,7 @@ export default async function Image() {
   const {
     general: { description, defaultOpengraphImage },
   } = await fetchSiteSettingsCached()
+
   const { name } = await fetchGlobalUserSettingsCached()
 
   const bg = resolveOgBackground(defaultOpengraphImage)
@@ -22,7 +24,7 @@ export default async function Image() {
   return new ImageResponse(
     <div
       tw={cn(
-        'relative flex h-full w-full flex-col items-start justify-end px-16 pb-20 text-neutral-100',
+        'relative flex size-full flex-col items-start justify-end px-16 pb-20 text-neutral-100',
         !bgSrc && 'bg-neutral-900',
       )}
     >

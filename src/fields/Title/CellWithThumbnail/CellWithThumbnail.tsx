@@ -15,6 +15,7 @@ export const CellWithThumbnail = async (props: CellWithThumbnailProps) => {
 
   const thumbnailPathBase = thumbnailPath.replace(/\.(url|thumbnailURL)$/, '')
   const document = await resolveRelations(rowData)
+
   const thumbnailURL = get(
     document,
     `${thumbnailPathBase}.thumbnailURL`,
@@ -22,6 +23,7 @@ export const CellWithThumbnail = async (props: CellWithThumbnailProps) => {
   )
 
   let titleValue: string | undefined
+
   if (cellData && typeof cellData === 'string' && cellData.length > 0) {
     titleValue = cellData
   } else if ('name' in field && typeof field.name === 'string' && field.name.length > 0) {

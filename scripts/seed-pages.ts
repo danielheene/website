@@ -24,6 +24,7 @@ const payload = await getPayload({
 
 const clean = process.argv.includes('--clean')
 const countIndex = process.argv.indexOf('--count')
+
 const count =
   countIndex !== -1 && process.argv[countIndex + 1]
     ? Number.parseInt(process.argv[countIndex + 1], 10)

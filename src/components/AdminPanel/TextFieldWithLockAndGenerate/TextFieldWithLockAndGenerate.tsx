@@ -46,6 +46,7 @@ export const TextFieldWithLockAndGenerate: React.FC<TextFieldWithLockAndGenerate
   const { value, setValue } = useField<string>({
     path,
   })
+
   const [isLocked, setIsLocked] = useState<boolean>(hasLock && readOnlyFromProps !== true)
 
   const handleUnlockClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {

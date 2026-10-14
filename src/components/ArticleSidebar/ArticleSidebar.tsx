@@ -31,7 +31,7 @@ export const ArticleSidebar = ({
       {sections.map(({ title, children }, index) => (
         <section key={title ?? index}>
           {title && (
-            <p className="font-mono text-xs uppercase tracking-wide text-muted-foreground">
+            <p className="font-mono text-xs tracking-wide text-muted-foreground uppercase">
               {title}
             </p>
           )}

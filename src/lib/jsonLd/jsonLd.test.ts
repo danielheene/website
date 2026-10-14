@@ -94,6 +94,7 @@ describe('generatePersonSchema', () => {
         },
       }),
     )
+
     expect(result.sameAs).toEqual(['https://github.test'])
     expect(result.worksFor).toEqual({
       '@type': 'Organization',
@@ -117,6 +118,7 @@ describe('generatePersonSchema', () => {
         },
       }),
     )
+
     expect(result.image).toEqual({
       '@type': 'ImageObject',
       url: '/regular.jpg',

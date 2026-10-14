@@ -47,6 +47,7 @@ if (tunnel) {
   const splice = (text) => {
     const lines = text.split('\n')
     const at = lines.findIndex((line) => line.startsWith('- Network:'))
+
     // Nothing to anchor to: pass the banner through rather than lose it.
     if (at === -1) return text
 
@@ -54,6 +55,7 @@ if (tunnel) {
     // Match the column Next pads its own labels to.
     const pad = ' '.repeat(Math.max(1, lines[at].indexOf('http') - label.length))
     lines.splice(at + 1, 0, `${label}${pad}${tunnelUrl}`)
+
     return lines.join('\n')
   }
 
@@ -77,6 +79,7 @@ if (tunnel) {
       tunnelUrl = marker[1]
       text = text.replace(MARKER, '')
       flush()
+
       if (!text) return
     }
 
@@ -88,12 +91,16 @@ if (tunnel) {
 
     if (!done && /^- Network:/m.test(text)) {
       pending = text
+
       if (tunnelUrl) {
         flush()
+
         return
       }
+
       // Cap the wait so a failed tunnel never swallows the banner.
       setTimeout(flush, 2000).unref()
+
       return
     }
 
@@ -105,8 +112,10 @@ child.on('exit', (code, signal) => {
   // Re-raise the signal so the shell sees a normal Ctrl-C rather than exit 0.
   if (signal) {
     process.kill(process.pid, signal)
+
     return
   }
+
   process.exit(code ?? 0)
 })
 

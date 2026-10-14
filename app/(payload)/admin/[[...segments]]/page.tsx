@@ -30,6 +30,7 @@ export const generateMetadata = ({ params, searchParams }: Args): Promise<Metada
 // Re-apply if Payload regenerates this file.
 const Connection = async () => {
   await connection()
+
   return null
 }
 

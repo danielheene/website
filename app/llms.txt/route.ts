@@ -64,7 +64,9 @@ const renderSection = (
       collection,
       slug: entry.slug,
     })
+
     const description = entry.description ? `: ${escapeDescription(entry.description)}` : ''
+
     return `- [${escapeLinkText(entry.title)}](${url})${description}`
   })
 

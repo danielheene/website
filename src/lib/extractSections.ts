@@ -32,9 +32,11 @@ export const extractSections = (
         title?: unknown
       }
     )?.title
+
     if (typeof title !== 'string' || title.trim() === '') continue
 
     const id = slugify(title)
+
     if (id === '' || seen.has(id)) continue
 
     seen.add(id)

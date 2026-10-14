@@ -70,9 +70,11 @@ export const isBlogSort = (value: unknown): value is BlogSort =>
  */
 export const parsePageParam = (raw: RawParam): number | null => {
   const value = firstValue(raw)
+
   if (!value || !/^[0-9]+$/.test(value)) return null
 
   const parsed = Number.parseInt(value, 10)
+
   return Number.isSafeInteger(parsed) && parsed >= 1 ? parsed : null
 }
 
@@ -102,10 +104,13 @@ export const buildBlogListingHref = (
   { page = 1, sort = DEFAULT_BLOG_SORT }: Partial<BlogListingState> = {},
 ): string => {
   const params = new URLSearchParams()
+
   if (sort !== DEFAULT_BLOG_SORT) params.set(BLOG_SORT_PARAM, sort)
+
   if (page > 1) params.set(BLOG_PAGE_PARAM, String(page))
 
   const query = params.toString()
+
   return query ? `${basePath}?${query}` : basePath
 }
 
@@ -143,6 +148,7 @@ export const resolveBlogListingUrl = (
   search: string,
 ): BlogListingUrlResolution | null => {
   const match = LISTING_PATH.exec(pathname)
+
   if (!match) return null
 
   const [, topic, legacyPage] = match
@@ -152,8 +158,10 @@ export const resolveBlogListingUrl = (
   if (topic && (RESERVED_TOPIC_SLUGS.includes(topic) || topic.includes('.'))) return null
 
   let pageFromPath: number | null = null
+
   if (legacyPage !== undefined) {
     pageFromPath = parsePageParam(legacyPage)
+
     if (pageFromPath === null) return null
   }
 
@@ -170,6 +178,7 @@ export const resolveBlogListingUrl = (
       seenPage = true
       // a page in the legacy path segment wins over one in the query
       const page = pageFromPath ?? parsePageParam(value)
+
       if (page !== null && page > 1) params.append(key, String(page))
       continue
     }
@@ -177,10 +186,12 @@ export const resolveBlogListingUrl = (
     if (key === BLOG_SORT_PARAM) {
       if (seenSort) continue
       seenSort = true
+
       if (isBlogSort(value) && value !== DEFAULT_BLOG_SORT) {
         sort = value
         params.append(key, value)
       }
+
       continue
     }
 

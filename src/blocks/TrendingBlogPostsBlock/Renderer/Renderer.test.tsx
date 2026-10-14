@@ -67,6 +67,7 @@ describe('TrendingBlogPostsBlockRenderer', () => {
         de: 'Beliebte Beiträge',
       },
     })
+
     render(element)
 
     expect(screen.getByText('Trending Now')).toBeInTheDocument()
@@ -189,6 +190,7 @@ describe('TrendingBlogPostsBlockRenderer', () => {
         de: '',
       },
     })
+
     render(element)
 
     expect(

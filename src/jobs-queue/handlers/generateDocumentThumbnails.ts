@@ -59,6 +59,7 @@ const run: TaskHandler<TaskSlug['GenerateDocumentThumbnails']> = async ({
   }
 
   const filenameBase = stripExtension(document.filename ?? String(documentId))
+
   const generatorFlags: GeneratorFlag[] = [
     'document-thumbnail',
     'thumbnail',
@@ -66,6 +67,7 @@ const run: TaskHandler<TaskSlug['GenerateDocumentThumbnails']> = async ({
   ]
 
   const ids: string[] = []
+
   for (const [index, thumbnail] of thumbnails.entries()) {
     const { id } = await payload.create({
       collection: CollectionSlug.MediaImages,
@@ -81,6 +83,7 @@ const run: TaskHandler<TaskSlug['GenerateDocumentThumbnails']> = async ({
         size: Buffer.byteLength(thumbnail.data),
       },
     })
+
     ids.push(id)
   }
 

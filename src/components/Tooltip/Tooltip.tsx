@@ -44,14 +44,14 @@ export const Tooltip = ({
           align="center"
           className={cn([
             'rounded-xl',
-            'select-none bg-sidebar-accent-foreground text-sidebar-accent px-2 py-1 text-[15px] leading-none',
+            'bg-sidebar-accent-foreground px-2 py-1 text-[15px] leading-none text-sidebar-accent select-none',
             'shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px]',
-            'will-change-[transform,opacity] font-pp-supply-sans',
+            'font-pp-supply-sans will-change-[transform,opacity]',
             'data-[state=delayed-open]:data-[side=bottom]:animate-slideUpAndFade',
             'data-[state=delayed-open]:data-[side=left]:animate-slideRightAndFade',
             'data-[state=delayed-open]:data-[side=right]:animate-slideLeftAndFade',
             'data-[state=delayed-open]:data-[side=top]:animate-slideDownAndFade',
-            '[&>span>svg]:fill-sidebar-accent-foreground z-999999',
+            'z-999999 [&>span>svg]:fill-sidebar-accent-foreground',
             className,
           ])}
           {...props}

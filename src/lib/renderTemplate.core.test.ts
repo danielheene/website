@@ -115,6 +115,7 @@ describe('renderTemplateCore', () => {
       const camel = await render('{title | kebabCase}', {
         title: 'About Us',
       })
+
       const lower = await render('{title | kebabcase}', {
         title: 'About Us',
       })

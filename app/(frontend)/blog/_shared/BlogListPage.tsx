@@ -118,8 +118,10 @@ const PostCard = ({ post }: { post: BlogPostData }) => {
       : firstSlide?.kind === 'video'
         ? firstSlide.poster
         : undefined
+
   const heroImageAlt = firstSlide?.kind === 'image' ? firstSlide.alt : post.title
   const heroImageBlurDataURL = firstSlide?.kind === 'image' ? firstSlide.blurDataURL : undefined
+
   const shaderThumbnail =
     firstSlide?.kind === 'shader' ? SHADER_PRESET_MAP[firstSlide.presetKey]?.thumbnail : undefined
 
@@ -149,11 +151,11 @@ const PostCard = ({ post }: { post: BlogPostData }) => {
           />
         )}
       </DuoTone>
-      <div className={cn(['absolute inset-0 size-full flex flex-col justify-between'])}>
+      <div className={cn(['absolute inset-0 flex size-full flex-col justify-between'])}>
         <p
           className={cn([
-            'text-background px-6 pt-2.5 pb-10 font-pp-supply-sans',
-            'dark:text-foreground text-right',
+            'px-6 pt-2.5 pb-10 font-pp-supply-sans text-background',
+            'text-right dark:text-foreground',
             'bg-linear-to-b from-primary/95 to-primary/0',
           ])}
         >
@@ -161,15 +163,15 @@ const PostCard = ({ post }: { post: BlogPostData }) => {
         </p>
         <header
           className={cn([
-            'text-background px-6 pb-4 pt-16 font-pp-supply-sans',
-            'dark:text-foreground line-clamp-2 text-xl leading-normal  font-medium',
+            'px-6 pt-16 pb-4 font-pp-supply-sans text-background',
+            'line-clamp-2 text-xl leading-normal font-medium dark:text-foreground',
             'bg-linear-to-b from-primary/0 to-primary/95',
           ])}
         >
           <h2
             className={cn([
-              'text-background block font-pp-supply-sans font-medium',
-              'dark:text-foreground text-2xl leading-8 line-clamp-2 h-[calc(var(--tw-leading)*2)]',
+              'block font-pp-supply-sans font-medium text-background',
+              'line-clamp-2 h-[calc(var(--tw-leading)*2)] text-2xl leading-8 dark:text-foreground',
             ])}
           >
             {post.title}
@@ -180,7 +182,7 @@ const PostCard = ({ post }: { post: BlogPostData }) => {
               enableGutter={false}
               enableProse={false}
               className={cn([
-                'text-background/80 mt-1 line-clamp-2 text-sm font-normal',
+                'mt-1 line-clamp-2 text-sm font-normal text-background/80',
                 'dark:text-foreground/80',
                 // Paragraphs run on as one text so the two-line clamp applies
                 // across all of them.
@@ -224,6 +226,7 @@ const PostsGrid = async ({
   searchParams: BlogListPageProps['searchParams']
 }) => {
   const { page, sort } = parseBlogListingParams(await searchParams)
+
   const {
     docs: posts,
     totalDocs,
@@ -298,6 +301,7 @@ export interface BlogListPageProps {
  */
 export const BlogListPage = async ({ topic, searchParams }: BlogListPageProps) => {
   const basePath = topic ? `${BLOG_PATH}/${topic.slug}` : BLOG_PATH
+
   return (
     <PageContainer>
       <section className={cn(['w-full py-32'])}>
@@ -305,10 +309,10 @@ export const BlogListPage = async ({ topic, searchParams }: BlogListPageProps) =
           <div className={cn(['mx-auto grid w-full max-w-7xl gap-16 lg:grid-cols-12'])}>
             <header
               className={cn([
-                'top-10 flex h-fit flex-col items-center gap-5 text-center lg:col-span-4 lg:sticky lg:items-start lg:gap-8 lg:text-left',
+                'top-10 flex h-fit flex-col items-center gap-5 text-center lg:sticky lg:col-span-4 lg:items-start lg:gap-8 lg:text-left',
               ])}
             >
-              <h1 className={cn(['text-4xl font-extrabold lg:text-5xl font-mono'])}>
+              <h1 className={cn(['font-mono text-4xl font-extrabold lg:text-5xl'])}>
                 {topic ? topic.title : 'All Posts'}
               </h1>
               {topic?.content && !isEmptyValue(topic.content) && (
@@ -324,7 +328,7 @@ export const BlogListPage = async ({ topic, searchParams }: BlogListPageProps) =
                 role="none"
                 data-slot="separator"
                 className={cn([
-                  'bg-border shrink-0 data-horizontal:h-px data-horizontal:w-full data-vertical:w-px data-vertical:self-stretch',
+                  'shrink-0 bg-border data-horizontal:h-px data-horizontal:w-full data-vertical:w-px data-vertical:self-stretch',
                 ])}
               />
               <nav>

@@ -58,6 +58,7 @@ export const sendUmamiPayload = async (payload: UmamiSendPayload): Promise<void>
       const blob = new Blob([body], {
         type: 'application/json',
       })
+
       const sent = navigator.sendBeacon(url, blob)
 
       if (!sent) {

@@ -47,6 +47,7 @@ const databaseUrl = need('DATABASE_URL')
 const redisUrl = need('REDIS_URL')
 const s3Endpoint = need('S3_ENDPOINT')
 const s3Bucket = need('S3_BUCKET')
+
 const allowed = need('TEST_SERVICES_HOST')
   .split(',')
   .map((host) => host.trim())
@@ -64,9 +65,11 @@ for (const [name, value] of [
 
 const rebuild = async (service, idName) => {
   const base = need('DOKPLOY_URL').replace(/\/$/, '')
+
   const body = JSON.stringify({
     [`${service}Id`]: need(idName),
   })
+
   const headers = {
     'content-type': 'application/json',
     'x-api-key': need('DOKPLOY_API_KEY'),
@@ -79,27 +82,34 @@ const rebuild = async (service, idName) => {
       headers,
       body,
     })
+
     if (response.ok) {
       console.info(`[reset-test-services] ${service} rebuild requested`)
+
       return
     }
+
     if (response.status !== 404) fail(`${service} rebuild failed: HTTP ${response.status}`)
   }
+
   fail(`${service} rebuild endpoint not found`)
 }
 
 const retryUntilReady = async (label, attempt) => {
   const deadline = Date.now() + READY_TIMEOUT_MS
   let lastError
+
   while (Date.now() < deadline) {
     try {
       await attempt()
+
       return
     } catch (error) {
       lastError = error
       await sleep(POLL_INTERVAL_MS)
     }
   }
+
   fail(`${label} not ready in time: ${lastError?.message ?? lastError}`)
 }
 
@@ -129,6 +139,7 @@ const dropMongoDatabase = () => {
       encoding: 'utf8',
     },
   )
+
   if (result.status !== 0) throw new Error(redact(result.stderr.trim()) || 'mongosh failed')
 }
 
@@ -136,11 +147,14 @@ const flushRedis = async () => {
   const client = createClient({
     url: redisUrl,
   })
+
   client.on('error', () => {})
+
   try {
     await client.connect()
     await client.flushAll()
     const size = await client.dbSize()
+
     if (size !== 0) throw new Error(`Redis still holds ${size} keys after FLUSHALL`)
   } finally {
     // `destroy()` is synchronous in node-redis and returns nothing.
@@ -162,6 +176,7 @@ const emptyBucket = () => {
       },
     },
   )
+
   if (result.status !== 0) throw new Error(redact(result.stderr.trim()) || 'aws s3 rm failed')
 }
 

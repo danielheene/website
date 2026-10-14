@@ -37,14 +37,14 @@ export const FieldComponent: CheckboxFieldClientComponent = ({
         <Icon
           name={iconActive}
           className={cn([
-            'absolute size-7 pointer-events-none transition-opacity',
+            'pointer-events-none absolute size-7 transition-opacity',
             value ? 'opacity-100' : 'opacity-0',
           ])}
         />
         <Icon
           name={iconInactive}
           className={cn([
-            'absolute size-7 pointer-events-none transition-opacity',
+            'pointer-events-none absolute size-7 transition-opacity',
             !value ? 'opacity-100' : 'opacity-0',
           ])}
         />

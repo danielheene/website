@@ -13,10 +13,14 @@ export const isEmptyValue = (value: SerializedEditorState | undefined): boolean 
         }
       | undefined
   )?.children
+
   if (!children || children.length === 0) return true
+
   if (children.length > 1) return false
+
   const [onlyChild] = children as Array<{
     children?: unknown[]
   }>
+
   return !onlyChild.children || onlyChild.children.length === 0
 }

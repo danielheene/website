@@ -31,7 +31,7 @@ export const HeroVideoPlayer = ({
         <img
           alt=""
           aria-hidden
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 size-full object-cover"
           src={blurDataURL}
           style={{
             opacity: videoReady ? 0 : 1,
@@ -44,7 +44,7 @@ export const HeroVideoPlayer = ({
         <img
           alt=""
           aria-hidden
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 size-full object-cover"
           src={poster}
           style={{
             opacity: videoReady ? 0 : 1,
@@ -54,7 +54,7 @@ export const HeroVideoPlayer = ({
       )}
       <video
         autoPlay
-        className="h-full w-full object-cover"
+        className="size-full object-cover"
         loop={loop}
         muted
         onCanPlay={() => setVideoReady(true)}

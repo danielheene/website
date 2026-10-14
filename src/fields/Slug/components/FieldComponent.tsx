@@ -16,6 +16,7 @@ const FieldComponent: React.FC<FieldComponentProps> = ({ fieldToUse, path, field
 
   const generateValue = async () => {
     const data = getDataByPath<string>(fieldToUse)
+
     if (data) return generateSlug(data)
   }
 

@@ -36,9 +36,9 @@ export const Header = ({
   return (
     <>
       <div className={cn(['flex flex-col', 'font-mono'])}>
-        <div className="text-xs md:text-sm lg:text-md text-muted-foreground">Umami Controls:</div>
+        <div className="lg:text-md text-xs text-muted-foreground md:text-sm">Umami Controls:</div>
         <Link
-          className="text-md md:text-lg lg:text-xl no-underline font-medium leading-none"
+          className="text-md leading-none font-medium no-underline md:text-lg lg:text-xl"
           href={umamiUrl}
           target="_blank"
           rel="noopener noreferrer"

@@ -41,6 +41,7 @@ export const LogoCarousel = ({ className, entries }: LogoCarouselProps) => {
 
           previousValue[rowIndex] = previousValue[rowIndex] || []
           previousValue[rowIndex][tileIndex] = currentValue
+
           return previousValue
         }, [])
         .filter((row) => row.length === 2),
@@ -65,7 +66,7 @@ export const LogoCarousel = ({ className, entries }: LogoCarouselProps) => {
       ])}
       ref={emblaRef}
     >
-      <div className={cn(['flex flex-col w-full shrink-0 grow-0 direction-reverse'])}>
+      <div className={cn(['direction-reverse flex w-full shrink-0 grow-0 flex-col'])}>
         {rows.filter(Boolean).map((row) => (
           <LogoCarouselRow key={getRowKey(row)} entries={row} />
         ))}
@@ -76,7 +77,7 @@ export const LogoCarousel = ({ className, entries }: LogoCarouselProps) => {
 
 export function LogoCarouselRow({ entries }: { entries: LogoCarouselProps['entries'] }) {
   return (
-    <div className={cn(['flex flex-row shrink-0 grow-0 my-3 gap-6'])}>
+    <div className={cn(['my-3 flex shrink-0 grow-0 flex-row gap-6'])}>
       {entries.map((item) => (
         <LogoCarouselTile key={item.id} {...item} />
       ))}
@@ -95,9 +96,9 @@ export function LogoCarouselTile({
       key={id}
       aria-label={title}
       className={cn(
-        'aspect-4/3 w-full p-3 rounded',
-        'fill-primary bg-white',
-        '*:w-full *:h-full *:object-contain *:object-center',
+        'aspect-4/3 w-full rounded p-3',
+        'bg-white fill-primary',
+        '*:size-full *:object-contain *:object-center',
       )}
       // oxlint-disable-next-line react/no-danger -- sanitized server-side by sanitizeSvg — on write via the ResumeCustomers beforeChange hook, and again in ResumeCustomersBlock/Renderer before reaching this component
       dangerouslySetInnerHTML={{

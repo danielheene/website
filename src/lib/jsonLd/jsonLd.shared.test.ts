@@ -20,6 +20,7 @@ describe('generateBreadcrumbList', () => {
         name: 'Current',
       },
     ])
+
     expect(result['@context']).toBe('https://schema.org')
     expect(result['@type']).toBe('BreadcrumbList')
     expect(result.itemListElement).toEqual([
@@ -44,6 +45,7 @@ describe('generateBlog', () => {
       name: 'Blog',
       url: 'https://x.test/blog',
     })
+
     expect(result).toEqual({
       '@context': 'https://schema.org',
       '@type': 'Blog',
@@ -60,6 +62,7 @@ describe('generateBlog', () => {
       image: 'https://x.test/og.jpg',
       keywords: ['a', 'b'],
     })
+
     expect(result.keywords).toBe('a, b')
     expect(result.image).toEqual({
       '@type': 'ImageObject',
@@ -175,6 +178,7 @@ describe('generateCollectionPage', () => {
       name: 'Tag',
       url: 'https://x.test/t',
     })
+
     expect(result['@type']).toBe('CollectionPage')
     expect(result).not.toHaveProperty('description')
   })
@@ -186,6 +190,7 @@ describe('generateCreativeWork', () => {
       name: 'W',
       image: 'https://x.test/i.jpg',
     })
+
     expect(result.image).toEqual({
       '@type': 'ImageObject',
       url: 'https://x.test/i.jpg',
@@ -216,6 +221,7 @@ describe('generateOccupation', () => {
       responsibilities: [],
       skills: [],
     })
+
     expect(result.roleName).not.toHaveProperty('responsibilities')
     expect(result.roleName).not.toHaveProperty('skills')
   })
@@ -229,6 +235,7 @@ describe('generateOccupation', () => {
       responsibilities: ['r1'],
       skills: ['s1'],
     })
+
     expect(result.worksFor).toEqual({
       '@type': 'Organization',
       name: 'ACME',
@@ -250,6 +257,7 @@ describe('generateOrganization', () => {
       name: 'ACME',
       logo: 'https://x.test/l.png',
     })
+
     expect(result.logo).toEqual({
       '@type': 'ImageObject',
       url: 'https://x.test/l.png',
@@ -269,6 +277,7 @@ describe('generateSoftwareSourceCode', () => {
       },
       keywords: ['ts', 'snippet'],
     })
+
     expect(result['@type']).toBe('SoftwareSourceCode')
     expect(result.programmingLanguage).toBe('TypeScript')
     expect(result.author).toEqual({
@@ -282,6 +291,7 @@ describe('generateSoftwareSourceCode', () => {
     const result = generateSoftwareSourceCode({
       name: 'Repo',
     })
+
     expect(result).not.toHaveProperty('codeRepository')
     expect(result).not.toHaveProperty('author')
   })

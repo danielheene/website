@@ -24,6 +24,7 @@ export const IconPickerFeature = createServerFeature({
           html: {
             converter: ({ node }) => {
               const { iconName } = node as SerializedIconNode
+
               if (!iconName) return ''
 
               return `<span data-icon="${escapeHtmlAttribute(iconName)}"></span>`

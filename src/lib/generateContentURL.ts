@@ -29,5 +29,6 @@ export const generateContentURL = ({
 }: GenerateContentURLProps): string => {
   const urlPath = encodeURI(path || generateContentPath(collection, slug))
   const urlParams = params ? `?${new URLSearchParams(params).toString()}` : ''
+
   return new URL(`${urlPath}${urlParams}`, process.env.SERVER_URL).toString()
 }

@@ -52,6 +52,7 @@ export const IconGrid = ({ icons, isSelected, onSelectAction, describe }: IconGr
   // measure before paint so the first frame already has the real column count
   useLayoutEffect(() => {
     const element = scrollRef.current
+
     if (!element) return
 
     const measure = () => {
@@ -67,6 +68,7 @@ export const IconGrid = ({ icons, isSelected, onSelectAction, describe }: IconGr
 
     const observer = new ResizeObserver(measure)
     observer.observe(element)
+
     return () => observer.disconnect()
   }, [])
 
@@ -87,6 +89,7 @@ export const IconGrid = ({ icons, isSelected, onSelectAction, describe }: IconGr
     viewportWidth > 0
       ? Math.max(MIN_CELL_PX, (viewportWidth - GAP_PX * (columns - 1)) / columns)
       : MIN_CELL_PX
+
   const rowHeight = columnWidth + GAP_PX
 
   const rowCount = Math.ceil(icons.length / columns)
@@ -100,7 +103,7 @@ export const IconGrid = ({ icons, isSelected, onSelectAction, describe }: IconGr
     <div
       ref={scrollRef}
       onScroll={(event) => setScrollTop(event.currentTarget.scrollTop)}
-      className="min-h-0 flex-1 overflow-y-auto scrollbar-none"
+      className="min-h-0 flex-1 scrollbar-none overflow-y-auto"
     >
       {/* full-height spacer keeps the scrollbar honest about the whole set */}
       <div
@@ -110,7 +113,7 @@ export const IconGrid = ({ icons, isSelected, onSelectAction, describe }: IconGr
         }}
       >
         <div
-          className={cn(['absolute left-0 right-0', 'grid'])}
+          className={cn(['absolute inset-x-0', 'grid'])}
           style={{
             top: firstRow * rowHeight,
             gridTemplateColumns: `repeat(${columns}, minmax(${MIN_CELL_PX}px, 1fr))`,
@@ -130,7 +133,7 @@ export const IconGrid = ({ icons, isSelected, onSelectAction, describe }: IconGr
                   onClick={() => onSelectAction(candidate)}
                   className={cn([
                     'flex w-full items-center justify-center',
-                    'aspect-square rounded-md border p-0 m-0',
+                    'm-0 aspect-square rounded-md border p-0',
                     'cursor-pointer text-foreground transition-colors',
                     'hover:bg-accent hover:text-accent-foreground',
                     'focus-visible:ring-2 focus-visible:ring-ring',

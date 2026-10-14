@@ -75,6 +75,7 @@ describe('fetchAnthropicExcerpt', () => {
         }>
       }>
     }
+
     expect(root.children[0].children[0].text).toBe('A short summary of the post.')
   })
 
@@ -102,6 +103,7 @@ describe('fetchAnthropicExcerpt', () => {
         }>
       }>
     }
+
     expect(root.children[0].children[0].text).toBe('A short summary.')
     expect(JSON.stringify(result)).not.toMatch(/```/)
   })

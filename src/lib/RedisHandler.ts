@@ -39,6 +39,7 @@ export const getClient = async (): Promise<RedisClient> => {
       .connect()
       .then((connectedClient) => {
         client = connectedClient
+
         return connectedClient
       })
       .catch((error) => {
@@ -64,6 +65,7 @@ export const get = async <T extends object | string>(key: string): Promise<T | n
     return JSON.parse(data) as T
   } catch (error) {
     console.error(`Failed to parse cached value for key: ${key}`, error)
+
     return null
   }
 }
@@ -113,10 +115,12 @@ const getSubscriberClient = async (): Promise<RedisClient> => {
       .then((baseClient) => {
         const duplicatedClient = baseClient.duplicate()
         duplicatedClient.on('error', (err) => console.error('Redis Subscriber Client Error', err))
+
         return duplicatedClient.connect()
       })
       .then((connectedClient) => {
         subscriberClient = connectedClient
+
         return connectedClient
       })
       .catch((error) => {

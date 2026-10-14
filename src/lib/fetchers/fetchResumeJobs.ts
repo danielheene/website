@@ -33,6 +33,7 @@ export const fetchResumeJobsCached = async (locale: BilingualLanguage = 'en') =>
   'use cache'
   cacheLife('max')
   cacheTag(CollectionSlug.ResumeJobs)
+
   return await fetchResumeJobs(locale)
 }
 

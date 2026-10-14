@@ -37,6 +37,7 @@ const payload = await getPayload({
 const server = createServer((req, res) => {
   if (req.url !== '/health') {
     res.writeHead(404).end()
+
     return
   }
 
@@ -75,6 +76,7 @@ await new Promise<void>((resolve) => {
     server.close()
     resolve()
   }
+
   process.on('SIGTERM', shutdown)
   process.on('SIGINT', shutdown)
 })

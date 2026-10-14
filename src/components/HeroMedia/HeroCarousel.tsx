@@ -75,6 +75,7 @@ export const HeroCarousel = ({ items, className }: HeroCarouselProps) => {
     if (!emblaApi) return
 
     const autoplay = emblaApi.plugins().autoplay
+
     if (!autoplay) return
 
     if (items[selected]?.kind === 'video') {
@@ -88,9 +89,11 @@ export const HeroCarousel = ({ items, className }: HeroCarouselProps) => {
   const handleVideoHandoff = useCallback(
     (index: number) => {
       if (!emblaApi) return
+
       // Nothing to hand over to: a lone slide loops instead (see HeroSlide),
       // and advancing would restart the video a fade-length early, forever.
       if (items.length < 2) return
+
       if (handedOver.current === index) return
 
       handedOver.current = index
@@ -101,7 +104,7 @@ export const HeroCarousel = ({ items, className }: HeroCarouselProps) => {
 
   return (
     <div className={cn('absolute inset-0 overflow-hidden', className)} ref={emblaRef}>
-      <div className="flex h-full w-full">
+      <div className="flex size-full">
         {items.map((item, index) => (
           <HeroSlide
             index={index}

@@ -50,7 +50,7 @@ export const SectionNavigationDisplay = ({
     ReactDOM.createPortal(
       <nav
         className={cn([
-          'fixed top-0 h-screen hidden md:flex flex-col justify-center animate-fade-in bg-background/60 backdrop-blur-md overflow-hidden z-50',
+          'fixed top-0 z-50 hidden h-screen animate-fade-in flex-col justify-center overflow-hidden bg-background/60 backdrop-blur-md md:flex',
         ])}
       >
         {anchors.map(({ id, title, active }) => (
@@ -60,9 +60,9 @@ export const SectionNavigationDisplay = ({
             onClick={handleAnchorClick}
             className={cn([
               'vertical-writing-rl orientation-sideways rotate-180',
-              'my-1 px-4 transition-opacity duration-500 ease-in-out transform-gpu',
-              'text-foreground/80 dark:text-foreground/50 text-sm font-mono font-light',
-              active && 'text-primary/100 dark:text-foreground font-medium animate-flip',
+              'my-1 transform-gpu px-4 transition-opacity duration-500 ease-in-out',
+              'font-mono text-sm font-light text-foreground/80 dark:text-foreground/50',
+              active && 'animate-flip font-medium text-primary/100 dark:text-foreground',
             ])}
           >
             {title}

@@ -46,6 +46,7 @@ export const useIconSearch = ({
       setIcons([])
       setLoading(false)
       setError(null)
+
       return
     }
 
@@ -57,12 +58,14 @@ export const useIconSearch = ({
         query: trimmed,
         limit: String(limit),
       })
+
       if (prefix) params.set('prefix', prefix)
 
       try {
         const response = await fetch(`${ICONIFY_API}/search?${params.toString()}`, {
           signal: controller.signal,
         })
+
         if (!response.ok) throw new Error(`Icon search failed (HTTP ${response.status})`)
 
         const data = (await response.json()) as {

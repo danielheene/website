@@ -90,6 +90,7 @@ describe('scopeMediaAssets', () => {
 
   it("does not classify 'unsplash-import' as generated — imported photos stay in the Uploaded scope", () => {
     const generated = scopeMediaAssets(withScope(MediaScope.Generated)) as Where
+
     const inList = (
       generated.generatorFlags as {
         in: string[]

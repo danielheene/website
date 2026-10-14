@@ -9,6 +9,7 @@ export const loginAfterCreate: CollectionAfterChangeHook = async ({
   const { totalDocs: existingUsers } = await payload.count({
     collection: 'users',
   })
+
   if (operation === 'create' && !req.user && existingUsers === 1) {
     const { email, password } = data as {
       email: string

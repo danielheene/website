@@ -29,6 +29,7 @@ export const SectionContainer = ({
     threshold: [0.1, 0.25],
     rootMargin: '-10%',
   })
+
   const { setActiveAnchor } = useSectionNavigation()
 
   const id = slugify(rawId || title)
@@ -41,7 +42,7 @@ export const SectionContainer = ({
     <section
       id={id}
       className={cn([
-        'relative m-0 p-0 shrink-0 grow-0',
+        'relative m-0 shrink-0 grow-0 p-0',
 
         variant === 'default' && 'bg-background text-foreground',
         variant === 'primary' && 'bg-primary text-primary-foreground',

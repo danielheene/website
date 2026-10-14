@@ -4,6 +4,7 @@ import robots from './robots'
 
 const rulesFor = async (agent: string) => {
   const { rules } = await robots()
+
   return (Array.isArray(rules) ? rules : [rules]).find(({ userAgent }) =>
     Array.isArray(userAgent) ? userAgent.includes(agent) : userAgent === agent,
   )

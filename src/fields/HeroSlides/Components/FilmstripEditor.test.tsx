@@ -215,6 +215,7 @@ describe('FilmstripEditor', () => {
         id: 'row-1',
       },
     ]
+
     const cappedFieldProps = {
       ...fieldProps,
       field: {
@@ -236,6 +237,7 @@ describe('FilmstripEditor', () => {
         id: 'row-0',
       },
     ]
+
     const cappedFieldProps = {
       ...fieldProps,
       field: {

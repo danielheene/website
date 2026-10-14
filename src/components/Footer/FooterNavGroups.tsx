@@ -14,21 +14,21 @@ interface FooterNavGroupsProps {
 
 export const FooterNavGroups = ({ navGroups, className }: FooterNavGroupsProps) => {
   return (
-    <div className={cn('grid gap-6 grid-cols-2 lg:grid-cols-3 lg:gap-20', className)}>
+    <div className={cn('grid grid-cols-2 gap-6 lg:grid-cols-3 lg:gap-20', className)}>
       {navGroups.map(({ title, entries }, groupKey) => (
         <div
           key={groupKey}
           className="col-span-1 lg:nth-last-[1]:-col-end-1 lg:nth-last-[2]:-col-end-2 lg:nth-last-[3]:-col-end-3"
         >
-          <h3 className="h-(--footer-header-height) mb-(--footer-header-gap) font-mono font-medium text-lg xl:text-2xl text-primary">
+          <h3 className="mb-(--footer-header-gap) h-(--footer-header-height) font-mono text-lg font-medium text-primary xl:text-2xl">
             {title}
           </h3>
-          <ul className="text-sm ml-1">
+          <ul className="ml-1 text-sm">
             {entries?.map(({ id, ...link }) => (
-              <li key={id} className=" text-current/75 hover:text-current">
+              <li key={id} className="text-current/75 hover:text-current">
                 <CMSLink
                   {...link}
-                  className="font-pp-frama font-medium text-sm xl:text-lg tracking-wider leading-none no-underline"
+                  className="font-pp-frama text-sm leading-none font-medium tracking-wider no-underline xl:text-lg"
                 />
               </li>
             ))}

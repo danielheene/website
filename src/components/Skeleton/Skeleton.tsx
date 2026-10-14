@@ -14,7 +14,7 @@ export const Skeleton = ({ ref, className, noPulse, ...props }: SkeletonProps) =
       ref={ref}
       className={cn([
         'skeleton',
-        'bg-accent relative rounded-xs overflow-hidden',
+        'relative overflow-hidden rounded-xs bg-accent',
         !noPulse && 'animate-pulse',
         className,
       ])}

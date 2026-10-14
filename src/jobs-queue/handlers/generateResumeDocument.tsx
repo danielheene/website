@@ -21,6 +21,7 @@ const run: WorkflowHandler<WorkflowSlug['GenerateResumeDocument']> = async ({
   // step needed, since the two are otherwise unrelated values.
   const documentSlug = customId
   const createdAt = getLocalISOString(RESUME_TIMEZONE, new Date())
+
   const retries = {
     attempts: maximumRetries,
     backoff: {
@@ -30,6 +31,7 @@ const run: WorkflowHandler<WorkflowSlug['GenerateResumeDocument']> = async ({
   }
 
   const channel = resumeGenerateChannel(String(id))
+
   const publishStep = (step: string) =>
     publish(channel, {
       status: 'progress',
@@ -41,6 +43,7 @@ const run: WorkflowHandler<WorkflowSlug['GenerateResumeDocument']> = async ({
   const generateLocale = async (locale: 'en' | 'de', label: string) => {
     payload.logger.info(`Processing LocalizedResumeDocument Tasks: ${label}`)
     await publishStep(`Generating ${label} resume…`)
+
     const result = await tasks.generateLocalizedResumeDocument(
       `${TaskSlug.GenerateLocalizedResumeDocument}:${customId}:${locale.toUpperCase()}`,
       {
@@ -54,12 +57,15 @@ const run: WorkflowHandler<WorkflowSlug['GenerateResumeDocument']> = async ({
         },
       },
     )
+
     payload.logger.info(`Successfully processed LocalizedResumeDocument Tasks: ${label}`)
+
     return result
   }
 
   try {
     await publishStep('Generating document title…')
+
     const { documentTitle } = await tasks.generateResumeDocumentTitle(
       `GenerateDocumentTitle:${customId}`,
       {

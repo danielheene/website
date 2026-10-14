@@ -26,6 +26,7 @@ export async function generateStaticParams() {
   const payload = await getPayload({
     config,
   })
+
   const { docs = [] } = await payload.find({
     collection: CollectionSlug.Pages,
     draft: false,
@@ -61,6 +62,7 @@ export default async function Page({ params }: PageProps) {
   const [{ isEnabled: draft }, { slug = 'home' }] = await Promise.all([draftMode(), params])
 
   const page: CollectionData<CollectionSlug['Pages']> = await queryPageBySlug(slug)
+
   if (!page) notFound()
 
   const { title, layout, hero, content } = page
@@ -69,11 +71,13 @@ export default async function Page({ params }: PageProps) {
     layout === 'legal'
       ? (content ?? []).flatMap((block) => {
           const lexical = (block as { content?: unknown }).content
+
           return extractHeadings(lexical)
         })
       : []
 
   const useCustomHeroContent = hero?.contentType === 'custom' && !isEmptyValue(hero.content)
+
   const highlightedHeroCode = useCustomHeroContent
     ? await highlightRichText(hero?.content)
     : undefined
@@ -97,7 +101,7 @@ export default async function Page({ params }: PageProps) {
                   enableGutter={false}
                   enableProse={false}
                   highlightedCode={highlightedHeroCode}
-                  className="font-mono text-balance text-4xl leading-tight text-foreground textshadow-lg shadow-primary/75 [&_h1]:text-4xl [&_h2]:text-3xl [&_h3]:text-2xl [&_p]:text-4xl"
+                  className="textshadow-lg font-mono text-4xl leading-tight text-balance text-foreground shadow-primary/75 [&_h1]:text-4xl [&_h2]:text-3xl [&_h3]:text-2xl [&_p]:text-4xl"
                 />
               </Suspense>
             </div>
@@ -108,7 +112,7 @@ export default async function Page({ params }: PageProps) {
               <div className="container">
                 <Headline
                   variant="page-title"
-                  className="text-balance text-foreground textshadow-lg shadow-primary/75"
+                  className="textshadow-lg text-balance text-foreground shadow-primary/75"
                 >
                   {title}
                 </Headline>
@@ -119,12 +123,12 @@ export default async function Page({ params }: PageProps) {
       </HeroMedia>
       {layout === 'legal' ? (
         <div className="container py-20">
-          <div className="mx-auto grid w-full max-w-7xl lg:grid-cols-12 gap-16 items-start">
+          <div className="mx-auto grid w-full max-w-7xl items-start gap-16 lg:grid-cols-12">
             <div className="min-w-0 lg:col-span-8 [&_h2]:scroll-mt-24 [&_h3]:scroll-mt-24 [&_h4]:scroll-mt-24">
               <RenderBlocks blocks={content} />
             </div>
             <ArticleSidebar
-              className="lg:col-span-4 w-auto"
+              className="w-auto lg:col-span-4"
               sections={[
                 legalHeadings &&
                   legalHeadings.length > 0 && {
@@ -147,6 +151,7 @@ export default async function Page({ params }: PageProps) {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug = 'home' } = await params
   const doc = await queryPageBySlug(slug)
+
   return generateMeta({
     doc,
   })
@@ -206,5 +211,6 @@ const queryDraftPageBySlug = async (slug: string) => {
 
 export const queryPageBySlug = cache(async (slug: string) => {
   const { isEnabled: draft } = await draftMode()
+
   return draft ? queryDraftPageBySlug(slug) : queryPublishedPageBySlug(slug)
 })

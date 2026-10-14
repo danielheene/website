@@ -18,12 +18,15 @@ const image = {
   mimeType: 'image/png',
   url: '/img.png',
 }
+
 const video = {
   mimeType: 'video/mp4',
 }
+
 const doc = {
   mimeType: 'application/pdf',
 }
+
 const audio = {
   mimeType: 'audio/mpeg',
 }

@@ -555,6 +555,7 @@ export const Toasty = function Toasty(): React.JSX.Element {
           type: ActionType.Reset,
         })
       }
+
       audioBufferNode.connect(audioContextRef.current.destination)
       audioBufferNode.start(0)
     }

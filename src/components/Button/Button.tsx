@@ -10,12 +10,12 @@ import { Icon } from '@/components/Icon'
 export const buttonStyles = tv({
   base: [
     'group/button inline-flex shrink-0 items-center justify-center rounded-none',
-    'text-(--button-text-color) text-md font-mono font-medium whitespace-nowrap uppercase',
+    'text-md font-mono font-medium whitespace-nowrap text-(--button-text-color) uppercase',
     'bg-(--button-background-color) bg-clip-padding',
-    'border-(--button-border-color) border',
-    'transition-all duration-300 outline-none select-none cursor-pointer',
+    'border border-(--button-border-color)',
+    'cursor-pointer transition-all duration-300 outline-none select-none',
     'focus-visible:ring-2 focus-visible:ring-ring/30',
-    'active:not-aria-[haspopup]:translate-y-px',
+    'not-aria-[haspopup]:active:translate-y-px',
     'disabled:pointer-events-none disabled:opacity-50',
     'aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20',
     'dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
@@ -57,8 +57,8 @@ export const buttonStyles = tv({
       link: [
         '[--button-text-color:var(--color-foreground)] hover:[--button-text-color:var(--color-foreground)]',
         '[--button-background-color:var(--color-transparent)] hover:[--button-background-color:var(--color-transparent)]',
-        '[--button-border-color:var(--color-transparent)] hover:[--button-border-color:var(--color-transparent)] border-none',
-        'normal-case underline underline-offset-4 hover:underline px-0! min-h-auto!',
+        'border-none [--button-border-color:var(--color-transparent)] hover:[--button-border-color:var(--color-transparent)]',
+        'min-h-auto! px-0! normal-case underline underline-offset-4 hover:underline',
       ],
     },
     size: {
@@ -67,7 +67,7 @@ export const buttonStyles = tv({
         'has:data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5',
       ],
       xs: [
-        "min-h-7 gap-1 px-4 [&>svg:not([class*='size-'])]:size-3 text-sm",
+        "min-h-7 gap-1 px-4 text-sm [&>svg:not([class*='size-'])]:size-3",
         'has-data-[icon=inline-end]:pr-1 has-data-[icon=inline-start]:pl-1',
       ],
       sm: [
@@ -86,7 +86,7 @@ export const buttonStyles = tv({
     },
     fullWidth: {
       false: '',
-      true: 'flex w-full grow shrink-0',
+      true: 'flex w-full shrink-0 grow',
     },
   },
   defaultVariants: {

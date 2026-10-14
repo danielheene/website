@@ -98,6 +98,7 @@ export const resolveRelations = async <T>(data: T): Promise<ResolvedRelations<T>
        * document and continue walking it. A stale reference resolves to null.
        */
       const reference = `${node.relationTo}:${node.value}`
+
       if (seen.has(reference))
         return {
           ...node,
@@ -131,6 +132,7 @@ export const resolveRelations = async <T>(data: T): Promise<ResolvedRelations<T>
       const entries = await Promise.all(
         Object.entries(node).map(async ([key, value]) => [key, await walk(value, seen)] as const),
       )
+
       return Object.fromEntries(entries)
     }
 

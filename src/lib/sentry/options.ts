@@ -11,6 +11,7 @@ import { type RuntimeConfig, readRuntimeConfigFromEnv } from '@/lib/runtimeConfi
 /** Sampling rates default low in production and full in development. */
 const rate = (value: string | undefined, fallback: number): number => {
   const parsed = Number.parseFloat(value ?? '')
+
   return Number.isFinite(parsed) && parsed >= 0 && parsed <= 1 ? parsed : fallback
 }
 
@@ -68,6 +69,7 @@ export const createSentryOptions = ({ sentryDsn, sentryEnvironment }: RuntimeCon
       ].join(' ')
 
       if (target.includes('/api/sse') || target.includes('/api/health')) return 0
+
       return inheritOrSampleWith(
         rate(process.env.SENTRY_TRACES_SAMPLE_RATE, sentryEnvironment === 'production' ? 0.1 : 1),
       )

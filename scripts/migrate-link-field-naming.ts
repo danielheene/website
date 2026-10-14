@@ -92,4 +92,5 @@ for (const collectionName of TARGET_COLLECTIONS) {
 console.info(
   `Migrated ${migratedLinks} link(s) across ${migratedDocs} document(s), skipped ${skipped} (nothing to rewrite).`,
 )
+
 process.exit(0)

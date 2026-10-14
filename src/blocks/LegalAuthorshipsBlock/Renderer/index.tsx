@@ -21,12 +21,12 @@ export const LegalAuthorshipsBlockRenderer = async (): Promise<JSX.Element | nul
 
   return (
     <section>
-      <h2 className="text-3xl font-mono font-semibold mb-4">Attributions / Resource Credits</h2>
+      <h2 className="mb-4 font-mono text-3xl font-semibold">Attributions / Resource Credits</h2>
 
-      <ul className={cn(['flex flex-col gap-6 list-none p-0 m-0'])}>
+      <ul className={cn(['m-0 flex list-none flex-col gap-6 p-0'])}>
         {credits.map((credit) => (
-          <li key={`${credit.collection}:${credit.id}`} className="flex flex-row gap-4 items-start">
-            <div className="relative shrink-0 w-24 aspect-4/3 overflow-hidden bg-muted flex items-center justify-center">
+          <li key={`${credit.collection}:${credit.id}`} className="flex flex-row items-start gap-4">
+            <div className="relative flex aspect-4/3 w-24 shrink-0 items-center justify-center overflow-hidden bg-muted">
               {credit.thumbnailUrl ? (
                 <ImageMedia
                   url={credit.thumbnailUrl}
@@ -39,7 +39,7 @@ export const LegalAuthorshipsBlockRenderer = async (): Promise<JSX.Element | nul
               )}
             </div>
 
-            <div className="flex flex-col py-1 gap-1">
+            <div className="flex flex-col gap-1 py-1">
               <RichText
                 data={credit.credits}
                 enableGutter={false}
@@ -48,7 +48,7 @@ export const LegalAuthorshipsBlockRenderer = async (): Promise<JSX.Element | nul
               />
 
               {credit.usages.length > 0 && (
-                <p className="flex flex-wrap gap-x-2 gap-y-1 text-sm font-mono opacity-80">
+                <p className="flex flex-wrap gap-x-2 gap-y-1 font-mono text-sm opacity-80">
                   <span className="font-medium">Used on:</span>
                   <span className="flex flex-wrap gap-x-2 gap-y-1">
                     {credit.usages.map(({ collection, label }) => (

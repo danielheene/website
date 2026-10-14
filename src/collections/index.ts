@@ -35,4 +35,5 @@ export const COLLECTIONS = [
   ResumeSkills,
   ResumeSkillTags,
 ]
+
 export const COLLECTION_SLUGS = COLLECTIONS.map((c) => c.slug as CollectionSlug)

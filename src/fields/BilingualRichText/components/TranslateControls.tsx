@@ -31,6 +31,7 @@ import { BilingualLanguage, BilingualLanguageLabel } from '@/types/bilingualLang
 const siblingPath = (path: string, name: string): string => {
   const segments = path.split('.')
   segments[segments.length - 1] = name
+
   return segments.join('.')
 }
 
@@ -40,6 +41,7 @@ const siblingPath = (path: string, name: string): string => {
 const groupPath = (path: string): string => {
   const segments = path.split('.')
   segments.pop()
+
   return segments.join('.')
 }
 
@@ -68,6 +70,7 @@ export const TranslateControls: UIFieldClientComponent = ({
   const { value: enValue } = useField<SerializedEditorState>({
     path: siblingPath(path, 'en'),
   })
+
   const { value: deValue } = useField<SerializedEditorState>({
     path: siblingPath(path, 'de'),
   })
@@ -133,6 +136,7 @@ export const TranslateControls: UIFieldClientComponent = ({
 
       if (!isEmptyValue(targetValue)) {
         openModal(confirmModalSlug)
+
         return
       }
 
@@ -164,6 +168,7 @@ export const TranslateControls: UIFieldClientComponent = ({
         targetFieldPath,
         translated,
       )
+
       await reset(nextData)
     },
     [getData, reset],
@@ -187,6 +192,7 @@ export const TranslateControls: UIFieldClientComponent = ({
               id: jobId,
               description: data.message,
             })
+
             return
           case 'success':
             void applyTranslation(targetFieldPath, data.translated)
@@ -195,6 +201,7 @@ export const TranslateControls: UIFieldClientComponent = ({
             })
             setIsTranslating(false)
             setJobId(null)
+
             return
           case 'skipped':
             toast.error(SKIP_TOAST_MESSAGE[data.reason], {
@@ -202,6 +209,7 @@ export const TranslateControls: UIFieldClientComponent = ({
             })
             setIsTranslating(false)
             setJobId(null)
+
             return
           case 'error':
             toast.error(data.message, {
@@ -298,7 +306,7 @@ export const TranslateControls: UIFieldClientComponent = ({
       className={cn([
         fieldBaseClass,
         'bilingual-rich-text-translate-controls',
-        'flex flex-row gap-1.5 items-center justify-center',
+        'flex flex-row items-center justify-center gap-1.5',
         layout === 'row' && 'md:flex-col',
       ])}
     >
@@ -306,7 +314,7 @@ export const TranslateControls: UIFieldClientComponent = ({
         type="button"
         size="icon-sm"
         variant="secondary"
-        className="basis-1/2 grow shrink"
+        className="shrink grow basis-1/2"
         aria-label={`Translate ${BilingualLanguageLabel[BilingualLanguage.English]} to ${BilingualLanguageLabel[BilingualLanguage.German]}`}
         disabled={isEmptyValue(enValue) || isTranslatingToDe}
         onClick={() =>
@@ -327,7 +335,7 @@ export const TranslateControls: UIFieldClientComponent = ({
         type="button"
         size="icon-sm"
         variant="secondary"
-        className="basis-1/2 grow shrink"
+        className="shrink grow basis-1/2"
         aria-label={`Translate ${BilingualLanguageLabel[BilingualLanguage.German]} to ${BilingualLanguageLabel[BilingualLanguage.English]}`}
         disabled={isEmptyValue(deValue) || isTranslatingToEn}
         onClick={() =>

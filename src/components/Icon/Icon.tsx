@@ -119,6 +119,7 @@ const pickDomAttributes = (props: Record<string, unknown>) =>
 export const Icon = forwardRef<SVGSVGElement, IconProps>(
   ({ name, className, style, ...iconBaseProps }, ref): JSX.Element => {
     const icon = ICON[name] ?? name
+
     return (
       <IconifyIconComponent
         ref={ref}

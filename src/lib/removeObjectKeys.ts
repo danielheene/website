@@ -22,10 +22,12 @@ export function removeObjectKeys<T, const K extends string = never>(
 
     if (typeof value === 'object' && value !== null) {
       const result: Record<string, unknown> = {}
+
       for (const [key, val] of Object.entries(value)) {
         if (keys.includes(key as K)) continue
         result[key] = clone(val)
       }
+
       return result
     }
 

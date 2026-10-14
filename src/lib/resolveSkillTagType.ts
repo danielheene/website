@@ -21,8 +21,10 @@ export const resolveSkillTagType = (
   }
 
   let resolved: SkillTypeValue | null = null
+
   for (const [type, count] of counts) {
     const best = resolved ? (counts.get(resolved) ?? 0) : 0
+
     if (
       count > best ||
       (count === best && SKILL_TYPE_ORDER.indexOf(type) < SKILL_TYPE_ORDER.indexOf(resolved))

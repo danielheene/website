@@ -15,6 +15,7 @@ export const isUnpublishedDraftSave = (doc: unknown, previousDoc?: unknown): boo
       _status?: unknown
     }
   )._status
+
   if (status === 'published') return false
 
   const previousStatus =

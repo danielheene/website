@@ -45,6 +45,7 @@ const PAGE_TITLES = [
 const pageTitleFor = (index: number): string => {
   const base = PAGE_TITLES[(index - 1) % PAGE_TITLES.length]
   const cycle = Math.floor((index - 1) / PAGE_TITLES.length)
+
   return cycle === 0 ? base : `${base} ${cycle + 1}`
 }
 
@@ -171,6 +172,7 @@ const twoColumnBlock = (random: Random) => ({
 /** One `CodeBlock` from the snippet pool. */
 const codeContentBlock = (random: Random) => {
   const snippet = pick(random, CODE_SNIPPETS)
+
   return {
     blockType: 'CodeBlock',
     code: snippet.code,
@@ -225,6 +227,7 @@ const createSeedImage = async (payload: Payload, index: number): Promise<string>
   const source = `https://picsum.photos/seed/${SEED_PREFIX}-page-${index}/1600/900`
 
   const response = await fetch(source)
+
   if (!response.ok) throw new Error(`Failed to download placeholder image: HTTP ${response.status}`)
 
   const data = Buffer.from(await response.arrayBuffer())
@@ -298,6 +301,7 @@ export const seedPages = async (
     const useShader = chance(random, 0.25)
 
     let slides: Page['hero']['slides']
+
     if (useShader) {
       slides = [
         {
@@ -388,6 +392,7 @@ export const cleanPages = async (
   })
 
   const mediaIds = new Set<string>()
+
   for (const page of pages) {
     for (const slide of page.hero?.slides ?? []) {
       if (slide.media?.relationTo === 'images') {
@@ -398,6 +403,7 @@ export const cleanPages = async (
   }
 
   let deleted = 0
+
   for (const [index, page] of pages.entries()) {
     onProgress?.({
       step: `Deleting ${page.slug}`,
@@ -417,6 +423,7 @@ export const cleanPages = async (
   }
 
   let deletedMedia = 0
+
   for (const mediaId of mediaIds) {
     const { docs: seededMedia } = await payload.find({
       collection: CollectionSlug.MediaImages,

@@ -36,13 +36,13 @@ export const FieldComponent = memo(
       >
         <div
           className={cn([
-            'relative flex justify-center align-center mx-auto',
+            'align-center relative mx-auto flex justify-center',
             !showFields && 'aspect-16-9 max-h-[500px] overflow-hidden',
-            showFields && 'overflow-y-scroll min-h-[500px]',
+            showFields && 'min-h-[500px] overflow-y-scroll',
           ])}
         >
           {showFields ? (
-            <div className="flex min-h-full min-w-full flex-col items-center justify-center my-10 p-10 opacity-0 animate-fade-in">
+            <div className="my-10 flex min-h-full min-w-full animate-fade-in flex-col items-center justify-center p-10 opacity-0">
               <RenderFields
                 className="w-full text-foreground"
                 fields={field.fields}
@@ -59,7 +59,7 @@ export const FieldComponent = memo(
               {/** oxlint-disable-next-line nextjs/no-img-element -- used for payload blocks */}
               <img
                 className={cn([
-                  'absolute w-full h-full object-contain opacity-0',
+                  'absolute size-full object-contain opacity-0',
                   imageReady && 'animate-fade-in',
                 ])}
                 onLoad={() => setImageReady(true)}
@@ -70,11 +70,11 @@ export const FieldComponent = memo(
                 type="button"
                 className={cn([
                   'absolute bottom-4 left-1/2 -translate-x-1/2',
-                  'm-0 py-2 px-4 font-mono text-inherit leading-none',
-                  'border-none rounded-md',
+                  'm-0 px-4 py-2 font-mono leading-none text-inherit',
+                  'rounded-md border-none',
                   variant === 'default' &&
-                    'bg-primary hover:bg-primary-accent text-primary-foreground',
-                  variant === 'primary' && 'bg-white hover:bg-neutral-300 text-primary',
+                    'hover:bg-primary-accent bg-primary text-primary-foreground',
+                  variant === 'primary' && 'bg-white text-primary hover:bg-neutral-300',
                 ])}
                 onClick={() => setShowFields(true)}
               >

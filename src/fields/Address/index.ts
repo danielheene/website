@@ -60,6 +60,7 @@ const fields: Field[] = [
         defaultValue: '',
         validate: (value: string) => {
           if (!value) return true
+
           return /^[A-Z]{2}$/.test(value) || 'Invalid country code'
         },
         admin: {
@@ -104,8 +105,8 @@ const fields: Field[] = [
     type: 'point',
     admin: {
       className: cn([
-        '[&_ul]:w-auto [&_ul]:mx-[calc(var(--base)/-4)]',
-        '[&_li]:mx-[calc(var(--base)/4)] [&_li]:px-0 [&_li]:basis-[calc(50%-var(--base)/2)]',
+        '[&_ul]:mx-[calc(var(--base)/-4)] [&_ul]:w-auto',
+        '[&_li]:mx-[calc(var(--base)/4)] [&_li]:basis-[calc(50%-var(--base)/2)] [&_li]:px-0',
       ]),
       readOnly: true,
     },

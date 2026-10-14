@@ -32,6 +32,7 @@ export const fetchResumeSkillTagsCached = async (locale: BilingualLanguage = 'en
   'use cache'
   cacheLife('max')
   cacheTag(CollectionSlug.ResumeSkillTags)
+
   return await fetchResumeSkillTags(locale)
 }
 

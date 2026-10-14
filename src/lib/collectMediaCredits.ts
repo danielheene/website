@@ -50,19 +50,23 @@ const hasCreditsContent = (credits: unknown): credits is DefaultTypedEditorState
   if (!credits || typeof credits !== 'object') return false
 
   const root = (credits as DefaultTypedEditorState).root
+
   if (!root || !Array.isArray(root.children) || root.children.length === 0) return false
 
   const collectText = (node: unknown): string => {
     if (!node || typeof node !== 'object') return ''
+
     const record = node as {
       text?: unknown
       children?: unknown
     }
 
     let text = typeof record.text === 'string' ? record.text : ''
+
     if (Array.isArray(record.children)) {
       for (const child of record.children) text += collectText(child)
     }
+
     return text
   }
 
@@ -92,6 +96,7 @@ const resolveSourceLabel = async (
 ): Promise<SourceLabel | null> => {
   if (sourceType === 'global') {
     const global = payload.config.globals.find(({ slug }) => slug === sourceCollection)
+
     return {
       collectionLabel: (global?.label as string) || sourceCollection,
       docLabel: null,
@@ -99,6 +104,7 @@ const resolveSourceLabel = async (
   }
 
   const collection = payload.config.collections.find(({ slug }) => slug === sourceCollection)
+
   if (!collection) return null
 
   const collectionLabel = (collection.labels?.singular as string) || sourceCollection
@@ -115,6 +121,7 @@ const resolveSourceLabel = async (
     })
 
     const title = (doc as Record<string, unknown>)?.[titleField]
+
     return {
       collectionLabel,
       docLabel: typeof title === 'string' && title.trim() !== '' ? title : null,
@@ -145,6 +152,7 @@ const resolveThumbnailUrl = (
           }
         }
       | undefined
+
     return sizes?.thumbnail?.url || (doc.url as string | null) || null
   }
 
@@ -165,9 +173,11 @@ const resolveThumbnailUrl = (
       | undefined
 
     const cover = thumbnails?.find((thumbnail) => typeof thumbnail.value === 'object')?.value
+
     if (cover && typeof cover === 'object') {
       return cover.sizes?.thumbnail?.url || cover.url || null
     }
+
     return null
   }
 
@@ -186,6 +196,7 @@ export const collectMediaCredits = async (): Promise<MediaCredit[]> => {
   'use cache'
   cacheLife('max')
   cacheTag(CollectionSlug.DocumentReferences)
+
   for (const collection of MEDIA_COLLECTIONS) cacheTag(collection)
 
   // Created inside the cache scope: a `Payload` instance is not serializable,
@@ -217,8 +228,10 @@ export const collectMediaCredits = async (): Promise<MediaCredit[]> => {
 
   // Group target ids per media collection so each collection is fetched once.
   const idsByCollection = new Map<MediaCollectionSlug, Set<string>>()
+
   for (const reference of references) {
     const collection = reference.targetCollection as MediaCollectionSlug
+
     if (!MEDIA_COLLECTIONS.includes(collection)) continue
 
     const ids = idsByCollection.get(collection) ?? new Set<string>()
@@ -245,6 +258,7 @@ export const collectMediaCredits = async (): Promise<MediaCredit[]> => {
         reference.sourceId,
         reference.sourceType,
       )
+
       sourceLabels.set(sourceKey(reference.sourceCollection, reference.sourceId), label)
     }),
   )
@@ -283,11 +297,14 @@ export const collectMediaCredits = async (): Promise<MediaCredit[]> => {
         if (!hasCreditsContent(doc.credits)) continue
 
         const usages = new Map<string, MediaCreditUsage>()
+
         for (const reference of references) {
           if (reference.targetCollection !== collection) continue
+
           if (reference.targetId !== String(doc.id)) continue
 
           const source = sourceLabels.get(sourceKey(reference.sourceCollection, reference.sourceId))
+
           if (!source) continue
 
           // Globals have no per-doc title; collection docs show both their

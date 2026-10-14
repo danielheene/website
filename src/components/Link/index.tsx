@@ -34,6 +34,7 @@ export const CMSLink = (props: CMSLinkProps): JSX.Element => {
   } = props
 
   const linkProps = resolveLinkProps(props)
+
   if (!linkProps) return null
 
   return (

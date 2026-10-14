@@ -63,6 +63,7 @@ export const ImageMedia = ({
 
   const aspectRatio = useMemo(() => {
     if (fill) return 'auto'
+
     return `${Math.round(width / height)}`
   }, [width, height, fill])
 
@@ -81,8 +82,8 @@ export const ImageMedia = ({
       <NextImage
         alt={alt}
         className={cn([
-          !fill && 'flex grow shrink basis-full',
-          fill && 'block absolute inset-0 h-full w-full object-cover',
+          !fill && 'flex shrink grow basis-full',
+          fill && 'absolute inset-0 block size-full object-cover',
           imgClassName,
           loaded && imgLoadedClassName,
         ])}
@@ -101,7 +102,7 @@ export const ImageMedia = ({
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className={cn([
-            'absolute inset-0 w-full h-full animation-duration-[2s]',
+            'animation-duration-[2s] absolute inset-0 size-full',
             loaded && 'animate-fade-out',
           ])}
           tabIndex={-1}

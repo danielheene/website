@@ -23,6 +23,7 @@ export const FieldComponent: GroupFieldClientComponent = (props) => {
     indexPath,
     readOnly,
   } = props
+
   const [currentLocale, setCurrentLocale] = useState<BilingualLanguage>()
 
   const fieldId = generateFieldId(path)

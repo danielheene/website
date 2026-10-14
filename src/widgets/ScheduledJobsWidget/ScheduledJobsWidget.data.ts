@@ -52,6 +52,7 @@ export const fetchScheduledJobs = async (): Promise<PayloadJob[] | null> => {
     .filter(({ id, waitUntil, createdAt }) => id && waitUntil && createdAt)
     .sort((a, b) => {
       if (a.workflowSlug === WorkflowSlug.GenerateResumeDocument) return -1
+
       return new Date(b.waitUntil).getTime() - new Date(a.waitUntil).getTime()
     })
 }

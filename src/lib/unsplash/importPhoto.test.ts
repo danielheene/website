@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const fetchMock = vi.fn()
 const payloadCreateMock = vi.fn()
+
 const getPayloadMock = vi.fn(async () => ({
   create: payloadCreateMock,
 }))
@@ -57,6 +58,7 @@ describe('importPhoto', () => {
           json: async () => photoDetailResponse(),
         }
       }
+
       if (String(url).includes('/photos/abc123/download')) {
         return {
           ok: true,
@@ -66,6 +68,7 @@ describe('importPhoto', () => {
           }),
         }
       }
+
       if (String(url).includes('images.unsplash.com')) {
         return {
           ok: true,
@@ -74,6 +77,7 @@ describe('importPhoto', () => {
           headers: new Map([['content-type', 'image/jpeg']]),
         }
       }
+
       throw new Error(`Unexpected fetch to ${url}`)
     })
 
@@ -117,6 +121,7 @@ describe('importPhoto', () => {
           json: async () => photoDetailResponse(),
         }
       }
+
       if (String(url).includes('/photos/abc123/download')) {
         return {
           ok: true,
@@ -126,6 +131,7 @@ describe('importPhoto', () => {
           }),
         }
       }
+
       return {
         ok: false,
         status: 500,

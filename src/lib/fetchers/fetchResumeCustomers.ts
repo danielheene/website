@@ -45,6 +45,7 @@ export const fetchResumeCustomersCached = async (locale: BilingualLanguage = 'en
   'use cache'
   cacheLife('max')
   cacheTag(CollectionSlug.ResumeCustomers)
+
   return await fetchResumeCustomers(locale)
 }
 

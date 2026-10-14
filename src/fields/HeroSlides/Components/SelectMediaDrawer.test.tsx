@@ -101,6 +101,7 @@ describe('SelectMediaDrawer', () => {
 
   it('renders an image thumbnail from sizes.thumbnail.url and selects it on click', () => {
     const onSelectAction = vi.fn()
+
     const doc = {
       id: 'img-1',
       filename: 'hero.webp',
@@ -126,6 +127,7 @@ describe('SelectMediaDrawer', () => {
     const button = screen.getByRole('button', {
       name: 'hero.webp',
     })
+
     expect(button.querySelector('img')).toHaveAttribute(
       'src',
       'https://example.com/hero-thumb.webp',
@@ -166,6 +168,7 @@ describe('SelectMediaDrawer', () => {
     const button = screen.getByRole('button', {
       name: 'hero.mp4',
     })
+
     expect(button.querySelector('img')).toHaveAttribute('src', 'https://example.com/poster.webp')
   })
 
