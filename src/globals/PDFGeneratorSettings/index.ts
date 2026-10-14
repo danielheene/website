@@ -6,17 +6,16 @@ import { DurationField } from '@/fields/Duration'
 import { SectionGroupField } from '@/fields/SectionGroup'
 import { TemplateField } from '@/fields/Template'
 import { authenticated } from '@/lib/access/authenticated'
-import { generateResumeDocumentUnsafeCustomId } from '@/lib/generateResumeDocumentUnsafeCustomId'
+import { UNSAFE_generateResumeId } from '@/lib/generateResumeId'
 import { generateResumeDocumentHook } from '@/lib/payloadHooks/global'
 import { AdminGroup } from '@/types/admin-panel'
 import { GlobalSlug } from '@/types/globals'
-import { SkillSorting } from '@/types/payload'
 
 import { revalidateDocument } from './hooks/revalidateDocument'
 import { sanitizeSkillSorting } from './hooks/sanitizeSkillSorting'
 import { skillSortingKeys } from './skillSorting'
 
-const previewCustomId = generateResumeDocumentUnsafeCustomId()
+const previewCustomId = UNSAFE_generateResumeId()
 
 export { skillSortingKeys, skillTypeSortables } from './skillSorting'
 

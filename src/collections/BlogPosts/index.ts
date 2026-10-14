@@ -173,7 +173,7 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
           fields: [
             RichTextField({
               name: 'excerpt',
-              editorVariant: 'excerpt',
+              editorVariant: 'caption',
               overrides: {
                 label: 'Excerpt',
                 admin: {

@@ -1,4 +1,4 @@
-import { cache } from 'react'
+import { cache, Suspense } from 'react'
 import type { Metadata } from 'next'
 import { cacheLife, cacheTag } from 'next/cache'
 import { draftMode } from 'next/headers'
@@ -8,15 +8,18 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 
 import { RenderBlocks } from '@/blocks/RenderBlocks'
-import { ArticleSidebar } from '@/components/ArticleSidebar'
+import { ArticleSidebar, TableOfContents } from '@/components/ArticleSidebar'
 import { Headline } from '@/components/Headline'
 import { HeroMedia } from '@/components/HeroMedia'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PageContainer } from '@/components/PageContainer'
+import { RichText } from '@/components/RichText'
 import { extractHeadings } from '@/lib/extractHeadings'
 import { extractSections } from '@/lib/extractSections'
 import { generateMeta } from '@/lib/generateMeta'
+import { isEmptyValue } from '@/lib/lexical/isEmptyValue'
 import { placeholderParams } from '@/lib/placeholderParams'
+import { highlightRichText } from '@/lib/shiki/highlightRichText'
 import { CollectionData, CollectionSlug } from '@/types/collections'
 
 export async function generateStaticParams() {
@@ -70,24 +73,48 @@ export default async function Page({ params }: PageProps) {
         })
       : []
 
+  const useCustomHeroContent = hero?.contentType === 'custom' && !isEmptyValue(hero.content)
+  const highlightedHeroCode = useCustomHeroContent
+    ? await highlightRichText(hero?.content)
+    : undefined
+
   return (
     <PageContainer layout={layout} sections={extractSections(content)}>
       <HeroMedia
+        align={useCustomHeroContent ? 'center' : 'bottom'}
         className="border-b-2 border-b-primary"
         fallbackAlt={title || 'Hero Image'}
         slides={hero?.slides}
       >
-        {title && (
-          <div className="pt-40 pb-20">
+        {useCustomHeroContent ? (
+          <div className="py-20">
             <div className="container">
-              <Headline
-                variant="page-title"
-                className="text-balance text-foreground textshadow-lg shadow-primary/75"
-              >
-                {title}
-              </Headline>
+              {/* RichText is a Client Component that calls randomUUID(), which
+                  Cache Components requires to sit behind a Suspense boundary. */}
+              <Suspense fallback={<div className="h-24 animate-pulse rounded-lg bg-muted" />}>
+                <RichText
+                  data={hero.content}
+                  enableGutter={false}
+                  enableProse={false}
+                  highlightedCode={highlightedHeroCode}
+                  className="font-mono text-balance text-4xl leading-tight text-foreground textshadow-lg shadow-primary/75 [&_h1]:text-4xl [&_h2]:text-3xl [&_h3]:text-2xl [&_p]:text-4xl"
+                />
+              </Suspense>
             </div>
           </div>
+        ) : (
+          title && (
+            <div className="pt-40 pb-20">
+              <div className="container">
+                <Headline
+                  variant="page-title"
+                  className="text-balance text-foreground textshadow-lg shadow-primary/75"
+                >
+                  {title}
+                </Headline>
+              </div>
+            </div>
+          )
         )}
       </HeroMedia>
       {layout === 'legal' ? (
@@ -96,7 +123,16 @@ export default async function Page({ params }: PageProps) {
             <div className="min-w-0 lg:col-span-8 [&_h2]:scroll-mt-24 [&_h3]:scroll-mt-24 [&_h4]:scroll-mt-24">
               <RenderBlocks blocks={content} />
             </div>
-            <ArticleSidebar headings={legalHeadings} className="lg:col-span-4 w-auto" />
+            <ArticleSidebar
+              className="lg:col-span-4 w-auto"
+              sections={[
+                legalHeadings &&
+                  legalHeadings.length > 0 && {
+                    title: 'On This Page',
+                    children: <TableOfContents headings={legalHeadings} />,
+                  },
+              ]}
+            />
           </div>
         </div>
       ) : (

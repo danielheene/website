@@ -22,7 +22,6 @@ interface ResumeExperienceBlockClientRendererProps extends ResumeExperienceBlock
 }
 
 export const ResumeExperienceBlockClientRenderer = ({
-  blockType,
   title,
   caption,
   jobs,

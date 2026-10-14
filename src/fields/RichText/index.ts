@@ -1,7 +1,6 @@
-import type { RichTextField as PayloadRichTextField } from 'payload'
+import type { RichTextField as PayloadRichTextField, RichTextAdapterProvider } from 'payload'
 import { deepMerge } from 'payload'
 import {
-  AlignFeature,
   BlockquoteFeature,
   BlocksFeature,
   BoldFeature,
@@ -13,7 +12,6 @@ import {
   IndentFeature,
   InlineCodeFeature,
   ItalicFeature,
-  LexicalFieldAdminProps,
   LinkFeature,
   lexicalEditor,
   OrderedListFeature,
@@ -23,190 +21,75 @@ import {
   UnderlineFeature,
   UnorderedListFeature,
   UploadFeature,
+  FeatureProviderServer,
+  AlignFeature,
 } from '@payloadcms/richtext-lexical'
 
 import { cn } from 'tailwind-variants'
+import { OmitDeep } from 'type-fest'
 
 import { IconPickerFeature } from '@/fields/Icon/lexical/feature.server'
 import { linkFeatureFields } from '@/fields/Link'
-import { BlockSlug } from '@/types/blocks'
+import { BlockSlug, BlockSlugValue } from '@/types/blocks'
 
-const defaultAdminConfig: LexicalFieldAdminProps = {
-  hideGutter: true,
-  hideInsertParagraphAtEnd: true,
-  hideDraggableBlockElement: true,
-  hideAddBlockButton: true,
-  placeholder: () => ' ',
-}
-
-const rootFeatures = [
-  FixedToolbarFeature({
-    applyToFocusedEditor: true,
-    customGroups: {
-      /**
-       * text:
-       * paragraph, headings, ordered list, unordered list, check list, blockquote
-       */
-      text: {
-        type: 'dropdown',
-        order: 10,
-        maxActiveItems: 1,
-      },
-
-      /**
-       * format:
-       * bold, italic, underline, strikethrough, superscript, subscript, inline code
-       */
-      format: {
-        type: 'buttons',
-        order: 20,
-      },
-
-      /**
-       * alignment:
-       * left, center, right, justify
-       */
-      align: {
-        type: 'buttons',
-        order: 30,
-      },
-
-      /**
-       * indentation:
-       * increase, decrease
-       */
-      indent: {
-        type: 'buttons',
-        order: 40,
-      },
-
-      /**
-       * features:
-       * links, blockquote, hr, code */
-      features: {
-        type: 'buttons',
-        order: 45,
-      },
-
-      /**
-       * custom blocks:
-       */
-      add: {
-        type: 'buttons',
-        order: 50,
-      },
-
-      blocks: {
-        type: 'dropdown',
-        order: 55,
-      },
-    },
-    disableIfParentHasFixedToolbar: true,
-  }),
-]
-
-const inlineFeatures = [
-  ...rootFeatures,
-  BoldFeature(),
-  ItalicFeature(),
-  UnderlineFeature(),
-  StrikethroughFeature(),
-  AlignFeature(),
-]
-
-/**
- * Blog post excerpts: plain paragraphs with the four basic text formats and
- * nothing else, so a teaser always renders the same on listing cards.
- */
-const excerptFeatures = [
-  ...rootFeatures,
-  BoldFeature(),
-  ItalicFeature(),
-  UnderlineFeature(),
-  StrikethroughFeature(),
-]
-
-const captionFeatures = [
-  ...inlineFeatures,
-  // `linkFeatureFields` mirrors `LinkField`'s own rows (`linkType`/`newTab`,
-  // `doc`/`url`, a `text` label) minus the icon fields — an inline `IconNode`
-  // already covers icons inside the editor's own selected text, so
-  // `iconBefore`/`iconAfter`/`iconOnly` would just be dead controls here.
-  // Sharing the row-building logic keeps this drawer looking like the same
-  // control as a standalone `LinkField` (`LinkGroupBlock`, Footer nav, and
-  // other group/array fields with no selected editor text) rather than two
-  // link editors that quietly drift apart — see `fields/Link/index.ts`'s
-  // module doc comment — and lets `resolveLinkTarget`/`CMSLink`/the RichText
-  // `link` converter read both shapes through the same logic.
-  LinkFeature({
-    fields: () => linkFeatureFields,
-  }),
-]
-
-const markdownFeatures = [
-  ...captionFeatures,
-  ParagraphFeature(),
-  HeadingFeature({
-    enabledHeadingSizes: ['h2', 'h3', 'h4'],
-  }),
-  OrderedListFeature(),
-  UnorderedListFeature(),
-  ChecklistFeature(),
-  BlockquoteFeature(),
-  InlineCodeFeature(),
-  UploadFeature(),
-]
-
-/**
- * Page content: everything `markdown` offers plus the two-column layout,
- * whose columns are `markdown` editors themselves — so columns cannot nest.
- */
-const contentFeatures = [
-  ...markdownFeatures,
-  BlocksFeature({
-    blocks: [BlockSlug.TwoColumnContent],
-  }),
-]
-
-const postFeatures = [
-  ...markdownFeatures,
-  RelationshipFeature(),
-  UploadFeature(),
-  HorizontalRuleFeature(),
-  BlocksFeature({
-    blocks: [
-      BlockSlug.LinkGroup,
-      BlockSlug.Code,
-      BlockSlug.TwoColumnContent,
-      BlockSlug.HighlightBox,
-    ],
-  }),
-  IndentFeature(),
-  EXPERIMENTAL_TableFeature(),
-  IconPickerFeature(),
-]
+export const RichTextEditorVariant = {
+  Minimal: 'minimal',
+  Caption: 'caption',
+  Content: 'content',
+  Post: 'post',
+} as const
 
 export type RichTextEditorVariant =
-  | 'inline'
-  | 'excerpt'
-  | 'caption'
-  | 'markdown'
-  | 'content'
-  | 'post'
-export type RichTextFieldOverrides = Partial<Omit<PayloadRichTextField, 'name' | 'type' | 'editor'>>
+  (typeof RichTextEditorVariant)[keyof typeof RichTextEditorVariant]
+
+export const RichTextFeatureSize = {
+  Minimal: 0,
+  Caption: 1,
+  Content: 2,
+  Post: 3,
+} as const
+
+export type RichTextFeatureSize = (typeof RichTextFeatureSize)[keyof typeof RichTextFeatureSize]
+
+const getRichTextFeatureSize = (variant: RichTextEditorVariant): RichTextFeatureSize => {
+  const index =
+    Object.keys(RichTextEditorVariant)[Object.values(RichTextEditorVariant).indexOf(variant)]
+  return index ? RichTextFeatureSize[index] : RichTextFeatureSize.Minimal
+}
+
+type ModifyBlocksFunc = (blocks: BlockSlugValue[]) => BlockSlugValue[]
+
+export type RichTextFieldOverrides = Partial<
+  OmitDeep<
+    PayloadRichTextField,
+    | 'name'
+    | 'type'
+    | 'editor'
+    | 'admin.className'
+    | 'admin.disableListColumn'
+    | 'admin.disableListFilter'
+    | 'admin.disableGroupBy'
+    | 'admin.disableBulkEdit'
+  >
+>
 
 type RichTextFieldProps = {
   name: string
   editorVariant?: RichTextEditorVariant
+  modifyBlocks?: ModifyBlocksFunc
+  modifyInlineBlocks?: ModifyBlocksFunc
   overrides?: RichTextFieldOverrides
 }
 
 export const RichTextField = ({
   name,
-  editorVariant = 'inline',
+  editorVariant = RichTextEditorVariant.Minimal,
+  modifyBlocks = (blocks) => blocks,
+  modifyInlineBlocks = (inlineBlocks) => inlineBlocks,
   overrides = {},
 }: RichTextFieldProps): PayloadRichTextField => {
-  const editor = createRichTextEditor(editorVariant)
+  const featureSize = getRichTextFeatureSize(editorVariant)
+  const editor = createRichTextEditor({ featureSize, modifyBlocks, modifyInlineBlocks })
 
   return deepMerge<PayloadRichTextField, RichTextFieldOverrides>(
     {
@@ -215,11 +98,6 @@ export const RichTextField = ({
       admin: {
         className: cn([
           'bg-(--theme-elevation-0)',
-          // The excerpt sits above other fields in its tab, so it keeps its label.
-          editorVariant !== 'excerpt' && [
-            String.raw`[&_.rich-text-lexical\_\_label-row]:hidden`,
-            String.raw`[&_.rich-text-lexical\_\_label-row]:border-none`,
-          ],
           String.raw`[&_.rich-text-lexical\_\_wrap_.fixed-toolbar]:top-0`,
           // String.raw`[&_.rich-text-lexical\_\_wrap_.fixed-toolbar]:border-[0_0_1px_0]`,
           String.raw`[&_.rich-text-lexical\_\_wrap]:h-full`,
@@ -234,17 +112,10 @@ export const RichTextField = ({
           String.raw`[&_.rich-text-lexical\_\_wrap_.editor-container]:h-full`,
           String.raw`[&_.rich-text-lexical\_\_wrap_.editor-container]:grow`,
           String.raw`[&_.rich-text-lexical\_\_wrap_.ContentEditable\_\_root]:p-2.5`,
+          String.raw`[&_.rich-text-lexical\_\_wrap_.ContentEditable\_\_root]:min-h-[120px]`,
           String.raw`[&_.rich-text-lexical\_\_wrap_.draggable-block-menu]:left-[30px]`,
 
-          editorVariant === 'excerpt' && [
-            String.raw`[&_.rich-text-lexical\_\_wrap_.ContentEditable\_\_root]:min-h-[120px]`,
-          ],
-
-          ['inline', 'caption'].includes(editorVariant) && [
-            String.raw`[&_.rich-text-lexical\_\_wrap_.ContentEditable\_\_root]:min-h-[200px]`,
-          ],
-
-          ['markdown', 'content', 'post'].includes(editorVariant) && [
+          featureSize > RichTextFeatureSize.Caption && [
             String.raw`[&_.rich-text-lexical\_\_wrap_.ContentEditable\_\_root]:min-h-[500px]`,
           ],
         ]),
@@ -259,134 +130,125 @@ export const RichTextField = ({
   )
 }
 
-function createRichTextEditor(variant: RichTextEditorVariant) {
-  if (variant === 'inline') {
-    return lexicalEditor({
-      features: inlineFeatures,
-      lexical: {
-        // disableEvents: true,
-        namespace: 'de',
-        theme: {
-          blockCursor: '',
-          characterLimit: '',
-          code: '',
-          codeHighlight: undefined,
-          hashtag: '',
-          specialText: '',
-          heading: {
-            h1: '',
-            h2: '',
-            h3: '',
-            h4: '',
-            h5: '',
-            h6: '',
-          },
-          hr: '',
-          hrSelected: '',
-          image: '',
-          link: '',
-          list: {
-            ul: '',
-            ulDepth: [],
-            ol: '',
-            olDepth: [],
-            checklist: '',
-            listitem: '',
-            listitemChecked: '',
-            listitemUnchecked: '',
-            nested: {
-              list: '',
-              listitem: '',
-            },
-          },
-          ltr: '',
-          mark: '',
-          markOverlap: '',
-          paragraph: '',
-          quote: '',
-          root: '',
-          rtl: '',
-          tab: '',
-          table: '',
-          tableAddColumns: '',
-          tableAddRows: '',
-          tableCellActionButton: '',
-          tableCellActionButtonContainer: '',
-          tableCellSelected: '',
-          tableCell: '',
-          tableCellHeader: '',
-          tableCellResizer: '',
-          tableRow: '',
-          tableScrollableWrapper: '',
-          tableSelected: '',
-          tableSelection: '',
+type CreateRichTextEditorOptions = {
+  featureSize: RichTextFeatureSize
+  modifyBlocks?: ModifyBlocksFunc
+  modifyInlineBlocks?: ModifyBlocksFunc
+}
+
+function createRichTextEditor({
+  featureSize,
+  modifyBlocks,
+  modifyInlineBlocks,
+}: CreateRichTextEditorOptions): RichTextAdapterProvider {
+  let features: FeatureProviderServer<unknown, unknown, unknown>[] = []
+
+  if (featureSize >= RichTextFeatureSize.Minimal) {
+    features = [
+      ...features,
+      FixedToolbarFeature({
+        applyToFocusedEditor: true,
+        customGroups: {
+          // paragraph, headings, ordered/unordered/check list, blockquote
           text: {
-            base: '',
-            bold: '',
-            code: '',
-            highlight: '',
-            italic: '',
-            lowercase: '',
-            uppercase: '',
-            capitalize: '',
-            strikethrough: '',
-            subscript: '',
-            superscript: '',
-            underline: '',
-            underlineStrikethrough: '',
+            type: 'dropdown',
+            order: 10,
+            maxActiveItems: 1,
           },
-          embedBlock: {
-            base: '',
-            focus: '',
+
+          // bold, italic, underline, strikethrough, superscript, subscript, inline code
+          format: {
+            type: 'buttons',
+            order: 20,
           },
-          indent: '',
+
+          // left, center, right, justify
+          align: {
+            type: 'dropdown',
+            order: 30,
+          },
+
+          // increase, decrease
+          indent: {
+            type: 'buttons',
+            order: 40,
+          },
+
+          // links, blockquote, hr, code
+          features: {
+            type: 'buttons',
+            order: 45,
+          },
+
+          // custom blocks
+          add: {
+            type: 'dropdown',
+            order: 50,
+          },
+
+          blocks: {
+            type: 'dropdown',
+            order: 55,
+          },
         },
-      },
-      admin: {
-        ...defaultAdminConfig,
-      },
-    })
+        disableIfParentHasFixedToolbar: true,
+      }),
+      BoldFeature(),
+      ItalicFeature(),
+      UnderlineFeature(),
+      StrikethroughFeature(),
+    ]
   }
-  if (variant === 'excerpt') {
-    return lexicalEditor({
-      features: excerptFeatures,
-      admin: {
-        ...defaultAdminConfig,
-      },
-    })
+
+  if (featureSize >= RichTextFeatureSize.Caption) {
+    features = [
+      ...features,
+      LinkFeature({
+        fields: () => linkFeatureFields,
+      }),
+      IconPickerFeature(),
+    ]
   }
-  if (variant === 'caption') {
-    return lexicalEditor({
-      features: captionFeatures,
-      admin: {
-        ...defaultAdminConfig,
-      },
-    })
+
+  if (featureSize >= RichTextFeatureSize.Content) {
+    features = [
+      ...features,
+      ParagraphFeature(),
+      AlignFeature(),
+      HeadingFeature({
+        enabledHeadingSizes: ['h2', 'h3', 'h4'],
+      }),
+      OrderedListFeature(),
+      UnorderedListFeature(),
+      ChecklistFeature(),
+      BlockquoteFeature(),
+      InlineCodeFeature(),
+      UploadFeature(),
+    ]
   }
-  if (variant === 'markdown') {
-    return lexicalEditor({
-      features: markdownFeatures,
-      admin: {
-        ...defaultAdminConfig,
-      },
-    })
+
+  if (featureSize >= RichTextFeatureSize.Post) {
+    features = [
+      ...features,
+      RelationshipFeature(),
+      HorizontalRuleFeature(),
+      BlocksFeature({
+        blocks: modifyBlocks([BlockSlug.LinkGroup, BlockSlug.Code, BlockSlug.HighlightBox]),
+        inlineBlocks: modifyInlineBlocks([]),
+      }),
+      IndentFeature(),
+      EXPERIMENTAL_TableFeature(),
+    ]
   }
-  if (variant === 'content') {
-    return lexicalEditor({
-      features: contentFeatures,
-      admin: {
-        ...defaultAdminConfig,
-        hideDraggableBlockElement: false,
-      },
-    })
-  }
-  if (variant === 'post') {
-    return lexicalEditor({
-      features: postFeatures,
-      admin: {
-        ...defaultAdminConfig,
-        hideDraggableBlockElement: false,
-      },
-    })
-  }
+
+  return lexicalEditor({
+    features,
+    admin: {
+      hideGutter: true,
+      hideInsertParagraphAtEnd: true,
+      hideAddBlockButton: true,
+      placeholder: () => ' ',
+      hideDraggableBlockElement: featureSize < RichTextFeatureSize.Content,
+    },
+  })
 }

@@ -1,6 +1,7 @@
 import { revalidatePath, revalidateTag } from 'next/cache'
 import type { CollectionAfterChangeHook } from 'payload'
 
+import { invalidatePageSlugCache } from '@/lib/pages/pageSlugCache'
 import { CollectionSlug } from '@/types/collections'
 import type { Page } from '@/types/payload'
 
@@ -10,6 +11,8 @@ export const revalidatePage: CollectionAfterChangeHook<Page> = ({
   req: { context, payload },
 }) => {
   if (context.skipRevalidate) return doc
+
+  void invalidatePageSlugCache()
 
   // Revalidation throws outside a Next context (e.g. a scheduled publish run
   // by the standalone jobs worker) — see revalidateLatestResumeDocument. That

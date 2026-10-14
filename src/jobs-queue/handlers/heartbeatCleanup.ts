@@ -2,13 +2,12 @@ import type { TaskHandler } from 'payload'
 
 import { subDays } from 'date-fns'
 
-import { wrapHandler } from '@/jobs-queue/lib/withJobObservability'
 import { CollectionSlug } from '@/types/collections'
 import { TaskSlug } from '@/types/jobs-queue'
 
-const run: TaskHandler<TaskSlug['HeartbeatCleanup']> = async ({ req: { payload } }) => {
-  console.log('Ping')
+const HEARTBEAT_RETENTION_DAYS = 7
 
+const run: TaskHandler<TaskSlug['HeartbeatCleanup']> = async ({ req: { payload } }) => {
   await payload.db.deleteMany({
     collection: CollectionSlug.PayloadJobs,
     where: {
@@ -20,7 +19,7 @@ const run: TaskHandler<TaskSlug['HeartbeatCleanup']> = async ({ req: { payload }
         },
         {
           updatedAt: {
-            less_than: subDays(new Date(), 7).toISOString(),
+            less_than: subDays(new Date(), HEARTBEAT_RETENTION_DAYS).toISOString(),
           },
         },
       ],
@@ -32,4 +31,4 @@ const run: TaskHandler<TaskSlug['HeartbeatCleanup']> = async ({ req: { payload }
   }
 }
 
-export const handler = wrapHandler(TaskSlug.HeartbeatCleanup, run)
+export const handler = run

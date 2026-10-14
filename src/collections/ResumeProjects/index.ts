@@ -78,7 +78,7 @@ export const ResumeProjects: CollectionConfig<CollectionSlug['ResumeProjects']> 
     },
     RichTextField({
       name: 'description',
-      editorVariant: 'markdown',
+      editorVariant: 'content',
     }),
 
     /* -------------- Sidebar Content -------------- */

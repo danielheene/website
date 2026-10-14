@@ -16,7 +16,7 @@ interface ResumeAboutMeBlockClientRendererProps extends ResumeAboutMeBlock {
 }
 
 export const ResumeAboutMeBlockClientRenderer = ({
-  blockType,
+  blockType: _blockType,
   caption,
   portrait,
   title,

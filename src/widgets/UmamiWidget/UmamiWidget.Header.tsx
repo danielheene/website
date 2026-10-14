@@ -30,7 +30,7 @@ export const Header = ({
   onMoveInterval,
 }: HeaderProps) => {
   if (!domain && !name) {
-    return <Skeleton className='h-12 w-full"' />
+    return <Skeleton className="h-12 w-full" />
   }
 
   return (

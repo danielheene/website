@@ -1,6 +1,6 @@
 import React, { JSX } from 'react'
 
-import { cn, tv, VariantProps } from 'tailwind-variants'
+import { tv, VariantProps } from 'tailwind-variants'
 
 import { Icon } from '../Icon'
 

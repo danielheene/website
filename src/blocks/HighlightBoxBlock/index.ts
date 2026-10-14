@@ -6,8 +6,8 @@ import { BlockGroup, BlockSlug } from '@/types/blocks'
 /**
  * Bg-colored box embeddable inside a post's RichText content, for outlining
  * or calling out a part of the post. Nests a RichText field of its own
- * (markdown variant, same as the RichTextBlock/TwoColumnContentBlock columns) so
- * it can hold headings, lists, quotes, inline code and images.
+ * (content variant) so it can hold headings, lists, quotes, inline code and
+ * images.
  */
 export const HighlightBoxBlock: Block = {
   slug: BlockSlug.HighlightBox,
@@ -23,7 +23,7 @@ export const HighlightBoxBlock: Block = {
   fields: [
     RichTextField({
       name: 'content',
-      editorVariant: 'markdown',
+      editorVariant: 'content',
       overrides: {
         label: false,
       },

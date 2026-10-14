@@ -5,7 +5,7 @@ import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical
 import { cn } from 'tailwind-variants'
 
 import { enqueueAutoTranslate } from '@/fields/BilingualRichText/hooks/enqueueAutoTranslate'
-import type { RichTextEditorVariant, RichTextFieldOverrides } from '@/fields/RichText'
+import { RichTextEditorVariant, RichTextFieldOverrides } from '@/fields/RichText'
 import { RichTextField } from '@/fields/RichText'
 import { isEmptyValue } from '@/lib/lexical/isEmptyValue'
 
@@ -71,7 +71,7 @@ const requireEitherLanguage =
 export const BilingualRichTextField = ({
   name,
   layout = 'column',
-  editorVariant = 'inline',
+  editorVariant = RichTextEditorVariant.Minimal,
   label = false,
   required = false,
   overrides = {},

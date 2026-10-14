@@ -254,7 +254,7 @@ describe('BilingualRichTextField', () => {
   it("propagates a non-default editorVariant into the inner richText fields' editor config", () => {
     const inlineField = BilingualRichTextField({
       name: 'task',
-      editorVariant: 'inline',
+      editorVariant: 'minimal',
     })
     const captionField = BilingualRichTextField({
       name: 'task',

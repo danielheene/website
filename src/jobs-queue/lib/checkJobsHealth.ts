@@ -1,4 +1,4 @@
-import type { Payload } from 'payload'
+import type { Payload, Where } from 'payload'
 
 import { CollectionSlug } from '@/types/collections'
 import { TaskSlug } from '@/types/jobs-queue'
@@ -25,7 +25,26 @@ const RECENT_FAILURE_WINDOW_MS = 60 * 60 * 1000
  */
 const HEARTBEAT_STALE_AFTER_MS = 3 * 60 * 1000
 
-export interface JobsHealth {
+/**
+ * A job that hasn't completed and isn't already marked failed — the shared
+ * "still pending" predicate both this health check and `scopeJobsList`'s
+ * `Pending`/`Stale` filters build on, so the admin list and this check never
+ * disagree about which jobs count as outstanding.
+ */
+export const NOT_FINISHED_WHERE: Where[] = [
+  {
+    completedAt: {
+      exists: false,
+    },
+  },
+  {
+    hasError: {
+      not_equals: true,
+    },
+  },
+]
+
+export type JobsHealth = {
   healthy: boolean
   pendingCount: number
   stalledCount: number
@@ -57,34 +76,14 @@ export const checkJobsHealth = async (payload: Payload): Promise<JobsHealth> => 
     payload.count({
       collection: CollectionSlug.PayloadJobs,
       where: {
-        and: [
-          {
-            completedAt: {
-              exists: false,
-            },
-          },
-          {
-            hasError: {
-              not_equals: true,
-            },
-          },
-        ],
+        and: NOT_FINISHED_WHERE,
       },
     }),
     payload.count({
       collection: CollectionSlug.PayloadJobs,
       where: {
         and: [
-          {
-            completedAt: {
-              exists: false,
-            },
-          },
-          {
-            hasError: {
-              not_equals: true,
-            },
-          },
+          ...NOT_FINISHED_WHERE,
           {
             waitUntil: {
               less_than: stalledBefore,

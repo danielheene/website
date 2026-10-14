@@ -1,5 +1,7 @@
 import type { Block } from 'payload'
 
+import { cn } from 'tailwind-variants'
+
 import { RichTextField } from '@/fields/RichText'
 import { BlockGroup, BlockSlug } from '@/types/blocks'
 
@@ -24,25 +26,49 @@ export const TwoColumnContentBlock: Block = {
   },
   fields: [
     {
-      name: 'verticalAlignment',
-      type: 'select',
-      label: false,
-      defaultValue: 'start',
-      options: [
-        { label: 'Vertical Align: Top', value: 'start' },
-        { label: 'Vertical Align: Center', value: 'center' },
-        { label: 'Vertical Align: End', value: 'end' },
+      type: 'row',
+      admin: {
+        className: cn(['[&>.render-fields]:mb-1']),
+      },
+      fields: [
+        {
+          name: 'verticalAlignment',
+          type: 'select',
+          label: false,
+          defaultValue: 'start',
+          options: [
+            { label: 'Vertical Align: Top', value: 'start' },
+            { label: 'Vertical Align: Center', value: 'center' },
+            { label: 'Vertical Align: End', value: 'end' },
+          ],
+          admin: {
+            width: '50%',
+          },
+        },
+        {
+          name: 'orderMobile',
+          type: 'select',
+          label: false,
+          defaultValue: 'normal',
+          options: [
+            { label: 'Order Mobile: Normal', value: 'normal' },
+            { label: 'Order Mobile: Reversed', value: 'reversed' },
+          ],
+          admin: {
+            width: '50%',
+          },
+        },
       ],
     },
     {
       type: 'row',
       admin: {
-        className: '*:mb-0',
+        className: 'lg:*:mb-0',
       },
       fields: [
         RichTextField({
           name: 'contentLeft',
-          editorVariant: 'markdown',
+          editorVariant: 'post',
           overrides: {
             label: false,
             admin: {
@@ -52,7 +78,7 @@ export const TwoColumnContentBlock: Block = {
         }),
         RichTextField({
           name: 'contentRight',
-          editorVariant: 'markdown',
+          editorVariant: 'post',
           overrides: {
             label: false,
             admin: {

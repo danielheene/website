@@ -18,6 +18,7 @@ import PPSupplySans from '@/fonts/pp-supply-sans/next'
 import { BLOG_FEED_PATH } from '@/lib/blog/feed'
 import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fetchers'
 import { generatePersonSchema, generateWebSiteSchema, JsonLd } from '@/lib/jsonLd'
+import { getRuntimeConfig } from '@/lib/runtimeConfig'
 import { RuntimeConfigScript } from '@/lib/runtimeConfig/RuntimeConfigScript'
 
 export default async function RootLayout({
@@ -77,9 +78,11 @@ export default async function RootLayout({
             a navigation updates it rather than remounting it: the animation
             has to go on `update`, not `share`.
           */}
-          <ViewTransition name="page-content" update="page-transition" default="none">
-            <div id="main-content">{children}</div>
-          </ViewTransition>
+          <Suspense fallback={null}>
+            <ViewTransition name="page-content" update="page-transition" default="none">
+              <div id="main-content">{children}</div>
+            </ViewTransition>
+          </Suspense>
           <Footer />
         </AllProviders>
         <Toasty />
@@ -88,59 +91,70 @@ export default async function RootLayout({
   )
 }
 
-export const metadata: Metadata = {
-  metadataBase: new URL(process.env.SERVER_URL),
-  title: process.env.SERVER_URL,
+/**
+ * `process.env.SERVER_URL` dot access gets inlined at build time, tying one
+ * compile to one environment — reads it through `getRuntimeConfig()` instead,
+ * which is why this is `generateMetadata()` rather than a static `metadata`
+ * export.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const serverUrl = getRuntimeConfig().serverUrl
+  const SiteSettings = await fetchSiteSettingsCached()
 
-  // feed autodiscovery (`<link rel="alternate" type="application/rss+xml">`)
-  alternates: {
-    types: {
-      'application/rss+xml': [
-        {
-          url: BLOG_FEED_PATH,
-          title: 'Blog',
-        },
-      ],
-    },
-  },
+  return {
+    metadataBase: serverUrl ? new URL(serverUrl) : undefined,
+    title: SiteSettings.general?.siteName,
 
-  icons: [
-    {
-      rel: 'shortcut icon',
-      url: '/favicon.ico',
-      sizes: '16x16 32x32 48x48',
-      type: 'image/x-icon',
+    // feed autodiscovery (`<link rel="alternate" type="application/rss+xml">`)
+    alternates: {
+      types: {
+        'application/rss+xml': [
+          {
+            url: BLOG_FEED_PATH,
+            title: 'Blog',
+          },
+        ],
+      },
     },
-    {
-      rel: 'icon',
-      url: '/favicon.svg',
-      type: 'image/svg+xml',
-    },
-    {
-      rel: 'icon',
-      url: '/favicon-96x96.png',
-      type: 'image/png',
-      sizes: '96x96',
-    },
-    {
-      rel: 'icon',
-      url: '/favicon-192x192.png',
-      type: 'image/png',
-      sizes: '192x192',
-    },
-    {
-      rel: 'icon',
-      url: '/favicon-512x512.png',
-      type: 'image/png',
-      sizes: '512x512',
-    },
-    {
-      rel: 'apple-touch-icon',
-      url: '/apple-touch-icon.png',
-      type: 'image/png',
-      sizes: '180x180',
-    },
-  ],
+
+    icons: [
+      {
+        rel: 'shortcut icon',
+        url: '/favicon.ico',
+        sizes: '16x16 32x32 48x48',
+        type: 'image/x-icon',
+      },
+      {
+        rel: 'icon',
+        url: '/favicon.svg',
+        type: 'image/svg+xml',
+      },
+      {
+        rel: 'icon',
+        url: '/favicon-96x96.png',
+        type: 'image/png',
+        sizes: '96x96',
+      },
+      {
+        rel: 'icon',
+        url: '/favicon-192x192.png',
+        type: 'image/png',
+        sizes: '192x192',
+      },
+      {
+        rel: 'icon',
+        url: '/favicon-512x512.png',
+        type: 'image/png',
+        sizes: '512x512',
+      },
+      {
+        rel: 'apple-touch-icon',
+        url: '/apple-touch-icon.png',
+        type: 'image/png',
+        sizes: '180x180',
+      },
+    ],
+  }
 }
 
 export const viewport: Viewport = {

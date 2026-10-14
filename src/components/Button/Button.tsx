@@ -13,7 +13,7 @@ export const buttonStyles = tv({
     'text-(--button-text-color) text-md font-mono font-medium whitespace-nowrap uppercase',
     'bg-(--button-background-color) bg-clip-padding',
     'border-(--button-border-color) border',
-    'transition-all outline-none select-none cursor-pointer',
+    'transition-all duration-300 outline-none select-none cursor-pointer',
     'focus-visible:ring-2 focus-visible:ring-ring/30',
     'active:not-aria-[haspopup]:translate-y-px',
     'disabled:pointer-events-none disabled:opacity-50',
@@ -27,6 +27,11 @@ export const buttonStyles = tv({
         '[--button-text-color:var(--color-primary-foreground)] hover:[--button-text-color:var(--color-primary-foreground)]',
         '[--button-background-color:var(--color-primary)] hover:[--button-background-color:color-mix(in_oklch,var(--color-primary),var(--color-transparent)_20%)]',
         '[--button-border-color:var(--color-primary)] hover:[--button-border-color:color-mix(in_oklch,var(--color-primary),var(--color-transparent)_20%)]',
+      ],
+      inverse: [
+        '[--button-text-color:var(--color-neutral-800)] hover:[--button-text-color:var(--color-primary)]',
+        '[--button-background-color:var(--color-primary-foreground)]',
+        '[--button-border-color:var(--color-primary-foreground)]',
       ],
       outline: [
         '[--button-text-color:var(--color-foreground)] hover:[--button-text-color:var(--color-foreground)]',
@@ -53,7 +58,7 @@ export const buttonStyles = tv({
         '[--button-text-color:var(--color-foreground)] hover:[--button-text-color:var(--color-foreground)]',
         '[--button-background-color:var(--color-transparent)] hover:[--button-background-color:var(--color-transparent)]',
         '[--button-border-color:var(--color-transparent)] hover:[--button-border-color:var(--color-transparent)] border-none',
-        'normal-case underline underline-offset-4 hover:underline px-0!',
+        'normal-case underline underline-offset-4 hover:underline px-0! min-h-auto!',
       ],
     },
     size: {

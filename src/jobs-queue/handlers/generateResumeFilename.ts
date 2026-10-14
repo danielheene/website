@@ -1,6 +1,5 @@
 import type { TaskHandler } from 'payload'
 
-import { wrapHandler } from '@/jobs-queue/lib/withJobObservability'
 import { renderTemplate } from '@/lib/renderTemplate'
 import { TaskSlug } from '@/types/jobs-queue'
 
@@ -33,4 +32,4 @@ const run: TaskHandler<TaskSlug['GenerateResumeFilename']> = async ({
   }
 }
 
-export const handler = wrapHandler(TaskSlug.GenerateResumeFilename, run)
+export const handler = run

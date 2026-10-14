@@ -1,3 +1,5 @@
+import { ReactNode } from 'react'
+
 import { cn } from 'tailwind-variants'
 
 import { DuoTone } from '@/components/DuoTone'
@@ -19,7 +21,7 @@ export interface HeroMediaProps {
    */
   align?: 'bottom' | 'center'
   className?: string
-  children?: React.ReactNode
+  children?: ReactNode
 }
 
 /**
@@ -44,7 +46,7 @@ export const HeroMedia = ({
     <section
       className={cn(
         // Fills the first desktop screen without trapping short viewports.
-        'relative flex min-h-[100svh] w-full flex-col overflow-hidden',
+        'relative flex min-h-svh w-full flex-col overflow-hidden',
         align === 'center' ? 'justify-center' : 'justify-end',
         className,
       )}
@@ -59,7 +61,7 @@ export const HeroMedia = ({
               blurDataURL={items[0].blurDataURL}
               className="object-cover"
               fill
-              priority
+              preload
               sizes="100vw"
               url={items[0].url}
             />

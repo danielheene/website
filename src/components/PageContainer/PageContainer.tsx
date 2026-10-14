@@ -16,7 +16,7 @@ interface PageContainerProps {
   sections?: ExtractedSection[]
 }
 export const PageContainer = ({
-  layout = 'default',
+  layout: _layout = 'default',
   sections,
   children,
 }: PageContainerProps): JSX.Element => {

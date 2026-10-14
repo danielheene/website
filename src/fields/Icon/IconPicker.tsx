@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Button } from '@payloadcms/ui'
 
+import { isEqual } from 'lodash-es'
 import { cn } from 'tailwind-variants'
 
 import {
@@ -60,12 +61,13 @@ export const IconPicker = ({
   const isSearching = trimmed.length >= MIN_QUERY_LENGTH
 
   // a field pinned to one collection has no tabs to offer
-  const collectionTabs = prefix ? [] : FAVORITE_COLLECTIONS
+  const collectionTabs = (prefix ? [] : FAVORITE_COLLECTIONS) as { prefix: string; label: string }[]
   const activeCollection = collectionTabs.find((collection) => collection.prefix === tab)
   const showingFavorites = tab === FAVORITES_TAB && !activeCollection
 
   /** The collection being browsed: an active tab, or a field pinned by `prefix`. */
   const browsePrefix = activeCollection?.prefix ?? prefix
+  const prevBrowsePrefixRef = useRef<string>(browsePrefix)
 
   const {
     icons: searchIcons,
@@ -93,10 +95,11 @@ export const IconPicker = ({
     enabled: !isSearching && Boolean(browsePrefix),
   })
 
-  // a category from the previous collection has no meaning in this one
-  // oxlint-disable-next-line react/exhaustive-deps -- reset is keyed on the collection, not the categories
   useEffect(() => {
-    setCategory(ALL_CATEGORIES)
+    if (!isEqual(prevBrowsePrefixRef.current, browsePrefix)) {
+      prevBrowsePrefixRef.current = browsePrefix
+      setCategory(ALL_CATEGORIES)
+    }
   }, [browsePrefix])
 
   /**

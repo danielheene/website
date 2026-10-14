@@ -55,7 +55,7 @@ const loggerError = vi.fn()
 /**
  * `getPayload` is stubbed globally in vitest.setup.ts with a fixed shape; this
  * module needs `jobs.queue`/`jobs.runByID` and per-test control over
- * `find`/`findGlobal`/`count` (the last used by generateResumeDocumentCustomId
+ * `find`/`findGlobal`/`count` (the last used by generateResumeId
  * to check for slug collisions).
  */
 beforeEach(() => {
@@ -128,7 +128,7 @@ describe('enqueueGenerateResumeDocument', () => {
 
     const [first, second] = queue.mock.calls.map((call) => call[0].input.customId)
 
-    expect(first).toHaveLength(10)
+    expect(first).toHaveLength(5)
     expect(second).not.toBe(first)
   })
 

@@ -1,24 +1,27 @@
 'use client'
 
+import type React from 'react'
 import { useNav } from '@payloadcms/ui'
 
-import { get } from 'lodash-es'
 import { cn } from 'tailwind-variants'
 
-import { ResolvedRelations } from '@/lib/resolveRelation'
 import { AdminNavigationGroup } from '@/types/admin-panel'
-import { User } from '@/types/payload'
 
-import { NavFooter } from './NavFooter'
 import { NavGroup } from './NavGroup'
 import { NavHeader } from './NavHeader'
 
 interface NavClientProps {
-  user: ResolvedRelations<User>
   navigationConfig: AdminNavigationGroup[]
+  /**
+   * Render the user-dependent footer slot
+   *
+   * Passed as a node so `Nav.tsx` can wrap only the user-resolving part in
+   * `Suspense`; the nav shell and its grid column render immediately.
+   */
+  footer: React.ReactNode
 }
 
-export const NavClient = ({ navigationConfig, user }: NavClientProps) => {
+export const NavClient = ({ navigationConfig, footer }: NavClientProps) => {
   const { hydrated, navOpen, navRef, shouldAnimate, setNavOpen } = useNav()
   return (
     <aside
@@ -38,13 +41,7 @@ export const NavClient = ({ navigationConfig, user }: NavClientProps) => {
           ))}
         </nav>
 
-        <NavFooter
-          avatarSrc={get(user, 'avatar.value.url', '')}
-          email={user.email}
-          name={user.name || ''}
-          enableOwnTracking={Boolean(user.enableOwnTracking)}
-          userId={user.id}
-        />
+        {footer}
       </div>
       <button
         type="button"

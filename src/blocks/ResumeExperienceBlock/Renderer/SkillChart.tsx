@@ -60,7 +60,7 @@ export const SkillChart = memo(function SkillChart({
       onTransitionEnd={() => nextTransitionWhen(0)}
     >
       <div className="border-l-4 border-white w-full flex flex-col nowrap gap-2 py-4 ">
-        {renderedSkills.map(({ id, title, interval, slug }, index) => {
+        {renderedSkills.map(({ title, interval, slug }, index) => {
           const width = calculateSkillWidth(interval)
 
           return (

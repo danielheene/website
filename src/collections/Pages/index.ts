@@ -20,6 +20,7 @@ import { authenticated } from '@/lib/access/authenticated'
 import { authenticatedOrPublished } from '@/lib/access/authenticatedOrPublished'
 import { generatePreviewPath } from '@/lib/generatePreviewPath'
 import { AdminGroup } from '@/types/admin-panel'
+import { BlockSlug } from '@/types/blocks'
 import { CollectionSlug } from '@/types/collections'
 import type { Page } from '@/types/payload'
 import { PAGE_LAYOUT } from '@/types/select-options'
@@ -171,19 +172,17 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
             RichTextField({
               name: 'content',
               editorVariant: 'post',
+              modifyBlocks: (blocks) => [...blocks, BlockSlug.TwoColumnContent],
               overrides: {
                 admin: {
-                  condition: ({ hero }) => hero.contentType === 'custom',
-                  disableListColumn: true,
-                  disableListFilter: true,
-                  disableGroupBy: true,
+                  condition: (_, siblingData) => siblingData?.contentType === 'custom',
                 },
               },
             }),
             {
               type: 'row',
               admin: {
-                condition: ({ hero }) => hero.contentType === 'custom',
+                condition: (_, siblingData) => siblingData?.contentType === 'custom',
               },
               fields: [],
             },

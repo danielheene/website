@@ -1,6 +1,3 @@
-import { withJobObservability } from '@/jobs-queue/lib/withJobObservability'
-import { TaskSlugValue } from '@/types/jobs-queue'
-
 import { autoTranslateBilingualField } from './autoTranslateBilingualField'
 import { buildLocalizedResumeData } from './buildLocalizedResumeData'
 import { calculateSkillTagInterval } from './calculateSkillTagInterval'
@@ -18,10 +15,6 @@ import { heartbeatPing } from './heartbeatPing'
 import { seedCollection } from './seedCollection'
 import { syncSkillSorting } from './syncSkillSorting'
 
-// Every task is wrapped in withJobObservability here, at the single point
-// where tasks are registered — a task added to this array cannot skip Sentry
-// span/exception instrumentation, unlike a per-task opt-in that's easy to
-// forget on a new file.
 export const TASKS = [
   generateDocumentThumbnails,
   generateVideoThumbnails,
@@ -39,6 +32,4 @@ export const TASKS = [
   heartbeatPing,
   seedCollection,
   syncSkillSorting,
-].map(withJobObservability)
-
-export const TASKS_SLUGS = TASKS.map(({ slug }) => slug) as TaskSlugValue[]
+]

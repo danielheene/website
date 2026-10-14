@@ -1,7 +1,7 @@
 import type { BaseFilter, Where } from 'payload'
 
-import { STALLED_AFTER_MS } from '@/jobs-queue/lib/checkJobsHealth'
-import { QueueSlug } from '@/types/jobs-queue'
+import { NOT_FINISHED_WHERE, STALLED_AFTER_MS } from '@/jobs-queue/lib/checkJobsHealth'
+import { QueueSlug, QueueSlugValue } from '@/types/jobs-queue'
 
 /**
  * Query parameters that scope the `payload-jobs` admin list. Independent of
@@ -11,13 +11,13 @@ import { QueueSlug } from '@/types/jobs-queue'
 export const JOBS_QUEUE_PARAM = 'queue'
 export const JOBS_STATE_PARAM = 'state'
 
-const isQueueSlugValue = (value: unknown): value is QueueSlug[keyof QueueSlug] =>
-  typeof value === 'string' && Object.values(QueueSlug).includes(value as never)
+const isQueueSlugValue = (value: unknown): value is QueueSlugValue =>
+  typeof value === 'string' && Object.values(QueueSlug).includes(value as QueueSlugValue)
 
 /**
  * Reads the requested queue, falling back to `null` (every queue).
  */
-export const resolveJobQueue = (value: unknown): QueueSlug[keyof QueueSlug] | null =>
+export const resolveJobQueue = (value: unknown): QueueSlugValue | null =>
   isQueueSlugValue(value) ? value : null
 
 /**
@@ -48,19 +48,6 @@ const isJobState = (value: unknown): value is JobState =>
 export const resolveJobState = (value: unknown): JobState | null =>
   isJobState(value) ? value : null
 
-const notFinished: Where[] = [
-  {
-    completedAt: {
-      exists: false,
-    },
-  },
-  {
-    hasError: {
-      not_equals: true,
-    },
-  },
-]
-
 /**
  * @param now Epoch ms the `Stale` cutoff is measured against — passed in
  * (rather than read with `Date.now()` here) so `scopeJobsList` computes it
@@ -83,12 +70,12 @@ const stateWhere = (state: JobState, now: number): Where => {
       }
     case JobState.Pending:
       return {
-        and: notFinished,
+        and: NOT_FINISHED_WHERE,
       }
     case JobState.Stale:
       return {
         and: [
-          ...notFinished,
+          ...NOT_FINISHED_WHERE,
           {
             waitUntil: {
               less_than: new Date(now - STALLED_AFTER_MS).toISOString(),

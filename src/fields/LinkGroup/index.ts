@@ -22,6 +22,7 @@ export const LinkGroupField = ({ overrides = {} }: LinkGroupFieldProps = {}): Ar
         singular: 'Link',
         plural: 'Links',
       },
+      interfaceName: 'LinkGroupData',
       admin: {
         className: cn([
           String.raw`[&_.collapsible\_\_content]:pb-0`,

@@ -4,7 +4,6 @@ import { ZodSafeParseResult } from 'zod'
 
 import { fetchGlobalUserSettings } from '@/lib/fetchers'
 import { type BilingualLanguage, translate } from '@/lib/i18n'
-import { buildDocumentFooter } from '@/pdf/lib/buildDocumentFooter'
 import { buildDocumentHeader } from '@/pdf/lib/buildDocumentHeader'
 import { buildIntroductionSection } from '@/pdf/lib/buildIntroductionSection'
 import { buildLanguageSection } from '@/pdf/lib/buildLanguageSection'
@@ -29,8 +28,8 @@ export const buildResumeDocumentData = async (
   const { name } = await fetchGlobalUserSettings(locale)
 
   return documentSchema.safeParse({
-    isPreview: false,
     locale: locale,
+    documentUrl,
     document: {
       author: name,
       title: translate(locale, 'document.title', {
@@ -41,10 +40,6 @@ export const buildResumeDocumentData = async (
     },
 
     header: await buildDocumentHeader(locale),
-    footer: await buildDocumentFooter({
-      locale,
-      documentUrl,
-    }),
     sections: [
       await buildIntroductionSection(locale),
       await buildWorkExperienceSection(locale),

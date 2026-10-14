@@ -12,7 +12,7 @@ import {
   subMilliseconds,
 } from 'date-fns'
 
-import { generateResumeDocumentCustomId } from '@/lib/generateResumeDocumentCustomId'
+import { generateResumeId } from '@/lib/generateResumeId'
 import { CollectionSlug } from '@/types/collections'
 import { GlobalSlug } from '@/types/globals'
 import { QueueSlug, WorkflowSlug } from '@/types/jobs-queue'
@@ -58,7 +58,7 @@ export const enqueueGenerateResumeDocument = async (
     draft: false,
   })
 
-  const customId = await generateResumeDocumentCustomId()
+  const customId = await generateResumeId()
   const timeoutBetweenJobs = timeoutBetweenJobsFromProps ?? timeoutBetweenJobsFromSettings
   const generateThrottle = generateThrottleFromProps ?? generateThrottleFromSettings
   const maximumRetries = maximumRetriesFromProps ?? maximumRetriesFromSettings

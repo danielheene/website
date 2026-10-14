@@ -13,6 +13,16 @@
 export type PageLayout = ('default' | 'home' | 'resume' | 'legal') | null;
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LinkGroupData".
+ */
+export type LinkGroupData =
+  | {
+      link: LinkFieldData;
+      id?: string | null;
+    }[]
+  | null;
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "SkillType".
  */
 export type SkillType =
@@ -299,11 +309,36 @@ export interface FeatureCardsBlock {
   heading?: string | null;
   cards?:
     | {
-        /**
-         * On wide screens. Cards stack on phones.
-         */
         size: 'third' | 'half' | 'twoThirds' | 'full';
-        color: 'primary' | 'rose' | 'violet' | 'sky' | 'teal' | 'amber';
+        color:
+          | 'primary'
+          | 'secondary'
+          | 'slate'
+          | 'gray'
+          | 'zinc'
+          | 'neutral'
+          | 'stone'
+          | 'red'
+          | 'orange'
+          | 'amber'
+          | 'yellow'
+          | 'lime'
+          | 'green'
+          | 'emerald'
+          | 'teal'
+          | 'cyan'
+          | 'sky'
+          | 'blue'
+          | 'indigo'
+          | 'violet'
+          | 'purple'
+          | 'fuchsia'
+          | 'pink'
+          | 'rose'
+          | 'info'
+          | 'success'
+          | 'warning'
+          | 'error';
         /**
          * Line breaks are kept.
          */
@@ -574,12 +609,7 @@ export interface HighlightBoxBlock {
  * via the `definition` "LinkGroupBlock".
  */
 export interface LinkGroupBlock {
-  links?:
-    | {
-        link: LinkFieldData;
-        id?: string | null;
-      }[]
-    | null;
+  links?: LinkGroupData;
   id?: string | null;
   blockName?: string | null;
   blockType: 'LinkGroupBlock';
@@ -888,12 +918,7 @@ export interface BlogPostData {
     };
     [k: string]: unknown;
   } | null;
-  links?:
-    | {
-        link: LinkFieldData;
-        id?: string | null;
-      }[]
-    | null;
+  links?: LinkGroupData;
   /**
    * This field group contains meta information for SEO purposes.
    * It includes fields for title, description, and SERP optimization.
@@ -997,6 +1022,7 @@ export interface Topic {
  */
 export interface TwoColumnContentBlock {
   verticalAlignment?: ('start' | 'center' | 'end') | null;
+  orderMobile?: ('normal' | 'reversed') | null;
   contentLeft?: {
     root: {
       type: string;
@@ -1894,12 +1920,7 @@ export interface PostsSelect<T extends boolean = true> {
   wordCount?: T;
   content?: T;
   excerpt?: T;
-  links?:
-    | T
-    | {
-        link?: T | LinkFieldDataSelect<T>;
-        id?: T;
-      };
+  links?: T | LinkGroupDataSelect<T>;
   meta?:
     | T
     | {
@@ -1911,6 +1932,14 @@ export interface PostsSelect<T extends boolean = true> {
   createdAt?: T;
   deletedAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LinkGroupData_select".
+ */
+export interface LinkGroupDataSelect<T extends boolean = true> {
+  link?: T | LinkFieldDataSelect<T>;
+  id?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3030,7 +3059,6 @@ export interface TaskGenerateResumeFilename {
 export interface TaskBuildLocalizedResumeData {
   input: {
     locale: 'en' | 'de';
-    filename: string;
     createdAt: string;
     documentSlug: string;
   };
@@ -3063,7 +3091,6 @@ export interface TaskGenerateResumeFile {
       | number
       | boolean
       | null;
-    locale: string;
   };
   output: {
     resumeFileId: string;
@@ -3076,12 +3103,12 @@ export interface TaskGenerateResumeFile {
  */
 export interface TaskAutoTranslateBilingualField {
   input: {
-    mode: string;
+    mode: 'auto' | 'manual';
     collectionSlug: string;
     docId?: string | null;
     path: string;
-    sourceLanguage: string;
-    targetLanguage: string;
+    sourceLanguage: 'en' | 'de';
+    targetLanguage: 'en' | 'de';
     sourceValue:
       | {
           [k: string]: unknown;
@@ -3168,8 +3195,8 @@ export interface TaskHeartbeatPing {
  */
 export interface TaskSeedCollection {
   input: {
-    collection: string;
-    mode: string;
+    collection: 'pages' | 'posts' | 'topics';
+    mode: 'seed' | 'clean';
     count?: number | null;
   };
   output?: unknown;

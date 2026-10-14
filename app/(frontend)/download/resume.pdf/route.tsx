@@ -3,8 +3,8 @@ import type { NextRequest } from 'next/server'
 
 import { z } from 'zod'
 
-import { generateResumeDocumentCustomId } from '@/lib/generateResumeDocumentCustomId'
 import { generateResumeDocumentRedirectURL } from '@/lib/generateResumeDocumentRedirectURL'
+import { generateResumeId } from '@/lib/generateResumeId'
 import { ResumeDocument } from '@/pdf'
 import { buildResumeDocumentData } from '@/pdf/lib/buildResumeDocumentData'
 
@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
   const localeParam = request.nextUrl.searchParams.get('locale')
   const locale = localeParam === 'de' ? 'de' : 'en'
 
-  const resumeSlug = await generateResumeDocumentCustomId()
+  const resumeSlug = await generateResumeId()
   const result = await buildResumeDocumentData({
     documentUrl: generateResumeDocumentRedirectURL(resumeSlug),
     creationDate: new Date(),
