@@ -1,3 +1,10 @@
+# [1.14.0](https://github.com/danielheene/website/compare/v1.13.0...v1.14.0) (2026-10-17)
+
+
+### Features
+
+* **lint:** vendor anti-slop and install oxlint-tailwindcss ([#113](https://github.com/danielheene/website/issues/113)) ([f973364](https://github.com/danielheene/website/commit/f973364bf28baa0c96dfe8d0b939f3ddc08e73b9))
+
 # [1.13.0](https://github.com/danielheene/website/compare/v1.12.3...v1.13.0) (2026-10-09)
 
 
