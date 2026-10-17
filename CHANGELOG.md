@@ -1,3 +1,10 @@
+# [1.15.0](https://github.com/danielheene/website/compare/v1.14.0...v1.15.0) (2026-10-17)
+
+
+### Features
+
+* **collections:** enable autosave for single-version drafts ([#114](https://github.com/danielheene/website/issues/114)) ([26f8791](https://github.com/danielheene/website/commit/26f8791be28406d43ae56cf778b31609a1aa9478))
+
 # [1.14.0](https://github.com/danielheene/website/compare/v1.13.0...v1.14.0) (2026-10-17)
 
 
