@@ -7,7 +7,10 @@ import type { CollectionConfig, DocumentTabCondition } from 'payload'
  */
 export const SINGLE_VERSION_DRAFTS: NonNullable<CollectionConfig['versions']> = {
   drafts: {
-    autosave: false,
+    autosave: {
+      interval: 750,
+      showSaveDraftButton: false,
+    },
     schedulePublish: true,
   },
   maxPerDoc: 1,
