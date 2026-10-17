@@ -1,4 +1,5 @@
 'use client'
+
 import { Fragment, memo, useState } from 'react'
 import { GroupFieldClientProps } from 'payload'
 import { RenderFields } from '@payloadcms/ui'
@@ -36,13 +37,13 @@ export const ResumeLayoutBlock = memo(
       >
         <div
           className={cn([
-            'relative flex justify-center align-center',
-            'aspect-16-9 max-h-[500px] mx-auto overflow-hidden',
+            'align-center relative flex justify-center',
+            'mx-auto aspect-16-9 max-h-[500px] overflow-hidden',
             showFields && 'overflow-y-scroll',
           ])}
         >
           {showFields ? (
-            <div className="flex min-h-full min-w-full flex-col items-center justify-center p-10 opacity-0 animate-fade-in">
+            <div className="flex min-h-full min-w-full animate-fade-in flex-col items-center justify-center p-10 opacity-0">
               <RenderFields
                 className="w-full text-foreground"
                 fields={field.fields}
@@ -59,7 +60,7 @@ export const ResumeLayoutBlock = memo(
               {/** oxlint-disable-next-line nextjs/no-img-element -- used for payload blocks */}
               <img
                 className={cn([
-                  'absolute w-full h-full object-contain opacity-0',
+                  'absolute size-full object-contain opacity-0',
                   imageReady && 'animate-fade-in',
                 ])}
                 onLoad={() => setImageReady(true)}
@@ -70,8 +71,8 @@ export const ResumeLayoutBlock = memo(
                 type="button"
                 className={cn([
                   'absolute bottom-4 left-1/2 -translate-x-1/2',
-                  'm-0 py-2 px-4 font-mono text-inherit leading-none',
-                  'bg-transparent hover:bg-current/10 border-none rounded-md',
+                  'm-0 px-4 py-2 font-mono leading-none text-inherit',
+                  'rounded-md border-none bg-transparent hover:bg-current/10',
                 ])}
                 onClick={() => setShowFields(true)}
               >

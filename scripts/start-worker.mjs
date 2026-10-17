@@ -82,6 +82,7 @@ let shuttingDown = false
 const shutdown = (signal) => {
   if (shuttingDown) return
   shuttingDown = true
+
   for (const child of children) {
     if (!child.killed) child.kill(signal)
   }
@@ -95,6 +96,7 @@ const onChildExit = (name) => (code, signal) => {
 }
 
 jobRunner.on('exit', onChildExit('jobs:run'))
+
 healthServer.on('exit', onChildExit('health-server'))
 
 for (const signal of ['SIGINT', 'SIGTERM']) {

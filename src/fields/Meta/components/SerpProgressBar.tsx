@@ -19,8 +19,10 @@ interface SerpProgressBarProps {
 function measurePixelWidth(value: string, font: string): number {
   if (typeof document === 'undefined') return 0
   const ctx = document.createElement('canvas').getContext('2d')
+
   if (!ctx) return 0
   ctx.font = font
+
   return ctx.measureText(value).width
 }
 

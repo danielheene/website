@@ -36,6 +36,7 @@ describe('FooterLegalLinks', () => {
     const element = await FooterLegalLinks({
       entries: mockEntries,
     })
+
     render(element)
 
     expect(fetchSiteSettingsCachedMock).not.toHaveBeenCalled()
@@ -82,6 +83,7 @@ describe('FooterLegalLinks', () => {
     const element = await FooterLegalLinks({
       entries: null,
     })
+
     const { container } = render(element)
 
     expect(fetchSiteSettingsCachedMock).not.toHaveBeenCalled()

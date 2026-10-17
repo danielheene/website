@@ -22,9 +22,9 @@ export const BannerIconNameMap: Record<BannerProps['variant'], string> = {
 
 export const bannerStyles = tv({
   base: [
-    'block py-4 pl-16 pr-4 relative',
-    'font-medium font-pp-supply-mono',
-    '[&>svg]:text-[2rem] [&>svg]:leading-[2rem] [&>svg]:absolute [&>svg]:left-4',
+    'relative block py-4 pr-4 pl-16',
+    'font-pp-supply-mono font-medium',
+    '[&>svg]:absolute [&>svg]:left-4 [&>svg]:text-[2rem] [&>svg]:leading-[2rem]',
   ],
   variants: {
     variant: {
@@ -35,12 +35,12 @@ export const bannerStyles = tv({
       [BannerVariant.Error]: ['[--banner-color:var(--color-error-700)]'],
     },
     inverse: {
-      false: ['bg-(--banner-color)', 'text-(--color-white)'],
-      true: ['bg-(--color-white)', 'text-(--banner-color)'],
+      false: ['bg-(--banner-color)', 'text-white'],
+      true: ['bg-white', 'text-(--banner-color)'],
     },
     vAlignIcon: {
       true: ['[&>svg]:top-1/2 [&>svg]:translate-y-[-50%]'],
-      false: ['[&>svg]:top-4 '],
+      false: ['[&>svg]:top-4'],
     },
     rotateIcon: {
       true: ['[&>svg]:animate-spin'],
@@ -79,6 +79,6 @@ export const Banner = ({
     })}
   >
     <Icon name={customIcon || BannerIconNameMap[variant]} />
-    <div className="py-1 font-semibold font-mono -tracking-tight">{children}</div>
+    <div className="py-1 font-mono font-semibold tracking-wide">{children}</div>
   </div>
 )

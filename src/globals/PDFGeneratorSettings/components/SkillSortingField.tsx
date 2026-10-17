@@ -26,7 +26,7 @@ export const SkillSortingField: JSONFieldClientComponent = ({ path }: JSONFieldC
   }
 
   return (
-    <div className={cn('grid grid-cols-2 gap-2 -mx-2')}>
+    <div className={cn('-mx-2 grid grid-cols-2 gap-2')}>
       <Sortable<SkillTypeSortable>
         entries={value?.skillTypeSortable || []}
         handleEntryMove={(newEntries) => {
@@ -36,7 +36,7 @@ export const SkillSortingField: JSONFieldClientComponent = ({ path }: JSONFieldC
         }}
         selectedEntry={isSelected}
         setSelectedEntry={setIsSelected}
-        className="p-2 w-full"
+        className="w-full p-2"
       />
       <Sortable<SkillEntrySortable>
         entries={(isSelected?.id ? value?.[isSelected.id] : undefined) || []}
@@ -45,7 +45,7 @@ export const SkillSortingField: JSONFieldClientComponent = ({ path }: JSONFieldC
             handleEntryMove(isSelected.id)(newEntries)
           }
         }}
-        className="p-2 w-full"
+        className="w-full p-2"
       />
     </div>
   )
@@ -75,7 +75,9 @@ function Sortable<EntryType extends SkillTypeSortable | SkillEntrySortable>({
   const moveArrayItem = useCallback(
     (fromIndex: number, toIndex: number) => {
       if (fromIndex === toIndex) return
+
       if (fromIndex < 0 || fromIndex > entries.length - 1) return
+
       if (toIndex < 0 || toIndex > entries.length - 1) return
 
       const movedValue = entries[fromIndex]
@@ -102,7 +104,7 @@ function Sortable<EntryType extends SkillTypeSortable | SkillEntrySortable>({
   return (
     <div
       className={cn([
-        'border-2 border-transparent rounded',
+        'rounded border-2 border-transparent',
         (pointerDown || isDraggingItem) && 'border-border',
         className,
       ])}
@@ -118,6 +120,7 @@ function Sortable<EntryType extends SkillTypeSortable | SkillEntrySortable>({
       >
         {entries.map((entry, index) => {
           const { id, label } = entry
+
           return !label && !id ? null : (
             <DraggableSortableItem key={index} id={id}>
               {({ isDragging, attributes, listeners, setNodeRef, transform }) => (
@@ -132,7 +135,7 @@ function Sortable<EntryType extends SkillTypeSortable | SkillEntrySortable>({
                   type="button"
                   className={cn([
                     'w-full',
-                    'grow-0 shrink-0',
+                    'shrink-0 grow-0',
                     'select-none',
                     'cursor-grab',
                     (pointerDown || isDragging) && 'z-50 cursor-grabbing',
@@ -143,7 +146,7 @@ function Sortable<EntryType extends SkillTypeSortable | SkillEntrySortable>({
                   }}
                   onPointerDown={() => setSelectedEntry(entry)}
                 >
-                  <span className="max-w-full text-ellipsis overflow-hidden">{label}</span>
+                  <span className="max-w-full overflow-hidden text-ellipsis">{label}</span>
                 </Button>
               )}
             </DraggableSortableItem>

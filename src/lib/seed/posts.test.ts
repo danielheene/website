@@ -50,13 +50,16 @@ describe('seedPosts', () => {
           id: 'image-1',
         }
       }
+
       if (collection === 'topics') {
         return {
           id: 'topic-1',
         }
       }
+
       expect(data.generatorFlags).toEqual(['seeded-dummy'])
       heroes.push(data.hero)
+
       return {
         id: 'post-1',
       }
@@ -65,6 +68,7 @@ describe('seedPosts', () => {
     const result = await seedPosts(makePayload(), 2)
 
     expect(result.created).toBe(2)
+
     for (const hero of heroes) {
       const [slide] = (
         hero as {
@@ -73,7 +77,9 @@ describe('seedPosts', () => {
           }[]
         }
       ).slides
+
       expect(['image', 'shader']).toContain(slide.slideType)
+
       if (slide.slideType === 'image') {
         expect(slide).toEqual({
           slideType: 'image',
@@ -102,12 +108,15 @@ describe('seedPosts', () => {
           id: 'image-1',
         }
       }
+
       if (collection === 'topics') {
         return {
           id: 'topic-1',
         }
       }
+
       heroSlides.push(data.hero.slides)
+
       return {
         id: 'post-1',
       }
@@ -126,6 +135,7 @@ describe('seedPosts', () => {
           }
         ).slideType === 'shader',
     )
+
     const imageSlides = heroSlides.filter(
       ([slide]) =>
         (
@@ -146,6 +156,7 @@ describe('seedPosts', () => {
         },
       ])
     }
+
     for (const slides of imageSlides) {
       expect(slides).toEqual([
         {
@@ -174,6 +185,7 @@ describe('seedPosts', () => {
           ],
         }
       }
+
       return {
         docs: [],
       }
@@ -206,6 +218,7 @@ describe('seedPosts', () => {
           ],
         }
       }
+
       return {
         docs: [],
       }
@@ -238,6 +251,7 @@ describe('seedPosts', () => {
         slug: 'seeded-dummy-topic-typescript',
       },
     ]
+
     let nextTopicId = 1
 
     find.mockImplementation(async ({ collection, where }) => {
@@ -247,12 +261,14 @@ describe('seedPosts', () => {
             docs: existingTopics.filter((topic) => topic.slug === where.slug.equals),
           }
         }
+
         if (where?.generatorFlags) {
           return {
             docs: existingTopics,
           }
         }
       }
+
       return {
         docs: [],
       }
@@ -266,6 +282,7 @@ describe('seedPosts', () => {
           id: 'image-1',
         }
       }
+
       if (collection === 'topics') {
         const id = `created-topic-${nextTopicId}`
         nextTopicId += 1
@@ -273,11 +290,14 @@ describe('seedPosts', () => {
           id,
           slug: data.slug,
         })
+
         return {
           id,
         }
       }
+
       postTopicCounts.push(data.topics.length)
+
       return {
         id: 'post-1',
       }
@@ -302,6 +322,7 @@ describe('seedPosts', () => {
           })),
         }
       }
+
       return {
         docs: [],
       }
@@ -315,12 +336,15 @@ describe('seedPosts', () => {
           id: 'image-1',
         }
       }
+
       if (collection === 'topics') {
         return {
           id: 'topic-extra',
         }
       }
+
       perPostTopicIds.push(data.topics.map((entry: { value: string }) => entry.value))
+
       return {
         id: 'post-1',
       }
@@ -332,6 +356,7 @@ describe('seedPosts', () => {
     // topic must vary across posts rather than always being the pool's first.
     const leadTopics = perPostTopicIds.map((ids) => ids[0])
     expect(new Set(leadTopics).size).toBeGreaterThan(1)
+
     for (const ids of perPostTopicIds) {
       for (const id of ids) {
         expect(poolIds).toContain(id)
@@ -359,6 +384,7 @@ describe('seedPosts', () => {
           })),
         }
       }
+
       return {
         docs: [],
       }
@@ -372,6 +398,7 @@ describe('seedPosts', () => {
     const topicPoolLookups = find.mock.calls.filter(
       ([args]) => args.collection === 'topics' && args.where?.generatorFlags,
     )
+
     expect(topicPoolLookups).toHaveLength(1)
   })
 
@@ -389,6 +416,7 @@ describe('seedPosts', () => {
           ],
         }
       }
+
       return {
         docs: [],
       }
@@ -399,11 +427,14 @@ describe('seedPosts', () => {
           id: 'image-1',
         }
       }
+
       expect(data.topics.length).toBeGreaterThanOrEqual(1)
       expect(data.topics.length).toBeLessThanOrEqual(2)
+
       for (const entry of data.topics) {
         expect(entry.relationTo).toBe('topics')
       }
+
       return {
         id: 'post-1',
       }
@@ -436,6 +467,7 @@ describe('cleanPosts', () => {
           ],
         }
       }
+
       if (collection === 'images') {
         return {
           docs: [
@@ -446,6 +478,7 @@ describe('cleanPosts', () => {
           ],
         }
       }
+
       return {
         docs: [],
       }
@@ -491,11 +524,13 @@ describe('cleanPosts', () => {
           ],
         }
       }
+
       if (collection === 'images') {
         return {
           docs: [],
         }
       }
+
       return {
         docs: [],
       }
@@ -519,6 +554,7 @@ describe('cleanPosts', () => {
           ],
         }
       }
+
       return {
         docs: [],
       }

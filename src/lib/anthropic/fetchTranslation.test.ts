@@ -82,6 +82,7 @@ describe('fetchAnthropicTranslation', () => {
         }>
       }>
     }
+
     expect(root.children[0].children[0].text).toBe('Hallo Welt')
   })
 
@@ -117,6 +118,7 @@ describe('fetchAnthropicTranslation', () => {
         }>
       }>
     }
+
     expect(root.children[0].children[0].text).toBe('Hallo Welt')
     // Nothing from the fence leaks through as literal text
     expect(JSON.stringify(result)).not.toMatch(/```/)

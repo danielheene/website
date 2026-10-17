@@ -81,7 +81,7 @@ const FeatureCardItem = ({ size, color, title, text, image, link }: FeatureCard)
       />
       <div
         aria-hidden
-        className="bg-grain pointer-events-none absolute inset-0 -z-10 opacity-35 mix-blend-overlay"
+        className="pointer-events-none absolute inset-0 -z-10 bg-grain opacity-35 mix-blend-overlay"
       />
 
       <div
@@ -91,11 +91,11 @@ const FeatureCardItem = ({ size, color, title, text, image, link }: FeatureCard)
           sideImage && 'lg:my-auto lg:max-w-[55%]',
         ])}
       >
-        <h3 className="text-3xl leading-[1.1] font-medium font-mono text-balance whitespace-pre-line sm:text-4xl">
+        <h3 className="font-mono text-3xl leading-[1.1] font-medium text-balance whitespace-pre-line sm:text-4xl">
           {title}
         </h3>
         {text && (
-          <p className="max-w-md text-base text-white/90 text-pretty whitespace-pre-line">{text}</p>
+          <p className="max-w-md text-base text-pretty whitespace-pre-line text-white/90">{text}</p>
         )}
         {link && (
           <Button

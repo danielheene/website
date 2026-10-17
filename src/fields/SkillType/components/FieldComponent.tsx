@@ -78,6 +78,7 @@ export const FieldComponent: SelectFieldClientComponent = ({ field, path, readOn
           value: option.value,
         },
   )
+
   const selected = options.find((option) => option.value === value) ?? null
 
   return (

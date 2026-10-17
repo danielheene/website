@@ -18,6 +18,7 @@ export async function POST(
   { params }: { params: Promise<{ path: string[] }> },
 ): Promise<NextResponse> {
   const umamiUrl = readRuntimeConfigFromEnv().umamiUrl
+
   if (!umamiUrl) {
     return new NextResponse(null, { status: 204 })
   }

@@ -22,8 +22,8 @@ export const ResumeAboutMeBlockClientRenderer = ({
   title,
 }: ResumeAboutMeBlockClientRendererProps) => (
   <SectionContainer title={title} variant="default">
-    <div className="container grid grid-cols-12 min-h-screen">
-      <Reveal className="col-span-10 col-start-2 lg:col-span-5 lg:col-start-1  order-2 lg:order-1">
+    <div className="container grid min-h-screen grid-cols-12">
+      <Reveal className="order-2 col-span-10 col-start-2 lg:order-1 lg:col-span-5 lg:col-start-1">
         {portrait && (
           <div data-reveal-item>
             <ImageMedia
@@ -31,7 +31,7 @@ export const ResumeAboutMeBlockClientRenderer = ({
               alt={portrait.value.alt}
               height={portrait.value.height}
               width={portrait.value.width}
-              className="w-full h-auto mt-20 md:mt-32 lg:mt-40 -mb-20 md:-mb-32 lg:-mb-40 object-bottom"
+              className="mt-20 -mb-20 h-auto w-full object-bottom md:mt-32 md:-mb-32 lg:mt-40 lg:-mb-40"
               // imgClassName="object-bottom"
               sizes="50vw"
             />
@@ -40,9 +40,9 @@ export const ResumeAboutMeBlockClientRenderer = ({
       </Reveal>
       <Reveal
         className={cn(
-          'col-span-10 col-start-2 lg:col-span-5 lg:col-start-7 mb-32 lg:py-32',
+          'col-span-10 col-start-2 mb-32 lg:col-span-5 lg:col-start-7 lg:py-32',
           'lg:sticky lg:top-0',
-          'flex flex-col gap-12  ',
+          'flex flex-col gap-12',
         )}
       >
         {title && (

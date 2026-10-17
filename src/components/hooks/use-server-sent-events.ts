@@ -62,6 +62,7 @@ export const useServerSentEvents = <T = unknown>({
   useEffect(() => {
     if (!enabled || !channel) {
       setStatus('closed')
+
       return
     }
 
@@ -78,6 +79,7 @@ export const useServerSentEvents = <T = unknown>({
       `/api/sse?channel=${encodeURIComponent(channel)}` +
         (reconnectToken > 0 ? `&r=${reconnectToken}` : ''),
     )
+
     setStatus('connecting')
 
     let lastActivity = Date.now()
@@ -119,6 +121,7 @@ export const useServerSentEvents = <T = unknown>({
     }
 
     const staleThreshold = SERVER_HEARTBEAT_INTERVAL_MS * STALE_AFTER_MISSED_HEARTBEATS
+
     const staleCheck = setInterval(() => {
       if (Date.now() - lastActivity <= staleThreshold) return
       // force a fresh connection; the effect re-runs via the token

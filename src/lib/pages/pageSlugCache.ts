@@ -78,11 +78,13 @@ const queryPageSlugExists = async (slug: string): Promise<boolean> => {
  */
 export const pageSlugExists = async (slug: string): Promise<boolean> => {
   const cached = await get<CacheEntry>(cacheKeyFor(slug))
+
   if (cached) {
     return cached.exists
   }
 
   const pending = inFlight.get(slug)
+
   if (pending) {
     return pending
   }
@@ -90,6 +92,7 @@ export const pageSlugExists = async (slug: string): Promise<boolean> => {
   const query = queryPageSlugExists(slug).finally(() => {
     inFlight.delete(slug)
   })
+
   inFlight.set(slug, query)
 
   return query

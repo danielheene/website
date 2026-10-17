@@ -25,6 +25,7 @@ const useIsClientRender = () =>
 
 const isInViewport = (element: HTMLElement) => {
   const { top, bottom } = element.getBoundingClientRect()
+
   return top < window.innerHeight && bottom > 0
 }
 
@@ -50,6 +51,7 @@ export const useReveal = <T extends HTMLElement = HTMLElement>({
 
   useLayoutEffect(() => {
     const element = ref.current
+
     if (!element) return
 
     element.querySelectorAll<HTMLElement>('[data-reveal-item]').forEach((item, index) => {
@@ -57,12 +59,15 @@ export const useReveal = <T extends HTMLElement = HTMLElement>({
     })
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
     if (reducedMotion || (wasServerRendered && isInViewport(element))) {
       element.dataset.reveal = 'visible'
+
       return
     }
 
     element.dataset.reveal = 'hidden'
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry?.isIntersecting) return
@@ -73,6 +78,7 @@ export const useReveal = <T extends HTMLElement = HTMLElement>({
         rootMargin,
       },
     )
+
     observer.observe(element)
 
     return () => observer.disconnect()

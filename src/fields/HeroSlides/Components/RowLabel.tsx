@@ -30,12 +30,12 @@ export const RowLabel = () => {
       <div className="h-10 w-16 shrink-0 overflow-hidden rounded-sm border border-input bg-black/5">
         {thumbnail.kind === 'shader' ? (
           <ShaderPreviewCanvas
-            className="h-full w-full"
+            className="size-full"
             entry={SHADER_COMPONENTS[thumbnail.presetKey]}
           />
         ) : thumbnail.kind === 'image-url' ? (
           // oxlint-disable-next-line nextjs/no-img-element -- a tiny admin-only preview thumbnail, not a page asset
-          <img alt="" className="h-full w-full object-cover" src={thumbnail.url} />
+          <img alt="" className="size-full object-cover" src={thumbnail.url} />
         ) : null}
       </div>
       <span className="text-sm">

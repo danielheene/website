@@ -34,7 +34,7 @@ export const ShaderPickerDrawer = ({ slug, value, onSelectAction }: ShaderPicker
         onSelect: () => onSelectAction(preset.key),
         selected: value === preset.key,
         thumbnail: (
-          <ShaderPreviewCanvas className="h-full w-full" entry={SHADER_COMPONENTS[preset.key]} />
+          <ShaderPreviewCanvas className="size-full" entry={SHADER_COMPONENTS[preset.key]} />
         ),
       }))}
       slug={slug}

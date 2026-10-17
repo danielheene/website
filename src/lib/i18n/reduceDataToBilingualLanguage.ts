@@ -34,9 +34,11 @@ export const reduceDataToBilingualLanguage = <T, L extends BilingualLanguage = '
   locale: L = 'en' as L,
 ): ReducedToBilingualLanguage<T, L> => {
   const locales: string[] = ['en', 'de']
+
   return new Traverse(data).forEach((ctx, x) => {
     if (x && typeof x === 'object' && Object.hasOwn(x, locale)) {
       const keys = Object.keys(x)
+
       if (keys.every((key) => locales.includes(key))) {
         ctx.update(x[locale])
       }

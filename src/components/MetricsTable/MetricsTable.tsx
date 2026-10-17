@@ -14,7 +14,7 @@ interface MetricsTableData {
 export const MetricsTable = ({ className, data, maxValue }: MetricsTableData) => {
   return (
     <div
-      className={cn('grid grid-cols-[auto_min-content] auto-rows-min font-mono gap-y-3', className)}
+      className={cn('grid auto-rows-min grid-cols-[auto_min-content] gap-y-3 font-mono', className)}
     >
       {data.map(({ x: metric, y: value }, index) => (
         <MetricsTableRow key={index} metric={metric} value={value} maxValue={maxValue} />
@@ -37,10 +37,10 @@ const MetricsTableRow = ({
   const barWidth = useMemo(() => (maxValue > 0 ? (value / maxValue) * 100 : 0), [value, maxValue])
 
   return (
-    <div className={cn('grid col-span-2 grid-cols-subgrid max-w-full gap-x-5', className)}>
-      <div className="whitespace-nowrap overflow-ellipsis overflow-hidden">
+    <div className={cn('col-span-2 grid max-w-full grid-cols-subgrid gap-x-5', className)}>
+      <div className="overflow-hidden text-ellipsis whitespace-nowrap">
         <span className="min-w-1px">{metric}</span>
-        <div className="h-1.5 mt-1 w-full rounded-full bg-muted overflow-hidden">
+        <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-muted">
           <div
             className="h-full rounded-full bg-primary transition-all"
             style={{

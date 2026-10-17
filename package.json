@@ -145,6 +145,7 @@
   "devDependencies": {
     "@commitlint/cli": "^21.2.3",
     "@commitlint/config-conventional": "^21.2.3",
+    "@oxlint/plugins": "^1.86.0",
     "@playwright/test": "~1.63.0",
     "@react-email/ui": "^6.11.0",
     "@semantic-release/changelog": "^7.0.0",
@@ -176,6 +177,7 @@
     "lefthook": "^2.1.14",
     "oxfmt": "^0.71.0",
     "oxlint": "^1.86.0",
+    "oxlint-tailwindcss": "^1.16.0",
     "playwright": "~1.63.0",
     "postcss": "^8.5.28",
     "react-docgen-typescript": "^2.4.0",

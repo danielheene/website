@@ -21,6 +21,7 @@ export const TableOfContents = ({ headings }: TableOfContentsProps) => {
 
       const passed = headings.filter((heading) => {
         const element = document.getElementById(heading.id)
+
         return element ? element.getBoundingClientRect().top <= readingLine : false
       })
 

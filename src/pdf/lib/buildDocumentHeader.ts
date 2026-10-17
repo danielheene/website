@@ -13,6 +13,7 @@ export const buildDocumentHeader = async (locale: BilingualLanguage): Promise<Do
   const github = sameAs?.find(({ url }) => url.includes('github'))
 
   const portraitUrl = portrait?.regular?.value?.url
+
   if (!portraitUrl) {
     throw new Error(
       'GlobalUserSettings.portrait is missing a "regular" image variant — set a portrait in the admin panel before generating a resume document.',

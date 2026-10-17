@@ -29,6 +29,7 @@ interface DropdownPosition {
 
 export function NavFooter({ avatarSrc, email, name, enableOwnTracking, userId }: NavFooterProps) {
   const { theme, setTheme } = useTheme()
+
   const {
     enabled: ownTrackingEnabled,
     isSaving: ownTrackingIsSaving,
@@ -37,6 +38,7 @@ export function NavFooter({ avatarSrc, email, name, enableOwnTracking, userId }:
     userId,
     initialValue: enableOwnTracking,
   })
+
   const dropdownRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const [dropdownIsOpen, setDropdownIsOpen] = useState<boolean>(false)
@@ -47,6 +49,7 @@ export function NavFooter({ avatarSrc, email, name, enableOwnTracking, userId }:
   // position is captured up front and refreshed only while the dropdown is open.
   const syncDropdownPosition = useCallback(() => {
     const trigger = buttonRef.current
+
     if (!trigger) return
 
     const { top, left } = trigger.getBoundingClientRect()
@@ -69,10 +72,12 @@ export function NavFooter({ avatarSrc, email, name, enableOwnTracking, userId }:
 
   const handleOutsideClick = useCallback((event: MouseEvent) => {
     const target = event.target as Node | null
+
     if (!target) return
 
     // The trigger button handles its own toggling; ignore clicks inside it or the dropdown.
     if (buttonRef.current?.contains(target)) return
+
     if (dropdownRef.current?.contains(target)) return
 
     setDropdownIsOpen(false)
@@ -82,6 +87,7 @@ export function NavFooter({ avatarSrc, email, name, enableOwnTracking, userId }:
     if (!dropdownIsOpen) return
 
     window.addEventListener('click', handleOutsideClick)
+
     return () => {
       window.removeEventListener('click', handleOutsideClick)
     }
@@ -94,6 +100,7 @@ export function NavFooter({ avatarSrc, email, name, enableOwnTracking, userId }:
     syncDropdownPosition()
 
     window.addEventListener('resize', syncDropdownPosition)
+
     return () => {
       window.removeEventListener('resize', syncDropdownPosition)
     }
@@ -101,9 +108,11 @@ export function NavFooter({ avatarSrc, email, name, enableOwnTracking, userId }:
 
   const initials = useMemo(() => {
     if (name === '') return ''
+
     if (!name.includes(' ')) return name[0].toUpperCase()
 
     const [first, last] = name.split(' ')
+
     return `${first[0]}${last[0]}`.toUpperCase()
   }, [name])
 

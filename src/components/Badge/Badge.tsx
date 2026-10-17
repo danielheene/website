@@ -5,8 +5,8 @@ import { cn, tv, VariantProps } from 'tailwind-variants'
 
 export const badgeStyles = tv({
   base: cn([
-    'flex items-center px-[0.5em] py-[0.25em] w-fit',
-    'font-medium font-mono select-none',
+    'flex w-fit items-center px-[0.5em] py-[0.25em]',
+    'font-mono font-medium select-none',
     'border whitespace-nowrap',
   ]),
   variants: {
@@ -41,7 +41,7 @@ export const badgeStyles = tv({
       stone: '[--badge-color:var(--color-stone-600)]',
     },
     style: {
-      solid: cn(['border-(--badge-color)', 'bg-(--badge-color)', 'text-(--color-white)']),
+      solid: cn(['border-(--badge-color)', 'bg-(--badge-color)', 'text-white']),
       light: cn([
         'border-(--badge-color)',
         'bg-[color-mix(in_oklab,var(--badge-color)_10%,var(--color-background)_90%)]',

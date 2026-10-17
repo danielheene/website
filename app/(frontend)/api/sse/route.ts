@@ -56,11 +56,13 @@ export async function GET(request: Request): Promise<Response> {
     })
 
     let isAuthenticated = false
+
     try {
       const { user } = await payload.auth({
         req: request as unknown as PayloadRequest,
         headers: request.headers,
       })
+
       isAuthenticated = Boolean(user)
     } catch (error) {
       payload.logger.error(
@@ -99,6 +101,7 @@ export async function GET(request: Request): Promise<Response> {
   // Guarded so the slot is released exactly once, no matter which of the
   // teardown paths below runs first.
   let released = false
+
   const release = () => {
     if (released) return
     released = true
@@ -119,6 +122,7 @@ export async function GET(request: Request): Promise<Response> {
         // Redis unreachable: give the slot back rather than leaking it.
         release()
         controller.error(error)
+
         return
       }
 
@@ -130,6 +134,7 @@ export async function GET(request: Request): Promise<Response> {
         if (heartbeatInterval) clearInterval(heartbeatInterval)
         await unsubscribeFromChannel?.()
         release()
+
         try {
           controller.close()
         } catch {

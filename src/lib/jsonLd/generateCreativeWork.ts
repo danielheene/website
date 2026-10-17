@@ -30,7 +30,9 @@ export function generateCreativeWork(data: CreativeWorkData): WithContext<Creati
   }
 
   if (data.additionalType) creativeWork.additionalType = data.additionalType
+
   if (data.description) creativeWork.description = data.description
+
   if (data.url) creativeWork.url = data.url
 
   if (data.image) {

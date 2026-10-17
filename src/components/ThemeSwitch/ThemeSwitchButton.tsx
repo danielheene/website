@@ -17,8 +17,8 @@ export const ThemeSwitchButton = ({
 }: ThemeSwitchButtonProps): JSX.Element => (
   <button
     className={cn([
-      'w-(--button-size) h-(--button-size) text-[calc(var(--button-size)*0.6)]',
-      'p-[calc(var(--button-size)*0.2)] m-0 relative z-1 rounded-full',
+      'size-(--button-size) text-[calc(var(--button-size)*0.6)]',
+      'relative z-1 m-0 rounded-full p-[calc(var(--button-size)*0.2)]',
       'hover:color-mix',
       isActive && 'bg-accent',
     ])}

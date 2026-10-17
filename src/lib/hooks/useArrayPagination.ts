@@ -26,6 +26,7 @@ export const useArrayPagination = <T>(
 
   const { hasPrevPage, hasNextPage, content } = useMemo(() => {
     const chunks: T[][] = chunk(data, size)
+
     return {
       hasPrevPage: offset > 0 && chunks.length > 1,
       hasNextPage: offset < chunks.length - 1 && chunks.length > 1,

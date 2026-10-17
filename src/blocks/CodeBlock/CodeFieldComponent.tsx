@@ -23,9 +23,11 @@ export const CodeFieldComponent: CodeFieldClientComponent = (props) => {
   const { field, path, onMount } = props
 
   const languagePath = path.replace(/\.code$/, '.language')
+
   const siblingLanguage = useFormFields(([fields]) => fields?.[languagePath]?.value) as
     | SupportedLanguage
     | undefined
+
   const monacoLanguage = siblingLanguage ? toMonacoLanguage(siblingLanguage) : undefined
 
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null)
@@ -35,9 +37,11 @@ export const CodeFieldComponent: CodeFieldClientComponent = (props) => {
     const currentEditor = editorRef.current
     const monaco = monacoRef.current
     const model = currentEditor?.getModel()
+
     if (!model || !monaco || !monacoLanguage) {
       return
     }
+
     monaco.editor.setModelLanguage(model, monacoLanguage)
   }, [monacoLanguage])
 

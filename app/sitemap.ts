@@ -99,6 +99,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const entry = (url: string, { updatedAt }: Dated): MetadataRoute.Sitemap[number] => {
     const lastModified = latest(updatedAt)
+
     return {
       url,
       ...(lastModified
@@ -111,9 +112,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // newest post update per topic id; unpopulated relations carry the bare id
   const topicUpdatedAt = new Map<string, string>()
+
   for (const post of posts) {
     for (const { value } of post.topics ?? []) {
       const id = typeof value === 'object' ? value?.id : value
+
       if (!id) continue
       topicUpdatedAt.set(id, latest(topicUpdatedAt.get(id), post.updatedAt))
     }

@@ -12,6 +12,7 @@ export const latestTimestamp = (
   for (const date of dates) {
     if (!date) continue
     const time = new Date(date).getTime()
+
     if (!Number.isNaN(time) && (latest === undefined || time > latest)) latest = time
   }
 

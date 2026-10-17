@@ -32,8 +32,8 @@ export const ResumeDownloadsBlockClientRenderer = ({
 }: ResumeDownloadsBlockClientRendererProps): JSX.Element => (
   <SectionContainer title={title} variant="default">
     <div className="container">
-      <div className="relative flex flex-col p-6 md:p-12 lg:p-20 md:flex-row overflow-hidden bg-primary text-primary-foreground rounded-md">
-        <Reveal className="flex flex-col justify-center items-center mb-72 md:mb-0 gap-8 md:w-2/3 lg:shrink-0 xl:w-1/2">
+      <div className="relative flex flex-col overflow-hidden rounded-md bg-primary p-6 text-primary-foreground md:flex-row md:p-12 lg:p-20">
+        <Reveal className="mb-72 flex flex-col items-center justify-center gap-8 md:mb-0 md:w-2/3 lg:shrink-0 xl:w-1/2">
           <Headline variant="section" data-reveal-item>
             {title}
           </Headline>
@@ -41,13 +41,13 @@ export const ResumeDownloadsBlockClientRenderer = ({
             <RichText
               data={caption}
               enableGutter={false}
-              className="text-primary-foreground px-8"
+              className="px-8 text-primary-foreground"
             />
           </div>
 
           <div
             data-reveal-item
-            className="flex flex-col md:flex-row justify-center gap-8 text-background-foreground"
+            className="text-background-foreground flex flex-col justify-center gap-8 md:flex-row"
           >
             {document_en && (
               <ResumeDownloadButton
@@ -69,8 +69,8 @@ export const ResumeDownloadsBlockClientRenderer = ({
             )}
           </div>
         </Reveal>
-        <div className="absolute right-1/2 bottom-0 mr-6 h-min w-[110%] max-w-md translate-x-1/2 md:-right-36 md:mr-0 md:w-3/4 md:max-w-xl md:translate-x-0 lg:mt-auto xl:relative xl:right-0 xl:h-full xl:w-full xl:max-w-full">
-          <div className="relative aspect-8/5 h-full min-h-[16rem] w-full">
+        <div className="absolute right-1/2 bottom-0 mr-6 h-min w-[110%] max-w-md translate-x-1/2 md:-right-36 md:mr-0 md:w-3/4 md:max-w-xl md:translate-x-0 lg:mt-auto xl:relative xl:right-0 xl:size-full xl:max-w-full">
+          <div className="relative aspect-8/5 size-full min-h-[16rem]">
             {[...thumbnails_en]
               .reverse()
               .map(
@@ -81,11 +81,11 @@ export const ResumeDownloadsBlockClientRenderer = ({
                       key={thumbnail.id}
                       className={cn([
                         index === 0 &&
-                          'translate-x-[-24%] md:max-xl:translate-x-[-8%] translate-y-[24%] md:max-xl:translate-y-[16%] -rotate-30',
+                          'translate-x-[-24%] translate-y-[24%] -rotate-30 md:max-xl:translate-x-[-8%] md:max-xl:translate-y-[16%]',
                         index === 1 &&
-                          'translate-x-[-12%] md:max-xl:translate-x-[-4%] translate-y-[12%] md:max-xl:translate-y-[8%] -rotate-15',
+                          'translate-x-[-12%] translate-y-[12%] -rotate-15 md:max-xl:translate-x-[-4%] md:max-xl:translate-y-[8%]',
                         index === 2 &&
-                          'translate-x-[-6%] md:max-xl:translate-x-[-2%] translate-y-[6%] md:max-xl:translate-y-[4%] -rotate-7.5',
+                          '-rotate-7.5 translate-x-[-6%] translate-y-[6%] md:max-xl:translate-x-[-2%] md:max-xl:translate-y-[4%]',
                       ])}
                     />
                   ),

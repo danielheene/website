@@ -17,6 +17,7 @@ export const Footer = async () => {
   const {
     footer: { column1, column2, column3, legalPages },
   } = await fetchSiteSettingsCached()
+
   const { telephone, email, sameAs } = await fetchGlobalUserSettingsCached()
 
   // Typed rather than inferred: these are hand-built `LinkFieldData` values
@@ -100,19 +101,19 @@ export const Footer = async () => {
         '[--footer-header-gap:12px] md:[--footer-header-gap:16px] lg:[--footer-header-gap:20px]',
       ])}
     >
-      <section className="container before:block before:my-20 before:h-px before:bg-foreground/50">
-        <div className="grid grid-cols-12 gap-4 lg:gap-6 xl:gap-8 relative">
-          <div className="flex flex-col gap-8 col-span-12 2xl:col-span-6">
+      <section className="container before:my-20 before:block before:h-px before:bg-foreground/50">
+        <div className="relative grid grid-cols-12 gap-4 lg:gap-6 xl:gap-8">
+          <div className="col-span-12 flex flex-col gap-8 2xl:col-span-6">
             <Link href="/">
               <Logo
                 variant="inline"
-                className="h-(--footer-header-height) mb-(--footer-header-gap)"
+                className="mb-(--footer-header-gap) h-(--footer-header-height)"
               />
             </Link>
             <FooterSocialLinks socialLinks={socialLinks} />
             <ServiceStatus />
           </div>
-          <div className="flex flex-col gap-8 col-span-12 2xl:col-span-6">
+          <div className="col-span-12 flex flex-col gap-8 2xl:col-span-6">
             <FooterNavGroups navGroups={navGroups} className="w-full" />
           </div>
           <div className="absolute top-0 right-0"></div>

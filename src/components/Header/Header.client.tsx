@@ -27,15 +27,15 @@ export const HeaderClient = ({ mainNavigation }: HeaderClientProps) => {
   return (
     <header
       ref={headerRef}
-      className={`page-header container sticky top-0 z-50 -mb-(--header-height)`}
+      className={`page-header sticky top-0 z-50 container -mb-(--header-height)`}
     >
       {/*<div className="pointer-events-none relative">*/}
       <div
         className={cn([
-          'h-12 md:h-16 lg:h-20  border-none ',
+          'h-12 border-none md:h-16 lg:h-20',
           'flex items-center justify-between gap-6',
           'pointer-events-auto relative z-10',
-          'text-foreground font-mono',
+          'font-mono text-foreground',
           'text-lg sm:text-xl md:text-2xl lg:text-3xl',
         ])}
       >
@@ -44,7 +44,7 @@ export const HeaderClient = ({ mainNavigation }: HeaderClientProps) => {
           <Logo variant="square" className="text-4xl md:hidden" />
         </Link>
 
-        <ul className="flex flex-row md:gap-4 lg:gap-8 items-center">
+        <ul className="flex flex-row items-center md:gap-4 lg:gap-8">
           {mainNavigation?.entries?.map(({ id, ...link }) => (
             <li key={id}>
               <CMSLink {...link} className="text-foreground hover:text-current" />

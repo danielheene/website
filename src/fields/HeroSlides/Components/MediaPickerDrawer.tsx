@@ -69,7 +69,7 @@ export const MediaPickerDrawer = ({
             aria-pressed={item.selected}
             className={cn([
               'flex flex-col gap-2 rounded-md border border-input p-2 text-left transition-colors',
-              'hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+              'hover:border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
               'aria-pressed:border-primary',
               'disabled:cursor-not-allowed disabled:opacity-60',
             ])}
@@ -100,6 +100,7 @@ export const MediaPickerDrawer = ({
  */
 export const useMediaPickerDrawer = (slug: string) => {
   const { openModal, closeModal } = useModal()
+
   return {
     open: () => openModal(slug),
     close: () => closeModal(slug),

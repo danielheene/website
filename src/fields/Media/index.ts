@@ -76,6 +76,7 @@ export const MediaField = (props: MediaFieldProps): UploadField => {
             name in siblingData && Array.isArray(siblingData[name]) && siblingData[name].length > 0
           )
         }
+
         return true
       },
     },

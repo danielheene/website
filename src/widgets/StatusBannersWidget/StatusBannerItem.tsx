@@ -26,12 +26,14 @@ export const StatusBannerItem = ({ id, jobName, waitUntil }: StatusBannerItemPro
   const isPending = isRescheduling || isDeleting
 
   const overdueSince = Math.round((Date.now() - new Date(waitUntil).getTime()) / 60_000)
+
   const overdueLabel =
     overdueSince < 1 ? 'just now' : overdueSince === 1 ? '1 min ago' : `${overdueSince} mins ago`
 
   const handleReschedule = () => {
     startReschedule(async () => {
       const result = await rescheduleJob(id)
+
       if (result.ok) {
         toast.success(`${startCase(jobName)} rescheduled`)
         router.refresh()
@@ -50,12 +52,12 @@ export const StatusBannerItem = ({ id, jobName, waitUntil }: StatusBannerItemPro
 
   return (
     <Banner variant="warning" vAlignIcon>
-      <div className="flex flex-row gap-4 space-between justif flex-1 min-w-0">
+      <div className="space-between justif flex min-w-0 flex-1 flex-row gap-4">
         <div className="flex flex-col gap-0.5">
-          <span className="text-lg font-mono font-medium leading-tight">
+          <span className="font-mono text-lg leading-tight font-medium">
             {startCase(jobName)}: detected as stale job
           </span>
-          <span className="text-md font-mono opacity-60 leading-none">
+          <span className="text-md font-mono leading-none opacity-60">
             Due {overdueLabel} — stuck in queue
           </span>
         </div>

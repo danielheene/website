@@ -47,6 +47,7 @@ describe('buildCreditsValue', () => {
           : (node.text ?? ''),
       )
       .join('')
+
     expect(flatText).toBe('Jane Doe [Unsplash]')
 
     const links = children.filter((node) => node.type === 'link')

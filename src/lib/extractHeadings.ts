@@ -17,6 +17,7 @@ const nodeText = (node: unknown): string => {
   }
 
   if (type === 'text' && typeof text === 'string') return text
+
   if (!Array.isArray(children)) return ''
 
   return children.map(nodeText).join('')
@@ -49,6 +50,7 @@ export const extractHeadings = (data: unknown): ExtractedHeading[] => {
     if (type !== 'heading' || !tag) return headings
 
     const title = nodeText(node).trim()
+
     if (!title) return headings
 
     const base = generateSlug(title)

@@ -15,6 +15,7 @@ import { name as packageName, version as packageVersion } from './package.json'
 const sentryRelease = `${packageName}@${packageVersion}`
 
 let server: ChildProcess | null = null
+
 const createTunnel = (token: string) =>
   new Promise<ChildProcess | null>((resolve) => {
     // No `shell: true`: the token is passed as its own argv entry rather than
@@ -84,6 +85,7 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
 
   /* Environment validation */
   const parsedEnv = envSchema.safeParse(process.env)
+
   if (!parsedEnv.success) {
     console.error(`\n${z.prettifyError(parsedEnv.error)}\n`)
     process.exit(1)

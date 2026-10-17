@@ -7,10 +7,12 @@ import { COLLECTION_PREFIX_MAP } from '@/types/collections'
  */
 export const generateContentPath = (collection: string, slug: string = ''): string => {
   const path = [COLLECTION_PREFIX_MAP[collection], slug]
+
   return path.reduce((acc, curr) => {
     if (curr !== 'home') {
       return acc.endsWith('/') ? `${acc}${curr}` : `${acc}/${curr}`
     }
+
     return acc
   }, '/')
 }

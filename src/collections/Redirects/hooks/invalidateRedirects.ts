@@ -8,10 +8,12 @@ import { invalidateRedirectCache } from '@/lib/redirects/redirectCache'
  */
 export const invalidateRedirectsAfterChange: CollectionAfterChangeHook = async ({ doc }) => {
   await invalidateRedirectCache()
+
   return doc
 }
 
 export const invalidateRedirectsAfterDelete: CollectionAfterDeleteHook = async ({ doc }) => {
   await invalidateRedirectCache()
+
   return doc
 }

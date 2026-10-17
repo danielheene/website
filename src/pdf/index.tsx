@@ -19,6 +19,7 @@ import { DocumentHeader, DocumentSection, DocumentSectionType } from '@/pdf/type
 const hyphenateEN = createHyphenator(enPattern as unknown as PatternsDefinition, {
   async: false,
 }) as HyphenationFunctionSync
+
 const hyphenateDE = createHyphenator(dePattern as unknown as PatternsDefinition, {
   async: false,
 }) as HyphenationFunctionSync
@@ -84,6 +85,7 @@ export const ResumeDocument = ({
 }: ResumeDocumentProps) => {
   Font.registerHyphenationCallback((word) => {
     const hyphenatedWords = locale === 'en' ? hyphenateEN(word) : hyphenateDE(word)
+
     return hyphenatedWords.split('\u00AD')
   })
 
@@ -109,6 +111,7 @@ export const ResumeDocument = ({
              */
             if (type === DocumentSectionType.Introduction) {
               const { headline, content } = data
+
               return (
                 <Section.Container key={sectionIndex}>
                   <Section.Headline bookmark="Introduction" withoutLine>
@@ -124,6 +127,7 @@ export const ResumeDocument = ({
              */
             if (type === DocumentSectionType.WorkExperience) {
               const { headline, entries } = data
+
               return (
                 <Section.Container key={sectionIndex} wrap={true}>
                   <Section.Headline bookmark={headline}>{headline}</Section.Headline>
@@ -154,6 +158,7 @@ export const ResumeDocument = ({
              */
             if (type === DocumentSectionType.Skill) {
               const { headline, entries } = data
+
               return (
                 <Section.Container key={sectionIndex} wrap={false}>
                   <Section.Headline bookmark={headline}>{headline}</Section.Headline>
@@ -166,6 +171,7 @@ export const ResumeDocument = ({
 
             if (type === DocumentSectionType.Language) {
               const { headline, entries } = data
+
               return (
                 <Section.Container key={sectionIndex} wrap={false}>
                   <Section.Headline bookmark={headline}>{headline}</Section.Headline>

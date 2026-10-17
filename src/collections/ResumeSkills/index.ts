@@ -134,7 +134,9 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
                   }
                 | undefined
             )?.content?.en
+
             if (!content) return ''
+
             const textValue = convertLexicalToPlaintext({
               data: content,
             }).trim()

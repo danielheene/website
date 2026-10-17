@@ -137,6 +137,7 @@ export const ResumeBlockField = <
 const createNameVariations = (name: string): [string, string] => {
   const dashedName = [kebabCase(name.replaceAll(/(Block|-block)*$/g, '')), 'block'].join('-')
   const pascalCaseName = upperFirst(camelCase(dashedName)) as string
+
   return [pascalCaseName, dashedName]
 }
 
@@ -161,6 +162,7 @@ const createLabelObject = (
     'plural' in label &&
     typeof label.plural === 'string' &&
     label.plural !== ''
+
   const isSimpleLabel = !isComplexLabel && typeof label === 'string' && label !== ''
   const isMissingLabel = !isComplexLabel && !isSimpleLabel && typeof label === 'undefined'
   const hasFallBack = typeof fallBack === 'string' && fallBack !== ''

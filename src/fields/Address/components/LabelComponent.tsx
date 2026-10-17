@@ -32,6 +32,7 @@ export const LabelComponent: GroupFieldLabelClientComponent = ({ field, path }) 
     if (!rootRef.current) {
       rootRef.current = document.getElementById(fieldId)
     }
+
     if (!renderFieldsRef.current) {
       renderFieldsRef.current = document.querySelector(`#${fieldId} .render-fields`)
     }
@@ -42,6 +43,7 @@ export const LabelComponent: GroupFieldLabelClientComponent = ({ field, path }) 
    */
   useEffect(() => {
     if (!rootRef.current) return
+
     if (!renderFieldsRef.current) return
 
     /* lock sizes while re-rendering to avoid massive layout shifts */
@@ -85,11 +87,11 @@ export const LabelComponent: GroupFieldLabelClientComponent = ({ field, path }) 
   }, [getPreference, preferenceKey])
 
   return (
-    <div className="flex items-center justify-between gap-8 w-full">
-      <h3 className={'flex items-end text-xl font-medium font-mono m-0'}>
+    <div className="flex w-full items-center justify-between gap-8">
+      <h3 className={'m-0 flex items-end font-mono text-xl font-medium'}>
         <span className="mr-2">{field.label as string}</span>
         {locale && (
-          <span className="opacity-60 text-sm mb-1">
+          <span className="mb-1 text-sm opacity-60">
             -{' '}
             {new Intl.DisplayNames(['en'], {
               type: 'language',

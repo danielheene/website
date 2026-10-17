@@ -53,6 +53,7 @@ export const MediaDocuments: CollectionConfig<CollectionSlug['MediaDocuments']> 
     adminThumbnail: ({ doc }) => {
       if (Array.isArray(doc.thumbnails) && doc.thumbnails.length > 0) {
         const thumbnailFilename = String(doc.filename).replace(/\.[^/.]+$/, '-1-thumbnail.png')
+
         return `/api/${CollectionSlug.MediaImages}/file/${thumbnailFilename}`
       }
       // return `/api/${CollectionSlug['MediaImages']}/file/${thumbnailFilename}`

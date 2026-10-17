@@ -65,6 +65,7 @@ vi.mock('next/dynamic', () => ({
         void loader().then((mod) => {
           if (!cancelled) setComponent(() => mod.default)
         })
+
         return () => {
           cancelled = true
         }

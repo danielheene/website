@@ -50,6 +50,7 @@ const firstThumbnail = (
   }[] = [],
 ): MediaImage | null => {
   const populated = thumbnails.find((thumbnail) => typeof thumbnail.value === 'object')
+
   return (populated?.value as MediaImage | undefined) ?? null
 }
 
@@ -58,6 +59,7 @@ export default async function ResumeDocumentPage({ params }: PageProps<'/resume/
 
   const isLatestSlug = slug === LATEST_RESUME_SLUG
   const resume = await resolveResumeDocument(slug)
+
   if (!resume) return notFound()
 
   const thumbnailEn = firstThumbnail(resume.thumbnails_en)
@@ -86,6 +88,7 @@ export default async function ResumeDocumentPage({ params }: PageProps<'/resume/
         }
       : null,
   ]
+
   const previewItems: HeroMediaItem[] = previewItemsOrGaps.filter(
     (item): item is HeroMediaItem => item !== null,
   )
@@ -115,8 +118,8 @@ export default async function ResumeDocumentPage({ params }: PageProps<'/resume/
           'bg-linear-to-b from-purple-500 via-indigo-500 to-background',
         ])}
       >
-        <div className="container flex flex-col py-24 sm:py-32 lg:flex-row lg:items-center lg:gap-16 xl:gap-32 lg:py-30 xl:py-40">
-          <div className="flex flex-col lg:gap-10 text-primary-foreground lg:w-1/2">
+        <div className="container flex flex-col py-24 sm:py-32 lg:flex-row lg:items-center lg:gap-16 lg:py-30 xl:gap-32 xl:py-40">
+          <div className="flex flex-col text-primary-foreground lg:w-1/2 lg:gap-10">
             <div>
               <h1 className="font-mono text-3xl font-medium tracking-tight md:text-4xl">
                 Resume Document
@@ -186,7 +189,7 @@ export default async function ResumeDocumentPage({ params }: PageProps<'/resume/
             <div
               className={cn([
                 'aspect-210/297 h-[45svh] w-auto max-w-full sm:h-[55svh] lg:h-[60svh]',
-                'bg-white overflow-hidden shadow-2xl shadow-black/40 relative',
+                'relative overflow-hidden bg-white shadow-2xl shadow-black/40',
               ])}
             >
               {previewItems.length > 0 && <ResumePreviewCarousel items={previewItems} />}
@@ -250,9 +253,11 @@ export async function generateMetadata({ params }: PageProps<'/resume/[slug]'>):
   const {
     general: { siteName },
   } = await fetchSiteSettingsCached()
+
   const { name, url } = await fetchGlobalUserSettingsCached()
 
   const title = resume?.title ?? 'Resume'
+
   const description = resume?.createdAt
     ? `Resume document generated on ${format(new Date(resume.createdAt), 'PP')}${
         name ? ` by ${name}` : ''

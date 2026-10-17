@@ -146,6 +146,7 @@ describe('HeroSlidesField', () => {
     const field = HeroSlidesField({
       name: 'slides',
     })
+
     const slideType = field.fields.find(
       (
         f,
@@ -180,6 +181,7 @@ describe('HeroSlidesField', () => {
     const field = HeroSlidesField({
       name: 'slides',
     })
+
     const media = field.fields.find(
       (
         f,
@@ -201,6 +203,7 @@ describe('HeroSlidesField', () => {
     const field = HeroSlidesField({
       name: 'slides',
     })
+
     const media = field.fields.find(
       (
         f,
@@ -236,6 +239,7 @@ describe('HeroSlidesField', () => {
     const field = HeroSlidesField({
       name: 'slides',
     })
+
     const shader = field.fields.find(
       (
         f,
@@ -258,6 +262,7 @@ describe('HeroSlidesField', () => {
     const field = HeroSlidesField({
       name: 'slides',
     })
+
     const shader = field.fields.find(
       (
         f,

@@ -29,7 +29,9 @@ vi.mock('@payloadcms/ui', () => ({
     // when `forceOpen` is explicitly set, the popup content's visibility —
     // and the toggle callbacks — follow it instead of any internal state.
     if (forceOpen === false) return <div>{button}</div>
+
     if (forceOpen === true) onToggleOpen?.(true)
+
     return (
       <div>
         {button}
@@ -169,6 +171,7 @@ describe('AddSlideMenu', () => {
 
   it('triggers the hidden file input and forwards the picked file for Upload Image', () => {
     const onUploadImage = vi.fn()
+
     const { container } = render(
       <AddSlideMenu
         menuId="test"
@@ -193,6 +196,7 @@ describe('AddSlideMenu', () => {
     const file = new File(['x'], 'hero.png', {
       type: 'image/png',
     })
+
     fireEvent.change(fileInput as HTMLInputElement, {
       target: {
         files: [file],
@@ -204,6 +208,7 @@ describe('AddSlideMenu', () => {
 
   it('triggers the hidden file input and forwards the picked file for Upload Video', () => {
     const onUploadVideo = vi.fn()
+
     const { container } = render(
       <AddSlideMenu
         menuId="test"
@@ -222,6 +227,7 @@ describe('AddSlideMenu', () => {
     const file = new File(['x'], 'hero.mp4', {
       type: 'video/mp4',
     })
+
     fireEvent.change(fileInput as HTMLInputElement, {
       target: {
         files: [file],

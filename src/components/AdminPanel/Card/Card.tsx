@@ -10,7 +10,7 @@ export const Card = ({ className, ...props }: React.ComponentProps<'div'>) => {
   return (
     <div
       className={cn(
-        'bg-card text-card-foreground flex flex-col gap-5 rounded-xl border border-border py-5',
+        'flex flex-col gap-5 rounded-xl border border-border bg-card py-5 text-card-foreground',
         'h-full',
         className,
       )}
@@ -70,7 +70,7 @@ export const CardTitle = ({ className, ...props }: React.ComponentProps<'div'>) 
   return (
     <div
       className={cn(
-        'leading-none font-mono font-semibold text-lg whitespace-nowrap text-ellipsis overflow-hidden',
+        'overflow-hidden font-mono text-lg leading-none font-semibold text-ellipsis whitespace-nowrap',
         className,
       )}
       {...props}
@@ -79,7 +79,7 @@ export const CardTitle = ({ className, ...props }: React.ComponentProps<'div'>) 
 }
 
 export const CardDescription = ({ className, ...props }: React.ComponentProps<'div'>) => {
-  return <div className={cn('text-muted-foreground text-sm', className)} {...props} />
+  return <div className={cn('text-sm text-muted-foreground', className)} {...props} />
 }
 
 export const CardAction = ({ className, ...props }: React.ComponentProps<'div'>) => {

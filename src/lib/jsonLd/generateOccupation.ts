@@ -65,6 +65,7 @@ export function generateOccupation(data: OccupationData): WithContext<
   }
 
   if (data.startDate) role.startDate = data.startDate
+
   if (data.endDate) role.endDate = data.endDate
 
   return role

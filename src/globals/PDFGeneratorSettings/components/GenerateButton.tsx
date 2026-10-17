@@ -68,6 +68,7 @@ const GenerateButton = () => {
           toast.loading(data.step, {
             id: jobId,
           })
+
           return
         case 'success':
           clearFallbackTimeout()
@@ -76,6 +77,7 @@ const GenerateButton = () => {
           })
           setJobId(null)
           router.refresh()
+
           return
         case 'error':
           clearFallbackTimeout()
@@ -83,6 +85,7 @@ const GenerateButton = () => {
             id: jobId,
           })
           setJobId(null)
+
           return
       }
     },

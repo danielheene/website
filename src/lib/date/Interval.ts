@@ -46,7 +46,9 @@ export class Interval {
   #validateIntervalValue(input: unknown): input is Interval {
     const isValidIntervalValue =
       Array.isArray(input) && input.every((date) => date instanceof Date) && input.length === 2
+
     if (!isValidIntervalValue) throw new IntervalError(input)
+
     return true
   }
 
@@ -77,6 +79,7 @@ export class Interval {
 
     this.startTime = this.startTime + steps * durationMillis
     this.endTime = this.endTime + steps * durationMillis
+
     return this
   }
 
@@ -191,6 +194,7 @@ export class Interval {
   public setToToday(): Interval {
     this.startDate = new Date(startOfDay(new Date()))
     this.endDate = new Date(endOfDay(new Date()))
+
     return this
   }
 
@@ -200,6 +204,7 @@ export class Interval {
   public setToLastTwentyFourHours(): Interval {
     this.endDate = new Date()
     this.startDate = new Date(subHours(this.endDate, 24))
+
     return this
   }
 
@@ -217,6 +222,7 @@ export class Interval {
         weekStartsOn: 1,
       }),
     )
+
     return this
   }
 
@@ -226,6 +232,7 @@ export class Interval {
   public setToLastSevenDays(): Interval {
     this.startDate = new Date(startOfDay(subDays(new Date(), 7)))
     this.endDate = new Date(endOfDay(new Date()))
+
     return this
   }
 
@@ -235,6 +242,7 @@ export class Interval {
   public setToThisMonth(): Interval {
     this.startDate = new Date(startOfMonth(new Date()))
     this.endDate = new Date(endOfMonth(new Date()))
+
     return this
   }
 
@@ -244,6 +252,7 @@ export class Interval {
   public setToLastThirtyDays(): Interval {
     this.startDate = new Date(startOfDay(subDays(new Date(), 30)))
     this.endDate = new Date(endOfDay(new Date()))
+
     return this
   }
 
@@ -253,6 +262,7 @@ export class Interval {
   public setToLastNinetyDays(): Interval {
     this.startDate = new Date(startOfDay(subDays(new Date(), 90)))
     this.endDate = new Date(endOfDay(new Date()))
+
     return this
   }
 
@@ -262,6 +272,7 @@ export class Interval {
   public setToThisYear(): Interval {
     this.startDate = new Date(startOfYear(new Date()))
     this.endDate = new Date(endOfYear(new Date()))
+
     return this
   }
 
@@ -271,6 +282,7 @@ export class Interval {
   public setToLastSixMonths(): Interval {
     this.startDate = new Date(startOfDay(subMonths(new Date(), 6)))
     this.endDate = new Date(endOfDay(new Date()))
+
     return this
   }
 
@@ -280,6 +292,7 @@ export class Interval {
   public setToLastTwelveMonths(): Interval {
     this.startDate = new Date(startOfDay(subMonths(new Date(), 12)))
     this.endDate = new Date(endOfDay(new Date()))
+
     return this
   }
 }

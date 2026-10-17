@@ -78,6 +78,7 @@ export const highlightRichText = async (data: unknown): Promise<HighlightedCodeM
         code,
         language: language ?? undefined,
       })
+
       return [key, html] as const
     }),
   )

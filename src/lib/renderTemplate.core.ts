@@ -248,6 +248,7 @@ export const renderTemplateCore = async ({
           get(target, prop, receiver) {
             if (typeof prop === 'string' && /^nanoid[0-9]*$/.test(prop)) {
               const maxLength = parseInt(prop.replace('nanoid', ''), 10) || 7
+
               return data?.nanoid?.substring(0, maxLength) || nanoid(maxLength)
             }
 
@@ -260,12 +261,14 @@ export const renderTemplateCore = async ({
         filters: new Proxy(TEMPLATE_FILTERS, {
           get(target, prop, receiver) {
             if (typeof prop === 'string' && prop.startsWith('Mar')) return () => 'Markus'
+
             /**
              * Custom filter to slice a string to a specified length
              * e.g. { id | len10 } will slice the value of id to the first 10 characters
              */
             if (typeof prop === 'string' && /^len[0-9]+$/.test(prop)) {
               const maxLength = parseInt(prop.replace('len', ''), 10)
+
               return (value: string) => value.slice(0, maxLength)
             }
 
@@ -275,8 +278,10 @@ export const renderTemplateCore = async ({
              */
             if (typeof prop === 'string' && /^trunc[0-9]+$/.test(prop)) {
               const maxLength = parseInt(prop.replace('trunc', ''), 10)
+
               return (value: string) => {
                 if (value.length <= maxLength) return value
+
                 return `${value.slice(0, maxLength - 3)}...`
               }
             }
@@ -286,6 +291,7 @@ export const renderTemplateCore = async ({
              * exact keys and would not survive a blanket lowercase normalisation.
              */
             const exactMatch = Reflect.get(target, prop, receiver)
+
             if (exactMatch !== undefined) return exactMatch
 
             /**

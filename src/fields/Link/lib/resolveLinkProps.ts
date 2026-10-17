@@ -14,6 +14,7 @@ type ResolvedLinkProps = {
 
 export const resolveLinkProps = (linkData: LinkDataParam): ResolvedLinkProps | undefined => {
   const target = resolveLinkTarget(linkData)
+
   if (!target) return undefined
 
   const href =
@@ -25,6 +26,7 @@ export const resolveLinkProps = (linkData: LinkDataParam): ResolvedLinkProps | u
             slug: target.value.slug,
           })
         : null
+
   if (!href) return undefined
 
   return linkData.newTab

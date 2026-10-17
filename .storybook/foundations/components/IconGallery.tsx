@@ -10,7 +10,7 @@ interface IconItemProps {
 
 /** An individual icon with a caption and an example (passed as `children`). */
 export const IconItem: FunctionComponent<IconItemProps> = ({ name, children }) => (
-  <div className="inline-flex flex-col items-center flex-[0_1_calc(20%-50px)] min-w-30 m-3.75">
+  <div className="m-3.75 inline-flex min-w-30 flex-[0_1_calc(20%-50px)] flex-col items-center">
     {/* a button rather than a div with onClick: the tile is click-to-copy, so it
         needs to be keyboard-reachable and announced as an action */}
     <button
@@ -18,7 +18,7 @@ export const IconItem: FunctionComponent<IconItemProps> = ({ name, children }) =
       aria-label={`Copy icon name "${name}" to clipboard`}
       className={cn(
         'rounded-md border border-border bg-card shadow-[0_1px_3px_rgba(0,0,0,0.10)] dark:shadow-[0_2px_5px_rgba(0,0,0,0.20)]',
-        'overflow-hidden text-[3rem] h-[2em] w-[2em] flex items-center justify-center flex-none [&>img]:w-[1em] [&>img]:h-[1em] [&>svg]:w-[1em] [&>svg]:h-[1em]',
+        'flex size-[2em] flex-none items-center justify-center overflow-hidden text-[3rem] [&>img]:size-[1em] [&>svg]:size-[1em]',
       )}
       onClick={async () => {
         if (navigator) await navigator.clipboard.writeText(name)
@@ -26,7 +26,7 @@ export const IconItem: FunctionComponent<IconItemProps> = ({ name, children }) =
     >
       {children}
     </button>
-    <div className="font-mono text-sm font-bold text-foreground mt-[1em] leading-[1.2] text-center">
+    <div className="mt-[1em] text-center font-mono text-sm leading-[1.2] font-bold text-foreground">
       {name}
     </div>
   </div>

@@ -46,6 +46,7 @@ export const SkillChart = memo(function SkillChart({
   const nextTransitionWhen = useCallback((whenStage: number) => {
     setTransitionStage((prev) => {
       if (prev === whenStage) return prev + 1
+
       return prev
     })
   }, [])
@@ -56,10 +57,10 @@ export const SkillChart = memo(function SkillChart({
       style={{
         maxHeight: inView || transitionStage > 0 ? '100%' : '0',
       }}
-      className={cn('overflow-hidden transition-all ease-in-out duration-100', className)}
+      className={cn('overflow-hidden transition-all duration-100 ease-in-out', className)}
       onTransitionEnd={() => nextTransitionWhen(0)}
     >
-      <div className="border-l-4 border-white w-full flex flex-col nowrap gap-2 py-4 ">
+      <div className="nowrap flex w-full flex-col gap-2 border-l-4 border-white py-4">
         {renderedSkills.map(({ title, interval, slug }, index) => {
           const width = calculateSkillWidth(interval)
 
@@ -67,8 +68,8 @@ export const SkillChart = memo(function SkillChart({
             <div key={slug} className={cn('relative block h-10')}>
               <div
                 className={cn(
-                  'bg-white absolute top-0 bottom-0 left-0',
-                  'transition-all ease-in-out duration-150 delay-100',
+                  'absolute inset-y-0 left-0 bg-white',
+                  'transition-all delay-100 duration-150 ease-in-out',
                 )}
                 style={{
                   width: transitionStage > index ? width : '0',
@@ -76,10 +77,10 @@ export const SkillChart = memo(function SkillChart({
               />
               <div
                 className={cn(
-                  'absolute top-0 bottom-0 left-0 right-0 px-6',
+                  'absolute inset-0 px-6',
                   'flex flex-row items-center justify-between',
-                  'text-transparent font-mono font-medium bg-clip-text',
-                  'transition-all ease-in-out duration-150 delay-300',
+                  'bg-clip-text font-mono font-medium text-transparent',
+                  'transition-all delay-300 duration-150 ease-in-out',
                   transitionStage > index ? 'opacity-100' : 'opacity-0',
                 )}
                 style={{

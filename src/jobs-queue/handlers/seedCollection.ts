@@ -30,12 +30,14 @@ const SEED_ROUTINES: Record<SeedableCollection, SeedRoutine> = {
   pages: {
     seed: async (payload, count, onProgress) => {
       const { created } = await seedPages(payload, count, onProgress)
+
       return {
         'pages created': created,
       }
     },
     clean: async (payload, onProgress) => {
       const { deleted, deletedMedia } = await cleanPages(payload, onProgress)
+
       return {
         'pages deleted': deleted,
         'images deleted': deletedMedia,
@@ -45,12 +47,14 @@ const SEED_ROUTINES: Record<SeedableCollection, SeedRoutine> = {
   posts: {
     seed: async (payload, count, onProgress) => {
       const { created } = await seedPosts(payload, count, onProgress)
+
       return {
         'posts created': created,
       }
     },
     clean: async (payload, onProgress) => {
       const { deleted, deletedMedia } = await cleanPosts(payload, onProgress)
+
       return {
         'posts deleted': deleted,
         'images deleted': deletedMedia,
@@ -60,12 +64,14 @@ const SEED_ROUTINES: Record<SeedableCollection, SeedRoutine> = {
   topics: {
     seed: async (payload, count, onProgress) => {
       const { created } = await seedTopics(payload, count, onProgress)
+
       return {
         'topics created': created,
       }
     },
     clean: async (payload, onProgress) => {
       const { deleted, skipped } = await cleanTopics(payload, onProgress)
+
       return {
         'topics deleted': deleted,
         // present even at 0 so a fully-clean run doesn't silently omit it —
@@ -81,6 +87,7 @@ const run: TaskHandler<TaskSlug['SeedCollection']> = async ({ input, job, req })
   const { payload } = req
 
   const channel = seedTaskChannel(String(job.id))
+
   const onProgress = (progress: SeedProgress) => {
     void publish(channel, {
       status: 'progress',
@@ -92,6 +99,7 @@ const run: TaskHandler<TaskSlug['SeedCollection']> = async ({ input, job, req })
     const routine = SEED_ROUTINES[input.collection]
 
     let counts: Record<string, number>
+
     if (input.mode === 'seed') {
       counts = await routine.seed(payload, input.count ?? 1, onProgress)
     } else if (input.mode === 'clean') {

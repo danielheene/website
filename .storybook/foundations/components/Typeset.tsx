@@ -4,6 +4,7 @@ import { cn } from 'tailwind-variants'
 
 export const defaultFontWeight: number = 400
 export const defaultSampleText: string = 'Heavy boxes perform quick waltzes and jigs.'
+
 export const defaultFontSizes: string[] = [
   'text-xs',
   'text-sm',
@@ -43,7 +44,7 @@ export const Typeset: FC<TypesetProps> = (props) => {
     <div
       className={cn(
         'rounded-md border border-border bg-card shadow-[0_1px_3px_rgba(0,0,0,0.10)] dark:shadow-[0_2px_5px_rgba(0,0,0,0.20)]',
-        'docblock-typeset sb-unstyled grid grid-cols-[min-content_auto] items-baseline my-[25px] mb-10 p-[30px_20px]',
+        'docblock-typeset sb-unstyled my-[25px] mb-10 grid grid-cols-[min-content_auto] items-baseline p-[30px_20px]',
       )}
     >
       {fontSizes.map(
@@ -52,7 +53,7 @@ export const Typeset: FC<TypesetProps> = (props) => {
             <Fragment key={size}>
               <header
                 className={cn([
-                  'mr-7.5 text-[1em] pr-[1em]',
+                  'mr-7.5 pr-[1em] text-[1em]',
                   'text-foreground/40 dark:text-foreground/60',
                 ])}
               >
@@ -60,7 +61,7 @@ export const Typeset: FC<TypesetProps> = (props) => {
               </header>
               <div
                 className={cn([
-                  'text-ellipsis overflow-hidden whitespace-nowrap',
+                  'overflow-hidden text-ellipsis whitespace-nowrap',
                   `text-${size} font-[${fontWeight}]`,
                   size,
                 ])}

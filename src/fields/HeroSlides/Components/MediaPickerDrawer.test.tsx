@@ -143,6 +143,7 @@ describe('MediaPickerDrawer', () => {
     const button = screen.getByRole('button', {
       name: 'First',
     })
+
     expect(button).toBeDisabled()
 
     fireEvent.click(button)

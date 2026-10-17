@@ -42,6 +42,7 @@ export const UnsplashSearch = () => {
         query: nextQuery,
         page: nextPage,
       })
+
       if (seq !== searchSeq.current) return
 
       setResults((previous) =>
@@ -63,9 +64,11 @@ export const UnsplashSearch = () => {
 
   useEffect(() => {
     const trimmed = query.trim()
+
     if (!trimmed) {
       setResults([])
       setTotalPages(0)
+
       return
     }
 

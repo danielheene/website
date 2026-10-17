@@ -59,6 +59,7 @@ export const HeroSlide = ({
   // starts with the placeholder visible again.
   useEffect(() => {
     if (item.kind !== 'video') return
+
     if (!isActive) setVideoReady(false)
   }, [isActive, item.kind])
 
@@ -72,10 +73,12 @@ export const HeroSlide = ({
    */
   useEffect(() => {
     const video = videoRef.current
+
     if (item.kind !== 'video' || !video) return
 
     if (!isActive) {
       video.pause()
+
       return
     }
 
@@ -93,7 +96,9 @@ export const HeroSlide = ({
    */
   useEffect(() => {
     const video = videoRef.current
+
     if (item.kind !== 'video' || !video || !isActive) return
+
     // A looping video never hands over, so it needs no end-of-play watcher.
     if (loop) return
 
@@ -107,7 +112,7 @@ export const HeroSlide = ({
   }, [index, isActive, item.kind, loop, onHandoff])
 
   return (
-    <div aria-hidden={!isActive} className="relative h-full w-full shrink-0 grow-0 basis-full">
+    <div aria-hidden={!isActive} className="relative size-full shrink-0 grow-0 basis-full">
       {item.kind === 'image' ? (
         <ImageMedia
           alt={item.alt}
@@ -126,7 +131,7 @@ export const HeroSlide = ({
             <img
               alt=""
               aria-hidden
-              className="absolute inset-0 h-full w-full object-cover"
+              className="absolute inset-0 size-full object-cover"
               src={item.blurDataURL}
               style={{
                 opacity: videoReady ? 0 : 1,
@@ -140,7 +145,7 @@ export const HeroSlide = ({
             <img
               alt=""
               aria-hidden
-              className="absolute inset-0 h-full w-full object-cover"
+              className="absolute inset-0 size-full object-cover"
               src={item.poster}
               style={{
                 opacity: videoReady ? 0 : 1,
@@ -149,7 +154,7 @@ export const HeroSlide = ({
             />
           )}
           <video
-            className="h-full w-full object-cover"
+            className="size-full object-cover"
             controls={false}
             loop={loop}
             muted
@@ -165,7 +170,7 @@ export const HeroSlide = ({
           />
         </>
       ) : (
-        <ShaderHeroBackground className="h-full w-full" presetKey={item.presetKey} />
+        <ShaderHeroBackground className="size-full" presetKey={item.presetKey} />
       )}
     </div>
   )

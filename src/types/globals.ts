@@ -12,10 +12,13 @@ export const GlobalSlug = {
 } as const
 
 export type GlobalSlug = typeof GlobalSlug
+
 export type GlobalSlugKey = keyof GlobalSlug & string
+
 export type GlobalSlugValue = string & GlobalSlug[GlobalSlugKey]
 
 export type { GlobalSlug as RegisteredGlobalSlug } from 'payload'
+
 export type GlobalData<
   T extends RegisteredGlobalSlug = RegisteredGlobalSlug,
   L extends BilingualLanguage = 'en',

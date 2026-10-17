@@ -25,6 +25,7 @@ const revalidateResumeSection = async ({
   slug,
 }: RevalidateResumeSectionHookOptions) => {
   if (process.env.CI) return doc
+
   if (context.skipRevalidate) return doc
 
   if ('_status' in doc && doc._status !== 'published') return
@@ -39,6 +40,7 @@ const revalidateResumeSection = async ({
    */
   try {
     console.info(`Fetching pages that are using the Resume layout: ${slug}`)
+
     const { docs } = await payload.find({
       collection: CollectionSlug.Pages,
       draft: false,

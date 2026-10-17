@@ -54,6 +54,7 @@ export const SelectUnsplashDrawer = ({
         query: nextQuery,
         page: nextPage,
       })
+
       if (seq !== searchSeq.current) return
 
       setResults((previous) =>
@@ -75,9 +76,11 @@ export const SelectUnsplashDrawer = ({
 
   useEffect(() => {
     const trimmed = query.trim()
+
     if (!trimmed) {
       setResults([])
       setTotalPages(0)
+
       return
     }
 
@@ -134,7 +137,7 @@ export const SelectUnsplashDrawer = ({
           // oxlint-disable-next-line nextjs/no-img-element -- thumbnail preview of Unsplash search results, not the imported asset, so next/image optimization isn't warranted
           <img
             alt={result.description}
-            className="h-full w-full object-cover"
+            className="size-full object-cover"
             loading="lazy"
             src={result.thumbUrl}
           />

@@ -75,7 +75,7 @@ export const VideoMedia = ({
       className={cn(['relative overflow-hidden', className, loaded && loadedClassName])}
     >
       <video
-        className={cn(['block h-full w-full object-cover', videoClassName])}
+        className={cn(['block size-full object-cover', videoClassName])}
         controls={controls}
         preload={preload}
         onCanPlay={handleLoadedData}
@@ -91,7 +91,7 @@ export const VideoMedia = ({
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className={cn([
-            'pointer-events-none absolute inset-0 h-full w-full animation-duration-[2s]',
+            'animation-duration-[2s] pointer-events-none absolute inset-0 size-full',
             loaded && 'animate-fade-out',
           ])}
           tabIndex={-1}

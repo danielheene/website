@@ -23,6 +23,7 @@ interface NavClientProps {
 
 export const NavClient = ({ navigationConfig, footer }: NavClientProps) => {
   const { hydrated, navOpen, navRef, shouldAnimate, setNavOpen } = useNav()
+
   return (
     <aside
       className={cn([

@@ -39,18 +39,21 @@ export const TrendingBlogPostsBlockRenderer = async ({
           {resolvedHeading}
         </Headline>
       )}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
         {posts.map(({ slug, post }) => {
           // Only the first slide represents this card — a video's poster
           // stands in for its thumbnail, same as the blog list's PostCard.
           const [firstSlide] = toSlideItems(post.hero?.slides, post.title)
+
           const heroImageUrl =
             firstSlide?.kind === 'image'
               ? firstSlide.url
               : firstSlide?.kind === 'video'
                 ? firstSlide.poster
                 : undefined
+
           const heroImageAlt = firstSlide?.kind === 'image' ? firstSlide.alt : post.title
+
           const heroImageBlurDataURL =
             firstSlide?.kind === 'image' ? firstSlide.blurDataURL : undefined
 
@@ -58,7 +61,7 @@ export const TrendingBlogPostsBlockRenderer = async ({
             <Link
               key={slug}
               href={`/blog/post/${slug}`}
-              className="group flex flex-col gap-4 rounded-sm border-4 border-primary bg-card overflow-hidden transition-colors hover:border-primary-800"
+              className="group flex flex-col gap-4 overflow-hidden rounded-sm border-4 border-primary bg-card transition-colors hover:border-primary-800"
             >
               {heroImageUrl && (
                 <div className="relative aspect-video w-full overflow-hidden">

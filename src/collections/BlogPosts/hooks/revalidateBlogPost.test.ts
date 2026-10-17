@@ -28,6 +28,7 @@ describe('revalidateBlogPost', () => {
       slug: 'hello',
       _status: 'published' as const,
     }
+
     expect(run(doc, doc)).toBe(doc)
 
     expect(revalidatePath).toHaveBeenCalledWith('/blog/post/hello')
@@ -70,6 +71,7 @@ describe('revalidateBlogPost', () => {
     vi.mocked(revalidatePath).mockImplementationOnce(() => {
       throw new Error('Invariant: static generation store missing')
     })
+
     const doc = {
       slug: 'hello',
       _status: 'published' as const,

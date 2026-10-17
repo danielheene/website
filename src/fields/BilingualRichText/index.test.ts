@@ -32,6 +32,7 @@ const paragraph = (text: string) => ({
 // tautology.
 vi.mock('@payloadcms/richtext-lexical', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@payloadcms/richtext-lexical')>()
+
   return {
     ...actual,
     lexicalEditor: (args: unknown) => args,
@@ -42,6 +43,7 @@ const { BilingualRichTextField } = await import('./index')
 
 const innerRowFields = (field: ReturnType<typeof BilingualRichTextField>): RowField['fields'] => {
   const row = field.fields[0] as RowField
+
   return row.fields
 }
 
@@ -60,6 +62,7 @@ describe('BilingualRichTextField', () => {
     const columnField = BilingualRichTextField({
       name: 'task',
     })
+
     const rowField = BilingualRichTextField({
       name: 'task',
       layout: 'row',
@@ -88,6 +91,7 @@ describe('BilingualRichTextField', () => {
       name: 'task',
       required: true,
     })
+
     const inner = innerRowFields(field)
 
     expect(
@@ -110,6 +114,7 @@ describe('BilingualRichTextField', () => {
     const field = BilingualRichTextField({
       name: 'task',
     })
+
     const inner = innerRowFields(field)
 
     expect((inner[0] as RichTextField).validate).toBeUndefined()
@@ -121,6 +126,7 @@ describe('BilingualRichTextField', () => {
       name: 'task',
       required: true,
     })
+
     const inner = innerRowFields(field)
     const enValidate = (inner[0] as RichTextField).validate
     const deValidate = (inner[2] as RichTextField).validate
@@ -180,6 +186,7 @@ describe('BilingualRichTextField', () => {
           en: paragraph(''),
         }),
       )
+
       expect(result).not.toBe(true)
     })
   })
@@ -189,6 +196,7 @@ describe('BilingualRichTextField', () => {
       name: 'task',
       layout: 'row',
     })
+
     const columnField = BilingualRichTextField({
       name: 'task',
       layout: 'column',
@@ -232,6 +240,7 @@ describe('BilingualRichTextField', () => {
         },
       },
     })
+
     const inner = innerRowFields(field)
 
     expect(
@@ -256,6 +265,7 @@ describe('BilingualRichTextField', () => {
       name: 'task',
       editorVariant: 'minimal',
     })
+
     const captionField = BilingualRichTextField({
       name: 'task',
       editorVariant: 'caption',
@@ -275,6 +285,7 @@ describe('BilingualRichTextField', () => {
         }
       }
     ).editor
+
     const captionEditor = (
       innerRowFields(captionField)[0] as {
         editor?: {

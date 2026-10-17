@@ -23,6 +23,7 @@ export type TemplateFieldAnnotationFunction = <
 }) => TemplateFieldAnnotation
 
 export type TemplateFieldData = Record<string, string>
+
 export type TemplateFieldDataFunction = <
   SiblingData = Record<string, string>,
   Data = Record<string, string>,

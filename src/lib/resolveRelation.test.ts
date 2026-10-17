@@ -16,6 +16,7 @@ describe('resolveRelations', () => {
       id: 'tag-1',
       title: 'TypeScript',
     }))
+
     vi.mocked(getPayload).mockResolvedValueOnce({
       findByID: findByIDMock,
     } as unknown as Awaited<ReturnType<typeof getPayload>>)

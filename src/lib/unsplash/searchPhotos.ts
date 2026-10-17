@@ -19,6 +19,7 @@ export const searchPhotos = async ({
   page: number
 }): Promise<UnsplashSearchResponse> => {
   const accessKey = process.env.UNSPLASH_ACCESS_KEY
+
   if (!accessKey) {
     throw new Error('UNSPLASH_ACCESS_KEY is not configured.')
   }
@@ -41,6 +42,7 @@ export const searchPhotos = async ({
     const message = Array.isArray(body?.errors)
       ? body.errors.join(', ')
       : `Unsplash search failed (${response.status}).`
+
     throw new Error(message)
   }
 

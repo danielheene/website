@@ -37,7 +37,7 @@ export const ContactFormConfirmationEmail = ({
       {ownerFirstName ? ` and will get back to you soon` : ''}. Here's a copy for your records:
     </Text>
     <Section className="rounded-md border border-solid border-neutral-200 bg-neutral-50 p-4">
-      <Text className="m-0 whitespace-pre-line text-sm text-neutral-900">{message}</Text>
+      <Text className="m-0 text-sm whitespace-pre-line text-neutral-900">{message}</Text>
     </Section>
     <Text className="m-0 mt-6 text-sm text-neutral-600">
       Need to add anything? Just reply to this email

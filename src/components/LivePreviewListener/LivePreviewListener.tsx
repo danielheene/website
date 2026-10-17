@@ -28,8 +28,10 @@ export const LivePreviewListener: React.FC = () => {
         router.refresh()
       }
     }
+
     document.addEventListener('visibilitychange', onVisible)
     window.addEventListener('focus', onVisible)
+
     return () => {
       document.removeEventListener('visibilitychange', onVisible)
       window.removeEventListener('focus', onVisible)
@@ -39,8 +41,10 @@ export const LivePreviewListener: React.FC = () => {
   const refresh = () => {
     if (document.hidden) {
       pendingRefresh.current = true
+
       return
     }
+
     router.refresh()
   }
 

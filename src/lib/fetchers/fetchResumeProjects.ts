@@ -31,6 +31,7 @@ export const fetchResumeProjectsCached = async (locale: BilingualLanguage = 'en'
   'use cache'
   cacheLife('max')
   cacheTag(CollectionSlug.ResumeProjects)
+
   return await fetchResumeProjects(locale)
 }
 

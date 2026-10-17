@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const payloadCreateMock = vi.fn()
+
 const getPayloadMock = vi.fn(async () => ({
   create: payloadCreateMock,
 }))
@@ -24,6 +25,7 @@ const buildFormData = (file: File, kind: string) => {
   const formData = new FormData()
   formData.set('file', file)
   formData.set('kind', kind)
+
   return formData
 }
 

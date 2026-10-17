@@ -22,13 +22,16 @@ type OgBackground =
 export function resolveOgBackground(slides: unknown, fallbackSlides?: unknown): OgBackground {
   for (const source of [slides, fallbackSlides]) {
     const [firstSlide] = toSlideItems(source, '')
+
     if (firstSlide?.kind === 'image')
       return {
         kind: 'image',
         url: firstSlide.url,
       }
+
     if (firstSlide?.kind === 'shader') {
       const thumbnailSrc = SHADER_PRESET_MAP[firstSlide.presetKey]?.thumbnail.src
+
       if (thumbnailSrc)
         return {
           kind: 'shader',
@@ -36,6 +39,7 @@ export function resolveOgBackground(slides: unknown, fallbackSlides?: unknown): 
         }
     }
   }
+
   return {
     kind: 'none',
   }

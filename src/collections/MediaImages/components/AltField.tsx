@@ -10,6 +10,7 @@ export const AltField: TextFieldServerComponent = ({ data: { url }, path, client
 
     try {
       const imageUrl = new URL(url, getRuntimeConfig().serverUrl)
+
       const imageData = await fetch(imageUrl)
         .then((res) => res.arrayBuffer())
         .then((arrayBuffer) => Buffer.from(arrayBuffer))
@@ -17,6 +18,7 @@ export const AltField: TextFieldServerComponent = ({ data: { url }, path, client
       return await fetchAnthropicImageAltText(imageData)
     } catch (error) {
       console.error('Error fetching image:', error)
+
       return ''
     }
   }

@@ -36,6 +36,7 @@ const editorState = (...texts: string[]) => ({
 
 const createReq = () => {
   const queue = vi.fn()
+
   return {
     queue,
     req: {
@@ -62,6 +63,7 @@ const run = async (doc: Record<string, unknown>) => {
       ...doc,
     },
   } as HookArgs)
+
   return queue
 }
 

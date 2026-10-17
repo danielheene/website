@@ -73,13 +73,13 @@ export const AllOptions: Story = {
   },
 
   render: () => (
-    <div className="flex flex-col gap-4 shrink-0 grow-0">
+    <div className="flex shrink-0 grow-0 flex-col gap-4">
       {Object.keys(badgeStyles.variants.size).map((size: BadgeProps['size']) => (
         <Fragment key={size}>
           <h3 className="font-mono font-bold">{size.toUpperCase()}:</h3>
-          <div key={size} className="flex flex-row gap-2 shrink-0 grow-0">
+          <div key={size} className="flex shrink-0 grow-0 flex-row gap-2">
             {Object.keys(badgeStyles.variants.color).map((color: BadgeProps['color']) => (
-              <div key={color} className="flex flex-col items-center gap-2 shrink-0 grow-0">
+              <div key={color} className="flex shrink-0 grow-0 flex-col items-center gap-2">
                 {Object.keys(badgeStyles.variants.style).map((style: BadgeProps['style']) => (
                   <Badge key={style} color={color} size={size} style={style}>
                     Label

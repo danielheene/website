@@ -64,6 +64,7 @@ const getHighlighter = (): Promise<Highlighter> => {
       langs: [...SUPPORTED_LANGUAGES],
     })
   }
+
   return highlighterPromise
 }
 

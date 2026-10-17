@@ -22,6 +22,7 @@ export const FieldComponentClient = ({
   const { value: title } = useField<string>({
     path: path.replace(field.name, 'title'),
   })
+
   const { value: description } = useField<string>({
     path: path.replace(field.name, 'description'),
   })
@@ -66,7 +67,7 @@ export const FieldComponentClient = ({
       }
     >
       <div className={cn(['w-fit', 'group/serp'])}>
-        <div className="flex justify-start items-center gap-3 w-fit">
+        <div className="flex w-fit items-center justify-start gap-3">
           {faviconUrl && (
             <div
               className={cn([
@@ -85,7 +86,7 @@ export const FieldComponentClient = ({
               ])}
             >
               {/** oxlint-disable-next-line nextjs/no-img-element -- favicon needs natural image loading */}
-              <img className="block aspect-square h-full w-full" src={faviconUrl} alt="" />
+              <img className="block aspect-square size-full" src={faviconUrl} alt="" />
             </div>
           )}
           <div className="flex flex-col">

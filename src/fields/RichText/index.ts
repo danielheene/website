@@ -54,6 +54,7 @@ export type RichTextFeatureSize = (typeof RichTextFeatureSize)[keyof typeof Rich
 const getRichTextFeatureSize = (variant: RichTextEditorVariant): RichTextFeatureSize => {
   const index =
     Object.keys(RichTextEditorVariant)[Object.values(RichTextEditorVariant).indexOf(variant)]
+
   return index ? RichTextFeatureSize[index] : RichTextFeatureSize.Minimal
 }
 

@@ -30,7 +30,9 @@ export interface GrainientProps {
 
 const hexToRgb = (hex: string): [number, number, number] => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+
   if (!result) return [1, 1, 1]
+
   return [
     parseInt(result[1], 16) / 255,
     parseInt(result[2], 16) / 255,
@@ -136,6 +138,7 @@ type GrainientCtx = {
   program: InstanceType<typeof Program>
   mesh: InstanceType<typeof Mesh>
 }
+
 const ctxMap = new WeakMap<HTMLDivElement, GrainientCtx>()
 
 export const Grainient: React.FC<GrainientProps> = ({
@@ -168,6 +171,7 @@ export const Grainient: React.FC<GrainientProps> = ({
   // Effect 1: build WebGL context once, pause when offscreen / tab hidden
   useEffect(() => {
     const container = containerRef.current
+
     if (!container) return
 
     const renderer = new Renderer({
@@ -185,6 +189,7 @@ export const Grainient: React.FC<GrainientProps> = ({
     container.appendChild(canvas)
 
     const geometry = new Triangle(gl)
+
     const program = new Program(gl, {
       vertex,
       fragment,
@@ -265,6 +270,7 @@ export const Grainient: React.FC<GrainientProps> = ({
       geometry,
       program,
     })
+
     ctxMap.set(container, {
       renderer,
       program,
@@ -276,11 +282,13 @@ export const Grainient: React.FC<GrainientProps> = ({
       const w = Math.max(1, Math.floor(rect.width))
       const h = Math.max(1, Math.floor(rect.height))
       renderer.setSize(w, h)
+
       const res = (
         program.uniforms.iResolution as {
           value: Float32Array
         }
       ).value
+
       res[0] = gl.drawingBufferWidth
       res[1] = gl.drawingBufferHeight
       renderer.render({
@@ -312,6 +320,7 @@ export const Grainient: React.FC<GrainientProps> = ({
     const tryStart = () => {
       if (isVisible && isPageVisible && raf === 0) raf = requestAnimationFrame(loop)
     }
+
     const tryStop = () => {
       if (raf !== 0) {
         cancelAnimationFrame(raf)
@@ -328,12 +337,14 @@ export const Grainient: React.FC<GrainientProps> = ({
         threshold: 0,
       },
     )
+
     io.observe(container)
 
     const onVisibility = () => {
       isPageVisible = !document.hidden
       isPageVisible ? tryStart() : tryStop()
     }
+
     document.addEventListener('visibilitychange', onVisibility)
 
     tryStart()
@@ -344,6 +355,7 @@ export const Grainient: React.FC<GrainientProps> = ({
       io.disconnect()
       document.removeEventListener('visibilitychange', onVisibility)
       ctxMap.delete(container)
+
       try {
         container.removeChild(canvas)
       } catch {
@@ -355,10 +367,13 @@ export const Grainient: React.FC<GrainientProps> = ({
   // Effect 2: sync props to uniforms — zero GPU cost, no teardown
   useEffect(() => {
     const container = containerRef.current
+
     if (!container) return
     const ctx = ctxMap.get(container)
+
     if (!ctx) return
     const { program } = ctx
+
     const u = program.uniforms as Record<
       string,
       {

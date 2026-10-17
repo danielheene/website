@@ -75,6 +75,7 @@ export const toSlideItems = (slides: unknown, fallbackAlt: string): HeroMediaIte
 
     if (isPopulated<'images', MediaImage>(media, CollectionSlug.MediaImages)) {
       const { id, url, alt, blurDataURL } = media.value
+
       if (!url) return []
 
       return [
@@ -90,6 +91,7 @@ export const toSlideItems = (slides: unknown, fallbackAlt: string): HeroMediaIte
 
     if (isPopulated<'videos', MediaVideo>(media, CollectionSlug.MediaVideos)) {
       const { id, url, thumbnails } = media.value
+
       if (!url) return []
 
       // Videos have no alt of their own; the generated thumbnail doubles as a

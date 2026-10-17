@@ -84,9 +84,11 @@ export const resolveRedirect = async ({
     })
 
     const redirect = docs[0]
+
     if (!redirect) break
 
     const destination = destinationFor(redirect as unknown as Record<string, unknown>)
+
     if (!destination) break
 
     resolved = destination
@@ -96,6 +98,7 @@ export const resolveRedirect = async ({
     if (/^https?:\/\//i.test(destination)) break
 
     const next = normalizeRedirectPath(destination)
+
     if (seen.has(next)) break
 
     seen.add(next)

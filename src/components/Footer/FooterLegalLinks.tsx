@@ -20,16 +20,16 @@ export const FooterLegalLinks = async ({
     <nav
       className={cn([
         'order-1 flex flex-col gap-2 md:order-2 md:flex-row',
-        'text-sm text-muted-foreground font-mono font-medium tracking-tight',
+        'font-mono text-sm font-medium tracking-tight text-muted-foreground',
         className,
       ])}
     >
       {entries?.map(({ id, ...link }) => (
         <div
           key={id}
-          className='not-first:before:content-["•"] not-first:before:mr-2 not-first:before:font-bold'
+          className='not-first:before:mr-2 not-first:before:font-bold not-first:before:content-["•"]'
         >
-          <CMSLink {...link} className="text-current/75 hover:text-current no-underline" />
+          <CMSLink {...link} className="text-current/75 no-underline hover:text-current" />
         </div>
       ))}
     </nav>

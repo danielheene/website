@@ -19,14 +19,15 @@ export const SkipToMainContent = ({ targetId }: SkipToMainContentProps): JSX.Ele
     },
     [targetId],
   )
+
   return (
     <Link
       href={`#${targetId}`}
       className={cn(
-        'absolute left-0 top-0  py-6 px-12 z-999',
+        'absolute top-0 left-0 z-999 px-12 py-6',
         'bg-background text-primary',
-        'text-3xl font-medium font-pp-supply-sans',
-        'transform -translate-y-full focus:translate-y-0',
+        'font-pp-supply-sans text-3xl font-medium',
+        '-translate-y-full transform focus:translate-y-0',
       )}
       onClick={handleClick}
     >

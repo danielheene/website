@@ -78,6 +78,7 @@ export const resolveSlideThumbnail = (
 
   if (slideType === 'shader' && data?.shader) {
     const preset = SHADER_PRESET_MAP[data.shader]
+
     if (preset) {
       return {
         kind: 'shader',
@@ -88,6 +89,7 @@ export const resolveSlideThumbnail = (
   }
 
   const rawValue = data?.media?.value
+
   const populated: PopulatedMediaValue | undefined =
     typeof rawValue === 'object'
       ? rawValue
@@ -101,6 +103,7 @@ export const resolveSlideThumbnail = (
     const posterThumbnail = populated?.thumbnails?.find(
       (thumbnail) => typeof thumbnail?.value === 'object',
     )?.value
+
     const posterUrl = typeof posterThumbnail === 'object' ? posterThumbnail?.url : undefined
 
     if (posterUrl)
@@ -108,11 +111,13 @@ export const resolveSlideThumbnail = (
         kind: 'image-url',
         url: posterUrl,
       }
+
     if (rawUrl)
       return {
         kind: 'video-url',
         url: rawUrl,
       }
+
     return {
       kind: 'empty',
     }

@@ -5,6 +5,7 @@ const getPreferencesURL = async (preferencesKey: string) => {
   const payload = await getPayload({
     config,
   })
+
   return `${payload.getAPIURL()}/payload-preferences/${preferencesKey}`
 }
 
@@ -16,6 +17,7 @@ export const getPreferences = async <K extends string | null>(
   const url = await getPreferencesURL(preferencesKey)
 
   let data: K = null
+
   try {
     data = await fetch(url, {
       method: 'GET',
@@ -42,6 +44,7 @@ export const setPreferences = async <K extends string | null>(
   const url = await getPreferencesURL(preferencesKey)
 
   let data: K = null
+
   try {
     data = await fetch(url, {
       method: 'POST',

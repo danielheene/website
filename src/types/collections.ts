@@ -43,7 +43,9 @@ export const CollectionSlug = {
 } as const
 
 export type CollectionSlug = typeof CollectionSlug
+
 export type CollectionSlugKey = keyof CollectionSlug & string
+
 export type CollectionSlugValue = CollectionSlug[CollectionSlugKey] & string
 
 export type MediaCollectionSlug =
@@ -64,6 +66,7 @@ export type {
   TypedCollection as RegisteredCollection,
   TypedCollectionSelect,
 } from 'payload'
+
 export type CollectionData<
   T extends RegisteredCollectionSlug = RegisteredCollectionSlug,
   L extends BilingualLanguage = 'en',

@@ -41,6 +41,7 @@ type NodeTypes = DefaultNodeTypes | SerializedBlockNode<BlockData>
 
 const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
   const { value, relationTo } = linkNode.fields.doc!
+
   if (typeof value !== 'object') {
     throw new Error('Expected value to be an object')
   }
@@ -76,6 +77,7 @@ const buildJsxConverters =
       ...ListJSXConverter,
       listitem: (args) => {
         const { node, parent } = args
+
         if ('listType' in parent && parent.listType === 'check') {
           const id = `checklist-item-${checklistItemIndex++}`
           const hasSubLists = node.children.some((child) => child.type === 'list')
@@ -124,6 +126,7 @@ const buildJsxConverters =
               height?: number
             }
           | undefined
+
         if (!value?.url) return null
 
         // populated upload values don't carry mimeType, so the collection the node
@@ -179,6 +182,7 @@ const buildJsxConverters =
       },
       heading: ({ node, nodesToJSX }) => {
         const Tag = node.tag as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
+
         const children = nodesToJSX({
           nodes: node.children,
         })
@@ -203,6 +207,7 @@ const buildJsxConverters =
             iconName?: string
           }
         ).iconName
+
         if (!iconName) return null
 
         return (
@@ -218,6 +223,7 @@ const buildJsxConverters =
         // pre-highlight) degrades to plain code rather than breaking the block.
         [BlockSlug.Code]: ({ node }) => {
           const code = node.fields.code ?? ''
+
           return (
             <CodeBlockShell
               code={code}
@@ -273,6 +279,7 @@ export function RichText(props: Props) {
     highlightedCode = {},
     ...rest
   } = props
+
   return (
     <ConvertRichText
       converters={buildJsxConverters(highlightedCode)}
@@ -280,7 +287,7 @@ export function RichText(props: Props) {
         'payload-richtext',
         enableGutter && 'container',
         !enableGutter && 'max-w-none',
-        enableProse && 'mx-auto prose',
+        enableProse && 'prose mx-auto',
         className,
       ])}
       {...rest}

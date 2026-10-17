@@ -86,6 +86,7 @@ export const useSendAdapter = (args: useSendAdapterArgs): UseSendEmailAdapter =>
       } else {
         const statusCode = res.status
         let formattedError = `Error sending email: ${statusCode}`
+
         if ('error' in data) {
           formattedError += ` ${data.error.code} - ${data.error.message}`
         }
@@ -123,6 +124,7 @@ function mapPayloadToUseSendEmail(
     if (message.attachments.length > 10) {
       throw new APIError('Maximum of 10 attachments allowed', 400)
     }
+
     emailOptions.attachments = mapAttachments(message.attachments)
   }
 

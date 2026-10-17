@@ -27,7 +27,7 @@ export const TitleCellClient = ({
   const { onSelect, isInDrawer } = useListDrawerContext()
 
   const sharedStyles = cn([
-    'mx-0 my-[-10px] p-0 w-full',
+    'mx-0 my-[-10px] w-full p-0',
     'flex items-center gap-2',
     'border-0 bg-transparent',
     'cursor-pointer',

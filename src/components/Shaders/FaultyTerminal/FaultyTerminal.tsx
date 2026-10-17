@@ -233,12 +233,14 @@ void main() {
 
 function hexToRgb(hex: string): [number, number, number] {
   let h = hex.replace('#', '').trim()
+
   if (h.length === 3)
     h = h
       .split('')
       .map((c) => c + c)
       .join('')
   const num = parseInt(h, 16)
+
   return [((num >> 16) & 255) / 255, ((num >> 8) & 255) / 255, (num & 255) / 255]
 }
 
@@ -268,14 +270,17 @@ export function FaultyTerminal({
   const containerRef = useRef<HTMLDivElement>(null)
   const programRef = useRef<Program>(null)
   const rendererRef = useRef<Renderer>(null)
+
   const mouseRef = useRef({
     x: 0.5,
     y: 0.5,
   })
+
   const smoothMouseRef = useRef({
     x: 0.5,
     y: 0.5,
   })
+
   const frozenTimeRef = useRef(0)
   const rafRef = useRef<number>(0)
   const loadAnimationStartRef = useRef<number>(0)
@@ -290,6 +295,7 @@ export function FaultyTerminal({
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     const ctn = containerRef.current
+
     if (!ctn) return
     const rect = ctn.getBoundingClientRect()
     const x = (e.clientX - rect.left) / rect.width
@@ -302,11 +308,13 @@ export function FaultyTerminal({
 
   useEffect(() => {
     const ctn = containerRef.current
+
     if (!ctn) return
 
     const renderer = new Renderer({
       dpr,
     })
+
     rendererRef.current = renderer
     const gl = renderer.gl
     gl.clearColor(0, 0, 0, 1)
@@ -377,6 +385,7 @@ export function FaultyTerminal({
         },
       },
     })
+
     programRef.current = program
 
     const mesh = new Mesh(gl, {
@@ -436,6 +445,7 @@ export function FaultyTerminal({
         scene: mesh,
       })
     }
+
     rafRef.current = requestAnimationFrame(update)
     ctn.appendChild(gl.canvas)
 
@@ -444,7 +454,9 @@ export function FaultyTerminal({
     return () => {
       cancelAnimationFrame(rafRef.current)
       resizeObserver.disconnect()
+
       if (mouseReact) ctn.removeEventListener('mousemove', handleMouseMove)
+
       if (gl.canvas.parentElement === ctn) ctn.removeChild(gl.canvas)
       gl.getExtension('WEBGL_lose_context')?.loseContext()
       loadAnimationStartRef.current = 0

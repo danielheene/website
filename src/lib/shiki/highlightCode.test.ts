@@ -50,6 +50,7 @@ describe('highlightCode', () => {
         code: 'test',
         language,
       })
+
       expect(html).toContain('<pre')
     }
   })
@@ -83,6 +84,7 @@ describe('highlightCode', () => {
       code: 'const a = 1\nconst b = 2\nconst c = 3',
       language: 'typescript',
     })
+
     expect(multiline.match(/class="line"/g)).toHaveLength(3)
   })
 

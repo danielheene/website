@@ -30,6 +30,7 @@ export const IconPickerPlugin = () => {
         // the selection dispatch again with a concrete icon
         if (!iconName) {
           openModal(drawerSlug)
+
           return true
         }
 
@@ -37,6 +38,7 @@ export const IconPickerPlugin = () => {
           $insertNodes([$createIconNode(iconName)])
         })
         closeModal(drawerSlug)
+
         return true
       },
       COMMAND_PRIORITY_EDITOR,

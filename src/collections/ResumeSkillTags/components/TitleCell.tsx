@@ -8,6 +8,7 @@ type TitleCellProps = DefaultServerCellComponentProps<TextFieldClient, string>
 
 export const TitleCell = ({ rowData, cellData, field, collectionSlug }: TitleCellProps) => {
   let titleValue: string
+
   if (cellData && typeof cellData === 'string' && cellData.length > 0) {
     titleValue = cellData
   } else if ('name' in field && typeof field.name === 'string' && field.name.length > 0) {

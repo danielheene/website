@@ -33,6 +33,7 @@ export const enqueueSeedCollection = async (
   if (!isSeedableCollection(args.collection)) {
     throw new Error(`Unknown seedable collection: "${args.collection}"`)
   }
+
   if (!isSeedMode(args.mode)) {
     throw new Error(`Unknown seed mode: "${args.mode}"`)
   }

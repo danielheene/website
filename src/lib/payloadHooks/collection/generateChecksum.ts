@@ -14,6 +14,7 @@ export const generateChecksum: CollectionBeforeChangeHook = async ({
   if (context.skipGenerateChecksum) return data
 
   let checksum: string
+
   if ((operation === 'create' || operation === 'update') && req.file) {
     checksum = await sha256(Buffer.from(req.file.data))
   }

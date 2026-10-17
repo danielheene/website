@@ -155,28 +155,28 @@ interface StatCardProps {
 
 function StatCard({ title, value, change, icon }: StatCardProps) {
   return (
-    <Card className="relative overflow-hidden h-14 py-0 flex-row items-center lg:h-40 lg:py-5 lg:flex-col lg:items-stretch lg:flex-1">
+    <Card className="relative h-14 flex-row items-center overflow-hidden py-0 lg:h-40 lg:flex-1 lg:flex-col lg:items-stretch lg:py-5">
       <Icon
         name={icon}
         className={cn([
-          'hidden lg:block h-[150%] w-auto aspect-square',
-          'absolute right-2/5 top-1/7 z-[0]',
+          'hidden aspect-square h-[150%] w-auto lg:block',
+          'absolute top-1/7 right-2/5 z-0',
           '[&>path]:fill-white/2',
         ])}
       />
-      <CardHeader className="h-auto px-4 shrink-0 basis-[50%] lg:h-9 lg:px-5 lg:basis-auto">
+      <CardHeader className="h-auto shrink-0 basis-[50%] px-4 lg:h-9 lg:basis-auto lg:px-5">
         <CardTitle>{title}</CardTitle>
       </CardHeader>
       <CardContent
         className={cn([
-          'h-auto lg:h-auto px-4 lg:px-5',
-          'flex-row items-center justify-between grow',
-          'lg:flex-col lg:items-stretch lg:justify-start lg:grow-0',
+          'h-auto px-4 lg:h-auto lg:px-5',
+          'grow flex-row items-center justify-between',
+          'lg:grow-0 lg:flex-col lg:items-stretch lg:justify-start',
         ])}
       >
         {value && change ? (
           <>
-            <div className="basis-[60%] justify-end flex items-center text-xl font-mono font-bold lg:basis-auto lg:h-10 lg:text-4xl">
+            <div className="flex basis-[60%] items-center justify-end font-mono text-xl font-bold lg:h-10 lg:basis-auto lg:text-4xl">
               {value}
             </div>
             <ChangeBadge change={change} className="basis-[40%] justify-end lg:basis-auto" />
@@ -201,7 +201,7 @@ function ChangeBadge({ change, className }: { change: Change; className?: string
   return (
     <div
       className={cn([
-        'h-5 flex items-center gap-1 text-sm font-mono',
+        'flex h-5 items-center gap-1 font-mono text-sm',
         isGood
           ? 'text-emerald-500'
           : direction === 'flat'

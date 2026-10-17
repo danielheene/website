@@ -167,6 +167,7 @@ export const AddSlideMenu = ({
         key={`image-input-${importingId}`}
         onChange={(event) => {
           const file = event.target.files?.[0]
+
           if (file) onUploadImage(file)
           event.target.value = ''
         }}
@@ -179,6 +180,7 @@ export const AddSlideMenu = ({
         key={`video-input-${importingId}`}
         onChange={(event) => {
           const file = event.target.files?.[0]
+
           if (file) onUploadVideo(file)
           event.target.value = ''
         }}

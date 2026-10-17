@@ -28,6 +28,7 @@ describe('removeObjectKeys', () => {
         },
       },
     }
+
     expect(removeObjectKeys(input, ['id'])).toEqual({
       a: 1,
       nested: {
@@ -50,6 +51,7 @@ describe('removeObjectKeys', () => {
         },
       ],
     }
+
     expect(removeObjectKeys(input, ['id'])).toEqual({
       items: [
         {
@@ -68,6 +70,7 @@ describe('removeObjectKeys', () => {
         a: 1,
       },
     }
+
     const result = removeObjectKeys(input)
     expect(result).toEqual(input)
     expect(result).not.toBe(input)
@@ -92,6 +95,7 @@ describe('removeObjectKeys', () => {
 
   it('preserves function values by reference', () => {
     const fn = () => 'hi'
+
     const result = removeObjectKeys(
       {
         fn,
@@ -99,6 +103,7 @@ describe('removeObjectKeys', () => {
       },
       ['drop'],
     )
+
     expect(result.fn).toBe(fn)
   })
 })

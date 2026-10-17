@@ -17,4 +17,5 @@ export const config = [
 ] as const
 
 export type ThemeConfig = (typeof config)[number]
+
 export type ThemeKey = ThemeConfig['key']

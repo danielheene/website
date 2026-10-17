@@ -31,6 +31,7 @@ const extractThumbnail = async ({
   })
 
   const videoTrack = await input.getPrimaryVideoTrack()
+
   if (!videoTrack) {
     throw new Error('No video track found in the input')
   }
@@ -94,15 +95,18 @@ const run: TaskHandler<TaskSlug['GenerateVideoThumbnails']> = async ({
   // The upload lives in S3, so the frame is decoded from a fetched copy
   // rather than from req.file (unavailable outside the upload request).
   const response = await fetch(video.url)
+
   if (!response.ok) {
     throw new Error(`Failed to fetch video ${videoId}: HTTP ${response.status}`)
   }
+
   const data = Buffer.from(await response.arrayBuffer())
 
   const sample = await extractThumbnail({
     data,
     timestampInSeconds: timestampInSeconds ?? 0,
   })
+
   const { width, height, buffer } = await sampleToPng(sample).finally(() => sample.close())
 
   // fixed thumbnail filename — see JSDoc
@@ -115,6 +119,7 @@ const run: TaskHandler<TaskSlug['GenerateVideoThumbnails']> = async ({
   }
 
   const filenameBase = stripExtension(video.filename ?? String(videoId))
+
   const { id } = await payload.create({
     collection: CollectionSlug.MediaImages,
     data: {

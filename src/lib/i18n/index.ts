@@ -3,7 +3,9 @@
 // the app. `translate` and `generateExperienceInterval` stay: both take
 // Payload types.
 export * from '@/lib/i18n/reduceDataToBilingualLanguage'
+
 export * from '@/lib/i18n/shared'
 
 export * from './generateExperienceInterval'
+
 export * from './translate'

@@ -31,6 +31,7 @@ const COLLECTION_LABELS: Record<string, string> = {
  */
 export const LinkRowLabel = () => {
   const { data, path, rowNumber } = useRowLabel<LinkEntryRowData>()
+
   const { value: docValue } = useField<ValueWithRelation | null>({
     path: `${path}.link.doc`,
   })
@@ -43,12 +44,14 @@ export const LinkRowLabel = () => {
   useEffect(() => {
     if (!relationTo || !docId) {
       setFetchedTitle(null)
+
       return
     }
 
     // If the doc is already populated in form state (object), no fetch needed —
     // the hint logic below reads it directly from `data.link.doc.value`.
     const link = data?.link
+
     if (typeof link?.doc?.value === 'object' && link.doc.value != null) return
 
     let cancelled = false
@@ -78,6 +81,7 @@ export const LinkRowLabel = () => {
 
   if (link?.linkType === 'custom') {
     const url = link.url?.trim()
+
     if (url) hint = `[${url}]`
   } else if (link?.doc) {
     const { relationTo: rel, value } = link.doc

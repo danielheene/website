@@ -30,6 +30,7 @@ const getCollection = async (prefix: string): Promise<IconCollection> => {
   cacheLife('max')
 
   const response = await fetch(`${ICONIFY_API}/collection?prefix=${encodeURIComponent(prefix)}`)
+
   if (!response.ok) throw new Error(`Icon collection failed (HTTP ${response.status})`)
 
   return parseCollection(prefix, (await response.json()) as CollectionResponse)
@@ -53,6 +54,7 @@ export const GET = async (request: Request): Promise<Response> => {
     return Response.json(await getCollection(prefix))
   } catch (caught) {
     console.error('Icon collection failed:', caught)
+
     return Response.json(
       {
         error: 'Icon collection failed',

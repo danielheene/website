@@ -130,6 +130,7 @@ export const track: TrackFunction = (
   if (isBrowser()) {
     payload.url = location.pathname + location.search
   }
+
   applyBrowserPayloadFields(payload)
 
   const sendPayload: UmamiSendPayload = {
@@ -166,6 +167,7 @@ export const trackPageview = (url?: string): void => {
   } else if (isBrowser()) {
     payload.url = location.pathname + location.search
   }
+
   applyBrowserPayloadFields(payload)
 
   const sendPayload: UmamiSendPayload = {

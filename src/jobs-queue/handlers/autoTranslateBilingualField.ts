@@ -31,6 +31,7 @@ const isTargetPopulated = async (
     id: docId,
     depth: 0,
   })
+
   const currentTarget = get(currentDoc, `${path}.${targetLanguage}`) as
     | SerializedEditorState
     | undefined
@@ -49,6 +50,7 @@ const writeTranslation = async (
     id: docId,
     depth: 0,
   })
+
   const nextDoc = cloneDeep(doc)
   set(nextDoc, `${path}.${targetLanguage}`, translated)
 
@@ -71,6 +73,7 @@ const run: TaskHandler<TaskSlug['AutoTranslateBilingualField']> = async ({ input
 
   const skip = async (reason: 'no-doc-id' | 'target-already-populated' | 'empty-translation') => {
     await emit({ status: 'skipped', reason })
+
     return { output: { skipped: true } }
   }
 
@@ -81,6 +84,7 @@ const run: TaskHandler<TaskSlug['AutoTranslateBilingualField']> = async ({ input
       }
 
       const lookup = { payload, collectionSlug, docId, path }
+
       if (await isTargetPopulated(lookup, targetLanguage)) {
         return skip('target-already-populated')
       }

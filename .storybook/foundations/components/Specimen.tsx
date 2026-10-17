@@ -23,7 +23,7 @@ export const SpecimenItem: FunctionComponent<SpecimenItemProps> = ({
   children,
   size = 'default',
 }) => (
-  <div className="inline-flex flex-col items-center flex-[0_1_calc(20%-30px)] min-w-56 m-3.75">
+  <div className="m-3.75 inline-flex min-w-56 flex-[0_1_calc(20%-30px)] flex-col items-center">
     <div
       className={cn(
         'rounded-md border border-border bg-card shadow-[0_1px_3px_rgba(0,0,0,0.10)] dark:shadow-[0_2px_5px_rgba(0,0,0,0.20)]',
@@ -33,11 +33,11 @@ export const SpecimenItem: FunctionComponent<SpecimenItemProps> = ({
     >
       {children}
     </div>
-    <div className="font-mono text-sm font-bold text-foreground mt-[1em] leading-[1.2] text-center">
+    <div className="mt-[1em] text-center font-mono text-sm leading-[1.2] font-bold text-foreground">
       {title}
     </div>
     {subtitle && (
-      <div className="font-mono text-xs text-foreground/40 dark:text-foreground/60 text-center">
+      <div className="text-center font-mono text-xs text-foreground/40 dark:text-foreground/60">
         {subtitle}
       </div>
     )}

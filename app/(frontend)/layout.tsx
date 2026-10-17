@@ -30,6 +30,7 @@ export default async function RootLayout({
     fetchGlobalUserSettingsCached(),
     fetchSiteSettingsCached(),
   ])
+
   const personSchema = generatePersonSchema(globalUserSettings)
   const webSiteSchema = generateWebSiteSchema(SiteSettings)
 

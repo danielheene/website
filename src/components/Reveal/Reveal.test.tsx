@@ -56,6 +56,7 @@ const hydrate = async () => {
   await act(async () => {
     hydrateRoot(container, tree)
   })
+
   return container.firstElementChild as HTMLElement
 }
 

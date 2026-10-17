@@ -50,6 +50,7 @@ const mediaRelationSubFieldState = (
   doc: MediaImage | MediaVideo,
 ): FormState => {
   const relationTo = kind === 'image' ? 'images' : 'videos'
+
   const value = {
     relationTo,
     value: doc.id,
@@ -134,6 +135,7 @@ export const useHeroSlideUploads = (mutators: HeroSlideRowMutators) => {
         formData.set('kind', kind)
 
         const { doc } = await uploadHeroSlideMedia(formData)
+
         return doc
       }),
     [runBackgroundInsert],
@@ -145,6 +147,7 @@ export const useHeroSlideUploads = (mutators: HeroSlideRowMutators) => {
         const { id, url, alt, blurDataURL } = await importPhoto({
           photoId,
         })
+
         // `importPhoto` returns a flat shape (id/url/alt/blurDataURL), not a
         // full `MediaImage` doc — build just enough of one for
         // `resolveSlideThumbnail` to render this slide's preview.

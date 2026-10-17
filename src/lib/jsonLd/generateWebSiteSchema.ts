@@ -23,6 +23,7 @@ export function generateWebSiteSchema({
   const firstImageSlide = data.defaultOpengraphImage?.find(
     (slide) => slide.slideType === 'image' && typeof slide.media === 'object',
   )
+
   const ogImageUrl =
     firstImageSlide && typeof firstImageSlide.media === 'object' && 'url' in firstImageSlide.media
       ? (
@@ -31,6 +32,7 @@ export function generateWebSiteSchema({
           }
         ).url
       : undefined
+
   if (ogImageUrl) {
     webSite.image = {
       '@type': 'ImageObject',

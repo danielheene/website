@@ -49,10 +49,12 @@ const textNodeStyle = (format: number): Style => {
   const style: Style = {}
 
   if (format & IS_BOLD) style.fontWeight = '500'
+
   if (format & IS_ITALIC) style.fontStyle = 'italic'
 
   const underline = Boolean(format & IS_UNDERLINE)
   const strikethrough = Boolean(format & IS_STRIKETHROUGH)
+
   if (underline && strikethrough) style.textDecoration = 'underline line-through'
   else if (underline) style.textDecoration = 'underline'
   else if (strikethrough) style.textDecoration = 'line-through'

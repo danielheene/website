@@ -4,6 +4,7 @@ import { fetchSiteSettingsCached } from '@/lib/fetchers'
 import { resolveOgBackground } from '@/lib/resolveOgBackground'
 
 export const alt = 'Blog'
+
 export const size = {
   width: 1200,
   height: 630,

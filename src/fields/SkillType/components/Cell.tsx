@@ -4,7 +4,9 @@ import { SkillTypeBadge } from './SkillTypeBadge'
 
 const labelFor = (options: Option[] | undefined, value: string): string => {
   const option = options?.find((opt) => (typeof opt === 'string' ? opt : opt.value) === value)
+
   if (!option) return value
+
   return typeof option === 'string' ? option : String(option.label)
 }
 

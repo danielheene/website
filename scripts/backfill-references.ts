@@ -50,6 +50,7 @@ const payload = await getPayload({
 
   for (const collection of Object.values(payload.collections)) {
     const slug = collection.config.slug
+
     if (SKIPPED_COLLECTIONS.has(slug)) continue
 
     // depth 0 keeps relations as ids, which is all the extractor needs and
@@ -67,6 +68,7 @@ const payload = await getPayload({
     }
 
     let collectionReferences = 0
+
     for (const doc of docs) {
       const count = await syncReferences({
         payload,
@@ -79,6 +81,7 @@ const payload = await getPayload({
         fields: collection.config.fields,
         blocks: payload.config.blocks,
       })
+
       collectionReferences += count
     }
 
@@ -107,6 +110,7 @@ const payload = await getPayload({
     })
 
     totalReferences += count
+
     if (count > 0) console.info(`${global.slug} (global): ${count} references`)
   }
 

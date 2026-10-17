@@ -62,11 +62,17 @@ export function generateSoftwareSourceCode(
   }
 
   if (data.description) softwareSourceCode.description = data.description
+
   if (data.url) softwareSourceCode.url = data.url
+
   if (data.codeRepository) softwareSourceCode.codeRepository = data.codeRepository
+
   if (data.programmingLanguage) softwareSourceCode.programmingLanguage = data.programmingLanguage
+
   if (data.codeSampleType) softwareSourceCode.codeSampleType = data.codeSampleType
+
   if (data.text) softwareSourceCode.text = data.text
+
   if (author) softwareSourceCode.author = author
 
   if (data.keywords && data.keywords.length > 0) {

@@ -20,10 +20,12 @@ export const FieldComponent: TextFieldServerComponent = async ({
 }: DescriptionFieldProps) => {
   const generateFunction = async () => {
     'use server'
+
     const pageUrl = generateContentURL({
       collection: collectionSlug,
       slug: get(data, slugPath),
     })
+
     return await fetchAnthropicMetaDescription(pageUrl)
   }
 

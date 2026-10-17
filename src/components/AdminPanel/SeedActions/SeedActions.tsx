@@ -95,25 +95,31 @@ export const SeedActions = ({ collectionSlug, collectionLabel }: SeedActionsProp
             id: jobId,
             description: `${data.current}/${data.total}`,
           })
+
           return
         case 'success': {
           clearFallbackTimeout()
+
           const summary = Object.entries(data.counts)
             .map(([label, count]) => `${count} ${label}`)
             .join(', ')
+
           toast.success(summary || 'Done.', {
             id: jobId,
           })
           setJobId(null)
           router.refresh()
+
           return
         }
+
         case 'error':
           clearFallbackTimeout()
           toast.error(data.message, {
             id: jobId,
           })
           setJobId(null)
+
           return
       }
     },

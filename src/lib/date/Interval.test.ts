@@ -77,6 +77,7 @@ describe('Interval', () => {
         new Interval('2026-01-01', '2026-01-10'),
         new Interval('2026-01-05', '2026-01-15'),
       ])
+
       expect(merged).toHaveLength(1)
       expect(merged[0].ISOStringEndDate).toBe('2026-01-15T00:00:00.000Z')
     })
@@ -86,6 +87,7 @@ describe('Interval', () => {
         new Interval('2026-01-01', '2026-01-10'),
         new Interval('2026-01-10', '2026-01-20'),
       ])
+
       expect(merged).toHaveLength(1)
     })
 
@@ -94,6 +96,7 @@ describe('Interval', () => {
         new Interval('2026-03-01', '2026-03-05'),
         new Interval('2026-01-01', '2026-01-05'),
       ])
+
       expect(merged).toHaveLength(2)
       expect(merged[0].ISOStringStartDate).toBe('2026-01-01T00:00:00.000Z')
     })

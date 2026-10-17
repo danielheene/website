@@ -69,6 +69,7 @@ export class Duration {
    */
   static fromString(duration: string): Duration {
     const milliseconds = timestring(duration, 'ms')
+
     if (!Number.isSafeInteger(milliseconds)) throw new DurationError(duration)
 
     return new Duration(milliseconds)
@@ -122,6 +123,7 @@ export class Duration {
    */
   public setSeconds(seconds: number): Duration {
     this.#duration.seconds = seconds
+
     return this
   }
 
@@ -133,6 +135,7 @@ export class Duration {
    */
   public setMinutes(minutes: number): Duration {
     this.#duration.minutes = minutes
+
     return this
   }
 
@@ -144,6 +147,7 @@ export class Duration {
    */
   public setHours(hours: number): Duration {
     this.#duration.hours = hours
+
     return this
   }
 
@@ -155,11 +159,13 @@ export class Duration {
    */
   public setDays(days: number): Duration {
     this.#duration.days = days
+
     return this
   }
 
   public addMilliseconds(milliseconds: number): Duration {
     this.#duration = this.#intervalFromMilliseconds(this.#milliseconds + milliseconds)
+
     return this
   }
 
@@ -167,6 +173,7 @@ export class Duration {
     this.#duration = this.#intervalFromMilliseconds(
       this.#milliseconds + secondsToMilliseconds(seconds),
     )
+
     return this
   }
 
@@ -174,16 +181,19 @@ export class Duration {
     this.#duration = this.#intervalFromMilliseconds(
       this.#milliseconds + minutesToMilliseconds(minutes),
     )
+
     return this
   }
 
   public addHours(hours: number): Duration {
     this.#duration = this.#intervalFromMilliseconds(this.#milliseconds + hoursToMilliseconds(hours))
+
     return this
   }
 
   public addDays(days: number): Duration {
     this.#duration = this.#intervalFromMilliseconds(this.#milliseconds + millisecondsInDay * days)
+
     return this
   }
 

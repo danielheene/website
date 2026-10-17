@@ -34,10 +34,15 @@ export type Bookmark =
     >
 
 export type DocumentHeader = z.infer<typeof documentHeaderSchema>
+
 export type IntroductionSection = z.infer<typeof introductionSectionSchema>
+
 export type LanguageSection = z.infer<typeof languageSectionSchema>
+
 export type SkillSection = z.infer<typeof skillSectionSchema>
+
 export type WorkExperienceSection = z.infer<typeof workExperienceSectionSchema>
 
 export type DocumentSection = z.infer<typeof documentSectionSchema>
+
 export type DocumentData = z.infer<typeof documentSchema>

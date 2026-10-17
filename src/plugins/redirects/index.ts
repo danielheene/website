@@ -30,6 +30,7 @@ const withSlugChangeRedirect = (collection: CollectionConfig): CollectionConfig 
       ...(collection.hooks?.afterChange ?? []),
       async ({ doc, previousDoc, operation, req, context }) => {
         if (context?.skipRedirects) return doc
+
         if (operation !== 'update') return doc
 
         const previousSlug = previousDoc?.slug
@@ -87,6 +88,7 @@ const withSlugChangeRedirect = (collection: CollectionConfig): CollectionConfig 
             data,
             req,
           })
+
           return doc
         }
 

@@ -32,6 +32,7 @@ export const Header = ({ queues, selectedQueue, onSelectQueue, onMoveQueue }: He
     }
 
     document.addEventListener('mousedown', handleClickOutside)
+
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [isPopupOpen])
 
@@ -43,10 +44,10 @@ export const Header = ({ queues, selectedQueue, onSelectQueue, onMoveQueue }: He
   return (
     <>
       <div className={cn(['flex flex-col', 'font-mono'])}>
-        <div className="text-xs md:text-sm lg:text-md text-muted-foreground">
+        <div className="lg:text-md text-xs text-muted-foreground md:text-sm">
           Scheduled Jobs Controls:
         </div>
-        <span className="text-md md:text-lg lg:text-xl font-medium leading-none">
+        <span className="text-md leading-none font-medium md:text-lg lg:text-xl">
           {selectedQueue ? startCase(selectedQueue) : ALL_QUEUES_LABEL}
         </span>
       </div>
@@ -92,9 +93,9 @@ export const Header = ({ queues, selectedQueue, onSelectQueue, onMoveQueue }: He
             <div
               role="listbox"
               className={cn([
-                'absolute right-0 top-full mt-1 z-10',
+                'absolute top-full right-0 z-10 mt-1',
                 'flex flex-col gap-1',
-                'bg-background border border-border p-2',
+                'border border-border bg-background p-2',
                 'min-w-full',
               ])}
             >

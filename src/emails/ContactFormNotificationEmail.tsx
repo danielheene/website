@@ -39,7 +39,7 @@ export const ContactFormNotificationEmail = ({
       contact form on {siteName}. Reply to this email to respond directly to {name}.
     </Text>
     <Section className="rounded-md border border-solid border-neutral-200 bg-neutral-50 p-4">
-      <Text className="m-0 mb-1 text-xs font-bold uppercase tracking-wide text-neutral-400">
+      <Text className="m-0 mb-1 text-xs font-bold tracking-wide text-neutral-400 uppercase">
         From
       </Text>
       <Text className="m-0 mb-4 text-sm text-neutral-900">
@@ -49,10 +49,10 @@ export const ContactFormNotificationEmail = ({
         </Link>
         &gt;
       </Text>
-      <Text className="m-0 mb-1 text-xs font-bold uppercase tracking-wide text-neutral-400">
+      <Text className="m-0 mb-1 text-xs font-bold tracking-wide text-neutral-400 uppercase">
         Message
       </Text>
-      <Text className="m-0 whitespace-pre-line text-sm text-neutral-900">{message}</Text>
+      <Text className="m-0 text-sm whitespace-pre-line text-neutral-900">{message}</Text>
     </Section>
     <Hr className="my-6 border-neutral-200" />
     <Text className="m-0 text-xs text-neutral-400">

@@ -29,7 +29,7 @@ export const ResumeDownloadButton = ({
     <Button
       variant="outline"
       className={cn(
-        'w-full uppercase bg-card text-card-foreground border-border font-mono px-4 py-2 h-auto',
+        'h-auto w-full border-border bg-card px-4 py-2 font-mono text-card-foreground uppercase',
         className,
       )}
       asChild
@@ -70,9 +70,9 @@ export const ResumeDownloadButton = ({
               d="m80.83 35.17-28-28A4 4 0 0 0 50 6H10a8 8 0 0 0-8 8v96a8 8 0 0 0 8 8h32v-8H10V14h32v24a8 8 0 0 0 8 8h24v16h8V38a4 4 0 0 0-1.17-2.83M50 15.66 72.34 38H50Z"
             />
           </svg>
-          <div className="h-10 flex flex-col justify-between text-card-foreground">
+          <div className="flex h-10 flex-col justify-between text-card-foreground">
             <span className="text-2xl leading-none font-medium tracking-tighter">{label}</span>
-            <span className="text-xs leading-none  opacity-80">{subline}</span>
+            <span className="text-xs leading-none opacity-80">{subline}</span>
           </div>
         </div>
       </Link>

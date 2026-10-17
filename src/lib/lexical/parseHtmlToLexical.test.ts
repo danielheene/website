@@ -13,6 +13,7 @@ const firstParagraph = (result: ReturnType<typeof parseHtmlToLexical>): MinimalN
   const root = result.root as unknown as {
     children: MinimalNode[]
   }
+
   return root.children[0]
 }
 

@@ -30,11 +30,13 @@ export const calculateJobProgress = (createdAt: string, waitUntil: string, now: 
   const nowMs = now.getTime()
 
   const totalMs = waitUntilMs - createdAtMs
+
   if (totalMs <= 0) {
     return 100
   }
 
   const elapsedMs = nowMs - createdAtMs
+
   return Math.min(100, Math.max(0, (elapsedMs / totalMs) * 100))
 }
 
@@ -58,23 +60,27 @@ export const ScheduledJobsWidgetClient = ({
             id,
           })
           router.refresh()
+
           return
         case 'queued':
           toast('Queued, the worker runs it shortly', {
             id,
           })
           router.refresh()
+
           return
         case 'cancelled':
           toast('Cancelled', {
             id,
           })
           router.refresh()
+
           return
         case 'error':
           toast.error(`${isCancelling ? 'Cancel failed' : 'Run failed'}: ${data.message}`, {
             id,
           })
+
           return
       }
     },
@@ -94,11 +100,13 @@ export const ScheduledJobsWidgetClient = ({
 
   useEffect(() => {
     const tick = setInterval(() => setNow(new Date()), TICK_INTERVAL_MS)
+
     return () => clearInterval(tick)
   }, [])
 
   useEffect(() => {
     const poll = setInterval(() => router.refresh(), POLL_INTERVAL_MS)
+
     return () => clearInterval(poll)
   }, [router])
 
@@ -123,22 +131,22 @@ export const ScheduledJobsWidgetClient = ({
   return (
     <div
       className={cn([
-        'bg-card border-border border flex flex-row justify-end items-center gap-4  px-4 pt-3 pb-4',
+        'flex flex-row items-center justify-end gap-4 border border-border bg-card px-4 pt-3 pb-4',
         'relative',
       ])}
     >
-      <div className={cn(['flex flex-col gap-1 mr-auto'])}>
-        <span className="text-lg leading-none font-mono font-medium">
+      <div className={cn(['mr-auto flex flex-col gap-1'])}>
+        <span className="font-mono text-lg leading-none font-medium">
           {taskSlug ?? workflowSlug}
         </span>
-        <span className="text-sm leading-none font-mono opacity-60">
+        <span className="font-mono text-sm leading-none opacity-60">
           {remainingLabel} [{format(waitUntil, 'p')}]
         </span>
       </div>
 
-      <div className="absolute left-0 bottom-0 right-0 h-1 w-full overflow-hidden  bg-white/10">
+      <div className="absolute inset-x-0 bottom-0 h-1 w-full overflow-hidden bg-white/10">
         <div
-          className="h-full  bg-primary-500 transition-[width] duration-1000 ease-linear"
+          className="h-full bg-primary-500 transition-[width] duration-1000 ease-linear"
           style={{
             width: `${progress}%`,
           }}

@@ -20,6 +20,7 @@ const fetchFeaturedTopics = async () => {
   const payload = await getPayload({
     config,
   })
+
   const { docs: topics } = await payload.find({
     collection: CollectionSlug.BlogTopics,
     limit: 0,
@@ -75,7 +76,7 @@ export const FeaturedTopics = async ({ currentSlug = '/' }: FeaturedTopicsProps)
           href={generateContentPath(CollectionSlug.BlogTopics, slug)}
           key={slug}
           className={cn([
-            'text-lg font-mono font-medium',
+            'font-mono text-lg font-medium',
             slug === currentSlug ? 'opacity-100' : 'opacity-50',
           ])}
         >

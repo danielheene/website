@@ -174,6 +174,7 @@ async function calculateEarliestPossibleScheduleTime(
 
   /* allow running the job immediately when none of the following cases matches  */
   let earliestPossible: Date = new Date()
+
   if (job?.completedAt && !job?.hasError) {
     /* if job is completed and has no error, change earliestPossible to timeoutBetweenJobs based on last completedAt */
     earliestPossible = addMilliseconds(new Date(job.completedAt), timeoutBetweenJobs)

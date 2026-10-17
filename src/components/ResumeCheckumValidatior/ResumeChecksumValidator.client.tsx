@@ -37,10 +37,12 @@ type FormState =
 export const ResumeChecksumValidatorClient = ({ searchChecksum }: ChecksumValidatorClientProps) => {
   const id = useId()
   const inputRef = useRef<HTMLInputElement>(null)
+
   const [{ state, result }, setFormState] = useState<FormState>({
     state: 'INITIAL',
     result: null,
   })
+
   const [hoverActive, setHoverActive] = useState(false)
   const [dragActive, setDragActive] = useState(false)
   const [fileName, setFileName] = useState<string | null>(null)
@@ -109,6 +111,7 @@ export const ResumeChecksumValidatorClient = ({ searchChecksum }: ChecksumValida
       state: 'INITIAL',
       result: null,
     })
+
     if (inputRef.current) inputRef.current.value = ''
   }, [])
 
@@ -131,9 +134,9 @@ export const ResumeChecksumValidatorClient = ({ searchChecksum }: ChecksumValida
               '[--dropzone-text-color:var(--color-primary)]',
               '[--dropzone-background-color:color-mix(in_oklch,var(--color-background),var(--color-primary)_15%)]',
             ],
-            'border-(--dropzone-border-color) text-(--dropzone-text-color) bg-(--dropzone-background-color)',
+            'border-(--dropzone-border-color) bg-(--dropzone-background-color) text-(--dropzone-text-color)',
             'group relative flex flex-col items-center justify-center gap-3 text-center',
-            'aspect-21-9 border-2 border-dashed transition-colors cursor-pointer',
+            'aspect-21-9 cursor-pointer border-2 border-dashed transition-colors',
           ])}
           onPointerEnter={() => setHoverActive(true)}
           onPointerOver={() => setHoverActive(true)}
@@ -158,7 +161,7 @@ export const ResumeChecksumValidatorClient = ({ searchChecksum }: ChecksumValida
             ])}
           />
           <div className="flex flex-col gap-1">
-            <span className="font-mono text-sm font-medium uppercase tracking-wide text-card-foreground">
+            <span className="font-mono text-sm font-medium tracking-wide text-card-foreground uppercase">
               {state === 'LOADING' ? 'Checking checksum…' : 'Drop a resume PDF here'}
             </span>
             <span className="text-xs text-muted-foreground">
@@ -225,7 +228,7 @@ export const ResumeChecksumValidatorClient = ({ searchChecksum }: ChecksumValida
           <button
             type="button"
             onClick={reset}
-            className="self-start text-xs uppercase tracking-wide text-muted-foreground underline underline-offset-4 hover:text-foreground"
+            className="self-start text-xs tracking-wide text-muted-foreground uppercase underline underline-offset-4 hover:text-foreground"
           >
             Check another file
           </button>

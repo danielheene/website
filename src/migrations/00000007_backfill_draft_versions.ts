@@ -35,6 +35,7 @@ export async function up({ payload, req }: MigrateUpArgs): Promise<void> {
     const versioned = await payload.db.versions[collection].distinct('parent', {
       latest: true,
     })
+
     const versionedIds = new Set(versioned.map(String))
 
     const { docs } = await payload.db.find<StoredDoc>({
@@ -43,6 +44,7 @@ export async function up({ payload, req }: MigrateUpArgs): Promise<void> {
       pagination: false,
       req,
     })
+
     const missing = docs.filter((doc) => !versionedIds.has(String(doc.id)))
 
     for (const doc of missing) {

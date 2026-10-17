@@ -73,6 +73,7 @@ export const parseCollection = (prefix: string, data: CollectionResponse): IconC
   // `mdi` files 2,059 of its 7,447 icons outside every category, so a
   // category-only listing would silently hide them
   const loose = (data.uncategorized ?? []).map(qualify)
+
   if (categories.length > 0 && loose.length > 0) {
     categories.push({
       label: 'Uncategorized',

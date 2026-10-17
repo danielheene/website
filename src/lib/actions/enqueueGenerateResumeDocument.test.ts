@@ -42,13 +42,17 @@ const queue = vi.fn(async (_args: QueueArgs) => ({
   id: 'job-1',
   waitUntil: new Date(),
 }))
+
 const find = vi.fn(async () => ({
   docs: [] as unknown[],
 }))
+
 const findGlobal = vi.fn(async () => SETTINGS)
+
 const count = vi.fn(async () => ({
   totalDocs: 0,
 }))
+
 const runByID = vi.fn(async () => ({}))
 const loggerError = vi.fn()
 

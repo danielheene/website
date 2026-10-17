@@ -55,11 +55,13 @@ export const Logo = ({
         width: 1060,
         height: 549,
       }
+
     if (variant === LogoVariant.Square || variant === LogoVariant.Initials)
       return {
         width: 1000,
         height: 1000,
       }
+
     return {
       width: 2296,
       height: 257,

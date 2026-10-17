@@ -23,6 +23,7 @@ import { useHeroSlideUploads } from './useHeroSlideUploads'
 const imageThumbnailValue = (doc: MediaImage) => ({
   url: doc.url,
 })
+
 const videoThumbnailValue = (doc: MediaVideo) => ({
   thumbnails: doc.thumbnails,
 })
@@ -32,6 +33,7 @@ const imageSubFieldState = (doc: MediaImage): FormState => {
     relationTo: 'images',
     value: doc.id,
   }
+
   return {
     slideType: {
       value: 'image',
@@ -51,6 +53,7 @@ const videoSubFieldState = (doc: MediaVideo): FormState => {
     relationTo: 'videos',
     value: doc.id,
   }
+
   return {
     slideType: {
       value: 'video',
@@ -103,11 +106,13 @@ export const useHeroSlideFieldEditor = (props: ArrayFieldClientProps) => {
   // to keep a populated `media.value`, so this is the real source of truth
   // for what each row's preview should show.
   const [thumbnailCache, setThumbnailCache] = useState<MediaThumbnailCache>({})
+
   const cacheThumbnail = useCallback((doc: MediaImage | MediaVideo, kind: 'image' | 'video') => {
     const value: MediaThumbnailCache[string] =
       kind === 'image'
         ? imageThumbnailValue(doc as MediaImage)
         : videoThumbnailValue(doc as MediaVideo)
+
     setThumbnailCache((prev) => ({
       ...prev,
       [doc.id]: value,
@@ -124,23 +129,30 @@ export const useHeroSlideFieldEditor = (props: ArrayFieldClientProps) => {
   const mediaByRow = useFormFields(([fields]) =>
     rows.map((_row, rowIndex) => fields?.[`${path}.${rowIndex}.media`]?.value),
   )
+
   const hydratedIds = useRef(new Set<string>())
   useEffect(() => {
     for (const value of mediaByRow) {
       if (!value || typeof value !== 'object') continue
+
       const { relationTo, value: mediaValue } = value as {
         relationTo?: string
         value?: unknown
       }
+
       if (typeof mediaValue !== 'string') continue
       const id = mediaValue
+
       if (hydratedIds.current.has(id) || thumbnailCache[id]) continue
+
       if (relationTo !== 'images' && relationTo !== 'videos') continue
 
       hydratedIds.current.add(id)
       const kind = relationTo === 'images' ? 'image' : 'video'
+
       const collection =
         relationTo === 'images' ? CollectionSlug.MediaImages : CollectionSlug.MediaVideos
+
       const depth = kind === 'video' ? 1 : 0
 
       fetch(`/api/${collection}/${id}?depth=${depth}`)
@@ -164,6 +176,7 @@ export const useHeroSlideFieldEditor = (props: ArrayFieldClientProps) => {
       }),
     [addFieldRow, path, schemaPath],
   )
+
   const replaceRow = useCallback(
     (args: { rowIndex: number; subFieldState: FormState }) =>
       replaceFieldRow({
@@ -173,6 +186,7 @@ export const useHeroSlideFieldEditor = (props: ArrayFieldClientProps) => {
       }),
     [replaceFieldRow, path, schemaPath],
   )
+
   const removeRow = useCallback(
     (args: { rowIndex: number }) =>
       removeFieldRow({
@@ -181,6 +195,7 @@ export const useHeroSlideFieldEditor = (props: ArrayFieldClientProps) => {
       }),
     [removeFieldRow, path],
   )
+
   const moveRow = useCallback(
     (fromIndex: number, toIndex: number) =>
       moveFieldRow({
@@ -209,6 +224,7 @@ export const useHeroSlideFieldEditor = (props: ArrayFieldClientProps) => {
     },
     [addRow, cacheThumbnail],
   )
+
   const insertVideo = useCallback(
     (rowIndex: number, doc: MediaVideo) => {
       cacheThumbnail(doc, 'video')
@@ -219,6 +235,7 @@ export const useHeroSlideFieldEditor = (props: ArrayFieldClientProps) => {
     },
     [addRow, cacheThumbnail],
   )
+
   const insertShader = useCallback(
     (rowIndex: number, key: ShaderPresetKey) =>
       addRow({
@@ -227,6 +244,7 @@ export const useHeroSlideFieldEditor = (props: ArrayFieldClientProps) => {
       }),
     [addRow],
   )
+
   const replaceWithImage = useCallback(
     (rowIndex: number, doc: MediaImage) => {
       cacheThumbnail(doc, 'image')
@@ -237,6 +255,7 @@ export const useHeroSlideFieldEditor = (props: ArrayFieldClientProps) => {
     },
     [replaceRow, cacheThumbnail],
   )
+
   const replaceWithVideo = useCallback(
     (rowIndex: number, doc: MediaVideo) => {
       cacheThumbnail(doc, 'video')
@@ -247,6 +266,7 @@ export const useHeroSlideFieldEditor = (props: ArrayFieldClientProps) => {
     },
     [replaceRow, cacheThumbnail],
   )
+
   const replaceWithShader = useCallback(
     (rowIndex: number, key: ShaderPresetKey) =>
       replaceRow({

@@ -43,6 +43,7 @@ export const useIconCollection = ({
   const [collection, setCollection] = useState<IconCollection>(() =>
     prefix ? (cache.get(prefix) ?? EMPTY_COLLECTION) : EMPTY_COLLECTION,
   )
+
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -51,6 +52,7 @@ export const useIconCollection = ({
       setCollection(EMPTY_COLLECTION)
       setLoading(false)
       setError(null)
+
       return
     }
 
@@ -58,15 +60,18 @@ export const useIconCollection = ({
     // a search, and dropping the names would make the "showing N of M" count
     // and the browse grid flash empty on every keystroke.
     const cached = cache.get(prefix)
+
     if (cached) {
       setCollection(cached)
       setLoading(false)
       setError(null)
+
       return
     }
 
     if (!enabled) {
       setLoading(false)
+
       return
     }
 
@@ -80,6 +85,7 @@ export const useIconCollection = ({
         const response = await fetch(`/api/icons/collection?prefix=${encodeURIComponent(prefix)}`, {
           signal: controller.signal,
         })
+
         if (!response.ok) throw new Error(`Icon collection failed (HTTP ${response.status})`)
 
         const resolved = (await response.json()) as IconCollection

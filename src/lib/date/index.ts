@@ -1,4 +1,5 @@
 export * from './Duration'
+
 export * from './Interval'
 
 /**
@@ -14,11 +15,13 @@ export const getTimeZoneOffsetMinutes = (
       timeZone: 'UTC',
     }),
   )
+
   const tzDate = new Date(
     date.toLocaleString('en-US', {
       timeZone,
     }),
   )
+
   return (tzDate.getTime() - utcDate.getTime()) / 6e4
 }
 
@@ -39,5 +42,6 @@ export const getTimeZoneOffsetMillis = (
  */
 export const getLocalISOString = (timeZone: string = 'UTC', date: Date = new Date()) => {
   const offset = getTimeZoneOffsetMillis(timeZone, date)
+
   return new Date(Date.now() + offset).toISOString().slice(0, -1)
 }

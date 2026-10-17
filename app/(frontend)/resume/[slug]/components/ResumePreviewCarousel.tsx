@@ -64,9 +64,9 @@ export const ResumePreviewCarousel = ({ items, className }: ResumePreviewCarouse
   }, [emblaApi])
 
   return (
-    <div className={cn('relative h-full w-full overflow-hidden', className)}>
-      <div className="h-full w-full" ref={emblaRef}>
-        <div className="flex h-full w-full">
+    <div className={cn('relative size-full overflow-hidden', className)}>
+      <div className="size-full" ref={emblaRef}>
+        <div className="flex size-full">
           {items.map((item, index) => (
             <HeroSlide
               index={index}
@@ -91,7 +91,7 @@ export const ResumePreviewCarousel = ({ items, className }: ResumePreviewCarouse
               aria-current={index === selected}
               onClick={() => emblaApi?.scrollTo(index)}
               className={cn([
-                'h-2 w-2 rounded-full transition-colors',
+                'size-2 rounded-full transition-colors',
                 index === selected ? 'bg-primary' : 'bg-primary/30 hover:bg-primary/50',
               ])}
             />

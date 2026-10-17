@@ -11,6 +11,7 @@ export const ResumeDownloadsBlockRenderer = async ({
   caption,
 }: ResumeDownloadsBlock) => {
   const latest = await fetchLatestResumeDocument()
+
   if (!latest) return null
 
   const { document_en, document_de, thumbnails_en, thumbnails_de } = latest

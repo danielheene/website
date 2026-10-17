@@ -81,6 +81,7 @@ export const UmamiWidgetClient = ({
   const effectiveStartDate = startDateFromProps
     ? parseISO(startDateFromProps)
     : parseISO(minDateFromProps)
+
   const effectiveEndDate = parseISO(endDateFromProps)
 
   // Seed with the server-provided window so all four section fetches fire on
@@ -100,6 +101,7 @@ export const UmamiWidgetClient = ({
 
   const [tempStartDate, setTempStartDate] = useState<Date>(effectiveStartDate)
   const [tempEndDate, setTempEndDate] = useState<Date>(effectiveEndDate)
+
   const [startDate, endDate] = selectedInterval
     ? selectedInterval.value
     : [effectiveStartDate, effectiveEndDate]
@@ -109,6 +111,7 @@ export const UmamiWidgetClient = ({
 
   const umamiUrl = useMemo(() => {
     const umamiPath = `${teamId ? `/teams/${teamId}` : ''}/websites/${id}/`
+
     return umamiBaseUrl ? new URL(umamiPath, umamiBaseUrl).toString() : ''
   }, [id, teamId, umamiBaseUrl])
 
@@ -122,6 +125,7 @@ export const UmamiWidgetClient = ({
     if (tempStartDate && tempEndDate) {
       setSelectedInterval(tempStartDate, tempEndDate)
     }
+
     closeModal(modalSlug)
   }, [closeModal, setSelectedInterval, tempEndDate, tempStartDate])
 
@@ -149,7 +153,7 @@ export const UmamiWidgetClient = ({
 
   return (
     <div className="grid grid-cols-12 gap-4 pb-8">
-      <div className="col-span-12 flex flex-row justify-between items-center py-4">
+      <div className="col-span-12 flex flex-row items-center justify-between py-4">
         <Header
           domain={domain}
           name={name}

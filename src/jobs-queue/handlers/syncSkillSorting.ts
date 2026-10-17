@@ -39,7 +39,9 @@ const mergeSkillEntries = (
 
   for (const entry of prevEntries) {
     const skillId = String(entry.id)
+
     if (seen.has(skillId)) continue
+
     if (!publishedSkillIds.has(skillId)) continue
     seen.add(skillId)
     merged.push({
@@ -50,6 +52,7 @@ const mergeSkillEntries = (
 
   for (const { id } of currentTypeSkills) {
     const skillId = String(id)
+
     if (seen.has(skillId)) continue
     seen.add(skillId)
     merged.push({
@@ -75,6 +78,7 @@ const run: TaskHandler<TaskSlug['SyncSkillSorting']> = async ({ req: { payload }
   const skillSorting = skillSortingKeys.reduce((acc, configKey: keyof SkillSorting) => {
     if (configKey === 'skillTypeSortable') {
       acc[configKey] = mergeSkillTypes(get(previousSkillSorting, configKey, []))
+
       return acc
     }
 

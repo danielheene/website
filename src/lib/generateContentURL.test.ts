@@ -37,9 +37,11 @@ describe('generateContentURL', () => {
 
   it('appends params from URLSearchParams', () => {
     vi.stubEnv('SERVER_URL', 'https://example.test')
+
     const params = new URLSearchParams({
       q: 'x',
     })
+
     expect(
       generateContentURL({
         path: '/p',

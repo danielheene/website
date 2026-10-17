@@ -16,6 +16,7 @@ const run: TaskHandler<TaskSlug['GenerateResumeFile']> = async ({ input, req: { 
   const arrayBufferLike = await renderToBuffer(
     <ResumeDocument {...(resumeDocumentData as DocumentData)} />,
   )
+
   const fileSizeBytes = Buffer.byteLength(arrayBufferLike)
 
   payload.logger.info(`Uploading resume file: ${filename}`)

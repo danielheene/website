@@ -48,6 +48,7 @@ describe('seedPages', () => {
           id: 'image-1',
         }
       }
+
       return {
         id: 'page-1',
       }
@@ -75,7 +76,9 @@ describe('seedPages', () => {
           id: 'image-1',
         }
       }
+
       heroSlides.push(data.hero.slides)
+
       return {
         id: 'page-1',
       }
@@ -94,6 +97,7 @@ describe('seedPages', () => {
           }
         ).slideType === 'shader',
     )
+
     const imageSlides = heroSlides.filter(
       ([slide]) =>
         (
@@ -114,6 +118,7 @@ describe('seedPages', () => {
         },
       ])
     }
+
     for (const slides of imageSlides) {
       expect(slides).toEqual([
         {
@@ -142,6 +147,7 @@ describe('seedPages', () => {
           ],
         }
       }
+
       return {
         docs: [],
       }
@@ -184,6 +190,7 @@ describe('seedPages', () => {
     })
     create.mockImplementation(async ({ collection, data }) => {
       expect(data.generatorFlags).toEqual(['seeded-dummy'])
+
       return {
         id: collection === 'images' ? 'image-1' : 'page-1',
       }
@@ -205,10 +212,12 @@ describe('seedPages', () => {
         expect(
           data.content.some((block: { blockType: string }) => block.blockType === 'RichTextBlock'),
         ).toBe(true)
+
         for (const block of data.content) {
           expect(['RichTextBlock', 'CodeBlock', 'LinkGroupBlock']).toContain(block.blockType)
         }
       }
+
       return {
         id: collection === 'images' ? 'image-1' : 'page-1',
       }
@@ -226,6 +235,7 @@ describe('seedPages', () => {
       if (collection === 'pages') {
         titles.push(data.title)
       }
+
       return {
         id: collection === 'images' ? 'image-1' : 'page-1',
       }
@@ -262,6 +272,7 @@ describe('cleanPages', () => {
           ],
         }
       }
+
       if (collection === 'images') {
         return {
           docs: [
@@ -272,6 +283,7 @@ describe('cleanPages', () => {
           ],
         }
       }
+
       return {
         docs: [],
       }
@@ -335,6 +347,7 @@ describe('cleanPages', () => {
           ],
         }
       }
+
       if (collection === 'images') {
         // Simulates a real, hand-uploaded image the seeded page's hero was
         // manually edited to point at: no seeded-dummy flag, so the live
@@ -343,6 +356,7 @@ describe('cleanPages', () => {
           docs: [],
         }
       }
+
       return {
         docs: [],
       }
@@ -374,6 +388,7 @@ describe('cleanPages', () => {
           ],
         }
       }
+
       return {
         docs: [],
       }

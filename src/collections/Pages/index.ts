@@ -43,6 +43,7 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
     create: authenticated,
     delete: async ({ req: { user } }: AccessArgs<Page>) => {
       if (!user) return false
+
       return {
         protected: {
           not_equals: true,

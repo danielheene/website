@@ -16,6 +16,7 @@ export const generateMeta = async ({ doc }: GenerateMetaArgs): Promise<Metadata>
   const {
     general: { description, category, siteName },
   } = await fetchSiteSettingsCached()
+
   const { name, url } = await fetchGlobalUserSettingsCached()
 
   const title = doc?.meta?.title || doc?.title

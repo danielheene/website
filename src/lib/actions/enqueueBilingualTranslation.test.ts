@@ -23,8 +23,10 @@ import { enqueueBilingualTranslation } from './enqueueBilingualTranslation'
 const queueMock = vi.fn(async () => ({
   id: 'job-1',
 }))
+
 const runByIDMock = vi.fn(async () => ({}))
 const loggerErrorMock = vi.fn()
+
 const authMock = vi.fn(async () => ({
   user: {
     id: 'user-1',

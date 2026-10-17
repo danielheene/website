@@ -23,10 +23,12 @@ export const generateExperienceInterval = ({
       endDate,
     })
   }
+
   if (startDate && !endDate) {
     return translate(locale, 'interval.ongoing', {
       startDate,
     })
   }
+
   return ''
 }
