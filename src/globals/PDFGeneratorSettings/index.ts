@@ -15,8 +15,6 @@ import { revalidateDocument } from './hooks/revalidateDocument'
 import { sanitizeSkillSorting } from './hooks/sanitizeSkillSorting'
 import { skillSortingKeys } from './skillSorting'
 
-const previewCustomId = UNSAFE_generateResumeId()
-
 export { skillSortingKeys, skillTypeSortables } from './skillSorting'
 
 export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings']> = {
@@ -64,9 +62,9 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
           overrides: {
             required: true,
           },
-          data: {
-            customId: previewCustomId,
-          },
+          data: () => ({
+            customId: UNSAFE_generateResumeId(),
+          }),
           anntotation: {
             label: 'Custom Data',
             entries: {
@@ -100,9 +98,9 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
           overrides: {
             required: true,
           },
-          data: {
-            customId: previewCustomId,
-          },
+          data: () => ({
+            customId: UNSAFE_generateResumeId(),
+          }),
           anntotation: {
             label: 'Custom Data',
             entries: {

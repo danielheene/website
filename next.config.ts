@@ -318,5 +318,21 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
     release: {
       name: sentryRelease,
     },
+
+    /**
+     * @sentry/nextjs 11.1.0's Turbopack support for build-time ("orchestrion")
+     * auto-instrumentation never registers the resolve-alias Webpack gets for
+     * its injected runtime snippet (`@sentry/server-utils`/
+     * `@sentry/server-runtime-injection`) — only `constructTurbopackConfig`'s
+     * loader rule is wired up, with no Turbopack-side equivalent of
+     * `sentryOrchestrionWebpackPlugin`'s `compiler.options.resolve.alias`.
+     * The result is a content-hashed `require()` call baked into
+     * `instrumentation.js` (e.g. `@sentry/server-runtime-injection-<hash>/register`)
+     * that nothing ever resolves, crashing the server on every boot. Disabling
+     * it here skips that broken codepath entirely; the manual integrations in
+     * instrumentation.ts (redisIntegration, mongooseIntegration, etc.) are
+     * unaffected, since those don't go through orchestrion.
+     */
+    buildTimeInstrumentation: false,
   })
 }
