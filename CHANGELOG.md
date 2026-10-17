@@ -1,3 +1,10 @@
+## [1.15.1](https://github.com/danielheene/website/compare/v1.15.0...v1.15.1) (2026-10-17)
+
+
+### Bug Fixes
+
+* **sentry:** disable Turbopack orchestrion instrumentation to fix boot crash ([#115](https://github.com/danielheene/website/issues/115)) ([8028fc9](https://github.com/danielheene/website/commit/8028fc9d2067aa8e61a6b52ee91b27572834764f))
+
 # [1.15.0](https://github.com/danielheene/website/compare/v1.14.0...v1.15.0) (2026-10-17)
 
 
