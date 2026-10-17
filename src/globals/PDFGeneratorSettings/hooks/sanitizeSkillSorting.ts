@@ -13,7 +13,7 @@ import {
   SkillTypeSortable,
 } from '@/types/payload'
 
-import { skillSortingKeys, skillTypeSortables } from '../index'
+import { skillSortingKeys, skillTypeSortables } from '../skillSorting'
 
 /**
  * Sanitizes and synchronizes skill sorting configuration by merging saved entries with current skills.
