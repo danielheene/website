@@ -1,3 +1,10 @@
+## [1.15.2](https://github.com/danielheene/website/compare/v1.15.1...v1.15.2) (2026-10-23)
+
+
+### Bug Fixes
+
+* **sentry:** filter Sentry's default server externals to avoid broken orchestrion requires ([#116](https://github.com/danielheene/website/issues/116)) ([0bb1044](https://github.com/danielheene/website/commit/0bb10440f5d7ffc1134875d86e82286ca5523ef8))
+
 ## [1.15.1](https://github.com/danielheene/website/compare/v1.15.0...v1.15.1) (2026-10-17)
 
 
