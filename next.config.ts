@@ -304,7 +304,7 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
     process.env.SENTRY_AUTH_TOKEN && process.env.SENTRY_ORG && process.env.SENTRY_PROJECT,
   )
 
-  return withSentryConfig(configWithPayload, {
+  const configWithSentry = withSentryConfig(configWithPayload, {
     org: process.env.SENTRY_ORG,
     project: process.env.SENTRY_PROJECT,
     authToken: process.env.SENTRY_AUTH_TOKEN,
@@ -335,4 +335,51 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
      */
     buildTimeInstrumentation: false,
   })
+
+  /**
+   * `withSentryConfig` unconditionally appends its own hardcoded list of
+   * "instrumentable" packages (dataloader, mongoose, mongodb, redis,
+   * graphql, ...; see `DEFAULT_SERVER_EXTERNAL_PACKAGES` in
+   * `@sentry/nextjs/build/cjs/config/withSentryConfig/constants.js`, not a
+   * public export) to `serverExternalPackages`, regardless of
+   * `buildTimeInstrumentation: false` above. Marking those packages external
+   * is only safe when orchestrion's runtime-injection externals are added
+   * alongside them, which only happens when `buildTimeInstrumentation` is
+   * truthy. With it `false`, Turbopack still rewrites some of those
+   * externalized requires (e.g. `dataloader`) into unresolvable
+   * content-hashed module ids in `instrumentation.js`, crashing the server
+   * on boot the same way the Sentry runtime-injection package did. Filtering
+   * Sentry's additions back out of `serverExternalPackages` (keeping only
+   * what we declared above) avoids the broken codepath entirely.
+   */
+  const sentryDefaultServerExternalPackages = new Set([
+    'amqplib',
+    'connect',
+    'dataloader',
+    'express',
+    'generic-pool',
+    'graphql',
+    '@hapi/hapi',
+    'ioredis',
+    'kafkajs',
+    'koa',
+    'lru-memoizer',
+    'mongodb',
+    'mongoose',
+    'mysql',
+    'mysql2',
+    'knex',
+    'pg',
+    'pg-pool',
+    '@node-redis/client',
+    '@redis/client',
+    'redis',
+    'tedious',
+  ])
+
+  configWithSentry.serverExternalPackages = configWithSentry.serverExternalPackages?.filter(
+    (pkg: string) => !sentryDefaultServerExternalPackages.has(pkg),
+  )
+
+  return configWithSentry
 }
