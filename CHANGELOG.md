@@ -4,6 +4,14 @@
 ### Bug Fixes
 
 * **sentry:** filter Sentry's default server externals to avoid broken orchestrion requires ([fbfabdd](https://github.com/danielheene/website/commit/fbfabdd7632729327a504056013c54bded702c10))
+* **sentry:** remove withSentryConfig, it's unusable on Turbopack ([#117](https://github.com/danielheene/website/issues/117)) ([4f4f903](https://github.com/danielheene/website/commit/4f4f903eef0250aec6b9562cb87842c8eb40baaa))
+
+## [1.15.2-rc.1](https://github.com/danielheene/website/compare/v1.15.1...v1.15.2-rc.1) (2026-10-23)
+
+
+### Bug Fixes
+
+* **sentry:** filter Sentry's default server externals to avoid broken orchestrion requires ([fbfabdd](https://github.com/danielheene/website/commit/fbfabdd7632729327a504056013c54bded702c10))
 
 ## [1.15.1](https://github.com/danielheene/website/compare/v1.15.0...v1.15.1) (2026-10-17)
 
