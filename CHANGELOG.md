@@ -1,3 +1,10 @@
+## [1.15.2-rc.1](https://github.com/danielheene/website/compare/v1.15.1...v1.15.2-rc.1) (2026-10-23)
+
+
+### Bug Fixes
+
+* **sentry:** filter Sentry's default server externals to avoid broken orchestrion requires ([fbfabdd](https://github.com/danielheene/website/commit/fbfabdd7632729327a504056013c54bded702c10))
+
 ## [1.15.1](https://github.com/danielheene/website/compare/v1.15.0...v1.15.1) (2026-10-17)
 
 
