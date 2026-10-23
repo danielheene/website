@@ -1,3 +1,10 @@
+## [1.15.3](https://github.com/danielheene/website/compare/v1.15.2...v1.15.3) (2026-10-23)
+
+
+### Bug Fixes
+
+* **sentry:** remove withSentryConfig, it's unusable on Turbopack ([#117](https://github.com/danielheene/website/issues/117)) ([be80c6d](https://github.com/danielheene/website/commit/be80c6d65a09876a41bd992752007d0e6e0629e1))
+
 ## [1.15.2](https://github.com/danielheene/website/compare/v1.15.1...v1.15.2) (2026-10-23)
 
 
