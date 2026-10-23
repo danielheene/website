@@ -4,7 +4,6 @@ import { NextConfig } from 'next'
 import { PHASE_DEVELOPMENT_SERVER } from 'next/constants'
 import { withPayload } from '@payloadcms/next/withPayload'
 
-import { withSentryConfig } from '@sentry/nextjs/config'
 import z from 'zod'
 
 import { envSchema } from '@/types/environment'
@@ -113,6 +112,19 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
     process.stderr.write(`__DEV_TUNNEL_URL__${process.env.SERVER_URL}\n`)
   }
 
+  const serverExternalPackages = [
+    // WASM decoder must not be inlined by Turbopack (invalid octal escapes
+    // in the generated template string break the server chunk)
+    'mediabunny',
+    '@mediabunny/server',
+    '@react-pdf/renderer',
+    'svgo',
+    'pdf-parse',
+    'node-av',
+    '@takumi-rs/core',
+    '@napi-rs/canvas',
+  ]
+
   const nextConfig: NextConfig = {
     poweredByHeader: false,
     productionBrowserSourceMaps: false,
@@ -184,18 +196,7 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
       browserToTerminal: 'error',
     },
 
-    serverExternalPackages: [
-      // WASM decoder must not be inlined by Turbopack (invalid octal escapes
-      // in the generated template string break the server chunk)
-      'mediabunny',
-      '@mediabunny/server',
-      '@react-pdf/renderer',
-      'svgo',
-      'pdf-parse',
-      'node-av',
-      '@takumi-rs/core',
-      '@napi-rs/canvas',
-    ],
+    serverExternalPackages,
 
     turbopack: {
       resolveExtensions: [
@@ -296,90 +297,20 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
   })
 
   /**
-   * Source maps are only uploaded when an auth token is present, so local and
-   * CI builds without Sentry credentials behave exactly as before. Without the
-   * upload, production stack traces stay minified but error capture still works.
+   * `withSentryConfig`'s Turbopack build-time support is what's unusable
+   * here: even with `buildTimeInstrumentation: false`, it unconditionally
+   * appends packages to `serverExternalPackages` for its auto-instrumentation
+   * (a hardcoded, non-exhaustive list — `@sentry/server-runtime-injection`,
+   * `dataloader`, `pino`, ... have each in turn come back as unresolvable
+   * content-hashed `require()` calls baked into `instrumentation.js`,
+   * crashing the server on every boot), and there is no option that
+   * disables this on Turbopack (`webpack.disableSentryConfig` only applies
+   * to webpack builds). Error capture doesn't need any of this — it comes
+   * from the manual `Sentry.init(...)` in `instrumentation.ts`
+   * (redisIntegration, mongooseIntegration, etc.), which runs independently
+   * at request time. Skipping `withSentryConfig` means production stack
+   * traces stay minified (no source map upload), but that's a worthwhile
+   * trade for a server that reliably boots.
    */
-  const uploadSourceMaps = Boolean(
-    process.env.SENTRY_AUTH_TOKEN && process.env.SENTRY_ORG && process.env.SENTRY_PROJECT,
-  )
-
-  const configWithSentry = withSentryConfig(configWithPayload, {
-    org: process.env.SENTRY_ORG,
-    project: process.env.SENTRY_PROJECT,
-    authToken: process.env.SENTRY_AUTH_TOKEN,
-
-    silent: !process.env.CI,
-    sourcemaps: {
-      disable: !uploadSourceMaps,
-      deleteSourcemapsAfterUpload: true,
-    },
-
-    release: {
-      name: sentryRelease,
-    },
-
-    /**
-     * @sentry/nextjs 11.1.0's Turbopack support for build-time ("orchestrion")
-     * auto-instrumentation never registers the resolve-alias Webpack gets for
-     * its injected runtime snippet (`@sentry/server-utils`/
-     * `@sentry/server-runtime-injection`) — only `constructTurbopackConfig`'s
-     * loader rule is wired up, with no Turbopack-side equivalent of
-     * `sentryOrchestrionWebpackPlugin`'s `compiler.options.resolve.alias`.
-     * The result is a content-hashed `require()` call baked into
-     * `instrumentation.js` (e.g. `@sentry/server-runtime-injection-<hash>/register`)
-     * that nothing ever resolves, crashing the server on every boot. Disabling
-     * it here skips that broken codepath entirely; the manual integrations in
-     * instrumentation.ts (redisIntegration, mongooseIntegration, etc.) are
-     * unaffected, since those don't go through orchestrion.
-     */
-    buildTimeInstrumentation: false,
-  })
-
-  /**
-   * `withSentryConfig` unconditionally appends its own hardcoded list of
-   * "instrumentable" packages (dataloader, mongoose, mongodb, redis,
-   * graphql, ...; see `DEFAULT_SERVER_EXTERNAL_PACKAGES` in
-   * `@sentry/nextjs/build/cjs/config/withSentryConfig/constants.js`, not a
-   * public export) to `serverExternalPackages`, regardless of
-   * `buildTimeInstrumentation: false` above. Marking those packages external
-   * is only safe when orchestrion's runtime-injection externals are added
-   * alongside them, which only happens when `buildTimeInstrumentation` is
-   * truthy. With it `false`, Turbopack still rewrites some of those
-   * externalized requires (e.g. `dataloader`) into unresolvable
-   * content-hashed module ids in `instrumentation.js`, crashing the server
-   * on boot the same way the Sentry runtime-injection package did. Filtering
-   * Sentry's additions back out of `serverExternalPackages` (keeping only
-   * what we declared above) avoids the broken codepath entirely.
-   */
-  const sentryDefaultServerExternalPackages = new Set([
-    'amqplib',
-    'connect',
-    'dataloader',
-    'express',
-    'generic-pool',
-    'graphql',
-    '@hapi/hapi',
-    'ioredis',
-    'kafkajs',
-    'koa',
-    'lru-memoizer',
-    'mongodb',
-    'mongoose',
-    'mysql',
-    'mysql2',
-    'knex',
-    'pg',
-    'pg-pool',
-    '@node-redis/client',
-    '@redis/client',
-    'redis',
-    'tedious',
-  ])
-
-  configWithSentry.serverExternalPackages = configWithSentry.serverExternalPackages?.filter(
-    (pkg: string) => !sentryDefaultServerExternalPackages.has(pkg),
-  )
-
-  return configWithSentry
+  return configWithPayload
 }
