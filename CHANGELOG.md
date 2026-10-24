@@ -1,3 +1,10 @@
+## [1.15.2-rc.2](https://github.com/danielheene/website/compare/v1.15.2-rc.1...v1.15.2-rc.2) (2026-10-24)
+
+
+### Bug Fixes
+
+* **sentry:** disable Sentry's default integrations, they crash the server under Turbopack ([#118](https://github.com/danielheene/website/issues/118)) ([dced5bb](https://github.com/danielheene/website/commit/dced5bbe979c962beb2dfc03d27ac25ce68f41ff))
+
 ## [1.15.2-rc.1](https://github.com/danielheene/website/compare/v1.15.1...v1.15.2-rc.1) (2026-10-23)
 
 
