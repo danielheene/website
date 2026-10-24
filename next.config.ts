@@ -136,9 +136,6 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
     reactStrictMode: true,
     cacheComponents: true,
 
-    // The web image contains only .next/standalone (see scripts/assemble-images.mjs).
-    output: 'standalone',
-
     compiler: {
       define: {},
       defineServer: {},
