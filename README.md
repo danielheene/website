@@ -373,19 +373,18 @@ bun run seed:pages:clean     # Removes seeded pages
 
 ## CI / CD & Deployment
 
-Everything is built in CI; Docker images only `COPY` finished output (no package manager, installs or builds inside an image). The checks live in `.github/workflows/ci.yml` and are reused by pull requests (`lint-and-test.yml`) and pushes (`build-and-deploy.yml`).
+Everything is built in CI; Docker images only `COPY` finished output (no package manager, installs or builds inside an image). The checks live in `.github/workflows/lint-and-test.yml`; branch protection on `main`/`develop` requires them to pass before a PR can merge, so pushes (`build-and-deploy.yml`) do not re-run them.
 
-- **`ci.yml`** (pull requests and pushes):
+- **`lint-and-test.yml`** (pull requests only):
   1. **Lint**: `commitlint` (PRs), `oxlint` + `oxfmt --check`, `syncpack`, a check that the committed generated files match `bun run generate`, and `actionlint`.
-  2. **Unit Tests**: `vitest run --coverage`.
-  3. **Compile**: `next build --experimental-build-mode=compile` with `.env.test` values. It needs no database and must not inline any environment-specific value; `scripts/check-env-leak.mjs` fails the job if a `.env.test` value ends up in `.next`.
-  4. **E2E** (environment `Testing`): resets the shared Testing services (Mongo and Redis rebuilt through Dokploy, S3 bucket emptied; `scripts/reset-test-services.mjs`), migrates, seeds, runs `next build --experimental-build-mode=generate` (prerender/PPR), assembles `out/web` and runs Playwright against `node out/web/server.js`. Forks and dependabot cannot read the Testing secrets and use local containers (`docker compose`) instead.
+  2. **Semgrep**: static security analysis (Node.js sinks, TypeScript/React patterns, hardcoded secrets).
+  3. **Unit Tests**: `vitest run --coverage`.
+  4. **E2E** (environment `Testing`): resets the shared Testing services (Mongo and Redis rebuilt through Dokploy, S3 bucket emptied; `scripts/reset-test-services.mjs`), migrates, seeds, runs a single `next build` against `.env.test`, assembles `out/web` and runs Playwright against `node out/web/server.js`. Forks and dependabot cannot read the Testing secrets and use local containers (`docker compose`) instead.
 - **Pushes to `develop` / `main`** (`build-and-deploy.yml`):
   1. **Semantic Versioning**: semver bump and tag/changelog via `semantic-release`. `main` cuts releases (`vX.Y.Z`, images also tagged `latest`), `develop` cuts release candidates (`vX.Y.Z-rc.N`, images also tagged `edge`). After a `main` release, `develop` is fast-forwarded to `main` when it has no commits of its own; otherwise it has to be brought up to date by hand, since `develop` only cuts release candidates while it contains every `main` release.
-  2. **CI**: the jobs above.
-  3. **Deploy** (environment `Production` on `main`, `Development` on `develop`): downloads the tested compile, runs `bun run migrate` against the target database, runs `--experimental-build-mode=generate` with that environment's values, assembles `out/{web,worker,storybook}` (`scripts/assemble-images.mjs`), builds the COPY-only images (`app`, `worker`, `storybook` in `Dockerfile`) for `linux/amd64`, pushes them to `ghcr.io/danielheene/website/*` and triggers the Dokploy redeploy webhooks.
+  2. **Deploy** (environment `Production` on `main`, `Development` on `develop`): runs `bun run migrate` against the target database, runs a single `next build` with that environment's real values, assembles `out/{web,worker,storybook}` (`scripts/assemble-images.mjs`), builds the COPY-only images (`app`, `worker`, `storybook` in `Dockerfile`) for `linux/amd64` without pushing, starts each one as a real container and polls its health endpoint, then pushes the verified images to `ghcr.io/danielheene/website/*` and triggers the Dokploy redeploy webhooks. A failed boot-check stops the job before anything reaches the registry.
 
-Environment-specific values the browser needs (site URL, status page, Umami, Sentry DSN/environment) are read at runtime through `src/lib/runtimeConfig`, never through static `process.env.NEXT_PUBLIC_*` references or `next.config.ts` `env`, so one compile can be deployed to any environment.
+The push-triggered deploy build also uploads source maps to the self-hosted Rustrak Sentry backend via a standalone `sentry-cli` step; the PR-time build does not, since it never ships and there'd be no deployed release to attach them to. See AGENTS.md's "Observability" note for why this isn't done through `withSentryConfig`.
 
 ---
 

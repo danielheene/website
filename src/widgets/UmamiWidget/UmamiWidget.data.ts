@@ -3,14 +3,13 @@
 import { hoursToSeconds } from 'date-fns'
 
 import { get, set } from '@/lib/RedisHandler'
-import { getRuntimeConfig } from '@/lib/runtimeConfig'
 
 let token: string | null = null
 let tokenPromise: Promise<string | null> | null = null
 
 const login = async (): Promise<string | null> => {
   try {
-    const response = await fetch(`${getRuntimeConfig().umamiUrl}/api/auth/login`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_UMAMI_URL}/api/auth/login`, {
       method: 'POST',
       body: JSON.stringify({
         username: process.env.UMAMI_USERNAME,
@@ -31,7 +30,7 @@ const verify = async (): Promise<boolean> => {
   if (!token) return false
 
   try {
-    const response = await fetch(`${getRuntimeConfig().umamiUrl}/api/auth/verify`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_UMAMI_URL}/api/auth/verify`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -119,8 +118,8 @@ const buildApiUrl = (
     : ''
 
   return new URL(
-    `/api/websites/${getRuntimeConfig().umamiSiteId}/${path}?${searchParams}`,
-    getRuntimeConfig().umamiUrl,
+    `/api/websites/${process.env.NEXT_PUBLIC_UMAMI_SITE_ID}/${path}?${searchParams}`,
+    process.env.NEXT_PUBLIC_UMAMI_URL,
   )
 }
 

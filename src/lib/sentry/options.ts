@@ -1,12 +1,13 @@
 /**
  * Shared Sentry configuration.
  *
- * Every runtime reads `SENTRY_DSN`; when it is absent `Sentry.init` is skipped
- * entirely, so the SDK stays inert in development and in any deployment that
- * has not been given a project yet.
+ * Every runtime reads `NEXT_PUBLIC_SENTRY_DSN`; when it is absent `Sentry.init`
+ * is skipped entirely, so the SDK stays inert in development and in any
+ * deployment that has not been given a project yet. DSN/environment/release
+ * are `NEXT_PUBLIC_` because `instrumentation-client.ts` reads the same values
+ * directly in the browser bundle — no runtime-config indirection needed since
+ * each environment now builds its own artifact.
  */
-
-import { type RuntimeConfig, readRuntimeConfigFromEnv } from '@/lib/runtimeConfig'
 
 /** Sampling rates default low in production and full in development. */
 const rate = (value: string | undefined, fallback: number): number => {
@@ -15,25 +16,18 @@ const rate = (value: string | undefined, fallback: number): number => {
   return Number.isFinite(parsed) && parsed >= 0 && parsed <= 1 ? parsed : fallback
 }
 
-/**
- * DSN and environment differ per deployment, so they come from the runtime
- * config (server: environment; browser: rendered by the server) instead of
- * being inlined at compile time.
- */
-export const createSentryOptions = ({ sentryDsn, sentryEnvironment }: RuntimeConfig) =>
+export const createSentryOptions = () =>
   ({
-    dsn: sentryDsn,
-    environment: sentryEnvironment ?? process.env.NODE_ENV,
+    dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+    environment: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT ?? process.env.NODE_ENV,
 
     /**
-     * `SENTRY_RELEASE` is set at build time (see next.config.ts's `env` block
-     * and `withSentryConfig`'s `release.name`) to `<name>@<package.json
-     * version>`. It is the same for every environment, so it is safe to inline
-     * (the environment tag distinguishes deployments). Both places must derive
-     * from that one value: passing a *different* release here would silently tag
-     * events under a release with no commits or deploy attached.
+     * Set to `<name>@<package.json version>` at build time (see
+     * next.config.ts). The same for every environment's build of that
+     * version, so safe to inline (the environment tag distinguishes
+     * deployments).
      */
-    release: process.env.SENTRY_RELEASE,
+    release: process.env.NEXT_PUBLIC_SENTRY_RELEASE,
 
     /** Forwards console calls and structured logs to Sentry. */
     enableLogs: true,
@@ -71,13 +65,14 @@ export const createSentryOptions = ({ sentryDsn, sentryEnvironment }: RuntimeCon
       if (target.includes('/api/sse') || target.includes('/api/health')) return 0
 
       return inheritOrSampleWith(
-        rate(process.env.SENTRY_TRACES_SAMPLE_RATE, sentryEnvironment === 'production' ? 0.1 : 1),
+        rate(
+          process.env.SENTRY_TRACES_SAMPLE_RATE,
+          process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT === 'production' ? 0.1 : 1,
+        ),
       )
     },
   }) as const
 
-const serverConfig = readRuntimeConfigFromEnv()
-
-export const SENTRY_DSN = serverConfig.sentryDsn
+export const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN
 export const SENTRY_ENABLED = Boolean(SENTRY_DSN)
-export const sharedSentryOptions = createSentryOptions(serverConfig)
+export const sharedSentryOptions = createSentryOptions()

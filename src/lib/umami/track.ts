@@ -1,5 +1,3 @@
-import { getRuntimeConfig } from '@/lib/runtimeConfig'
-
 import { sendUmamiPayload } from './sendUmamiPayload'
 import type { TrackFunction, UmamiSendPayload, UmamiSendPayloadPayload } from './Umami.types'
 
@@ -114,7 +112,7 @@ export const track: TrackFunction = (
   }
 
   const payload: UmamiSendPayloadPayload = {
-    website: getRuntimeConfig().umamiSiteId ?? '',
+    website: process.env.NEXT_PUBLIC_UMAMI_SITE_ID ?? '',
     ...(name
       ? {
           name,
@@ -159,7 +157,7 @@ export const trackPageview = (url?: string): void => {
   }
 
   const payload: UmamiSendPayloadPayload = {
-    website: getRuntimeConfig().umamiSiteId ?? '',
+    website: process.env.NEXT_PUBLIC_UMAMI_SITE_ID ?? '',
   }
 
   if (url !== undefined) {

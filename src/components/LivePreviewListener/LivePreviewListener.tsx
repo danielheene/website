@@ -5,8 +5,6 @@ import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { RefreshRouteOnSave as PayloadLivePreview } from '@payloadcms/live-preview-react'
 
-import { getRuntimeConfig } from '@/lib/runtimeConfig'
-
 /**
  * Defer live-preview refreshes while the document is hidden
  *
@@ -48,5 +46,5 @@ export const LivePreviewListener: React.FC = () => {
     router.refresh()
   }
 
-  return <PayloadLivePreview refresh={refresh} serverURL={getRuntimeConfig().serverUrl} />
+  return <PayloadLivePreview refresh={refresh} serverURL={process.env.NEXT_PUBLIC_SERVER_URL} />
 }

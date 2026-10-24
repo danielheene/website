@@ -25,8 +25,11 @@ const fail = (message) => {
   process.exit(1)
 }
 
-// Tests and stories are never executed in an image.
-const NOT_SHIPPED = /\.(test|spec|stories)\.(ts|tsx|mdx)$/
+// Tests and stories are never executed in an image. `.map` files are uploaded
+// to Rustrak (see the CI build step that runs `sentry-cli sourcemaps upload`)
+// before this script runs, then excluded here so they never ship to a browser
+// or sit in a production container — only the upload copy is allowed to see them.
+const NOT_SHIPPED = /\.(test|spec|stories)\.(ts|tsx|mdx)$|\.map$/
 
 const copy = (from, to = from) => {
   const source = path.join(root, from)

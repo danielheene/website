@@ -51,6 +51,12 @@ deployment server Dokploy supplies the environment directly.
 Always run `bun run generate` after adding/renaming a collection, global, field, or block — many
 files import generated types from `src/types/payload.ts` and `@/types/collections`.
 
+Each environment builds with a single `next build` against its own real values (no separate
+compile/finalize split) — see "Environment variables" below. `lint-and-test.yml`'s `e2e` job runs
+this build against `.env.test` as part of PR checks; `build-and-deploy.yml`'s `deploy` job runs it
+again, separately, against that environment's real secrets, then containerizes, boot-checks, and
+pushes the result.
+
 `bun run lint` fails only on errors; it prints pre-existing warnings (see "Known Issues" below).
 Don't let those block your task, but do not introduce new lint errors or warnings, and prefer
 fixing warnings in files you already touch.
@@ -151,24 +157,27 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
 - **Server actions** (`src/lib/actions/`): `'use server'` functions for admin mutations (job
   rescheduling, cancellation, etc.). Use `useTransition` on the client side when calling them.
 
-## Environment-specific values (compile once, deploy anywhere)
+## Environment variables
 
-The compiled Next output is built once and finalised per environment, so it must contain no
-environment-specific value. Do not add such values to `next.config.ts` `env`, do not reference
-`process.env.NEXT_PUBLIC_*` statically and do not add `rewrites()` that embed a URL. Read them
-through `getRuntimeConfig()` (`src/lib/runtimeConfig`): the server reads the environment, the
-browser reads what `RuntimeConfigScript` rendered into the page. CI fails
-(`scripts/check-env-leak.mjs`) if a `.env.test` value shows up in `.next`.
+Each environment (local dev, PR/`Testing`, `develop`, `main`) runs exactly one `next build`
+against its own real values — there is no single build redeployed across environments, so
+`process.env.NEXT_PUBLIC_*` is read normally (statically inlined at build time, like any other
+Next.js app) and `rewrites()`/`next.config.ts`'s `env` block may reference real values directly.
+`src/types/environment.ts`'s `envSchema` is validated in `next.config.ts` on every build/dev
+start, and is the only place the full set of variables is enumerated.
 
 ## Job handlers (`src/jobs-queue/`)
 
 Task and workflow **configs** (`tasks/`, `workflows/`) are part of the Payload config and therefore of
 the Next.js bundle; their **handlers** are not. Each handler lives in `handlers/<name>.ts` and the
 config points at it with `handler: handlerPath('<name>.ts')` (Payload loads string handlers at run
-time). A handler module exports `handler = wrapHandler(TaskSlug.X, run)`, which adds the Sentry
-instrumentation `withJobObservability` gives inline handlers, and must use `req.payload` instead of
-`getPayload({ config })`. The web process only enqueues jobs (never `runByID`); the worker
-(`scripts/start-worker.mjs`, polling every 5 seconds) runs them.
+time). A handler module exports `handler` directly (e.g. `export const handler = run`) and must use
+`req.payload` instead of `getPayload({ config })`. There is currently no Sentry-specific wrapping
+around job handlers — errors thrown from a handler surface through whatever `req.payload.logger`/job
+retry behavior already exists, not through a dedicated observability wrapper; if you need one,
+write it rather than assuming `wrapHandler`/`withJobObservability` already exists. The web process
+only enqueues jobs (never `runByID`); the worker (`scripts/start-worker.mjs`, polling every 5
+seconds) runs them.
 
 ## Security Guardrails (found during review — respect these when touching related code)
 
@@ -210,6 +219,26 @@ instrumentation `withJobObservability` gives inline handlers, and must use `req.
   production build. Lift the pin once a newer release builds cleanly (`bun run build`).
 - No app-level rate limiting exists on public API routes.
 - No shared logging abstraction — error logging is ad hoc `console.error` calls.
+
+### Observability
+
+Error capture goes through `@sentry/nextjs`/`@sentry/node` via a manual `Sentry.init(...)` in
+`instrumentation.ts`/`instrumentation-client.ts` (`defaultIntegrations: false` plus
+`zodErrorsIntegration`/`vercelAIIntegration`) — **not** `withSentryConfig`, which is incompatible
+with Turbopack (its auto-instrumentation appends packages to `serverExternalPackages` that come
+back as unresolvable content-hashed `require()` calls at runtime; see commits 4f4f903e, dced5bbe,
+46e20549). Source maps are instead uploaded with a standalone `sentry-cli` step in
+`build-and-deploy.yml`'s `deploy` job only (push-triggered, real builds) — not in
+`lint-and-test.yml`'s `e2e` job, since a PR build never ships and there'd be no deployed release
+to attach the maps to.
+Scoped to `.next/server/app` + `.next/static/chunks` rather than the full `.next` tree — see the
+step's own comments for why (a Cloudflare request-size limit in front of the Sentry backend, and
+the fact that most vendor code ends up in opaque, unhelpful chunk names anyway).
+
+The Sentry backend is a self-hosted [Rustrak](https://github.com/rustrak/rustrak) instance
+(`SENTRY_URL`), confirmed (by reading its source) to implement the real Sentry envelope + CI/release
+API, not a partial lookalike — any future "do we still need the Sentry SDK/do we need OTel instead"
+question should start from that fact rather than re-investigating it.
 
 ## Testing
 

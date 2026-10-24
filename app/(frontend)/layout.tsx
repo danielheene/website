@@ -18,8 +18,6 @@ import PPSupplySans from '@/fonts/pp-supply-sans/next'
 import { BLOG_FEED_PATH } from '@/lib/blog/feed'
 import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fetchers'
 import { generatePersonSchema, generateWebSiteSchema, JsonLd } from '@/lib/jsonLd'
-import { getRuntimeConfig } from '@/lib/runtimeConfig'
-import { RuntimeConfigScript } from '@/lib/runtimeConfig/RuntimeConfigScript'
 
 export default async function RootLayout({
   children,
@@ -48,8 +46,6 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        {/* before any client code: see RuntimeConfigScript */}
-        <RuntimeConfigScript />
         <JsonLd data={[personSchema, webSiteSchema]} />
       </head>
       <body>
@@ -92,14 +88,8 @@ export default async function RootLayout({
   )
 }
 
-/**
- * `process.env.SERVER_URL` dot access gets inlined at build time, tying one
- * compile to one environment — reads it through `getRuntimeConfig()` instead,
- * which is why this is `generateMetadata()` rather than a static `metadata`
- * export.
- */
 export async function generateMetadata(): Promise<Metadata> {
-  const serverUrl = getRuntimeConfig().serverUrl
+  const serverUrl = process.env.SERVER_URL
   const SiteSettings = await fetchSiteSettingsCached()
 
   return {

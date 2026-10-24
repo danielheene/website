@@ -3,7 +3,6 @@ import type { WidgetServerProps } from 'payload'
 import { isAfter, isBefore, isValid, parseISO } from 'date-fns'
 
 import { Interval } from '@/lib/date'
-import { getRuntimeConfig } from '@/lib/runtimeConfig'
 
 import { UmamiWidgetClient } from './UmamiWidget.client'
 import { fetchWebsite } from './UmamiWidget.data'
@@ -35,7 +34,6 @@ export const UmamiWidget = async (_props: WidgetServerProps) => {
       name={name}
       id={id}
       teamId={teamId}
-      umamiBaseUrl={getRuntimeConfig().umamiUrl}
     />
   )
 }

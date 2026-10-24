@@ -1,41 +1,19 @@
 import * as Sentry from '@sentry/nextjs'
 
-import { getRuntimeConfig, type RuntimeConfig } from '@/lib/runtimeConfig'
 import { createSentryOptions } from '@/lib/sentry/options'
 import { trackPageview } from '@/lib/umami/track'
 
-const initSentry = (config: RuntimeConfig): void => {
-  if (!config.sentryDsn) return
-
+/**
+ * DSN/environment/release are `NEXT_PUBLIC_` and inlined into this bundle at
+ * build time — including the Payload admin's generated bundle, since both
+ * are produced by the same build.
+ */
+if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
   Sentry.init({
-    ...createSentryOptions(config),
+    ...createSentryOptions(),
 
     integrations: [Sentry.browserTracingIntegration()],
   })
-}
-
-/**
- * DSN and environment are not inlined at compile time. Pages rendered by the
- * frontend layout carry them in `window.__RUNTIME_CONFIG__` (already present
- * here, since the script sits in <head>); other pages, such as the Payload
- * admin whose layout is generated and cannot host the script, fetch them.
- */
-if (typeof window !== 'undefined') {
-  if (window.__RUNTIME_CONFIG__) {
-    initSentry(getRuntimeConfig())
-  } else {
-    fetch('/api/runtime-config')
-      .then((response) => (response.ok ? (response.json() as Promise<RuntimeConfig>) : undefined))
-      .then((config) => {
-        if (config) {
-          window.__RUNTIME_CONFIG__ = config
-          initSentry(config)
-        }
-      })
-      .catch(() => {
-        // Error reporting is best-effort; never break the page over it.
-      })
-  }
 }
 
 /**
