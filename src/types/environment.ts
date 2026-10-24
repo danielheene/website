@@ -17,7 +17,14 @@ export const envSchema = z.object({
   SERVER_HOST: z.string().trim().min(1),
   SERVER_URL: z.url(),
 
-  STATUS_PAGE_URL: z.url(),
+  /**
+   * Same value as `SERVER_URL`, duplicated under a `NEXT_PUBLIC_` prefix so
+   * the one client component that needs it in the browser
+   * (`LivePreviewListener`) can read it statically.
+   */
+  NEXT_PUBLIC_SERVER_URL: z.url(),
+
+  NEXT_PUBLIC_STATUS_PAGE_URL: z.url(),
   STATUS_PAGE_HEARTBEAT_URL: z.url(),
 
   /**
@@ -66,12 +73,15 @@ export const envSchema = z.object({
   UNSPLASH_ACCESS_KEY: emptyAsUndefined(z.string()),
 
   /**
-   * Sentry is entirely optional: with no DSN the SDK is never initialized
+   * Sentry is entirely optional: with no DSN the SDK is never initialized.
+   * DSN/environment/release are `NEXT_PUBLIC_` because the browser bundle
+   * (`instrumentation-client.ts`) reads them directly.
    */
-  SENTRY_DSN: emptyAsUndefined(z.url()),
-  SENTRY_ENVIRONMENT: emptyAsUndefined(z.string()),
-  SENTRY_RELEASE: emptyAsUndefined(z.string()),
+  NEXT_PUBLIC_SENTRY_DSN: emptyAsUndefined(z.url()),
+  NEXT_PUBLIC_SENTRY_ENVIRONMENT: emptyAsUndefined(z.string()),
+  NEXT_PUBLIC_SENTRY_RELEASE: emptyAsUndefined(z.string()),
   SENTRY_TRACES_SAMPLE_RATE: emptyAsUndefined(z.string()),
+  SENTRY_URL: emptyAsUndefined(z.url()),
   SENTRY_AUTH_TOKEN: emptyAsUndefined(z.string()),
   SENTRY_ORG: emptyAsUndefined(z.string()),
   SENTRY_PROJECT: emptyAsUndefined(z.string()),

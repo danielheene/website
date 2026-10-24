@@ -124,41 +124,18 @@ jobs:
             echo "::warning::could not fast-forward develop to main; update it by hand so it keeps cutting release candidates"
           fi
 
-  # The same checks as pull requests (lint, unit tests, one environment-agnostic
-  # compile, E2E against the assembled output). See ci.yml.
-  ci:
-    name: CI
-    needs: version
-    # The version job is skipped (not failed/cancelled) for a [skip ci]
-    # commit re-triggering this workflow — always() plus explicit
-    # failure()/cancelled() checks is what lets this job run then too.
+  # Builds, migrates, assembles images, boot-checks each container, pushes and
+  # redeploys. Lint/unit tests/Semgrep/E2E already ran as required PR checks
+  # (branch protection on main/develop requires lint-and-test.yml's checks to
+  # pass before merge) — this job assumes the merged commit already passed
+  # them, and does not re-run them here.
+  deploy:
+    name: Build, migrate & push images
+    needs:
+      - version
     if: |
       always() &&
       !contains(needs.version.result, 'failure') && !contains(needs.version.result, 'cancelled')
-    uses: ./.github/workflows/ci.yml
-    with:
-      # the release commit semantic-release just pushed (if any), so the
-      # version compiled into the output matches the tag
-      ref: ${{ github.ref }}
-    secrets:
-      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-      SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-      SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
-    permissions:
-      contents: read
-
-  # Finalises the tested compile with this environment's values and ships it:
-  # migrate -> generate (prerender/PPR against the real database) -> assemble
-  # -> COPY-only image builds -> push -> redeploy. No image runs a build.
-  deploy:
-    name: Migrate, generate & push images
-    needs:
-      - version
-      - ci
-    if: |
-      always() &&
-      !contains(needs.version.result, 'failure') && !contains(needs.version.result, 'cancelled') &&
-      needs.ci.result == 'success'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
@@ -176,9 +153,13 @@ jobs:
       # Every image runs production mode, `develop` (:edge) included; the old
       # per-branch NODE_ENV build arg is gone with the Docker build phase.
       NODE_ENV: production
+      # `if:` can't read the `secrets` context directly, so its presence is
+      # mirrored into `env` at the job level, where every step's `if:` can see it.
+      HAS_SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN != '' }}
       SERVER_HOST: ${{ secrets.SERVER_HOST }}
       SERVER_URL: ${{ secrets.SERVER_URL }}
-      STATUS_PAGE_URL: ${{ secrets.STATUS_PAGE_URL }}
+      NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
+      NEXT_PUBLIC_STATUS_PAGE_URL: ${{ secrets.NEXT_PUBLIC_STATUS_PAGE_URL }}
       STATUS_PAGE_HEARTBEAT_URL: ${{ secrets.STATUS_PAGE_HEARTBEAT_URL }}
       RESUME_REDIRECT_URL_BASE: ${{ secrets.RESUME_REDIRECT_URL_BASE }}
       PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
@@ -203,8 +184,8 @@ jobs:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       MAPBOX_API_KEY: ${{ secrets.MAPBOX_API_KEY }}
       UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
-      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-      SENTRY_ENVIRONMENT: ${{ secrets.SENTRY_ENVIRONMENT }}
+      NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+      NEXT_PUBLIC_SENTRY_ENVIRONMENT: ${{ secrets.NEXT_PUBLIC_SENTRY_ENVIRONMENT }}
       SENTRY_TRACES_SAMPLE_RATE: ${{ secrets.SENTRY_TRACES_SAMPLE_RATE }}
     steps:
       - name: Checkout
@@ -229,22 +210,45 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Download compiled output
-        uses: actions/download-artifact@v4 # TODO: pin to a commit SHA like the other actions
-        with:
-          name: next-compile
-          path: ${{ runner.temp }}
-
-      - name: Unpack compiled output
-        run: tar -xf "$RUNNER_TEMP/next-compile.tar"
-
       # `payload migrate` reads process.env directly. A failed migration stops
       # the job before any image is built or pushed.
       - name: Run database migrations
         run: bun run migrate
 
-      - name: Generate (prerender)
-        run: bun x next build --experimental-build-mode=generate
+      # One build against this environment's real values — no separate
+      # test-env compile to reconcile with afterward (see lint-and-test.yml's
+      # `e2e` job for the PR-time equivalent, which uses .env.test instead).
+      - name: Build
+        run: bun x next build
+
+      # Standalone sentry-cli steps, not a Next.js/webpack plugin — avoids the
+      # withSentryConfig require-patching crash under Turbopack (see commits
+      # 4f4f903e, dced5bbe, 46e20549). Only this push-triggered build uploads
+      # source maps (lint-and-test.yml's PR-time build does not: a PR never
+      # ships, so there's no deployed release to attach maps to).
+      #
+      # Scoped to .next/server/app (this app's own route code) and
+      # .next/static/chunks (its own client bundles) rather than the whole
+      # .next tree: .next/server/chunks alone is ~500MB, almost entirely
+      # third-party vendor code (date-fns, shiki languages/themes, etc.)
+      # bundled in by Turbopack — stack traces through vendor internals are
+      # rarely actionable, and uploading it hits Cloudflare's request-size
+      # limit in front of Rustrak (confirmed via a live 413 with sentry-cli
+      # --log-level=debug showing a single ~113MB chunk-upload POST). Vendor
+      # chunks stay minified; this app's own code resolves.
+      - name: Upload source maps to Rustrak
+        if: env.HAS_SENTRY_AUTH_TOKEN == 'true'
+        run: |
+          release="$(node -e "const p=require('./package.json'); console.log(p.name+'@'+p.version)")"
+          bun x sentry-cli --url "$SENTRY_URL" sourcemaps inject .next/server/app .next/static/chunks
+          bun x sentry-cli --url "$SENTRY_URL" releases new "$release"
+          bun x sentry-cli --url "$SENTRY_URL" sourcemaps upload --release "$release" .next/server/app .next/static/chunks
+          bun x sentry-cli --url "$SENTRY_URL" releases finalize "$release"
+        env:
+          SENTRY_URL: ${{ secrets.SENTRY_URL }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
 
       - name: Build Storybook
         run: bun run build:storybook
@@ -301,13 +305,17 @@ jobs:
       # single-platform manifest plus an untagged attestation manifest, which
       # reads as "3 versions" on GHCR's package page for what is one image with
       # one tag. amd64 only, so a plain manifest is enough.
-      - name: Build & push app image
+      #
+      # `load: true` (not `push: true`) loads each image into the local Docker
+      # daemon instead of pushing it — the boot-check steps below start it and
+      # confirm it's actually healthy before anything reaches the registry.
+      - name: Build app image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
           context: .
           target: app
           platforms: linux/amd64
-          push: true
+          load: true
           provenance: false
           sbom: false
           tags: ${{ steps.tags.outputs.app }}
@@ -315,13 +323,13 @@ jobs:
             VERSION=${{ needs.version.outputs.version }}
             REVISION=${{ github.sha }}
 
-      - name: Build & push worker image
+      - name: Build worker image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
           context: .
           target: worker
           platforms: linux/amd64
-          push: true
+          load: true
           provenance: false
           sbom: false
           tags: ${{ steps.tags.outputs.worker }}
@@ -329,19 +337,69 @@ jobs:
             VERSION=${{ needs.version.outputs.version }}
             REVISION=${{ github.sha }}
 
-      - name: Build & push storybook image
+      - name: Build storybook image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
           context: .
           target: storybook
           platforms: linux/amd64
-          push: true
+          load: true
           provenance: false
           sbom: false
           tags: ${{ steps.tags.outputs.storybook }}
           build-args: |
             VERSION=${{ needs.version.outputs.version }}
             REVISION=${{ github.sha }}
+
+      # Starts each built image as a real container and confirms it boots and
+      # its HEALTHCHECK passes — proof the image itself works, not just that
+      # `docker build` succeeded. Uses the app's primary (first) tag; a
+      # multi-tag image is the same single image under every tag, so checking
+      # one is checking all of them. Each container is run against the real
+      # database/Redis/S3 already reachable in this job (via the Tailscale
+      # connection above) and this environment's real secrets, so the
+      # healthcheck exercises real dependencies, not an unreachable stub.
+      - name: Boot-check app image
+        run: |
+          tag="$(echo "${{ steps.tags.outputs.app }}" | head -n1)"
+          id=$(docker run -d --network host -e NODE_ENV -e PAYLOAD_SECRET \
+            -e PREVIEW_SECRET -e CRON_SECRET -e DATABASE_URL -e REDIS_URL -e S3_BUCKET \
+            -e S3_SECRET_KEY -e S3_REGION -e S3_ACCESS_KEY -e S3_ENDPOINT "$tag")
+          for _ in $(seq 1 30); do
+            curl -fsS http://localhost:3000/api/health/app > /dev/null && { echo "app container healthy"; docker rm -f "$id" > /dev/null; exit 0; }
+            sleep 2
+          done
+          echo "app container never became healthy"; docker logs "$id"; docker rm -f "$id" > /dev/null; exit 1
+
+      - name: Boot-check worker image
+        run: |
+          tag="$(echo "${{ steps.tags.outputs.worker }}" | head -n1)"
+          id=$(docker run -d --network host -e NODE_ENV -e PAYLOAD_SECRET -e DATABASE_URL -e REDIS_URL \
+            -e S3_BUCKET -e S3_SECRET_KEY -e S3_REGION -e S3_ACCESS_KEY -e S3_ENDPOINT "$tag")
+          for _ in $(seq 1 30); do
+            curl -fsS http://localhost:3010/health > /dev/null && { echo "worker container healthy"; docker rm -f "$id" > /dev/null; exit 0; }
+            sleep 2
+          done
+          echo "worker container never became healthy"; docker logs "$id"; docker rm -f "$id" > /dev/null; exit 1
+
+      - name: Boot-check storybook image
+        run: |
+          tag="$(echo "${{ steps.tags.outputs.storybook }}" | head -n1)"
+          id=$(docker run -d --network host "$tag")
+          for _ in $(seq 1 10); do
+            curl -fsS http://localhost:3020 > /dev/null && { echo "storybook container healthy"; docker rm -f "$id" > /dev/null; exit 0; }
+            sleep 2
+          done
+          echo "storybook container never became healthy"; docker logs "$id"; docker rm -f "$id" > /dev/null; exit 1
+
+      - name: Push app image
+        run: for tag in ${{ steps.tags.outputs.app }}; do docker push "$tag"; done
+
+      - name: Push worker image
+        run: for tag in ${{ steps.tags.outputs.worker }}; do docker push "$tag"; done
+
+      - name: Push storybook image
+        run: for tag in ${{ steps.tags.outputs.storybook }}; do docker push "$tag"; done
 
       # Tells Dokploy to actually redeploy each app now that its image is
       # pushed — pushing to ghcr.io alone doesn't make Dokploy pull it. Each

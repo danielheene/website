@@ -10,7 +10,6 @@ import { envSchema } from '@/types/environment'
 
 import { name as packageName, version as packageVersion } from './package.json'
 
-// Identical for every environment, so a single compile can be deployed anywhere.
 const sentryRelease = `${packageName}@${packageVersion}`
 
 let server: ChildProcess | null = null
@@ -127,7 +126,13 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
 
   const nextConfig: NextConfig = {
     poweredByHeader: false,
-    productionBrowserSourceMaps: false,
+    /**
+     * Enabled so sourcemaps can be uploaded to Rustrak (see the build step
+     * that runs `sentry-cli sourcemaps upload`). The uploaded `.map` files are
+     * then stripped from the deployed output before it ships — see
+     * scripts/assemble-images.mjs — so they never reach the browser.
+     */
+    productionBrowserSourceMaps: true,
     reactStrictMode: true,
     cacheComponents: true,
 
@@ -171,16 +176,13 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
     /**
      *    Environment Variables
      *
-     *    Only values that are identical in every environment may be inlined
-     *    here, because the compiled output is built once (see
-     *    `next build --experimental-build-mode=compile`) and deployed to
-     *    several. Environment-specific public values (site URL, status page,
-     *    Umami, Sentry DSN/environment, ...) are read at runtime through
-     *    `@/lib/runtimeConfig` instead; do not add them here or reference
-     *    `process.env.NEXT_PUBLIC_*` statically.
+     *    `NEXT_PUBLIC_SENTRY_RELEASE` is the one build-time-computed value
+     *    with no corresponding entry in Doppler/`.env.*` — it's derived from
+     *    `package.json`, not set per-environment — so it's injected here
+     *    rather than expected to already be in `process.env`.
      */
     env: {
-      SENTRY_RELEASE: sentryRelease,
+      NEXT_PUBLIC_SENTRY_RELEASE: sentryRelease,
     },
 
     /**
@@ -307,10 +309,12 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
    * disables this on Turbopack (`webpack.disableSentryConfig` only applies
    * to webpack builds). Error capture doesn't need any of this — it comes
    * from the manual `Sentry.init(...)` in `instrumentation.ts`
-   * (redisIntegration, mongooseIntegration, etc.), which runs independently
-   * at request time. Skipping `withSentryConfig` means production stack
-   * traces stay minified (no source map upload), but that's a worthwhile
-   * trade for a server that reliably boots.
+   * (zodErrorsIntegration, vercelAIIntegration), which runs independently at
+   * request time. Source maps are restored via a standalone `sentry-cli`
+   * step in `.github/workflows/ci.yml`'s `compile` job (not a bundler
+   * plugin), uploaded to the self-hosted Rustrak instance set as `SENTRY_URL`
+   * — see that workflow for the exact scope and why it's not the full
+   * `.next` tree.
    */
   return configWithPayload
 }

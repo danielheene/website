@@ -4,6 +4,7 @@ namespace NodeJS {
 
     SERVER_HOST: string
     SERVER_URL: string
+    NEXT_PUBLIC_SERVER_URL: string
 
     PAYLOAD_SECRET: string
     PREVIEW_SECRET: string
@@ -32,8 +33,17 @@ namespace NodeJS {
     ANTHROPIC_API_KEY: string
     MAPBOX_API_KEY: string
 
-    STATUS_PAGE_URL: string
+    NEXT_PUBLIC_STATUS_PAGE_URL: string
     STATUS_PAGE_HEARTBEAT_URL: string
+
+    NEXT_PUBLIC_SENTRY_DSN?: string
+    NEXT_PUBLIC_SENTRY_ENVIRONMENT?: string
+    NEXT_PUBLIC_SENTRY_RELEASE?: string
+    SENTRY_TRACES_SAMPLE_RATE?: string
+    SENTRY_URL?: string
+    SENTRY_AUTH_TOKEN?: string
+    SENTRY_ORG?: string
+    SENTRY_PROJECT?: string
 
     CLOUDFLARE_TUNNEL_HOST?: string
     CLOUDFLARE_TUNNEL_URL?: string

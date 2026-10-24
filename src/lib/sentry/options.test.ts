@@ -11,7 +11,7 @@ const loadOptions = async () => {
 }
 
 beforeEach(() => {
-  vi.stubEnv('SENTRY_DSN', '')
+  vi.stubEnv('NEXT_PUBLIC_SENTRY_DSN', '')
   vi.stubEnv('SENTRY_TRACES_SAMPLE_RATE', '')
 })
 
@@ -21,13 +21,13 @@ afterEach(() => {
 
 describe('SENTRY_ENABLED', () => {
   it('is false without a DSN, so the SDK stays inert', async () => {
-    vi.stubEnv('SENTRY_DSN', '')
+    vi.stubEnv('NEXT_PUBLIC_SENTRY_DSN', '')
     const { SENTRY_ENABLED } = await loadOptions()
     expect(SENTRY_ENABLED).toBe(false)
   })
 
   it('is true once a DSN is provided', async () => {
-    vi.stubEnv('SENTRY_DSN', 'https://key@example.test/1')
+    vi.stubEnv('NEXT_PUBLIC_SENTRY_DSN', 'https://key@example.test/1')
     const { SENTRY_ENABLED } = await loadOptions()
     expect(SENTRY_ENABLED).toBe(true)
   })
@@ -37,7 +37,7 @@ describe('tracesSampler', () => {
   const inherit = (fallback: number) => fallback
 
   it('samples everything outside production', async () => {
-    vi.stubEnv('SENTRY_ENVIRONMENT', 'development')
+    vi.stubEnv('NEXT_PUBLIC_SENTRY_ENVIRONMENT', 'development')
     const { sharedSentryOptions } = await loadOptions()
     expect(
       sharedSentryOptions.tracesSampler({
@@ -48,7 +48,7 @@ describe('tracesSampler', () => {
   })
 
   it('samples a fraction in production', async () => {
-    vi.stubEnv('SENTRY_ENVIRONMENT', 'production')
+    vi.stubEnv('NEXT_PUBLIC_SENTRY_ENVIRONMENT', 'production')
     const { sharedSentryOptions } = await loadOptions()
     expect(
       sharedSentryOptions.tracesSampler({
@@ -70,7 +70,7 @@ describe('tracesSampler', () => {
   })
 
   it('ignores out-of-range and non-numeric values', async () => {
-    vi.stubEnv('SENTRY_ENVIRONMENT', 'production')
+    vi.stubEnv('NEXT_PUBLIC_SENTRY_ENVIRONMENT', 'production')
 
     for (const value of ['2', '-1', 'abc']) {
       vi.stubEnv('SENTRY_TRACES_SAMPLE_RATE', value)
