@@ -142,7 +142,6 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
     },
 
     experimental: {
-      appNewScrollHandler: true,
       turbopackServerFastRefresh: true,
       serverActions: {
         bodySizeLimit: '10mb',
@@ -198,6 +197,13 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
     serverExternalPackages,
 
     turbopack: {
+      // Pins workspace-root inference to this file's own directory. Without
+      // it, Turbopack can infer a different root at build time than at
+      // runtime inside the container (both just `next start` from `/app`,
+      // but detection otherwise walks up for a lockfile/workspace marker),
+      // producing content-hashed external module ids (e.g. `pino-<hash>`)
+      // that resolve during build but 404 as `Cannot find module` at boot.
+      root: import.meta.dirname,
       resolveExtensions: [
         '.ts',
         '.tsx',

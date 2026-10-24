@@ -130,8 +130,8 @@ describe('tracesSampler', () => {
 })
 
 describe('enableLogs', () => {
-  it('is on so console output and structured logs reach Sentry', async () => {
+  it('is off: the console/logging integration it registers patches pino via require-in-the-middle, which crashes under Turbopack', async () => {
     const { sharedSentryOptions } = await loadOptions()
-    expect(sharedSentryOptions.enableLogs).toBe(true)
+    expect(sharedSentryOptions.enableLogs).toBe(false)
   })
 })

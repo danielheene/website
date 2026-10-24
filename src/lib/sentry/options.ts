@@ -29,8 +29,18 @@ export const createSentryOptions = () =>
      */
     release: process.env.NEXT_PUBLIC_SENTRY_RELEASE,
 
-    /** Forwards console calls and structured logs to Sentry. */
-    enableLogs: true,
+    /**
+     * `enableLogs: true` auto-registers Sentry's console/logging
+     * integration independent of `defaultIntegrations: false` and the
+     * explicit `integrations` list in instrumentation.ts (they gate the
+     * "default" integrations, not this). That integration patches `pino`
+     * via `require-in-the-middle`, which crashes the server under Turbopack
+     * (unresolvable content-hashed `pino-<hash>` require) the same way the
+     * default integrations did — confirmed live on a real deploy with this
+     * still set to `true`. Disabled until there's a Turbopack-safe way to
+     * forward logs; error capture is unaffected.
+     */
+    enableLogs: false,
 
     debug: false,
 
