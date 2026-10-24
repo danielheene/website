@@ -1,3 +1,10 @@
+## [1.15.5](https://github.com/danielheene/website/compare/v1.15.4...v1.15.5) (2026-10-24)
+
+
+### Bug Fixes
+
+* **sentry:** drop redis/mongoose/pino require-patching integrations ([#119](https://github.com/danielheene/website/issues/119)) ([c2566a6](https://github.com/danielheene/website/commit/c2566a6aa32c583e1130fafdbbbe7558b85d6957)), closes [#118](https://github.com/danielheene/website/issues/118)
+
 ## [1.15.4](https://github.com/danielheene/website/compare/v1.15.3...v1.15.4) (2026-10-24)
 
 
