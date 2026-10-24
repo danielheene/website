@@ -68,6 +68,7 @@ const assemblers = {
       'package.json',
       'bun.lock',
       'bunfig.toml',
+      'patches',
       'tsconfig.json',
       'next.config.ts',
       'payload.config.ts',
