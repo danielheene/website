@@ -2,9 +2,12 @@
 
 # Nothing is built or installed in here. CI produces the exact contents of each
 # image with `node scripts/assemble-images.mjs <web|worker|storybook>` (into
-# `out/<target>`) and every stage below only COPYs that directory onto a base
-# image. Targets:
-#   - `app`       the Next.js server (standalone output)
+# `out/<target>`, dependencies already installed there) and every stage below
+# only COPYs that directory onto a base image. Targets:
+#   - `app`       the Next.js server (plain `next start`, not `output: 'standalone'`
+#                  — standalone's dependency trace repeatedly conflicted with
+#                  Turbopack's content-hashed module ids under Sentry's
+#                  require-patching integrations, crashing the server on boot)
 #   - `worker`    the Payload job runner
 #   - `storybook` the built Storybook, served statically
 
@@ -27,7 +30,7 @@ USER node
 EXPOSE 3000
 HEALTHCHECK --interval=60s --timeout=10s --retries=3 --start-period=30s \
     CMD node -e "fetch('http://localhost:3000/api/health/app').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
-CMD ["node", "server.js"]
+CMD ["node_modules/.bin/next", "start"]
 
 # ---- worker ------------------------------------------------------------------
 FROM node:${NODE_VERSION}-slim AS worker
