@@ -1,3 +1,10 @@
+## [1.15.2-rc.5](https://github.com/danielheene/website/compare/v1.15.2-rc.4...v1.15.2-rc.5) (2026-10-24)
+
+
+### Bug Fixes
+
+* **ci:** forward every env var into the boot-check containers, not a hand-picked subset ([#123](https://github.com/danielheene/website/issues/123)) ([6b47571](https://github.com/danielheene/website/commit/6b47571e6b7f762d42fe726d8b11c9989476b8e0))
+
 ## [1.15.2-rc.4](https://github.com/danielheene/website/compare/v1.15.2-rc.3...v1.15.2-rc.4) (2026-10-24)
 
 
