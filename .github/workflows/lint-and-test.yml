@@ -242,7 +242,8 @@ jobs:
       - name: Run E2E tests against the assembled output
         run: bun run test:e2e
         env:
-          E2E_SERVER_COMMAND: node --env-file=.env.test out/web/server.js
+          E2E_SERVER_COMMAND: node --env-file=../../.env.test node_modules/.bin/next start
+          E2E_SERVER_CWD: out/web
           HOSTNAME: localhost
           PORT: '3000'
           NODE_ENV: production

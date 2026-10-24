@@ -52,7 +52,11 @@ export default defineConfig({
     ? undefined
     : {
         // CI serves the assembled production output instead of a dev server.
+        // `next start` needs its cwd set to that output (it reads .next,
+        // next.config.ts and package.json relative to it), same as the
+        // Dockerfile's WORKDIR for the real image.
         command: process.env.E2E_SERVER_COMMAND ?? 'bun run dev:app',
+        cwd: process.env.E2E_SERVER_CWD,
         url: baseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 180_000,
