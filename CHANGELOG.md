@@ -1,3 +1,10 @@
+## [1.15.2-rc.4](https://github.com/danielheene/website/compare/v1.15.2-rc.3...v1.15.2-rc.4) (2026-10-24)
+
+
+### Bug Fixes
+
+* **build:** drop output: 'standalone', ship a plain next start image ([#122](https://github.com/danielheene/website/issues/122)) ([23abe69](https://github.com/danielheene/website/commit/23abe6976ba3f784c2bf250e1cbc4bac797a558d)), closes [117-#119](https://github.com/117-/issues/119)
+
 ## [1.15.2-rc.3](https://github.com/danielheene/website/compare/v1.15.2-rc.2...v1.15.2-rc.3) (2026-10-24)
 
 
