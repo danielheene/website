@@ -19,6 +19,9 @@ on:
     branches:
       - main
       - develop
+      # TEMP: validating the turbopack-root fix against the real deploy
+      # pipeline before merging. Remove before merging back to develop.
+      - fix/turbopack-root
   workflow_dispatch: {}
 
 # Each job asks for what it needs.
