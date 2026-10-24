@@ -359,12 +359,17 @@ jobs:
       # database/Redis/S3 already reachable in this job (via the Tailscale
       # connection above) and this environment's real secrets, so the
       # healthcheck exercises real dependencies, not an unreachable stub.
+      # `docker run --env-file` forwards every variable this job's own env:
+      # block exports to the shell (minus a few GitHub Actions reserves that
+      # never belong in a container anyway) — hand-picking a subset drifted
+      # out of sync with envSchema and silently failed boot-checks with env
+      # validation errors instead of ever actually testing the app.
       - name: Boot-check app image
         run: |
           tag="$(echo "${{ steps.tags.outputs.app }}" | head -n1)"
-          id=$(docker run -d --network host -e NODE_ENV -e PAYLOAD_SECRET \
-            -e PREVIEW_SECRET -e CRON_SECRET -e DATABASE_URL -e REDIS_URL -e S3_BUCKET \
-            -e S3_SECRET_KEY -e S3_REGION -e S3_ACCESS_KEY -e S3_ENDPOINT "$tag")
+          env | grep -vE '^(PATH|HOME|PWD|GITHUB_|RUNNER_|CI=|ACTIONS_)' > "$RUNNER_TEMP/boot-check.env"
+          id=$(docker run -d --network host --env-file "$RUNNER_TEMP/boot-check.env" "$tag")
+          rm -f "$RUNNER_TEMP/boot-check.env"
           for _ in $(seq 1 30); do
             curl -fsS http://localhost:3000/api/health/app > /dev/null && { echo "app container healthy"; docker rm -f "$id" > /dev/null; exit 0; }
             sleep 2
@@ -374,8 +379,9 @@ jobs:
       - name: Boot-check worker image
         run: |
           tag="$(echo "${{ steps.tags.outputs.worker }}" | head -n1)"
-          id=$(docker run -d --network host -e NODE_ENV -e PAYLOAD_SECRET -e DATABASE_URL -e REDIS_URL \
-            -e S3_BUCKET -e S3_SECRET_KEY -e S3_REGION -e S3_ACCESS_KEY -e S3_ENDPOINT "$tag")
+          env | grep -vE '^(PATH|HOME|PWD|GITHUB_|RUNNER_|CI=|ACTIONS_)' > "$RUNNER_TEMP/boot-check.env"
+          id=$(docker run -d --network host --env-file "$RUNNER_TEMP/boot-check.env" "$tag")
+          rm -f "$RUNNER_TEMP/boot-check.env"
           for _ in $(seq 1 30); do
             curl -fsS http://localhost:3010/health > /dev/null && { echo "worker container healthy"; docker rm -f "$id" > /dev/null; exit 0; }
             sleep 2
