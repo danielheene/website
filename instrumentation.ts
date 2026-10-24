@@ -21,30 +21,19 @@ export const register = async () => {
     Sentry.init({
       ...sharedSentryOptions,
       /**
-       * Tracing being enabled (see `tracesSampler` in sentry/options.ts) makes
-       * the SDK auto-load its default tracing integrations
-       * (dataloaderIntegration, mongooseIntegration, redisIntegration, a pino
-       * logger hook, ...), each of which patches `require()` for its target
-       * package at runtime. Under Turbopack those patched requires resolve to
-       * unresolvable content-hashed module ids (e.g. `dataloader-<hash>`,
-       * `pino-<hash>`) baked into `instrumentation.js`, crashing the server on
-       * every boot — this is independent of `withSentryConfig`/orchestrion's
-       * build-time config; it is the SDK's runtime auto-instrumentation.
-       * Disabling it and listing only the integrations below keeps error
-       * capture, logs and the integrations we actually want working, without
-       * the auto-instrumented packages that break under Turbopack.
+       * `redisIntegration`, `mongooseIntegration` and the pino hook behind
+       * `consoleLoggingIntegration`/`enableLogs` all patch `require()` for
+       * their target package via `require-in-the-middle`. Under Turbopack
+       * those patched requires resolve to unresolvable content-hashed module
+       * ids (`mongoose-<hash>`, `pino-<hash>`, ...) baked into
+       * `instrumentation.js`, crashing the server on every boot — confirmed
+       * from the deployed container's actual logs, not just a local repro.
+       * `zodErrorsIntegration`/`vercelAIIntegration` don't patch `require()`
+       * and stay safe to keep. Error capture still works via the manual
+       * `captureRequestError` below, independent of all of this.
        */
       defaultIntegrations: false,
-      integrations: [
-        Sentry.redisIntegration(),
-        Sentry.mongooseIntegration(),
-        Sentry.zodErrorsIntegration(),
-        Sentry.vercelAIIntegration(),
-        // captures console.* as structured logs alongside errors
-        Sentry.consoleLoggingIntegration({
-          levels: ['warn', 'error'],
-        }),
-      ],
+      integrations: [Sentry.zodErrorsIntegration(), Sentry.vercelAIIntegration()],
     })
   }
 
