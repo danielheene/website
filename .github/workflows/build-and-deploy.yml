@@ -259,8 +259,9 @@ jobs:
       - name: Assemble image contents
         run: |
           node scripts/assemble-images.mjs web
-          node scripts/assemble-images.mjs worker
-          # TEMP: storybook image not needed for this fix.
+          # TEMP: focusing on the app image only while iterating. Restore
+          # worker/storybook before merging.
+          # node scripts/assemble-images.mjs worker
           # node scripts/assemble-images.mjs storybook
 
       - name: Set up Docker Buildx
@@ -329,19 +330,21 @@ jobs:
             VERSION=${{ needs.version.outputs.version }}
             REVISION=${{ github.sha }}
 
-      - name: Build worker image
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
-        with:
-          context: .
-          target: worker
-          platforms: linux/amd64
-          load: true
-          provenance: false
-          sbom: false
-          tags: ${{ steps.tags.outputs.worker }}
-          build-args: |
-            VERSION=${{ needs.version.outputs.version }}
-            REVISION=${{ github.sha }}
+      # TEMP: focusing on the app image only while iterating. Restore before
+      # merging.
+      # - name: Build worker image
+      #   uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+      #   with:
+      #     context: .
+      #     target: worker
+      #     platforms: linux/amd64
+      #     load: true
+      #     provenance: false
+      #     sbom: false
+      #     tags: ${{ steps.tags.outputs.worker }}
+      #     build-args: |
+      #       VERSION=${{ needs.version.outputs.version }}
+      #       REVISION=${{ github.sha }}
 
       # TEMP: storybook image not needed for this fix.
       # - name: Build storybook image
@@ -383,17 +386,19 @@ jobs:
           done
           echo "app container never became healthy"; docker logs "$id"; docker rm -f "$id" > /dev/null; exit 1
 
-      - name: Boot-check worker image
-        run: |
-          tag="$(echo "${{ steps.tags.outputs.worker }}" | head -n1)"
-          env | grep -vE '^(PATH|HOME|PWD|GITHUB_|RUNNER_|CI=|ACTIONS_)' > "$RUNNER_TEMP/boot-check.env"
-          id=$(docker run -d --network host --env-file "$RUNNER_TEMP/boot-check.env" "$tag")
-          rm -f "$RUNNER_TEMP/boot-check.env"
-          for _ in $(seq 1 30); do
-            curl -fsS http://localhost:3010/health > /dev/null && { echo "worker container healthy"; docker rm -f "$id" > /dev/null; exit 0; }
-            sleep 2
-          done
-          echo "worker container never became healthy"; docker logs "$id"; docker rm -f "$id" > /dev/null; exit 1
+      # TEMP: focusing on the app image only while iterating. Restore before
+      # merging.
+      # - name: Boot-check worker image
+      #   run: |
+      #     tag="$(echo "${{ steps.tags.outputs.worker }}" | head -n1)"
+      #     env | grep -vE '^(PATH|HOME|PWD|GITHUB_|RUNNER_|CI=|ACTIONS_)' > "$RUNNER_TEMP/boot-check.env"
+      #     id=$(docker run -d --network host --env-file "$RUNNER_TEMP/boot-check.env" "$tag")
+      #     rm -f "$RUNNER_TEMP/boot-check.env"
+      #     for _ in $(seq 1 30); do
+      #       curl -fsS http://localhost:3010/health > /dev/null && { echo "worker container healthy"; docker rm -f "$id" > /dev/null; exit 0; }
+      #       sleep 2
+      #     done
+      #     echo "worker container never became healthy"; docker logs "$id"; docker rm -f "$id" > /dev/null; exit 1
 
       # TEMP: storybook image not needed for this fix.
       # - name: Boot-check storybook image

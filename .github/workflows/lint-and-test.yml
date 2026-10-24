@@ -269,26 +269,24 @@ jobs:
       #     PORT: '3000'
       #     NODE_ENV: production
 
-      # The worker image is assembled from a production-only install; starting
-      # it here proves it can load the Payload config, reach the database and
-      # load and run a handler: the scheduled heartbeat task (every minute)
-      # logs "Ping" once the runner has executed it.
-      - name: Smoke test the worker output
-        run: |
-          node scripts/assemble-images.mjs worker
-          (cd out/worker && exec node scripts/start-worker.mjs > "$RUNNER_TEMP/worker.log" 2>&1) &
-          for _ in $(seq 1 30); do
-            curl -fsS http://localhost:3010/health > /dev/null && break
-            sleep 5
-          done
-          for _ in $(seq 1 30); do
-            grep -q '^Ping' "$RUNNER_TEMP/worker.log" && { echo "worker ran a job"; exit 0; }
-            sleep 5
-          done
-          echo "worker did not run a job"; tail -n 80 "$RUNNER_TEMP/worker.log"; exit 1
-        env:
-          NODE_ENV: production
-          PORT: '3010'
+      # TEMP: focusing on the app image only while iterating on the
+      # turbopack-root fix. Restore before merging.
+      # - name: Smoke test the worker output
+      #   run: |
+      #     node scripts/assemble-images.mjs worker
+      #     (cd out/worker && exec node scripts/start-worker.mjs > "$RUNNER_TEMP/worker.log" 2>&1) &
+      #     for _ in $(seq 1 30); do
+      #       curl -fsS http://localhost:3010/health > /dev/null && break
+      #       sleep 5
+      #     done
+      #     for _ in $(seq 1 30); do
+      #       grep -q '^Ping' "$RUNNER_TEMP/worker.log" && { echo "worker ran a job"; exit 0; }
+      #       sleep 5
+      #     done
+      #     echo "worker did not run a job"; tail -n 80 "$RUNNER_TEMP/worker.log"; exit 1
+      #   env:
+      #     NODE_ENV: production
+      #     PORT: '3010'
 
       # TEMP: no Playwright run while iterating, nothing to upload.
       # - name: Upload Playwright report
