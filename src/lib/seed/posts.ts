@@ -25,6 +25,7 @@ import {
   text,
   upload,
 } from '@/lib/seed/lexical'
+import { fetchSeedImage } from '@/lib/seed/seedImage'
 import { seedTopics } from '@/lib/seed/topics'
 import { CollectionSlug } from '@/types/collections'
 import type { BlogPostData } from '@/types/payload'
@@ -314,13 +315,7 @@ const lexicalExcerpt = (title: string) => {
 
 const createSeedImage = async (payload: Payload, index: number): Promise<string> => {
   const filename = `${SEED_PREFIX}-post-${index}.jpg`
-  const source = `https://picsum.photos/seed/${SEED_PREFIX}-post-${index}/1600/900`
-
-  const response = await fetch(source)
-
-  if (!response.ok) throw new Error(`Failed to download placeholder image: HTTP ${response.status}`)
-
-  const data = Buffer.from(await response.arrayBuffer())
+  const data = await fetchSeedImage(`${SEED_PREFIX}-post-${index}`)
 
   const created = await payload.create({
     collection: CollectionSlug.MediaImages,
