@@ -1,0 +1,77 @@
+'use client'
+
+import dynamic from 'next/dynamic'
+
+import { defaultProps as darkVeilDefaults } from '@website/components/Shaders/DarkVeil/config'
+import { defaultProps as faultyTerminalDefaults } from '@website/components/Shaders/FaultyTerminal/config'
+import { defaultProps as gradientBlindsDefaults } from '@website/components/Shaders/GradientBlinds/config'
+import { defaultProps as grainientDefaults } from '@website/components/Shaders/Grainient/config'
+
+import type { ShaderPresetKey } from './shaderPresets'
+
+/**
+ * One `dynamic()` call per preset, built once at module scope. Building
+ * these inside the component body would create a new lazy component on
+ * every render, defeating memoization and risking remounts on re-render.
+ */
+const SHADER_COMPONENTS: Record<ShaderPresetKey, ReturnType<typeof dynamic>> = {
+  darkveil: dynamic(
+    () => import('@website/components/Shaders/DarkVeil').then((mod) => mod.DarkVeil),
+    {
+      ssr: false,
+    },
+  ),
+  'faulty-terminal': dynamic(
+    () => import('@website/components/Shaders/FaultyTerminal').then((mod) => mod.FaultyTerminal),
+    {
+      ssr: false,
+    },
+  ),
+  'gradient-blinds': dynamic(
+    () => import('@website/components/Shaders/GradientBlinds').then((mod) => mod.GradientBlinds),
+    {
+      ssr: false,
+    },
+  ),
+  grainient: dynamic(
+    () => import('@website/components/Shaders/Grainient').then((mod) => mod.Grainient),
+    {
+      ssr: false,
+    },
+  ),
+}
+
+/**
+ * Per-preset prop bundles sourced from each shader's `config.ts`.
+ * The admin picker (`src/fields/HeroSlides/Components/shaderComponents.ts`)
+ * keeps its own preview-tuned bundles — these are the production/public values.
+ */
+const SHADER_PROPS: Record<ShaderPresetKey, object> = {
+  darkveil: darkVeilDefaults,
+  'faulty-terminal': faultyTerminalDefaults,
+  'gradient-blinds': gradientBlindsDefaults,
+  grainient: grainientDefaults,
+}
+
+export interface ShaderHeroBackgroundProps {
+  presetKey: ShaderPresetKey
+  className?: string
+}
+
+/**
+ * Renders the given shader preset full-bleed, live. Dynamically imported
+ * (`ssr: false`) since the shader components read `window` at
+ * default-parameter-evaluation time, not just inside effects — a static
+ * import here would crash server rendering.
+ */
+export const ShaderHeroBackground = ({ presetKey, className }: ShaderHeroBackgroundProps) => {
+  const Shader = SHADER_COMPONENTS[presetKey]
+
+  return (
+    <div className={className} data-testid="shader-hero-background" data-preset={presetKey}>
+      <Shader {...SHADER_PROPS[presetKey]} />
+    </div>
+  )
+}
+
+export default ShaderHeroBackground

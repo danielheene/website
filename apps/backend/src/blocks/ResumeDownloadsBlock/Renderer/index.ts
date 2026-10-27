@@ -1,0 +1,1 @@
+export { ResumeDownloadsBlockRenderer } from './Renderer'

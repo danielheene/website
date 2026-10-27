@@ -1,0 +1,24 @@
+import type { CollectionAfterChangeHook } from 'payload'
+
+import { QueueSlug, TaskSlug } from '@website/types/jobs-queue'
+import { MediaDocument } from '@website/types/payload'
+
+export const generateThumbnails: CollectionAfterChangeHook<MediaDocument> = async ({
+  context,
+  doc,
+  req,
+  previousDoc,
+  operation,
+}) => {
+  if (context.skipGenerateDocumentThumbnails) return doc
+
+  if ((operation === 'create' || operation === 'update') && doc.checksum !== previousDoc.checksum) {
+    await req.payload.jobs.queue({
+      task: TaskSlug.GenerateDocumentThumbnails,
+      queue: QueueSlug.HookHandler,
+      input: {
+        documentId: doc.id,
+      },
+    })
+  }
+}

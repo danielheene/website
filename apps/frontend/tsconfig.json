@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "allowJs": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": false,
+    "target": "esnext",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@website/types": [
+        "../../packages/types/src/*"
+      ],
+      "@website/styles": [
+        "../../packages/styles/*"
+      ],
+      "@website/components": [
+        "../../packages/components/src/*"
+      ],
+      "react": [
+        "./node_modules/@types/react"
+      ],
+      "@website/lib": [
+        "../../packages/lib/src/*"
+      ],
+      "@website/lib/*": [
+        "../../packages/lib/src/*"
+      ],
+      "@website/app-components": [
+        "../../packages/app-components/src/*"
+      ],
+      "@website/app-components/*": [
+        "../../packages/app-components/src/*"
+      ]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "out",
+    "tools/oxlint/anti-slop",
+    "**/*.test.ts",
+    "**/*.test.tsx"
+  ],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts",
+    "next.config.ts"
+  ]
+}

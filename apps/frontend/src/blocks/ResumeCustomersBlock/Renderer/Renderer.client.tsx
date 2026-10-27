@@ -1,0 +1,45 @@
+'use client'
+
+import { LogoCarousel, LogoCarouselProps } from '@website/app-components/LogoCarousel/LogoCarousel'
+import { Reveal } from '@website/app-components/Reveal/index'
+import { SectionContainer } from '@website/app-components/SectionContainer/index'
+import { Headline } from '@website/components/Headline'
+import { ResumeCustomersBlock } from '@website/types/payload'
+
+import RichText from '@/components/RichText'
+
+interface ResumeCustomersBlockClientRendererProps extends ResumeCustomersBlock {
+  title: string
+  logos: LogoCarouselProps['entries']
+}
+
+export const ResumeCustomersBlockClientRenderer = ({
+  blockType: _blockType,
+  title,
+  caption,
+  logos,
+}: ResumeCustomersBlockClientRendererProps) => {
+  return (
+    <SectionContainer title={title} variant="primary">
+      <div className="container py-16 lg:py-32">
+        <Reveal className="grid grid-cols-12 items-center gap-8">
+          <div className="col-span-12 mb-16 flex flex-col justify-center gap-12 lg:col-span-4 lg:col-start-2 lg:mb-0">
+            {title && (
+              <Headline variant="section" data-reveal-item>
+                {title}
+              </Headline>
+            )}
+            {caption && (
+              <div data-reveal-item>
+                <RichText className="text-inherit" data={caption} enableGutter={false} />
+              </div>
+            )}
+          </div>
+          <div className="col-span-12 lg:col-span-6" data-reveal-item>
+            <LogoCarousel entries={logos} />
+          </div>
+        </Reveal>
+      </div>
+    </SectionContainer>
+  )
+}

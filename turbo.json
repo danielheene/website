@@ -1,0 +1,85 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "stream",
+  "globalDependencies": [
+    ".env.local",
+    "packages/styles/**/*.css",
+    "packages/types/src/**/*.ts",
+    "packages/components/src/**/*",
+    "packages/lib/src/**/*.ts",
+    "packages/app-components/src/**/*"
+  ],
+  "globalEnv": [
+    "NODE_ENV",
+    "CI",
+    "VERCEL",
+    "VERCEL_ENV",
+    "VERCEL_URL",
+    "VERCEL_BRANCH_URL",
+    "VERCEL_TARGET_ENV",
+    "NEXT_PUBLIC_SENTRY_DSN",
+    "NEXT_PUBLIC_SENTRY_ENVIRONMENT",
+    "NEXT_PUBLIC_SENTRY_RELEASE",
+    "SENTRY_TRACES_SAMPLE_RATE"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": ["generate", "^build"],
+      "inputs": ["$TURBO_DEFAULT$", "!.env*", "!**/*.test.ts", "!**/*.test.tsx"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+    },
+    "@website/frontend#build": {
+      "dependsOn": ["^build", "@website/backend#build"],
+      "inputs": ["$TURBO_DEFAULT$", "!.env*", "!**/*.test.ts", "!**/*.test.tsx"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "start": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
+    },
+    "lint:fix": {
+      "dependsOn": ["^lint:fix"],
+      "cache": false
+    },
+    "format": {
+      "dependsOn": ["^format"]
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "test:coverage": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"]
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true
+    },
+    "generate": {
+      "dependsOn": ["generate:types", "generate:db-schema", "generate:importmap"]
+    },
+    "generate:types": {
+      "dependsOn": ["^generate:types"],
+      "cache": false
+    },
+    "generate:db-schema": {
+      "dependsOn": ["^generate:db-schema"],
+      "cache": false
+    },
+    "generate:importmap": {
+      "dependsOn": ["^generate:importmap"],
+      "cache": false
+    }
+  }
+}

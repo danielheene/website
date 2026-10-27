@@ -1,0 +1,207 @@
+import type { AccessArgs, CollectionConfig } from 'payload'
+
+import { generatePreviewPath } from '@website/lib/generatePreviewPath'
+import { AdminGroup } from '@website/types/admin-panel'
+import { RESERVED_TOPIC_SLUGS } from '@website/types/blog'
+import { CollectionData, CollectionSlug } from '@website/types/collections'
+
+import {
+  hideVersionsTabForSingleVersion,
+  SINGLE_VERSION_DRAFTS,
+} from '@/collections/shared/singleVersionDrafts'
+import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
+import { HeroSlidesField } from '@/fields/HeroSlides'
+import { MetaField } from '@/fields/Meta'
+import { RichTextField } from '@/fields/RichText'
+import { SlugField } from '@/fields/Slug'
+import { TitleField } from '@/fields/Title'
+import { ToggleField } from '@/fields/Toggle'
+import { authenticated } from '@/lib/access/authenticated'
+import { authenticatedOrPublished } from '@/lib/access/authenticatedOrPublished'
+
+import { revalidateBlogTopic } from './hooks/revalidateBlogTopic'
+
+export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
+  slug: CollectionSlug.BlogTopics,
+  labels: {
+    singular: 'Topic',
+    plural: 'Topics',
+  },
+  defaultPopulate: {
+    title: true,
+    slug: true,
+  },
+  // Descending so featured topics sort first — MongoDB orders booleans
+  // false -> true on an ascending sort.
+  defaultSort: ['-featured', 'title'],
+  disableDuplicate: true,
+  admin: {
+    useAsTitle: 'title',
+    group: AdminGroup.Blog,
+    groupBy: true,
+    pagination: {
+      defaultLimit: 25,
+      limits: [25, 50, 100],
+    },
+    livePreview: {
+      url: ({ data }) => generatePreviewPath(CollectionSlug.BlogTopics, data.slug),
+    },
+    preview: (data: Partial<CollectionData<CollectionSlug['BlogTopics']>>) =>
+      generatePreviewPath(CollectionSlug.BlogTopics, data.slug),
+    listSearchableFields: ['title', 'slug'],
+    defaultColumns: ['title', 'slug', 'featured'],
+    components: {
+      listMenuItems:
+        process.env.NODE_ENV !== 'production'
+          ? [
+              {
+                path: '@/components/AdminPanel/SeedActions#SeedActions',
+                clientProps: {
+                  collectionSlug: CollectionSlug.BlogTopics,
+                  collectionLabel: 'Topics',
+                },
+              },
+            ]
+          : [],
+      views: {
+        edit: {
+          versions: {
+            tab: {
+              condition: hideVersionsTabForSingleVersion,
+            },
+          },
+        },
+      },
+    },
+  },
+  access: {
+    create: authenticated,
+    delete: async ({
+      req: { user, payload },
+      id,
+    }: AccessArgs<CollectionData<CollectionSlug['BlogTopics']>>) => {
+      if (!user) return false
+      let references = 0
+
+      try {
+        const { totalDocs } = await payload.find({
+          collection: CollectionSlug.BlogPosts,
+          where: {
+            topics: {
+              contains: id,
+            },
+          },
+          pagination: false,
+        })
+
+        references += totalDocs
+      } catch (_) {
+        /* no references found */
+      }
+
+      return references === 0
+    },
+    read: authenticatedOrPublished,
+    update: authenticated,
+  },
+  hooks: {
+    afterChange: [revalidateBlogTopic],
+  },
+  fields: [
+    /* -------------- Main  Content -------------- */
+    {
+      type: 'row',
+      fields: [
+        TitleField({
+          listViewThumbnailPath: 'hero.slides.0.media.value',
+        }),
+        ToggleField({
+          name: 'featured',
+          iconActive: 'material-symbols:star',
+          iconInactive: 'material-symbols:star-outline',
+        }),
+      ],
+    },
+
+    /* -------------- Sidebar Content -------------- */
+    SlugField({
+      fieldToUse: 'title',
+      overrides: {
+        validate: (value: string | null | undefined) => {
+          // these segments belong to /blog/post/<slug> and the legacy
+          // /blog/page/<n> redirects; a topic using them would be unreachable
+          if (typeof value === 'string' && RESERVED_TOPIC_SLUGS.includes(value)) {
+            return `"${value}" is reserved by the blog routes — choose another slug.`
+          }
+
+          return true
+        },
+      },
+    }),
+
+    {
+      name: 'hero',
+      type: 'group',
+      label: false,
+      admin: {
+        position: 'sidebar',
+        disableListColumn: true,
+        disableListFilter: true,
+        disableGroupBy: true,
+      },
+      fields: [
+        HeroSlidesField({
+          name: 'slides',
+          editorVariant: 'single',
+        }),
+      ],
+    },
+
+    /* -------------- Content -------------- */
+    {
+      type: 'tabs',
+      tabs: [
+        {
+          label: 'Content',
+          fields: [
+            RichTextField({
+              name: 'content',
+              editorVariant: 'caption',
+              overrides: {
+                label: false,
+              },
+            }),
+          ],
+        },
+        {
+          label: 'Related Posts',
+          fields: [
+            {
+              name: 'relatedPosts',
+              type: 'join',
+              collection: CollectionSlug.BlogPosts,
+              on: 'topics',
+              hasMany: true,
+              label: false,
+              admin: {
+                allowCreate: false,
+                disableGroupBy: true,
+                disableListColumn: true,
+                disableListFilter: true,
+              },
+            },
+          ],
+        },
+        {
+          label: 'SEO',
+          fields: [MetaField()],
+        },
+      ],
+    },
+
+    GeneratorFlagsField(),
+  ],
+  orderable: true,
+  trash: true,
+  versions: SINGLE_VERSION_DRAFTS,
+}

@@ -1,0 +1,76 @@
+import type { BlockSlug as RegisteredBlockSlug, TypedBlock } from 'payload'
+
+import type { PascalCase } from 'type-fest'
+
+import type { GlobalData, RegisteredGlobalSlug } from './globals'
+import type { BilingualLocale, ReducedToBilingualLanguage } from './reduceDataToBilingualLanguage'
+import type { ResolvedRelations } from './resolvedRelations'
+
+/**
+ *
+ * BLOCK GROUPS
+ *
+ */
+export const BlockGroup = {
+  General: 'General',
+  Blog: 'Blog',
+  Resume: 'Resume',
+  Legal: 'Legal',
+} as const
+
+export type BlockGroup = typeof BlockGroup
+
+export type BlockGroupKey = keyof BlockGroup & string
+
+export type BlockGroupValue = BlockGroup[BlockGroupKey] & string
+
+/**
+ * Block Slugs
+ */
+export const BlockSlug = {
+  /* general blocks */
+  RichText: 'RichTextBlock',
+  TwoColumnContent: 'TwoColumnContentBlock',
+  Code: 'CodeBlock',
+  LinkGroup: 'LinkGroupBlock',
+  HighlightBox: 'HighlightBoxBlock',
+  FeatureCards: 'FeatureCardsBlock',
+
+  /* blog related blocks */
+  TrendingBlogPosts: 'TrendingBlogPostsBlock',
+
+  /* legal blocks */
+  LegalPublisher: 'LegalPublisherBlock',
+  LegalAuthorships: 'LegalAuthorshipsBlock',
+
+  /* resume related blocks */
+  ResumeAboutMe: 'ResumeAboutMeBlock',
+  ResumeCustomers: 'ResumeCustomersBlock',
+  ResumeDownloads: 'ResumeDownloadsBlock',
+  ResumeExperience: 'ResumeExperienceBlock',
+  ResumeProjects: 'ResumeProjectsBlock',
+  ResumeContact: 'ResumeContactBlock',
+} as const
+
+export type BlockSlug = typeof BlockSlug
+
+export type BlockSlugKey = keyof BlockSlug & string
+
+export type BlockSlugValue = BlockSlug[BlockSlugKey] & string
+
+export type { BlockSlug as RegisteredBlockSlug } from 'payload'
+
+export type BlockData<
+  T extends RegisteredBlockSlug = RegisteredBlockSlug & string,
+  L extends BilingualLocale = 'en',
+> = ReducedToBilingualLanguage<ResolvedRelations<TypedBlock[T]>, L>
+
+/**
+ * generic for resume blocks that only wraps data of its respective global
+ * and serves as assistance to place global data into the layout
+ */
+export type ResumeLayoutBlockData<S extends RegisteredGlobalSlug> = {
+  id?: string
+  blockType: `${PascalCase<S>}Block`
+  data: ReducedToBilingualLanguage<GlobalData<S>>
+}

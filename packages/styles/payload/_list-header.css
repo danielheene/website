@@ -1,0 +1,41 @@
+.list-header,
+.doc-header {
+  @apply mt-0;
+
+  .list-header__title,
+  .doc-header__title {
+    @apply font-pp-supply-mono text-xl leading-10 -mt-0.5;
+  }
+
+  .list-header__content {
+    @apply flex flex-row justify-between flex-wrap pt-2.5;
+  }
+
+  .list-header__title-and-actions,
+  .list-header__title-actions,
+  .list-header__actions,
+  .list-header__actions > * {
+    @apply flex flex-row items-center flex-nowrap text-nowrap whitespace-nowrap m-0 p-0;
+
+    .btn {
+      @apply text-nowrap whitespace-nowrap;
+    }
+  }
+
+  .list-header__after-header-content > * {
+    @apply empty:hidden;
+  }
+}
+
+.collection-list .table:first-of-type td {
+  vertical-align: middle;
+}
+
+.list-header,
+.file-field__dropzoneButtons {
+  @apply items-center;
+}
+
+.array-field .array-field__header {
+  gap: calc(var(--base) / 4);
+}

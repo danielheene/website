@@ -1,0 +1,43 @@
+import type { TaskConfig } from 'payload'
+
+import { TaskSlug } from '@website/types/jobs-queue'
+
+import { handlerPath } from '@/jobs-queue/lib/handlerPath'
+
+export const buildLocalizedResumeData: TaskConfig<TaskSlug['BuildLocalizedResumeData']> = {
+  slug: TaskSlug.BuildLocalizedResumeData,
+  label: 'Build Localized Resume Data',
+  retries: 3,
+  inputSchema: [
+    {
+      type: 'text',
+      name: 'locale',
+      required: true,
+      typescriptSchema: [
+        () => ({
+          type: 'string',
+          enum: ['en', 'de'],
+          required: true,
+        }),
+      ],
+    },
+    {
+      type: 'date',
+      name: 'createdAt',
+      required: true,
+    },
+    {
+      type: 'text',
+      name: 'documentSlug',
+      required: true,
+    },
+  ],
+  outputSchema: [
+    {
+      type: 'json',
+      name: 'resumeDocumentData',
+      required: true,
+    },
+  ],
+  handler: handlerPath('buildLocalizedResumeData.ts'),
+}

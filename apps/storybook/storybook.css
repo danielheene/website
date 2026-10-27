@@ -1,0 +1,17 @@
+/**
+ * The Storybook's own stylesheet.
+ *
+ * It reuses the shared theme so the components render with the same tokens
+ * the site uses, but scans the Storybook's own stories — the frontend's
+ * `@source` roots point at the frontend's app tree, which Storybook does not
+ * ship.
+ */
+@import 'tailwindcss/preflight.css' layer(base);
+@import 'tailwindcss/utilities.css' layer(utilities);
+@import '@website/styles/theme.css' layer(theme);
+
+@source './components';
+@source './foundations';
+@source './shaders';
+@source '../../packages/components/src';
+@source '../../packages/app-components/src';

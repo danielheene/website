@@ -1,0 +1,86 @@
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.text-field-with-lock-and-generate {
+  .label-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: calc(var(--base) / 2);
+  }
+
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+
+    & > *:hover,
+    & > *:focus,
+    & > *:focus-within {
+      z-index: 1;
+    }
+  }
+
+  .input-button {
+    border: 1px solid var(--theme-elevation-150);
+    border-radius: var(--style-radius-s);
+    background: var(--theme-input-bg);
+    color: var(--theme-elevation-800);
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    cursor: pointer;
+    position: relative;
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 2px 2px -1px #0003;
+      border-color: var(--theme-elevation-250);
+    }
+
+    &:disabled {
+      cursor: default;
+      pointer-events: none;
+      background-color: var(--theme-elevation-100);
+      color: var(--theme-elevation-400);
+    }
+
+    &.input-button--lock {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    &.input-button--generate {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+  }
+
+  .input-field {
+    flex: 1;
+
+    &.input-field--has-lock {
+      margin-left: -1px;
+
+      input {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+    }
+
+    &.input-field--has-generate {
+      margin-right: -1px;
+
+      input {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+    }
+  }
+}

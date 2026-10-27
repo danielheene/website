@@ -1,0 +1,21 @@
+/**
+ * The Tailwind theme, assembled from the partials next to this file.
+ *
+ * The apps each own an entry stylesheet (`apps/frontend/frontend.css`,
+ * `apps/backend/backend.css`) that imports this and adds its own layers on
+ * top. Shared CSS in `packages/*` uses `@reference '@website/styles/theme.css'`
+ * to pull the theme in without emitting any of it — which is why Tailwind's
+ * own `theme.css` is part of this file: `@apply` in shared CSS needs the
+ * default scales (spacing, breakpoints, radii) as well as the custom ones.
+ */
+@import 'tailwindcss/theme.css' layer(theme);
+
+@import './theme/_animations.css' layer(theme);
+@import './theme/_aspects.css' layer(theme);
+@import './theme/_colors.css' layer(theme);
+@import './theme/_fonts.css' layer(theme);
+@import './theme/_radii.css' layer(theme);
+@import './theme/_sizes.css' layer(theme);
+@import './theme/_shadows.css' layer(theme);
+@import './theme/_text.css' layer(theme);
+@import './theme/_text-shadows.css' layer(theme);

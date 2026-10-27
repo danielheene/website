@@ -1,0 +1,462 @@
+name: Build & Deploy
+
+# Push pipeline only: bump version -> build & tag & deploy. main cuts releases,
+# develop cuts release candidates (X.Y.Z-rc.N, see release.config.mjs).
+# main and develop are the only two branches this workflow ever runs on, so
+# `environment:` and image tags are static literals per job, never computed
+# from a branch-name expression. PR-time lint/test lives in lint-and-test.yml.
+#
+# Images are tagged `latest` (production) or `edge` (development) — one tag
+# per branch, no per-SHA intermediate tags and no separate promote/retag
+# step: each push builds and pushes the final tag directly.
+#
+# workflow_dispatch is a manual re-run of the same pipeline on an existing
+# branch tip (e.g. to recover from a run that a [skip ci] push never
+# triggered) — not a way to run this on any other branch. Every job still
+# keys off github.ref, so a dispatch run must be started on main or develop.
+on:
+  push:
+    branches:
+      - main
+      - develop
+  workflow_dispatch: {}
+
+# Each job asks for what it needs.
+permissions:
+  contents: read
+
+# Deploys of one branch never overlap or cancel each other mid-way.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_BASE: ghcr.io/${{ github.repository }}
+
+jobs:
+  version:
+    name: Bump version
+    permissions:
+      contents: write
+    # main cuts a release, develop a release candidate (X.Y.Z-rc.N).
+    if: >-
+      !contains(github.event.head_commit.message, '[skip ci]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      released: ${{ steps.release.outputs.released }}
+      version: ${{ steps.release.outputs.version }}
+    steps:
+      # main is protected by a ruleset requiring PRs + signed commits, with
+      # no bypass for a plain secrets.GITHUB_TOKEN push — @semantic-release/
+      # git's direct push to main was being rejected outright (GH006:
+      # "Commits must have verified signatures" + "Changes must be made
+      # through a pull request"). A GitHub App installation token is this
+      # ruleset's configured bypass actor, and GitHub auto-verifies commits
+      # authored via an App token, so this satisfies both rules with no GPG
+      # key to generate or rotate.
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@67018539274d69449ef7c02e8e71183d1719ab42 # v2.1.4
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # semantic-release computes the next version from the full commit
+          # history since the last tag — a shallow clone would see nothing.
+          fetch-depth: 0
+          persist-credentials: true
+          token: ${{ steps.app-token.outputs.token }}
+
+      # @semantic-release/git doesn't infer a commit identity from the
+      # checkout token — without this it'd fall back to the runner's
+      # default git config, and the resulting commit would carry the
+      # App's auth but a mismatched author, defeating the point. This is
+      # GitHub's documented convention for App-authored commits:
+      # <app-slug>[bot] / <app-id>+<app-slug>[bot]@users.noreply.github.com.
+      - name: Configure git identity as the App
+        run: |
+          git config user.name "danielheene-website-release[bot]"
+          git config user.email "${{ secrets.RELEASE_APP_ID }}+danielheene-website-release[bot]@users.noreply.github.com"
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Release
+        id: release
+        run: |
+          bun x semantic-release
+          # Nothing further to do if this push didn't actually cut a release
+          # (e.g. a docs/chore-only push that semantic-release skipped) —
+          # semantic-release's own commit (if any) is HEAD after it runs,
+          # so an exact tag match there means a release was just cut.
+          if git describe --tags --exact-match HEAD >/dev/null 2>&1; then
+            echo "released=true" >> "$GITHUB_OUTPUT"
+            echo "version=v$(node -p 'require("./package.json").version')" >> "$GITHUB_OUTPUT"
+          else
+            echo "released=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          # @semantic-release/git's push and @semantic-release/github's
+          # release creation both need to run as the App identity — the
+          # App token is what's actually allowed through main's ruleset,
+          # secrets.GITHUB_TOKEN is not.
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      # develop only cuts release candidates while it contains every main
+      # release, and each main release adds a commit develop lacks. Fast-forward
+      # develop when it has nothing of its own; otherwise leave it for a manual
+      # update rather than failing the main release.
+      - name: Fast-forward develop to main
+        if: github.ref == 'refs/heads/main'
+        run: |
+          # Never fails the main release: anything that goes wrong here only
+          # means develop needs a manual update.
+          if git fetch origin develop &&
+            git merge-base --is-ancestor origin/develop HEAD &&
+            git push origin HEAD:refs/heads/develop; then
+            echo "develop fast-forwarded to main"
+          else
+            echo "::warning::could not fast-forward develop to main; update it by hand so it keeps cutting release candidates"
+          fi
+
+  # Builds, migrates, assembles images, boot-checks each container, pushes and
+  # redeploys. Lint/unit tests/Semgrep/E2E already ran as required PR checks
+  # (branch protection on main/develop requires lint-and-test.yml's checks to
+  # pass before merge) — this job assumes the merged commit already passed
+  # them, and does not re-run them here.
+  deploy:
+    name: Build, migrate & push images
+    needs:
+      - version
+    if: |
+      always() &&
+      !contains(needs.version.result, 'failure') && !contains(needs.version.result, 'cancelled')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+    # One literal environment per branch — main and develop are the only
+    # branches this workflow runs on, so there is exactly one deployment
+    # chain per branch and no computed `environment: ${{ expression }}`
+    # (GitHub accepts that syntactically but never actually binds an
+    # environment from it, so no environment-scoped secrets get injected).
+    environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
+    # Every step that needs the application environment (migrate, generate)
+    # reads it from here, so the list exists once.
+    env:
+      # Every image runs production mode, `develop` (:edge) included; the old
+      # per-branch NODE_ENV build arg is gone with the Docker build phase.
+      NODE_ENV: production
+      # `if:` can't read the `secrets` context directly, so its presence is
+      # mirrored into `env` at the job level, where every step's `if:` can see it.
+      HAS_SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN != '' }}
+      SERVER_HOST: ${{ secrets.SERVER_HOST }}
+      SERVER_URL: ${{ secrets.SERVER_URL }}
+      NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
+      NEXT_PUBLIC_STATUS_PAGE_URL: ${{ secrets.NEXT_PUBLIC_STATUS_PAGE_URL }}
+      STATUS_PAGE_HEARTBEAT_URL: ${{ secrets.STATUS_PAGE_HEARTBEAT_URL }}
+      RESUME_REDIRECT_URL_BASE: ${{ secrets.RESUME_REDIRECT_URL_BASE }}
+      PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+      PREVIEW_SECRET: ${{ secrets.PREVIEW_SECRET }}
+      CRON_SECRET: ${{ secrets.CRON_SECRET }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      REDIS_URL: ${{ secrets.REDIS_URL }}
+      S3_BUCKET: ${{ secrets.S3_BUCKET }}
+      S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+      S3_REGION: ${{ secrets.S3_REGION }}
+      S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+      S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+      UMAMI_USERNAME: ${{ secrets.UMAMI_USERNAME }}
+      UMAMI_PASSWORD: ${{ secrets.UMAMI_PASSWORD }}
+      NEXT_PUBLIC_UMAMI_URL: ${{ secrets.NEXT_PUBLIC_UMAMI_URL }}
+      NEXT_PUBLIC_UMAMI_SITE_ID: ${{ secrets.NEXT_PUBLIC_UMAMI_SITE_ID }}
+      USESEND_URL: ${{ secrets.USESEND_URL }}
+      USESEND_API_KEY: ${{ secrets.USESEND_API_KEY }}
+      USESEND_DEFAULT_FROM_ADDRESS: ${{ secrets.USESEND_DEFAULT_FROM_ADDRESS }}
+      USESEND_DEFAULT_FROM_NAME: ${{ secrets.USESEND_DEFAULT_FROM_NAME }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      MAPBOX_API_KEY: ${{ secrets.MAPBOX_API_KEY }}
+      UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
+      NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+      NEXT_PUBLIC_SENTRY_ENVIRONMENT: ${{ secrets.NEXT_PUBLIC_SENTRY_ENVIRONMENT }}
+      SENTRY_TRACES_SAMPLE_RATE: ${{ secrets.SENTRY_TRACES_SAMPLE_RATE }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.ref }}
+
+      # Reaches the same database over Tailscale that Dokploy does, so migrate
+      # and generate (whose generateStaticParams/prerender queries hit the
+      # database) resolve exactly as they do on the deployment server. The
+      # DATABASE_URL/REDIS_URL hostnames are MagicDNS names, so the node must
+      # accept the tailnet's DNS config (`--accept-dns=true`, the default,
+      # made explicit here).
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@780049a30b6ff5c378a9e7b389d15ece7a204888 # v4.1.3
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+          args: --accept-dns=true
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      # `payload migrate` reads process.env directly. A failed migration stops
+      # the job before any image is built or pushed.
+      - name: Run database migrations
+        run: bun run migrate
+
+      # One build against this environment's real values — no separate
+      # test-env compile to reconcile with afterward (see lint-and-test.yml's
+      # `e2e` job for the PR-time equivalent, which uses .env.test instead).
+      - name: Build backend
+        run: bun run build:backend
+
+      # Standalone sentry-cli steps, not a Next.js/webpack plugin — avoids the
+      # withSentryConfig require-patching crash under Turbopack (see commits
+      # 4f4f903e, dced5bbe, 46e20549). Only this push-triggered build uploads
+      # source maps (lint-and-test.yml's PR-time build does not: a PR never
+      # ships, so there's no deployed release to attach maps to).
+      #
+      # Scoped to .next/server/app (this app's own route code) and
+      # .next/static/chunks (its own client bundles) rather than the whole
+      # .next tree: .next/server/chunks alone is ~500MB, almost entirely
+      # third-party vendor code (date-fns, shiki languages/themes, etc.)
+      # bundled in by Turbopack — stack traces through vendor internals are
+      # rarely actionable, and uploading it hits Cloudflare's request-size
+      # limit in front of Rustrak (confirmed via a live 413 with sentry-cli
+      # --log-level=debug showing a single ~113MB chunk-upload POST). Vendor
+      # chunks stay minified; this app's own code resolves.
+      - name: Upload source maps to Rustrak
+        if: env.HAS_SENTRY_AUTH_TOKEN == 'true'
+        run: |
+          release="$(node -e "const p=require('./apps/backend/package.json'); console.log(p.name+'@'+p.version)")"
+          cd apps/backend
+          bun x sentry-cli --url "$SENTRY_URL" sourcemaps inject .next/server/app .next/static/chunks
+          bun x sentry-cli --url "$SENTRY_URL" releases new "$release"
+          bun x sentry-cli --url "$SENTRY_URL" sourcemaps upload --release "$release" .next/server/app .next/static/chunks
+          bun x sentry-cli --url "$SENTRY_URL" releases finalize "$release"
+        env:
+          SENTRY_URL: ${{ secrets.SENTRY_URL }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # main -> :latest, develop -> :edge, each plus :vX.Y.Z / :vX.Y.Z-rc.N if
+      # this push cut a release.
+      # One literal tag set per branch, no arch suffix and no separate merge
+      # job — amd64 is the only platform built, so the build-push-action's
+      # own tag already is the final tag.
+      - name: Compute image tags
+        id: tags
+        env:
+          RELEASE_VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            names="latest"
+          else
+            names="edge"
+          fi
+          if [ -n "$RELEASE_VERSION" ]; then
+            names="$(printf '%s\n%s' "$names" "$RELEASE_VERSION")"
+          fi
+          # shellcheck disable=SC2001 # sed prefixes every line; ${var//} cannot
+          {
+            echo "backend-app<<EOF"
+            echo "$names" | sed "s#^#${IMAGE_BASE}/backend-app:#"
+            echo "EOF"
+            echo "backend-worker<<EOF"
+            echo "$names" | sed "s#^#${IMAGE_BASE}/backend-worker:#"
+            echo "EOF"
+            echo "frontend<<EOF"
+            echo "$names" | sed "s#^#${IMAGE_BASE}/frontend:#"
+            echo "EOF"
+            echo "storybook<<EOF"
+            echo "$names" | sed "s#^#${IMAGE_BASE}/storybook:#"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      # provenance/sbom: false — build-push-action defaults provenance to true,
+      # which pushes every tag as an OCI image index wrapping the actual
+      # single-platform manifest plus an untagged attestation manifest, which
+      # reads as "3 versions" on GHCR's package page for what is one image with
+      # one tag. amd64 only, so a plain manifest is enough.
+      #
+      # `load: true` (not `push: true`) loads each image into the local Docker
+      # daemon instead of pushing it — the boot-check steps below start it and
+      # confirm it's actually healthy before anything reaches the registry.
+      # Each app has its own Dockerfile under `apps/<app>/`. The context is
+      # always the repo root: the Dockerfiles copy the workspace manifests, the
+      # shared packages and the app's own source, then install dependencies
+      # inside the image (native modules are platform specific, so an install
+      # done on the host would not run on the Linux image).
+      - name: Build backend app image
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        with:
+          context: .
+          file: apps/backend/Dockerfile
+          target: app
+          platforms: linux/amd64
+          load: true
+          provenance: false
+          sbom: false
+          tags: ${{ steps.tags.outputs.backend-app }}
+          build-args: |
+            VERSION=${{ needs.version.outputs.version }}
+            REVISION=${{ github.sha }}
+
+      - name: Build backend worker image
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        with:
+          context: .
+          file: apps/backend/Dockerfile
+          target: worker
+          platforms: linux/amd64
+          load: true
+          provenance: false
+          sbom: false
+          tags: ${{ steps.tags.outputs.backend-worker }}
+          build-args: |
+            VERSION=${{ needs.version.outputs.version }}
+            REVISION=${{ github.sha }}
+
+      - name: Build frontend image
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        with:
+          context: .
+          file: apps/frontend/Dockerfile
+          target: app
+          platforms: linux/amd64
+          load: true
+          provenance: false
+          sbom: false
+          tags: ${{ steps.tags.outputs.frontend }}
+          build-args: |
+            VERSION=${{ needs.version.outputs.version }}
+            REVISION=${{ github.sha }}
+
+      - name: Build storybook image
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        with:
+          context: .
+          file: apps/storybook/Dockerfile
+          target: storybook
+          platforms: linux/amd64
+          load: true
+          provenance: false
+          sbom: false
+          tags: ${{ steps.tags.outputs.storybook }}
+          build-args: |
+            VERSION=${{ needs.version.outputs.version }}
+            REVISION=${{ github.sha }}
+
+      # Starts each built image as a real container and confirms it boots and
+      # its HEALTHCHECK passes — proof the image itself works, not just that
+      # `docker build` succeeded. Uses the app's primary (first) tag; a
+      # multi-tag image is the same single image under every tag, so checking
+      # one is checking all of them. Each container is run against the real
+      # database/Redis/S3 already reachable in this job (via the Tailscale
+      # connection above) and this environment's real secrets, so the
+      # healthcheck exercises real dependencies, not an unreachable stub.
+      # `docker run --env-file` forwards every variable this job's own env:
+      # block exports to the shell (minus a few GitHub Actions reserves that
+      # never belong in a container anyway) — hand-picking a subset drifted
+      # out of sync with envSchema and silently failed boot-checks with env
+      # validation errors instead of ever actually testing the app.
+      - name: Boot-check backend app image
+        run: |
+          tag="$(echo "${{ steps.tags.outputs.backend-app }}" | head -n1)"
+          env | grep -vE '^(PATH|HOME|PWD|GITHUB_|RUNNER_|CI=|ACTIONS_)' > "$RUNNER_TEMP/boot-check.env"
+          id=$(docker run -d --network host --env-file "$RUNNER_TEMP/boot-check.env" "$tag")
+          rm -f "$RUNNER_TEMP/boot-check.env"
+          for _ in $(seq 1 30); do
+            curl -sS -o /dev/null http://localhost:3000/ && { echo "backend app container healthy"; docker rm -f "$id" > /dev/null; exit 0; }
+            sleep 2
+          done
+          echo "backend app container never became healthy"; docker logs "$id"; docker rm -f "$id" > /dev/null; exit 1
+
+      - name: Boot-check backend worker image
+        run: |
+          tag="$(echo "${{ steps.tags.outputs.backend-worker }}" | head -n1)"
+          env | grep -vE '^(PATH|HOME|PWD|GITHUB_|RUNNER_|CI=|ACTIONS_)' > "$RUNNER_TEMP/boot-check.env"
+          id=$(docker run -d --network host --env-file "$RUNNER_TEMP/boot-check.env" "$tag")
+          rm -f "$RUNNER_TEMP/boot-check.env"
+          for _ in $(seq 1 30); do
+            curl -sS -o /dev/null http://localhost:3000/health && { echo "backend worker container healthy"; docker rm -f "$id" > /dev/null; exit 0; }
+            sleep 2
+          done
+          echo "backend worker container never became healthy"; docker logs "$id"; docker rm -f "$id" > /dev/null; exit 1
+
+      # The frontend binds :3000 by default, which the backend app image
+      # already uses on the host network — give it a different port.
+      - name: Boot-check frontend image
+        run: |
+          tag="$(echo "${{ steps.tags.outputs.frontend }}" | head -n1)"
+          env | grep -vE '^(PATH|HOME|PWD|GITHUB_|RUNNER_|CI=|ACTIONS_)' > "$RUNNER_TEMP/boot-check.env"
+          id=$(docker run -d --network host --env-file "$RUNNER_TEMP/boot-check.env" -e PORT=3002 "$tag")
+          rm -f "$RUNNER_TEMP/boot-check.env"
+          for _ in $(seq 1 30); do
+            curl -sS -o /dev/null http://localhost:3002/ && { echo "frontend container healthy"; docker rm -f "$id" > /dev/null; exit 0; }
+            sleep 2
+          done
+          echo "frontend container never became healthy"; docker logs "$id"; docker rm -f "$id" > /dev/null; exit 1
+
+      - name: Boot-check storybook image
+        run: |
+          tag="$(echo "${{ steps.tags.outputs.storybook }}" | head -n1)"
+          id=$(docker run -d --network host "$tag")
+          for _ in $(seq 1 10); do
+            curl -fsS http://localhost:3020 > /dev/null && { echo "storybook container healthy"; docker rm -f "$id" > /dev/null; exit 0; }
+            sleep 2
+          done
+          echo "storybook container never became healthy"; docker logs "$id"; docker rm -f "$id" > /dev/null; exit 1
+
+      - name: Push backend app image
+        run: for tag in ${{ steps.tags.outputs.backend-app }}; do docker push "$tag"; done
+
+      - name: Push backend worker image
+        run: for tag in ${{ steps.tags.outputs.backend-worker }}; do docker push "$tag"; done
+
+      - name: Push frontend image
+        run: for tag in ${{ steps.tags.outputs.frontend }}; do docker push "$tag"; done
+
+      - name: Push storybook image
+        run: for tag in ${{ steps.tags.outputs.storybook }}; do docker push "$tag"; done
+
+      # Tells Dokploy to actually redeploy each app now that its image is
+      # pushed — pushing to ghcr.io alone doesn't make Dokploy pull it. Each
+      # URL already embeds its own auth (Dokploy's refreshToken as a query
+      # param), so these are just bare trigger calls, one per app.
+      - name: Trigger Dokploy deployments
+        run: |
+          for url in \
+            "$DOKPLOY_UPDATE_URL_BACKEND_APP" \
+            "$DOKPLOY_UPDATE_URL_BACKEND_WORKER" \
+            "$DOKPLOY_UPDATE_URL_FRONTEND" \
+            "$DOKPLOY_UPDATE_URL_STORYBOOK"; do
+            curl --fail --silent --show-error --request POST "$url"
+          done
+        env:
+          DOKPLOY_UPDATE_URL_BACKEND_APP: ${{ secrets.DOKPLOY_UPDATE_URL_BACKEND_APP }}
+          DOKPLOY_UPDATE_URL_BACKEND_WORKER: ${{ secrets.DOKPLOY_UPDATE_URL_BACKEND_WORKER }}
+          DOKPLOY_UPDATE_URL_FRONTEND: ${{ secrets.DOKPLOY_UPDATE_URL_FRONTEND }}
+          DOKPLOY_UPDATE_URL_STORYBOOK: ${{ secrets.DOKPLOY_UPDATE_URL_STORYBOOK }}

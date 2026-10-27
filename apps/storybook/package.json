@@ -1,0 +1,41 @@
+{
+  "name": "@website/storybook",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "_storybook": "NODE_OPTIONS=\"--trace-deprecation --disable-warning=DeprecationWarning\" storybook",
+    "build": "bun run _storybook build --config-dir . --output-dir dist",
+    "dev": "bun run _storybook dev --config-dir . -p 6006",
+    "format": "oxfmt",
+    "lint": "oxlint && oxfmt --check",
+    "lint:fix": "oxlint --fix && oxfmt",
+    "start": "npx serve dist -l 3020",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@website/components": "workspace:*",
+    "@website/font-pp-frama": "workspace:*",
+    "@website/font-pp-frama-text": "workspace:*",
+    "@website/font-pp-supply-mono": "workspace:*",
+    "@website/font-pp-supply-sans": "workspace:*",
+    "@website/styles": "workspace:*",
+    "next": "^16.4.3",
+    "react": "^19.3.0",
+    "tailwind-variants": "^3.3.1"
+  },
+  "devDependencies": {
+    "@storybook/addon-a11y": "^10.6.0",
+    "@storybook/addon-docs": "^10.6.0",
+    "@storybook/addon-mcp": "^10.6.0",
+    "@storybook/addon-onboarding": "^10.6.0",
+    "@storybook/addon-themes": "^10.6.0",
+    "@storybook/nextjs-vite": "^10.6.0",
+    "@tailwindcss/postcss": "^4.3.3",
+    "postcss": "^8.5.28",
+    "storybook": "^10.6.0",
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.3.1",
+    "vite-tsconfig-paths": "^6.1.1"
+  }
+}

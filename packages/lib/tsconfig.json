@@ -1,0 +1,64 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@website/types": [
+        "../types/src/*"
+      ],
+      "@website/types/*": [
+        "../types/src/*"
+      ],
+      "@website/styles": [
+        "../styles/*"
+      ],
+      "@website/styles/*": [
+        "../styles/*"
+      ],
+      "@website/components": [
+        "../components/src/*"
+      ],
+      "@website/components/*": [
+        "../components/src/*"
+      ],
+      "@website/lib": [
+        "./src/*"
+      ],
+      "@website/lib/*": [
+        "./src/*"
+      ],
+      "@website/app-components": [
+        "../app-components/src/*"
+      ],
+      "@website/app-components/*": [
+        "../app-components/src/*"
+      ]
+    },
+    "jsx": "react-jsx",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "types": [
+      "node",
+      "next/image-types/global"
+    ]
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "**/*.test.tsx"
+  ]
+}

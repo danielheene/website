@@ -1,0 +1,251 @@
+@layer fonts, theme, base, components, utilities, payload-default, overrides;
+@import 'tailwindcss/utilities.css' layer(utilities);
+@import '@website/styles/theme.css' layer(theme);
+
+@import '@website/styles/payload/_app-header.css' layer(overrides);
+@import '@website/styles/payload/_fields.css' layer(payload-default);
+@import '@website/styles/payload/_buttons.css' layer(payload-default);
+@import '@website/styles/payload/_list-header.css' layer(payload-default);
+
+@custom-variant light (&:where(.light, .light *, [data-theme="light"], [data-theme="light"] *));
+@custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
+
+/* Tailwind scans the app's own sources by default. The shared packages
+ * live outside the app tree, so they need an explicit source root — without
+ * it their utility classes are never generated and silently render unstyled. */
+@source '../../packages/app-components/src';
+@source '../../packages/components/src';
+@source '../../frontend';
+
+@source not inline("table");
+@source not inline("table-cell");
+@source not inline("table-row");
+
+@theme static {
+  --color-elevation-0: var(--theme-elevation-0);
+  --color-elevation-50: var(--theme-elevation-50);
+  --color-elevation-100: var(--theme-elevation-100);
+  --color-elevation-150: var(--theme-elevation-150);
+  --color-elevation-200: var(--theme-elevation-200);
+  --color-elevation-250: var(--theme-elevation-250);
+  --color-elevation-300: var(--theme-elevation-300);
+  --color-elevation-350: var(--theme-elevation-350);
+  --color-elevation-400: var(--theme-elevation-400);
+  --color-elevation-450: var(--theme-elevation-450);
+  --color-elevation-500: var(--theme-elevation-500);
+  --color-elevation-550: var(--theme-elevation-550);
+  --color-elevation-600: var(--theme-elevation-600);
+  --color-elevation-650: var(--theme-elevation-650);
+  --color-elevation-700: var(--theme-elevation-700);
+  --color-elevation-750: var(--theme-elevation-750);
+  --color-elevation-800: var(--theme-elevation-800);
+  --color-elevation-850: var(--theme-elevation-850);
+  --color-elevation-900: var(--theme-elevation-900);
+  --color-elevation-950: var(--theme-elevation-950);
+  --color-elevation-1000: var(--theme-elevation-1000);
+}
+
+@layer overrides {
+  :root {
+    --base-body-size: 16;
+    --font-body: var(--font-pp-frama);
+    --font-mono: var(--font-pp-supply-mono);
+    --style-radius-s: var(--radius-sm);
+    --style-radius-m: var(--radius-md);
+    --style-radius-l: var(--radius-lg);
+  }
+
+  html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html,
+  body {
+    background-color: var(--theme-bg);
+    color: var(--theme-text);
+  }
+
+  .cell-createdAt span,
+  .cell-slug span {
+    @apply font-mono;
+  }
+
+  /* The skill's content is its title, so it takes all remaining width. */
+  .collection-list--resume-skills .cell-title {
+    @apply font-sans;
+    width: 100%;
+
+    a {
+      text-decoration: none;
+    }
+  }
+
+  /* Matches the Payload admin form-input look (see the formInput mixin in
+   * @payloadcms/ui/dist/scss/vars.scss) for plain inputs and selects that
+   * live outside a Payload field wrapper, such as the icon picker search
+   * box and category filter, so they read as native admin controls rather
+   * than a one-off Tailwind style.
+   */
+  .payload-form-input {
+    box-shadow: inset 0 0 0 1px transparent;
+    font-family: var(--font-body);
+    border: 1px solid var(--theme-elevation-150);
+    border-radius: var(--style-radius-s);
+    background: var(--theme-input-bg);
+    color: var(--theme-elevation-800);
+    font-size: 1rem;
+    height: 40px;
+    line-height: 20px;
+    padding: 8px 15px;
+    appearance: none;
+    transition-property: border, box-shadow, background-color;
+    transition-duration: 100ms, 100ms, 500ms;
+    transition-timing-function: cubic-bezier(0, 0.2, 0.2, 1);
+
+    &::placeholder {
+      color: var(--theme-elevation-400);
+      font-weight: normal;
+      font-size: 1rem;
+    }
+
+    &:hover {
+      border-color: var(--theme-elevation-250);
+    }
+
+    &:focus,
+    &:focus-within,
+    &:active {
+      border-color: var(--theme-elevation-400);
+      outline: 0;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
+
+  /* Matches the Payload admin Pill component (see @payloadcms/ui Pill and
+   * DefaultListViewTabs), medium size, for the icon picker collection
+   * selectors — Favorites plus one tab per favorite collection — so they
+   * read as the same tab pattern Payload itself uses for switching between
+   * collections in the list view.
+   */
+  .payload-pill {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    white-space: nowrap;
+    border: 0;
+    border-radius: var(--style-radius-s);
+    background: var(--theme-elevation-150);
+    color: var(--theme-elevation-800);
+    font-size: 0.8125rem;
+    line-height: 24px;
+    padding: 4px 12px;
+    transition: background-color 100ms cubic-bezier(0, 0.2, 0.2, 1);
+
+    &:hover {
+      background: var(--theme-elevation-100);
+    }
+
+    &:focus-visible {
+      outline: var(--accessibility-outline);
+      outline-offset: var(--accessibility-outline-offset);
+    }
+  }
+
+  .payload-pill--active {
+    background: var(--theme-elevation-800);
+    color: var(--theme-elevation-0);
+
+    &:hover {
+      background: var(--theme-elevation-750);
+    }
+  }
+
+  /* The icon picker is a search+grid, not a form needing the usual drawer
+   * near-full-width panel — narrowed to a third of the viewport so it reads
+   * as a docked panel rather than covering the page, while still scaling
+   * with the window. min-width keeps the icon grid and collection tabs from
+   * getting cramped once the viewport is narrow enough that a third of it
+   * is no longer enough room. The important flag is required because the
+   * Payload Drawer sets this width as an inline style (see the
+   * @payloadcms/ui Drawer component), which no plain stylesheet rule
+   * (cascade layers included) can outrank on its own.
+   */
+  .icon-picker-drawer .drawer__content {
+    width: 33% !important;
+    min-width: 475px !important;
+  }
+
+  /* The Payload drawer content wrapper (.drawer__content-children, a
+   * Gutter) is a plain padded div with no height or flex behavior of its
+   * own — the IconPicker h-full/flex-1 chain has nothing to resolve against
+   * without this, so its icon grid still falls back to a small intrinsic
+   * height instead of filling the drawer. Scoped to this drawer only, since
+   * other drawers keep a plain form that should grow with its fields rather
+   * than being pinned to the drawer height.
+   */
+  .icon-picker-drawer .drawer__content-children {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    > div:not(.drawer__header) {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+    }
+  }
+
+  /* Balances the drawer header, which reserves 50px above the content
+   * (.drawer__header margin-top: base(2.5) in @payloadcms/ui) — the same
+   * 50px is reserved below so the icon grid does not run flush to the
+   * drawer edge.
+   */
+  .icon-picker-drawer .drawer__content-children > div:not(.drawer__header) {
+    padding-bottom: 50px;
+  }
+
+  @media (min-width: 768px) {
+    .tabs-field--vertical {
+      display: flex;
+      width: 100%;
+
+      .tabs-field__tabs-wrap {
+        min-width: 270px;
+      }
+
+      .tabs-field__tabs {
+        display: flex;
+        flex-direction: column;
+        padding-left: var(--gutter-h);
+        border-bottom: 0;
+      }
+      .tabs-field__content-wrap {
+        flex-grow: 1;
+      }
+      .tabs-field__tab-button {
+        padding: 10px 20px;
+        border-bottom-width: 0;
+        margin-right: 0;
+        &:hover:after {
+          width: 1px;
+          height: 100%;
+          bottom: 0;
+          left: -1px;
+        }
+      }
+      .tabs-field__tab-button--active::after {
+        width: 2px;
+        height: 100%;
+        bottom: 0;
+        left: -1px;
+      }
+    }
+  }
+}

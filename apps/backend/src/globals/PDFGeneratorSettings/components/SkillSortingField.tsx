@@ -1,0 +1,157 @@
+'use client'
+
+import { useCallback, useRef, useState } from 'react'
+import type { JSONFieldClientComponent, JSONFieldClientProps } from 'payload'
+import { DraggableSortable, DraggableSortableItem, fieldBaseClass, useField } from '@payloadcms/ui'
+
+import { Button } from '@website/components/Button'
+import { SkillEntrySortable, SkillSorting, SkillTypeSortable } from '@website/types/payload'
+import { ClassValue, cn } from 'tailwind-variants'
+
+export const SkillSortingField: JSONFieldClientComponent = ({ path }: JSONFieldClientProps) => {
+  const { value, setValue, formProcessing, formInitializing } = useField<SkillSorting>({
+    path,
+  })
+
+  const [isSelected, setIsSelected] = useState<SkillTypeSortable | null>(null)
+
+  const handleEntryMove = (sortableKey: keyof SkillSorting) => {
+    return (selectedValue: SkillTypeSortable[] | SkillEntrySortable[]) => {
+      setValue({
+        ...value,
+        [sortableKey]: selectedValue,
+      })
+    }
+  }
+
+  return (
+    <div className={cn('-mx-2 grid grid-cols-2 gap-2')}>
+      <Sortable<SkillTypeSortable>
+        entries={value?.skillTypeSortable || []}
+        handleEntryMove={(newEntries) => {
+          if (!formProcessing && !formInitializing) {
+            handleEntryMove('skillTypeSortable')(newEntries)
+          }
+        }}
+        selectedEntry={isSelected}
+        setSelectedEntry={setIsSelected}
+        className="w-full p-2"
+      />
+      <Sortable<SkillEntrySortable>
+        entries={(isSelected?.id ? value?.[isSelected.id] : undefined) || []}
+        handleEntryMove={(newEntries) => {
+          if (!formProcessing && !formInitializing && isSelected?.id) {
+            handleEntryMove(isSelected.id)(newEntries)
+          }
+        }}
+        className="w-full p-2"
+      />
+    </div>
+  )
+}
+
+export default SkillSortingField
+
+type SortableProps<EntryType extends SkillTypeSortable | SkillEntrySortable> = {
+  entries: EntryType[]
+  handleEntryMove: (newEntries: EntryType[]) => void
+  selectedEntry?: EntryType | null
+  setSelectedEntry?: (entry: EntryType) => void
+  className?: ClassValue
+}
+
+function Sortable<EntryType extends SkillTypeSortable | SkillEntrySortable>({
+  entries,
+  handleEntryMove,
+  selectedEntry,
+  setSelectedEntry = () => void 0,
+  className,
+}: SortableProps<EntryType>) {
+  const droppableRef = useRef<HTMLDivElement | null>(null)
+  const [pointerDown, setPointerDown] = useState<boolean>(false)
+  const [isDraggingItem, setIsDraggingItem] = useState<string | null>(null)
+
+  const moveArrayItem = useCallback(
+    (fromIndex: number, toIndex: number) => {
+      if (fromIndex === toIndex) return
+
+      if (fromIndex < 0 || fromIndex > entries.length - 1) return
+
+      if (toIndex < 0 || toIndex > entries.length - 1) return
+
+      const movedValue = entries[fromIndex]
+      const arrayExcludingMoved = entries.toSpliced(fromIndex, 1)
+      const arrNewValuePos = arrayExcludingMoved.toSpliced(toIndex, 0, movedValue)
+
+      handleEntryMove(arrNewValuePos)
+    },
+    [entries, handleEntryMove],
+  )
+
+  const handleDragStart = useCallback(({ event: _event, id }) => {
+    setIsDraggingItem(id)
+  }, [])
+
+  const handleDragEnd = useCallback(
+    ({ event: _event, moveFromIndex, moveToIndex }) => {
+      moveArrayItem(moveFromIndex, moveToIndex)
+      setIsDraggingItem(null)
+    },
+    [moveArrayItem],
+  )
+
+  return (
+    <div
+      className={cn([
+        'rounded border-2 border-transparent',
+        (pointerDown || isDraggingItem) && 'border-border',
+        className,
+      ])}
+      onPointerDown={() => setPointerDown(true)}
+      onPointerUp={() => setPointerDown(false)}
+    >
+      <DraggableSortable
+        ids={entries.map(({ id }) => id)}
+        onDragEnd={handleDragEnd}
+        onDragStart={handleDragStart}
+        droppableRef={droppableRef}
+        className={cn([fieldBaseClass, 'skill-sort', 'flex flex-col gap-2'])}
+      >
+        {entries.map((entry, index) => {
+          const { id, label } = entry
+
+          return !label && !id ? null : (
+            <DraggableSortableItem key={index} id={id}>
+              {({ isDragging, attributes, listeners, setNodeRef, transform }) => (
+                <Button
+                  id={id}
+                  ref={setNodeRef}
+                  {...attributes}
+                  {...listeners}
+                  role="draggable"
+                  size="lg"
+                  variant="outline"
+                  type="button"
+                  className={cn([
+                    'w-full',
+                    'shrink-0 grow-0',
+                    'select-none',
+                    'cursor-grab',
+                    (pointerDown || isDragging) && 'z-50 cursor-grabbing',
+                    selectedEntry?.id === id && 'bg-accent',
+                  ])}
+                  style={{
+                    transform,
+                  }}
+                  onPointerDown={() => setSelectedEntry(entry)}
+                >
+                  <span className="max-w-full overflow-hidden text-ellipsis">{label}</span>
+                </Button>
+              )}
+            </DraggableSortableItem>
+          )
+        })}
+      </DraggableSortable>
+    </div>
+  )
+}

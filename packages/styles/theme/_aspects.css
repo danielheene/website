@@ -1,0 +1,18 @@
+@theme {
+  /* ---------- aspects ---------- */
+  --aspect-*: initial;
+  --aspect-1-1: 1 / 1;
+  --aspect-3-2: 3 / 2;
+  --aspect-2-3: 2 / 3;
+  --aspect-4-3: 4 / 3;
+  --aspect-3-4: 3 / 4;
+  --aspect-16-9: 16 / 9;
+  --aspect-9-16: 9 / 16;
+  --aspect-16-10: 16 / 10;
+  --aspect-10-16: 10 / 16;
+  --aspect-21-9: 21 / 9;
+  --aspect-9-21: 9 / 21;
+  --aspect-video: var(--aspect-16-9);
+  --aspect-image: var(--aspect-4-3);
+  --aspect-square: var(--aspect-1-1);
+}

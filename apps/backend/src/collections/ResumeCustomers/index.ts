@@ -1,0 +1,137 @@
+import { CollectionConfig } from 'payload'
+
+import { sanitizeSvg } from '@website/lib/sanitizeSvg'
+import { CollectionSlug } from '@website/types/collections'
+import { cn } from 'tailwind-variants'
+
+import {
+  hideVersionsTabForSingleVersion,
+  SINGLE_VERSION_DRAFTS,
+} from '@/collections/shared/singleVersionDrafts'
+import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
+import { SlugField } from '@/fields/Slug'
+import { SVGUploadField } from '@/fields/SVGUpload'
+import { TitleField } from '@/fields/Title'
+import { authenticated } from '@/lib/access/authenticated'
+import { authenticatedOrPublished } from '@/lib/access/authenticatedOrPublished'
+
+export const ResumeCustomers: CollectionConfig<CollectionSlug['ResumeCustomers']> = {
+  slug: CollectionSlug.ResumeCustomers,
+  labels: {
+    singular: 'Customer',
+    plural: 'Customers',
+  },
+  typescript: {
+    interface: 'ResumeCustomerData',
+  },
+  access: {
+    read: authenticatedOrPublished,
+    update: authenticated,
+    create: authenticated,
+    delete: authenticated,
+    readVersions: authenticated,
+  },
+  admin: {
+    useAsTitle: 'title',
+    pagination: {
+      defaultLimit: 50,
+      limits: [50, 100],
+    },
+    defaultColumns: ['title', 'slug'],
+    components: {
+      views: {
+        edit: {
+          versions: {
+            tab: {
+              condition: hideVersionsTabForSingleVersion,
+            },
+          },
+        },
+      },
+    },
+  },
+  orderable: true,
+  fields: [
+    TitleField(),
+    SlugField({
+      fieldToUse: 'title',
+    }),
+    {
+      type: 'row',
+      admin: {
+        className: cn([
+          'flex flex-col',
+          String.raw`[&_.group-field\_\_wrap]:grow`,
+          String.raw`[&_.group-field\_\_wrap]:flex`,
+          String.raw`[&_.group-field\_\_wrap]:flex-col`,
+          String.raw`[&_.group-field\_\_wrap_.render-fields]:grow`,
+          String.raw`[&_.group-field\_\_wrap_.render-fields]:flex`,
+          String.raw`[&_.group-field\_\_wrap_.code-field]:grow`,
+          String.raw`[&_.group-field\_\_wrap_.code-field]:flex`,
+          String.raw`[&_.group-field\_\_wrap_.code-field]:flex-col`,
+          String.raw`[&_.group-field\_\_wrap_.field-type\_\_wrap]:grow`,
+        ]),
+      },
+      fields: [
+        {
+          type: 'group',
+          admin: {
+            width: '50%',
+          },
+          fields: [
+            SVGUploadField({
+              fieldToUse: 'svg',
+            }),
+          ],
+        },
+        {
+          type: 'group',
+          admin: {
+            width: '50%',
+          },
+          fields: [
+            {
+              type: 'code',
+              name: 'svg',
+              label: false,
+              hooks: {
+                /**
+                 * Sanitizes on write, server-side. The admin panel runs uploads
+                 * through `svgo` in the browser, but that is bypassable by
+                 * posting to the API — and this value is rendered with
+                 * `dangerouslySetInnerHTML` on the public resume page.
+                 */
+                beforeChange: [
+                  ({ value }) => (typeof value === 'string' ? sanitizeSvg(value) : value),
+                ],
+              },
+              admin: {
+                disableBulkEdit: true,
+                disableListColumn: true,
+                disableGroupBy: true,
+                disableListFilter: true,
+                language: 'xml',
+                editorOptions: {
+                  fontSize: 14,
+                  readOnly: true,
+                  lineNumbers: 'off',
+                  fontFamily: 'var(--font-mono)',
+                  folding: false,
+                  experimentalWhitespaceRendering: 'svg',
+                  contextmenu: false,
+                },
+                editorProps: {
+                  language: 'xml',
+                  height: '100%',
+                },
+              },
+            },
+          ],
+        },
+      ],
+    },
+
+    GeneratorFlagsField(),
+  ],
+  versions: SINGLE_VERSION_DRAFTS,
+}

@@ -1,0 +1,129 @@
+import Link from 'next/link'
+
+import { ServiceStatus } from '@website/app-components/ServiceStatus/index'
+import { Logo } from '@website/components/Logo'
+import type { LinkFieldDataLean, NavEntry } from '@website/lib/fields/Link/lib/resolveLinkTarget'
+import parsePhoneNumber from 'libphonenumber-js'
+import { cn } from 'tailwind-variants'
+
+import { FooterLegalLinks } from '@/components/Footer/FooterLegalLinks'
+import { FooterNavGroups } from '@/components/Footer/FooterNavGroups'
+import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fetchers'
+
+import { FooterSocialLinks } from './FooterSocialLinks'
+import { FooterThemeSwitch } from './FooterThemeSwitch'
+
+export const Footer = async () => {
+  const {
+    footer: { column1, column2, column3, legalPages },
+  } = await fetchSiteSettingsCached()
+
+  const { telephone, email, sameAs } = await fetchGlobalUserSettingsCached()
+
+  // Typed rather than inferred: these are hand-built `LinkFieldData` values
+  // that never pass through the CMS, so an inferred `any[]` would let them
+  // drift from the field's shape without `tsc` noticing — which is exactly
+  // how they kept the removed `type`/`icon` keys through the link rework.
+  const socialLinks: {
+    id: string
+    link: LinkFieldDataLean
+  }[] = []
+
+  if (email) {
+    socialLinks.push({
+      id: 'email',
+      link: {
+        linkType: 'custom',
+        url: `mailto:${email}`,
+        text: 'Email',
+        iconBefore: 'mail',
+        iconOnly: true,
+        newTab: true,
+      },
+    })
+  }
+
+  // parsePhoneNumber returns undefined rather than throwing when it can't
+  // parse the input — a malformed or incomplete number stored in settings
+  // should just drop the telephone link, not crash the page render (and
+  // with it, the build's prerender step).
+  const parsedTelephone = telephone ? parsePhoneNumber(telephone) : undefined
+
+  if (parsedTelephone) {
+    socialLinks.push({
+      id: 'telephone',
+      link: {
+        linkType: 'custom',
+        url: parsedTelephone.getURI(),
+        text: 'Telephone',
+        iconBefore: 'phone',
+        newTab: true,
+        iconOnly: true,
+      },
+    })
+  }
+
+  sameAs.forEach(({ id, name, url, icon }) => {
+    socialLinks.push({
+      id,
+      link: {
+        linkType: 'custom',
+        url,
+        text: name,
+        iconBefore: icon,
+        iconOnly: true,
+        newTab: true,
+      },
+    })
+  })
+
+  // `column1`/`column2`/`column3` come straight off `fetchSiteSettingsCached()`,
+  // typed against the generated (unnarrowed) `NavEntries` — `reference.value`
+  // there is `string | Page`, and `Page.content` recursively embeds more link
+  // fields, so it can't be assigned to `FooterNavGroups`' lean prop type
+  // without TypeScript trying (and failing) to unify two different expansions
+  // of that recursion. `resolveRelations` has already depth-limited the real
+  // data to what `NavEntry` describes; the cast just tells TypeScript that,
+  // same as the `LinkFieldDataLean` casts in `RichText/serialize.tsx`.
+  const navGroups = (
+    [column1, column2, column3] as {
+      isActive?: boolean | null
+      title?: string | null
+      entries?: NavEntry[] | null
+    }[]
+  ).filter(({ isActive }) => isActive === true)
+
+  return (
+    <footer
+      className={cn([
+        'transition-constants bg-background text-foreground',
+        '[--footer-header-height:24px] md:[--footer-header-height:30px] lg:[--footer-header-height:36px]',
+        '[--footer-header-gap:12px] md:[--footer-header-gap:16px] lg:[--footer-header-gap:20px]',
+      ])}
+    >
+      <section className="container before:my-20 before:block before:h-px before:bg-foreground/50">
+        <div className="relative grid grid-cols-12 gap-4 lg:gap-6 xl:gap-8">
+          <div className="col-span-12 flex flex-col gap-8 2xl:col-span-6">
+            <Link href="/">
+              <Logo
+                variant="inline"
+                className="mb-(--footer-header-gap) h-(--footer-header-height)"
+              />
+            </Link>
+            <FooterSocialLinks socialLinks={socialLinks} />
+            <ServiceStatus />
+          </div>
+          <div className="col-span-12 flex flex-col gap-8 2xl:col-span-6">
+            <FooterNavGroups navGroups={navGroups} className="w-full" />
+          </div>
+          <div className="absolute top-0 right-0"></div>
+        </div>
+
+        <div className="mt-8 flex flex-col justify-between gap-4 border-t py-8 md:flex-row md:items-center md:text-left">
+          <FooterThemeSwitch />
+          <FooterLegalLinks entries={legalPages.entries} />
+        </div>
+      </section>
+    </footer>
+  )
+}

@@ -1,0 +1,28 @@
+{
+  "name": "@website/types",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./blocks": "./src/blocks.ts",
+    "./collections": "./src/collections.ts",
+    "./globals": "./src/globals.ts",
+    "./jobs-queue": "./src/jobs-queue.ts",
+    "./bilingualLanguage": "./src/bilingualLanguage.ts",
+    "./cache": "./src/cache.ts",
+    "./blog": "./src/blog.ts",
+    "./payload": "./src/payload.ts",
+    "./select-options": "./src/select-options.ts",
+    "./admin-panel": "./src/admin-panel.ts",
+    "./reduceDataToBilingualLanguage": "./src/reduceDataToBilingualLanguage.ts",
+    "./resolvedRelations": "./src/resolvedRelations.ts"
+  },
+  "main": "./src/index.ts",
+  "dependencies": {
+    "neotraverse": "^1.0.1",
+    "payload": "^3.90.1",
+    "type-fest": "^5.10.0"
+  },
+  "devDependencies": {}
+}

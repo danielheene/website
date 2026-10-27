@@ -1,0 +1,56 @@
+'use client'
+
+import { CheckboxFieldClientComponent, CheckboxFieldClientProps } from 'payload'
+import { fieldBaseClass, useField } from '@payloadcms/ui'
+
+import { Button } from '@website/components/Button'
+import { cn } from 'tailwind-variants'
+
+import { Icon } from '@/components/Icon'
+
+type FieldComponentProps = {
+  tooltip?: string
+  iconActive: string
+  iconInactive: string
+} & CheckboxFieldClientProps
+
+export const FieldComponent: CheckboxFieldClientComponent = ({
+  path,
+  readOnly,
+  iconActive,
+  iconInactive,
+}: FieldComponentProps) => {
+  const { value, setValue } = useField<boolean>({
+    path,
+  })
+
+  return (
+    <div className={cn([fieldBaseClass, 'toggle', 'flex flex-col justify-end'])}>
+      <input type="checkbox" readOnly={readOnly} value={String(value)} className="hidden" />
+      <Button
+        type="button"
+        onClick={() => setValue(!value)}
+        size="icon"
+        variant={value ? 'default' : 'secondary'}
+        className="relative cursor-pointer"
+      >
+        <Icon
+          name={iconActive}
+          className={cn([
+            'pointer-events-none absolute size-7 transition-opacity',
+            value ? 'opacity-100' : 'opacity-0',
+          ])}
+        />
+        <Icon
+          name={iconInactive}
+          className={cn([
+            'pointer-events-none absolute size-7 transition-opacity',
+            !value ? 'opacity-100' : 'opacity-0',
+          ])}
+        />
+      </Button>
+    </div>
+  )
+}
+
+export default FieldComponent

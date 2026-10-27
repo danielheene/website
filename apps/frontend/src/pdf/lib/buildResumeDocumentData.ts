@@ -1,0 +1,50 @@
+'use server'
+
+import { type BilingualLanguage, translate } from '@website/lib/i18n'
+import { ZodSafeParseResult } from 'zod'
+
+import { fetchGlobalUserSettings } from '@/lib/fetchers'
+import { buildDocumentHeader } from '@/pdf/lib/buildDocumentHeader'
+import { buildIntroductionSection } from '@/pdf/lib/buildIntroductionSection'
+import { buildLanguageSection } from '@/pdf/lib/buildLanguageSection'
+import { buildSkillSections } from '@/pdf/lib/buildSkillSections'
+import { buildWorkExperienceSection } from '@/pdf/lib/buildWorkExperienceSection'
+import { documentSchema } from '@/pdf/schemas'
+import { DocumentData } from '@/pdf/types'
+
+interface GenerateResumeDocumentArgs {
+  locale: BilingualLanguage
+  documentUrl: string
+  creationDate: Date
+}
+
+export const buildResumeDocumentData = async (
+  args: GenerateResumeDocumentArgs,
+): Promise<ZodSafeParseResult<DocumentData>> => {
+  const { documentUrl, creationDate } = args
+  const locale: BilingualLanguage = args?.locale === 'de' ? 'de' : 'en'
+  const language = locale === 'en' ? 'en_EN' : 'de_DE'
+
+  const { name } = await fetchGlobalUserSettings(locale)
+
+  return documentSchema.safeParse({
+    locale: locale,
+    documentUrl,
+    document: {
+      author: name,
+      title: translate(locale, 'document.title', {
+        name,
+      }),
+      creationDate,
+      language,
+    },
+
+    header: await buildDocumentHeader(locale),
+    sections: [
+      await buildIntroductionSection(locale),
+      await buildWorkExperienceSection(locale),
+      await buildSkillSections(locale),
+      await buildLanguageSection(locale),
+    ].flat(),
+  })
+}

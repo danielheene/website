@@ -1,0 +1,156 @@
+import type { CollectionConfig } from 'payload'
+
+import { AdminGroup } from '@website/types/admin-panel'
+import { CollectionSlug } from '@website/types/collections'
+
+import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
+import { scopeMediaAssets } from '@/fields/GeneratorFlags/baseFilter'
+import { MediaField } from '@/fields/Media'
+import { RichTextField } from '@/fields/RichText'
+import { anyone } from '@/lib/access/anyone'
+import { authenticated } from '@/lib/access/authenticated'
+import { generateChecksum } from '@/lib/payloadHooks/collection'
+
+import { generateThumbnails } from './hooks/generateThumbnails'
+
+export const MediaDocuments: CollectionConfig<CollectionSlug['MediaDocuments']> = {
+  slug: CollectionSlug.MediaDocuments,
+  typescript: {
+    interface: 'MediaDocument',
+  },
+  labels: {
+    singular: 'Document',
+    plural: 'Documents',
+  },
+  hooks: {
+    beforeChange: [generateChecksum],
+    afterChange: [generateThumbnails],
+  },
+  admin: {
+    baseFilter: scopeMediaAssets,
+    group: AdminGroup.Media,
+    useAsTitle: 'filename',
+    defaultColumns: ['filename', 'mimeType', 'filesize', 'updatedAt'],
+    pagination: {
+      defaultLimit: 50,
+      limits: [50, 100],
+    },
+    components: {
+      Description: '@/components/AdminPanel/MediaScopeTabs#MediaScopeTabs',
+    },
+  },
+  access: {
+    create: authenticated,
+    delete: authenticated,
+    read: anyone,
+    update: authenticated,
+  },
+  upload: {
+    disableLocalStorage: true,
+    withMetadata: false,
+    hideRemoveFile: true,
+    displayPreview: true,
+    mimeTypes: ['application/pdf'],
+    adminThumbnail: ({ doc }) => {
+      if (Array.isArray(doc.thumbnails) && doc.thumbnails.length > 0) {
+        const thumbnailFilename = String(doc.filename).replace(/\.[^/.]+$/, '-1-thumbnail.png')
+
+        return `/api/${CollectionSlug.MediaImages}/file/${thumbnailFilename}`
+      }
+      // return `/api/${CollectionSlug['MediaImages']}/file/${thumbnailFilename}`
+    },
+  },
+
+  fields: [
+    {
+      name: 'filename',
+      type: 'text',
+      label: 'File Name',
+      admin: {
+        disableGroupBy: true,
+        disableListColumn: false,
+        disableListFilter: true,
+      },
+    },
+    {
+      name: 'checksum',
+      type: 'text',
+      label: 'Checksum',
+      index: true,
+      admin: {
+        readOnly: true,
+        disableGroupBy: true,
+        disableListColumn: true,
+        disableListFilter: true,
+      },
+    },
+    RichTextField({
+      name: 'credits',
+      editorVariant: 'caption',
+    }),
+    {
+      name: 'width',
+      type: 'number',
+      label: 'Width',
+      admin: {
+        disableGroupBy: true,
+        disableListColumn: true,
+        disableListFilter: true,
+      },
+    },
+    {
+      name: 'height',
+      type: 'number',
+      label: 'Height',
+      admin: {
+        disableGroupBy: true,
+        disableListColumn: true,
+        disableListFilter: true,
+      },
+    },
+    {
+      name: 'mimeType',
+      type: 'text',
+      label: 'MIME Type',
+      admin: {
+        hidden: true,
+        disableGroupBy: true,
+        disableListFilter: true,
+      },
+    },
+    MediaField({
+      name: 'thumbnails',
+      relationTo: [CollectionSlug.MediaImages],
+      hasMany: true,
+      readOnly: true,
+      allowCreate: false,
+    }),
+
+    {
+      name: 'thumbnailURL',
+      type: 'text',
+      label: 'Thumbnail URL',
+      virtual: true,
+      admin: {
+        hidden: true,
+        disableGroupBy: true,
+        disableListColumn: true,
+        disableListFilter: true,
+      },
+    },
+    // {
+    //   name: 'blurDataURL',
+    //   type: 'text',
+    //   label: 'Blur Data URL',
+    //   admin: {
+    //     readOnly: true,
+    //     disableGroupBy: true,
+    //     disableListColumn: true,
+    //     disableListFilter: true,
+    //   },
+    // },
+
+    GeneratorFlagsField(),
+  ],
+  versions: false,
+}

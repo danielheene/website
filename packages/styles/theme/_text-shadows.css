@@ -1,0 +1,7 @@
+@theme {
+  /* ---------- text shadows ---------- */
+  --text-shadow-*: initial;
+  --text-shadow-sm: 0 0 2px rgb(from var(--color-black) r g b / 10%);
+  --text-shadow-md: 0 0 4px rgb(from var(--color-black) r g b / 10%);
+  --text-shadow-lg: 0 0 0.3em rgb(from var(--color-black) r g b / 25%);
+}

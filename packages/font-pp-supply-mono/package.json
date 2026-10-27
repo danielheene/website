@@ -1,0 +1,15 @@
+{
+  "name": "@website/font-pp-supply-mono",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./next": "./next.ts",
+    "./css": "./style.css",
+    "./pdf": "./pdf.ts",
+    "./assets": "./assets.ts",
+    "./files/*": "./files/*"
+  },
+  "main": "./next.ts"
+}

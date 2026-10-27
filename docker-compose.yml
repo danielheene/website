@@ -1,0 +1,213 @@
+x-healthcheck-props: &healthcheck-props
+  interval: 5s
+  timeout: 20s
+  retries: 10
+
+services:
+  mongo:
+    image: mongo:8
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - "mongo-data:/data/db"
+    command: --storageEngine=wiredTiger
+    healthcheck:
+      <<: *healthcheck-props
+      test: [ "CMD-SHELL", "echo 'db.runCommand(\"ping\").ok' | mongosh 127.0.0.1:27017/productiondb --quiet | grep -q 1" ]
+
+  redis:
+    image: redis:8-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - "redis-data:/data"
+    healthcheck:
+      <<: *healthcheck-props
+      test: [ "CMD-SHELL", "redis-cli PING" ]
+
+  storage:
+    image: rustfs/rustfs:latest
+    restart: always
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      RUSTFS_ACCESS_KEY: ${S3_ACCESS_KEY}
+      RUSTFS_SECRET_KEY: ${S3_SECRET_KEY}
+    volumes:
+      - "storage-data:/data"
+    healthcheck:
+      <<: *healthcheck-props
+      test: [ "CMD-SHELL", "curl -f http://127.0.0.1:9000/health" ]
+
+  # Uses the AWS CLI (speaks plain S3 against RustFS) rather than MinIO's own
+  # `mc` client — minio/mc was pulled from both Docker Hub and quay.io in
+  # late 2025 when MinIO went source-only, so an `mc`-based image can no
+  # longer be pulled at all.
+  create-bucket:
+    image: amazon/aws-cli:2.36.49
+    restart: "no"
+    depends_on:
+      storage:
+        condition: service_healthy
+    environment:
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY}
+      AWS_DEFAULT_REGION: ${S3_REGION}
+      S3_BUCKET: ${S3_BUCKET}
+    configs:
+      - source: cors.json
+        target: /tmp/cors.json
+      - source: bucket-policy.json
+        target: /tmp/bucket-policy.json
+    entrypoint:
+      - /bin/bash
+      - -c
+      - |
+        set -e
+
+        until aws --endpoint-url http://storage:9000 s3api list-buckets >/dev/null 2>&1; do
+          echo 'storage is not ready yet, retrying in 2 seconds...'
+          sleep 2
+        done
+
+        echo 'create bucket if not exists'
+        aws --endpoint-url http://storage:9000 s3api head-bucket --bucket "$$S3_BUCKET" 2>/dev/null \
+          || aws --endpoint-url http://storage:9000 s3api create-bucket --bucket "$$S3_BUCKET"
+
+        echo 'set policy PUBLIC (download only) for bucket'
+        aws --endpoint-url http://storage:9000 s3api put-bucket-policy --bucket "$$S3_BUCKET" --policy file:///tmp/bucket-policy.json
+
+        echo 'set cors rules'
+        aws --endpoint-url http://storage:9000 s3api put-bucket-cors --bucket "$$S3_BUCKET" --cors-configuration file:///tmp/cors.json
+
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+      target: app
+    restart: always
+    # Not published: the backend is reached over the compose network only.
+    # The frontend rewrites /api/* to http://backend:3000 (see the `frontend`
+    # service below), which resolves through Docker's internal DNS.
+    expose:
+      - "3000"
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      storage:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+      SERVER_HOST: ${SERVER_HOST}
+      SERVER_URL: ${SERVER_URL}
+      NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL}
+      NEXT_PUBLIC_STATUS_PAGE_URL: ${NEXT_PUBLIC_STATUS_PAGE_URL}
+      STATUS_PAGE_HEARTBEAT_URL: ${STATUS_PAGE_HEARTBEAT_URL}
+      RESUME_REDIRECT_URL_BASE: ${RESUME_REDIRECT_URL_BASE}
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET}
+      PREVIEW_SECRET: ${PREVIEW_SECRET}
+      CRON_SECRET: ${CRON_SECRET}
+      PAYLOAD_JOBS_ENABLE_APP_WORKERS: ${PAYLOAD_JOBS_ENABLE_APP_WORKERS:-false}
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+      S3_BUCKET: ${S3_BUCKET}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
+      S3_REGION: ${S3_REGION}
+      S3_ENDPOINT: ${S3_ENDPOINT}
+      UMAMI_USERNAME: ${UMAMI_USERNAME}
+      UMAMI_PASSWORD: ${UMAMI_PASSWORD}
+      NEXT_PUBLIC_UMAMI_URL: ${NEXT_PUBLIC_UMAMI_URL}
+      NEXT_PUBLIC_UMAMI_SITE_ID: ${NEXT_PUBLIC_UMAMI_SITE_ID}
+      USESEND_URL: ${USESEND_URL}
+      USESEND_API_KEY: ${USESEND_API_KEY}
+      USESEND_DEFAULT_FROM_ADDRESS: ${USESEND_DEFAULT_FROM_ADDRESS}
+      USESEND_DEFAULT_FROM_NAME: ${USESEND_DEFAULT_FROM_NAME}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      MAPBOX_API_KEY: ${MAPBOX_API_KEY}
+      UNSPLASH_ACCESS_KEY: ${UNSPLASH_ACCESS_KEY}
+      NEXT_PUBLIC_SENTRY_DSN: ${NEXT_PUBLIC_SENTRY_DSN}
+      NEXT_PUBLIC_SENTRY_ENVIRONMENT: ${NEXT_PUBLIC_SENTRY_ENVIRONMENT}
+      NEXT_PUBLIC_SENTRY_RELEASE: ${NEXT_PUBLIC_SENTRY_RELEASE}
+      PAYLOAD_API_URL: http://backend:3000
+      PAYLOAD_API_KEY: ${PAYLOAD_API_KEY}
+      PAYLOAD_FRONTEND_URL: http://frontend:3000
+      REVALIDATE_SECRET: ${REVALIDATE_SECRET}
+    healthcheck:
+      <<: *healthcheck-props
+      test: [ "CMD-SHELL", "curl -sS -o /dev/null http://127.0.0.1:3000/ || exit 1" ]
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+      target: app
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+      SERVER_URL: ${SERVER_URL}
+      NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL}
+      NEXT_PUBLIC_STATUS_PAGE_URL: ${NEXT_PUBLIC_STATUS_PAGE_URL}
+      STATUS_PAGE_HEARTBEAT_URL: ${STATUS_PAGE_HEARTBEAT_URL}
+      PAYLOAD_API_URL: http://backend:3000
+      PAYLOAD_API_KEY: ${PAYLOAD_API_KEY}
+      REVALIDATE_SECRET: ${REVALIDATE_SECRET}
+      NEXT_PUBLIC_UMAMI_URL: ${NEXT_PUBLIC_UMAMI_URL}
+      NEXT_PUBLIC_UMAMI_SITE_ID: ${NEXT_PUBLIC_UMAMI_SITE_ID}
+      NEXT_PUBLIC_SENTRY_DSN: ${NEXT_PUBLIC_SENTRY_DSN}
+      NEXT_PUBLIC_SENTRY_ENVIRONMENT: ${NEXT_PUBLIC_SENTRY_ENVIRONMENT}
+      NEXT_PUBLIC_SENTRY_RELEASE: ${NEXT_PUBLIC_SENTRY_RELEASE}
+    healthcheck:
+      <<: *healthcheck-props
+      test: [ "CMD-SHELL", "curl -sS -o /dev/null http://127.0.0.1:3000/ || exit 1" ]
+
+configs:
+  cors.json:
+    content: |
+      {
+        "CORSRules": [
+          {
+            "AllowedOrigins": [
+              "http://localhost:3000",
+              "https://daniel.heene.io",
+              "https://daniel.heene.dev",
+              "https://daniel.heene.nexus"
+            ],
+            "AllowedMethods": [ "GET", "PUT", "POST", "HEAD" ],
+            "AllowedHeaders": [ "*" ]
+          }
+        ]
+      }
+  bucket-policy.json:
+    content: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": [ "s3:GetObject" ],
+            "Resource": [ "arn:aws:s3:::${S3_BUCKET}/*" ]
+          }
+        ]
+      }
+
+volumes:
+  mongo-data:
+  redis-data:
+  storage-data:

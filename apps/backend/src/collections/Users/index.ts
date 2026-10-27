@@ -1,0 +1,87 @@
+import type { CollectionConfig } from 'payload'
+
+import { AdminGroup } from '@website/types/admin-panel'
+import { CollectionSlug } from '@website/types/collections'
+import { hoursToSeconds, minutesToMilliseconds } from 'date-fns'
+
+import { loginAfterCreate } from './hooks/loginAfterCreate'
+
+// The create-first-user view renders every collection field regardless of admin.hidden
+// (it calls buildFormState with renderAllFields: true), so hiding fields there requires
+// admin.condition instead, keyed off the absence of a logged-in user (create-first-user
+// runs with no req.user, unlike a normal authenticated create/edit).
+const showUnlessCreatingFirstUser: NonNullable<
+  CollectionConfig['fields'][number]['admin']
+>['condition'] = (_data, _siblingData, { user }) => Boolean(user)
+
+export const Users: CollectionConfig = {
+  slug: CollectionSlug.Users,
+
+  admin: {
+    custom: {
+      icon: 'user',
+    },
+    useAsTitle: 'email',
+    group: AdminGroup.Settings,
+    pagination: {
+      defaultLimit: 25,
+      limits: [25, 50, 100],
+    },
+  },
+  fields: [
+    {
+      type: 'text',
+      name: 'name',
+      admin: {
+        condition: showUnlessCreatingFirstUser,
+      },
+    },
+    {
+      type: 'upload',
+      name: 'avatar',
+      relationTo: [CollectionSlug.MediaImages],
+      admin: {
+        condition: showUnlessCreatingFirstUser,
+      },
+    },
+    {
+      type: 'checkbox',
+      name: 'enableOwnTracking',
+      label: 'Track my own visits (debug)',
+      defaultValue: false,
+      saveToJWT: true,
+      admin: {
+        description:
+          "When enabled, your own visits will be tracked in analytics like any other visitor. Off by default so your admin browsing doesn't skew site statistics.",
+        condition: showUnlessCreatingFirstUser,
+      },
+    },
+    {
+      type: 'select',
+      name: 'role',
+      label: 'Role',
+      defaultValue: 'admin',
+      options: [
+        { label: 'Admin', value: 'admin' },
+        { label: 'Frontend', value: 'frontend' },
+      ],
+      admin: {
+        condition: showUnlessCreatingFirstUser,
+      },
+      access: {
+        update: ({ req }) => Boolean(req.user?.role === 'admin'),
+      },
+    },
+  ],
+  hooks: {
+    afterChange: [loginAfterCreate],
+  },
+  auth: {
+    tokenExpiration: hoursToSeconds(24 * 14),
+    maxLoginAttempts: 5,
+    lockTime: minutesToMilliseconds(5),
+    useAPIKey: true,
+  },
+  timestamps: true,
+  versions: false,
+}

@@ -1,0 +1,426 @@
+import path from 'node:path'
+import * as process from 'node:process'
+import { fileURLToPath } from 'node:url'
+
+import { buildConfig } from 'payload'
+import { mongooseAdapter } from '@payloadcms/db-mongodb'
+import { redisKVAdapter } from '@payloadcms/kv-redis'
+import { importExportPlugin } from '@payloadcms/plugin-import-export'
+import { sentryPlugin } from '@payloadcms/plugin-sentry'
+import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { s3Storage } from '@payloadcms/storage-s3'
+
+import * as Sentry from '@sentry/nextjs'
+import { captureException as captureExceptionFromNode } from '@sentry/node'
+import { SENTRY_ENABLED, sharedSentryOptions } from '@website/lib/sentry/options'
+import { CollectionSlug } from '@website/types/collections'
+import { QueueSlug } from '@website/types/jobs-queue'
+import { SKILL_TYPE } from '@website/types/select-options'
+import sharp from 'sharp'
+
+import { BLOCKS } from '@/blocks'
+import { COLLECTIONS } from '@/collections'
+import { GLOBALS } from '@/globals'
+import { scopeJobsList } from '@/jobs-queue/lib/jobsListFilter'
+import { TASKS } from '@/jobs-queue/tasks'
+import { WORKFLOWS } from '@/jobs-queue/workflows'
+import { authenticated } from '@/lib/access/authenticated'
+import { useSendAdapter } from '@/lib/useSendAdapter'
+import { frontendReadOnlyPlugin } from '@/plugins/frontendReadOnly'
+import { redirectsPlugin } from '@/plugins/redirects'
+import { referencesPlugin } from '@/plugins/references'
+
+const filename = fileURLToPath(import.meta.url)
+const dirname = path.dirname(filename)
+
+/**
+ * Patch `Sentry.captureException` for `sentryPlugin`
+ *
+ * Outside Next's bundler, `@sentry/nextjs` resolves to a CJS build whose
+ * `export * from '@sentry/node'` leaves `captureException` undefined.
+ * `@sentry/node` resolves it correctly in every context.
+ */
+const SentryForPlugin = {
+  ...Sentry,
+  captureException: captureExceptionFromNode,
+}
+
+/**
+ * Init Sentry outside the Next.js runtime
+ *
+ * `instrumentation.ts` only runs inside Next.js. The job worker
+ * (`scripts/start-worker.mjs`) loads this config via plain `tsx/esm`, so
+ * `NEXT_RUNTIME` is unset there and `Sentry.init` never ran.
+ */
+if (SENTRY_ENABLED && !process.env.NEXT_RUNTIME) {
+  Sentry.init(sharedSentryOptions)
+}
+
+export const config = buildConfig({
+  routes: {
+    admin: '/',
+  },
+  admin: {
+    autoRefresh: true,
+    components: {
+      graphics: {
+        Icon: '@/components/AdminPanel#Icon',
+        Logo: '@/components/AdminPanel#Logo',
+      },
+      Nav: '@/components/AdminPanel#Nav',
+      providers: ['@/components/AdminPanel#TooltipProvider'],
+    },
+    dashboard: {
+      widgets: [
+        {
+          slug: 'status-banners-widget',
+          label: 'Status Banners',
+          Component: '@/widgets/StatusBannersWidget#StatusBannersWidget',
+          minWidth: 'full',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'scheduled-jobs-widget',
+          label: 'Scheduled Jobs',
+          Component: '@/widgets/ScheduledJobsWidget#ScheduledJobsWidget',
+          minWidth: 'full',
+          maxWidth: 'full',
+        },
+        {
+          slug: 'umami-widget',
+          label: 'Umami',
+          Component: '@/widgets/UmamiWidget#UmamiWidget',
+          minWidth: 'full',
+          maxWidth: 'full',
+        },
+      ],
+      defaultLayout: [
+        {
+          widgetSlug: 'status-banners-widget',
+          width: 'full',
+        },
+        {
+          widgetSlug: 'scheduled-jobs-widget',
+          width: 'full',
+        },
+        {
+          widgetSlug: 'umami-widget',
+          width: 'full',
+        },
+      ],
+    },
+    dateFormat: 'yyyy-MM-dd HH:mm',
+    importMap: {
+      baseDir: path.resolve(dirname, './app'),
+      importMapFile: path.resolve(dirname, './app/importMap.js'),
+    },
+
+    livePreview: {
+      breakpoints: [
+        {
+          label: 'Mobile',
+          name: 'mobile',
+          width: 375,
+          height: 667,
+        },
+        {
+          label: 'Tablet',
+          name: 'tablet',
+          width: 768,
+          height: 1024,
+        },
+        {
+          label: 'Desktop',
+          name: 'desktop',
+          width: 1440,
+          height: 900,
+        },
+      ],
+    },
+
+    meta: {
+      icons: [
+        {
+          rel: 'icon',
+          url: '/favicon.ico',
+          sizes: '16x16 32x32 48x48',
+          type: 'image/x-icon',
+        },
+        {
+          rel: 'icon',
+          url: '/favicon.svg',
+          type: 'image/svg+xml',
+        },
+      ],
+    },
+    suppressHydrationWarning: true,
+    timezones: {
+      supportedTimezones: [
+        {
+          label: 'Europe/Berlin',
+          value: 'Europe/Berlin',
+        },
+      ],
+      defaultTimezone: 'Europe/Berlin',
+    },
+    user: CollectionSlug.Users,
+  },
+  bin: [],
+  blocks: BLOCKS,
+  csrf: [process.env.SERVER_URL],
+  cors: {
+    origins: [process.env.SERVER_URL],
+    headers: [],
+  },
+  defaultDepth: 10,
+  editor: lexicalEditor(),
+  db: mongooseAdapter({
+    url: process.env.DATABASE_URL,
+  }),
+  collections: COLLECTIONS,
+  debug: process.env.NODE_ENV !== 'production',
+  // oxlint-disable-next-line react/rules-of-hooks -- useSend is a mailing service, not a React hook
+  email: useSendAdapter({
+    apiKey: process.env.USESEND_API_KEY,
+    useSendUrl: process.env.USESEND_URL,
+    defaultFromAddress: process.env.USESEND_DEFAULT_FROM_ADDRESS,
+    defaultFromName: process.env.USESEND_DEFAULT_FROM_NAME,
+  }),
+  endpoints: [],
+  folders: {
+    browseByFolder: false,
+  },
+  globals: GLOBALS,
+  graphQL: {
+    disable: true,
+    disablePlaygroundInProduction: true,
+  },
+  jobs: {
+    enableConcurrencyControl: true,
+    tasks: TASKS,
+    workflows: WORKFLOWS,
+    shouldAutoRun: async () => {
+      return process.env.PAYLOAD_JOBS_ENABLE_APP_WORKERS === 'true'
+    },
+    deleteJobOnComplete: false,
+    autoRun: [
+      {
+        cron: '* * * * *',
+        queue: QueueSlug.Default,
+        limit: 10,
+      },
+      {
+        cron: '* * * * *',
+        queue: QueueSlug.HookHandler,
+        limit: 10,
+      },
+      {
+        cron: '* * * * *',
+        queue: QueueSlug.ResumeGeneration,
+        limit: 10,
+      },
+      {
+        cron: '* * * * *',
+        queue: QueueSlug.Heartbeat,
+        limit: 10,
+      },
+    ],
+    jobsCollectionOverrides: ({ defaultJobsCollection }) => ({
+      ...defaultJobsCollection,
+      slug: CollectionSlug.PayloadJobs,
+      access: {
+        read: authenticated,
+        update: authenticated,
+        create: authenticated,
+        delete: authenticated,
+      },
+      admin: {
+        ...defaultJobsCollection.admin,
+        hidden: false,
+        baseFilter: scopeJobsList,
+        components: {
+          ...defaultJobsCollection.admin?.components,
+          Description: '@/components/AdminPanel/JobsQueueTabs#JobsQueueTabs',
+        },
+      },
+    }),
+  },
+  kv: redisKVAdapter({
+    redisURL: process.env.REDIS_URL,
+  }),
+
+  localization: false,
+  plugins: [
+    referencesPlugin(),
+    redirectsPlugin(),
+    frontendReadOnlyPlugin(),
+    importExportPlugin({
+      overrideImportCollection: ({ collection }) => {
+        return {
+          ...collection,
+          slug: CollectionSlug.PayloadImports,
+        }
+      },
+      collections: [
+        CollectionSlug.BlogPosts,
+        CollectionSlug.BlogTopics,
+        CollectionSlug.Pages,
+        CollectionSlug.ResumeCustomers,
+        CollectionSlug.ResumeJobs,
+        CollectionSlug.ResumeProjects,
+        CollectionSlug.ResumeSkills,
+        CollectionSlug.ResumeSkillTags,
+      ].map((slug) => ({
+        slug,
+        export: {
+          format: 'json',
+          disableJobsQueue: true,
+          disableSave: true,
+          limit: 10000,
+          batchSize: 1000,
+        },
+        import: {
+          // Run synchronously in the same request so req.file.data is still
+          // available — avoids a URL round-trip to S3 that fails inside Docker.
+          disableJobsQueue: true,
+          defaultVersionStatus: 'published',
+          limit: 10000,
+          batchSize: 1000,
+        },
+      })),
+    }),
+    // nestedDocsPlugin({
+    //   collections: [CollectionSlug['ResumeSkills']],
+    //
+    // }),
+    /**
+     * Reports errors raised inside Payload — collection hooks, access control,
+     * the jobs queue and admin requests — which sit outside the Next.js request
+     * lifecycle that `onRequestError` covers.
+     *
+     * The plugin is registered unconditionally rather than behind
+     * `SENTRY_ENABLED`: `enabled: false` makes the plugin return the config
+     * untouched, so the admin's `AdminErrorBoundary` provider would not be
+     * registered at all — and that provider is what puts the
+     * `@payloadcms/plugin-sentry/client#AdminErrorBoundary` entry in the
+     * generated import map. Gating registration on the DSN would make the
+     * committed import map depend on the environment it was generated in: the
+     * CI check regenerates it with `.env.test` (no DSN) and would strip the
+     * entry that production — which has a DSN — needs.
+     *
+     * Without a DSN the SDK is inert: `captureException` no-ops when no
+     * client is configured, and `ErrorBoundary` skips the report dialog when
+     * `getClient()` returns undefined. The `captureErrors` list is emptied
+     * below for the same reason.
+     */
+    sentryPlugin({
+      enabled: true,
+      Sentry: SentryForPlugin,
+      options: {
+        // 500s are captured by default; 401/403/404 are normal traffic and
+        // would drown the real failures
+        captureErrors: SENTRY_ENABLED ? [400, 409, 500] : [],
+        context: ({ defaultContext, req }) => ({
+          ...defaultContext,
+          tags: {
+            ...defaultContext.tags,
+            source: 'payload',
+          },
+          user: req?.user
+            ? {
+                id: String(req.user.id),
+                email: req.user.email,
+              }
+            : defaultContext.user,
+        }),
+      },
+    }),
+
+    s3Storage({
+      enabled: true,
+      collections: {
+        [CollectionSlug.MediaImages]: {
+          prefix: CollectionSlug.MediaImages,
+        },
+        [CollectionSlug.MediaVideos]: {
+          prefix: CollectionSlug.MediaVideos,
+        },
+        [CollectionSlug.MediaDocuments]: {
+          prefix: CollectionSlug.MediaDocuments,
+        },
+        [CollectionSlug.MediaAudios]: {
+          prefix: CollectionSlug.MediaAudios,
+        },
+        [CollectionSlug.PayloadImports]: {
+          prefix: CollectionSlug.PayloadImports,
+        },
+      },
+      useCompositePrefixes: true,
+      clientUploads: true,
+      disableLocalStorage: true,
+      bucket: process.env.S3_BUCKET,
+      config: {
+        credentials: {
+          accessKeyId: process.env.S3_ACCESS_KEY,
+          secretAccessKey: process.env.S3_SECRET_KEY,
+        },
+        forcePathStyle: true,
+        endpoint: process.env.S3_ENDPOINT,
+        region: process.env.S3_REGION,
+      },
+    }),
+  ],
+  serverURL: process.env.SERVER_URL,
+  secret: process.env.PAYLOAD_SECRET,
+  sharp,
+  telemetry: false,
+  typescript: {
+    outputFile: path.resolve(dirname, '../../packages/types/src/payload.ts'),
+    schema: [
+      ({ jsonSchema }) => ({
+        ...jsonSchema,
+        definitions: {
+          ...jsonSchema.definitions,
+          SkillType: {
+            title: 'SkillType',
+            type: 'string',
+            enum: Object.values(SKILL_TYPE),
+          },
+          SkillTypeSortable: {
+            title: 'SkillTypeSortable',
+            type: 'object',
+            properties: {
+              id: {
+                $ref: '#/definitions/SkillType',
+              },
+              label: {
+                type: 'string',
+              },
+            },
+            additionalProperties: false,
+            required: ['id', 'label'],
+          },
+          SkillEntrySortable: {
+            title: 'SkillEntrySortable',
+            type: 'object',
+            properties: {
+              id: {
+                type: 'string',
+              },
+              label: {
+                type: 'string',
+              },
+              caption: {
+                type: 'string',
+              },
+            },
+            additionalProperties: false,
+            required: ['id', 'label'],
+          },
+        },
+      }),
+    ],
+  },
+})
+
+export default config

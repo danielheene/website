@@ -1,0 +1,52 @@
+import { renderToBuffer } from '@react-pdf/renderer'
+import type { TaskHandler } from 'payload'
+
+import { CollectionSlug } from '@website/types/collections'
+import { TaskSlug } from '@website/types/jobs-queue'
+
+import { ResumeDocument } from '@/pdf'
+import { DocumentData } from '@/pdf/types'
+
+const run: TaskHandler<TaskSlug['GenerateResumeFile']> = async ({ input, req: { payload } }) => {
+  const { filename, createdAt, resumeDocumentData } = input
+
+  payload.logger.info(`Rendering resume PDF: ${filename}`)
+
+  // The rendered buffer stays local to this task — it is never passed
+  // through a task's input/output, which would persist it as JSON.
+  const arrayBufferLike = await renderToBuffer(
+    <ResumeDocument {...(resumeDocumentData as DocumentData)} />,
+  )
+
+  const fileSizeBytes = Buffer.byteLength(arrayBufferLike)
+
+  payload.logger.info(`Uploading resume file: ${filename}`)
+
+  const { id, checksum } = await payload.create({
+    collection: CollectionSlug.MediaDocuments,
+    data: {
+      createdAt,
+      generatorFlags: ['resume-asset', 'thumbnail', 'document'],
+    },
+    file: {
+      data: Buffer.from(arrayBufferLike),
+      name: `${filename}.pdf`,
+      mimetype: 'application/pdf',
+      size: fileSizeBytes,
+    },
+    context: {
+      skipGenerateDocumentThumbnails: true,
+    },
+  })
+
+  payload.logger.info(`Uploaded resume file: ${filename}`)
+
+  return {
+    output: {
+      resumeFileId: id,
+      resumeFileChecksum: checksum,
+    },
+  }
+}
+
+export const handler = run

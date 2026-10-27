@@ -1,0 +1,33 @@
+# Each app's Dockerfile builds from the repo root's build context: it copies
+# the workspace manifests, the shared packages and the app's own source, then
+# installs dependencies inside the image (native modules are platform
+# specific, so an install done on the host would not run on the Linux image).
+#
+# Everything else is excluded — the images only need what they copy.
+*
+!package.json
+!bun.lock
+!bunfig.toml
+!patches
+!packages
+!apps
+
+# Exclude the installed dependency trees, the build caches and the local
+# artefacts. `node_modules` is excluded everywhere *except* under an app's
+# `.next` directory — see the note at the bottom.
+**/node_modules
+**/.turbo
+**/.cache
+**/coverage
+**/.DS_Store
+apps/*/.next/cache
+apps/*/.next/trace
+apps/*/.next/**/*.tsbuildinfo
+apps/*/dist
+out
+
+# Turbopack traces the server's external packages into `.next/node_modules/`
+# under content-hashed names (`mongoose-8b99e611e7552af3` and friends), and the
+# server requires them by those exact names. Excluding it makes the image fail
+# to boot with "Failed to load external module", so it has to ship.
+!apps/*/.next/node_modules

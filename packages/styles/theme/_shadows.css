@@ -1,0 +1,4 @@
+@theme {
+  --inset-shadow-vignette:
+    inset 0 0 200px var(--color-current), inset 0 0 300px var(--color-current);
+}

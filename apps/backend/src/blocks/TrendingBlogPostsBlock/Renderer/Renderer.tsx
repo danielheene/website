@@ -1,0 +1,88 @@
+'use server'
+
+import Link from 'next/link'
+
+import { toSlideItems } from '@website/app-components/HeroMedia/toSlideItems'
+import { ImageMedia } from '@website/app-components/ImageMedia/index'
+import { Headline } from '@website/components/Headline'
+import { reduceDataToBilingualLanguage } from '@website/lib/i18n'
+
+import { fetchTrendingBlogPosts } from '@/lib/fetchers/fetchTrendingBlogPosts'
+
+const TRENDING_WINDOW_DAYS = 7
+
+type TrendingBlogPostsBlockRendererProps = {
+  blockType?: string
+  heading?: {
+    en?: string | null
+    de?: string | null
+  } | null
+  postCount?: number | null
+}
+
+export const TrendingBlogPostsBlockRenderer = async ({
+  heading,
+  postCount,
+}: TrendingBlogPostsBlockRendererProps) => {
+  const posts = await fetchTrendingBlogPosts({
+    days: TRENDING_WINDOW_DAYS,
+    limit: postCount ?? 4,
+  })
+
+  if (!posts || posts.length === 0) return null
+
+  const resolvedHeading = heading ? reduceDataToBilingualLanguage(heading) : undefined
+
+  return (
+    <section className="container mx-auto px-4 py-16">
+      {resolvedHeading && (
+        <Headline variant="section" className="mb-8">
+          {resolvedHeading}
+        </Headline>
+      )}
+      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        {posts.map(({ slug, post }) => {
+          // Only the first slide represents this card — a video's poster
+          // stands in for its thumbnail, same as the blog list's PostCard.
+          const [firstSlide] = toSlideItems(post.hero?.slides, post.title)
+
+          const heroImageUrl =
+            firstSlide?.kind === 'image'
+              ? firstSlide.url
+              : firstSlide?.kind === 'video'
+                ? firstSlide.poster
+                : undefined
+
+          const heroImageAlt = firstSlide?.kind === 'image' ? firstSlide.alt : post.title
+
+          const heroImageBlurDataURL =
+            firstSlide?.kind === 'image' ? firstSlide.blurDataURL : undefined
+
+          return (
+            <Link
+              key={slug}
+              href={`/blog/post/${slug}`}
+              className="group flex flex-col gap-4 overflow-hidden rounded-sm border-4 border-primary bg-card transition-colors hover:border-primary-800"
+            >
+              {heroImageUrl && (
+                <div className="relative aspect-video w-full overflow-hidden">
+                  <ImageMedia
+                    url={heroImageUrl}
+                    alt={heroImageAlt ?? post.title}
+                    blurDataURL={heroImageBlurDataURL}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    imgClassName="transition-transform duration-300 ease-in-out group-hover:scale-105"
+                  />
+                </div>
+              )}
+              <Headline as="h3" variant="subline" className="px-4 pb-4 text-xl">
+                {post.title}
+              </Headline>
+            </Link>
+          )
+        })}
+      </div>
+    </section>
+  )
+}

@@ -1,0 +1,1 @@
+export { UmamiWidget } from './UmamiWidget'

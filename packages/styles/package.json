@@ -1,0 +1,15 @@
+{
+  "name": "@website/styles",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./theme.css": "./theme.css",
+    "./theme/*": "./theme/*",
+    "./payload/*": "./payload/*"
+  },
+  "dependencies": {
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {}
+}

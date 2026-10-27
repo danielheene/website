@@ -1,0 +1,24 @@
+.blocks-drawer__blocks {
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+}
+
+.radio-input {
+  .radio-input__styled-radio::before {
+    box-sizing: content-box;
+  }
+}
+
+.login__form__inputWrap > .field-type input {
+  @apply font-mono text-base;
+}
+
+.field-label:not(.unstyled) {
+  @apply font-mono;
+}
+
+.forgot-password,
+.login {
+  a {
+    @apply font-mono text-sm opacity-60;
+  }
+}

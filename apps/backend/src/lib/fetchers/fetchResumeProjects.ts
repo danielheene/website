@@ -1,0 +1,41 @@
+import { cacheLife, cacheTag, revalidateTag } from 'next/cache'
+import config from '@payload-config'
+import { getPayload } from 'payload'
+
+import { BilingualLanguage, reduceDataToBilingualLanguage } from '@website/lib/i18n'
+import { CollectionSlug } from '@website/types/collections'
+
+import { resolveRelations } from '@/lib/resolveRelation'
+
+export const fetchResumeProjects = async (locale: BilingualLanguage = 'en') => {
+  const payload = await getPayload({
+    config,
+  })
+
+  const { docs = [] } = await payload.find({
+    collection: CollectionSlug.ResumeProjects,
+    draft: false,
+    pagination: false,
+    limit: 0,
+    // runs with overrideAccess, so never-published drafts must be excluded here
+    where: {
+      _status: {
+        equals: 'published',
+      },
+    },
+  })
+
+  return await resolveRelations(reduceDataToBilingualLanguage(docs, locale))
+}
+
+export const fetchResumeProjectsCached = async (locale: BilingualLanguage = 'en') => {
+  'use cache'
+  cacheLife('max')
+  cacheTag(CollectionSlug.ResumeProjects)
+
+  return await fetchResumeProjects(locale)
+}
+
+export const revalidateResumeProjects = async (): Promise<void> => {
+  revalidateTag(CollectionSlug.ResumeProjects, 'max')
+}

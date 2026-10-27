@@ -1,0 +1,66 @@
+import { Button } from '@website/components/Button'
+import parsePhoneNumber from 'libphonenumber-js'
+import { cn } from 'tailwind-variants'
+
+import { Icon } from '@/components/Icon'
+import { fetchGlobalUserSettingsCached } from '@/lib/fetchers'
+
+export const LegalPublisherBlockRenderer = async () => {
+  const {
+    name,
+    address,
+    email,
+    telephone: telephoneRaw,
+    vatID,
+  } = await fetchGlobalUserSettingsCached('en')
+
+  const telephone = parsePhoneNumber(telephoneRaw)
+
+  return (
+    <section>
+      <address
+        className={cn([
+          'flex flex-col gap-4',
+          'font-mono text-lg leading-snug text-foreground not-italic',
+          '[&_strong]:font-bold',
+        ])}
+      >
+        <p>
+          <strong>{name}</strong>
+        </p>
+        <p>
+          {address.street} {address.number}
+          <br />
+          {address.postCode} {address.place}
+          <br />
+          {address.countryName}
+        </p>
+        <p>
+          <Button variant="link" asChild className="h-auto no-underline">
+            <a href={`mailto:${email}`}>
+              <Icon name="mail" data-icon="inline-start" /> {email}
+            </a>
+          </Button>
+          <br />
+          <Button variant="link" asChild className="h-auto no-underline">
+            <a href={telephone.getURI()}>
+              <Icon name="phone" data-icon="inline-start" />
+              {telephone.formatInternational()}
+            </a>
+          </Button>
+        </p>
+        {vatID && (
+          <p>
+            <strong>VAT ID:</strong> {vatID}
+          </p>
+        )}
+      </address>
+
+      <p className="block py-4 text-sm opacity-80">
+        This Legal Notice complies with the German laws under § 5 DDG and § 55 RStV.
+      </p>
+    </section>
+  )
+}
+
+export default LegalPublisherBlockRenderer

@@ -1,0 +1,12 @@
+@theme {
+  --radius-*: initial;
+
+  --radius: 0.375rem;
+  --radius-xs: calc(var(--radius) * 0.5);
+  --radius-sm: calc(var(--radius) * 0.75);
+  --radius-md: calc(var(--radius) * 1);
+  --radius-lg: calc(var(--radius) * 1.25);
+  --radius-xl: calc(var(--radius) * 1.5);
+  --radius-none: 0;
+  --radius-full: 9999px;
+}

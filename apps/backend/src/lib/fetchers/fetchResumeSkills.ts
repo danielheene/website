@@ -1,0 +1,40 @@
+import { cacheLife, cacheTag, revalidateTag } from 'next/cache'
+import config from '@payload-config'
+import { getPayload } from 'payload'
+
+import { BilingualLanguage, reduceDataToBilingualLanguage } from '@website/lib/i18n'
+import { CollectionSlug } from '@website/types/collections'
+
+import { resolveRelations } from '@/lib/resolveRelation'
+
+export const fetchResumeSkills = async (locale: BilingualLanguage = 'en') => {
+  const payload = await getPayload({
+    config,
+  })
+
+  const { docs = [] } = await payload.find({
+    collection: CollectionSlug.ResumeSkills,
+    draft: false,
+    pagination: false,
+    limit: 0,
+    where: {
+      _status: {
+        equals: 'published',
+      },
+    },
+  })
+
+  return await resolveRelations(reduceDataToBilingualLanguage(docs, locale))
+}
+
+export const fetchResumeSkillsCached = async (locale: BilingualLanguage = 'en') => {
+  'use cache'
+  cacheLife('max')
+  cacheTag(CollectionSlug.ResumeSkills)
+
+  return await fetchResumeSkills(locale)
+}
+
+export const revalidateResumeSkills = async (): Promise<void> => {
+  revalidateTag(CollectionSlug.ResumeSkills, 'max')
+}

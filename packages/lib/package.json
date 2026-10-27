@@ -1,0 +1,39 @@
+{
+  "name": "@website/lib",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*"
+  },
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "format": "oxfmt",
+    "lint": "oxlint && oxfmt --check",
+    "lint:fix": "oxlint --fix && oxfmt",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@payloadcms/richtext-lexical": "^3.90.1",
+    "@sindresorhus/slugify": "^3.0.1",
+    "date-fns": "^4.4.0",
+    "dedent": "^1.7.2",
+    "isomorphic-dompurify": "^4.3.0",
+    "jose": "^6.2.12",
+    "lodash-es": "^4.18.1",
+    "neotraverse": "^1.0.1",
+    "next": "^16.4.3",
+    "pretty-ms": "^9.3.1",
+    "pupa": "^3.3.0",
+    "react": "^19.3.0",
+    "redis": "6.2.1",
+    "schema-dts": "^2.0.0",
+    "shiki": "^4.4.3",
+    "timestring": "^7.0.0"
+  },
+  "devDependencies": {}
+}
