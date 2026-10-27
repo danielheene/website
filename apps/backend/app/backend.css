@@ -13,9 +13,9 @@
 /* Tailwind scans the app's own sources by default. The shared packages
  * live outside the app tree, so they need an explicit source root — without
  * it their utility classes are never generated and silently render unstyled. */
-@source '../../packages/app-components/src';
-@source '../../packages/components/src';
-@source '../../frontend';
+@source '../../../packages/app-components/src';
+@source '../../../packages/components/src';
+@source '../../frontend/src/';
 
 @source not inline("table");
 @source not inline("table-cell");

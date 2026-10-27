@@ -137,13 +137,13 @@ export default async (_phase, { defaultConfig: _defaultConfig }) => {
         beforeFiles: [
           {
             source: '/admin/:path*',
-            destination: `${process.env.PAYLOAD_API_URL}/admin/:path*`,
+            destination: `${process.env.PAYLOAD_API_URL}/:path*`,
           },
         ],
         fallback: [
           {
             source: '/api/:path*',
-            destination: `${process.env.PAYLOAD_API_URL}/admin/api/:path*`,
+            destination: `${process.env.PAYLOAD_API_URL}/api/:path*`,
           },
         ],
         afterFiles: [],

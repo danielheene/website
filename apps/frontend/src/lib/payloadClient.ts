@@ -22,7 +22,13 @@ const buildUrl = (path: string): URL => {
     throw new Error('PAYLOAD_API_URL is not set')
   }
 
-  return new URL(path, base)
+  const basePath = new URL(base).pathname
+
+  const mergedPath = basePath.length && !path.startsWith(basePath) ? `${basePath}${path}` : path
+
+  console.log(mergedPath)
+
+  return new URL(mergedPath, base)
 }
 
 type FetchOptions = {

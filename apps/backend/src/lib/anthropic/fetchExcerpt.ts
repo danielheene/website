@@ -28,12 +28,8 @@ export const fetchAnthropicExcerpt = async (
     throw new Error('ANTHROPIC_API_KEY is not configured.')
   }
 
-  const anthropic = createAnthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
-  })
-
   const { text: excerptHtml } = await generateText({
-    model: anthropic('claude-haiku-4-5'),
+    model: 'anthropic/claude-haiku-4-5',
     telemetry: {
       isEnabled: true,
       functionId: 'fetchAnthropicExcerpt',

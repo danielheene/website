@@ -11,12 +11,8 @@
 @custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
 @custom-variant primary (&:where(.primary, .primary *));
 
-/* Tailwind scans the app's own sources by default. The shared packages
- * live outside the app tree, so they need an explicit source root — without
- * it their utility classes are never generated and silently render unstyled. */
-@source '../../packages/app-components/src';
-@source '../../packages/components/src';
-@source '../backend/app/';
+@source '../../../packages/app-components/src';
+@source '../../../packages/components/src';
 
 @source inline("col-span-{1..12..1}");
 @source inline("col-start-{1..12..1}");

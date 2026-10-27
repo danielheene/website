@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "imports": {
-    "#frontend.css": "./frontend.css"
+    "#frontend.css": "./app/frontend.css"
   },
   "scripts": {
     "_next": "NODE_OPTIONS=\"--import tsx/esm --trace-deprecation --disable-warning=DeprecationWarning\" next",

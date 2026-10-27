@@ -14,10 +14,6 @@ export const fetchAnthropicImageAltText = async (input: SharpInput): Promise<str
     throw new Error('ANTHROPIC_API_KEY is not configured.')
   }
 
-  const anthropic = createAnthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
-  })
-
   const resizedImageBuffer = await sharp(input)
     .autoOrient()
     .resize({
@@ -31,7 +27,7 @@ export const fetchAnthropicImageAltText = async (input: SharpInput): Promise<str
     .toBuffer()
 
   const { text } = await generateText({
-    model: anthropic('claude-haiku-4-5'),
+    model: 'anthropic/claude-haiku-4-5',
     telemetry: {
       isEnabled: true,
       functionId: 'fetchAnthropicImageAltText',
