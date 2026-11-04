@@ -1,6 +1,19 @@
 # [1.15.0](https://github.com/danielheene/website/compare/v1.14.0...v1.15.0) (2026-11-04)
 
 
+### Bug Fixes
+
+* break circular import crashing the production build ([#126](https://github.com/danielheene/website/issues/126)) ([e408c10](https://github.com/danielheene/website/commit/e408c10142b6b3ad417b30168c5a4cfacf7ec601))
+* restore 'use client' on global-error.tsx ([#127](https://github.com/danielheene/website/issues/127)) ([2b159d0](https://github.com/danielheene/website/commit/2b159d028b6b7e214b1663df157d266c504da6f1))
+
+
+### Features
+
+* **collections:** enable autosave for single-version drafts ([#114](https://github.com/danielheene/website/issues/114)) ([26f8791](https://github.com/danielheene/website/commit/26f8791be28406d43ae56cf778b31609a1aa9478))
+
+# [1.15.0](https://github.com/danielheene/website/compare/v1.14.0...v1.15.0) (2026-11-04)
+
+
 ### Features
 
 * **collections:** enable autosave for single-version drafts ([#114](https://github.com/danielheene/website/issues/114)) ([26f8791](https://github.com/danielheene/website/commit/26f8791be28406d43ae56cf778b31609a1aa9478))
