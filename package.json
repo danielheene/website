@@ -1,6 +1,6 @@
 {
   "name": "website",
-  "version": "1.14.0",
+  "version": "1.15.5",
   "private": true,
   "description": "personal website, blog, and resume builder",
   "homepage": "https://daniel.heene.io",
@@ -84,7 +84,6 @@
     "@payloadcms/live-preview-react": "^3.90.1",
     "@payloadcms/next": "^3.90.1",
     "@payloadcms/plugin-import-export": "^3.90.1",
-    "@payloadcms/plugin-sentry": "^3.90.1",
     "@payloadcms/richtext-lexical": "^3.90.1",
     "@payloadcms/storage-s3": "^3.90.1",
     "@payloadcms/translations": "^3.90.1",
@@ -96,8 +95,6 @@
     "@radix-ui/react-tooltip": "^1.2.16",
     "@react-pdf/renderer": "^4.9.0",
     "@react-pdf/types": "^2.14.0",
-    "@sentry/nextjs": "^11.0.0",
-    "@sentry/node": "^11.0.0",
     "@sindresorhus/slugify": "^3.0.1",
     "@toolwind/corner-shape": "^0.0.8-3",
     "ai": "^7.0.107",
@@ -201,7 +198,6 @@
     "pdfjs-dist@5.4.296": "patches/pdfjs-dist@5.4.296.patch"
   },
   "trustedDependencies": [
-    "@sentry/cli",
     "@swc/core",
     "core-js-pure",
     "esbuild",

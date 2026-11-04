@@ -2,13 +2,7 @@
 import { render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const captureException = vi.fn()
-
-vi.mock('@sentry/nextjs', () => ({
-  captureException: (...args: unknown[]) => captureException(...args),
-}))
-
-const { ErrorBoundary } = await import('./ErrorBoundary')
+import { ErrorBoundary } from './ErrorBoundary'
 
 const Boom = ({ message = 'boom' }: { message?: string }) => {
   throw new Error(message)
@@ -22,7 +16,6 @@ describe('ErrorBoundary', () => {
 
   afterEach(() => {
     vi.restoreAllMocks()
-    captureException.mockReset()
   })
 
   it('renders children when nothing throws', () => {
@@ -56,38 +49,6 @@ describe('ErrorBoundary', () => {
     )
 
     expect(screen.getByText('sibling survived')).toBeInTheDocument()
-  })
-
-  it('reports the error to Sentry tagged with the boundary name', () => {
-    render(
-      <ErrorBoundary name="TrendingBlogPostsBlock">
-        <Boom message="block failed" />
-      </ErrorBoundary>,
-    )
-
-    expect(captureException).toHaveBeenCalledTimes(1)
-    const [error, context] = captureException.mock.calls[0] as [Error, Record<string, never>]
-    expect(error.message).toBe('block failed')
-    expect(context).toMatchObject({
-      tags: {
-        errorBoundary: 'TrendingBlogPostsBlock',
-      },
-    })
-  })
-
-  it('tags the report as unnamed when no name is given', () => {
-    render(
-      <ErrorBoundary>
-        <Boom />
-      </ErrorBoundary>,
-    )
-
-    const [, context] = captureException.mock.calls[0] as [Error, Record<string, never>]
-    expect(context).toMatchObject({
-      tags: {
-        errorBoundary: 'unnamed',
-      },
-    })
   })
 
   it('renders a static fallback when provided', () => {

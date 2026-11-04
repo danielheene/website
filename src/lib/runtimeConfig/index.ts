@@ -12,8 +12,6 @@ export type RuntimeConfig = {
   umamiUrl?: string
   umamiSiteId?: string
   iconifyApi?: string
-  sentryDsn?: string
-  sentryEnvironment?: string
 }
 
 declare global {
@@ -31,8 +29,6 @@ export const readRuntimeConfigFromEnv = (): RuntimeConfig => ({
   umamiUrl: readEnv('NEXT_PUBLIC_UMAMI_URL'),
   umamiSiteId: readEnv('NEXT_PUBLIC_UMAMI_SITE_ID'),
   iconifyApi: readEnv('NEXT_PUBLIC_ICONIFY_API'),
-  sentryDsn: readEnv('SENTRY_DSN'),
-  sentryEnvironment: readEnv('SENTRY_ENVIRONMENT'),
 })
 
 /** Server: reads the environment. Browser: reads what the server rendered. */

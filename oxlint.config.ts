@@ -94,6 +94,9 @@ export default defineConfig({
     'tailwindcss/no-contradicting-variants': 'warn',
 
     'typescript/no-explicit-any': 'warn',
+    'typescript/no-unsafe-assignment': 'warn',
+    'typescript/no-useless-default-assignment': 'warn',
+
     'react/rules-of-hooks': 'error',
     'react/exhaustive-deps': 'warn',
     'react/jsx-key': 'error',

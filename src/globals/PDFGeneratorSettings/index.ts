@@ -100,9 +100,9 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
           overrides: {
             required: true,
           },
-          data: {
-            customId: previewCustomId,
-          },
+          data: () => ({
+            customId: UNSAFE_generateResumeId(),
+          }),
           anntotation: {
             label: 'Custom Data',
             entries: {

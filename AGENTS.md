@@ -125,7 +125,7 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   functions), `hooks/` (React hooks), `payloadHooks/` (Payload collection/global lifecycle hooks —
   distinct from `hooks/`, don't conflate the two), `anthropic/` and `mapbox/` (external API
   clients, same shape as `unsplash/`), plus `actions/`, `fetchers/`, `date/`, `i18n/`, `jsonLd/`,
-  `redirects/`, `references/`, `seed/`, `sentry/`, `shiki/`, `sse/`, `umami/`, `unsplash/`. A new
+  `redirects/`, `references/`, `seed/`, `shiki/`, `sse/`, `umami/`, `unsplash/`. A new
   external API client or hook goes in the matching subfolder; a handful of genuinely standalone
   utilities stay flat at the top of `src/lib/`.
 - **Collections/Blocks/Fields/Globals** are factory-function based — most fields (e.g.
@@ -165,9 +165,8 @@ browser reads what `RuntimeConfigScript` rendered into the page. CI fails
 Task and workflow **configs** (`tasks/`, `workflows/`) are part of the Payload config and therefore of
 the Next.js bundle; their **handlers** are not. Each handler lives in `handlers/<name>.ts` and the
 config points at it with `handler: handlerPath('<name>.ts')` (Payload loads string handlers at run
-time). A handler module exports `handler = wrapHandler(TaskSlug.X, run)`, which adds the Sentry
-instrumentation `withJobObservability` gives inline handlers, and must use `req.payload` instead of
-`getPayload({ config })`. The web process only enqueues jobs (never `runByID`); the worker
+time). A handler module must use `req.payload` instead of `getPayload({ config })`. The web process
+only enqueues jobs (never `runByID`); the worker
 (`scripts/start-worker.mjs`, polling every 5 seconds) runs them.
 
 ## Security Guardrails (found during review — respect these when touching related code)

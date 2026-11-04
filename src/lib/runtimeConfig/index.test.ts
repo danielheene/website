@@ -10,11 +10,11 @@ afterEach(() => {
 describe('runtime config', () => {
   it('reads the environment on the server and maps empty values to undefined', () => {
     vi.stubEnv('SERVER_URL', 'https://example.test')
-    vi.stubEnv('SENTRY_DSN', '')
+    vi.stubEnv('STATUS_PAGE_URL', '')
 
     expect(readRuntimeConfigFromEnv()).toMatchObject({
       serverUrl: 'https://example.test',
-      sentryDsn: undefined,
+      statusPageUrl: undefined,
     })
     expect(getRuntimeConfig().serverUrl).toBe('https://example.test')
   })

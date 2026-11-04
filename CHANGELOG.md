@@ -1,3 +1,45 @@
+## [1.15.5](https://github.com/danielheene/website/compare/v1.15.4...v1.15.5) (2026-10-24)
+
+
+### Bug Fixes
+
+* **sentry:** drop redis/mongoose/pino require-patching integrations ([#119](https://github.com/danielheene/website/issues/119)) ([c2566a6](https://github.com/danielheene/website/commit/c2566a6aa32c583e1130fafdbbbe7558b85d6957)), closes [#118](https://github.com/danielheene/website/issues/118)
+
+## [1.15.4](https://github.com/danielheene/website/compare/v1.15.3...v1.15.4) (2026-10-24)
+
+
+### Bug Fixes
+
+* **sentry:** disable Sentry's default integrations, they crash the server under Turbopack ([#118](https://github.com/danielheene/website/issues/118)) ([acf9afa](https://github.com/danielheene/website/commit/acf9afa0c60a012450e54f2df43b3f13b6d2efe7))
+
+## [1.15.3](https://github.com/danielheene/website/compare/v1.15.2...v1.15.3) (2026-10-23)
+
+
+### Bug Fixes
+
+* **sentry:** remove withSentryConfig, it's unusable on Turbopack ([#117](https://github.com/danielheene/website/issues/117)) ([be80c6d](https://github.com/danielheene/website/commit/be80c6d65a09876a41bd992752007d0e6e0629e1))
+
+## [1.15.2](https://github.com/danielheene/website/compare/v1.15.1...v1.15.2) (2026-10-23)
+
+
+### Bug Fixes
+
+* **sentry:** filter Sentry's default server externals to avoid broken orchestrion requires ([#116](https://github.com/danielheene/website/issues/116)) ([0bb1044](https://github.com/danielheene/website/commit/0bb10440f5d7ffc1134875d86e82286ca5523ef8))
+
+## [1.15.1](https://github.com/danielheene/website/compare/v1.15.0...v1.15.1) (2026-10-17)
+
+
+### Bug Fixes
+
+* **sentry:** disable Turbopack orchestrion instrumentation to fix boot crash ([#115](https://github.com/danielheene/website/issues/115)) ([8028fc9](https://github.com/danielheene/website/commit/8028fc9d2067aa8e61a6b52ee91b27572834764f))
+
+# [1.15.0](https://github.com/danielheene/website/compare/v1.14.0...v1.15.0) (2026-10-17)
+
+
+### Features
+
+* **collections:** enable autosave for single-version drafts ([#114](https://github.com/danielheene/website/issues/114)) ([26f8791](https://github.com/danielheene/website/commit/26f8791be28406d43ae56cf778b31609a1aa9478))
+
 # [1.14.0](https://github.com/danielheene/website/compare/v1.13.0...v1.14.0) (2026-10-17)
 
 

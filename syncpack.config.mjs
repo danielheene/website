@@ -3,7 +3,7 @@
 /**
  * Keeps families of packages that are released together on the same version.
  *
- * Payload, Storybook, Sentry and the others each publish a dozen packages from
+ * Payload, Storybook and the others each publish a dozen packages from
  * one repo on a shared release train — mixing versions within a family causes
  * subtle runtime breakage rather than an install error, so it is worth
  * enforcing. Each family is held to a single range with `sameRange`: `snapTo` targets a
@@ -189,13 +189,6 @@ export default {
       dependencies: ['storybook', '@storybook/**'],
       packages: ['**'],
       policy: 'sameRange',
-    },
-
-    {
-      label: 'Sentry packages share a release train',
-      dependencies: ['@sentry/**'],
-      packages: ['**'],
-      preferVersion: 'highestSemver',
     },
 
     {

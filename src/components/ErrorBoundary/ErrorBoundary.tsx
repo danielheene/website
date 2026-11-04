@@ -2,8 +2,6 @@
 
 import { Component, type ErrorInfo, type ReactNode } from 'react'
 
-import * as Sentry from '@sentry/nextjs'
-
 export interface ErrorBoundaryProps {
   children: ReactNode
   /**
@@ -14,10 +12,7 @@ export interface ErrorBoundaryProps {
    * Pass a render function to show something contextual, e.g. a retry button.
    */
   fallback?: ReactNode | ((error: Error, reset: () => void) => ReactNode)
-  /**
-   * Label attached to the Sentry report, so a crash can be traced back to the
-   * boundary that caught it (e.g. the block type that failed).
-   */
+  /** Label identifying which boundary caught the error (e.g. the block type that failed). */
   name?: string
   /** Additional side effect on catch, e.g. local logging or a metric. */
   onError?: (error: Error, errorInfo: ErrorInfo) => void
@@ -37,8 +32,7 @@ interface ErrorBoundaryState {
  * root-level crashes, but they replace the *entire* route. This boundary is
  * for the finer-grained case: one CMS block, widget, or third-party embed
  * failing should degrade to nothing while the rest of the page renders
- * normally. Errors are still forwarded to Sentry, so silence here never means
- * an unreported crash.
+ * normally.
  *
  * Note this catches errors thrown while *rendering* on the client. It does not
  * catch errors in event handlers, `setTimeout`, or async code — those need
@@ -56,18 +50,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    const { name, onError } = this.props
-
-    Sentry.captureException(error, {
-      tags: {
-        errorBoundary: name ?? 'unnamed',
-      },
-      contexts: {
-        react: {
-          componentStack: errorInfo.componentStack,
-        },
-      },
-    })
+    const { onError } = this.props
 
     onError?.(error, errorInfo)
   }

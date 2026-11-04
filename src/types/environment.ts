@@ -66,17 +66,6 @@ export const envSchema = z.object({
   UNSPLASH_ACCESS_KEY: emptyAsUndefined(z.string()),
 
   /**
-   * Sentry is entirely optional: with no DSN the SDK is never initialized
-   */
-  SENTRY_DSN: emptyAsUndefined(z.url()),
-  SENTRY_ENVIRONMENT: emptyAsUndefined(z.string()),
-  SENTRY_RELEASE: emptyAsUndefined(z.string()),
-  SENTRY_TRACES_SAMPLE_RATE: emptyAsUndefined(z.string()),
-  SENTRY_AUTH_TOKEN: emptyAsUndefined(z.string()),
-  SENTRY_ORG: emptyAsUndefined(z.string()),
-  SENTRY_PROJECT: emptyAsUndefined(z.string()),
-
-  /**
    * Cloudflare Tunnel is used to expose the app to the internet on local development
    */
   CLOUDFLARE_TUNNEL_HOST: emptyAsUndefined(z.string()),

@@ -54,8 +54,8 @@ export const RenderBlocks = ({ blocks }: BlockRendererProps) => {
               /*
                 Blocks are CMS-authored and several fetch live external data
                 (Umami, Payload), so one failing block must not take down the
-                whole page. The boundary reports to Sentry and renders nothing,
-                letting the remaining blocks display normally.
+                whole page. The boundary renders nothing, letting the
+                remaining blocks display normally.
               */
               <ErrorBoundary key={index} name={blockType}>
                 <Suspense>

@@ -22,7 +22,6 @@ This repository contains the source code for the personal website, blog, and res
 - **Integrations & Services**:
   - **Analytics**: [Umami](https://umami.is/) (Optional)
   - **Transactional Email**: [UseSend](https://usesend.com/) / [React Email](https://react.email/) (Optional)
-  - **Error Tracking & Tracing**: [Sentry](https://sentry.io/) (Optional)
   - **AI Metadata & Alt-Text**: OpenAI / Anthropic (Optional)
   - **Address & Geocoding**: Mapbox (Optional)
   - **Stock Photos**: Unsplash API (Optional)
@@ -130,7 +129,7 @@ bun run dev:email        # React Email preview server (http://localhost:3005)
 | `bun run dev` | Starts Next.js dev server and Storybook in parallel (supports `--tunnel`). |
 | `bun run dev:app` | Starts Next.js development server only (`localhost:3000`). |
 | `bun run dev:storybook` | Starts Storybook development server (`localhost:6006`). |
-| `bun run build` | Production build (compiles Next.js bundle with Sentry release tagging). |
+| `bun run build` | Production build (compiles the Next.js bundle). |
 | `bun run build:storybook` | Builds static Storybook documentation into `dist/`. |
 | `bun run start:storybook` | Serves the static Storybook build on port 3020. |
 | `bun run start:app` | Starts the production Next.js application server. |
@@ -237,18 +236,6 @@ The source of truth is declared as a Zod schema in `src/types/environment.ts`. I
 | `MAPBOX_API_KEY` | **Required** | Mapbox access token for address and coordinate lookups. |
 | `UNSPLASH_ACCESS_KEY` | Optional | Unsplash API access key for stock photo search & direct media import. |
 
-### Error Tracking (Sentry, Optional)
-
-| Variable | Type / Requirement | Purpose |
-| --- | --- | --- |
-| `SENTRY_DSN` | Optional (URL) | Enables Sentry SDK if provided (inlined at build time). |
-| `SENTRY_ENVIRONMENT` | Optional | Custom environment name reported to Sentry. |
-| `SENTRY_RELEASE` | Optional | Release tag reported to Sentry. |
-| `SENTRY_TRACES_SAMPLE_RATE` | Optional | Performance trace sample rate (`0` to `1`). |
-| `SENTRY_AUTH_TOKEN` | Optional | Sentry authentication token for source map upload during build. |
-| `SENTRY_ORG` | Optional | Sentry organization slug for source map upload. |
-| `SENTRY_PROJECT` | Optional | Sentry project name for source map upload. |
-
 ### Cloudflare Tunnel (Optional)
 
 | Variable | Type / Requirement | Purpose |
@@ -257,7 +244,7 @@ The source of truth is declared as a Zod schema in `src/types/environment.ts`. I
 | `CLOUDFLARE_TUNNEL_URL` | Optional (URL) | Target URL for Cloudflare tunnel. |
 | `CLOUDFLARE_TUNNEL_TOKEN` | Optional | Cloudflare tunnel authentication token. |
 
-> **Build-Time Inlining Notice**: `SERVER_URL`, `STATUS_PAGE_URL`, and `SENTRY_DSN` are inlined into the client bundle at build time by `next.config.ts`. Additionally, route shells rendered at build time with `cacheComponents: true` capture server-side values. Ensure correct values are present during `bun run build`.
+> **Build-Time Inlining Notice**: route shells rendered at build time with `cacheComponents: true` capture server-side values. Ensure correct values are present during `bun run build`.
 
 ---
 
@@ -385,7 +372,7 @@ Everything is built in CI; Docker images only `COPY` finished output (no package
   2. **CI**: the jobs above.
   3. **Deploy** (environment `Production` on `main`, `Development` on `develop`): downloads the tested compile, runs `bun run migrate` against the target database, runs `--experimental-build-mode=generate` with that environment's values, assembles `out/{web,worker,storybook}` (`scripts/assemble-images.mjs`), builds the COPY-only images (`app`, `worker`, `storybook` in `Dockerfile`) for `linux/amd64`, pushes them to `ghcr.io/danielheene/website/*` and triggers the Dokploy redeploy webhooks.
 
-Environment-specific values the browser needs (site URL, status page, Umami, Sentry DSN/environment) are read at runtime through `src/lib/runtimeConfig`, never through static `process.env.NEXT_PUBLIC_*` references or `next.config.ts` `env`, so one compile can be deployed to any environment.
+Environment-specific values the browser needs (site URL, status page, Umami) are read at runtime through `src/lib/runtimeConfig`, never through static `process.env.NEXT_PUBLIC_*` references or `next.config.ts` `env`, so one compile can be deployed to any environment.
 
 ---
 

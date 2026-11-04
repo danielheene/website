@@ -4,15 +4,9 @@ import { NextConfig } from 'next'
 import { PHASE_DEVELOPMENT_SERVER } from 'next/constants'
 import { withPayload } from '@payloadcms/next/withPayload'
 
-import { withSentryConfig } from '@sentry/nextjs/config'
 import z from 'zod'
 
 import { envSchema } from '@/types/environment'
-
-import { name as packageName, version as packageVersion } from './package.json'
-
-// Identical for every environment, so a single compile can be deployed anywhere.
-const sentryRelease = `${packageName}@${packageVersion}`
 
 let server: ChildProcess | null = null
 
@@ -157,21 +151,6 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
     ],
 
     /**
-     *    Environment Variables
-     *
-     *    Only values that are identical in every environment may be inlined
-     *    here, because the compiled output is built once (see
-     *    `next build --experimental-build-mode=compile`) and deployed to
-     *    several. Environment-specific public values (site URL, status page,
-     *    Umami, Sentry DSN/environment, ...) are read at runtime through
-     *    `@/lib/runtimeConfig` instead; do not add them here or reference
-     *    `process.env.NEXT_PUBLIC_*` statically.
-     */
-    env: {
-      SENTRY_RELEASE: sentryRelease,
-    },
-
-    /**
      *    Logging
      */
     logging: {
@@ -245,37 +224,6 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
       dangerouslyAllowSVG: true,
     },
 
-    // webpack: (config, context) => {
-    //   const nextConfig = {
-    //     ...config,
-    //   }
-    //   nextConfig.resolve = {
-    //     ...config.resolve,
-    //     extensionAlias: {
-    //       '.cjs': [
-    //         '.cts',
-    //         '.cjs',
-    //       ],
-    //       '.js': [
-    //         '.ts',
-    //         '.tsx',
-    //         '.js',
-    //         '.jsx',
-    //       ],
-    //       '.mjs': [
-    //         '.mts',
-    //         '.mjs',
-    //       ],
-    //     },
-    //     alias: {
-    //       ...config.resolve.alias,
-    //       '@': path.resolve(__dirname, 'src'),
-    //     },
-    //   }
-    //
-    //   return config
-    // },
-
     async headers() {
       return [
         {
@@ -291,32 +239,7 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
     },
   }
 
-  const configWithPayload = withPayload(nextConfig, {
+  return withPayload(nextConfig, {
     devBundleServerPackages: false,
-  })
-
-  /**
-   * Source maps are only uploaded when an auth token is present, so local and
-   * CI builds without Sentry credentials behave exactly as before. Without the
-   * upload, production stack traces stay minified but error capture still works.
-   */
-  const uploadSourceMaps = Boolean(
-    process.env.SENTRY_AUTH_TOKEN && process.env.SENTRY_ORG && process.env.SENTRY_PROJECT,
-  )
-
-  return withSentryConfig(configWithPayload, {
-    org: process.env.SENTRY_ORG,
-    project: process.env.SENTRY_PROJECT,
-    authToken: process.env.SENTRY_AUTH_TOKEN,
-
-    silent: !process.env.CI,
-    sourcemaps: {
-      disable: !uploadSourceMaps,
-      deleteSourcemapsAfterUpload: true,
-    },
-
-    release: {
-      name: sentryRelease,
-    },
   })
 }
