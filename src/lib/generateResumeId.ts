@@ -11,15 +11,6 @@ import { CollectionSlug } from '@/types/collections'
 const nanoid = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 5)
 
 /**
- * Generate a resume ID without a uniqueness check
- *
- * For temporary display IDs in the admin dashboard only; may collide.
- */
-export const UNSAFE_generateResumeId = () => {
-  return nanoid()
-}
-
-/**
  * Generate a resume ID that is unique in the database
  *
  * Retries until `ResumeDocuments` has no doc with that slug.
