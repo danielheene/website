@@ -30,9 +30,16 @@ test.describe('smoke', () => {
     await expect(page.locator('form')).toBeVisible()
   })
 
-  test('unknown route returns a 404 page', async ({ page }) => {
+  test('unknown route renders the 404 page', async ({ page }) => {
     const response = await page.goto('/this-route-does-not-exist-abc123')
-    expect(response?.status()).toBe(404)
+    // Cache Components streams the not-found UI after the shell, so the
+    // status is already committed as 200 even though the 404 page renders.
+    expect(response?.status()).toBeLessThan(500)
+    await expect(page.getByRole('heading', { name: '404' })).toBeVisible()
+    await expect(page.getByText('This page could not be found.')).toBeVisible()
+    // Next marks the streamed not-found response noindex, which is the real
+    // SEO guarantee when the status has already been committed as 200.
+    await expect(page.locator('head meta[name="robots"]')).toHaveAttribute('content', 'noindex')
   })
 
   test('no uncaught page errors on the homepage', async ({ page }) => {

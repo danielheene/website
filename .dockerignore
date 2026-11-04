@@ -24,6 +24,7 @@ apps/*/.next/cache
 apps/*/.next/trace
 apps/*/.next/**/*.tsbuildinfo
 apps/*/dist
+packages/*/dist
 out
 
 # Turbopack traces the server's external packages into `.next/node_modules/`

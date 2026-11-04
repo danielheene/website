@@ -1,6 +1,5 @@
 'use server'
 
-import { createAnthropic } from '@ai-sdk/anthropic'
 import { generateText } from 'ai'
 import dedent from 'dedent'
 import sharp, { type SharpInput } from 'sharp'

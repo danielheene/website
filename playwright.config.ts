@@ -71,7 +71,7 @@ export default defineConfig({
           {
             // The real backend image, running the admin panel and the REST API
             // the frontend reads from.
-            command: `docker run --rm --network host -e PORT=${BACKEND_PORT} website-backend-app:e2e`,
+            command: `docker run --rm --network host --env-file .env.test -e PORT=${BACKEND_PORT} website-backend-app:e2e`,
             url: `${backendURL}/admin`,
             reuseExistingServer: !process.env.CI,
             timeout: 180_000,
@@ -80,7 +80,7 @@ export default defineConfig({
           },
           {
             // The real frontend image, pointed at the backend above.
-            command: `docker run --rm --network host -e PORT=${PORT} -e PAYLOAD_API_URL=${backendURL} website-frontend:e2e`,
+            command: `docker run --rm --network host --env-file .env.test -e PORT=${PORT} -e PAYLOAD_API_URL=${backendURL} website-frontend:e2e`,
             url: baseURL,
             reuseExistingServer: !process.env.CI,
             timeout: 180_000,
@@ -92,7 +92,7 @@ export default defineConfig({
           {
             // The Payload backend serves the admin panel and the REST API the
             // frontend reads from.
-            command: 'bun run dev:backend',
+            command: 'bun run dev',
             cwd: './apps/backend',
             url: `${backendURL}/admin`,
             reuseExistingServer: !process.env.CI,
@@ -102,7 +102,7 @@ export default defineConfig({
           },
           {
             // The public frontend, pointed at the backend above.
-            command: 'bun run dev:frontend',
+            command: 'bun run dev',
             cwd: './apps/frontend',
             url: baseURL,
             reuseExistingServer: !process.env.CI,

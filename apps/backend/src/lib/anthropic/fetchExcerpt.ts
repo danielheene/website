@@ -3,7 +3,6 @@
 import { convertLexicalToHTML } from '@payloadcms/richtext-lexical/html'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 
-import { createAnthropic } from '@ai-sdk/anthropic'
 import { parseHtmlToLexical } from '@website/lib/lexical/parseHtmlToLexical'
 import { generateText } from 'ai'
 import dedent from 'dedent'

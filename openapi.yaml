@@ -1,0 +1,2623 @@
+openapi: 3.0.3
+info:
+  title: daniel.heene.io Backend API
+  version: 1.15.2-rc.5
+  description: |
+    Payload CMS 3.x backend API for daniel.heene.io.
+
+    The backend (apps/backend) exposes a REST API under /api/* for every
+    Payload collection and global. The frontend proxies /api/:path* to
+    PAYLOAD_API_URL/admin/api/:path* via next.config.ts rewrites.
+
+    Collections and globals are bilingual (English/German) where configured.
+    Read access follows the drafts setting: collections with versions.drafts
+    use authenticatedOrPublished, so unpublished documents require a signed-in
+    Payload session. Local-API reads default to overrideAccess: true, so
+    fetchers that skip access must filter _status: published themselves.
+
+servers:
+  - url: http://localhost:3100
+    description: Local development backend (Payload CMS)
+  - url: http://localhost:3000
+    description: Frontend proxy to backend (/api/* -> PAYLOAD_API_URL/admin/api/*)
+
+tags:
+  - name: collections
+    description: Payload CMS collections
+  - name: globals
+    description: Payload CMS globals
+
+components:
+  securitySchemes:
+    payloadAuth:
+      type: http
+      scheme: bearer
+      format: jwt
+      description: |
+        Payload CMS JWT. Obtained via POST /api/users/login. Required for
+        write operations and for reading draft documents on collections with
+        versions.drafts.
+
+  schemas:
+    MediaBase:
+      type: object
+      properties:
+        id:
+          type: string
+        checksum:
+          type: string
+          nullable: true
+        credits:
+          type: object
+          nullable: true
+        thumbnails:
+          type: array
+          nullable: true
+        generatorFlags:
+          type: array
+          items:
+            type: string
+            enum: [resume-asset, thumbnail, document, audio-thumbnail, video-thumbnail, document-thumbnail, unsplash-import, seeded-dummy]
+        prefix:
+          type: string
+          nullable: true
+        _objectKey:
+          type: string
+          nullable: true
+        updatedAt:
+          type: string
+        createdAt:
+          type: string
+        url:
+          type: string
+          nullable: true
+        thumbnailURL:
+          type: string
+          nullable: true
+        filename:
+          type: string
+          nullable: true
+        mimeType:
+          type: string
+          nullable: true
+        filesize:
+          type: number
+          nullable: true
+        width:
+          type: number
+          nullable: true
+        height:
+          type: number
+          nullable: true
+        focalX:
+          type: number
+          nullable: true
+        focalY:
+          type: number
+          nullable: true
+
+    RichText:
+      type: object
+      properties:
+        root:
+          type: object
+        '[k: string]':
+          type: object
+
+    HeroSlide:
+      type: object
+      properties:
+        slideType:
+          type: string
+          enum: [image, video, shader]
+          nullable: true
+        media:
+          type: object
+          nullable: true
+        shader:
+          type: string
+          enum: [darkveil, faulty-terminal, gradient-blinds, grainient]
+          nullable: true
+        id:
+          type: string
+          nullable: true
+
+    Meta:
+      type: object
+      properties:
+        title:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+
+    LinkFieldData:
+      type: object
+      properties:
+        link:
+          type: string
+        id:
+          type: string
+          nullable: true
+
+    NavEntry:
+      type: object
+      properties:
+        linkType:
+          type: string
+          enum: [internal, custom]
+        newTab:
+          type: boolean
+          nullable: true
+        iconOnly:
+          type: boolean
+          nullable: true
+        doc:
+          type: object
+          nullable: true
+        url:
+          type: string
+          nullable: true
+        iconBefore:
+          type: string
+          nullable: true
+        text:
+          type: string
+        iconAfter:
+          type: string
+          nullable: true
+        id:
+          type: string
+          nullable: true
+
+    PaginatedResponse:
+      type: object
+      required: [docs, totalDocs, page, limit, totalPages]
+      properties:
+        docs:
+          type: array
+          items:
+            type: object
+        totalDocs:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+        totalPages:
+          type: integer
+        hasNextPage:
+          type: boolean
+        hasPrevPage:
+          type: boolean
+
+    Page:
+      type: object
+      required: [id, title, protected, slug, updatedAt, createdAt]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        protected:
+          type: boolean
+        slug:
+          type: string
+        layout:
+          type: string
+          enum: [default, home, resume, legal]
+          nullable: true
+        hero:
+          type: object
+          nullable: true
+          properties:
+            slides:
+              type: array
+              nullable: true
+        contentType:
+          type: string
+          enum: [title, custom]
+          nullable: true
+        content:
+          $ref: '#/components/schemas/RichText'
+          nullable: true
+        blocks:
+          type: array
+          nullable: true
+        meta:
+          $ref: '#/components/schemas/Meta'
+          nullable: true
+        generatorFlags:
+          type: array
+          items:
+            type: string
+            enum: [resume-asset, thumbnail, document, audio-thumbnail, video-thumbnail, document-thumbnail, unsplash-import, seeded-dummy]
+        updatedAt:
+          type: string
+        createdAt:
+          type: string
+        deletedAt:
+          type: string
+          nullable: true
+        _status:
+          type: string
+          enum: [draft, published]
+          nullable: true
+
+    BlogPost:
+      type: object
+      required: [id, title, slug, updatedAt, createdAt]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        slug:
+          type: string
+        topics:
+          type: array
+          nullable: true
+        hero:
+          type: object
+          nullable: true
+        readingTime:
+          type: number
+          nullable: true
+        wordCount:
+          type: number
+          nullable: true
+        content:
+          $ref: '#/components/schemas/RichText'
+          nullable: true
+        excerpt:
+          $ref: '#/components/schemas/RichText'
+          nullable: true
+        links:
+          type: array
+          nullable: true
+        meta:
+          $ref: '#/components/schemas/Meta'
+          nullable: true
+        generatorFlags:
+          type: array
+          items:
+            type: string
+            enum: [resume-asset, thumbnail, document, audio-thumbnail, video-thumbnail, document-thumbnail, unsplash-import, seeded-dummy]
+        updatedAt:
+          type: string
+        createdAt:
+          type: string
+        deletedAt:
+          type: string
+          nullable: true
+        _status:
+          type: string
+          enum: [draft, published]
+          nullable: true
+
+    Topic:
+      type: object
+      required: [id, title, slug, updatedAt, createdAt]
+      properties:
+        id:
+          type: string
+        _order:
+          type: string
+          nullable: true
+        title:
+          type: string
+        featured:
+          type: boolean
+          nullable: true
+        slug:
+          type: string
+        hero:
+          type: object
+          nullable: true
+        content:
+          $ref: '#/components/schemas/RichText'
+          nullable: true
+        relatedPosts:
+          type: object
+          nullable: true
+        meta:
+          $ref: '#/components/schemas/Meta'
+          nullable: true
+        generatorFlags:
+          type: array
+          items:
+            type: string
+            enum: [resume-asset, thumbnail, document, audio-thumbnail, video-thumbnail, document-thumbnail, unsplash-import, seeded-dummy]
+        updatedAt:
+          type: string
+        createdAt:
+          type: string
+        deletedAt:
+          type: string
+          nullable: true
+        _status:
+          type: string
+          enum: [draft, published]
+          nullable: true
+
+    MediaImage:
+      type: object
+      required: [id, updatedAt, createdAt]
+      allOf:
+        - $ref: '#/components/schemas/MediaBase'
+
+    MediaVideo:
+      type: object
+      required: [id, updatedAt, createdAt]
+      allOf:
+        - $ref: '#/components/schemas/MediaBase'
+
+    MediaDocument:
+      type: object
+      required: [id, updatedAt, createdAt]
+      allOf:
+        - $ref: '#/components/schemas/MediaBase'
+
+    MediaAudio:
+      type: object
+      required: [id, updatedAt, createdAt]
+      allOf:
+        - $ref: '#/components/schemas/MediaBase'
+
+    User:
+      type: object
+      required: [id, email, collection, updatedAt, createdAt]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          nullable: true
+        avatar:
+          type: object
+          nullable: true
+        enableOwnTracking:
+          type: boolean
+          nullable: true
+        role:
+          type: string
+          enum: [admin, frontend]
+          nullable: true
+        updatedAt:
+          type: string
+        createdAt:
+          type: string
+        enableAPIKey:
+          type: boolean
+          nullable: true
+        apiKey:
+          type: string
+          nullable: true
+        apiKeyIndex:
+          type: string
+          nullable: true
+        hasAPIKey:
+          type: boolean
+          nullable: true
+        email:
+          type: string
+        resetPasswordToken:
+          type: string
+          nullable: true
+        resetPasswordExpiration:
+          type: string
+          nullable: true
+        salt:
+          type: string
+          nullable: true
+        hash:
+          type: string
+          nullable: true
+        resetPasswordRequestedAt:
+          type: string
+          nullable: true
+        loginAttempts:
+          type: number
+          nullable: true
+        lockUntil:
+          type: string
+          nullable: true
+        sessions:
+          type: array
+          nullable: true
+        password:
+          type: string
+          nullable: true
+        collection:
+          type: string
+          enum: [users]
+
+    ResumeCustomer:
+      type: object
+      required: [id, title, slug, updatedAt, createdAt]
+      properties:
+        id:
+          type: string
+        _order:
+          type: string
+          nullable: true
+        title:
+          type: string
+        slug:
+          type: string
+        svg:
+          type: string
+          nullable: true
+        generatorFlags:
+          type: array
+          items:
+            type: string
+            enum: [resume-asset, thumbnail, document, audio-thumbnail, video-thumbnail, document-thumbnail, unsplash-import, seeded-dummy]
+        updatedAt:
+          type: string
+        createdAt:
+          type: string
+        _status:
+          type: string
+          enum: [draft, published]
+          nullable: true
+
+    ResumeDocument:
+      type: object
+      required: [id, title, slug]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        slug:
+          type: string
+        createdAt:
+          type: string
+          nullable: true
+        jobId:
+          type: string
+          nullable: true
+        checksum_en:
+          type: string
+          nullable: true
+        checksum_de:
+          type: string
+          nullable: true
+        document_en:
+          type: object
+          nullable: true
+        document_de:
+          type: object
+          nullable: true
+        thumbnails_en:
+          type: array
+          nullable: true
+        thumbnails_de:
+          type: array
+          nullable: true
+        data_en:
+          type: object
+          nullable: true
+        data_de:
+          type: object
+          nullable: true
+        generatorFlags:
+          type: array
+          items:
+            type: string
+            enum: [resume-asset, thumbnail, document, audio-thumbnail, video-thumbnail, document-thumbnail, unsplash-import, seeded-dummy]
+
+    ResumeJob:
+      type: object
+      required: [id, employer, title, startDate, updatedAt, createdAt]
+      properties:
+        id:
+          type: string
+        employer:
+          type: string
+        title:
+          type: string
+        tasks:
+          type: array
+          nullable: true
+        startDate:
+          type: string
+        endDate:
+          type: string
+          nullable: true
+        interval:
+          type: number
+          nullable: true
+        skillTags:
+          type: array
+          nullable: true
+        generatorFlags:
+          type: array
+          items:
+            type: string
+            enum: [resume-asset, thumbnail, document, audio-thumbnail, video-thumbnail, document-thumbnail, unsplash-import, seeded-dummy]
+        updatedAt:
+          type: string
+        createdAt:
+          type: string
+        deletedAt:
+          type: string
+          nullable: true
+        _status:
+          type: string
+          enum: [draft, published]
+          nullable: true
+
+    ResumeSkillTag:
+      type: object
+      required: [id, title, slug, updatedAt, createdAt]
+      properties:
+        id:
+          type: string
+        _order:
+          type: string
+          nullable: true
+        icon:
+          type: string
+          nullable: true
+        title:
+          type: string
+        slug:
+          type: string
+        type:
+          type: string
+          enum: [programmingLanguages, frameworksAndLibraries, toolingAndPlatforms, testingAndQuality, architectureAndPatterns, methodologiesAndWorkingPractices]
+          nullable: true
+        interval:
+          type: number
+          nullable: true
+        relatedJobs:
+          type: object
+          nullable: true
+        relatedSkills:
+          type: object
+          nullable: true
+        generatorFlags:
+          type: array
+          items:
+            type: string
+            enum: [resume-asset, thumbnail, document, audio-thumbnail, video-thumbnail, document-thumbnail, unsplash-import, seeded-dummy]
+        updatedAt:
+          type: string
+        createdAt:
+          type: string
+        _status:
+          type: string
+          enum: [draft, published]
+          nullable: true
+
+    ResumeSkill:
+      type: object
+      required: [id, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+        content:
+          type: object
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        type:
+          type: string
+          enum: [programmingLanguages, frameworksAndLibraries, toolingAndPlatforms, testingAndQuality, architectureAndPatterns, methodologiesAndWorkingPractices]
+          nullable: true
+        skillTags:
+          type: array
+          nullable: true
+        generatorFlags:
+          type: array
+          items:
+            type: string
+            enum: [resume-asset, thumbnail, document, audio-thumbnail, video-thumbnail, document-thumbnail, unsplash-import, seeded-dummy]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        deletedAt:
+          type: string
+          nullable: true
+        _status:
+          type: string
+          enum: [draft, published]
+          nullable: true
+
+    ResumeProject:
+      type: object
+      required: [id, updatedAt, createdAt]
+      properties:
+        id:
+          type: string
+        scope:
+          type: string
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        description:
+          $ref: '#/components/schemas/RichText'
+          nullable: true
+        relatedPost:
+          type: object
+          nullable: true
+        images:
+          type: array
+          nullable: true
+        generatorFlags:
+          type: array
+          items:
+            type: string
+            enum: [resume-asset, thumbnail, document, audio-thumbnail, video-thumbnail, document-thumbnail, unsplash-import, seeded-dummy]
+        updatedAt:
+          type: string
+        createdAt:
+          type: string
+        deletedAt:
+          type: string
+          nullable: true
+        _status:
+          type: string
+          enum: [draft, published]
+          nullable: true
+
+    DocumentReference:
+      type: object
+      required: [id, targetCollection, targetId, sourceCollection, sourceId, sourceType, updatedAt, createdAt]
+      properties:
+        id:
+          type: string
+        targetCollection:
+          type: string
+        targetId:
+          type: string
+        sourceCollection:
+          type: string
+        sourceId:
+          type: string
+        sourceType:
+          type: string
+          enum: [collection, global]
+        path:
+          type: string
+          nullable: true
+        updatedAt:
+          type: string
+        createdAt:
+          type: string
+
+    Redirect:
+      type: object
+      required: [id, from, type, statusCode, updatedAt, createdAt]
+      properties:
+        id:
+          type: string
+        from:
+          type: string
+        type:
+          type: string
+          enum: [reference, custom]
+        toDocument:
+          type: object
+          nullable: true
+        toPath:
+          type: string
+          nullable: true
+        statusCode:
+          type: string
+          enum: ['301', '302', '307', '308']
+        enabled:
+          type: boolean
+          nullable: true
+        origin:
+          type: string
+          enum: [manual, slug-change]
+          nullable: true
+        updatedAt:
+          type: string
+        createdAt:
+          type: string
+
+    SiteSettings:
+      type: object
+      required: [id, general]
+      properties:
+        id:
+          type: string
+        general:
+          type: object
+          properties:
+            siteName:
+              type: string
+              nullable: true
+            category:
+              type: string
+              nullable: true
+            siteHost:
+              type: string
+              nullable: true
+            siteURL:
+              type: string
+              nullable: true
+            titleTemplate:
+              type: string
+              nullable: true
+            description:
+              type: string
+              nullable: true
+            defaultOpengraphImage:
+              type: array
+              nullable: true
+            errorHero:
+              type: array
+              nullable: true
+        header:
+          $ref: '#/components/schemas/HeaderSettings'
+          nullable: true
+        footer:
+          $ref: '#/components/schemas/FooterSettings'
+          nullable: true
+        updatedAt:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          nullable: true
+
+    HeaderSettings:
+      type: object
+      properties:
+        mainNavigation:
+          type: object
+          properties:
+            entries:
+              type: array
+              items:
+                $ref: '#/components/schemas/NavEntry'
+
+    FooterSettings:
+      type: object
+      properties:
+        column1:
+          type: object
+          properties:
+            isActive:
+              type: boolean
+              nullable: true
+            title:
+              type: string
+              nullable: true
+            entries:
+              type: array
+              items:
+                $ref: '#/components/schemas/NavEntry'
+        column2:
+          type: object
+          properties:
+            isActive:
+              type: boolean
+              nullable: true
+            title:
+              type: string
+              nullable: true
+            entries:
+              type: array
+              items:
+                $ref: '#/components/schemas/NavEntry'
+        column3:
+          type: object
+          properties:
+            isActive:
+              type: boolean
+              nullable: true
+            title:
+              type: string
+              nullable: true
+            entries:
+              type: array
+              items:
+                $ref: '#/components/schemas/NavEntry'
+        legalPages:
+          type: object
+          properties:
+            entries:
+              type: array
+              items:
+                $ref: '#/components/schemas/NavEntry'
+
+    PDFGeneratorSettings:
+      type: object
+      required: [id, documentTitleTemplate, filenameTemplate, maximumRetries, skillSorting]
+      properties:
+        id:
+          type: string
+        documentTitleTemplate:
+          type: string
+        filenameTemplate:
+          type: string
+        generateThrottle:
+          type: number
+          nullable: true
+        timeoutBetweenJobs:
+          type: number
+          nullable: true
+        maximumRetries:
+          type: number
+        skillSorting:
+          type: object
+        updatedAt:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          nullable: true
+
+    GlobalUserSettings:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+        portrait:
+          type: object
+          nullable: true
+        url:
+          type: string
+          nullable: true
+        firstName:
+          type: string
+          nullable: true
+        lastName:
+          type: string
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        gender:
+          type: string
+          nullable: true
+        pronouns:
+          type: string
+          nullable: true
+        jobTitle:
+          type: string
+          nullable: true
+        homeLocation:
+          type: string
+          nullable: true
+        birthPlace:
+          type: string
+          nullable: true
+        birthDate:
+          type: string
+          nullable: true
+        languages:
+          type: array
+          nullable: true
+        taxID:
+          type: string
+          nullable: true
+        vatID:
+          type: string
+          nullable: true
+        duns:
+          type: string
+          nullable: true
+        telephone:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        address:
+          type: object
+          nullable: true
+        sameAs:
+          type: array
+          nullable: true
+        worksFor:
+          type: object
+          nullable: true
+        updatedAt:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          nullable: true
+
+    AddressData:
+      type: object
+      properties:
+        street:
+          type: string
+          nullable: true
+        number:
+          type: string
+          nullable: true
+        postCode:
+          type: string
+          nullable: true
+        place:
+          type: string
+          nullable: true
+        countryCode:
+          type: string
+          nullable: true
+        countryName:
+          type: string
+          nullable: true
+        region:
+          type: string
+          nullable: true
+        locality:
+          type: string
+          nullable: true
+        location:
+          type: array
+          nullable: true
+          minItems: 2
+          maxItems: 2
+
+paths:
+  /api/pages:
+    get:
+      tags: [collections]
+      summary: List pages
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - in: query
+          name: where
+          schema:
+            type: string
+        - in: query
+          name: sort
+          schema:
+            type: string
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Paginated list of pages.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+
+    post:
+      tags: [collections]
+      summary: Create a page
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Page'
+      responses:
+        '201':
+          description: Page created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page'
+        '400':
+          description: Validation error.
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+
+  /api/pages/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [collections]
+      summary: Get a page by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Page found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page'
+        '404':
+          description: Page not found.
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+
+    patch:
+      tags: [collections]
+      summary: Update a page by ID
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Page'
+      responses:
+        '200':
+          description: Page updated.
+        '400':
+          description: Validation error.
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Page not found.
+
+    delete:
+      tags: [collections]
+      summary: Delete a page by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Page deleted.
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Page not found.
+
+  /api/posts:
+    get:
+      tags: [collections]
+      summary: List blog posts
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - in: query
+          name: where
+          schema:
+            type: string
+        - in: query
+          name: sort
+          schema:
+            type: string
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Paginated list of blog posts.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+
+    post:
+      tags: [collections]
+      summary: Create a blog post
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlogPost'
+      responses:
+        '201':
+          description: Blog post created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogPost'
+        '400':
+          description: Validation error.
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+
+  /api/posts/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [collections]
+      summary: Get a blog post by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Blog post found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogPost'
+        '404':
+          description: Blog post not found.
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+
+    patch:
+      tags: [collections]
+      summary: Update a blog post by ID
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlogPost'
+      responses:
+        '200':
+          description: Blog post updated.
+        '400':
+          description: Validation error.
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Blog post not found.
+
+    delete:
+      tags: [collections]
+      summary: Delete a blog post by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Blog post deleted.
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Blog post not found.
+
+  /api/topics:
+    get:
+      tags: [collections]
+      summary: List blog topics
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - in: query
+          name: where
+          schema:
+            type: string
+        - in: query
+          name: sort
+          schema:
+            type: string
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Paginated list of topics.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+
+    post:
+      tags: [collections]
+      summary: Create a topic
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Topic'
+      responses:
+        '201':
+          description: Topic created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Topic'
+        '400':
+          description: Validation error.
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+
+  /api/topics/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [collections]
+      summary: Get a topic by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Topic found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Topic'
+        '404':
+          description: Topic not found.
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+
+    patch:
+      tags: [collections]
+      summary: Update a topic by ID
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Topic'
+      responses:
+        '200':
+          description: Topic updated.
+        '400':
+          description: Validation error.
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Topic not found.
+
+    delete:
+      tags: [collections]
+      summary: Delete a topic by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Topic deleted.
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Topic not found.
+
+  /api/users:
+    get:
+      tags: [collections]
+      summary: List users
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Paginated list of users.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+
+    post:
+      tags: [collections]
+      summary: Create a user
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: User created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Validation error.
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+
+  /api/users/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [collections]
+      summary: Get a user by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: User found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found.
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+
+    patch:
+      tags: [collections]
+      summary: Update a user by ID
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User updated.
+        '400':
+          description: Validation error.
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+        '404':
+          description: User not found.
+
+    delete:
+      tags: [collections]
+      summary: Delete a user by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: User deleted.
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+        '404':
+          description: User not found.
+
+  /api/images:
+    get:
+      tags: [collections]
+      summary: List media images
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Paginated list of images.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+    post:
+      tags: [collections]
+      summary: Create a media image
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaImage'
+      responses:
+        '201':
+          description: Image created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaImage'
+
+  /api/images/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [collections]
+      summary: Get a media image by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Image found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaImage'
+        '404':
+          description: Image not found.
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+
+    patch:
+      tags: [collections]
+      summary: Update a media image by ID
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaImage'
+      responses:
+        '200':
+          description: Image updated.
+        '400':
+          description: Validation error.
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Image not found.
+
+    delete:
+      tags: [collections]
+      summary: Delete a media image by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Image deleted.
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+        '404':
+          description: Image not found.
+
+  /api/videos:
+    get:
+      tags: [collections]
+      summary: List media videos
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Paginated list of videos.
+
+    post:
+      tags: [collections]
+      summary: Create a media video
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaVideo'
+      responses:
+        '201':
+          description: Video created.
+
+  /api/videos/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [collections]
+      summary: Get a media video by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Video found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaVideo'
+
+    patch:
+      tags: [collections]
+      summary: Update a media video by ID
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaVideo'
+      responses:
+        '200':
+          description: Video updated.
+
+    delete:
+      tags: [collections]
+      summary: Delete a media video by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Video deleted.
+
+  /api/documents:
+    get:
+      tags: [collections]
+      summary: List media documents
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Paginated list of documents.
+
+    post:
+      tags: [collections]
+      summary: Create a media document
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaDocument'
+      responses:
+        '201':
+          description: Document created.
+
+  /api/documents/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [collections]
+      summary: Get a media document by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Document found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaDocument'
+
+    patch:
+      tags: [collections]
+      summary: Update a media document by ID
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaDocument'
+      responses:
+        '200':
+          description: Document updated.
+
+    delete:
+      tags: [collections]
+      summary: Delete a media document by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Document deleted.
+
+  /api/audios:
+    get:
+      tags: [collections]
+      summary: List media audios
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Paginated list of audios.
+
+    post:
+      tags: [collections]
+      summary: Create a media audio
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaAudio'
+      responses:
+        '201':
+          description: Audio created.
+
+  /api/audios/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [collections]
+      summary: Get a media audio by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Audio found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaAudio'
+
+    patch:
+      tags: [collections]
+      summary: Update a media audio by ID
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaAudio'
+      responses:
+        '200':
+          description: Audio updated.
+
+    delete:
+      tags: [collections]
+      summary: Delete a media audio by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Audio deleted.
+
+  /api/resume-customers:
+    get:
+      tags: [collections]
+      summary: List resume customers
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Paginated list of resume customers.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+    post:
+      tags: [collections]
+      summary: Create a resume customer
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeCustomer'
+      responses:
+        '201':
+          description: Resume customer created.
+
+  /api/resume-customers/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [collections]
+      summary: Get a resume customer by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Resume customer found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumeCustomer'
+
+    patch:
+      tags: [collections]
+      summary: Update a resume customer by ID
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeCustomer'
+      responses:
+        '200':
+          description: Resume customer updated.
+
+    delete:
+      tags: [collections]
+      summary: Delete a resume customer by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Resume customer deleted.
+
+  /api/resume-documents:
+    get:
+      tags: [collections]
+      summary: List resume documents
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Paginated list of resume documents.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+    post:
+      tags: [collections]
+      summary: Create a resume document
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeDocument'
+      responses:
+        '201':
+          description: Resume document created.
+
+  /api/resume-documents/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [collections]
+      summary: Get a resume document by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Resume document found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumeDocument'
+
+    patch:
+      tags: [collections]
+      summary: Update a resume document by ID
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeDocument'
+      responses:
+        '200':
+          description: Resume document updated.
+
+    delete:
+      tags: [collections]
+      summary: Delete a resume document by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Resume document deleted.
+
+  /api/resume-jobs:
+    get:
+      tags: [collections]
+      summary: List resume jobs
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Paginated list of resume jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+    post:
+      tags: [collections]
+      summary: Create a resume job
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeJob'
+      responses:
+        '201':
+          description: Resume job created.
+
+  /api/resume-jobs/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [collections]
+      summary: Get a resume job by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Resume job found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumeJob'
+
+    patch:
+      tags: [collections]
+      summary: Update a resume job by ID
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeJob'
+      responses:
+        '200':
+          description: Resume job updated.
+
+    delete:
+      tags: [collections]
+      summary: Delete a resume job by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Resume job deleted.
+
+  /api/resume-skills:
+    get:
+      tags: [collections]
+      summary: List resume skills
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Paginated list of resume skills.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+    post:
+      tags: [collections]
+      summary: Create a resume skill
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeSkill'
+      responses:
+        '201':
+          description: Resume skill created.
+
+  /api/resume-skills/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [collections]
+      summary: Get a resume skill by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Resume skill found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumeSkill'
+
+    patch:
+      tags: [collections]
+      summary: Update a resume skill by ID
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeSkill'
+      responses:
+        '200':
+          description: Resume skill updated.
+
+    delete:
+      tags: [collections]
+      summary: Delete a resume skill by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Resume skill deleted.
+
+  /api/resume-skill-tags:
+    get:
+      tags: [collections]
+      summary: List resume skill tags
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Paginated list of resume skill tags.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+    post:
+      tags: [collections]
+      summary: Create a resume skill tag
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeSkillTag'
+      responses:
+        '201':
+          description: Resume skill tag created.
+
+  /api/resume-skill-tags/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [collections]
+      summary: Get a resume skill tag by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Resume skill tag found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumeSkillTag'
+
+    patch:
+      tags: [collections]
+      summary: Update a resume skill tag by ID
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeSkillTag'
+      responses:
+        '200':
+          description: Resume skill tag updated.
+
+    delete:
+      tags: [collections]
+      summary: Delete a resume skill tag by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Resume skill tag deleted.
+
+  /api/resume-projects:
+    get:
+      tags: [collections]
+      summary: List resume projects
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Paginated list of resume projects.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+    post:
+      tags: [collections]
+      summary: Create a resume project
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeProject'
+      responses:
+        '201':
+          description: Resume project created.
+
+  /api/resume-projects/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [collections]
+      summary: Get a resume project by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Resume project found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumeProject'
+
+    patch:
+      tags: [collections]
+      summary: Update a resume project by ID
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeProject'
+      responses:
+        '200':
+          description: Resume project updated.
+
+    delete:
+      tags: [collections]
+      summary: Delete a resume project by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Resume project deleted.
+
+  /api/document-references:
+    get:
+      tags: [collections]
+      summary: List document references
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Paginated list of document references.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+    post:
+      tags: [collections]
+      summary: Create a document reference
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentReference'
+      responses:
+        '201':
+          description: Document reference created.
+
+  /api/document-references/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [collections]
+      summary: Get a document reference by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Document reference found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentReference'
+
+    patch:
+      tags: [collections]
+      summary: Update a document reference by ID
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentReference'
+      responses:
+        '200':
+          description: Document reference updated.
+
+    delete:
+      tags: [collections]
+      summary: Delete a document reference by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Document reference deleted.
+
+  /api/redirects:
+    get:
+      tags: [collections]
+      summary: List redirects
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Paginated list of redirects.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+
+    post:
+      tags: [collections]
+      summary: Create a redirect
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Redirect'
+      responses:
+        '201':
+          description: Redirect created.
+
+  /api/redirects/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [collections]
+      summary: Get a redirect by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Redirect found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Redirect'
+
+    patch:
+      tags: [collections]
+      summary: Update a redirect by ID
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Redirect'
+      responses:
+        '200':
+          description: Redirect updated.
+
+    delete:
+      tags: [collections]
+      summary: Delete a redirect by ID
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: Redirect deleted.
+
+  /api/globals/settings-site:
+    get:
+      tags: [globals]
+      summary: Get SiteSettings global
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: SiteSettings global.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteSettings'
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+
+    patch:
+      tags: [globals]
+      summary: Update SiteSettings global
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SiteSettings'
+      responses:
+        '200':
+          description: SiteSettings updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteSettings'
+        '400':
+          description: Validation error.
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+
+  /api/globals/settings-pdf-builder:
+    get:
+      tags: [globals]
+      summary: Get PDFGeneratorSettings global
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: PDFGeneratorSettings global.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PDFGeneratorSettings'
+
+    patch:
+      tags: [globals]
+      summary: Update PDFGeneratorSettings global
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PDFGeneratorSettings'
+      responses:
+        '200':
+          description: PDFGeneratorSettings updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PDFGeneratorSettings'
+        '400':
+          description: Validation error.
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+
+  /api/globals/settings-global-user:
+    get:
+      tags: [globals]
+      summary: Get GlobalUserSettings global
+      security:
+        - payloadAuth: []
+      responses:
+        '200':
+          description: GlobalUserSettings global.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GlobalUserSettings'
+
+    patch:
+      tags: [globals]
+      summary: Update GlobalUserSettings global
+      security:
+        - payloadAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GlobalUserSettings'
+      responses:
+        '200':
+          description: GlobalUserSettings updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GlobalUserSettings'
+        '400':
+          description: Validation error.
+        '401':
+          description: Unauthenticated.
+        '403':
+          description: Forbidden.
+
+externalDocs:
+  description: Payload CMS documentation
+  url: https://payloadcms.com/docs

@@ -1,6 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "stream",
+  "envMode": "loose",
   "globalDependencies": [
     ".env.local",
     "packages/styles/**/*.css",
@@ -28,11 +29,6 @@
       "inputs": ["$TURBO_DEFAULT$", "!.env*", "!**/*.test.ts", "!**/*.test.tsx"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
-    "@website/frontend#build": {
-      "dependsOn": ["^build", "@website/backend#build"],
-      "inputs": ["$TURBO_DEFAULT$", "!.env*", "!**/*.test.ts", "!**/*.test.tsx"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
-    },
     "dev": {
       "cache": false,
       "persistent": true
@@ -55,11 +51,11 @@
       "dependsOn": ["^typecheck"]
     },
     "test": {
-      "dependsOn": ["^build"],
+      "dependsOn": [],
       "outputs": []
     },
     "test:coverage": {
-      "dependsOn": ["^build"],
+      "dependsOn": [],
       "outputs": ["coverage/**"]
     },
     "test:watch": {
@@ -67,18 +63,12 @@
       "persistent": true
     },
     "generate": {
-      "dependsOn": ["generate:types", "generate:db-schema", "generate:importmap"]
+      "dependsOn": ["^generate", "generate:types", "generate:importmap"]
     },
     "generate:types": {
-      "dependsOn": ["^generate:types"],
-      "cache": false
-    },
-    "generate:db-schema": {
-      "dependsOn": ["^generate:db-schema"],
       "cache": false
     },
     "generate:importmap": {
-      "dependsOn": ["^generate:importmap"],
       "cache": false
     }
   }

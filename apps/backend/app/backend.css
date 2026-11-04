@@ -15,7 +15,7 @@
  * it their utility classes are never generated and silently render unstyled. */
 @source '../../../packages/app-components/src';
 @source '../../../packages/components/src';
-@source '../../frontend/src/';
+@source '../../frontend';
 
 @source not inline("table");
 @source not inline("table-cell");

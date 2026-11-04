@@ -22,13 +22,12 @@ const buildUrl = (path: string): URL => {
     throw new Error('PAYLOAD_API_URL is not set')
   }
 
-  const basePath = new URL(base).pathname
+  // The backend mounts everything under its Next `basePath` (see
+  // apps/backend/next.config.ts), so its REST API is at /admin/api — the same
+  // prefix the frontend rewrites add when proxying browser requests.
+  const normalizedPath = path.startsWith('/admin') ? path : `/admin${path}`
 
-  const mergedPath = basePath.length && !path.startsWith(basePath) ? `${basePath}${path}` : path
-
-  console.log(mergedPath)
-
-  return new URL(mergedPath, base)
+  return new URL(normalizedPath, base)
 }
 
 type FetchOptions = {

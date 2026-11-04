@@ -55,6 +55,16 @@ jobs:
           bun run generate
           git diff --exit-code -- packages/types/src/payload.ts "apps/backend/app/(payload)/admin/importMap.js"
 
+      # The shared packages are bundled into dist/ + .d.ts by tsdown. Building
+      # them proves the output is valid; the diff check keeps the generated
+      # exports/publishConfig in package.json committed and in sync with the
+      # sources (tsdown rewrites them deterministically).
+      - name: Build shared packages
+        run: bun run build:packages
+
+      - name: Check package exports are up to date
+        run: git diff --exit-code -- "packages/*/package.json"
+
       - name: Lint workflows
         run: docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.7 -color
 
@@ -217,6 +227,12 @@ jobs:
       # that 00000001_initialize_basic_site creates.
       - name: Run database migrations
         run: bun run migrate
+
+      # Creates the API-key user the frontend authenticates with (the resume
+      # collections are authenticated-only), plus the site settings and the
+      # published home page the frontend build/prerender needs.
+      - name: Seed frontend access
+        run: bun run seed:frontend-access
 
       # blog.spec.ts needs published posts. seed:posts creates its own topics,
       # and each post fetches one placeholder image from picsum.photos, so

@@ -16,7 +16,12 @@ const payload = await getPayload({
 })
 
 const apiKey = process.env.PAYLOAD_API_KEY
+const password = process.env.PAYLOAD_API_KEY_USER_PASSWORD
 const email = process.env.PAYLOAD_API_KEY_USER_EMAIL ?? 'frontend@daniel.heene.io'
+
+// Deployments only need the API-key user to exist; they must not create site
+// content. `SEED_FRONTEND_USER_ONLY=true` stops after the user upsert.
+const userOnly = process.env.SEED_FRONTEND_USER_ONLY === 'true'
 
 if (!apiKey) {
   throw new Error('PAYLOAD_API_KEY is not set')
@@ -37,7 +42,7 @@ if (existing.docs[0]) {
   await payload.update({
     collection: CollectionSlug.Users,
     id: userId,
-    data: { apiKey, role: 'admin' },
+    data: { apiKey, role: 'admin', ...(password ? { password } : {}) },
   })
 
   console.log(`Reused user ${email} (${userId})`)
@@ -46,7 +51,7 @@ if (existing.docs[0]) {
     collection: CollectionSlug.Users,
     data: {
       email,
-      password: crypto.randomUUID(),
+      password: password ?? crypto.randomUUID(),
       apiKey,
       role: 'admin',
     },
@@ -55,6 +60,11 @@ if (existing.docs[0]) {
   userId = created.id
 
   console.log(`Created user ${email} (${userId})`)
+}
+
+if (userOnly) {
+  console.log('Done (API-key user only)')
+  process.exit(0)
 }
 
 // Site settings must exist or the frontend layout's JSON-LD generators receive
@@ -72,7 +82,7 @@ if (!siteSettings) {
   await payload.updateGlobal({
     slug: GlobalSlug.SiteSettings,
     data: {},
-    context: { skipUpdateCachedData: true },
+    context: { skipUpdateCachedData: true, skipGenerateResumeDocumentHook: true },
   })
 
   console.log('Created SiteSettings global')
@@ -89,7 +99,7 @@ if (!globalUserSettings) {
       firstName: 'Daniel',
       lastName: 'Heene',
     },
-    context: { skipUpdateCachedData: true },
+    context: { skipUpdateCachedData: true, skipGenerateResumeDocumentHook: true },
   })
 
   console.log('Created GlobalUserSettings global')
@@ -100,7 +110,7 @@ if (!globalUserSettings) {
       firstName: 'Daniel',
       lastName: 'Heene',
     },
-    context: { skipUpdateCachedData: true },
+    context: { skipUpdateCachedData: true, skipGenerateResumeDocumentHook: true },
   })
 
   console.log('Updated GlobalUserSettings global')

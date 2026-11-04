@@ -57,9 +57,9 @@ COPY --chown=node:node apps/backend/src ./apps/backend/src
 COPY --chown=node:node apps/backend/public ./apps/backend/public
 COPY --chown=node:node apps/backend/next.config.ts apps/backend/payload.config.ts \
   apps/backend/tsconfig.json apps/backend/next-env.d.ts ./apps/backend/
-# The stylesheet entry point and the PostCSS config that runs Tailwind over
-# it — without both, the built CSS has no utilities in it.
-COPY --chown=node:node apps/backend/backend.css apps/backend/postcss.config.mjs ./apps/backend/
+# The PostCSS config that runs Tailwind over the stylesheet. The stylesheet
+# itself (app/backend.css) already came in with the app directory above.
+COPY --chown=node:node apps/backend/postcss.config.mjs ./apps/backend/
 
 USER node
 EXPOSE 3000

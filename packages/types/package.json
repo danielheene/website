@@ -5,24 +5,55 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./admin-panel": "./src/admin-panel.ts",
+    "./bilingualLanguage": "./src/bilingualLanguage.ts",
     "./blocks": "./src/blocks.ts",
+    "./blog": "./src/blog.ts",
+    "./cache": "./src/cache.ts",
     "./collections": "./src/collections.ts",
     "./globals": "./src/globals.ts",
     "./jobs-queue": "./src/jobs-queue.ts",
-    "./bilingualLanguage": "./src/bilingualLanguage.ts",
-    "./cache": "./src/cache.ts",
-    "./blog": "./src/blog.ts",
     "./payload": "./src/payload.ts",
-    "./select-options": "./src/select-options.ts",
-    "./admin-panel": "./src/admin-panel.ts",
     "./reduceDataToBilingualLanguage": "./src/reduceDataToBilingualLanguage.ts",
-    "./resolvedRelations": "./src/resolvedRelations.ts"
+    "./resolvedRelations": "./src/resolvedRelations.ts",
+    "./select-options": "./src/select-options.ts",
+    "./*": "./src/*"
   },
-  "main": "./src/index.ts",
   "dependencies": {
     "neotraverse": "^1.0.1",
     "payload": "^3.90.1",
     "type-fest": "^5.10.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "tsdown": "^0.23.4"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./dist/index.js",
+      "./admin-panel": "./dist/admin-panel.js",
+      "./bilingualLanguage": "./dist/bilingualLanguage.js",
+      "./blocks": "./dist/blocks.js",
+      "./blog": "./dist/blog.js",
+      "./cache": "./dist/cache.js",
+      "./collections": "./dist/collections.js",
+      "./globals": "./dist/globals.js",
+      "./jobs-queue": "./dist/jobs-queue.js",
+      "./payload": "./dist/payload.js",
+      "./reduceDataToBilingualLanguage": "./dist/reduceDataToBilingualLanguage.js",
+      "./resolvedRelations": "./dist/resolvedRelations.js",
+      "./select-options": "./dist/select-options.js",
+      "./*": "./dist/*.js"
+    }
+  },
+  "scripts": {
+    "build": "tsdown -F @website/types && node ../../scripts/clean-stray-dts.mjs",
+    "dev": "tsdown -F @website/types --watch",
+    "format": "oxfmt",
+    "lint": "oxlint && oxfmt --check",
+    "lint:fix": "oxlint --fix && oxfmt",
+    "typecheck": "tsc --noEmit"
+  },
+  "files": [
+    "dist"
+  ]
 }

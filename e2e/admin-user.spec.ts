@@ -46,8 +46,15 @@ const expectOnlyFields = async (page: Page, expected: string[]) => {
 test.describe.serial('admin user', () => {
   test('/admin/create-first-user hides the extra user fields', async ({ page }) => {
     await page.goto(`${backendURL}/admin/create-first-user`)
-    await page.waitForURL(/\/admin\/(create-first-user|login)/)
-    test.skip(page.url().includes('/admin/login'), 'a user already exists')
+    await page.locator('form').waitFor()
+    await page.waitForLoadState('networkidle')
+    // The client-side redirect to /admin/login (when a user exists) can land
+    // after the first URL check, so decide from the form itself: only the
+    // create-first-user form has a confirm-password field.
+    test.skip(
+      (await page.locator('#field-confirm-password').count()) === 0,
+      'a user already exists',
+    )
 
     await expectOnlyFields(page, ['email', 'password', 'confirm-password'])
 

@@ -165,6 +165,10 @@ jobs:
       PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
       PREVIEW_SECRET: ${{ secrets.PREVIEW_SECRET }}
       CRON_SECRET: ${{ secrets.CRON_SECRET }}
+      PAYLOAD_API_URL: ${{ secrets.PAYLOAD_API_URL }}
+      PAYLOAD_API_KEY: ${{ secrets.PAYLOAD_API_KEY }}
+      PAYLOAD_FRONTEND_URL: ${{ secrets.PAYLOAD_FRONTEND_URL || secrets.NEXT_PUBLIC_SERVER_URL }}
+      REVALIDATE_SECRET: ${{ secrets.REVALIDATE_SECRET }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       REDIS_URL: ${{ secrets.REDIS_URL }}
       S3_BUCKET: ${{ secrets.S3_BUCKET }}
@@ -215,11 +219,44 @@ jobs:
       - name: Run database migrations
         run: bun run migrate
 
+      # Idempotent: makes sure the API-key user the frontend builds and reads
+      # with exists (and matches PAYLOAD_API_KEY) in this environment.
+      - name: Ensure frontend API key user
+        run: bun run seed:frontend-access
+        env:
+          # Never create site settings or pages from a deployment.
+          SEED_FRONTEND_USER_ONLY: 'true'
+
       # One build against this environment's real values — no separate
       # test-env compile to reconcile with afterward (see lint-and-test.yml's
       # `e2e` job for the PR-time equivalent, which uses .env.test instead).
       - name: Build backend
         run: bun run build:backend
+
+      # The frontend prerenders its routes against the backend REST API, so
+      # the backend has to be running before the frontend build starts (the
+      # same sequence lint-and-test.yml uses). Without this step the frontend
+      # image had no .next to copy.
+      - name: Build frontend
+        run: |
+          cd apps/backend
+          (NODE_ENV=production PORT=3100 bun run start > "$RUNNER_TEMP/backend-build.log" 2>&1) &
+          backend_pid=$!
+          for _ in $(seq 1 30); do
+            curl -fsS http://localhost:3100/admin > /dev/null && break
+            sleep 2
+          done
+          if ! curl -fsS http://localhost:3100/admin > /dev/null; then
+            echo "backend never became healthy"; tail -n 80 "$RUNNER_TEMP/backend-build.log"; kill "$backend_pid" 2>/dev/null || true; exit 1
+          fi
+          cd ../..
+          bun run build:frontend
+          kill "$backend_pid" 2>/dev/null || true
+        env:
+          NODE_ENV: production
+          # Build-time only: the built app reads the runtime value from
+          # Dokploy, but prerendering needs a reachable backend now.
+          PAYLOAD_API_URL: http://localhost:3100
 
       # Standalone sentry-cli steps, not a Next.js/webpack plugin — avoids the
       # withSentryConfig require-patching crash under Turbopack (see commits

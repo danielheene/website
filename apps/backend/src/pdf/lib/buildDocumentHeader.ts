@@ -9,6 +9,12 @@ import { DocumentHeader } from '@/pdf/types'
 export const buildDocumentHeader = async (locale: BilingualLanguage): Promise<DocumentHeader> => {
   const { portrait, address, telephone, email, url, sameAs } = await fetchGlobalUserSettings(locale)
 
+  if (!telephone) {
+    throw new Error(
+      'GlobalUserSettings.telephone is missing — set it in the admin panel before generating a resume document.',
+    )
+  }
+
   const phone = parsePhoneNumber(telephone)
   const github = sameAs?.find(({ url }) => url.includes('github'))
 

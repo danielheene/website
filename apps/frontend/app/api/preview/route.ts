@@ -52,7 +52,7 @@ export async function GET(req: NextRequest): Promise<Response> {
   try {
     const baseUrl = process.env.PAYLOAD_API_URL || 'http://localhost:3100'
 
-    const authRes = await fetch(`${baseUrl}/api/users/me`, {
+    const authRes = await fetch(`${baseUrl}/admin/api/users/me`, {
       headers: req.headers,
       cache: 'no-store',
     })

@@ -26,6 +26,8 @@ import { fileURLToPath } from 'node:url'
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const target = path.join(projectRoot, '.env.local')
+const frontendTarget = path.join(projectRoot, 'apps/frontend/.env.local')
+const backendTarget = path.join(projectRoot, 'apps/backend/.env.local')
 const checkOnly = process.argv.slice(2).includes('--check')
 
 const fail = (message) => {
@@ -105,7 +107,14 @@ if (existing === contents) {
 }
 
 writeFileSync(target, contents, {
-  // owner-only: this file holds every secret the project uses
+  mode: 0o600,
+})
+
+writeFileSync(frontendTarget, contents, {
+  mode: 0o600,
+})
+
+writeFileSync(backendTarget, contents, {
   mode: 0o600,
 })
 

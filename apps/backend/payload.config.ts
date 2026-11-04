@@ -12,6 +12,7 @@ import { s3Storage } from '@payloadcms/storage-s3'
 
 import * as Sentry from '@sentry/nextjs'
 import { captureException as captureExceptionFromNode } from '@sentry/node'
+import { openapi, scalar } from '@seshuk/payload-plugin-openapi'
 import { SENTRY_ENABLED, sharedSentryOptions } from '@website/lib/sentry/options'
 import { CollectionSlug } from '@website/types/collections'
 import { QueueSlug } from '@website/types/jobs-queue'
@@ -369,6 +370,13 @@ export const config = buildConfig({
         region: process.env.S3_REGION,
       },
     }),
+    openapi({
+      metadata: {
+        title: 'danielheene/website api',
+        version: '1.0.0',
+      },
+    }),
+    scalar(),
   ],
   serverURL: process.env.SERVER_URL,
   secret: process.env.PAYLOAD_SECRET,

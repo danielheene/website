@@ -17,7 +17,7 @@ export default defineConfig({
     tailwindcss: {
       // The frontend's stylesheet entry point — it is the one that carries
       // the site's theme and the app-wide source roots.
-      entryPoint: 'apps/frontend/frontend.css',
+      entryPoint: 'apps/frontend/app/frontend.css',
     },
   },
   plugins: [

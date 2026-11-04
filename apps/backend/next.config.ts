@@ -59,6 +59,8 @@ export default async (_phase, { defaultConfig: _defaultConfig }) => {
     },
 
     allowedDevOrigins: [
+      '::1',
+      '127.0.0.1',
       'localhost:3000',
       '*.localhost:3000',
       'daniel.heene.nexus',
