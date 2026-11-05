@@ -229,7 +229,7 @@ jobs:
 
       # Prerenders every route (PPR shells included) against the seeded database.
       - name: Build
-        run: bun x next build
+        run: bun x next build --webpack
         env:
           NODE_ENV: production
 
