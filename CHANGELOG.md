@@ -1,3 +1,10 @@
+## [1.15.1](https://github.com/danielheene/website/compare/v1.15.0...v1.15.1) (2026-11-05)
+
+
+### Reverts
+
+* run app container with next start instead of standalone output ([#131](https://github.com/danielheene/website/issues/131)) ([0e6548e](https://github.com/danielheene/website/commit/0e6548e094274448a2d3588bac318267edbf7bb1)), closes [#130](https://github.com/danielheene/website/issues/130)
+
 # [1.15.0](https://github.com/danielheene/website/compare/v1.14.0...v1.15.0) (2026-11-05)
 
 
