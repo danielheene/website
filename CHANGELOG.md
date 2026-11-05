@@ -1,3 +1,10 @@
+## [1.15.2](https://github.com/danielheene/website/compare/v1.15.1...v1.15.2) (2026-11-05)
+
+
+### Bug Fixes
+
+* **ci:** fix multiline tag substitution breaking the push-image loops ([#132](https://github.com/danielheene/website/issues/132)) ([4791524](https://github.com/danielheene/website/commit/4791524ca68ea01c966bd307f0e92749282b712b))
+
 ## [1.15.1](https://github.com/danielheene/website/compare/v1.15.0...v1.15.1) (2026-11-05)
 
 
