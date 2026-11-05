@@ -54,6 +54,6 @@
     ".storybook/**/*.ts",
     ".storybook/**/*.tsx",
     ".storybook/**/*.mdx",
-    "node_modules/storybook/dist/manager/runtime.js"
+    "node_modules/storybook/dist/manager/runtime.js",
   ]
 }
