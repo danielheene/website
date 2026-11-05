@@ -7,7 +7,8 @@
  *
  *    Usage: node scripts/assemble-images.mjs <web|worker|storybook>
  *
- *    web        needs `.next/standalone` (run `next build` compile + generate first)
+ *    web        needs `.next` (run `next build` compile + generate first) and
+ *               network access to install production dependencies
  *    worker     needs network access to install production dependencies
  *    storybook  needs `dist/` (bun run build:storybook)
  */
@@ -49,13 +50,28 @@ const run = (command, args, options = {}) => {
 }
 
 const assemblers = {
-  // `output: 'standalone'` traces the server's own dependencies; static assets
-  // and public files are not part of the trace and are copied per the Next docs.
+  // Runs with `next start`, so the image needs the full build output, the
+  // project files Next reads at runtime, and real `node_modules` (no
+  // dependency trace, unlike the old standalone output).
   web: () => {
-    copy('.next/standalone', '.')
-    copy('.next/static', '.next/static')
+    for (const entry of [
+      'package.json',
+      'bun.lock',
+      'bunfig.toml',
+      'patches',
+      'next.config.ts',
+      '.next',
+    ]) {
+      copy(entry)
+    }
 
     if (existsSync(path.join(root, 'public'))) copy('public')
+
+    // --ignore-scripts: the root `prepare` script (lefthook) is a devDependency,
+    // and every runtime dependency here ships prebuilt binaries.
+    run('bun', ['install', '--production', '--frozen-lockfile', '--ignore-scripts'], {
+      cwd: out,
+    })
   },
 
   // Everything the Payload job runner needs to load the config, and nothing
