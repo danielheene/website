@@ -228,13 +228,7 @@ export default {
     },
     {
       label: 'Exact pins that must not become ranges',
-      dependencies: [
-        // the bun patch (patchedDependencies) is keyed to an exact version; a range would silently
-        // stop applying it
-        'pdfjs-dist',
-        // pinned deliberately via overrides to hold the v4 API
-        'redis',
-      ],
+      dependencies: ['pdfjs-dist'],
       packages: ['**'],
       range: '',
     },

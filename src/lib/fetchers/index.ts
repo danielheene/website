@@ -12,4 +12,6 @@ export * from './fetchResumeSkills'
 
 export * from './fetchResumeSkillTags'
 
+export * from './fetchServiceStatus'
+
 export * from './fetchSiteSettings'

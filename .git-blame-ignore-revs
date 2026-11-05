@@ -1,4 +1,0 @@
-# Biome -> Oxc migration (#92). The repo squash-merges, so the Oxfmt reformat
-# landed inside this squash commit; it also carries the pnpm -> Bun config
-# changes, which blame skips along with it.
-a3b3c4559278f77e1896995c149ee7209a61147d

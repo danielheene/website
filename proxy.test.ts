@@ -4,107 +4,98 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import proxy from './proxy'
 
-vi.mock('@/lib/redirects/redirectCache', () => ({
+const { fetchRedirect } = vi.hoisted(() => ({
   fetchRedirect: vi.fn(async () => null),
 }))
 
-const { pageSlugExists } = vi.hoisted(() => ({
-  pageSlugExists: vi.fn(async () => true),
-}))
-
-vi.mock('@/lib/pages/pageSlugCache', () => ({
-  pageSlugExists,
+vi.mock('@/lib/redirects/redirectCache', () => ({
+  fetchRedirect,
 }))
 
 afterEach(() => {
-  vi.unstubAllEnvs()
-  pageSlugExists.mockClear()
-  pageSlugExists.mockResolvedValue(true)
+  fetchRedirect.mockClear()
+  fetchRedirect.mockResolvedValue(null)
 })
 
-describe('proxy /stats forwarding', () => {
-  it('rewrites /stats/* to the Umami URL read at runtime', async () => {
-    vi.stubEnv('NEXT_PUBLIC_UMAMI_URL', 'https://umami.example.test')
+describe('proxy redirects', () => {
+  it('redirects to a stored destination', async () => {
+    fetchRedirect.mockResolvedValue({
+      destination: '/new-path',
+      statusCode: 301,
+    })
 
-    const response = await proxy(
-      new NextRequest('https://site.test/stats/api/send?x=1', {
-        method: 'POST',
-      }),
-    )
+    const response = await proxy(new NextRequest('https://site.test/old-path'))
 
-    expect(response.headers.get('x-middleware-rewrite')).toBe(
-      'https://umami.example.test/api/send?x=1',
-    )
+    expect(response.status).toBe(301)
+    expect(response.headers.get('location')).toBe('https://site.test/new-path')
   })
 
-  it('does not rewrite when no Umami URL is configured', async () => {
-    vi.stubEnv('NEXT_PUBLIC_UMAMI_URL', '')
+  it('preserves the incoming query string unless the destination defines its own', async () => {
+    fetchRedirect.mockResolvedValue({
+      destination: '/new-path',
+      statusCode: 301,
+    })
 
-    const response = await proxy(new NextRequest('https://site.test/stats/api/send'))
+    const response = await proxy(new NextRequest('https://site.test/old-path?x=1'))
 
-    expect(response.headers.get('x-middleware-rewrite')).toBeNull()
+    expect(response.headers.get('location')).toBe('https://site.test/new-path?x=1')
   })
 
-  it('leaves other paths alone', async () => {
-    vi.stubEnv('NEXT_PUBLIC_UMAMI_URL', 'https://umami.example.test')
+  it('does not redirect exempt paths', async () => {
+    fetchRedirect.mockResolvedValue({
+      destination: '/new-path',
+      statusCode: 301,
+    })
 
-    const response = await proxy(new NextRequest('https://site.test/about-me'))
-
-    expect(response.headers.get('x-middleware-rewrite')).toBeNull()
-  })
-})
-
-describe('proxy unknown [slug] 404s', () => {
-  it('404s a top-level path with no matching page', async () => {
-    pageSlugExists.mockResolvedValue(false)
-
-    const response = await proxy(new NextRequest('https://site.test/this-route-does-not-exist'))
-
-    expect(response.status).toBe(404)
-  })
-
-  it('passes through a top-level path that matches a page', async () => {
-    pageSlugExists.mockResolvedValue(true)
-
-    const response = await proxy(new NextRequest('https://site.test/about-me'))
+    const response = await proxy(new NextRequest('https://site.test/admin/anything'))
 
     expect(response.status).toBe(200)
-    expect(pageSlugExists).toHaveBeenCalledWith('about-me')
+    expect(fetchRedirect).not.toHaveBeenCalled()
   })
 
-  it('does not check reserved top-level segments', async () => {
+  it('does not redirect when the destination matches the current path', async () => {
+    fetchRedirect.mockResolvedValue({
+      destination: '/same-path',
+      statusCode: 301,
+    })
+
+    const response = await proxy(new NextRequest('https://site.test/same-path'))
+
+    expect(response.status).toBe(200)
+  })
+
+  it('swallows redirect lookup failures', async () => {
+    fetchRedirect.mockRejectedValue(new Error('boom'))
+
+    const response = await proxy(new NextRequest('https://site.test/any-path'))
+
+    expect(response.status).toBe(200)
+  })
+})
+
+describe('proxy blog listing canonicalisation', () => {
+  it('redirects non-canonical listing URLs', async () => {
+    const response = await proxy(new NextRequest('https://site.test/blog?page=1'))
+
+    expect(response.status).toBe(308)
+    expect(response.headers.get('location')).toBe('https://site.test/blog')
+  })
+
+  it('leaves canonical listing URLs alone', async () => {
     const response = await proxy(new NextRequest('https://site.test/blog'))
 
     expect(response.status).toBe(200)
-    expect(pageSlugExists).not.toHaveBeenCalled()
   })
 
-  it('does not check nested paths', async () => {
-    const response = await proxy(new NextRequest('https://site.test/foo/bar'))
+  it('marks non-default sort orders as noindex', async () => {
+    const response = await proxy(new NextRequest('https://site.test/blog?sort=title'))
 
-    expect(response.status).toBe(200)
-    expect(pageSlugExists).not.toHaveBeenCalled()
+    expect(response.headers.get('X-Robots-Tag')).toBe('noindex, follow')
   })
 
-  it('does not check dotted (static file) paths', async () => {
-    const response = await proxy(new NextRequest('https://site.test/favicon.ico'))
+  it('does not set X-Robots-Tag for the default listing', async () => {
+    const response = await proxy(new NextRequest('https://site.test/blog'))
 
-    expect(response.status).toBe(200)
-    expect(pageSlugExists).not.toHaveBeenCalled()
-  })
-
-  it('skips the check for draft-mode requests', async () => {
-    pageSlugExists.mockResolvedValue(false)
-
-    const response = await proxy(
-      new NextRequest('https://site.test/this-route-does-not-exist', {
-        headers: {
-          cookie: '__prerender_bypass=1',
-        },
-      }),
-    )
-
-    expect(response.status).toBe(200)
-    expect(pageSlugExists).not.toHaveBeenCalled()
+    expect(response.headers.get('X-Robots-Tag')).toBeNull()
   })
 })

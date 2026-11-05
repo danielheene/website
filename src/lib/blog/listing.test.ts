@@ -113,7 +113,6 @@ describe('resolveBlogListingUrl', () => {
     expect(resolveBlogListingUrl('/blogroll', '')).toBeNull()
     expect(resolveBlogListingUrl('/blog/post/hello-world', '')).toBeNull()
     expect(resolveBlogListingUrl('/blog/post', '')).toBeNull()
-    expect(resolveBlogListingUrl('/blog/page', '')).toBeNull()
     expect(resolveBlogListingUrl('/blog/feed.xml', '')).toBeNull()
   })
 
@@ -130,20 +129,6 @@ describe('resolveBlogListingUrl', () => {
       redirect: null,
       indexable: false,
     })
-  })
-
-  it('moves legacy /page/<n> segments into the query', () => {
-    expect(resolveBlogListingUrl('/blog/page/2', '')?.redirect).toBe('/blog?page=2')
-    expect(resolveBlogListingUrl('/blog/react/page/3', '')?.redirect).toBe('/blog/react?page=3')
-    expect(resolveBlogListingUrl('/blog/page/1', '')?.redirect).toBe('/blog')
-    expect(resolveBlogListingUrl('/blog/page/2', '?utm_source=x')?.redirect).toBe(
-      '/blog?utm_source=x&page=2',
-    )
-  })
-
-  it('lets invalid legacy page segments fall through to a 404', () => {
-    expect(resolveBlogListingUrl('/blog/page/abc', '')).toBeNull()
-    expect(resolveBlogListingUrl('/blog/react/page/0', '')).toBeNull()
   })
 
   it('drops invalid and default param values', () => {
@@ -183,7 +168,7 @@ describe('resolveBlogListingUrl', () => {
 
   it('is idempotent', () => {
     for (const [pathname, search] of [
-      ['/blog/page/4', '?sort=oldest&x=a b'],
+      ['/blog', '?page=02&sort=oldest&x=a b'],
       ['/blog/react', '?page=0&sort=title&page=9'],
     ]) {
       const target = resolveBlogListingUrl(pathname, search)?.redirect
