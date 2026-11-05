@@ -362,14 +362,26 @@ jobs:
           done
           echo "storybook container never became healthy"; docker logs "$id"; docker rm -f "$id" > /dev/null; exit 1
 
+      # `steps.tags.outputs.*` is a multiline value (one tag per line whenever
+      # a release version exists) — substituting it into a single-line `run:`
+      # splices a literal newline into the command, breaking the `for` loop's
+      # syntax. A multi-line `run:` block with the expression on its own line
+      # keeps the substitution's newlines inside the heredoc-style string the
+      # `for ... in` word-splits on, instead of terminating the statement.
       - name: Push app image
-        run: for tag in ${{ steps.tags.outputs.app }}; do docker push "$tag"; done
+        run: |
+          tags="${{ steps.tags.outputs.app }}"
+          for tag in $tags; do docker push "$tag"; done
 
       - name: Push worker image
-        run: for tag in ${{ steps.tags.outputs.worker }}; do docker push "$tag"; done
+        run: |
+          tags="${{ steps.tags.outputs.worker }}"
+          for tag in $tags; do docker push "$tag"; done
 
       - name: Push storybook image
-        run: for tag in ${{ steps.tags.outputs.storybook }}; do docker push "$tag"; done
+        run: |
+          tags="${{ steps.tags.outputs.storybook }}"
+          for tag in $tags; do docker push "$tag"; done
 
       # Tells Dokploy to actually redeploy each app now that its image is
       # pushed — pushing to ghcr.io alone doesn't make Dokploy pull it. Each
