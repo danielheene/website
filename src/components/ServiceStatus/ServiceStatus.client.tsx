@@ -35,10 +35,10 @@ export const ServiceStatusClient = ({
   useEffect(() => {
     const refetch = () => {
       fetchStatus().then(setStatus)
-      timeoutRef.current = setTimeout(refetch, secondsToMilliseconds(30))
+      timeoutRef.current = setTimeout(refetch, secondsToMilliseconds(60))
     }
 
-    if (!timeoutRef.current) refetch()
+    timeoutRef.current = setTimeout(refetch, secondsToMilliseconds(60))
 
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current)
