@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { resolveBlogListingUrl } from '@/lib/blog/listing'
 import { pageSlugExists } from '@/lib/pages/pageSlugCache'
 import { fetchRedirect } from '@/lib/redirects/redirectCache'
-import { getRuntimeConfig } from '@/lib/runtimeConfig'
 
 /** Paths that must never be redirected, regardless of stored rows. */
 const REDIRECT_EXEMPT = ['/admin', '/api', '/_next', '/next']
@@ -60,14 +59,10 @@ const lookupRedirect = async (request: NextRequest) => {
 
 const STATS_PREFIX = '/stats/'
 
-/**
- * Forwards `/stats/*` to the Umami instance. Done here instead of in
- * `next.config.ts` `rewrites()` because rewrites are baked into the compiled
- * routes manifest, which would tie the compile to one environment's Umami URL.
- */
+/** Forwards `/stats/*` to the Umami instance. */
 const rewriteToUmami = (request: NextRequest): NextResponse | null => {
   const { pathname, search } = request.nextUrl
-  const { umamiUrl } = getRuntimeConfig()
+  const umamiUrl = process.env.NEXT_PUBLIC_UMAMI_URL
 
   if (!umamiUrl || !pathname.startsWith(STATS_PREFIX)) return null
 

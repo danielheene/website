@@ -151,14 +151,14 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
 - **Server actions** (`src/lib/actions/`): `'use server'` functions for admin mutations (job
   rescheduling, cancellation, etc.). Use `useTransition` on the client side when calling them.
 
-## Environment-specific values (compile once, deploy anywhere)
+## Environment-specific values
 
-The compiled Next output is built once and finalised per environment, so it must contain no
-environment-specific value. Do not add such values to `next.config.ts` `env`, do not reference
-`process.env.NEXT_PUBLIC_*` statically and do not add `rewrites()` that embed a URL. Read them
-through `getRuntimeConfig()` (`src/lib/runtimeConfig`): the server reads the environment, the
-browser reads what `RuntimeConfigScript` rendered into the page. CI fails
-(`scripts/check-env-leak.mjs`) if a `.env.test` value shows up in `.next`.
+Each push to `main` or `develop` runs its own `next build` against that environment's real secrets
+(see `build-and-deploy.yml`) and ships straight into that environment's container — there is no
+single compile deployed to several environments. Values the browser needs (site URL, status page,
+Umami, the Iconify API) are therefore ordinary `NEXT_PUBLIC_*` environment variables, read via a
+plain `process.env.NEXT_PUBLIC_*` reference; server-only values (e.g. `SERVER_URL`) are read the
+same way without the prefix. `src/types/environment.ts` is the schema for the full set.
 
 ## Job handlers (`src/jobs-queue/`)
 

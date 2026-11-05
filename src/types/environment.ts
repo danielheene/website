@@ -17,7 +17,14 @@ export const envSchema = z.object({
   SERVER_HOST: z.string().trim().min(1),
   SERVER_URL: z.url(),
 
-  STATUS_PAGE_URL: z.url(),
+  /**
+   * Same value as `SERVER_URL`, duplicated under a `NEXT_PUBLIC_` prefix so
+   * the one client component that needs it in the browser
+   * (`LivePreviewListener`) can read it statically.
+   */
+  NEXT_PUBLIC_SERVER_URL: z.url(),
+
+  NEXT_PUBLIC_STATUS_PAGE_URL: z.url(),
   STATUS_PAGE_HEARTBEAT_URL: z.url(),
 
   /**

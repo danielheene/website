@@ -372,7 +372,7 @@ Everything is built in CI; Docker images only `COPY` finished output (no package
   2. **CI**: the jobs above.
   3. **Deploy** (environment `Production` on `main`, `Development` on `develop`): downloads the tested compile, runs `bun run migrate` against the target database, runs `--experimental-build-mode=generate` with that environment's values, assembles `out/{web,worker,storybook}` (`scripts/assemble-images.mjs`), builds the COPY-only images (`app`, `worker`, `storybook` in `Dockerfile`) for `linux/amd64`, pushes them to `ghcr.io/danielheene/website/*` and triggers the Dokploy redeploy webhooks.
 
-Environment-specific values the browser needs (site URL, status page, Umami) are read at runtime through `src/lib/runtimeConfig`, never through static `process.env.NEXT_PUBLIC_*` references or `next.config.ts` `env`, so one compile can be deployed to any environment.
+Each push to `main`/`develop` builds and deploys against that environment's real secrets, so environment-specific values the browser needs (site URL, status page, Umami) are ordinary `NEXT_PUBLIC_*` environment variables read via `process.env.NEXT_PUBLIC_*`.
 
 ---
 
