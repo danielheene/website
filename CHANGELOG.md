@@ -1,3 +1,10 @@
+# [1.16.0](https://github.com/danielheene/website/compare/v1.15.2...v1.16.0) (2026-11-05)
+
+
+### Features
+
+* draft-mode indicator, secure preview route, cached service status ([#134](https://github.com/danielheene/website/issues/134)) ([76712d9](https://github.com/danielheene/website/commit/76712d988e17452964b1f42f21b1a977d3c63d0f))
+
 ## [1.15.2](https://github.com/danielheene/website/compare/v1.15.1...v1.15.2) (2026-11-05)
 
 
