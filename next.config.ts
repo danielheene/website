@@ -112,17 +112,12 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
     productionBrowserSourceMaps: false,
     reactStrictMode: true,
     cacheComponents: true,
+    partialPrefetching: true,
 
     // The web image contains only .next/standalone (see scripts/assemble-images.mjs).
     output: 'standalone',
 
-    compiler: {
-      define: {},
-      defineServer: {},
-    },
-
     experimental: {
-      appNewScrollHandler: true,
       turbopackServerFastRefresh: true,
       serverActions: {
         bodySizeLimit: '10mb',
