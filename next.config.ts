@@ -232,6 +232,17 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
         },
       ]
     },
+
+    rewrites: async () => ({
+      beforeFiles: [
+        {
+          source: '/stats/:match*',
+          destination: process.env.NEXT_PUBLIC_UMAMI_URL + '/:match*',
+        },
+      ],
+      afterFiles: [],
+      fallback: [],
+    }),
   }
 
   return withPayload(nextConfig, {

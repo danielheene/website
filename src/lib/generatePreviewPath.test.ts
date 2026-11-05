@@ -18,16 +18,14 @@ describe('generatePreviewPath', () => {
     expect(pathname).toBe('/api/preview')
 
     const params = new URLSearchParams(query)
-    expect(params.get('slug')).toBe('my-post')
-    expect(params.get('collection')).toBe('posts')
     expect(params.get('path')).toBe('/blog/post/my-post')
-    expect(params.get('previewSecret')).toBe('shhh')
+    expect(params.get('secret')).toBe('shhh')
   })
 
   it('falls back to an empty preview secret', async () => {
     vi.stubEnv('PREVIEW_SECRET', '')
     const result = await generatePreviewPath('pages', 'about')
     const params = new URLSearchParams((result as string).split('?')[1])
-    expect(params.get('previewSecret')).toBe('')
+    expect(params.get('secret')).toBe('')
   })
 })

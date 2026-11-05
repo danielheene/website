@@ -1,9 +1,6 @@
-import type React from 'react'
-import '@payloadcms/next/css'
-
-/* THIS FILE WAS GENERATED AUTOMATICALLY BY PAYLOAD. */
-/* DO NOT MODIFY IT BECAUSE IT COULD BE REWRITTEN AT ANY TIME. */
+import React from 'react'
 import config from '@payload-config'
+import '@payloadcms/next/css'
 import type { ServerFunctionClient } from 'payload'
 import { handleServerFunctions, RootLayout } from '@payloadcms/next/layouts'
 
@@ -14,9 +11,9 @@ import PPFrama from '@/fonts/pp-frama/next'
 import PPSupplyMono from '@/fonts/pp-supply-mono/next'
 import PPSupplySans from '@/fonts/pp-supply-sans/next'
 
-import { importMap } from './admin/importMap.js'
-
 import '@/styles/payload.css'
+
+import { importMap } from './admin/importMap.js'
 
 type Args = {
   children: React.ReactNode

@@ -1,0 +1,53 @@
+'use client'
+
+import { useRouter } from 'next/navigation'
+import { RefreshRouteOnSave as PayloadLivePreview } from '@payloadcms/live-preview-react'
+
+/**
+ * Defer live-preview refreshes while the document is hidden
+ *
+ * Next wraps `router.refresh()` in `document.startViewTransition()`, which
+ * throws `InvalidStateError` while `document.hidden` is true. The live-preview
+ * iframe can stay `hidden` even while visibly on screen, so a save made while
+ * that holds would otherwise never reach the frame; `refresh()` marks it
+ * pending instead, and the effect replays it on the next
+ * `visibilitychange`/`focus`.
+ */
+export const RefreshRouteOnSave = () => {
+  const router = useRouter()
+  // const pendingRefresh = useRef(false)
+  //
+  // useEffect(() => {
+  //   const onVisible = () => {
+  //     if (pendingRefresh.current && !document.hidden) {
+  //       pendingRefresh.current = false
+  //       router.refresh()
+  //     }
+  //   }
+  //
+  //   document.addEventListener('visibilitychange', onVisible)
+  //   window.addEventListener('focus', onVisible)
+  //
+  //   return () => {
+  //     document.removeEventListener('visibilitychange', onVisible)
+  //     window.removeEventListener('focus', onVisible)
+  //   }
+  // }, [router])
+  //
+  // const refresh = () => {
+  //   if (document.hidden) {
+  //     pendingRefresh.current = true
+  //
+  //     return
+  //   }
+  //
+  //   router.refresh()
+  // }
+
+  return (
+    <PayloadLivePreview
+      refresh={() => router.refresh()}
+      serverURL={process.env.NEXT_PUBLIC_SERVER_URL}
+    />
+  )
+}

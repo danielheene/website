@@ -1,7 +1,7 @@
 import { renderToBuffer } from '@react-pdf/renderer'
 import type { NextRequest } from 'next/server'
 
-import { z } from 'zod'
+import * as z from 'zod'
 
 import { generateResumeDocumentRedirectURL } from '@/lib/generateResumeDocumentRedirectURL'
 import { generateResumeId } from '@/lib/generateResumeId'

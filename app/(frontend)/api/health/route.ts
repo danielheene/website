@@ -9,7 +9,7 @@ export async function GET() {
     },
     {
       headers: {
-        'Cache-Control': 'no-store',
+        'Cache-Control': 'private, no-cache, no-store, max-age=0, must-revalidate',
       },
     },
   )

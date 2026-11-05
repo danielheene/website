@@ -4,10 +4,10 @@ import { RESERVED_TOPIC_SLUGS } from '@/types/blog'
  *    Blog listing state
  *
  *    Every post listing (/blog and /blog/<topic>) is paginated and sorted via
- *    search params — `?page=<n>` and `?sort=<key>` — rather than dedicated
- *    `/page/<n>` route segments. Everything that reads or writes those params
- *    goes through this module, so the page, the pagination links and the
- *    proxy's URL normalisation cannot disagree on what a valid value is.
+ *    search params — `?page=<n>` and `?sort=<key>`. Everything that reads or
+ *    writes those params goes through this module, so the page, the
+ *    pagination links and the proxy's URL normalisation cannot disagree on
+ *    what a valid value is.
  */
 
 /** The unfiltered listing. Use this, not generateContentPath(BlogTopics), which yields `/blog/`. */
@@ -115,11 +115,10 @@ export const buildBlogListingHref = (
 }
 
 /**
- * Matches every URL shape a listing can arrive under: /blog, /blog/<topic>
- * and the legacy /blog/page/<n> and /blog/<topic>/page/<n> segments that
- * pagination used before it moved to search params.
+ * Matches every URL shape a listing can arrive under: /blog and
+ * /blog/<topic>.
  */
-const LISTING_PATH = /^\/blog(?:\/([^/]+))?(?:\/page\/([^/]+))?\/?$/
+const LISTING_PATH = /^\/blog(?:\/([^/]+))?\/?$/
 
 export interface BlogListingUrlResolution {
   /** Canonical path + query to redirect to, or null if already canonical. */
@@ -134,14 +133,12 @@ export interface BlogListingUrlResolution {
 /**
  * Canonicalises a listing URL for the proxy:
  *
- * - legacy `/page/<n>` segments move into `?page=<n>`
  * - `page` values that are invalid or 1, and `sort` values that are unknown
  *   or the default, are dropped, and repeated values collapse to the first
  * - every other query param (utm tags and the like) is kept in place
  *
- * Returns null for paths that are not a listing (posts, the feed, reserved
- * segments and invalid legacy page segments), which the router then handles
- * — or 404s — on its own.
+ * Returns null for paths that are not a listing (posts, the feed and
+ * reserved segments), which the router then handles — or 404s — on its own.
  */
 export const resolveBlogListingUrl = (
   pathname: string,
@@ -151,19 +148,11 @@ export const resolveBlogListingUrl = (
 
   if (!match) return null
 
-  const [, topic, legacyPage] = match
+  const [, topic] = match
 
   // `/blog/post/...`, `/blog/feed.xml` and other route-owned segments — topic
   // slugs are slugified and never contain a dot
   if (topic && (RESERVED_TOPIC_SLUGS.includes(topic) || topic.includes('.'))) return null
-
-  let pageFromPath: number | null = null
-
-  if (legacyPage !== undefined) {
-    pageFromPath = parsePageParam(legacyPage)
-
-    if (pageFromPath === null) return null
-  }
 
   const basePath = topic ? `${BLOG_PATH}/${topic}` : BLOG_PATH
   const incoming = new URLSearchParams(search)
@@ -176,8 +165,7 @@ export const resolveBlogListingUrl = (
     if (key === BLOG_PAGE_PARAM) {
       if (seenPage) continue
       seenPage = true
-      // a page in the legacy path segment wins over one in the query
-      const page = pageFromPath ?? parsePageParam(value)
+      const page = parsePageParam(value)
 
       if (page !== null && page > 1) params.append(key, String(page))
       continue
@@ -196,10 +184,6 @@ export const resolveBlogListingUrl = (
     }
 
     params.append(key, value)
-  }
-
-  if (!seenPage && pageFromPath !== null && pageFromPath > 1) {
-    params.append(BLOG_PAGE_PARAM, String(pageFromPath))
   }
 
   const query = params.toString()

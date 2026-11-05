@@ -3,9 +3,8 @@ import { notFound } from 'next/navigation'
 import { ImageResponse } from 'takumi-js/response'
 
 import { fetchSiteSettingsCached } from '@/lib/fetchers'
+import { fetchPageBySlug } from '@/lib/fetchers/fetchPageBySlug'
 import { resolveOgBackground } from '@/lib/resolveOgBackground'
-
-import { queryPageBySlug } from './page'
 
 export const alt = 'Page'
 
@@ -22,7 +21,7 @@ type Props = {
 
 export default async function Image({ params }: Props) {
   const { slug = 'home' } = await params
-  const page = await queryPageBySlug(slug)
+  const page = await fetchPageBySlug({ slug })
 
   if (!page) notFound()
 

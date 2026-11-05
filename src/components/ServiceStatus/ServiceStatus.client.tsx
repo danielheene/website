@@ -12,6 +12,7 @@ import { type OverallStatus, OverallStatusCode } from '@/lib/uptime-kuma'
 interface ServiceStatusProps {
   className?: string
   fetchStatus: () => Promise<OverallStatus | null>
+  initialStatus: OverallStatus | null
 }
 
 /** Maps each overall status to the Badge color that carries the same meaning. */
@@ -26,17 +27,18 @@ const STATUS_BADGE_COLOR: Record<OverallStatusCode, BadgeProps['color']> = {
 export const ServiceStatusClient = ({
   className,
   fetchStatus,
+  initialStatus,
 }: ServiceStatusProps): JSX.Element => {
   const timeoutRef = useRef<NodeJS.Timeout>(null)
-  const [status, setStatus] = useState<OverallStatus | null>(null)
+  const [status, setStatus] = useState<OverallStatus | null>(initialStatus)
 
   useEffect(() => {
-    const updateData = () => {
+    const refetch = () => {
       fetchStatus().then(setStatus)
-      timeoutRef.current = setTimeout(updateData, secondsToMilliseconds(30))
+      timeoutRef.current = setTimeout(refetch, secondsToMilliseconds(30))
     }
 
-    if (!timeoutRef.current) updateData()
+    if (!timeoutRef.current) refetch()
 
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current)

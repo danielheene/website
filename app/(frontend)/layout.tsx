@@ -4,9 +4,9 @@ import type { Metadata, Viewport } from 'next'
 
 import { cn } from 'tailwind-variants'
 
+import { DraftModeIndicator } from '@/components/DraftModeIndicator'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
-import { DraftModeListener } from '@/components/LivePreviewListener'
 import { AllProviders } from '@/components/Providers'
 import { SkipToMainContent } from '@/components/SkipToMainContent'
 import { Toasty } from '@/components/Toasty'
@@ -50,14 +50,6 @@ export default async function RootLayout({
       </head>
       <body>
         {/*
-          `draftMode()` is a runtime API, so it is read inside this boundary
-          rather than in the layout body — otherwise it blocks the whole route
-          from prerendering under `cacheComponents`.
-        */}
-        <Suspense fallback={null}>
-          <DraftModeListener />
-        </Suspense>
-        {/*
           `isTrackingSuppressed()` calls `cookies()` — a runtime API — so it
           is read inside this boundary rather than in the layout body,
           otherwise it blocks the whole route from prerendering under
@@ -66,20 +58,17 @@ export default async function RootLayout({
         <Suspense fallback={null}>
           <UmamiSuppressionFlag />
         </Suspense>
+        {/* `draftMode()` is a runtime API — read behind its own boundary for
+            the same reason as `UmamiSuppressionFlag` above. */}
+        <Suspense fallback={null}>
+          <DraftModeIndicator />
+        </Suspense>
         <AllProviders>
           <SkipToMainContent targetId="main-content" />
           <Header />
-          {/*
-            Route navigations crossfade this block; header and footer stay put
-            (see "View transitions" in frontend.css). It lives in the layout, so
-            a navigation updates it rather than remounting it: the animation
-            has to go on `update`, not `share`.
-          */}
-          <Suspense fallback={null}>
-            <ViewTransition name="page-content" update="page-transition" default="none">
-              <div id="main-content">{children}</div>
-            </ViewTransition>
-          </Suspense>
+          <ViewTransition name="page-content" update="page-transition" default="none">
+            <div id="main-content">{children}</div>
+          </ViewTransition>
           <Footer />
         </AllProviders>
         <Toasty />
