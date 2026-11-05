@@ -212,7 +212,7 @@ jobs:
       # test-env compile to reconcile with afterward (see lint-and-test.yml's
       # `e2e` job for the PR-time equivalent, which uses .env.test instead).
       - name: Build
-        run: bun x next build
+        run: bun x next build --webpack
 
       - name: Build Storybook
         run: bun run build:storybook

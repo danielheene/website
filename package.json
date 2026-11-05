@@ -16,7 +16,7 @@
     "#frontend.css": "./src/styles/frontend.css"
   },
   "scripts": {
-    "build": "bun run _next build",
+    "build": "bun run _next build --webpack",
     "build:storybook": "bun run _storybook build --output-dir dist",
     "chore:reinstall": "rm -rf node_modules bun.lock && bun install",
     "chore:format": "syncpack format",
