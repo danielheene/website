@@ -336,7 +336,7 @@ jobs:
           id=$(docker run -d --network host --env-file "$RUNNER_TEMP/boot-check.env" "$tag")
           rm -f "$RUNNER_TEMP/boot-check.env"
           for _ in $(seq 1 30); do
-            curl -fsS http://localhost:3000/api/health/app > /dev/null && { echo "app container healthy"; docker rm -f "$id" > /dev/null; exit 0; }
+            curl -fsS http://localhost:3000/api/health > /dev/null && { echo "app container healthy"; docker rm -f "$id" > /dev/null; exit 0; }
             sleep 2
           done
           echo "app container never became healthy"; docker logs "$id"; docker rm -f "$id" > /dev/null; exit 1
