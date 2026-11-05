@@ -1,4 +1,5 @@
 import { ChildProcess, spawn } from 'node:child_process'
+import process from 'node:process'
 
 import { NextConfig } from 'next'
 import { PHASE_DEVELOPMENT_SERVER } from 'next/constants'
@@ -222,11 +223,37 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
     async headers() {
       return [
         {
+          source: '(.*)',
+          headers: [
+            {
+              key: 'X-DNS-Prefetch-Control',
+              value: 'on',
+            },
+          ],
+        },
+        {
           source: '/:path*{/}?',
           headers: [
             {
               key: 'X-Accel-Buffering',
               value: 'no',
+            },
+          ],
+        },
+        {
+          source: '/api/:path*',
+          headers: [
+            {
+              key: 'Access-Control-Allow-Origin',
+              value: process.env.SERVER_URL,
+            },
+            {
+              key: 'Access-Control-Allow-Methods',
+              value: 'GET, POST, PUT, DELETE, OPTIONS',
+            },
+            {
+              key: 'Access-Control-Allow-Headers',
+              value: 'Content-Type, Authorization',
             },
           ],
         },
