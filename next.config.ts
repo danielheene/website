@@ -114,6 +114,9 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
     cacheComponents: true,
     partialPrefetching: true,
 
+    // The web image contains only .next/standalone (see scripts/assemble-images.mjs).
+    output: 'standalone',
+
     experimental: {
       turbopackServerFastRefresh: true,
       serverActions: {
