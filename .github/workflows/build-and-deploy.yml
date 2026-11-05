@@ -155,7 +155,8 @@ jobs:
       NODE_ENV: production
       SERVER_HOST: ${{ secrets.SERVER_HOST }}
       SERVER_URL: ${{ secrets.SERVER_URL }}
-      STATUS_PAGE_URL: ${{ secrets.STATUS_PAGE_URL }}
+      NEXT_PUBLIC_SERVER_URL: ${{ secrets.SERVER_URL }}
+      NEXT_PUBLIC_STATUS_PAGE_URL: ${{ secrets.STATUS_PAGE_URL }}
       STATUS_PAGE_HEARTBEAT_URL: ${{ secrets.STATUS_PAGE_HEARTBEAT_URL }}
       RESUME_REDIRECT_URL_BASE: ${{ secrets.RESUME_REDIRECT_URL_BASE }}
       PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}

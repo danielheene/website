@@ -6,7 +6,6 @@ import { getPayload } from 'payload'
 import { minutesToSeconds, subDays } from 'date-fns'
 
 import { get, set } from '@/lib/RedisHandler'
-import { getRuntimeConfig } from '@/lib/runtimeConfig'
 import { CollectionSlug } from '@/types/collections'
 import { BlogPostData } from '@/types/payload'
 import { getToken } from '@/widgets/UmamiWidget/UmamiWidget.data'
@@ -39,8 +38,8 @@ const buildApiUrl = (startAt: Date, endAt: Date) => {
   }).toString()
 
   return new URL(
-    `/api/websites/${getRuntimeConfig().umamiSiteId}/metrics?${searchParams}`,
-    getRuntimeConfig().umamiUrl,
+    `/api/websites/${process.env.NEXT_PUBLIC_UMAMI_SITE_ID}/metrics?${searchParams}`,
+    process.env.NEXT_PUBLIC_UMAMI_URL,
   )
 }
 

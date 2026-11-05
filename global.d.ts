@@ -4,6 +4,7 @@ namespace NodeJS {
 
     SERVER_HOST: string
     SERVER_URL: string
+    NEXT_PUBLIC_SERVER_URL: string
 
     PAYLOAD_SECRET: string
     PREVIEW_SECRET: string
@@ -32,7 +33,7 @@ namespace NodeJS {
     ANTHROPIC_API_KEY: string
     MAPBOX_API_KEY: string
 
-    STATUS_PAGE_URL: string
+    NEXT_PUBLIC_STATUS_PAGE_URL: string
     STATUS_PAGE_HEARTBEAT_URL: string
 
     CLOUDFLARE_TUNNEL_HOST?: string
