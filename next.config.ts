@@ -223,7 +223,7 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
     async headers() {
       return [
         {
-          source: '(.*)',
+          source: '/(.*)',
           headers: [
             {
               key: 'X-DNS-Prefetch-Control',
@@ -245,7 +245,7 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
           headers: [
             {
               key: 'Access-Control-Allow-Origin',
-              value: process.env.SERVER_URL,
+              value: process.env.SERVER_URL ?? '*',
             },
             {
               key: 'Access-Control-Allow-Methods',
