@@ -1,3 +1,10 @@
+# [1.17.0-rc.2](https://github.com/danielheene/website/compare/v1.17.0-rc.1...v1.17.0-rc.2) (2026-11-06)
+
+
+### Bug Fixes
+
+* **docker:** point app healthcheck at the real /api/health route ([#137](https://github.com/danielheene/website/issues/137)) ([57335bd](https://github.com/danielheene/website/commit/57335bd42c881b8ef3519b92b05356f7af6600fc))
+
 # [1.17.0-rc.1](https://github.com/danielheene/website/compare/v1.16.1-rc.1...v1.17.0-rc.1) (2026-11-06)
 
 
