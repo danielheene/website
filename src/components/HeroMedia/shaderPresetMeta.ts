@@ -14,7 +14,15 @@
  * `src/fields/HeroSlides/index.ts`.
  */
 
-export type ShaderPresetKey = 'darkveil' | 'faulty-terminal' | 'gradient-blinds' | 'grainient'
+export type ShaderPresetKey =
+  | 'crt-warp'
+  | 'darkveil'
+  | 'dither'
+  | 'faulty-terminal'
+  | 'gradient-blinds'
+  | 'grainient'
+  | 'pixel-blast'
+  | 'silk'
 
 export type ShaderPresetMeta = {
   key: ShaderPresetKey
@@ -23,8 +31,16 @@ export type ShaderPresetMeta = {
 
 export const SHADER_PRESET_META: ShaderPresetMeta[] = [
   {
+    key: 'crt-warp',
+    label: 'CRT Warp',
+  },
+  {
     key: 'darkveil',
     label: 'Dark Veil',
+  },
+  {
+    key: 'dither',
+    label: 'Dither',
   },
   {
     key: 'faulty-terminal',
@@ -37,5 +53,13 @@ export const SHADER_PRESET_META: ShaderPresetMeta[] = [
   {
     key: 'grainient',
     label: 'Grainient',
+  },
+  {
+    key: 'pixel-blast',
+    label: 'Pixel Blast',
+  },
+  {
+    key: 'silk',
+    label: 'Silk',
   },
 ]

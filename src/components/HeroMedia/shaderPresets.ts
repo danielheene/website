@@ -1,10 +1,14 @@
 import type { StaticImageData } from 'next/image'
 
 import { SHADER_PRESET_META, type ShaderPresetKey } from '@/components/HeroMedia/shaderPresetMeta'
+import crtWarpThumbnail from '@/components/Shaders/CRTWarp/thumbnail.png'
 import darkVeilThumbnail from '@/components/Shaders/DarkVeil/thumbnail.png'
+import ditherThumbnail from '@/components/Shaders/Dither/thumbnail.png'
 import faultyTerminalThumbnail from '@/components/Shaders/FaultyTerminal/thumbnail.png'
 import gradientBlindsThumbnail from '@/components/Shaders/GradientBlinds/thumbnail.png'
 import grainientThumbnail from '@/components/Shaders/Grainient/thumbnail.png'
+import pixelBlastThumbnail from '@/components/Shaders/PixelBlast/thumbnail.png'
+import silkThumbnail from '@/components/Shaders/Silk/thumbnail.png'
 
 export type { ShaderPresetKey }
 
@@ -23,10 +27,14 @@ export type ShaderPreset = {
 }
 
 const THUMBNAILS: Record<ShaderPresetKey, StaticImageData> = {
+  'crt-warp': crtWarpThumbnail,
   darkveil: darkVeilThumbnail,
+  dither: ditherThumbnail,
   'faulty-terminal': faultyTerminalThumbnail,
   'gradient-blinds': gradientBlindsThumbnail,
   grainient: grainientThumbnail,
+  'pixel-blast': pixelBlastThumbnail,
+  silk: silkThumbnail,
 }
 
 // Presentation data layered onto shaderPresetMeta's key/label — anything

@@ -1,6 +1,6 @@
-import { Meta } from '@storybook/addon-docs/blocks'
+import {Meta} from '@storybook/addon-docs/blocks';
+import {CRTWarp, DarkVeil, Dither, FaultyTerminal, GradientBlinds, Grainient, PixelBlast, Silk, } from '@/components/Shaders';
 
-import { DarkVeil, FaultyTerminal, GradientBlinds, Grainient } from '@/components/Shaders'
 
 <Meta title="Shaders" />
 
@@ -71,6 +71,46 @@ panel is previewed at a 16:9 aspect ratio.
     }}
   >
     <GradientBlinds />
+  </div>
+</div>
+
+<div style={{ padding: '3rem 0' }}>
+  ## Silk
+
+  Flowing satin folds with glossy highlights and interactive ripples. Component defaults.
+
+  <div style={{ width: '100%', aspectRatio: '16 / 9', position: 'relative', marginTop: '1rem' }}>
+    <Silk />
+  </div>
+</div>
+
+<div style={{ padding: '3rem 0' }}>
+  ## CRTWarp
+
+  Cathode ray tube simulation with scanlines, phosphor glow, curvature, and magnetic lens interaction. Component defaults.
+
+  <div style={{ width: '100%', aspectRatio: '16 / 9', position: 'relative', marginTop: '1rem' }}>
+    <CRTWarp />
+  </div>
+</div>
+
+<div style={{ padding: '3rem 0' }}>
+  ## Dither
+
+  Retro ordered Bayer matrix and halftone dithering over generative simplex wave field with interactive cursor eraser and ripples. Component defaults.
+
+  <div style={{ width: '100%', aspectRatio: '16 / 9', position: 'relative', marginTop: '1rem' }}>
+    <Dither />
+  </div>
+</div>
+
+<div style={{ padding: '3rem 0' }}>
+  ## PixelBlast
+
+  Procedural particle grid animation with shapes, noise jitter, drift, and interactive ripple pulses. Component defaults.
+
+  <div style={{ width: '100%', aspectRatio: '16 / 9', position: 'relative', marginTop: '1rem' }}>
+    <PixelBlast />
   </div>
 </div>
 

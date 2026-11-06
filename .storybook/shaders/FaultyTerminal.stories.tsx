@@ -1,296 +1,102 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import { FaultyTerminal } from '@/components/Shaders/FaultyTerminal/FaultyTerminal'
-
-// FaultyTerminalProps extends React.HTMLAttributes<HTMLDivElement>, which would otherwise pull
-// hundreds of inherited DOM event-handler props into the auto-generated arg table. Restrict
-// Controls to the component's own props.
-const OWN_PROP_NAMES = [
-  'scale',
-  'gridMul',
-  'digitSize',
-  'timeScale',
-  'pause',
-  'scanlineIntensity',
-  'glitchAmount',
-  'flickerAmount',
-  'noiseAmp',
-  'chromaticAberration',
-  'dither',
-  'curvature',
-  'tint',
-  'mouseReact',
-  'mouseStrength',
-  'dpr',
-  'pageLoadAnimation',
-  'brightness',
-]
+import { FaultyTerminal, presets } from '@/components/Shaders/FaultyTerminal'
 
 const meta = {
   title: 'FaultyTerminal',
   component: FaultyTerminal,
   parameters: {
-    controls: {
-      include: OWN_PROP_NAMES,
-    },
-    // 'padded' avoids 'fullscreen' stretching the decorator to the canvas's full height, which
-    // would fight the 16:9 aspect ratio below.
     layout: 'padded',
   },
-  // Args mirror reactbits.dev's own demo defaults for this component (not the component's own
-  // built-in defaults, which differ slightly — e.g. noiseAmp).
   args: {
+    tint: '#A7EF9E',
+    glyphs: 'blocks',
     scale: 1.5,
-    gridMul: [2, 1],
     digitSize: 1.2,
     timeScale: 0.5,
-    pause: false,
+    brightness: 0.75,
+    glow: 0.5,
+    persistence: 0.5,
+    mouseStrength: 0.5,
+    mouseGlow: 0.6,
+    curvature: 0.1,
+    vignette: 0.25,
+    clickEffect: 'glitch',
     scanlineIntensity: 0.5,
     glitchAmount: 1,
     flickerAmount: 1,
     noiseAmp: 1,
     chromaticAberration: 0,
+    scramble: 0,
     dither: 0,
-    curvature: 0.1,
-    tint: '#A7EF9E',
+    pause: false,
     mouseReact: true,
-    mouseStrength: 0.5,
     pageLoadAnimation: true,
-    brightness: 0.6,
+    lightMode: false,
   },
-  // Control ranges match reactbits.dev's published control panel for this component.
   argTypes: {
-    scale: {
-      control: {
-        type: 'range',
-        min: 0.5,
-        max: 3,
-        step: 0.1,
-      },
-      description: 'Zoom level of the digit grid.',
-      table: {
-        defaultValue: {
-          summary: '1',
-        },
-      },
-    },
-    gridMul: {
-      control: 'object',
-      description: 'Column/row multiplier `[x, y]` applied to the base digit grid.',
-      table: {
-        defaultValue: {
-          summary: '[2, 1]',
-        },
-      },
-    },
-    digitSize: {
-      control: {
-        type: 'range',
-        min: 0.5,
-        max: 5,
-        step: 0.1,
-      },
-      description: 'Size of each rendered digit glyph.',
-      table: {
-        defaultValue: {
-          summary: '1.5',
-        },
-      },
-    },
-    timeScale: {
-      control: {
-        type: 'range',
-        min: 0,
-        max: 2,
-        step: 0.05,
-      },
-      description: 'Multiplier on elapsed time — how fast the terminal animates.',
-      table: {
-        defaultValue: {
-          summary: '0.3',
-        },
-      },
-    },
-    pause: {
-      control: 'boolean',
-      description: 'Freezes the animation loop at its current frame.',
-      table: {
-        defaultValue: {
-          summary: 'false',
-        },
-      },
-    },
-    scanlineIntensity: {
-      control: {
-        type: 'range',
-        min: 0,
-        max: 1,
-        step: 0.05,
-      },
-      description: 'Strength of the CRT scanline overlay.',
-      table: {
-        defaultValue: {
-          summary: '0.3',
-        },
-      },
-    },
-    glitchAmount: {
-      control: {
-        type: 'range',
-        min: 0,
-        max: 3,
-        step: 0.1,
-      },
-      description: 'Amount of glitch-style displacement applied to the grid.',
-      table: {
-        defaultValue: {
-          summary: '1',
-        },
-      },
-    },
-    flickerAmount: {
-      control: {
-        type: 'range',
-        min: 0,
-        max: 3,
-        step: 0.1,
-      },
-      description: 'Amount of brightness flicker over time.',
-      table: {
-        defaultValue: {
-          summary: '1',
-        },
-      },
-    },
-    noiseAmp: {
-      control: {
-        type: 'range',
-        min: 0,
-        max: 1,
-        step: 0.05,
-      },
-      description: 'Amplitude of the underlying fbm noise field driving the pattern.',
-      table: {
-        defaultValue: {
-          summary: '0',
-        },
-      },
-    },
-    chromaticAberration: {
-      control: {
-        type: 'range',
-        min: 0,
-        max: 0.1,
-        step: 0.005,
-      },
-      description: 'Pixel offset between color channels at the edges of the curvature.',
-      table: {
-        defaultValue: {
-          summary: '0',
-        },
-      },
-    },
-    dither: {
-      control: {
-        type: 'range',
-        min: 0,
-        max: 1,
-        step: 0.05,
-      },
-      description:
-        'Dither strength. Accepts `boolean` in the component API too (`true` behaves like `1`) — this control only exercises the numeric range.',
-      table: {
-        defaultValue: {
-          summary: '0',
-        },
-      },
-    },
-    curvature: {
-      control: {
-        type: 'range',
-        min: 0,
-        max: 1,
-        step: 0.05,
-      },
-      description: 'CRT-style barrel curvature of the screen.',
-      table: {
-        defaultValue: {
-          summary: '0.2',
-        },
-      },
-    },
     tint: {
       control: 'color',
-      description: 'Color tint applied to the rendered digits.',
-      table: {
-        defaultValue: {
-          summary: '#ffffff',
-        },
-      },
+      description: 'Monochrome phosphor cathode ray emission color.',
     },
-    mouseReact: {
-      control: 'boolean',
-      description: 'Whether the pattern reacts to pointer movement.',
-      table: {
-        defaultValue: {
-          summary: 'true',
-        },
-      },
+    glyphs: {
+      control: 'select',
+      options: ['blocks', 'dots', 'characters'],
+      description: 'Terminal character raster matrix style.',
     },
-    mouseStrength: {
-      control: {
-        type: 'range',
-        min: 0,
-        max: 1,
-        step: 0.05,
-      },
-      description: 'Strength of the pointer-reactive distortion, when `mouseReact` is on.',
-      table: {
-        defaultValue: {
-          summary: '0.2',
-        },
-      },
+    scale: {
+      control: { type: 'range', min: 0.5, max: 4, step: 0.1 },
+      description: 'Matrix grid density scale.',
     },
-    dpr: {
-      control: false,
-      description:
-        'Device pixel ratio for the render target. Defaults to the browser’s own, capped at 2.',
+    digitSize: {
+      control: { type: 'range', min: 0.5, max: 3, step: 0.05 },
+      description: 'Character cell size scale.',
     },
-    pageLoadAnimation: {
-      control: 'boolean',
-      description: 'Plays a one-time reveal animation on mount.',
-      table: {
-        defaultValue: {
-          summary: 'true',
-        },
-      },
+    timeScale: {
+      control: { type: 'range', min: 0, max: 2, step: 0.05 },
+      description: 'Terminal animation speed.',
     },
     brightness: {
-      control: {
-        type: 'range',
-        min: 0.2,
-        max: 2,
-        step: 0.1,
-      },
-      description: 'Overall brightness multiplier.',
-      table: {
-        defaultValue: {
-          summary: '1',
-        },
-      },
+      control: { type: 'range', min: 0, max: 1.5, step: 0.05 },
+      description: 'Phosphor display luminance.',
+    },
+    glow: {
+      control: { type: 'range', min: 0, max: 1, step: 0.05 },
+      description: 'CRT bloom and phosphor bleed intensity.',
+    },
+    persistence: {
+      control: { type: 'range', min: 0, max: 1, step: 0.05 },
+      description: 'Phosphor decay trail latency.',
+    },
+    curvature: {
+      control: { type: 'range', min: 0, max: 0.5, step: 0.01 },
+      description: 'CRT glass tube spherical barrel distortion.',
+    },
+    vignette: {
+      control: { type: 'range', min: 0, max: 1, step: 0.05 },
+      description: 'Screen edge falloff shading.',
+    },
+    clickEffect: {
+      control: 'select',
+      options: ['glitch', 'degauss', 'none'],
+      description: 'Cathode burst animation on pointer click.',
+    },
+    scanlineIntensity: {
+      control: { type: 'range', min: 0, max: 1, step: 0.05 },
+      description: 'Horizontal raster line shading strength.',
+    },
+    glitchAmount: {
+      control: { type: 'range', min: 0, max: 5, step: 0.1 },
+      description: 'Horizontal sync jitter and tearing frequency.',
+    },
+    chromaticAberration: {
+      control: { type: 'range', min: 0, max: 3, step: 0.1 },
+      description: 'RGB electron gun convergence misalignment.',
     },
   },
   decorators: [
-    // Same shape as reactbits.dev's own demo wrapper (plain sized div, position: relative, no
-    // overflow clipping), sized to a 16:9 preview instead of a fixed 600px.
     (Story) => (
-      <div
-        style={{
-          width: '100%',
-          aspectRatio: '16 / 9',
-          position: 'relative',
-        }}
-      >
+      <div className="relative aspect-video w-full max-w-4xl overflow-hidden rounded-xl bg-[#0d0f12] shadow-2xl">
         <Story />
       </div>
     ),
@@ -301,41 +107,50 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-/** reactbits.dev's own demo configuration. */
-export const Default: Story = {}
-
-/** Heavier glitch and flicker, closer to a failing terminal. */
-export const Glitchy: Story = {
+export const Default: Story = {
   args: {
-    glitchAmount: 2.5,
-    flickerAmount: 2,
-    scanlineIntensity: 0.7,
+    ...presets.default,
   },
 }
 
-/** CRT curvature and chromatic aberration pushed up for an old-monitor look. */
-export const CRTLook: Story = {
+export const Classic: Story = {
   args: {
-    curvature: 0.6,
-    chromaticAberration: 0.05,
-    scanlineIntensity: 0.6,
+    ...presets.classic,
   },
 }
 
-/** The component's own default white tint instead of the demo's green. */
-export const WhiteTint: Story = {
+export const Terminal: Story = {
   args: {
-    tint: '#ffffff',
-    brightness: 1,
+    ...presets.terminal,
   },
 }
 
-/**
- * Pointer reactivity off — the demo default has it on; this is the stable, non-interactive
- * variant.
- */
-export const NoMouseReact: Story = {
+export const Amber: Story = {
   args: {
-    mouseReact: false,
+    ...presets.amber,
+  },
+}
+
+export const Ice: Story = {
+  args: {
+    ...presets.ice,
+  },
+}
+
+export const Meltdown: Story = {
+  args: {
+    ...presets.meltdown,
+  },
+}
+
+export const Data: Story = {
+  args: {
+    ...presets.data,
+  },
+}
+
+export const LightMode: Story = {
+  args: {
+    ...presets.data,
   },
 }

@@ -17,14 +17,29 @@ export type ShaderPreviewCanvasProps = {
  * `next/dynamic(..., { ssr: false })` boundary (see ShaderSlideField.tsx),
  * never imported statically into anything that could render on the server.
  */
-export const ShaderPreviewCanvas = ({ entry, className }: ShaderPreviewCanvasProps) => {
-  const { Component, props } = entry
+const renderShader = (entry: ShaderComponentEntry) => {
+  switch (entry.key) {
+    case 'crt-warp':
+      return <entry.Component {...entry.props} />
+    case 'darkveil':
+      return <entry.Component {...entry.props} />
+    case 'dither':
+      return <entry.Component {...entry.props} />
+    case 'faulty-terminal':
+      return <entry.Component {...entry.props} />
+    case 'gradient-blinds':
+      return <entry.Component {...entry.props} />
+    case 'grainient':
+      return <entry.Component {...entry.props} />
+    case 'pixel-blast':
+      return <entry.Component {...entry.props} />
+    case 'silk':
+      return <entry.Component {...entry.props} />
+  }
+}
 
-  return (
-    <div className={className}>
-      <Component {...props} />
-    </div>
-  )
+export const ShaderPreviewCanvas = ({ entry, className }: ShaderPreviewCanvasProps) => {
+  return <div className={className}>{renderShader(entry)}</div>
 }
 
 export default ShaderPreviewCanvas

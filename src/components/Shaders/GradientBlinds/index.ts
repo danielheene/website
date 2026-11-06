@@ -1,5 +1,3 @@
-export { defaultProps } from './config'
+export * from './GradientBlinds'
 
-export type { GradientBlindsProps } from './GradientBlinds'
-
-export { GradientBlinds } from './GradientBlinds'
+export * from './config'
