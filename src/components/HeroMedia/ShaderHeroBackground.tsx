@@ -2,10 +2,14 @@
 
 import dynamic from 'next/dynamic'
 
+import { defaultProps as crtWarpDefaults } from '@/components/Shaders/CRTWarp/config'
 import { defaultProps as darkVeilDefaults } from '@/components/Shaders/DarkVeil/config'
+import { defaultProps as ditherDefaults } from '@/components/Shaders/Dither/config'
 import { defaultProps as faultyTerminalDefaults } from '@/components/Shaders/FaultyTerminal/config'
 import { defaultProps as gradientBlindsDefaults } from '@/components/Shaders/GradientBlinds/config'
 import { defaultProps as grainientDefaults } from '@/components/Shaders/Grainient/config'
+import { defaultProps as pixelBlastDefaults } from '@/components/Shaders/PixelBlast/config'
+import { defaultProps as silkDefaults } from '@/components/Shaders/Silk/config'
 
 import type { ShaderPresetKey } from './shaderPresets'
 
@@ -15,7 +19,13 @@ import type { ShaderPresetKey } from './shaderPresets'
  * every render, defeating memoization and risking remounts on re-render.
  */
 const SHADER_COMPONENTS: Record<ShaderPresetKey, ReturnType<typeof dynamic>> = {
+  'crt-warp': dynamic(() => import('@/components/Shaders/CRTWarp').then((mod) => mod.CRTWarp), {
+    ssr: false,
+  }),
   darkveil: dynamic(() => import('@/components/Shaders/DarkVeil').then((mod) => mod.DarkVeil), {
+    ssr: false,
+  }),
+  dither: dynamic(() => import('@/components/Shaders/Dither').then((mod) => mod.Dither), {
     ssr: false,
   }),
   'faulty-terminal': dynamic(
@@ -33,6 +43,15 @@ const SHADER_COMPONENTS: Record<ShaderPresetKey, ReturnType<typeof dynamic>> = {
   grainient: dynamic(() => import('@/components/Shaders/Grainient').then((mod) => mod.Grainient), {
     ssr: false,
   }),
+  'pixel-blast': dynamic(
+    () => import('@/components/Shaders/PixelBlast').then((mod) => mod.PixelBlast),
+    {
+      ssr: false,
+    },
+  ),
+  silk: dynamic(() => import('@/components/Shaders/Silk').then((mod) => mod.Silk), {
+    ssr: false,
+  }),
 }
 
 /**
@@ -41,10 +60,14 @@ const SHADER_COMPONENTS: Record<ShaderPresetKey, ReturnType<typeof dynamic>> = {
  * keeps its own preview-tuned bundles — these are the production/public values.
  */
 const SHADER_PROPS: Record<ShaderPresetKey, object> = {
+  'crt-warp': crtWarpDefaults,
   darkveil: darkVeilDefaults,
+  dither: ditherDefaults,
   'faulty-terminal': faultyTerminalDefaults,
   'gradient-blinds': gradientBlindsDefaults,
   grainient: grainientDefaults,
+  'pixel-blast': pixelBlastDefaults,
+  silk: silkDefaults,
 }
 
 export interface ShaderHeroBackgroundProps {

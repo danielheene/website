@@ -1,5 +1,3 @@
-export { defaultProps } from './config'
+export * from './FaultyTerminal'
 
-export type { FaultyTerminalProps } from './FaultyTerminal'
-
-export { FaultyTerminal } from './FaultyTerminal'
+export * from './config'
