@@ -1,9 +1,19 @@
 import type { ShaderPresetKey } from '@/components/HeroMedia/shaderPresets'
 import {
+  CRTWarp,
+  type CRTWarpProps,
+  defaultProps as crtWarpDefaults,
+} from '@/components/Shaders/CRTWarp'
+import {
   DarkVeil,
   type DarkVeilProps,
   defaultProps as darkVeilDefaults,
 } from '@/components/Shaders/DarkVeil'
+import {
+  Dither,
+  type DitherProps,
+  defaultProps as ditherDefaults,
+} from '@/components/Shaders/Dither'
 import { FaultyTerminal, type FaultyTerminalProps } from '@/components/Shaders/FaultyTerminal'
 import {
   GradientBlinds,
@@ -15,12 +25,28 @@ import {
   type GrainientProps,
   defaultProps as grainientDefaults,
 } from '@/components/Shaders/Grainient'
+import {
+  PixelBlast,
+  type PixelBlastProps,
+  defaultProps as pixelBlastDefaults,
+} from '@/components/Shaders/PixelBlast'
+import { Silk, type SilkProps, defaultProps as silkDefaults } from '@/components/Shaders/Silk'
 
 export type ShaderComponentEntry =
+  | {
+      key: 'crt-warp'
+      Component: typeof CRTWarp
+      props: CRTWarpProps
+    }
   | {
       key: 'darkveil'
       Component: typeof DarkVeil
       props: DarkVeilProps
+    }
+  | {
+      key: 'dither'
+      Component: typeof Dither
+      props: DitherProps
     }
   | {
       key: 'faulty-terminal'
@@ -37,6 +63,16 @@ export type ShaderComponentEntry =
       Component: typeof Grainient
       props: GrainientProps
     }
+  | {
+      key: 'pixel-blast'
+      Component: typeof PixelBlast
+      props: PixelBlastProps
+    }
+  | {
+      key: 'silk'
+      Component: typeof Silk
+      props: SilkProps
+    }
 
 /**
  * One curated, fixed prop bundle per shader — no per-prop admin tuning.
@@ -47,10 +83,20 @@ export type ShaderComponentEntry =
  * demo's green tint or the hero's own tuned bundle.
  */
 export const SHADER_COMPONENTS: Record<ShaderPresetKey, ShaderComponentEntry> = {
+  'crt-warp': {
+    key: 'crt-warp',
+    Component: CRTWarp,
+    props: crtWarpDefaults,
+  },
   darkveil: {
     key: 'darkveil',
     Component: DarkVeil,
     props: darkVeilDefaults,
+  },
+  dither: {
+    key: 'dither',
+    Component: Dither,
+    props: ditherDefaults,
   },
   'faulty-terminal': {
     key: 'faulty-terminal',
@@ -89,5 +135,15 @@ export const SHADER_COMPONENTS: Record<ShaderPresetKey, ShaderComponentEntry> = 
     key: 'grainient',
     Component: Grainient,
     props: grainientDefaults,
+  },
+  'pixel-blast': {
+    key: 'pixel-blast',
+    Component: PixelBlast,
+    props: pixelBlastDefaults,
+  },
+  silk: {
+    key: 'silk',
+    Component: Silk,
+    props: silkDefaults,
   },
 }

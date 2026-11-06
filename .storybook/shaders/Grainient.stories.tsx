@@ -1,5 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
+import {
+  defaultProps,
+  dunesPreset,
+  duskPreset,
+  emberPreset,
+  lagoonPreset,
+  satinPreset,
+  tidePreset,
+} from '@/components/Shaders/Grainient/config'
 import { Grainient } from '@/components/Shaders/Grainient/Grainient'
 
 const meta = {
@@ -10,170 +19,143 @@ const meta = {
     // would fight the 16:9 aspect ratio below.
     layout: 'padded',
   },
-  // Args and control ranges match reactbits.dev's own published control panel for this
-  // component.
   args: {
-    timeSpeed: 0.25,
-    colorBalance: 0.0,
-    warpStrength: 1.0,
-    warpFrequency: 5.0,
-    warpSpeed: 2.0,
-    warpAmplitude: 50.0,
-    blendAngle: 0.0,
-    blendSoftness: 0.05,
-    rotationAmount: 500.0,
-    noiseScale: 2.0,
-    grainAmount: 0.1,
-    grainScale: 2.0,
-    grainAnimated: false,
-    contrast: 1.5,
-    gamma: 1.0,
-    saturation: 1.0,
-    centerX: 0.0,
-    centerY: 0.0,
-    zoom: 0.9,
-    color1: '#FF9FFC',
-    color2: '#5227FF',
-    color3: '#B497CF',
+    colors: defaultProps.colors,
+    type: 'linear',
+    angle: 55,
+    bands: 1,
+    speed: 1,
+    flow: 0.8,
+    scale: 1,
+    softness: 1,
+    silk: 0.35,
+    grainAmount: 0.08,
+    grainSize: 1.2,
+    grainAnimated: true,
+    contrast: 1,
+    saturation: 1,
+    variation: 0,
+    interactive: true,
+    stir: 1,
+    clickSwirl: true,
+    intro: true,
+    lightMode: false,
   },
   argTypes: {
-    timeSpeed: {
-      control: {
-        type: 'range',
-        min: 0,
-        max: 5,
-        step: 0.05,
-      },
-      description: 'Multiplier on elapsed time — how fast the gradient warps.',
+    colors: {
+      control: 'object',
+      description: 'Palette of up to 8 colors interpolated smoothly in Oklab color space.',
       table: {
         defaultValue: {
-          summary: '0.25',
+          summary: "['#120f17', '#2a0f0a', '#9a3412', '#f97316', '#fed7aa']",
         },
       },
     },
-    colorBalance: {
-      control: {
-        type: 'range',
-        min: -1,
-        max: 1,
-        step: 0.01,
-      },
-      description: 'Shifts the blend point between the three colors.',
+    type: {
+      control: 'select',
+      options: ['linear', 'radial'],
+      description: 'Gradient coordinate mapping geometry (directional linear or swirling radial).',
       table: {
         defaultValue: {
-          summary: '0',
+          summary: 'linear',
         },
       },
     },
-    warpStrength: {
+    angle: {
       control: {
         type: 'range',
         min: 0,
-        max: 4,
-        step: 0.05,
+        max: 360,
+        step: 1,
       },
-      description: 'Overall strength of the UV warp (inversely scales the warp amplitude).',
+      description: 'Angle of the linear gradient in degrees.',
+      table: {
+        defaultValue: {
+          summary: '55',
+        },
+      },
+    },
+    bands: {
+      control: {
+        type: 'range',
+        min: 1,
+        max: 8,
+        step: 1,
+      },
+      description: 'Number of repeating color stripes / fold cycles across the field.',
       table: {
         defaultValue: {
           summary: '1',
         },
       },
     },
-    warpFrequency: {
+    speed: {
       control: {
         type: 'range',
         min: 0,
-        max: 12,
+        max: 5,
         step: 0.1,
       },
-      description: 'Spatial frequency of the sine-based warp.',
+      description: 'Playback speed multiplier for the internal drift and flow time clock.',
       table: {
         defaultValue: {
-          summary: '5',
+          summary: '1',
         },
       },
     },
-    warpSpeed: {
+    flow: {
       control: {
         type: 'range',
         min: 0,
-        max: 6,
-        step: 0.1,
+        max: 3,
+        step: 0.05,
       },
-      description: 'Speed of the warp animation, independent of `timeSpeed`.',
+      description: 'Distortion turbulence and displacement intensity of the gradient waves.',
       table: {
         defaultValue: {
-          summary: '2',
+          summary: '0.8',
         },
       },
     },
-    warpAmplitude: {
+    scale: {
       control: {
         type: 'range',
-        min: 5,
-        max: 80,
-        step: 1,
+        min: 0.25,
+        max: 3,
+        step: 0.05,
       },
-      description: 'Amplitude of the warp displacement.',
+      description: 'Spatial scale and zoom level of the gradient noise field.',
       table: {
         defaultValue: {
-          summary: '50',
+          summary: '1',
         },
       },
     },
-    blendAngle: {
-      control: {
-        type: 'range',
-        min: -180,
-        max: 180,
-        step: 1,
-      },
-      description: 'Rotation of the color blend axis, in degrees.',
-      table: {
-        defaultValue: {
-          summary: '0',
-        },
-      },
-    },
-    blendSoftness: {
+    softness: {
       control: {
         type: 'range',
         min: 0,
         max: 1,
         step: 0.01,
       },
-      description: 'Softness of the transition between color regions.',
+      description: 'Edge softness between adjacent color stops (lower creates sharper banding).',
       table: {
         defaultValue: {
-          summary: '0.05',
+          summary: '1',
         },
       },
     },
-    rotationAmount: {
+    silk: {
       control: {
         type: 'range',
         min: 0,
-        max: 1440,
-        step: 10,
-      },
-      description: 'Strength of the noise-driven overall rotation.',
-      table: {
-        defaultValue: {
-          summary: '500',
-        },
-      },
-    },
-    noiseScale: {
-      control: {
-        type: 'range',
-        min: 0,
-        max: 4,
+        max: 1,
         step: 0.05,
       },
-      description: 'Spatial scale of the noise field driving rotation.',
+      description: 'Specular 3D surface sheen and normal lighting response.',
       table: {
         defaultValue: {
-          summary: '2',
+          summary: '0.35',
         },
       },
     },
@@ -181,61 +163,47 @@ const meta = {
       control: {
         type: 'range',
         min: 0,
-        max: 0.4,
+        max: 0.5,
         step: 0.01,
       },
-      description: 'Strength of the grain mixed into the color.',
+      description: 'Luminance-weighted film grain noise intensity.',
       table: {
         defaultValue: {
-          summary: '0.1',
+          summary: '0.08',
         },
       },
     },
-    grainScale: {
+    grainSize: {
       control: {
         type: 'range',
-        min: 0.2,
-        max: 8,
+        min: 0.5,
+        max: 4,
         step: 0.1,
       },
-      description: 'Spatial scale of the grain pattern.',
+      description: 'Spatial coarseness and clumping of the grain texture.',
       table: {
         defaultValue: {
-          summary: '2',
+          summary: '1.2',
         },
       },
     },
     grainAnimated: {
       control: 'boolean',
-      description: 'Animates the grain over time instead of holding it static.',
+      description: 'Whether the film grain changes every frame or remains static.',
       table: {
         defaultValue: {
-          summary: 'false',
+          summary: 'true',
         },
       },
     },
     contrast: {
       control: {
         type: 'range',
-        min: 0,
-        max: 2.5,
+        min: 0.2,
+        max: 2,
         step: 0.05,
       },
-      description: 'Contrast applied after blending.',
-      table: {
-        defaultValue: {
-          summary: '1.5',
-        },
-      },
-    },
-    gamma: {
-      control: {
-        type: 'range',
-        min: 0.4,
-        max: 2.5,
-        step: 0.05,
-      },
-      description: 'Gamma correction applied to the final color.',
+      description: 'Post-process contrast adjustment applied in Oklab space.',
       table: {
         defaultValue: {
           summary: '1',
@@ -246,90 +214,87 @@ const meta = {
       control: {
         type: 'range',
         min: 0,
-        max: 2.5,
+        max: 2,
         step: 0.05,
       },
-      description: 'Saturation multiplier — 0 desaturates to grayscale.',
+      description: 'Color saturation multiplier in Oklab chroma space.',
       table: {
         defaultValue: {
           summary: '1',
         },
       },
     },
-    centerX: {
+    variation: {
       control: {
         type: 'range',
-        min: -1,
-        max: 1,
-        step: 0.01,
+        min: 0,
+        max: 10,
+        step: 1,
       },
-      description: 'Horizontal offset of the gradient center.',
+      description: 'Random seed index that shifts noise coordinate offsets.',
       table: {
         defaultValue: {
           summary: '0',
         },
       },
     },
-    centerY: {
+    interactive: {
+      control: 'boolean',
+      description: 'Enables fluid pointer stirring and movement drag physics.',
+      table: {
+        defaultValue: {
+          summary: 'true',
+        },
+      },
+    },
+    stir: {
       control: {
         type: 'range',
-        min: -1,
-        max: 1,
-        step: 0.01,
+        min: 0,
+        max: 2,
+        step: 0.1,
       },
-      description: 'Vertical offset of the gradient center.',
+      description: 'Strength of pointer drag ripples and fluid wakes.',
       table: {
         defaultValue: {
-          summary: '0',
+          summary: '1',
         },
       },
     },
-    zoom: {
-      control: {
-        type: 'range',
-        min: 0.3,
-        max: 3,
-        step: 0.05,
-      },
-      description: 'Zoom level of the gradient.',
+    clickSwirl: {
+      control: 'boolean',
+      description: 'Spawns localized vortex twirls on click/tap.',
       table: {
         defaultValue: {
-          summary: '0.9',
+          summary: 'true',
         },
       },
     },
-    color1: {
-      control: 'color',
-      description: 'First gradient color.',
+    intro: {
+      control: 'boolean',
+      description: 'Plays a smooth unfolding intro animation on initial load.',
       table: {
         defaultValue: {
-          summary: '#FF9FFC',
+          summary: 'true',
         },
       },
     },
-    color2: {
-      control: 'color',
-      description: 'Second gradient color.',
+    lightMode: {
+      control: 'boolean',
+      description: 'Inverts palette curves and boosts high-key lightness values.',
       table: {
         defaultValue: {
-          summary: '#5227FF',
-        },
-      },
-    },
-    color3: {
-      control: 'color',
-      description: 'Third gradient color.',
-      table: {
-        defaultValue: {
-          summary: '#B497CF',
+          summary: 'false',
         },
       },
     },
   },
   decorators: [
     (Story) => (
-      <div className="aspect-video w-full">
-        <Story />
+      <div className="rounded-2xl mx-auto w-full max-w-5xl overflow-hidden border border-neutral-800 bg-neutral-950 shadow-2xl">
+        <div className="relative aspect-16/9 w-full">
+          <Story />
+        </div>
       </div>
     ),
   ],
@@ -339,39 +304,49 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-/** Default pink/purple/lavender warp with static grain. */
-export const Default: Story = {}
+export const Default: Story = {
+  args: defaultProps,
+}
 
-/** Animated grain instead of a static, per-frame-stable pattern. */
-export const AnimatedGrain: Story = {
+export const Ember: Story = {
+  args: emberPreset,
+}
+
+export const Lagoon: Story = {
+  args: lagoonPreset,
+}
+
+export const Dusk: Story = {
+  args: duskPreset,
+}
+
+export const Satin: Story = {
+  args: satinPreset,
+}
+
+export const Dunes: Story = {
+  args: dunesPreset,
+}
+
+export const Tide: Story = {
+  args: tidePreset,
+}
+
+export const RadialVortex: Story = {
   args: {
-    grainAnimated: true,
-    grainAmount: 0.2,
+    ...emberPreset,
+    type: 'radial',
+    flow: 1.2,
+    scale: 1.5,
+    silk: 0.5,
   },
 }
 
-/** A different three-color palette. */
-export const AlternatePalette: Story = {
+export const LightMode: Story = {
   args: {
-    color1: '#22D3EE',
-    color2: '#0EA5E9',
-    color3: '#1E3A8A',
-  },
-}
-
-/** Stronger warp and faster animation for a more turbulent look. */
-export const Turbulent: Story = {
-  args: {
-    warpStrength: 2.5,
-    warpFrequency: 10,
-    timeSpeed: 0.6,
-  },
-}
-
-/** Desaturated, higher-contrast variant. */
-export const Desaturated: Story = {
-  args: {
-    saturation: 0.2,
-    contrast: 2,
+    ...lagoonPreset,
+    lightMode: true,
+    grainAmount: 0.05,
+    contrast: 0.9,
   },
 }

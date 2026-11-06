@@ -466,7 +466,18 @@ export interface Page {
                 relationTo: 'videos';
                 value: string | MediaVideo;
               } | null);
-          shader?: ('darkveil' | 'faulty-terminal' | 'gradient-blinds' | 'grainient') | null;
+          shader?:
+            | (
+                | 'crt-warp'
+                | 'darkveil'
+                | 'dither'
+                | 'faulty-terminal'
+                | 'gradient-blinds'
+                | 'grainient'
+                | 'pixel-blast'
+                | 'silk'
+              )
+            | null;
           id?: string | null;
         }[]
       | null;
@@ -878,7 +889,18 @@ export interface BlogPostData {
                 relationTo: 'videos';
                 value: string | MediaVideo;
               } | null);
-          shader?: ('darkveil' | 'faulty-terminal' | 'gradient-blinds' | 'grainient') | null;
+          shader?:
+            | (
+                | 'crt-warp'
+                | 'darkveil'
+                | 'dither'
+                | 'faulty-terminal'
+                | 'gradient-blinds'
+                | 'grainient'
+                | 'pixel-blast'
+                | 'silk'
+              )
+            | null;
           id?: string | null;
         }[]
       | null;
@@ -968,7 +990,18 @@ export interface Topic {
                 relationTo: 'videos';
                 value: string | MediaVideo;
               } | null);
-          shader?: ('darkveil' | 'faulty-terminal' | 'gradient-blinds' | 'grainient') | null;
+          shader?:
+            | (
+                | 'crt-warp'
+                | 'darkveil'
+                | 'dither'
+                | 'faulty-terminal'
+                | 'gradient-blinds'
+                | 'grainient'
+                | 'pixel-blast'
+                | 'silk'
+              )
+            | null;
           id?: string | null;
         }[]
       | null;
@@ -2484,7 +2517,18 @@ export interface GeneralSettings {
               relationTo: 'videos';
               value: string | MediaVideo;
             } | null);
-        shader?: ('darkveil' | 'faulty-terminal' | 'gradient-blinds' | 'grainient') | null;
+        shader?:
+          | (
+              | 'crt-warp'
+              | 'darkveil'
+              | 'dither'
+              | 'faulty-terminal'
+              | 'gradient-blinds'
+              | 'grainient'
+              | 'pixel-blast'
+              | 'silk'
+            )
+          | null;
         id?: string | null;
       }[]
     | null;
@@ -2503,7 +2547,18 @@ export interface GeneralSettings {
               relationTo: 'videos';
               value: string | MediaVideo;
             } | null);
-        shader?: ('darkveil' | 'faulty-terminal' | 'gradient-blinds' | 'grainient') | null;
+        shader?:
+          | (
+              | 'crt-warp'
+              | 'darkveil'
+              | 'dither'
+              | 'faulty-terminal'
+              | 'gradient-blinds'
+              | 'grainient'
+              | 'pixel-blast'
+              | 'silk'
+            )
+          | null;
         id?: string | null;
       }[]
     | null;

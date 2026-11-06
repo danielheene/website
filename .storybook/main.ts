@@ -4,7 +4,7 @@ export default defineMain({
   framework: {
     name: '@storybook/nextjs-vite',
     options: {
-      nextConfigPath: '../next.config.ts',
+      nextConfigPath: '..',
     },
   },
   core: {
@@ -50,32 +50,51 @@ export default defineMain({
     reactDocgen: 'react-docgen',
   },
   async viteFinal(config) {
-    const existingOnwarn = config.build?.rollupOptions?.onwarn
-
     return {
       ...config,
       build: {
         ...config.build,
-        rollupOptions: {
-          ...config.build?.rollupOptions,
-          // "use client" has no meaning once bundled for the browser here —
-          // Storybook only needs the component, not the RSC boundary marker
-          // Next.js would otherwise read it for. Rollup's own warning about
-          // it is accurate but not actionable in this context, so it's
-          // filtered out rather than left as noise on every build.
-          onwarn(warning, warn) {
-            if (
-              warning.code === 'MODULE_LEVEL_DIRECTIVE' &&
-              warning.message.includes('"use client"')
-            ) {
+        rolldownOptions: {
+          onLog: (level, log, defaultHandler) => {
+            if (log.code === 'MODULE_LEVEL_DIRECTIVE' && log.message.includes('"use client"')) {
               return
             }
 
-            if (existingOnwarn) {
-              existingOnwarn(warning, warn)
-            } else {
-              warn(warning)
-            }
+            defaultHandler(level, log)
+          },
+          output: {
+            codeSplitting: {
+              groups: [
+                {
+                  name: 'react-vendor',
+                  test: /node_modules[\\/]react/,
+                  priority: 20,
+                },
+                {
+                  name: 'storybook-vendor',
+                  test: /node_modules[\\/]@storybook/,
+                  priority: 15,
+                },
+
+                {
+                  name: 'radix-vendor',
+                  test: /node_modules[\\/]@radix-ui/,
+                  priority: 15,
+                },
+
+                {
+                  name: 'vendor',
+                  test: /node_modules/,
+                  priority: 10,
+                },
+                {
+                  name: 'common',
+                  minShareCount: 2,
+                  minSize: 10000,
+                  priority: 5,
+                },
+              ],
+            },
           },
         },
       },

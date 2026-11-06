@@ -1,5 +1,3 @@
-export { defaultProps } from './config'
+export * from './DarkVeil'
 
-export type { DarkVeilProps } from './DarkVeil'
-
-export { DarkVeil } from './DarkVeil'
+export * from './config'

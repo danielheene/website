@@ -1,129 +1,90 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 
-import { DarkVeil } from '@/components/Shaders/DarkVeil/DarkVeil'
+import { DarkVeil, presets } from '@/components/Shaders/DarkVeil'
 
 const meta = {
   title: 'DarkVeil',
   component: DarkVeil,
   parameters: {
-    // 'padded' avoids 'fullscreen' stretching the decorator to the canvas's full height, which
-    // would fight the 16:9 aspect ratio below.
     layout: 'padded',
   },
-  // Args and control ranges match reactbits.dev's own published control panel for this
-  // component.
   args: {
-    hueShift: 0,
-    noiseIntensity: 0,
-    scanlineIntensity: 0,
+    color: '#ffffff',
     speed: 0.5,
-    scanlineFrequency: 0,
-    warpAmount: 0,
-    resolutionScale: 1,
+    scale: 1,
+    rotation: 0,
+    flow: 1,
+    warp: 0,
+    variation: 0,
+    brightness: 1,
+    sheen: 0.5,
+    glow: 0.4,
+    grain: 0.2,
+    quality: 1,
+    mouseInteraction: true,
+    mouseStrength: 1,
+    intro: true,
+    fade: 0,
+    opacity: 1,
+    lightMode: false,
   },
   argTypes: {
-    hueShift: {
-      control: {
-        type: 'range',
-        min: -180,
-        max: 180,
-        step: 5,
-      },
-      description: 'Hue rotation in degrees applied to the generated field.',
-      table: {
-        defaultValue: {
-          summary: '0',
-        },
-      },
-    },
-    noiseIntensity: {
-      control: {
-        type: 'range',
-        min: 0,
-        max: 0.5,
-        step: 0.01,
-      },
-      description: 'Amount of per-pixel random grain mixed into the color.',
-      table: {
-        defaultValue: {
-          summary: '0',
-        },
-      },
-    },
-    scanlineIntensity: {
-      control: {
-        type: 'range',
-        min: 0,
-        max: 1,
-        step: 0.05,
-      },
-      description: 'Strength of the horizontal scanline darkening pass.',
-      table: {
-        defaultValue: {
-          summary: '0',
-        },
-      },
+    color: {
+      control: 'color',
+      description: 'Primary tint color for the neural CPPN wave structures.',
     },
     speed: {
-      control: {
-        type: 'range',
-        min: 0,
-        max: 2,
-        step: 0.1,
-      },
-      description: 'Multiplier on elapsed time — how fast the field evolves.',
-      table: {
-        defaultValue: {
-          summary: '0.5',
-        },
-      },
+      control: { type: 'range', min: 0, max: 2, step: 0.05 },
+      description: 'Time progression rate through latent neural space.',
     },
-    scanlineFrequency: {
-      control: {
-        type: 'range',
-        min: 0,
-        max: 50,
-        step: 1,
-      },
-      description: 'Spatial frequency of the scanlines.',
-      table: {
-        defaultValue: {
-          summary: '0',
-        },
-      },
+    scale: {
+      control: { type: 'range', min: 0.2, max: 3, step: 0.05 },
+      description: 'Pattern spatial zoom scale.',
     },
-    warpAmount: {
-      control: {
-        type: 'range',
-        min: 0,
-        max: 1,
-        step: 0.05,
-      },
-      description: 'Strength of the sine-based UV warp applied before sampling.',
-      table: {
-        defaultValue: {
-          summary: '0',
-        },
-      },
+    rotation: {
+      control: { type: 'range', min: 0, max: 360, step: 5 },
+      description: 'Orientation angle in degrees.',
     },
-    resolutionScale: {
-      control: {
-        type: 'range',
-        min: 0.25,
-        max: 2,
-        step: 0.25,
-      },
-      description: 'Multiplier on the render target size relative to the container.',
-      table: {
-        defaultValue: {
-          summary: '1',
-        },
-      },
+    flow: {
+      control: { type: 'range', min: 0, max: 5, step: 0.1 },
+      description: 'Neural flow evolution speed.',
+    },
+    warp: {
+      control: { type: 'range', min: 0, max: 2, step: 0.05 },
+      description: 'Domain distortion and harmonic warping intensity.',
+    },
+    variation: {
+      control: { type: 'range', min: 0, max: 10, step: 1 },
+      description: 'Latent space seed variation index.',
+    },
+    brightness: {
+      control: { type: 'range', min: 0.2, max: 2, step: 0.05 },
+      description: 'Luminance gain multiplier.',
+    },
+    sheen: {
+      control: { type: 'range', min: 0, max: 1, step: 0.05 },
+      description: 'Specular silk highlight reflectance.',
+    },
+    glow: {
+      control: { type: 'range', min: 0, max: 1, step: 0.05 },
+      description: 'Outer bloom glow intensity.',
+    },
+    grain: {
+      control: { type: 'range', min: 0, max: 1, step: 0.05 },
+      description: 'Film grain texture noise overlay.',
+    },
+    mouseInteraction: {
+      control: 'boolean',
+      description: 'Enable magnetic distortion follow on pointer hover.',
+    },
+    lightMode: {
+      control: 'boolean',
+      description: 'Invert luminance mapping for bright background themes.',
     },
   },
   decorators: [
     (Story) => (
-      <div className="aspect-video w-full">
+      <div className="relative aspect-video w-full max-w-4xl overflow-hidden rounded-xl bg-black shadow-2xl">
         <Story />
       </div>
     ),
@@ -134,30 +95,39 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-/** Default — a calm, mostly-static purple field with no noise, scanlines, or warp. */
-export const Default: Story = {}
-
-/** Faster evolution and a hue rotated toward warm tones. */
-export const HueShifted: Story = {
+export const Default: Story = {
   args: {
-    hueShift: 180,
-    speed: 1,
+    ...presets.default,
   },
 }
 
-/** CRT-style scanlines layered over noise and grain. */
-export const ScanlinesAndNoise: Story = {
+export const Ember: Story = {
   args: {
-    scanlineIntensity: 0.6,
-    scanlineFrequency: 20,
-    noiseIntensity: 0.3,
+    ...presets.ember,
   },
 }
 
-/** Strong UV warp distorting the underlying field. */
-export const Warped: Story = {
+export const Jade: Story = {
   args: {
-    warpAmount: 1,
-    speed: 0.8,
+    ...presets.jade,
+  },
+}
+
+export const Silver: Story = {
+  args: {
+    ...presets.silver,
+  },
+}
+
+export const Storm: Story = {
+  args: {
+    ...presets.storm,
+  },
+}
+
+export const LightMode: Story = {
+  args: {
+    ...presets.default,
+    lightMode: true,
   },
 }
