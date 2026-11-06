@@ -1,3 +1,10 @@
+# [1.17.0-rc.1](https://github.com/danielheene/website/compare/v1.16.1-rc.1...v1.17.0-rc.1) (2026-11-06)
+
+
+### Features
+
+* **shaders:** add CRTWarp, Dither, PixelBlast, and Silk shaders ([#136](https://github.com/danielheene/website/issues/136)) ([3e1c69a](https://github.com/danielheene/website/commit/3e1c69a08eaa859f431eb13f50016d9630aa795d))
+
 ## [1.16.1-rc.1](https://github.com/danielheene/website/compare/v1.16.0...v1.16.1-rc.1) (2026-11-05)
 
 
