@@ -227,8 +227,6 @@ only when `PAYLOAD_JOBS_ENABLE_APP_WORKERS=true` (default `false`).
   targets that exact version (it gives the fake-worker import a default `workerSrc`, see
   vercel/next.js#65406). Bumping `pdfjs-dist` means regenerating the patch.
 - The E2E job in `lint-and-test.yml` is commented out, so Playwright only runs locally.
-- `STATUS_PAGE_WORKER_HEARTBEAT_PUSH_URL` is read by the `heartbeatPing` handler but missing from
-  the env schema.
 - No app-level rate limiting exists on public API routes.
 - No shared logging abstraction — error logging is ad hoc `console.error` calls.
 

@@ -28,6 +28,12 @@ export const envSchema = z.object({
   STATUS_PAGE_HEARTBEAT_URL: z.url(),
 
   /**
+   * Push monitor the worker's `heartbeatPing` job reports to every minute.
+   * Optional: without it the job only logs.
+   */
+  STATUS_PAGE_WORKER_HEARTBEAT_PUSH_URL: emptyAsUndefined(z.url()),
+
+  /**
    * Base URL used by generateResumeDocumentRedirectURL to build the
    * redirect target for /download/resume.pdf and localized resume jobs.
    */

@@ -220,7 +220,7 @@ The source of truth is declared as a Zod schema in `src/types/environment.ts`. I
 | --- | --- | --- |
 | `NEXT_PUBLIC_STATUS_PAGE_URL` | **Required** (URL) | Public status page URL, read in the browser. |
 | `STATUS_PAGE_HEARTBEAT_URL` | **Required** (URL) | Status page heartbeat endpoint the server fetches (Redis-cached) for the service-status indicator. |
-| `STATUS_PAGE_WORKER_HEARTBEAT_PUSH_URL` | Optional (URL), not in the schema | Push monitor URL the worker's `heartbeatPing` job calls every minute; without it the job only logs. |
+| `STATUS_PAGE_WORKER_HEARTBEAT_PUSH_URL` | Optional (URL) | Push monitor URL the worker's `heartbeatPing` job calls every minute; without it the job only logs. |
 
 ### Analytics & Email
 
