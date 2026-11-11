@@ -8,6 +8,19 @@
 
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GeneratorFlag".
+ */
+export type GeneratorFlag =
+  | 'resume-asset'
+  | 'thumbnail'
+  | 'document'
+  | 'audio-thumbnail'
+  | 'video-thumbnail'
+  | 'document-thumbnail'
+  | 'unsplash-import'
+  | 'seeded-dummy';
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "PageLayout".
  */
 export type PageLayout = ('default' | 'home' | 'resume' | 'legal') | null;
@@ -105,6 +118,11 @@ export type LanguageProficiency = ('a1' | 'a2' | 'b1' | 'b2' | 'c1' | 'c2' | 'na
  * via the `definition` "supportedTimezones".
  */
 export type SupportedTimezones = 'Europe/Berlin';
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GeneratorFlags".
+ */
+export type GeneratorFlags = GeneratorFlag[];
 
 export interface Config {
   auth: {
@@ -380,16 +398,7 @@ export interface MediaImage {
     [k: string]: unknown;
   } | null;
   blurDataURL?: string | null;
-  generatorFlags?: (
-    | 'resume-asset'
-    | 'thumbnail'
-    | 'document'
-    | 'audio-thumbnail'
-    | 'video-thumbnail'
-    | 'document-thumbnail'
-    | 'unsplash-import'
-    | 'seeded-dummy'
-  )[];
+  generatorFlags: GeneratorFlag[];
   prefix?: string | null;
   _objectKey?: string | null;
   updatedAt: string;
@@ -524,16 +533,7 @@ export interface Page {
     title?: string | null;
     description?: string | null;
   };
-  generatorFlags?: (
-    | 'resume-asset'
-    | 'thumbnail'
-    | 'document'
-    | 'audio-thumbnail'
-    | 'video-thumbnail'
-    | 'document-thumbnail'
-    | 'unsplash-import'
-    | 'seeded-dummy'
-  )[];
+  generatorFlags: GeneratorFlag[];
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -567,16 +567,7 @@ export interface MediaVideo {
         value: string | MediaImage;
       }[]
     | null;
-  generatorFlags?: (
-    | 'resume-asset'
-    | 'thumbnail'
-    | 'document'
-    | 'audio-thumbnail'
-    | 'video-thumbnail'
-    | 'document-thumbnail'
-    | 'unsplash-import'
-    | 'seeded-dummy'
-  )[];
+  generatorFlags: GeneratorFlag[];
   prefix?: string | null;
   _objectKey?: string | null;
   updatedAt: string;
@@ -949,16 +940,7 @@ export interface BlogPostData {
     title?: string | null;
     description?: string | null;
   };
-  generatorFlags?: (
-    | 'resume-asset'
-    | 'thumbnail'
-    | 'document'
-    | 'audio-thumbnail'
-    | 'video-thumbnail'
-    | 'document-thumbnail'
-    | 'unsplash-import'
-    | 'seeded-dummy'
-  )[];
+  generatorFlags: GeneratorFlag[];
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -1034,16 +1016,7 @@ export interface Topic {
     title?: string | null;
     description?: string | null;
   };
-  generatorFlags?: (
-    | 'resume-asset'
-    | 'thumbnail'
-    | 'document'
-    | 'audio-thumbnail'
-    | 'video-thumbnail'
-    | 'document-thumbnail'
-    | 'unsplash-import'
-    | 'seeded-dummy'
-  )[];
+  generatorFlags: GeneratorFlag[];
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -1153,16 +1126,7 @@ export interface MediaDocument {
         value: string | MediaImage;
       }[]
     | null;
-  generatorFlags?: (
-    | 'resume-asset'
-    | 'thumbnail'
-    | 'document'
-    | 'audio-thumbnail'
-    | 'video-thumbnail'
-    | 'document-thumbnail'
-    | 'unsplash-import'
-    | 'seeded-dummy'
-  )[];
+  generatorFlags: GeneratorFlag[];
   prefix?: string | null;
   _objectKey?: string | null;
   updatedAt: string;
@@ -1199,16 +1163,7 @@ export interface MediaAudio {
     };
     [k: string]: unknown;
   } | null;
-  generatorFlags?: (
-    | 'resume-asset'
-    | 'thumbnail'
-    | 'document'
-    | 'audio-thumbnail'
-    | 'video-thumbnail'
-    | 'document-thumbnail'
-    | 'unsplash-import'
-    | 'seeded-dummy'
-  )[];
+  generatorFlags: GeneratorFlag[];
   prefix?: string | null;
   _objectKey?: string | null;
   updatedAt: string;
@@ -1233,16 +1188,7 @@ export interface ResumeCustomerData {
   title: string;
   slug: string;
   svg?: string | null;
-  generatorFlags?: (
-    | 'resume-asset'
-    | 'thumbnail'
-    | 'document'
-    | 'audio-thumbnail'
-    | 'video-thumbnail'
-    | 'document-thumbnail'
-    | 'unsplash-import'
-    | 'seeded-dummy'
-  )[];
+  generatorFlags: GeneratorFlag[];
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1297,16 +1243,7 @@ export interface ResumeDocumentData {
     | number
     | boolean
     | null;
-  generatorFlags?: (
-    | 'resume-asset'
-    | 'thumbnail'
-    | 'document'
-    | 'audio-thumbnail'
-    | 'video-thumbnail'
-    | 'document-thumbnail'
-    | 'unsplash-import'
-    | 'seeded-dummy'
-  )[];
+  generatorFlags: GeneratorFlag[];
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1511,16 +1448,7 @@ export interface ResumeJobData {
         value: string | ResumeSkillTagData;
       }[]
     | null;
-  generatorFlags?: (
-    | 'resume-asset'
-    | 'thumbnail'
-    | 'document'
-    | 'audio-thumbnail'
-    | 'video-thumbnail'
-    | 'document-thumbnail'
-    | 'unsplash-import'
-    | 'seeded-dummy'
-  )[];
+  generatorFlags: GeneratorFlag[];
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -1548,16 +1476,7 @@ export interface ResumeSkillTagData {
     hasNextPage?: boolean;
     totalDocs?: number;
   };
-  generatorFlags?: (
-    | 'resume-asset'
-    | 'thumbnail'
-    | 'document'
-    | 'audio-thumbnail'
-    | 'video-thumbnail'
-    | 'document-thumbnail'
-    | 'unsplash-import'
-    | 'seeded-dummy'
-  )[];
+  generatorFlags: GeneratorFlag[];
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1608,16 +1527,7 @@ export interface ResumeSkillData {
         value: string | ResumeSkillTagData;
       }[]
     | null;
-  generatorFlags?: (
-    | 'resume-asset'
-    | 'thumbnail'
-    | 'document'
-    | 'audio-thumbnail'
-    | 'video-thumbnail'
-    | 'document-thumbnail'
-    | 'unsplash-import'
-    | 'seeded-dummy'
-  )[];
+  generatorFlags: GeneratorFlag[];
   createdAt: string;
   updatedAt: string;
   deletedAt?: string | null;
@@ -1656,16 +1566,7 @@ export interface ResumeProjectData {
         value: string | MediaImage;
       }[]
     | null;
-  generatorFlags?: (
-    | 'resume-asset'
-    | 'thumbnail'
-    | 'document'
-    | 'audio-thumbnail'
-    | 'video-thumbnail'
-    | 'document-thumbnail'
-    | 'unsplash-import'
-    | 'seeded-dummy'
-  )[];
+  generatorFlags: GeneratorFlag[];
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;

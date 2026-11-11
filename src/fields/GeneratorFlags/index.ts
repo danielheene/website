@@ -27,6 +27,7 @@ import { normalizeIncomingFlags } from './hooks/normalizeIncomingFlags'
  * back as `thumbnail` cannot be described accurately. Callers that genuinely
  * need to merge can spread the existing array.
  */
+
 export const GENERATOR_FLAGS = [
   'resume-asset',
   'thumbnail',
@@ -54,20 +55,21 @@ export const GeneratorFlagsField = (): TextField => ({
   admin: {
     hidden: true,
   },
-
+  hooks: {
+    afterRead: [({ value }) => value ?? []],
+    beforeChange: [normalizeIncomingFlags],
+  },
+  required: true,
+  defaultValue: [],
   typescriptSchema: [
     () => ({
       type: 'array',
       items: {
-        type: 'string',
-        enum: [...GENERATOR_FLAGS],
+        $ref: '#/definitions/GeneratorFlag',
       },
       additionalItems: false,
-      required: false,
+      required: true,
       default: [],
     }),
   ],
-  hooks: {
-    beforeChange: [normalizeIncomingFlags],
-  },
 })
