@@ -3,7 +3,10 @@ import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical
 
 import dedent from 'dedent'
 
-import { generateAnthropicText } from '@/lib/anthropic/generateAnthropicText'
+import {
+  ANTHROPIC_TRANSLATION_MODEL,
+  generateAnthropicText,
+} from '@/lib/anthropic/generateAnthropicText'
 import { parseHtmlToLexical } from '@/lib/lexical/parseHtmlToLexical'
 import { BilingualLanguageLabel, BilingualLanguageValue } from '@/types/bilingualLanguage'
 
@@ -35,6 +38,7 @@ export const fetchAnthropicTranslation = async ({
 
   const translatedHtml = await generateAnthropicText({
     functionId: 'fetchAnthropicTranslation',
+    model: ANTHROPIC_TRANSLATION_MODEL,
     maxOutputTokens: 16_000,
     system: dedent`
       You translate résumé content from ${source} into ${target}.

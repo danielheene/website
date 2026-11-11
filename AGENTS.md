@@ -161,7 +161,8 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
 - **Server actions** (`src/lib/actions/`): `'use server'` functions for admin mutations (job
   rescheduling, cancellation, etc.). Use `useTransition` on the client side when calling them.
 - **Claude calls** (`src/lib/anthropic/`): every fetcher goes through `generateAnthropicText()`,
-  which owns the model ID (`ANTHROPIC_MODEL`), effort, timeout and output limit, and throws when
+  which owns the model IDs (`ANTHROPIC_MODEL`, Haiku 5.5; `ANTHROPIC_TRANSLATION_MODEL`, Sonnet
+  5.5, for résumé translation only), effort, timeout and output limit, and throws when
   the answer was cut off or declined rather than returning partial text. Give the model the
   content itself (wrapped in tags), never a URL: it cannot fetch. These modules are plain server
   modules, not `'use server'` files, and the worker imports them too, so `server-only` (which

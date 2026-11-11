@@ -12,7 +12,7 @@ vi.mock('@ai-sdk/anthropic', () => ({
   }),
 }))
 
-const { ANTHROPIC_MODEL, generateAnthropicText, stripCodeFence } =
+const { ANTHROPIC_MODEL, ANTHROPIC_TRANSLATION_MODEL, generateAnthropicText, stripCodeFence } =
   await import('./generateAnthropicText')
 
 const call = () =>
@@ -50,6 +50,23 @@ describe('generateAnthropicText', () => {
     expect(options.timeout).toBeGreaterThan(0)
     expect(options.system).toBe('Be brief.')
     expect(options.prompt).toBe('Hello')
+  })
+
+  it('uses the model a caller names instead of the default', async () => {
+    generateTextMock.mockResolvedValue({
+      text: 'Hi',
+      finishReason: 'stop',
+    })
+
+    await generateAnthropicText({
+      functionId: 'test',
+      system: 'Be brief.',
+      maxOutputTokens: 512,
+      model: ANTHROPIC_TRANSLATION_MODEL,
+      prompt: 'Hello',
+    })
+
+    expect(generateTextMock.mock.calls[0][0].model.modelId).toBe('claude-sonnet-5-5')
   })
 
   it.each(['length', 'content-filter', 'error', 'other'])(

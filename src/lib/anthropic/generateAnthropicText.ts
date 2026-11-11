@@ -3,6 +3,14 @@ import { generateText, type ModelMessage } from 'ai'
 
 export const ANTHROPIC_MODEL = 'claude-haiku-5-5'
 
+/**
+ * Résumé wording is read closely and translated rarely, so the translation
+ * uses the stronger model; everything else stays on the cheap one.
+ */
+export const ANTHROPIC_TRANSLATION_MODEL = 'claude-sonnet-5-5'
+
+type AnthropicModel = typeof ANTHROPIC_MODEL | typeof ANTHROPIC_TRANSLATION_MODEL
+
 // One model call; none of the tasks here should take longer.
 const TIMEOUT_MS = 60_000
 
@@ -12,6 +20,8 @@ type GenerateAnthropicTextArgs = {
   system: string
   /** Thinking counts toward this, so leave room beyond the expected answer. */
   maxOutputTokens: number
+  /** Defaults to `ANTHROPIC_MODEL`. */
+  model?: AnthropicModel
 } & (
   | {
       prompt: string
@@ -38,6 +48,7 @@ export const generateAnthropicText = async ({
   functionId,
   system,
   maxOutputTokens,
+  model = ANTHROPIC_MODEL,
   ...input
 }: GenerateAnthropicTextArgs): Promise<string> => {
   if (!process.env.ANTHROPIC_API_KEY) {
@@ -49,7 +60,7 @@ export const generateAnthropicText = async ({
   })
 
   const { text, finishReason } = await generateText({
-    model: anthropic(ANTHROPIC_MODEL),
+    model: anthropic(model),
     telemetry: {
       isEnabled: true,
       functionId,
@@ -58,7 +69,7 @@ export const generateAnthropicText = async ({
     timeout: TIMEOUT_MS,
     providerOptions: {
       anthropic: {
-        // The model thinks by default at `medium`; these tasks need less.
+        // Both models think more than these short tasks need by default.
         effort: 'low',
       },
     },

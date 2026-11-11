@@ -75,6 +75,7 @@ describe('fetchAnthropicTranslation', () => {
     expect(call[0].prompt).toContain('Hello world')
     expect(call[0].system).toContain('English')
     expect(call[0].system).toContain('German')
+    expect(call[0].model.modelId).toBe('claude-sonnet-5-5')
 
     const root = result?.root as unknown as {
       children: Array<{
