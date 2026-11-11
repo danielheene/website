@@ -2,12 +2,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import robots from './robots'
 
-const rulesFor = async (agent: string) => {
+const allRules = async () => {
   const { rules } = await robots()
 
-  return (Array.isArray(rules) ? rules : [rules]).find(({ userAgent }) =>
-    Array.isArray(userAgent) ? userAgent.includes(agent) : userAgent === agent,
-  )
+  return Array.isArray(rules) ? rules : [rules]
 }
 
 describe('robots', () => {
@@ -15,23 +13,19 @@ describe('robots', () => {
     vi.unstubAllEnvs()
   })
 
-  it('lets search engines render pages and load uploads', async () => {
-    const rule = await rulesFor('Googlebot')
+  it('applies one rule to every crawler', async () => {
+    const rules = await allRules()
 
-    expect(rule.allow).toEqual(expect.arrayContaining(['/', '/api/*/file/']))
-    expect(rule.disallow).toEqual(expect.arrayContaining(['/admin', '/api']))
+    expect(rules).toHaveLength(1)
+    expect(rules[0].userAgent).toEqual(['*'])
+  })
+
+  it('lets crawlers render pages and load uploads', async () => {
+    const [rule] = await allRules()
+
+    expect(rule.allow).toEqual(['/', '/api/*/file/'])
+    expect(rule.disallow).toEqual(['/admin', '/api'])
     expect(rule.disallow).not.toContain('/_next')
-  })
-
-  it('gives link-preview bots the same access as search engines', async () => {
-    expect(await rulesFor('Twitterbot')).toEqual(await rulesFor('Googlebot'))
-  })
-
-  it('limits every other crawler to /llms.txt', async () => {
-    const rule = await rulesFor('*')
-
-    expect(rule.allow).toEqual(['/llms.txt'])
-    expect(rule.disallow).toEqual(['/'])
   })
 
   it('points at the sitemap and sends no Host directive', async () => {
