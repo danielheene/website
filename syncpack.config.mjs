@@ -23,22 +23,23 @@ export default {
   // order (sortFirst below) and content order for these fields, instead of
   // re-shuffling each other's output on alternating commits.
   sortAz: [
-    'maintainers',
-    'contributors',
-    'resolutions',
-    'overrides',
-    'dependencies',
-    'devDependencies',
-    'peerDependencies',
-    'optionalDependencies',
     'bundledDependencies',
     'bundleDependencies',
-    'extensionPack',
-    'extensionDependencies',
+    'contributors',
+    'dependencies',
+    'devDependencies',
     'engines',
     'engineStrict',
+    'extensionDependencies',
+    'extensionPack',
+    'maintainers',
+    'optionalDependencies',
+    'overrides',
+    'peerDependencies',
     'preferGlobal',
     'publishConfig',
+    'resolutions',
+    'scripts',
   ],
   // Full sort-package-json default field order (see that package's `fields`
   // array) — kept complete rather than trimmed to this repo's current
@@ -212,7 +213,7 @@ export default {
       label: 'Playwright packages are pinned to one version',
       dependencies: ['playwright', '@playwright/**'],
       packages: ['**'],
-      pinVersion: '~1.64.1',
+      pinVersion: '~1.65.0',
     },
 
     {
