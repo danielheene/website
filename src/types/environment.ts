@@ -15,6 +15,12 @@ export const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 
   SERVER_HOST: z.string().trim().min(1),
+
+  /**
+   * Host of the production site. An environment is production when its
+   * `SERVER_HOST` equals this (see `src/lib/isProductionHost.ts`).
+   */
+  PRODUCTION_HOST: z.string().trim().min(1),
   SERVER_URL: z.url(),
 
   /**

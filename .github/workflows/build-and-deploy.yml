@@ -154,6 +154,7 @@ jobs:
       # per-branch NODE_ENV build arg is gone with the Docker build phase.
       NODE_ENV: production
       SERVER_HOST: ${{ secrets.SERVER_HOST }}
+      PRODUCTION_HOST: ${{ secrets.PRODUCTION_HOST }}
       SERVER_URL: ${{ secrets.SERVER_URL }}
       NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
       NEXT_PUBLIC_STATUS_PAGE_URL: ${{ secrets.NEXT_PUBLIC_STATUS_PAGE_URL }}

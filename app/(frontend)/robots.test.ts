@@ -15,6 +15,7 @@ describe('robots', () => {
 
   describe('on production', () => {
     const stubProduction = () => {
+      vi.stubEnv('PRODUCTION_HOST', 'daniel.heene.io')
       vi.stubEnv('SERVER_HOST', 'daniel.heene.io')
       vi.stubEnv('SERVER_URL', 'https://daniel.heene.io')
     }
@@ -49,6 +50,7 @@ describe('robots', () => {
     it.each(['daniel.heene.dev', 'localhost:3000', 'staging.daniel.heene.io'])(
       'disallows everything on %s',
       async (host) => {
+        vi.stubEnv('PRODUCTION_HOST', 'daniel.heene.io')
         vi.stubEnv('SERVER_HOST', host)
         vi.stubEnv('SERVER_URL', `https://${host}`)
         const result = await robots()
@@ -63,8 +65,9 @@ describe('robots', () => {
       },
     )
 
-    it('disallows everything when SERVER_HOST is unset', async () => {
-      vi.stubEnv('SERVER_HOST', undefined)
+    it('disallows everything when PRODUCTION_HOST is unset', async () => {
+      vi.stubEnv('PRODUCTION_HOST', undefined)
+      vi.stubEnv('SERVER_HOST', 'daniel.heene.io')
 
       expect((await allRules())[0].disallow).toEqual(['/'])
     })

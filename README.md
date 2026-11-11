@@ -117,7 +117,7 @@ bun run dev:email        # React Email preview server (http://localhost:3005)
   - `app/(frontend)/`: Public website pages, layouts, and route handlers: `/api/preview`, `/api/sse`, `/api/health`, `/api/icons/collection`, `/blog/feed.xml` and `/download/resume.pdf`. CMS pages are under `[slug]/`, the blog under `blog/`, resume documents under `resume/[slug]/`.
   - `app/(payload)/`: Payload CMS admin panel (`/admin`) and Payload's REST API (`/api/*`; GraphQL is disabled).
   - `app/llms.txt/`: The site's public `/llms.txt`, generated from published pages, posts and topics (unrelated to the repository's own `llms.txt` in the project root).
-  - `app/(frontend)/robots.ts`, `app/(frontend)/sitemap.ts`: Crawler rules and the sitemap. `robots.txt` disallows everything unless `SERVER_HOST` is the production host (`daniel.heene.io`).
+  - `app/(frontend)/robots.ts`, `app/(frontend)/sitemap.ts`: Crawler rules and the sitemap. `robots.txt` disallows everything unless `SERVER_HOST` equals `PRODUCTION_HOST`.
   - `app/global-error.tsx`: Root error boundary. It has to stay at the root of `app/`; Next.js does not look for it inside a route group.
 - **Request Proxy**: `proxy.ts` (Next.js 16's replacement for `middleware.ts`) canonicalizes blog listing URLs and marks non-default sorts `noindex`.
 - **Payload Configuration**: `payload.config.ts` in the project root, integrated into Next.js via `withPayload` in `next.config.ts`.
@@ -184,6 +184,7 @@ The source of truth is declared as a Zod schema in `src/types/environment.ts`. I
 | --- | --- | --- |
 | `NODE_ENV` | Optional (`development` \| `production` \| `test`) | Runtime environment (defaults to `development`). |
 | `SERVER_HOST` | **Required** | Host/port used for server-side URL construction. |
+| `PRODUCTION_HOST` | **Required** | Host of the production site. An environment counts as production when `SERVER_HOST` equals it; everywhere else `robots.txt` disallows all crawlers and generated PDFs carry a DRAFT watermark. |
 | `SERVER_URL` | **Required** (URL) | Public URL of the site, read server-side. |
 | `NEXT_PUBLIC_SERVER_URL` | **Required** (URL) | Same value as `SERVER_URL`, exposed to the browser for the live-preview listener. |
 | `RESUME_REDIRECT_URL_BASE` | **Required** (URL) | Base URL for the redirect target of `/download/resume.pdf` and localized resume jobs. |

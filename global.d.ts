@@ -3,6 +3,7 @@ namespace NodeJS {
     NODE_ENV: string
 
     SERVER_HOST: string
+    PRODUCTION_HOST: string
     SERVER_URL: string
     NEXT_PUBLIC_SERVER_URL: string
 

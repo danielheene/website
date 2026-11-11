@@ -222,10 +222,11 @@ only when `PAYLOAD_JOBS_ENABLE_APP_WORKERS=true` (default `false`).
   Action is its own reachable endpoint, whichever page renders the button. Compare shared secrets
   with `crypto.timingSafeEqual` and accept only same-site relative redirect targets, as
   `app/(frontend)/api/preview/route.ts` does (that route checks `PREVIEW_SECRET` only, no session).
-- **Crawlers**: `app/(frontend)/robots.ts` disallows everything unless `SERVER_HOST` is
-  `daniel.heene.io`. `NODE_ENV` cannot tell environments apart (every deployed image runs
-  `production`), so compare `SERVER_HOST` for production-only behaviour, as `src/pdf/index.tsx`
-  also does.
+- **Production detection**: `NODE_ENV` cannot tell environments apart (every deployed image runs
+  `production`). Use `isProductionHost()` (`src/lib/isProductionHost.ts`), which compares
+  `SERVER_HOST` with `PRODUCTION_HOST` and reads an unset value as "not production". Outside
+  production `app/(frontend)/robots.ts` disallows all crawlers and `src/pdf/index.tsx` stamps
+  PDFs as DRAFT.
 
 ## Known Issues / Tech Debt (baseline, not blocking, but don't add more)
 
@@ -255,7 +256,7 @@ only when `PAYLOAD_JOBS_ENABLE_APP_WORKERS=true` (default `false`).
   `neotraverse` are intentionally NOT mocked — their real behavior is the contract under test.
 - `TZ=UTC` is forced in `vitest.setup.ts` and date tests depend on it. Anything touching
   `Interval.setToX()` or `getLocalISOString` needs `vi.useFakeTimers()` + `vi.setSystemTime()`.
-  Use `vi.stubEnv()` for env-dependent code (`SERVER_URL`, `SERVER_HOST`, `PREVIEW_SECRET`).
+  Use `vi.stubEnv()` for env-dependent code (`SERVER_URL`, `SERVER_HOST`, `PRODUCTION_HOST`, `PREVIEW_SECRET`).
 - There is no CI-enforced coverage threshold; when fixing a bug, add a regression test near
   existing tests for that module if a suitable test file already exists.
 
