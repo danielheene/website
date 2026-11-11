@@ -30,10 +30,12 @@ See `README.md` for setup/run instructions; this file focuses on conventions and
 
 ```bash
 bun install              # install deps (Bun only — see packageManager in package.json)
-bun run dev              # runs Next.js dev server + Storybook in parallel
-bun run dev:app          # Next.js dev server only
-bun run generate         # regenerate Payload types + import map (run after changing collections/fields)
-bun run build            # production build
+bun run dev              # Next.js dev server via scripts/dev.mjs (--tunnel opens the Cloudflare Tunnel)
+bun run dev:app          # plain `next dev`, without the tunnel wrapper
+bun run dev:storybook    # Storybook on :6006 (not started by `bun run dev`)
+bun run generate         # regenerate Next route types, Payload types + import map
+bun run build            # production build (`next build --webpack`)
+bun run typecheck        # tsc --noEmit
 bun run lint             # oxlint + oxfmt --check (does NOT auto-fix)
 bun run lint:fix         # oxlint --fix + oxfmt (auto-fixes what it can)
 bun run format           # oxfmt (formatting and import order only)
@@ -59,7 +61,8 @@ Always spell scripts `bun run <script>`: bare `bun test` and `bun build` run Bun
 and bundler, not the package scripts.
 
 Commits go through Lefthook (`lefthook.yml`): `pre-commit` runs `oxfmt` then `oxlint --fix` on
-staged files (re-staging the fixes), `commit-msg` enforces Conventional
+staged files (re-staging the fixes) and, when `package.json` is staged, `syncpack format` + `fix`
+followed by `bun install` (re-staging `bun.lock`); `commit-msg` enforces Conventional
 Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
 `test`, `build`, `ci`, `perf`, `style`, `revert`); scopes are unrestricted.
 
@@ -94,7 +97,8 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   the two hook flavors stay visually distinct — React hooks in `src/lib/hooks/` are camelCase named
   after the hook (`useIsMobile.ts`), Payload lifecycle hooks in `src/lib/payloadHooks/` are
   camelCase named after what they do (`generateChecksum.ts`). Plain utils use camelCase
-  (`generateSlug.ts`).
+  (`generateSlug.ts`). `src/components/hooks/` is an older second home for React hooks (one of
+  them kebab-case, `use-server-sent-events.ts`); put new hooks in `src/lib/hooks/`.
 - **Fields**: folder name has no suffix (`src/fields/Slug/`), but the exported factory function
   has an `XField` suffix (`SlugField`, `TitleField`). Keep this pattern for new fields.
 - **Globals**: naming is currently inconsistent (`SiteSettings`, `SettingsGlobalUser`,
@@ -125,9 +129,9 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   functions), `hooks/` (React hooks), `payloadHooks/` (Payload collection/global lifecycle hooks —
   distinct from `hooks/`, don't conflate the two), `anthropic/` and `mapbox/` (external API
   clients, same shape as `unsplash/`), plus `actions/`, `fetchers/`, `date/`, `i18n/`, `jsonLd/`,
-  `redirects/`, `references/`, `seed/`, `shiki/`, `sse/`, `umami/`, `unsplash/`. A new
-  external API client or hook goes in the matching subfolder; a handful of genuinely standalone
-  utilities stay flat at the top of `src/lib/`.
+  `blog/`, `lexical/`, `migrations/`, `redirects/`, `references/`, `seed/`, `shiki/`, `sse/`,
+  `umami/`, `unsplash/`. A new external API client or hook goes in the matching subfolder; a
+  handful of genuinely standalone utilities stay flat at the top of `src/lib/`.
 - **Collections/Blocks/Fields/Globals** are factory-function based — most fields (e.g.
   `TitleField()`, `SlugField()`) accept an `overrides` object rather than being edited in place.
   Reuse existing field factories instead of inlining raw Payload field configs when one exists.
@@ -150,6 +154,14 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   `*.client.tsx` files and call server actions from `src/lib/actions/` for mutations.
 - **Server actions** (`src/lib/actions/`): `'use server'` functions for admin mutations (job
   rescheduling, cancellation, etc.). Use `useTransition` on the client side when calling them.
+- **Plugins** (`src/plugins/`): `redirects` and `references` are local Payload plugins that add the
+  `Redirects` and `References` collections; `bun run refs:backfill` rebuilds the reference index.
+- **Stories** live in `.storybook/components/*.stories.tsx`, not next to the components; the
+  design-foundation and shader docs are MDX under `.storybook/foundations/` and
+  `.storybook/shaders/`.
+- **Two `llms.txt`**: the root `llms.txt` describes this repository for coding agents and is
+  maintained by hand; `app/llms.txt/route.ts` serves the site's public `/llms.txt` from published
+  content.
 
 ## Environment-specific values
 
@@ -167,13 +179,15 @@ the Next.js bundle; their **handlers** are not. Each handler lives in `handlers/
 config points at it with `handler: handlerPath('<name>.ts')` (Payload loads string handlers at run
 time). A handler module must use `req.payload` instead of `getPayload({ config })`. The web process
 only enqueues jobs (never `runByID`); the worker
-(`scripts/start-worker.mjs`, polling every 5 seconds) runs them.
+(`scripts/start-worker.mjs`, polling every 5 seconds) runs them. The app process runs jobs itself
+only when `PAYLOAD_JOBS_ENABLE_APP_WORKERS=true` (default `false`).
 
 ## Security Guardrails (found during review — respect these when touching related code)
 
 - **SSE / Redis channels** (`app/(frontend)/api/sse/route.ts`): the `channel` query param is
   matched against an allowlist (`src/lib/sse/channels.ts`) before `subscribe()` ever sees it, and
-  per-job channels (`bilingual-translate:`, `seed-task:`) additionally require a signed-in
+  per-job channels (`bilingual-translate:`, `seed-task:`, `scheduled-job:`, `resume-generate:`)
+  additionally require a signed-in
   `payload.auth()` session. The public channels in `SSE_CHANNELS` (e.g. `service-status`) stay
   unauthenticated by design. If you add a new channel that carries non-public data, add it to the
   authenticated branch rather than `SSE_CHANNELS` — see the route's own comments for the exact
@@ -193,20 +207,31 @@ only enqueues jobs (never `runByID`); the worker
   `src/types/environment.ts` declares the schema and is the only place the full set of
   variables is enumerated. The one committed env file is `.env.test`, which holds dummy,
   format-valid values for E2E runs.
+- **Semgrep** runs on every PR (`lint-and-test.yml`, rulesets `nodejs`, `typescript`, `react`,
+  `secrets`) and fails the check on any finding. A reviewed, accepted finding is marked on its own
+  line with `// nosemgrep: <rule> -- <reason>` (see `src/components/LogoCarousel/LogoCarousel.tsx`).
 - New authenticated API routes should mirror `app/(frontend)/api/preview/route.ts`'s pattern of
   pairing a shared-secret check with a real `payload.auth()` session check where feasible.
 
 ## Known Issues / Tech Debt (baseline, not blocking, but don't add more)
 
 - `bun run lint` passes but reports pre-existing warnings, mostly `no-explicit-any`, `no-unused-vars`,
-  `no-img-element` and the React Compiler rules (`set-state-in-effect`, `purity`, `refs`), which
+  `no-img-element`, the React Compiler rules (`set-state-in-effect`, `purity`, `refs`), and the
+  backlog of the `tailwindcss/*` and vendored `anti-slop/*` rules (`tools/oxlint/anti-slop/`), which
   `oxlint.config.ts` keeps at `warn` until they are cleaned up.
-- Leftover debug `console.log`s (e.g. `src/collections/ResumeJobs/index.ts`,
-  `src/blocks/ResumeDownloadsBlock/Renderer/Renderer.tsx`) and commented-out dead code (e.g.
-  `src/collections/ResumeSkillTags/index.ts`) exist and should be cleaned up opportunistically.
-- `package.json` `overrides` pins `postcss-merge-rules` to `9.0.4`: `9.0.6` throws
-  `RangeError: Invalid string length` while cssnano minifies Payload's admin CSS in the
-  production build. Lift the pin once a newer release builds cleanly (`bun run build`).
+- A leftover debug `console.log` (`src/components/VideoMedia/VideoMedia.tsx`) and commented-out dead
+  code (e.g. `src/collections/ResumeSkills/index.ts`,
+  `src/components/ResumeRenderer/sections/Hero/Hero.tsx`) exist and should be cleaned up
+  opportunistically.
+- `package.json` `overrides` pins `pdfjs-dist` to `5.4.296` because `patches/pdfjs-dist@5.4.296.patch`
+  targets that exact version (it gives the fake-worker import a default `workerSrc`, see
+  vercel/next.js#65406). Bumping `pdfjs-dist` means regenerating the patch.
+- The E2E job in `lint-and-test.yml` is commented out, so Playwright only runs locally.
+- `scripts/e2e-docker.sh` pins the Playwright image to `v1.62.1`, behind `@playwright/test`
+  (`~1.63.0`); the script's own comment requires the two to match.
+- `OPENAI_API_KEY` is required by the env schema but read nowhere (all AI calls go through
+  `src/lib/anthropic/`), and `STATUS_PAGE_WORKER_HEARTBEAT_PUSH_URL` is read by the `heartbeatPing`
+  handler but missing from the schema.
 - No app-level rate limiting exists on public API routes.
 - No shared logging abstraction — error logging is ad hoc `console.error` calls.
 
@@ -217,7 +242,7 @@ only enqueues jobs (never `runByID`); the worker
   test; E2E specs live in `e2e/*.spec.ts` (never `*.spec.ts` under `src/`).
 - Shared mocks live in `vitest.setup.ts`: `payload` (`getPayload` stubbed via `importOriginal`
   spread — never replace the whole module, value imports from it are used at runtime),
-  `next/cache` and `redis`. `tailwind-merge`, `date-fns`, `slugify`, `pupa` and `neotraverse` are
+  `next/cache`, `server-only` and `redis`. `tailwind-merge`, `date-fns`, `slugify`, `pupa` and `neotraverse` are
   intentionally NOT mocked — their real behavior is the contract under test.
 - `TZ=UTC` is forced in `vitest.setup.ts` and date tests depend on it. Anything touching
   `Interval.setToX()` or `getLocalISOString` needs `vi.useFakeTimers()` + `vi.setSystemTime()`.
