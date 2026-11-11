@@ -1,6 +1,21 @@
 import type { MetadataRoute } from 'next'
 
+// Same signal as the draft watermark in src/pdf/index.tsx. NODE_ENV cannot
+// tell the environments apart: every deployed image runs in production mode.
+const PRODUCTION_HOST = 'daniel.heene.io'
+
 export default async function robots(): Promise<MetadataRoute.Robots> {
+  if (process.env.SERVER_HOST !== PRODUCTION_HOST) {
+    return {
+      rules: [
+        {
+          userAgent: ['*'],
+          disallow: ['/'],
+        },
+      ],
+    }
+  }
+
   return {
     rules: [
       {

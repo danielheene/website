@@ -117,7 +117,7 @@ bun run dev:email        # React Email preview server (http://localhost:3005)
   - `app/(frontend)/`: Public website pages, layouts, and route handlers: `/api/preview`, `/api/sse`, `/api/health`, `/api/icons/collection`, `/blog/feed.xml` and `/download/resume.pdf`. CMS pages are under `[slug]/`, the blog under `blog/`, resume documents under `resume/[slug]/`.
   - `app/(payload)/`: Payload CMS admin panel (`/admin`) and Payload's REST API (`/api/*`; GraphQL is disabled).
   - `app/llms.txt/`: The site's public `/llms.txt`, generated from published pages, posts and topics (unrelated to the repository's own `llms.txt` in the project root).
-  - `app/(frontend)/robots.ts`, `app/(frontend)/sitemap.ts`: Crawler rules and the sitemap.
+  - `app/(frontend)/robots.ts`, `app/(frontend)/sitemap.ts`: Crawler rules and the sitemap. `robots.txt` disallows everything unless `SERVER_HOST` is the production host (`daniel.heene.io`).
   - `app/global-error.tsx`: Root error boundary. It has to stay at the root of `app/`; Next.js does not look for it inside a route group.
 - **Request Proxy**: `proxy.ts` (Next.js 16's replacement for `middleware.ts`) canonicalizes blog listing URLs and marks non-default sorts `noindex`.
 - **Payload Configuration**: `payload.config.ts` in the project root, integrated into Next.js via `withPayload` in `next.config.ts`.
