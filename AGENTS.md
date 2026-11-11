@@ -227,11 +227,8 @@ only when `PAYLOAD_JOBS_ENABLE_APP_WORKERS=true` (default `false`).
   targets that exact version (it gives the fake-worker import a default `workerSrc`, see
   vercel/next.js#65406). Bumping `pdfjs-dist` means regenerating the patch.
 - The E2E job in `lint-and-test.yml` is commented out, so Playwright only runs locally.
-- `scripts/e2e-docker.sh` pins the Playwright image to `v1.62.1`, behind `@playwright/test`
-  (`~1.63.0`); the script's own comment requires the two to match.
-- `OPENAI_API_KEY` is required by the env schema but read nowhere (all AI calls go through
-  `src/lib/anthropic/`), and `STATUS_PAGE_WORKER_HEARTBEAT_PUSH_URL` is read by the `heartbeatPing`
-  handler but missing from the schema.
+- `STATUS_PAGE_WORKER_HEARTBEAT_PUSH_URL` is read by the `heartbeatPing` handler but missing from
+  the env schema.
 - No app-level rate limiting exists on public API routes.
 - No shared logging abstraction — error logging is ad hoc `console.error` calls.
 

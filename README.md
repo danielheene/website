@@ -240,7 +240,6 @@ The source of truth is declared as a Zod schema in `src/types/environment.ts`. I
 | Variable | Type / Requirement | Purpose |
 | --- | --- | --- |
 | `NEXT_PUBLIC_ICONIFY_API` | Optional (URL) | Self-hosted Iconify API (defaults to `https://icons.heene.io`). |
-| `OPENAI_API_KEY` | **Required** | Still required by the schema, but no code reads it; any non-empty value passes. |
 | `ANTHROPIC_API_KEY` | **Required** | API key for Anthropic Claude (alt-text, meta descriptions, blog excerpts, resume translation). |
 | `MAPBOX_API_KEY` | **Required** | Mapbox access token for address and coordinate lookups. |
 | `UNSPLASH_ACCESS_KEY` | Optional | Unsplash API access key for stock photo search & direct media import. |

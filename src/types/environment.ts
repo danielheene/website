@@ -67,7 +67,6 @@ export const envSchema = z.object({
   USESEND_DEFAULT_FROM_ADDRESS: z.email(),
   USESEND_DEFAULT_FROM_NAME: z.string().trim().min(1),
 
-  OPENAI_API_KEY: z.string(),
   ANTHROPIC_API_KEY: z.string(),
   MAPBOX_API_KEY: z.string(),
   UNSPLASH_ACCESS_KEY: emptyAsUndefined(z.string()),

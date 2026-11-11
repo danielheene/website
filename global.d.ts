@@ -29,7 +29,6 @@ namespace NodeJS {
     USESEND_DEFAULT_FROM_ADDRESS: string
     USESEND_DEFAULT_FROM_NAME: string
 
-    OPENAI_API_KEY: string
     ANTHROPIC_API_KEY: string
     MAPBOX_API_KEY: string
 
