@@ -160,6 +160,13 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   `*.client.tsx` files and call server actions from `src/lib/actions/` for mutations.
 - **Server actions** (`src/lib/actions/`): `'use server'` functions for admin mutations (job
   rescheduling, cancellation, etc.). Use `useTransition` on the client side when calling them.
+- **Claude calls** (`src/lib/anthropic/`): every fetcher goes through `generateAnthropicText()`,
+  which owns the model ID (`ANTHROPIC_MODEL`), effort, timeout and output limit, and throws when
+  the answer was cut off or declined rather than returning partial text. Give the model the
+  content itself (wrapped in tags), never a URL: it cannot fetch. These modules are plain server
+  modules, not `'use server'` files, and the worker imports them too, so `server-only` (which
+  throws outside Next) is not an option. Callers that run inside a save (`generateAlt`) catch the
+  error so a Claude outage never blocks the write.
 - **Plugins** (`src/plugins/`): `redirects` and `references` are local Payload plugins that add the
   `Redirects` and `References` collections; `bun run refs:backfill` rebuilds the reference index.
 - **Stories** live in `.storybook/components/*.stories.tsx`, not next to the components; the
@@ -219,7 +226,10 @@ only when `PAYLOAD_JOBS_ENABLE_APP_WORKERS=true` (default `false`).
   line with `// nosemgrep: <rule> -- <reason>` (see `src/components/LogoCarousel/LogoCarousel.tsx`).
 - New authenticated API routes and server actions need a real `payload.auth()` session check, as
   in the SSE route's per-job branch and `src/lib/actions/enqueueBilingualTranslation.ts` — a Server
-  Action is its own reachable endpoint, whichever page renders the button. Compare shared secrets
+  Action is its own reachable endpoint, whichever page renders the button. Inline `'use server'`
+  functions in admin field components call `requireSession()` (`src/lib/actions/requireSession.ts`)
+  first. A server-side fetch of an uploaded file goes through `resolveOwnMediaUrl()`
+  (`src/lib/resolveOwnMediaUrl.ts`), which rejects any other origin. Compare shared secrets
   with `crypto.timingSafeEqual` and accept only same-site relative redirect targets, as
   `app/(frontend)/api/preview/route.ts` does (that route checks `PREVIEW_SECRET` only, no session).
 - **Production detection**: `NODE_ENV` cannot tell environments apart (every deployed image runs

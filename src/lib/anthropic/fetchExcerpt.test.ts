@@ -57,6 +57,7 @@ describe('fetchAnthropicExcerpt', () => {
   it('sends the source HTML to the model and parses the excerpt result back into Lexical', async () => {
     generateTextMock.mockResolvedValue({
       text: '<p>A short summary of the post.</p>',
+      finishReason: 'stop',
     })
 
     const result = await fetchAnthropicExcerpt(
@@ -92,6 +93,7 @@ describe('fetchAnthropicExcerpt', () => {
   it("strips a leading '```html' + trailing '```' fence from the model output before parsing", async () => {
     generateTextMock.mockResolvedValue({
       text: '```html\n<p>A short summary.</p>\n```',
+      finishReason: 'stop',
     })
 
     const result = await fetchAnthropicExcerpt(paragraphDocument('Some content here.') as never)
@@ -111,6 +113,7 @@ describe('fetchAnthropicExcerpt', () => {
   it('unwraps links, which the excerpt editor cannot hold, keeping their text', async () => {
     generateTextMock.mockResolvedValue({
       text: '<p>Read the <a href="https://example.com">full guide</a> first.</p>',
+      finishReason: 'stop',
     })
 
     const result = await fetchAnthropicExcerpt(paragraphDocument('Some content here.') as never)

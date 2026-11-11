@@ -1,32 +1,34 @@
-import type { TextFieldServerComponent, TextFieldServerProps } from 'payload'
+import type { TextFieldServerComponent } from 'payload'
 
-import { get } from 'lodash-es'
-
+import { requireSession } from '@/lib/actions/requireSession'
 import { fetchAnthropicMetaDescription } from '@/lib/anthropic/fetchMetaDescription'
-import { generateContentURL } from '@/lib/generateContentURL'
 
 import { FieldComponentClient } from './FieldComponent.client'
-
-type DescriptionFieldProps = {
-  slugPath: string
-} & TextFieldServerProps
 
 export const FieldComponent: TextFieldServerComponent = async ({
   collectionSlug,
   data,
   path,
   clientField,
-  slugPath,
-}: DescriptionFieldProps) => {
+}) => {
   const generateFunction = async () => {
     'use server'
 
-    const pageUrl = generateContentURL({
-      collection: collectionSlug,
-      slug: get(data, slugPath),
-    })
+    try {
+      await requireSession()
 
-    return await fetchAnthropicMetaDescription(pageUrl)
+      // An empty result leaves the field as it is.
+      return (
+        (await fetchAnthropicMetaDescription({
+          collection: collectionSlug,
+          data,
+        })) ?? ''
+      )
+    } catch (error) {
+      console.error('Error generating meta description:', error)
+
+      return ''
+    }
   }
 
   return (

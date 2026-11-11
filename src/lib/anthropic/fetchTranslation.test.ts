@@ -61,6 +61,7 @@ describe('fetchAnthropicTranslation', () => {
   it('sends the source HTML to the model and parses the translated result back into Lexical', async () => {
     generateTextMock.mockResolvedValue({
       text: '<p>Hallo Welt</p>',
+      finishReason: 'stop',
     })
 
     const result = await fetchAnthropicTranslation({
@@ -103,6 +104,7 @@ describe('fetchAnthropicTranslation', () => {
   it("strips a leading '```html' + trailing '```' fence from the model output before parsing", async () => {
     generateTextMock.mockResolvedValue({
       text: '```html\n<p>Hallo Welt</p>\n```',
+      finishReason: 'stop',
     })
 
     const result = await fetchAnthropicTranslation({

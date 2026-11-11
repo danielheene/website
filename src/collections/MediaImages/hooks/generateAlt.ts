@@ -7,16 +7,31 @@ import { fetchAnthropicImageAltText } from '@/lib/anthropic/fetchImageAltText'
  * This function is used as a beforeChange hook for the MediaImage collection.
  * It generates alternative text for images based on their content.
  */
-export const generateAlt: CollectionBeforeChangeHook = async ({ data, req: { file }, context }) => {
+export const generateAlt: CollectionBeforeChangeHook = async ({
+  data,
+  req: { file, payload },
+  context,
+}) => {
   if (context.skipGenerateAlt) return data
 
   /* req.file is only set when uploading a file */
   if (!file || !file?.mimetype?.includes('image')) return data
 
-  const alt = await fetchAnthropicImageAltText(file.data)
+  try {
+    const alt = await fetchAnthropicImageAltText(file.data)
 
-  return {
-    ...data,
-    alt,
+    return {
+      ...data,
+      alt,
+    }
+  } catch (error) {
+    // The upload must not depend on Claude being reachable; the alt text can
+    // still be generated from the field's button afterwards.
+    payload.logger.error({
+      err: error,
+      msg: 'Could not generate alt text for the uploaded image',
+    })
+
+    return data
   }
 }

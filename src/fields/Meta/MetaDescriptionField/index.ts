@@ -1,10 +1,6 @@
 import type { TextField } from 'payload'
 
-interface MetaDescriptionFieldProps {
-  slugPath: string
-}
-
-export const MetaDescriptionField = ({ slugPath }: MetaDescriptionFieldProps): TextField => ({
+export const MetaDescriptionField = (): TextField => ({
   name: 'description',
   label: 'Description',
   type: 'text',
@@ -15,12 +11,7 @@ export const MetaDescriptionField = ({ slugPath }: MetaDescriptionFieldProps): T
     disableListFilter: true,
     disableGroupBy: true,
     components: {
-      Field: {
-        path: '@/fields/Meta/MetaDescriptionField/FieldComponent',
-        serverProps: {
-          slugPath,
-        },
-      },
+      Field: '@/fields/Meta/MetaDescriptionField/FieldComponent',
     },
   },
 })

@@ -1,12 +1,9 @@
-'use server'
-
 import { convertLexicalToHTML } from '@payloadcms/richtext-lexical/html'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 
-import { createAnthropic } from '@ai-sdk/anthropic'
-import { generateText } from 'ai'
 import dedent from 'dedent'
 
+import { generateAnthropicText } from '@/lib/anthropic/generateAnthropicText'
 import { parseHtmlToLexical } from '@/lib/lexical/parseHtmlToLexical'
 import { BilingualLanguageLabel, BilingualLanguageValue } from '@/types/bilingualLanguage'
 
@@ -33,35 +30,28 @@ export const fetchAnthropicTranslation = async ({
 
   if (!html.trim()) return null
 
-  if (!process.env.ANTHROPIC_API_KEY) {
-    throw new Error('ANTHROPIC_API_KEY is not configured.')
-  }
+  const source = BilingualLanguageLabel[sourceLanguage]
+  const target = BilingualLanguageLabel[targetLanguage]
 
-  const anthropic = createAnthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
-  })
-
-  const { text: translatedHtml } = await generateText({
-    model: anthropic('claude-haiku-4-5'),
-    telemetry: {
-      isEnabled: true,
-      functionId: 'fetchAnthropicTranslation',
-    },
+  const translatedHtml = await generateAnthropicText({
+    functionId: 'fetchAnthropicTranslation',
+    maxOutputTokens: 16_000,
     system: dedent`
-      Translate the following ${BilingualLanguageLabel[sourceLanguage]} HTML fragment
-      into ${BilingualLanguageLabel[targetLanguage]}. Preserve the HTML tags and
-      structure exactly - translate only the text content. Keep the tone
-      concise and professional, appropriate for a CV/résumé bullet point.
-      Return only the translated HTML fragment, no explanation, no code
-      fences, no surrounding <html>/<body> tags.
+      You translate résumé content from ${source} into ${target}.
+
+      The source is an HTML fragment in the <source> tags. Translate its text
+      and keep the HTML tags, attributes and structure exactly as they are.
+      Leave link targets, company names, product names, technologies and other
+      proper nouns untranslated.
+
+      Keep the tone concise and professional, as in a CV bullet point, and
+      phrase it the way a native ${target} reader expects a résumé to read
+      rather than word for word.
+
+      Return only the translated HTML fragment.
     `,
-    prompt: html,
+    prompt: `<source>\n${html}\n</source>`,
   })
 
-  const stripped = translatedHtml
-    .replace(/^\s*```(?:html)?\s*\n?/i, '')
-    .replace(/\n?\s*```\s*$/, '')
-    .trim()
-
-  return parseHtmlToLexical(stripped)
+  return parseHtmlToLexical(translatedHtml)
 }

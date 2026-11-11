@@ -1,12 +1,9 @@
-'use server'
-
 import { convertLexicalToHTML } from '@payloadcms/richtext-lexical/html'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 
-import { createAnthropic } from '@ai-sdk/anthropic'
-import { generateText } from 'ai'
 import dedent from 'dedent'
 
+import { generateAnthropicText } from '@/lib/anthropic/generateAnthropicText'
 import { parseHtmlToLexical } from '@/lib/lexical/parseHtmlToLexical'
 
 /**
@@ -25,37 +22,26 @@ export const fetchAnthropicExcerpt = async (
 
   if (!html.trim()) return null
 
-  if (!process.env.ANTHROPIC_API_KEY) {
-    throw new Error('ANTHROPIC_API_KEY is not configured.')
-  }
-
-  const anthropic = createAnthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
-  })
-
-  const { text: excerptHtml } = await generateText({
-    model: anthropic('claude-haiku-4-5'),
-    telemetry: {
-      isEnabled: true,
-      functionId: 'fetchAnthropicExcerpt',
-    },
+  const excerptHtml = await generateAnthropicText({
+    functionId: 'fetchAnthropicExcerpt',
+    maxOutputTokens: 2048,
     system: dedent`
-      Write a concise, engaging excerpt (2-3 sentences) summarizing the
-      following blog post HTML, suitable for a preview card and meta
-      description. Return only the excerpt as a single HTML <p> tag, no
-      explanation, no code fences, no surrounding <html>/<body> tags. Use no
-      links; <strong> and <em> are the only tags allowed inside the <p>.
+      You write the excerpt shown on a blog post's preview card.
+
+      The post is in the <post> tags as HTML. Tell the reader what they will
+      get from it in 2-3 sentences, in the same language as the post and in the
+      author's own voice: state the point directly rather than describing the
+      post ("This post explains ...").
+
+      Return a single HTML <p> element and nothing else. Inside it, <strong>
+      and <em> are the only tags allowed; the excerpt has no link support.
     `,
-    prompt: html,
+    prompt: `<post>\n${html}\n</post>`,
   })
 
-  const stripped = excerptHtml
-    .replace(/^\s*```(?:html)?\s*\n?/i, '')
-    .replace(/\n?\s*```\s*$/, '')
-    // The excerpt editor has no link feature, so a link would fail validation
-    // on save; keep its text only.
-    .replace(/<\/?a\b[^>]*>/gi, '')
-    .trim()
+  // The excerpt editor has no link feature, so a link would fail validation
+  // on save; keep its text only.
+  const withoutLinks = excerptHtml.replace(/<\/?a\b[^>]*>/gi, '').trim()
 
-  return parseHtmlToLexical(stripped)
+  return parseHtmlToLexical(withoutLinks)
 }
