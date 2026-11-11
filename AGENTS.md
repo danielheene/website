@@ -179,9 +179,9 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   `sitemap.ts` is the exception and works from `app/(frontend)/`. `global-error.tsx` replaces the
   root layout, so it imports the stylesheet and fonts itself.
 - **Bundle budget**: `scripts/check-bundle-size.mjs` reports the gzipped first-load JavaScript of
-  every public route and fails above the limit set in its `BUDGETS` (CI job "Build & Bundle
-  Size"). `bun run analyze` produces the same check locally plus the `@next/bundle-analyzer`
-  reports in `.next/analyze/`. The 170 kB target is a warning; lower the enforced limit when
+  every public route and fails above the limit set in its `BUDGETS`. It is a local check, not a
+  CI job: `bun run analyze` builds, runs it and writes the `@next/bundle-analyzer` reports to
+  `.next/analyze/`. The 170 kB target is a warning; lower the enforced limit when
   routes shrink, and give a reason in the commit when raising it.
 - **Two `llms.txt`**: the root `llms.txt` describes this repository for coding agents and is
   maintained by hand; `app/llms.txt/route.ts` serves the site's public `/llms.txt` from published
