@@ -1,7 +1,5 @@
 import { TextField } from 'payload'
 
-import { normalizeIncomingFlags } from './hooks/normalizeIncomingFlags'
-
 /**
  * Markers describing how an asset came to exist — set by the jobs queue when it
  * generates thumbnails and resume documents, and used to filter those out of
@@ -57,7 +55,6 @@ export const GeneratorFlagsField = (): TextField => ({
   },
   hooks: {
     afterRead: [({ value }) => value ?? []],
-    beforeChange: [normalizeIncomingFlags],
   },
   required: true,
   defaultValue: [],
