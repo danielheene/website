@@ -117,8 +117,8 @@ bun run dev:email        # React Email preview server (http://localhost:3005)
   - `app/(frontend)/`: Public website pages, layouts, and route handlers: `/api/preview`, `/api/sse`, `/api/health`, `/api/icons/collection`, `/blog/feed.xml` and `/download/resume.pdf`. CMS pages are under `[slug]/`, the blog under `blog/`, resume documents under `resume/[slug]/`.
   - `app/(payload)/`: Payload CMS admin panel (`/admin`) and Payload's REST API (`/api/*`; GraphQL is disabled).
   - `app/llms.txt/`: The site's public `/llms.txt`, generated from published pages, posts and topics (unrelated to the repository's own `llms.txt` in the project root).
-  - `app/(frontend)/robots.ts`, `app/(frontend)/sitemap.ts`: Crawler rules and the sitemap. `robots.txt` disallows everything unless `SERVER_HOST` equals `PRODUCTION_HOST`.
-  - `app/global-error.tsx`: Root error boundary. It has to stay at the root of `app/`; Next.js does not look for it inside a route group.
+  - `app/robots.ts`, `app/manifest.ts`, `app/global-error.tsx`: Crawler rules, the web app manifest and the root error boundary. These three have to stay at the root of `app/`; Next.js does not pick them up inside a route group. `robots.txt` disallows everything unless `SERVER_HOST` equals `PRODUCTION_HOST`.
+  - `app/(frontend)/sitemap.ts`: The sitemap.
 - **Request Proxy**: `proxy.ts` (Next.js 16's replacement for `middleware.ts`) canonicalizes blog listing URLs and marks non-default sorts `noindex`.
 - **Payload Configuration**: `payload.config.ts` in the project root, integrated into Next.js via `withPayload` in `next.config.ts`.
 - **Jobs Queue & Worker**: `src/jobs-queue/` and standalone background worker entrypoint `scripts/start-worker.mjs` with `scripts/health-server.ts`. The web process only enqueues jobs; the worker runs them.
@@ -135,6 +135,8 @@ bun run dev:email        # React Email preview server (http://localhost:3005)
 | `bun run dev:app` | Starts the Next.js dev server directly, without the tunnel wrapper. |
 | `bun run dev:storybook` | Starts Storybook development server (`localhost:6006`). |
 | `bun run build` | Production build (`next build --webpack`). |
+| `bun run analyze` | Compile-only build with `@next/bundle-analyzer` reports in `.next/analyze/`, followed by `bundle:check`. |
+| `bun run bundle:check` | Checks the first-load JavaScript of each public route in an existing build against its budget (`scripts/check-bundle-size.mjs`). |
 | `bun run build:storybook` | Builds static Storybook documentation into `dist/`. |
 | `bun run start:storybook` | Serves the static Storybook build on port 3020. |
 | `bun run start:app` | Starts the production Next.js application server. |
@@ -268,7 +270,6 @@ The source of truth is declared as a Zod schema in `src/types/environment.ts`. I
 │   │   ├── blog/                 # Blog listing, topics, posts, and the RSS feed (feed.xml)
 │   │   ├── download/             # /download/resume.pdf redirect
 │   │   ├── resume/               # Resume documents by slug
-│   │   ├── robots.ts             # Crawler rules
 │   │   ├── sitemap.ts            # Sitemap
 │   │   └── layout.tsx            # Frontend root layout
 │   ├── (payload)/                # Payload CMS admin routes
@@ -276,7 +277,9 @@ The source of truth is declared as a Zod schema in `src/types/environment.ts`. I
 │   │   ├── api/                  # Payload REST API endpoints
 │   │   └── layout.tsx            # Payload admin layout
 │   ├── llms.txt/                 # Public /llms.txt route
-│   └── global-error.tsx          # Root error boundary (must stay at the app root)
+│   ├── robots.ts                 # Crawler rules           ┐
+│   ├── manifest.ts               # Web app manifest        ├ must stay at the app root
+│   └── global-error.tsx          # Root error boundary     ┘
 ├── src/                          # Application source code
 │   ├── blocks/                   # Payload blocks (rich text, code, feature cards, resume sections, etc.)
 │   ├── collections/              # Payload collections (Media*, Pages, BlogPosts, BlogTopics, Resume*, Redirects, References, Users)
@@ -399,7 +402,8 @@ Everything is built in CI; Docker images only `COPY` finished output (no package
   1. **Lint**: `commitlint` over the PR's commits, `oxlint` + `oxfmt --check`, `syncpack`, a check that the committed generated files (`src/types/payload.ts`, the admin import map) match `bun run generate`, and `actionlint`.
   2. **Semgrep**: static security analysis with the `nodejs`, `typescript`, `react` and `secrets` rulesets. Accepted findings are marked in place with `// nosemgrep: <rule>` and a reason.
   3. **Unit Tests**: `vitest run --coverage`, with the coverage report uploaded as an artifact.
-  4. **E2E**: currently disabled (the job is commented out in the workflow).
+  4. **Build & Bundle Size**: `next build --webpack --experimental-build-mode=compile` with `.env.test` (no database needed), then `bun run bundle:check`. The per-route table goes into the job summary and the `@next/bundle-analyzer` reports are uploaded as the `bundle-analysis` artifact.
+  5. **E2E**: currently disabled (the job is commented out in the workflow).
 - **Pushes to `develop` / `main`** (`build-and-deploy.yml`, also runnable through `workflow_dispatch` on those two branches):
   1. **Bump version**: semver bump, tag and changelog via `semantic-release` (`release.config.mjs`), committed as a GitHub App so the push passes `main`'s ruleset. `main` cuts releases (`vX.Y.Z`, images also tagged `latest`), `develop` cuts release candidates (`vX.Y.Z-rc.N`, images also tagged `edge`). After a `main` release, `develop` is fast-forwarded to `main` when it has no commits of its own; otherwise it has to be brought up to date by hand, since `develop` only cuts release candidates while it contains every `main` release.
   2. **Deploy** (environment `Production` on `main`, `Development` on `develop`): connects to the tailnet, runs `bun run migrate` against the target database, runs one `next build --webpack` with that environment's values, builds Storybook, assembles `out/{web,worker,storybook}` (`scripts/assemble-images.mjs`), builds the COPY-only images (`app`, `worker`, `storybook` in `Dockerfile`) for `linux/amd64`, boot-checks each one as a real container (`/api/health` on 3000, `/health` on 3010, Storybook on 3020), pushes them to `ghcr.io/danielheene/website/*` and triggers the Dokploy redeploy webhooks. The lint and test jobs are not re-run here; the merged commit already passed them as PR checks.

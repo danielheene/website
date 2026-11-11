@@ -53,9 +53,10 @@ generated from published content by `app/llms.txt/route.ts`.
 ## Source Layout
 
 - [app/](app): Next.js App Router — `(frontend)` for the public site, its route handlers
-  (preview, sse, health, icons/collection, the blog RSS feed, the resume download), `robots.ts`
-  and `sitemap.ts`; `(payload)` for the admin panel and Payload's REST API; `llms.txt/` for the
-  site's public `/llms.txt`; `global-error.tsx`, which has to stay at the root of `app/`.
+  (preview, sse, health, icons/collection, the blog RSS feed, the resume download) and
+  `sitemap.ts`; `(payload)` for the admin panel and Payload's REST API; `llms.txt/` for the
+  site's public `/llms.txt`; `robots.ts`, `manifest.ts` and `global-error.tsx`, which have to
+  stay at the root of `app/`.
 - [src/collections/](src/collections): Payload Collections (Media*, Pages, BlogPosts,
   BlogTopics, Resume*, Redirects, References, Users).
 - [src/globals/](src/globals): Payload Globals (SiteSettings, SettingsGlobalUser,
@@ -89,7 +90,10 @@ generated from published content by `app/llms.txt/route.ts`.
 ## Build and Deployment
 
 - [.github/workflows/lint-and-test.yml](.github/workflows/lint-and-test.yml): Pull-request gate —
-  lint, Semgrep, unit tests (the E2E job is currently commented out).
+  lint, Semgrep, unit tests, a compile-only build with the bundle-size budget (the E2E job is
+  currently commented out).
+- [scripts/check-bundle-size.mjs](scripts/check-bundle-size.mjs): Per-route first-load
+  JavaScript report and budget.
 - [.github/workflows/build-and-deploy.yml](.github/workflows/build-and-deploy.yml): Push
   pipeline for `main` and `develop` — version bump, migrate, build, image boot checks, push,
   Dokploy redeploy.

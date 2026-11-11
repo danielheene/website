@@ -101,6 +101,57 @@ jobs:
           retention-days: 7
           if-no-files-found: ignore
 
+  # Compiles the app and holds the public routes to their JavaScript budget
+  # (scripts/check-bundle-size.mjs). Compile mode only: it needs no database,
+  # prerenders nothing, and is never deployed; build-and-deploy.yml builds the
+  # real thing against each environment's own values.
+  build:
+    name: Build & Bundle Size
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      # Webpack's persistent cache; the only part of .next Next documents as
+      # worth restoring between builds.
+      - name: Restore Next.js build cache
+        uses: actions/cache@v4 # TODO: pin to a commit SHA like the other actions
+        with:
+          path: .next/cache
+          key: next-cache-bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}-${{ github.sha }}
+          restore-keys: |
+            next-cache-bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}-
+            next-cache-bun-${{ runner.os }}-
+
+      # next.config.ts validates the environment when it loads.
+      - name: Load .env.test into job environment
+        run: grep -v '^#' .env.test | grep -v '^$' >> "$GITHUB_ENV"
+
+      # ANALYZE writes the @next/bundle-analyzer reports to .next/analyze.
+      - name: Build
+        run: bun run build --experimental-build-mode=compile
+        env:
+          NODE_ENV: production
+          ANALYZE: 'true'
+
+      # Prints the per-route table into the job summary and fails the job when
+      # a route is over its limit.
+      - name: Check bundle size
+        run: bun run bundle:check
+
+      - name: Upload bundle analysis
+        if: always()
+        uses: actions/upload-artifact@v4 # TODO: pin to a commit SHA like the other actions
+        with:
+          name: bundle-analysis
+          path: .next/analyze/
+          retention-days: 7
+          if-no-files-found: ignore
+
   # E2E tests temporarily disabled
   # e2e:
   #   name: E2E Tests

@@ -36,6 +36,7 @@ bun run dev:storybook    # Storybook on :6006 (not started by `bun run dev`)
 bun run generate         # regenerate Next route types, Payload types + import map
 bun run build            # production build (`next build --webpack`)
 bun run typecheck        # tsc --noEmit
+bun run analyze          # compile-only build + bundle analyzer reports + bundle budget check
 bun run lint             # oxlint + oxfmt --check (does NOT auto-fix)
 bun run lint:fix         # oxlint --fix + oxfmt (auto-fixes what it can)
 bun run format           # oxfmt (formatting and import order only)
@@ -173,8 +174,15 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
 - **Stories** live in `.storybook/components/*.stories.tsx`, not next to the components; the
   design-foundation and shader docs are MDX under `.storybook/foundations/` and
   `.storybook/shaders/`.
-- **`app/global-error.tsx`** has to stay at the root of `app/`: Next only resolves it there, not
-  inside a route group. It replaces the root layout, so it imports the stylesheet and fonts itself.
+- **`app/global-error.tsx`, `app/robots.ts` and `app/manifest.ts`** have to stay at the root of
+  `app/`: inside a route group Next silently ignores all three (no error, the URL just 404s).
+  `sitemap.ts` is the exception and works from `app/(frontend)/`. `global-error.tsx` replaces the
+  root layout, so it imports the stylesheet and fonts itself.
+- **Bundle budget**: `scripts/check-bundle-size.mjs` reports the gzipped first-load JavaScript of
+  every public route and fails above the limit set in its `BUDGETS` (CI job "Build & Bundle
+  Size"). `bun run analyze` produces the same check locally plus the `@next/bundle-analyzer`
+  reports in `.next/analyze/`. The 170 kB target is a warning; lower the enforced limit when
+  routes shrink, and give a reason in the commit when raising it.
 - **Two `llms.txt`**: the root `llms.txt` describes this repository for coding agents and is
   maintained by hand; `app/llms.txt/route.ts` serves the site's public `/llms.txt` from published
   content.
@@ -236,7 +244,7 @@ only when `PAYLOAD_JOBS_ENABLE_APP_WORKERS=true` (default `false`).
 - **Production detection**: `NODE_ENV` cannot tell environments apart (every deployed image runs
   `production`). Use `isProductionHost()` (`src/lib/isProductionHost.ts`), which compares
   `SERVER_HOST` with `PRODUCTION_HOST` and reads an unset value as "not production". Outside
-  production `app/(frontend)/robots.ts` disallows all crawlers and `src/pdf/index.tsx` stamps
+  production `app/robots.ts` disallows all crawlers and `src/pdf/index.tsx` stamps
   PDFs as DRAFT.
 
 ## Known Issues / Tech Debt (baseline, not blocking, but don't add more)

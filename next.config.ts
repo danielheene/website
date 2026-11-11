@@ -5,6 +5,7 @@ import { NextConfig } from 'next'
 import { PHASE_DEVELOPMENT_SERVER } from 'next/constants'
 import { withPayload } from '@payloadcms/next/withPayload'
 
+import bundleAnalyzer from '@next/bundle-analyzer'
 import z from 'zod'
 
 import { envSchema } from '@/types/environment'
@@ -272,7 +273,16 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
     }),
   }
 
-  return withPayload(nextConfig, {
+  /**
+   *    `bun run analyze` sets ANALYZE. The reports land in .next/analyze as
+   *    static HTML; nothing is opened, so the same command works in CI.
+   */
+  const withBundleAnalyzer = bundleAnalyzer({
+    enabled: process.env.ANALYZE === 'true',
+    openAnalyzer: false,
+  })
+
+  return withPayload(withBundleAnalyzer(nextConfig), {
     devBundleServerPackages: false,
   })
 }

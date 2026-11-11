@@ -17,6 +17,8 @@
   },
   "scripts": {
     "build": "bun run _next build --webpack",
+    "analyze": "ANALYZE=true bun run build --experimental-build-mode=compile && bun run bundle:check",
+    "bundle:check": "node scripts/check-bundle-size.mjs",
     "build:storybook": "bun run _storybook build --output-dir dist",
     "chore:reinstall": "rm -rf node_modules bun.lock && bun install",
     "chore:format": "syncpack format",
@@ -136,6 +138,7 @@
   "devDependencies": {
     "@commitlint/cli": "^21.2.3",
     "@commitlint/config-conventional": "^21.2.3",
+    "@next/bundle-analyzer": "^16.4.6",
     "@oxlint/plugins": "^1.86.0",
     "@playwright/test": "~1.64.1",
     "@react-email/ui": "^6.11.0",
