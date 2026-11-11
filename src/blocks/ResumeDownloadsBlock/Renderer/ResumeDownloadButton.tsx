@@ -1,7 +1,5 @@
 'use client'
 
-import Link from 'next/link'
-
 import { cn } from 'tailwind-variants'
 
 import { Button } from '@/components/Button'
@@ -34,9 +32,11 @@ export const ResumeDownloadButton = ({
       )}
       asChild
     >
-      <Link
+      {/* A file download, not a route: next/link would prefetch it and throws without an href. */}
+      <a
         href={url}
         download={fileName}
+        aria-label={`${label}: ${subline}`}
         onClick={() =>
           track(`resume-download-${locale}`, {
             slug,
@@ -75,7 +75,7 @@ export const ResumeDownloadButton = ({
             <span className="text-xs leading-none opacity-80">{subline}</span>
           </div>
         </div>
-      </Link>
+      </a>
     </Button>
   )
 }
