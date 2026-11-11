@@ -199,15 +199,20 @@ export default {
     },
 
     /**
-     * `playwright` and `@playwright/test` must match exactly: the Docker image
-     * tag in scripts/e2e-docker.sh is pinned to this version, and a mismatch
-     * means the bundled browser revisions disagree.
+     * `playwright` and `@playwright/test` must be on the identical version:
+     * each bundles its own browser revisions, and scripts/e2e-docker.sh picks
+     * the Docker image tag from the installed `@playwright/test`.
+     *
+     * Pinned rather than `sameRange`: syncpack only compares one dependency
+     * across packages, never two dependencies with each other, so in this
+     * single-package repo a policy group cannot catch a mismatch. To upgrade
+     * Playwright, change this one value and run `bun run deps:fix`.
      */
     {
-      label: 'Playwright must match the pinned browser image',
+      label: 'Playwright packages are pinned to one version',
       dependencies: ['playwright', '@playwright/**'],
       packages: ['**'],
-      policy: 'sameRange',
+      pinVersion: '~1.64.1',
     },
 
     {
