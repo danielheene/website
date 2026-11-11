@@ -145,7 +145,7 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   only inside the grid's Suspense boundary so the shell still prerenders. `src/lib/blog/listing.ts`
   owns the params (sort options, parsing, href building); `proxy.ts` uses it to redirect
   non-canonical forms (legacy `/page/<n>` segments, `page=1`, unknown sorts) and to mark non-default
-  sorts `noindex`. The RSS feed (`/blog/feed.xml`) and `app/sitemap.ts` cache under the `posts` tag,
+  sorts `noindex`. The RSS feed (`/blog/feed.xml`) and `app/(frontend)/sitemap.ts` cache under the `posts` tag,
   which `revalidateBlogPost` invalidates.
 - **Dashboard widgets** (`src/widgets/`): async server components registered in `payload.config.ts`
   under `admin.dashboard.widgets`. Each widget has a `slug`, `Component` path, and optional

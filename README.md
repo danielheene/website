@@ -117,7 +117,8 @@ bun run dev:email        # React Email preview server (http://localhost:3005)
   - `app/(frontend)/`: Public website pages, layouts, and route handlers: `/api/preview`, `/api/sse`, `/api/health`, `/api/icons/collection`, `/blog/feed.xml` and `/download/resume.pdf`. CMS pages are under `[slug]/`, the blog under `blog/`, resume documents under `resume/[slug]/`.
   - `app/(payload)/`: Payload CMS admin panel (`/admin`) and Payload's REST API (`/api/*`; GraphQL is disabled).
   - `app/llms.txt/`: The site's public `/llms.txt`, generated from published pages, posts and topics (unrelated to the repository's own `llms.txt` in the project root).
-  - `app/robots.ts`, `app/sitemap.ts`: Crawler rules and the sitemap.
+  - `app/(frontend)/robots.ts`, `app/(frontend)/sitemap.ts`: Crawler rules and the sitemap.
+  - `app/global-error.tsx`: Root error boundary. It has to stay at the root of `app/`; Next.js does not look for it inside a route group.
 - **Request Proxy**: `proxy.ts` (Next.js 16's replacement for `middleware.ts`) canonicalizes blog listing URLs and marks non-default sorts `noindex`.
 - **Payload Configuration**: `payload.config.ts` in the project root, integrated into Next.js via `withPayload` in `next.config.ts`.
 - **Jobs Queue & Worker**: `src/jobs-queue/` and standalone background worker entrypoint `scripts/start-worker.mjs` with `scripts/health-server.ts`. The web process only enqueues jobs; the worker runs them.
@@ -267,14 +268,15 @@ The source of truth is declared as a Zod schema in `src/types/environment.ts`. I
 │   │   ├── blog/                 # Blog listing, topics, posts, and the RSS feed (feed.xml)
 │   │   ├── download/             # /download/resume.pdf redirect
 │   │   ├── resume/               # Resume documents by slug
+│   │   ├── robots.ts             # Crawler rules
+│   │   ├── sitemap.ts            # Sitemap
 │   │   └── layout.tsx            # Frontend root layout
 │   ├── (payload)/                # Payload CMS admin routes
 │   │   ├── admin/                # Payload admin UI routes (and the generated import map)
 │   │   ├── api/                  # Payload REST API endpoints
 │   │   └── layout.tsx            # Payload admin layout
 │   ├── llms.txt/                 # Public /llms.txt route
-│   ├── robots.ts                 # Crawler rules
-│   └── sitemap.ts                # Sitemap
+│   └── global-error.tsx          # Root error boundary (must stay at the app root)
 ├── src/                          # Application source code
 │   ├── blocks/                   # Payload blocks (rich text, code, feature cards, resume sections, etc.)
 │   ├── collections/              # Payload collections (Media*, Pages, BlogPosts, BlogTopics, Resume*, Redirects, References, Users)
