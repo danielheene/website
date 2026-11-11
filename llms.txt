@@ -8,56 +8,103 @@ This is a code repository, not a documentation site — the files below are the 
 AI coding agent should read before making changes, not end-user docs. `AGENTS.md` is the most
 important file: read it first, every time.
 
+This file describes the repository. The website's own public `/llms.txt` is a separate thing,
+generated from published content by `app/llms.txt/route.ts`.
+
 ## Start Here
 
-- [AGENTS.md](AGENTS.md): Required reading before any change — stack, code style, architecture
-  notes, and known security guardrails (public SSE channels remain unauthenticated by design,
-  raw SVG is sanitized server-side before rendering, `CRON_SECRET` is declared but unenforced).
+- [AGENTS.md](AGENTS.md): Required reading before any change — stack, commands, code style,
+  architecture notes, security guardrails (session checks on server actions, authenticated SSE
+  channels, server-side SVG sanitizing, production detection via `PRODUCTION_HOST`) and known
+  issues.
 - [README.md](README.md): Setup and local development — Doppler-based env config, Docker
-  services, available scripts, project structure, testing, CI/deployment.
+  services, available scripts, environment variables, project structure, testing, CI/deployment.
 
 ## Configuration
 
 - [payload.config.ts](payload.config.ts): Payload CMS configuration (collections, globals,
-  plugins, S3 storage, KV cache) — repo root, not under `src/`.
+  plugins, jobs queue, S3 storage, KV store, dashboard widgets) — repo root, not under `src/`.
 - [next.config.ts](next.config.ts): Next.js configuration; validates the environment against
   the Zod schema at startup and owns the opt-in dev tunnel. There is no `env:` block: browser
   values are plain `NEXT_PUBLIC_*` variables.
 - [proxy.ts](proxy.ts): Next.js 16 request proxy (the former `middleware.ts`); canonicalizes blog
-  listing URLs.
+  listing URLs and marks non-default sorts `noindex`.
 - [src/types/environment.ts](src/types/environment.ts): Zod schema and source of truth for all
-  environment variables; validated at process start.
+  environment variables.
+- [.env.test](.env.test): The one committed env file — dummy, format-valid values for E2E runs
+  and CI checks.
 - [docker-compose.yml](docker-compose.yml): Local infrastructure (MongoDB, Redis, S3-compatible
   storage) — the app itself runs via `bun run dev`, not as a compose service.
-- [oxlint.config.ts](oxlint.config.ts), [oxfmt.config.ts](oxfmt.config.ts): Linting/formatting rules (Oxc toolchain, not ESLint/Prettier).
-- [vitest.config.ts](vitest.config.ts) / [vitest.setup.ts](vitest.setup.ts): Unit test config
-  and shared mocks (`payload`, `next/cache`, `redis`).
-- [playwright.config.ts](playwright.config.ts): E2E test config (Chromium).
-- [commitlint.config.mjs](commitlint.config.mjs): Conventional Commits enforcement.
+- [package.json](package.json): Scripts and dependencies; Bun is the package manager, Node.js
+  runs Next, Payload, the scripts and the tests.
+- [oxlint.config.ts](oxlint.config.ts): Lint rules (Oxc toolchain, not ESLint), including the
+  Tailwind plugin and the vendored `anti-slop` plugin.
+- [oxfmt.config.ts](oxfmt.config.ts): Formatting and import order (not Prettier).
+- [syncpack.config.mjs](syncpack.config.mjs): Dependency version rules, including the pinned
+  Playwright version.
+- [lefthook.yml](lefthook.yml): Git hooks — format and lint staged files, sync `package.json`,
+  check the commit message.
+- [commitlint.config.mjs](commitlint.config.mjs): Conventional Commits rules.
+- [vitest.config.ts](vitest.config.ts): Unit test configuration.
+- [vitest.setup.ts](vitest.setup.ts): Shared mocks (`payload`, `next/cache`, `server-only`,
+  `redis`) and the forced `TZ=UTC`.
+- [playwright.config.ts](playwright.config.ts): E2E test configuration (Chromium).
 
 ## Source Layout
 
-- [app/](app): Next.js App Router — `(frontend)` for the public site and its route handlers
-  (preview, sse, health, icons/collection, the blog RSS feed, the resume download), `(payload)`
-  for the admin panel and Payload's REST API, `llms.txt/` for the site's public `/llms.txt`.
+- [app/](app): Next.js App Router — `(frontend)` for the public site, its route handlers
+  (preview, sse, health, icons/collection, the blog RSS feed, the resume download), `robots.ts`
+  and `sitemap.ts`; `(payload)` for the admin panel and Payload's REST API; `llms.txt/` for the
+  site's public `/llms.txt`; `global-error.tsx`, which has to stay at the root of `app/`.
 - [src/collections/](src/collections): Payload Collections (Media*, Pages, BlogPosts,
   BlogTopics, Resume*, Redirects, References, Users).
-- [src/globals/](src/globals): Payload Globals (SiteSettings, PDFGeneratorSettings, etc.).
+- [src/globals/](src/globals): Payload Globals (SiteSettings, SettingsGlobalUser,
+  PDFGeneratorSettings).
 - [src/blocks/](src/blocks): Reusable Payload Blocks (resume sections, content blocks).
-- [src/fields/](src/fields): Custom/reusable Payload field factories.
+- [src/fields/](src/fields): Reusable Payload field factories (`SlugField`, `TitleField`, ...).
+- [src/components/](src/components): React components.
+- [src/lib/](src/lib): Utilities grouped by domain, including `RedisHandler.ts` (cache and
+  pub/sub for SSE), `isProductionHost.ts` (the only way to tell production apart) and `seed/`
+  (fixture seed/clean logic shared by the CLI scripts and the admin panel).
 - [src/lib/access/](src/lib/access): Access control functions — no role system; any
   authenticated Payload user is fully trusted.
-- [src/components/](src/components): React components.
-- [src/lib/](src/lib): Framework-agnostic utilities, including `RedisHandler.ts` (cache +
-  pub/sub for SSE) and `lib/seed/` (shared seed/clean logic for fixture data, used by both
-  CLI scripts and the admin panel).
-- [src/emails/](src/emails): React Email templates and rendering (contact form notifications).
-- [src/pdf/](src/pdf): PDF generation (resume export).
+- [src/lib/actions/](src/lib/actions): Server actions (`'use server'`) for admin mutations, and
+  `requireSession.ts`, the session check every such action runs first.
+- [src/lib/anthropic/](src/lib/anthropic): Claude calls (alt text, meta descriptions, blog
+  excerpts, resume translation); all go through `generateAnthropicText.ts`, which owns the model
+  IDs, effort, timeout and output limit.
+- [src/lib/sse/](src/lib/sse): Allowlist of Server-Sent Events channels, public and
+  authenticated.
 - [src/jobs-queue/](src/jobs-queue): Payload Jobs Queue task/workflow configs plus their
-  handlers (`handlers/`), which only the standalone worker (`scripts/start-worker.mjs`) runs.
+  handlers (`handlers/`), which only the standalone worker runs.
 - [src/plugins/](src/plugins): Local Payload plugins (redirects, references).
-- [src/widgets/](src/widgets): Custom Payload dashboard widgets (async server components registered
-  in `payload.config.ts`; client parts call server actions from `src/lib/actions/`).
-- [src/lib/actions/](src/lib/actions): Server actions (`'use server'`) for admin mutations (job
-  rescheduling, cancellation, etc.).
+- [src/widgets/](src/widgets): Payload dashboard widgets (async server components registered in
+  `payload.config.ts`; client parts call server actions from `src/lib/actions/`).
+- [src/emails/](src/emails): React Email templates (contact form notifications).
+- [src/pdf/](src/pdf): PDF generation for the resume export.
+- [src/migrations/](src/migrations): Payload database migrations.
+- [scripts/](scripts): Dev runner, worker entrypoint, env loader, seeders, image assembly.
 - [e2e/](e2e): Playwright E2E specs — structural smoke tests, not content assertions.
+
+## Build and Deployment
+
+- [.github/workflows/lint-and-test.yml](.github/workflows/lint-and-test.yml): Pull-request gate —
+  lint, Semgrep, unit tests (the E2E job is currently commented out).
+- [.github/workflows/build-and-deploy.yml](.github/workflows/build-and-deploy.yml): Push
+  pipeline for `main` and `develop` — version bump, migrate, build, image boot checks, push,
+  Dokploy redeploy.
+- [Dockerfile](Dockerfile): COPY-only images for the app, the worker and Storybook; everything
+  is built in CI.
+- [release.config.mjs](release.config.mjs): semantic-release — releases from `main`, release
+  candidates from `develop`.
+- [scripts/start-worker.mjs](scripts/start-worker.mjs): Worker container entrypoint; runs the
+  job queue and its health endpoint.
+
+## Optional
+
+- [CHANGELOG.md](CHANGELOG.md): Release history, written by semantic-release.
+- [.storybook/](.storybook): Storybook configuration, component stories, and the
+  design-foundation and shader documentation (MDX).
+- [tools/oxlint/anti-slop/](tools/oxlint/anti-slop): Vendored Oxlint rule plugin.
+- [patches/](patches): Dependency patches applied by Bun (`pdfjs-dist`).
+- [LICENSE](LICENSE): MIT license.
