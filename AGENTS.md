@@ -57,6 +57,12 @@ files import generated types from `src/types/payload.ts` and `@/types/collection
 Don't let those block your task, but do not introduce new lint errors or warnings, and prefer
 fixing warnings in files you already touch.
 
+`syncpack.config.mjs` pins `playwright` and `@playwright/*` to one version with `pinVersion`; to
+upgrade Playwright, change that value and run `bun run deps:fix`. `scripts/e2e-docker.sh` derives
+its image tag from the installed `@playwright/test`. The `sameRange` groups in that file (Payload,
+Storybook, Vitest, React) do not catch mismatches between different packages in this
+single-package repo: syncpack only compares one dependency across packages.
+
 Always spell scripts `bun run <script>`: bare `bun test` and `bun build` run Bun's own test runner
 and bundler, not the package scripts.
 
@@ -159,6 +165,8 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
 - **Stories** live in `.storybook/components/*.stories.tsx`, not next to the components; the
   design-foundation and shader docs are MDX under `.storybook/foundations/` and
   `.storybook/shaders/`.
+- **`app/global-error.tsx`** has to stay at the root of `app/`: Next only resolves it there, not
+  inside a route group. It replaces the root layout, so it imports the stylesheet and fonts itself.
 - **Two `llms.txt`**: the root `llms.txt` describes this repository for coding agents and is
   maintained by hand; `app/llms.txt/route.ts` serves the site's public `/llms.txt` from published
   content.
@@ -187,9 +195,8 @@ only when `PAYLOAD_JOBS_ENABLE_APP_WORKERS=true` (default `false`).
 - **SSE / Redis channels** (`app/(frontend)/api/sse/route.ts`): the `channel` query param is
   matched against an allowlist (`src/lib/sse/channels.ts`) before `subscribe()` ever sees it, and
   per-job channels (`bilingual-translate:`, `seed-task:`, `scheduled-job:`, `resume-generate:`)
-  additionally require a signed-in
-  `payload.auth()` session. The public channels in `SSE_CHANNELS` (e.g. `service-status`) stay
-  unauthenticated by design. If you add a new channel that carries non-public data, add it to the
+  additionally require a signed-in `payload.auth()` session. The public channels in `SSE_CHANNELS`
+  (e.g. `service-status`) stay unauthenticated by design. If you add a new channel that carries non-public data, add it to the
   authenticated branch rather than `SSE_CHANNELS` — see the route's own comments for the exact
   split.
 - **Raw SVG rendering**: `src/collections/ResumeCustomers` stores raw SVG markup rendered via
@@ -210,8 +217,15 @@ only when `PAYLOAD_JOBS_ENABLE_APP_WORKERS=true` (default `false`).
 - **Semgrep** runs on every PR (`lint-and-test.yml`, rulesets `nodejs`, `typescript`, `react`,
   `secrets`) and fails the check on any finding. A reviewed, accepted finding is marked on its own
   line with `// nosemgrep: <rule> -- <reason>` (see `src/components/LogoCarousel/LogoCarousel.tsx`).
-- New authenticated API routes should mirror `app/(frontend)/api/preview/route.ts`'s pattern of
-  pairing a shared-secret check with a real `payload.auth()` session check where feasible.
+- New authenticated API routes and server actions need a real `payload.auth()` session check, as
+  in the SSE route's per-job branch and `src/lib/actions/enqueueBilingualTranslation.ts` — a Server
+  Action is its own reachable endpoint, whichever page renders the button. Compare shared secrets
+  with `crypto.timingSafeEqual` and accept only same-site relative redirect targets, as
+  `app/(frontend)/api/preview/route.ts` does (that route checks `PREVIEW_SECRET` only, no session).
+- **Crawlers**: `app/(frontend)/robots.ts` disallows everything unless `SERVER_HOST` is
+  `daniel.heene.io`. `NODE_ENV` cannot tell environments apart (every deployed image runs
+  `production`), so compare `SERVER_HOST` for production-only behaviour, as `src/pdf/index.tsx`
+  also does.
 
 ## Known Issues / Tech Debt (baseline, not blocking, but don't add more)
 
@@ -237,11 +251,11 @@ only when `PAYLOAD_JOBS_ENABLE_APP_WORKERS=true` (default `false`).
   test; E2E specs live in `e2e/*.spec.ts` (never `*.spec.ts` under `src/`).
 - Shared mocks live in `vitest.setup.ts`: `payload` (`getPayload` stubbed via `importOriginal`
   spread — never replace the whole module, value imports from it are used at runtime),
-  `next/cache`, `server-only` and `redis`. `tailwind-merge`, `date-fns`, `slugify`, `pupa` and `neotraverse` are
-  intentionally NOT mocked — their real behavior is the contract under test.
+  `next/cache`, `server-only` and `redis`. `tailwind-merge`, `date-fns`, `slugify`, `pupa` and
+  `neotraverse` are intentionally NOT mocked — their real behavior is the contract under test.
 - `TZ=UTC` is forced in `vitest.setup.ts` and date tests depend on it. Anything touching
   `Interval.setToX()` or `getLocalISOString` needs `vi.useFakeTimers()` + `vi.setSystemTime()`.
-  Use `vi.stubEnv()` for env-dependent code (`SERVER_URL`, `PREVIEW_SECRET`).
+  Use `vi.stubEnv()` for env-dependent code (`SERVER_URL`, `SERVER_HOST`, `PREVIEW_SECRET`).
 - There is no CI-enforced coverage threshold; when fixing a bug, add a regression test near
   existing tests for that module if a suitable test file already exists.
 
