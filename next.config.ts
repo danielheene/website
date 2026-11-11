@@ -273,13 +273,8 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
     }),
   }
 
-  /**
-   *    `bun run analyze` sets ANALYZE. The reports land in .next/analyze as
-   *    static HTML; nothing is opened, so the same command works in CI.
-   */
   const withBundleAnalyzer = bundleAnalyzer({
     enabled: process.env.ANALYZE === 'true',
-    openAnalyzer: false,
   })
 
   return withPayload(withBundleAnalyzer(nextConfig), {

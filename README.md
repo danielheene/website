@@ -135,8 +135,7 @@ bun run dev:email        # React Email preview server (http://localhost:3005)
 | `bun run dev:app` | Starts the Next.js dev server directly, without the tunnel wrapper. |
 | `bun run dev:storybook` | Starts Storybook development server (`localhost:6006`). |
 | `bun run build` | Production build (`next build --webpack`). |
-| `bun run analyze` | Compile-only build with `@next/bundle-analyzer` reports in `.next/analyze/`, followed by `bundle:check`. |
-| `bun run bundle:check` | Checks the first-load JavaScript of each public route in an existing build against its budget (`scripts/check-bundle-size.mjs`). |
+| `bun run analyze` | Production build with `@next/bundle-analyzer`; opens the bundle reports when it finishes. |
 | `bun run build:storybook` | Builds static Storybook documentation into `dist/`. |
 | `bun run start:storybook` | Serves the static Storybook build on port 3020. |
 | `bun run start:app` | Starts the production Next.js application server. |

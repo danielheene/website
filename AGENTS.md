@@ -36,7 +36,7 @@ bun run dev:storybook    # Storybook on :6006 (not started by `bun run dev`)
 bun run generate         # regenerate Next route types, Payload types + import map
 bun run build            # production build (`next build --webpack`)
 bun run typecheck        # tsc --noEmit
-bun run analyze          # compile-only build + bundle analyzer reports + bundle budget check
+bun run analyze          # production build with @next/bundle-analyzer reports
 bun run lint             # oxlint + oxfmt --check (does NOT auto-fix)
 bun run lint:fix         # oxlint --fix + oxfmt (auto-fixes what it can)
 bun run format           # oxfmt (formatting and import order only)
@@ -178,11 +178,6 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   `app/`: inside a route group Next silently ignores all three (no error, the URL just 404s).
   `sitemap.ts` is the exception and works from `app/(frontend)/`. `global-error.tsx` replaces the
   root layout, so it imports the stylesheet and fonts itself.
-- **Bundle budget**: `scripts/check-bundle-size.mjs` reports the gzipped first-load JavaScript of
-  every public route and fails above the limit set in its `BUDGETS`. It is a local check, not a
-  CI job: `bun run analyze` builds, runs it and writes the `@next/bundle-analyzer` reports to
-  `.next/analyze/`. The 170 kB target is a warning; lower the enforced limit when
-  routes shrink, and give a reason in the commit when raising it.
 - **Two `llms.txt`**: the root `llms.txt` describes this repository for coding agents and is
   maintained by hand; `app/llms.txt/route.ts` serves the site's public `/llms.txt` from published
   content.

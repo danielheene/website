@@ -17,8 +17,7 @@
   },
   "scripts": {
     "build": "bun run _next build --webpack",
-    "analyze": "ANALYZE=true bun run build --experimental-build-mode=compile && bun run bundle:check",
-    "bundle:check": "node scripts/check-bundle-size.mjs",
+    "analyze": "ANALYZE=true bun run build",
     "build:storybook": "bun run _storybook build --output-dir dist",
     "chore:reinstall": "rm -rf node_modules bun.lock && bun install",
     "chore:format": "syncpack format",

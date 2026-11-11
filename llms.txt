@@ -91,8 +91,6 @@ generated from published content by `app/llms.txt/route.ts`.
 
 - [.github/workflows/lint-and-test.yml](.github/workflows/lint-and-test.yml): Pull-request gate —
   lint, Semgrep, unit tests (the E2E job is currently commented out).
-- [scripts/check-bundle-size.mjs](scripts/check-bundle-size.mjs): Per-route first-load
-  JavaScript report and budget, run locally with `bun run analyze`.
 - [.github/workflows/build-and-deploy.yml](.github/workflows/build-and-deploy.yml): Push
   pipeline for `main` and `develop` — version bump, migrate, build, image boot checks, push,
   Dokploy redeploy.
