@@ -41,7 +41,7 @@ bun run lint             # oxlint + oxfmt --check (does NOT auto-fix)
 bun run lint:fix         # oxlint --fix + oxfmt (auto-fixes what it can)
 bun run format           # oxfmt (formatting and import order only)
 bun run test             # unit tests (Vitest)
-bun run deps:lint        # syncpack: dependency version groups
+bun run packages:lint        # syncpack: dependency version groups
 bun run test:e2e         # Playwright E2E (needs docker compose up -d)
 ```
 
@@ -59,7 +59,7 @@ Don't let those block your task, but do not introduce new lint errors or warning
 fixing warnings in files you already touch.
 
 `syncpack.config.mjs` pins `playwright` and `@playwright/*` to one version with `pinVersion`; to
-upgrade Playwright, change that value and run `bun run deps:fix`. `scripts/e2e-docker.sh` derives
+upgrade Playwright, change that value and run `bun run packages:fix`. `scripts/e2e-docker.sh` derives
 its image tag from the installed `@playwright/test`. The `sameRange` groups in that file (Payload,
 Storybook, Vitest, React) do not catch mismatches between different packages in this
 single-package repo: syncpack only compares one dependency across packages.

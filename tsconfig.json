@@ -35,7 +35,11 @@
       ],
       "react": [
         "./node_modules/@types/react"
-      ]
+      ],
+      "react-dom": [
+        "./node_modules/@types/react-dom"
+      ],
+      "react-s"
     }
   },
   "exclude": [

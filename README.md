@@ -131,47 +131,54 @@ bun run dev:email        # React Email preview server (http://localhost:3005)
 
 | Script | Description |
 | --- | --- |
+| `bun run _email` | Wrapper to execute React Email CLI commands. |
+| `bun run _next` | Wrapper to execute Next.js CLI commands with telemetry disabled. |
+| `bun run _payload` | Wrapper to execute Payload CLI commands (used by `migrate`, `generate` and the other scripts). |
+| `bun run _storybook` | Wrapper to execute Storybook CLI commands. |
+| `bun run analyze` | Production build with `@next/bundle-analyzer`; opens the bundle reports when it finishes. |
+| `bun run build` | Production build (`next build --webpack`). |
+| `bun run build:storybook` | Builds static Storybook documentation into `dist/`. |
+| `bun run chore:reinstall` | Cleans `node_modules` and `bun.lock`, then runs fresh `bun install`. |
+| `bun run ci` | Local convenience: runs database migrations and a full production build (CI itself runs the steps separately). |
 | `bun run dev` | Starts the Next.js dev server through `scripts/dev.mjs` (`localhost:3000`, supports `--tunnel`). |
 | `bun run dev:app` | Starts the Next.js dev server directly, without the tunnel wrapper. |
+| `bun run dev:email` | Starts React Email development server on port 3005 (`src/emails`). |
 | `bun run dev:storybook` | Starts Storybook development server (`localhost:6006`). |
-| `bun run build` | Production build (`next build --webpack`). |
-| `bun run analyze` | Production build with `@next/bundle-analyzer`; opens the bundle reports when it finishes. |
-| `bun run build:storybook` | Builds static Storybook documentation into `dist/`. |
-| `bun run start:storybook` | Serves the static Storybook build on port 3020. |
-| `bun run start:app` | Starts the production Next.js application server. |
-| `bun run start:worker` | Runs standalone background jobs worker and health monitoring server. |
-| `bun run load-env` | Writes `.env.local` from active Doppler config (`--check` validates drift). |
 | `bun run generate` | Runs `generate:next-types`, `generate:payload-types` and `generate:importmap` in sequence. |
+| `bun run generate:importmap` | Regenerates Payload admin component import map (`app/(payload)/admin/importMap.js`). |
 | `bun run generate:next-types` | Generates Next.js route types (`next typegen`). |
 | `bun run generate:payload-types` | Generates TypeScript types for Payload collections and globals (`src/types/payload.ts`). |
-| `bun run generate:importmap` | Regenerates Payload admin component import map (`app/(payload)/admin/importMap.js`). |
-| `bun run _payload` | Wrapper to execute Payload CLI commands (used by `migrate`, `generate` and the other scripts). |
-| `bun run migrate` | Runs database migrations via Payload CLI. |
-| `bun run ci` | Local convenience: runs database migrations and a full production build (CI itself runs the steps separately). |
+| `bun run links:migrate` | Runs database migration for link field naming. |
 | `bun run lint` | Runs `oxlint` and `oxfmt --check` (linting and format checks). |
 | `bun run lint:fix` | Runs `oxlint --fix` and `oxfmt` to auto-fix what they can. |
-| `bun run format` | Runs `oxfmt` to fix formatting and import order. |
-| `bun run typecheck` | Runs TypeScript typechecker (`tsc --noEmit`). |
-| `bun run deps:lint` | Runs Syncpack to check dependency version consistency across packages. |
-| `bun run deps:fix` | Runs Syncpack to automatically align dependency versions. |
-| `bun run deps:update` | Updates dependency versions using Syncpack. |
-| `bun run chore:format` | Formats `package.json` field order using Syncpack. |
-| `bun run chore:reinstall` | Cleans `node_modules` and `bun.lock`, then runs fresh `bun install`. |
-| `bun run dev:email` | Starts React Email development server on port 3005 (`src/emails`). |
-| `bun run seed:topics` | Seeds fixture blog topics (`-- --count <n>`, default 6; `seed:topics:clean` removes them). |
-| `bun run seed:posts` | Seeds fixture blog posts and media (`-- --count <n>`, default 10; `seed:posts:clean` removes them). |
-| `bun run seed:pages` | Seeds fixture pages (`-- --count <n>`, default 10; `seed:pages:clean` removes them). |
-| `bun run seed:resume-documents` | Seeds an older and a newer fixture resume document without PDFs (`seed:resume-documents:clean` removes them). |
-| `bun run links:migrate` | Runs database migration for link field naming. |
+| `bun run load-env` | Writes `.env.local` from active Doppler config (`--check` validates drift). |
+| `bun run migrate` | Runs database migrations via Payload CLI. |
+| `bun run packages:fix` | Runs Syncpack to automatically align dependency versions. |
+| `bun run packages:format` | Formats `package.json` field order using Syncpack. |
+| `bun run packages:lint` | Runs Syncpack to check dependency version consistency across packages. |
+| `bun run packages:update` | Updates dependency versions using Syncpack. |
+| `bun run prepare` | Installs Lefthook Git hooks. |
 | `bun run refs:backfill` | Rebuilds content reference index table. |
-| `bun run test` | Runs unit tests once via Vitest. |
-| `bun run test:watch` | Runs Vitest in interactive watch mode. |
-| `bun run test:coverage` | Runs Vitest with v8 code coverage reporting. |
-| `bun run test:e2e` | Runs Playwright E2E tests against `.env.test`. |
-| `bun run test:e2e:ui` | Runs Playwright E2E tests with interactive UI. |
-| `bun run test:e2e:docker` | Runs Playwright E2E tests inside Docker Chromium container, against a dev server on the host. |
 | `bun run release` | Runs semantic-release to calculate version, tag, and publish changelog. |
 | `bun run release:dry-run` | Runs semantic-release in dry-run mode. |
+| `bun run seed:pages` | Seeds fixture pages (`-- --count <n>`, default 10; `seed:pages:clean` removes them). |
+| `bun run seed:pages:clean` | Removes fixture pages. |
+| `bun run seed:posts` | Seeds fixture blog posts and media (`-- --count <n>`, default 10; `seed:posts:clean` removes them). |
+| `bun run seed:posts:clean` | Removes fixture blog posts and media. |
+| `bun run seed:resume-documents` | Seeds an older and a newer fixture resume document without PDFs (`seed:resume-documents:clean` removes them). |
+| `bun run seed:resume-documents:clean` | Removes fixture resume documents. |
+| `bun run seed:topics` | Seeds fixture blog topics (`-- --count <n>`, default 6; `seed:topics:clean` removes them). |
+| `bun run seed:topics:clean` | Removes fixture blog topics. |
+| `bun run start:app` | Starts the production Next.js application server. |
+| `bun run start:storybook` | Serves the static Storybook build on port 3020. |
+| `bun run start:worker` | Runs standalone background jobs worker and health monitoring server. |
+| `bun run test` | Runs unit tests once via Vitest. |
+| `bun run test:coverage` | Runs Vitest with v8 code coverage reporting. |
+| `bun run test:e2e` | Runs Playwright E2E tests against `.env.test`. |
+| `bun run test:e2e:docker` | Runs Playwright E2E tests inside Docker Chromium container, against a dev server on the host. |
+| `bun run test:e2e:ui` | Runs Playwright E2E tests with interactive UI. |
+| `bun run test:watch` | Runs Vitest in interactive watch mode. |
+| `bun run typecheck` | Runs TypeScript typechecker (`tsc --noEmit`). |
 
 ---
 

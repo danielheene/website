@@ -43,7 +43,7 @@ jobs:
         run: bun run lint
 
       - name: Check dependency version groups
-        run: bun run deps:lint
+        run: bun run packages:lint
 
       # Generated files are committed; a stale one means someone changed a
       # collection/field/block without running `bun run generate`.
