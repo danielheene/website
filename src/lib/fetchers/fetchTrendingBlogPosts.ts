@@ -4,9 +4,9 @@ import { getPayload } from 'payload'
 import { minutesToSeconds, subDays } from 'date-fns'
 
 import { get, set } from '@/lib/RedisHandler'
+import { getToken } from '@/lib/umami/getToken'
 import { CollectionSlug } from '@/types/collections'
 import { BlogPostData } from '@/types/payload'
-import { getToken } from '@/widgets/UmamiWidget/UmamiWidget.data'
 
 const BLOG_POST_PATH_PREFIX = '/blog/post/'
 

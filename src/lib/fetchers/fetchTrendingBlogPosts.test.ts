@@ -11,7 +11,7 @@ vi.mock('@/lib/RedisHandler', () => ({
   set: (...args: unknown[]) => setMock(...args),
 }))
 
-vi.mock('@/widgets/UmamiWidget/UmamiWidget.data', () => ({
+vi.mock('@/lib/umami/getToken', () => ({
   getToken: (...args: unknown[]) => getTokenMock(...args),
 }))
 

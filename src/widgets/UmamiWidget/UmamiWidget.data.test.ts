@@ -5,7 +5,8 @@ vi.mock('@/lib/RedisHandler', () => ({
   set: vi.fn(async () => undefined),
 }))
 
-const { fetchWebsite, getToken } = await import('./UmamiWidget.data')
+const { getToken } = await import('@/lib/umami/getToken')
+const { fetchWebsite } = await import('./UmamiWidget.data')
 
 describe('UmamiWidget data', () => {
   beforeEach(() => {
