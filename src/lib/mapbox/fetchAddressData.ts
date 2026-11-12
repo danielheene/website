@@ -1,5 +1,3 @@
-'use server'
-
 import { get } from 'lodash-es'
 
 import type { AddressData } from '@/types/payload'

@@ -1,3 +1,5 @@
+import * as util from 'node:util'
+
 import { CollectionSlug } from '@/types/collections'
 import type { MediaAudio, MediaDocument, MediaImage, MediaVideo } from '@/types/payload'
 
@@ -90,4 +92,7 @@ export const isMediaVideoReference = (
   isMediaVideo(object.value)
 
 export const isArrayBuffer = (data: unknown): data is ArrayBuffer =>
-  typeof data === 'object' && data !== null && data.toString() === '[object ArrayBuffer]'
+  typeof data === 'object' && data !== null && util.types.isArrayBuffer(data)
+
+export const isCachedRedisValue = (value: unknown): value is string =>
+  typeof value === 'string' && value !== ''

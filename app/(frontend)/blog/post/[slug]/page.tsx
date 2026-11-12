@@ -1,8 +1,5 @@
-// oxlint-disable -- reason
-
-import { cache, Suspense } from 'react'
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
-import { cacheLife, cacheTag } from 'next/cache'
 import { draftMode } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -16,13 +13,12 @@ import { LinkList } from '@/components/ArticleSidebar/LinkList'
 import { HeroMedia } from '@/components/HeroMedia'
 import { RichText } from '@/components/RichText'
 import { extractHeadings } from '@/lib/extractHeadings'
+import { fetchPostBySlug } from '@/lib/fetchers/fetchPostBySlug'
 import { generateMeta } from '@/lib/generateMeta'
-import { reduceDataToBilingualLanguage } from '@/lib/i18n'
 import { generateBlogPosting, generateBreadcrumbList } from '@/lib/jsonLd'
 import { placeholderParams } from '@/lib/placeholderParams'
-import { resolveRelations } from '@/lib/resolveRelation'
 import { highlightRichText } from '@/lib/shiki/highlightRichText'
-import { CollectionData, CollectionSlug } from '@/types/collections'
+import { CollectionSlug } from '@/types/collections'
 import { LinkGroupData } from '@/types/payload'
 
 import { size } from './opengraph-image'
@@ -33,11 +29,25 @@ export async function generateStaticParams() {
   })
 
   const { docs = [] } = await payload.find({
-    collection: CollectionSlug['BlogPosts'],
+    collection: CollectionSlug.BlogPosts,
     draft: false,
     limit: 1000,
     overrideAccess: false,
     pagination: false,
+    where: {
+      or: [
+        {
+          _status: {
+            equals: 'published',
+          },
+        },
+        {
+          _status: {
+            exists: false,
+          },
+        },
+      ],
+    },
     select: {
       slug: true,
     },
@@ -52,18 +62,20 @@ export async function generateStaticParams() {
   }))
 }
 
-type PageProps = {
-  params: Promise<{
-    slug?: string
-  }>
+export default async function BlogPostShell(props: PageProps<'/blog/post/[slug]'>) {
+  return (
+    <Suspense>
+      <BlogPost {...props} />
+    </Suspense>
+  )
 }
 
-export default async function Page({ params: paramsPromise }: PageProps) {
-  const { slug } = await paramsPromise
+async function BlogPost({ params }: PageProps<'/blog/post/[slug]'>) {
+  const { slug } = await params
+  const { isEnabled: draft } = await draftMode()
 
-  const post = await queryPostBySlug({
-    slug,
-  })
+  const post = await fetchPostBySlug({ slug, draft })
+
   if (!post) return notFound()
 
   const { title, content, hero, createdAt, updatedAt, topics, links } = post
@@ -79,6 +91,7 @@ export default async function Page({ params: paramsPromise }: PageProps) {
   const topicList = (topics ?? [])
     .map(({ value }) => value)
     .filter((value) => typeof value === 'object' && value !== null)
+
   const primaryTopic = topicList[0]
 
   const heroImageData = {
@@ -89,6 +102,7 @@ export default async function Page({ params: paramsPromise }: PageProps) {
   }
 
   // Generate BlogPosting schema
+  // oxlint-disable-next-line no-unused-vars
   const blogPostingSchema = generateBlogPosting({
     headline: title,
     url: postUrl,
@@ -103,6 +117,7 @@ export default async function Page({ params: paramsPromise }: PageProps) {
   })
 
   // Generate BreadcrumbList schema
+  // oxlint-disable-next-line no-unused-vars
   const breadcrumbSchema = generateBreadcrumbList([
     {
       name: 'Home',
@@ -118,16 +133,16 @@ export default async function Page({ params: paramsPromise }: PageProps) {
   ])
 
   return (
-    <div className="flex  w-full flex-col bg-background text-foreground">
+    <div className="flex w-full flex-col bg-background text-foreground">
       <div className="flex flex-1 items-center justify-center">
-        <section className="pb-32 w-full">
+        <section className="w-full pb-32">
           <HeroMedia fallbackAlt={title} slides={hero?.slides}>
             <div className="pt-40 pb-16">
               <div className="container flex flex-col items-center gap-8 text-center">
                 <nav aria-label="breadcrumb">
-                  <ol className="text-foreground/70 gap-1.5 text-sm sm:gap-2.5 flex flex-wrap items-center justify-center wrap-break-word">
-                    <li className="gap-1.5 inline-flex items-center">
-                      <Link className="hover:text-foreground transition-colors" href="/blog">
+                  <ol className="flex flex-wrap items-center justify-center gap-1.5 text-sm wrap-break-word text-foreground/70 sm:gap-2.5">
+                    <li className="inline-flex items-center gap-1.5">
+                      <Link className="transition-colors hover:text-foreground" href="/blog">
                         Blog
                       </Link>
                     </li>
@@ -136,9 +151,9 @@ export default async function Page({ params: paramsPromise }: PageProps) {
                         <li aria-hidden="true" className="[&>svg]:size-3.5">
                           /
                         </li>
-                        <li className="gap-1.5 inline-flex items-center">
+                        <li className="inline-flex items-center gap-1.5">
                           <Link
-                            className="hover:text-foreground transition-colors"
+                            className="transition-colors hover:text-foreground"
                             href={`/blog/${primaryTopic.slug}`}
                           >
                             {primaryTopic.title}
@@ -148,11 +163,11 @@ export default async function Page({ params: paramsPromise }: PageProps) {
                     )}
                   </ol>
                 </nav>
-                <div className="flex w-full max-w-5xl  flex-col gap-5 text-white">
-                  <div className="flex items-center justify-center gap-2.5 font-mono font-semibold text-sm text-white/80">
+                <div className="flex w-full max-w-5xl flex-col gap-5 text-white">
+                  <div className="flex items-center justify-center gap-2.5 font-mono text-sm font-semibold text-white/80">
                     <time dateTime={createdAt}>{format(createdAt, 'MMMM d, yyyy')}</time>
                   </div>
-                  <h1 className="text-[2.5rem] leading-[1.1] font-semibold font-mono text-balance md:text-6xl lg:text-7xl">
+                  <h1 className="font-mono text-[2.5rem] leading-[1.1] font-semibold text-balance md:text-6xl lg:text-7xl">
                     {title}
                   </h1>
                   {post.meta?.description && (
@@ -180,7 +195,7 @@ export default async function Page({ params: paramsPromise }: PageProps) {
           </HeroMedia>
 
           <div className="container pt-20">
-            <div className="mx-auto grid w-full max-w-7xl lg:grid-cols-12 gap-16 items-start">
+            <div className="mx-auto grid w-full max-w-7xl items-start gap-16 lg:grid-cols-12">
               {/* scroll-mt keeps TOC anchor targets clear of the fixed header */}
               <article className="min-w-0 lg:col-span-8 [&_h2]:scroll-mt-24 [&_h3]:scroll-mt-24 [&_h4]:scroll-mt-24">
                 {content ? (
@@ -199,7 +214,7 @@ export default async function Page({ params: paramsPromise }: PageProps) {
               </article>
 
               <ArticleSidebar
-                className="lg:col-span-4 w-auto"
+                className="w-auto lg:col-span-4"
                 sections={[
                   headings &&
                     headings.length > 0 && {
@@ -222,73 +237,13 @@ export default async function Page({ params: paramsPromise }: PageProps) {
   )
 }
 
-export async function generateMetadata({ params: paramsPromise }: PageProps): Promise<Metadata> {
-  const { slug } = await paramsPromise
-  const doc = await queryPostBySlug({
-    slug,
-  })
+export async function generateMetadata({
+  params,
+}: PageProps<'/blog/post/[slug]'>): Promise<Metadata> {
+  const { slug } = await params
+  const doc = await fetchPostBySlug({ slug })
+
   return generateMeta({
     doc,
   })
 }
-
-const queryPublishedPostBySlug = async (
-  slug: string,
-): Promise<CollectionData<CollectionSlug['BlogPosts']>> => {
-  'use cache'
-  cacheLife('max')
-  cacheTag(CollectionSlug.BlogPosts)
-
-  const payload = await getPayload({
-    config,
-  })
-
-  const { docs = [] } = await payload.find({
-    collection: CollectionSlug['BlogPosts'],
-    draft: false,
-    limit: 1,
-    pagination: false,
-    overrideAccess: false,
-    where: {
-      slug: {
-        equals: slug,
-      },
-    },
-  })
-
-  if (!docs[0]) return null
-
-  return reduceDataToBilingualLanguage(await resolveRelations(docs[0]))
-}
-
-const queryDraftPostBySlug = async (
-  slug: string,
-): Promise<CollectionData<CollectionSlug['BlogPosts']>> => {
-  const payload = await getPayload({
-    config,
-  })
-
-  const { docs = [] } = await payload.find({
-    collection: CollectionSlug['BlogPosts'],
-    draft: true,
-    limit: 1,
-    pagination: false,
-    overrideAccess: true,
-    where: {
-      slug: {
-        equals: slug,
-      },
-    },
-  })
-
-  if (!docs[0]) return null
-
-  return reduceDataToBilingualLanguage(await resolveRelations(docs[0]))
-}
-
-export const queryPostBySlug = cache(
-  async ({ slug }: { slug: string }): Promise<CollectionData<CollectionSlug['BlogPosts']>> => {
-    const { isEnabled: draft } = await draftMode()
-    return draft ? queryDraftPostBySlug(slug) : queryPublishedPostBySlug(slug)
-  },
-)

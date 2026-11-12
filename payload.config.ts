@@ -13,6 +13,7 @@ import sharp from 'sharp'
 
 import { BLOCKS } from '@/blocks'
 import { COLLECTIONS } from '@/collections'
+import { GENERATOR_FLAGS } from '@/fields/GeneratorFlags'
 import { GLOBALS } from '@/globals'
 import { scopeJobsList } from '@/jobs-queue/lib/jobsListFilter'
 import { TASKS } from '@/jobs-queue/tasks'
@@ -306,6 +307,19 @@ export const config = buildConfig({
         ...jsonSchema,
         definitions: {
           ...jsonSchema.definitions,
+          GeneratorFlag: {
+            title: 'GeneratorFlag',
+            type: 'string',
+            enum: [...GENERATOR_FLAGS],
+          },
+          GeneratorFlags: {
+            title: 'GeneratorFlags',
+            type: 'array',
+            items: {
+              $ref: '#/definitions/GeneratorFlag',
+            },
+            additionalItems: false,
+          },
           SkillType: {
             title: 'SkillType',
             type: 'string',

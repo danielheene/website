@@ -1,5 +1,3 @@
-'use server'
-
 import { fetchResumeJobs } from '@/lib/fetchers'
 import {
   type BilingualLanguage,

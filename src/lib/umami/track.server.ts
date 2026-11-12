@@ -1,5 +1,3 @@
-'use server'
-
 import { isTrackingSuppressed } from './isTrackingSuppressed.server'
 import { sendUmamiPayload } from './sendUmamiPayload'
 import type { UmamiSendPayload, UmamiSendPayloadPayload } from './Umami.types'

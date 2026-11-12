@@ -43,7 +43,7 @@ jobs:
         run: bun run lint
 
       - name: Check dependency version groups
-        run: bun run deps:lint
+        run: bun run packages:lint
 
       # Generated files are committed; a stale one means someone changed a
       # collection/field/block without running `bun run generate`.
@@ -94,7 +94,7 @@ jobs:
 
       - name: Upload coverage
         if: always()
-        uses: actions/upload-artifact@v4 # TODO: pin to a commit SHA like the other actions
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: coverage
           path: coverage/

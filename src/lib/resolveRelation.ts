@@ -58,8 +58,6 @@ const isRelation = (
  * @returns The same structure with all relations resolved.
  */
 export const resolveRelations = async <T>(data: T): Promise<ResolvedRelations<T>> => {
-  'use server'
-
   const payload = await getPayload({
     config,
   })

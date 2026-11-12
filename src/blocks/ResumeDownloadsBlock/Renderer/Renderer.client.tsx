@@ -49,7 +49,7 @@ export const ResumeDownloadsBlockClientRenderer = ({
             data-reveal-item
             className="text-background-foreground flex flex-col justify-center gap-8 md:flex-row"
           >
-            {document_en && (
+            {document_en?.url && (
               <ResumeDownloadButton
                 locale="en"
                 url={document_en.url}
@@ -58,7 +58,7 @@ export const ResumeDownloadsBlockClientRenderer = ({
                 subline="English Version"
               />
             )}
-            {document_de && (
+            {document_de?.url && (
               <ResumeDownloadButton
                 locale="de"
                 url={document_de.url}

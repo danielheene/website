@@ -24,7 +24,7 @@ const NavEntries = (): ArrayField => ({
     },
   },
   hooks: {
-    afterRead: [async ({ value = [] }) => value],
+    afterRead: [({ value = [] }) => value],
   },
   interfaceName: 'NavEntries',
   fields: [...LinkField().fields],

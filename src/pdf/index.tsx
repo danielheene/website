@@ -5,6 +5,7 @@ import dePattern from 'hyphen/patterns/de-1996'
 import enPattern from 'hyphen/patterns/en-us'
 
 import type { BilingualLanguage } from '@/lib/i18n'
+import { isProductionHost } from '@/lib/isProductionHost'
 import { BulletPoint } from '@/pdf/components/BulletPoint'
 import { Footer } from '@/pdf/components/Footer'
 import { Header } from '@/pdf/components/Header'
@@ -98,7 +99,7 @@ export const ResumeDocument = ({
         orientation="portrait"
         bookmark={document.title}
       >
-        {process.env.SERVER_HOST !== 'daniel.heene.io' && (
+        {!isProductionHost() && (
           <View style={styles.debug} fixed>
             <Text style={textStyles.debugText}>DRAFT</Text>
           </View>

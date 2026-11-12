@@ -1,5 +1,3 @@
-'use server'
-
 import { fetchLatestResumeDocument } from '@/lib/fetchers/fetchLatestResumeDocument'
 import { ResumeDownloadsBlock } from '@/types/payload'
 

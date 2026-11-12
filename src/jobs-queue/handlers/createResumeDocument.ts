@@ -28,6 +28,7 @@ const run: TaskHandler<TaskSlug['CreateResumeDocument']> = async ({ input, req: 
     data: {
       title: documentTitle,
       slug: documentSlug,
+      generatorFlags: [],
       createdAt,
       jobId,
       document_en: {

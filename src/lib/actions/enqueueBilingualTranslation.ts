@@ -35,7 +35,7 @@ export const enqueueBilingualTranslation = async (
   // `TranslateControls` only renders inside the Payload admin panel, but a
   // Server Action is its own reachable endpoint regardless of which page
   // renders the button that calls it — without this, anyone who discovers
-  // the action's reference could trigger paid OpenAI/Anthropic translation
+  // the action's reference could trigger paid Anthropic translation
   // calls with no session at all.
   const { user } = await payload.auth({
     headers: await headers(),

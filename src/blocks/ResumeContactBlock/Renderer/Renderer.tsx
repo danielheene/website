@@ -1,5 +1,3 @@
-'use server'
-
 import { ResumeContactBlock } from '@/types/payload'
 
 import { ResumeContactBlockClientRenderer } from './Renderer.client'

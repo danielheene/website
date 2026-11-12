@@ -154,6 +154,7 @@ jobs:
       # per-branch NODE_ENV build arg is gone with the Docker build phase.
       NODE_ENV: production
       SERVER_HOST: ${{ secrets.SERVER_HOST }}
+      PRODUCTION_HOST: ${{ secrets.PRODUCTION_HOST }}
       SERVER_URL: ${{ secrets.SERVER_URL }}
       NEXT_PUBLIC_SERVER_URL: ${{ secrets.NEXT_PUBLIC_SERVER_URL }}
       NEXT_PUBLIC_STATUS_PAGE_URL: ${{ secrets.NEXT_PUBLIC_STATUS_PAGE_URL }}
@@ -177,7 +178,6 @@ jobs:
       USESEND_API_KEY: ${{ secrets.USESEND_API_KEY }}
       USESEND_DEFAULT_FROM_ADDRESS: ${{ secrets.USESEND_DEFAULT_FROM_ADDRESS }}
       USESEND_DEFAULT_FROM_NAME: ${{ secrets.USESEND_DEFAULT_FROM_NAME }}
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       MAPBOX_API_KEY: ${{ secrets.MAPBOX_API_KEY }}
       UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
@@ -208,6 +208,17 @@ jobs:
       # the job before any image is built or pushed.
       - name: Run database migrations
         run: bun run migrate
+
+      # Webpack's persistent cache; the only part of .next worth restoring
+      # between builds.
+      - name: Restore Next.js build cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('bun.lock') }}-${{ github.sha }}
+          restore-keys: |
+            next-${{ runner.os }}-${{ hashFiles('bun.lock') }}-
+            next-${{ runner.os }}-
 
       # One build against this environment's real values — no separate
       # test-env compile to reconcile with afterward (see lint-and-test.yml's

@@ -8,10 +8,12 @@ set -euo pipefail
 #      docker compose up -d      (Mongo/Redis/S3)
 #      bun run dev:app          (Next.js on the host, port 3000)
 #
-#    The image tag MUST match the @playwright/test version in package.json —
-#    bump them together, otherwise browser revisions mismatch.
+#    The image tag must match the installed @playwright/test, otherwise the
+#    browser revisions mismatch, so it is read from the package rather than
+#    written here.
 
-IMAGE="mcr.microsoft.com/playwright:v1.62.1-noble"
+PLAYWRIGHT_VERSION="$(node -p "require('./node_modules/@playwright/test/package.json').version")"
+IMAGE="mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-noble"
 
 #    Host networking lets the container reach the dev server as
 #    http://localhost:3000 — required because the Payload admin UI talks to

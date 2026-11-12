@@ -158,6 +158,7 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
 
           label: false,
           type: 'json',
+          required: true,
 
           typescriptSchema: [
             () => ({

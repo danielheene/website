@@ -70,9 +70,7 @@ export const MetaField = ({
         }),
       ]),
       MetaSerpProgressGroupField([
-        MetaDescriptionField({
-          slugPath,
-        }),
+        MetaDescriptionField(),
         MetaSerpProgressField({
           watchPath: 'meta.description',
           serpConfig: DESCRIPTION_SERP_CONFIG,

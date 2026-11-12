@@ -22,7 +22,7 @@ export type LatestResumeDocument = Pick<
  * Scoped narrower than the broad `CollectionSlug.ResumeDocuments` tag every
  * other resume-document fetcher uses, so revalidating "latest" specifically
  * (see `revalidateLatestResumeDocument`) doesn't also blow away unrelated
- * per-slug reads (`fetchResumeDocumentBySlug`) or the newer-versions count
+ * per-slug reads (`fetchDocumentBySlug`) or the newer-versions count
  * (`fetchNewerDocumentVersions`).
  */
 export const LATEST_RESUME_DOCUMENT_TAG = `${CollectionSlug.ResumeDocuments}:latest`

@@ -15,6 +15,12 @@ export const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 
   SERVER_HOST: z.string().trim().min(1),
+
+  /**
+   * Host of the production site. An environment is production when its
+   * `SERVER_HOST` equals this (see `src/lib/isProductionHost.ts`).
+   */
+  PRODUCTION_HOST: z.string().trim().min(1),
   SERVER_URL: z.url(),
 
   /**
@@ -26,6 +32,12 @@ export const envSchema = z.object({
 
   NEXT_PUBLIC_STATUS_PAGE_URL: z.url(),
   STATUS_PAGE_HEARTBEAT_URL: z.url(),
+
+  /**
+   * Push monitor the worker's `heartbeatPing` job reports to every minute.
+   * Optional: without it the job only logs.
+   */
+  STATUS_PAGE_WORKER_HEARTBEAT_PUSH_URL: emptyAsUndefined(z.url()),
 
   /**
    * Base URL used by generateResumeDocumentRedirectURL to build the
@@ -67,7 +79,6 @@ export const envSchema = z.object({
   USESEND_DEFAULT_FROM_ADDRESS: z.email(),
   USESEND_DEFAULT_FROM_NAME: z.string().trim().min(1),
 
-  OPENAI_API_KEY: z.string(),
   ANTHROPIC_API_KEY: z.string(),
   MAPBOX_API_KEY: z.string(),
   UNSPLASH_ACCESS_KEY: emptyAsUndefined(z.string()),

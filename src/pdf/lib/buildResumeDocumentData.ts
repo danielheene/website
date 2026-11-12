@@ -1,5 +1,3 @@
-'use server'
-
 import { ZodSafeParseResult } from 'zod'
 
 import { fetchGlobalUserSettings } from '@/lib/fetchers'

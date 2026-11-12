@@ -1,5 +1,3 @@
-'use server'
-
 import parsePhoneNumber from 'libphonenumber-js'
 
 import { fetchGlobalUserSettings } from '@/lib/fetchers'

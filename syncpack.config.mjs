@@ -2,47 +2,31 @@
 
 /**
  * Keeps families of packages that are released together on the same version.
- *
- * Payload, Storybook and the others each publish a dozen packages from
- * one repo on a shared release train — mixing versions within a family causes
- * subtle runtime breakage rather than an install error, so it is worth
- * enforcing. Each family is held to a single range with `sameRange`: `snapTo` targets a
- * local workspace package, which this single-package repo does not have, so
- * matching ranges is the equivalent guarantee.
- *
- * Run `bun run deps:lint` to check, `bun run deps:fix` to apply.
+ * Run `bun run packages:lint` to check, `bun run packages:fix` to apply.
  *
  * @type {import('syncpack').RcFile}
  */
 export default {
   sortPackages: true,
-  // Mirrors sort-package-json's own default `sortOrder`/alphabetized-content
-  // list exactly (node_modules/sort-package-json's `fields` array — the
-  // fields there marked `over: sortObject`/`sortDependencies`), so a
-  // `syncpack fix` run and a `sort-package-json` run agree on both key
-  // order (sortFirst below) and content order for these fields, instead of
-  // re-shuffling each other's output on alternating commits.
   sortAz: [
-    'maintainers',
-    'contributors',
-    'resolutions',
-    'overrides',
-    'dependencies',
-    'devDependencies',
-    'peerDependencies',
-    'optionalDependencies',
     'bundledDependencies',
     'bundleDependencies',
-    'extensionPack',
-    'extensionDependencies',
+    'contributors',
+    'dependencies',
+    'devDependencies',
     'engines',
     'engineStrict',
+    'extensionDependencies',
+    'extensionPack',
+    'maintainers',
+    'optionalDependencies',
+    'overrides',
+    'peerDependencies',
     'preferGlobal',
     'publishConfig',
+    'resolutions',
+    'scripts',
   ],
-  // Full sort-package-json default field order (see that package's `fields`
-  // array) — kept complete rather than trimmed to this repo's current
-  // fields, so it stays correct as fields are added later.
   sortFirst: [
     '$schema',
     'name',
@@ -156,69 +140,54 @@ export default {
     'markdown',
   ],
   source: ['package.json', 'apps/*/package.json', 'packages/*/package.json'],
-
+  /**
+   * Families are pinned, not `sameRange`: every syncpack policy compares one
+   * dependency across several package.json files, so in this single-package
+   * repo only `pinVersion` holds two different dependencies to one version.
+   * To upgrade a family, change its pin and run `bun run packages:fix`.
+   */
   versionGroups: [
-    /**
-     * Packages that live in a family's namespace but are versioned
-     * independently. Listing them first means the family rules below never
-     * see them.
-     */
     {
       label: 'Independently versioned, despite the shared namespace',
       dependencies: [
-        // Storybook's compiler addons track the bundler, not Storybook
         '@storybook/addon-webpack5-compiler-swc',
-        // each Radix primitive ships on its own release line
         '@radix-ui/**',
-        // changelog-github is 0.x while the CLI is 2.x
         '@changesets/changelog-github',
       ],
       packages: ['**'],
       isIgnored: true,
     },
-
     {
       label: 'Payload CMS packages share a release train',
       dependencies: ['payload', '@payloadcms/**'],
       packages: ['**'],
-      policy: 'sameRange',
+      pinVersion: '^3.93.0',
     },
-
     {
       label: 'Storybook packages share a release train',
       dependencies: ['storybook', '@storybook/**'],
       packages: ['**'],
-      policy: 'sameRange',
+      pinVersion: '^10.6.0',
     },
-
     {
       label: 'Vitest packages share a release train',
       dependencies: ['vitest', '@vitest/**'],
       packages: ['**'],
-      policy: 'sameRange',
+      pinVersion: '^4.1.11',
     },
-
-    /**
-     * `playwright` and `@playwright/test` must match exactly: the Docker image
-     * tag in scripts/e2e-docker.sh is pinned to this version, and a mismatch
-     * means the bundled browser revisions disagree.
-     */
     {
-      label: 'Playwright must match the pinned browser image',
+      label: 'Playwright packages are pinned to one version',
       dependencies: ['playwright', '@playwright/**'],
       packages: ['**'],
-      policy: 'sameRange',
+      pinVersion: '~1.65.0',
     },
-
     {
-      label: 'React and its DOM/type packages move together',
+      label: 'react and react-dom packages move together',
       dependencies: ['react', 'react-dom'],
       packages: ['**'],
-      policy: 'sameRange',
+      pinVersion: '^19.3.1',
     },
   ],
-
-  /** Range styles, so a family bump does not silently change pinning strategy. */
   semverGroups: [
     {
       label: 'Playwright is pinned to a patch range to match the Docker image',

@@ -1,7 +1,5 @@
 import { TextField } from 'payload'
 
-import { normalizeIncomingFlags } from './hooks/normalizeIncomingFlags'
-
 /**
  * Markers describing how an asset came to exist — set by the jobs queue when it
  * generates thumbnails and resume documents, and used to filter those out of
@@ -27,6 +25,7 @@ import { normalizeIncomingFlags } from './hooks/normalizeIncomingFlags'
  * back as `thumbnail` cannot be described accurately. Callers that genuinely
  * need to merge can spread the existing array.
  */
+
 export const GENERATOR_FLAGS = [
   'resume-asset',
   'thumbnail',
@@ -54,20 +53,18 @@ export const GeneratorFlagsField = (): TextField => ({
   admin: {
     hidden: true,
   },
-
+  hooks: {
+    afterRead: [({ value }) => value ?? []],
+  },
+  defaultValue: [],
   typescriptSchema: [
     () => ({
       type: 'array',
       items: {
-        type: 'string',
-        enum: [...GENERATOR_FLAGS],
+        $ref: '#/definitions/GeneratorFlag',
       },
       additionalItems: false,
-      required: false,
       default: [],
     }),
   ],
-  hooks: {
-    beforeChange: [normalizeIncomingFlags],
-  },
 })

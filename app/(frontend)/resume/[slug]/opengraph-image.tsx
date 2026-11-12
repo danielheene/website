@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 
 import { ImageResponse } from 'takumi-js/response'
 
-import { resolveResumeDocument } from './page'
+import { fetchDocumentBySlug } from '@/lib/fetchers/fetchDocumentBySlug'
 
 export const alt = 'Resume'
 
@@ -19,7 +19,7 @@ type Props = {
 
 export default async function Image({ params }: Props) {
   const { slug } = await params
-  const resume = await resolveResumeDocument(slug)
+  const resume = await fetchDocumentBySlug({ slug })
 
   if (!resume) notFound()
 

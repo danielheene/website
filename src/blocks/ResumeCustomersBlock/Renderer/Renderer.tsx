@@ -1,5 +1,3 @@
-'use server'
-
 import { fetchResumeCustomersCached } from '@/lib/fetchers/fetchResumeCustomers'
 import type { ResumeCustomersBlock } from '@/types/payload'
 

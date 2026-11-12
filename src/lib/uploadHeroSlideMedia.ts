@@ -50,7 +50,9 @@ export const uploadHeroSlideMedia = async (
 
   const doc = await payload.create({
     collection,
-    data: {},
+    data: {
+      generatorFlags: [],
+    },
     file: {
       data,
       name: file.name,

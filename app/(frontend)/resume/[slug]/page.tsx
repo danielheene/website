@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
+import { draftMode } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import config from '@payload-config'
@@ -13,8 +14,8 @@ import type { HeroMediaItem } from '@/components/HeroMedia/HeroSlide'
 import { ResumeChecksumValidator } from '@/components/ResumeCheckumValidatior/ResumeChecksumValidator'
 import { ResumeNewerVersionsChecker } from '@/components/ResumeNewerVersionsChecker'
 import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fetchers'
-import { fetchLatestResumeDocument } from '@/lib/fetchers/fetchLatestResumeDocument'
-import { fetchResumeDocumentBySlug } from '@/lib/fetchers/fetchResumeDocumentBySlug'
+import { fetchDocumentBySlug } from '@/lib/fetchers/fetchDocumentBySlug'
+import { generateContentURL } from '@/lib/generateContentURL'
 import { placeholderParams } from '@/lib/placeholderParams'
 import { CollectionSlug } from '@/types/collections'
 import { MediaImage } from '@/types/payload'
@@ -27,20 +28,9 @@ const validateAnchorId = 'validate'
 
 /**
  * Reserved slug value that resolves to whichever document is actually
- * newest, rather than one fixed row — see `resolveResumeDocument`.
+ * newest, rather than one fixed row — see `fetchDocumentBySlug`.
  */
 const LATEST_RESUME_SLUG = 'latest'
-
-/**
- * Resolves the `[slug]` param to a document: `fetchLatestResumeDocument()`
- * for the reserved `latest` value (a single KV-cached lookup, no query
- * against a stale slug), `fetchResumeDocumentBySlug()` for every other
- * value. `proxy.ts` used to rewrite `/resume/latest` to the real slug before
- * this route ever ran; that rewrite is gone, so `latest` now reaches here
- * directly and is handled the same way `opengraph-image.tsx` needs it to be.
- */
-export const resolveResumeDocument = async (slug: string) =>
-  slug === LATEST_RESUME_SLUG ? fetchLatestResumeDocument() : fetchResumeDocumentBySlug(slug)
 
 /** First populated thumbnail for a locale, or `null` if that set is empty/unpopulated. */
 const firstThumbnail = (
@@ -54,11 +44,51 @@ const firstThumbnail = (
   return (populated?.value as MediaImage | undefined) ?? null
 }
 
-export default async function ResumeDocumentPage({ params }: PageProps<'/resume/[slug]'>) {
+export async function generateStaticParams() {
+  const payload = await getPayload({
+    config,
+  })
+
+  const { docs = [] } = await payload.find({
+    collection: CollectionSlug.ResumeDocuments,
+    draft: false,
+    limit: 1000,
+    // The collection denies anonymous reads and has no drafts to filter out.
+    overrideAccess: true,
+    pagination: false,
+    select: {
+      slug: true,
+    },
+  })
+
+  if (docs.length === 0) {
+    return placeholderParams('/resume/[slug]')
+  }
+
+  return [
+    {
+      slug: 'latest',
+    },
+    ...docs.map(({ slug }) => ({
+      slug,
+    })),
+  ]
+}
+
+export default async function ResumeDocumentShell(props: PageProps<'/resume/[slug]'>) {
+  return (
+    <Suspense>
+      <ResumeDocument {...props} />
+    </Suspense>
+  )
+}
+
+async function ResumeDocument({ params }: PageProps<'/resume/[slug]'>) {
   const { slug } = await params
+  const { isEnabled: draft } = await draftMode()
 
   const isLatestSlug = slug === LATEST_RESUME_SLUG
-  const resume = await resolveResumeDocument(slug)
+  const resume = await fetchDocumentBySlug({ slug, draft })
 
   if (!resume) return notFound()
 
@@ -213,42 +243,9 @@ export default async function ResumeDocumentPage({ params }: PageProps<'/resume/
   )
 }
 
-export async function generateStaticParams() {
-  const payload = await getPayload({
-    config,
-  })
-
-  const { docs = [] } = await payload.find({
-    collection: CollectionSlug.ResumeDocuments,
-    draft: false,
-    pagination: false,
-    select: {
-      slug: true,
-    },
-  })
-
-  if (docs.length === 0) {
-    return placeholderParams('/resume/[slug]')
-  }
-
-  // `latest` used to be handled entirely by proxy.ts rewriting it to the
-  // real slug before this route ever ran; that rewrite is gone, so it needs
-  // its own static param now — resolveResumeDocument gives it real content
-  // via fetchLatestResumeDocument rather than a document literally slugged
-  // 'latest'.
-  return [
-    {
-      slug: LATEST_RESUME_SLUG,
-    },
-    ...docs.map(({ slug }) => ({
-      slug,
-    })),
-  ]
-}
-
 export async function generateMetadata({ params }: PageProps<'/resume/[slug]'>): Promise<Metadata> {
   const { slug } = await params
-  const resume = await resolveResumeDocument(slug)
+  const resume = await fetchDocumentBySlug({ slug })
 
   const {
     general: { siteName },
@@ -267,6 +264,12 @@ export async function generateMetadata({ params }: PageProps<'/resume/[slug]'>):
   return {
     title,
     description,
+    alternates: {
+      canonical: generateContentURL({
+        collection: CollectionSlug.ResumeDocuments,
+        slug: resume?.slug,
+      }),
+    },
     creator: name,
     authors: name
       ? [

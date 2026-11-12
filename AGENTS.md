@@ -30,15 +30,17 @@ See `README.md` for setup/run instructions; this file focuses on conventions and
 
 ```bash
 bun install              # install deps (Bun only — see packageManager in package.json)
-bun run dev              # runs Next.js dev server + Storybook in parallel
-bun run dev:app          # Next.js dev server only
-bun run generate         # regenerate Payload types + import map (run after changing collections/fields)
-bun run build            # production build
+bun run dev              # Next.js dev server via scripts/dev.mjs (--tunnel opens the Cloudflare Tunnel)
+bun run dev:app          # plain `next dev`, without the tunnel wrapper
+bun run dev:storybook    # Storybook on :6006 (not started by `bun run dev`)
+bun run generate         # regenerate Next route types, Payload types + import map
+bun run build            # production build (`next build --webpack`)
+bun run typecheck        # tsc --noEmit
+bun run analyze          # production build with @next/bundle-analyzer reports
 bun run lint             # oxlint + oxfmt --check (does NOT auto-fix)
 bun run lint:fix         # oxlint --fix + oxfmt (auto-fixes what it can)
-bun run format           # oxfmt (formatting and import order only)
 bun run test             # unit tests (Vitest)
-bun run deps:lint        # syncpack: dependency version groups
+bun run packages:lint        # syncpack: dependency version groups
 bun run test:e2e         # Playwright E2E (needs docker compose up -d)
 ```
 
@@ -55,11 +57,19 @@ files import generated types from `src/types/payload.ts` and `@/types/collection
 Don't let those block your task, but do not introduce new lint errors or warnings, and prefer
 fixing warnings in files you already touch.
 
+`syncpack.config.mjs` pins each package family (Payload, Storybook, Vitest, Playwright, React) to
+one version with `pinVersion`; to upgrade a family, change its pin and run `bun run packages:fix`
+(`packages:update` skips pinned families). Pins rather than `sameRange`: syncpack only compares
+one dependency across packages, so in this single-package repo no policy catches `react` and
+`react-dom` drifting apart. `scripts/e2e-docker.sh` derives its image tag from the installed
+`@playwright/test`.
+
 Always spell scripts `bun run <script>`: bare `bun test` and `bun build` run Bun's own test runner
 and bundler, not the package scripts.
 
 Commits go through Lefthook (`lefthook.yml`): `pre-commit` runs `oxfmt` then `oxlint --fix` on
-staged files (re-staging the fixes), `commit-msg` enforces Conventional
+staged files (re-staging the fixes) and, when `package.json` is staged, `syncpack format` + `fix`
+followed by `bun install` (re-staging `bun.lock`); `commit-msg` enforces Conventional
 Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
 `test`, `build`, `ci`, `perf`, `style`, `revert`); scopes are unrestricted.
 
@@ -76,7 +86,7 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   4. `@/**` path-alias imports
   5. relative imports
   6. style imports
-  Run `bun run format` (or your editor's Oxc integration) instead of manually sorting imports.
+  Run `bun run lint:fix` (or your editor's Oxc integration) instead of manually sorting imports.
 - `tsconfig.json` has `"strict": false` — do not rely on the compiler to catch null/undefined
   bugs; be explicit and defensive, especially in Payload hooks and access-control functions.
 - `import type` vs. value imports is **not** enforced (`typescript/consistent-type-imports` is off) — either style is
@@ -94,7 +104,8 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   the two hook flavors stay visually distinct — React hooks in `src/lib/hooks/` are camelCase named
   after the hook (`useIsMobile.ts`), Payload lifecycle hooks in `src/lib/payloadHooks/` are
   camelCase named after what they do (`generateChecksum.ts`). Plain utils use camelCase
-  (`generateSlug.ts`).
+  (`generateSlug.ts`). `src/components/hooks/` is an older second home for React hooks (one of
+  them kebab-case, `use-server-sent-events.ts`); put new hooks in `src/lib/hooks/`.
 - **Fields**: folder name has no suffix (`src/fields/Slug/`), but the exported factory function
   has an `XField` suffix (`SlugField`, `TitleField`). Keep this pattern for new fields.
 - **Globals**: naming is currently inconsistent (`SiteSettings`, `SettingsGlobalUser`,
@@ -125,9 +136,9 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   functions), `hooks/` (React hooks), `payloadHooks/` (Payload collection/global lifecycle hooks —
   distinct from `hooks/`, don't conflate the two), `anthropic/` and `mapbox/` (external API
   clients, same shape as `unsplash/`), plus `actions/`, `fetchers/`, `date/`, `i18n/`, `jsonLd/`,
-  `redirects/`, `references/`, `seed/`, `shiki/`, `sse/`, `umami/`, `unsplash/`. A new
-  external API client or hook goes in the matching subfolder; a handful of genuinely standalone
-  utilities stay flat at the top of `src/lib/`.
+  `blog/`, `lexical/`, `migrations/`, `redirects/`, `references/`, `seed/`, `shiki/`, `sse/`,
+  `umami/`, `unsplash/`. A new external API client or hook goes in the matching subfolder; a
+  handful of genuinely standalone utilities stay flat at the top of `src/lib/`.
 - **Collections/Blocks/Fields/Globals** are factory-function based — most fields (e.g.
   `TitleField()`, `SlugField()`) accept an `overrides` object rather than being edited in place.
   Reuse existing field factories instead of inlining raw Payload field configs when one exists.
@@ -141,7 +152,7 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   only inside the grid's Suspense boundary so the shell still prerenders. `src/lib/blog/listing.ts`
   owns the params (sort options, parsing, href building); `proxy.ts` uses it to redirect
   non-canonical forms (legacy `/page/<n>` segments, `page=1`, unknown sorts) and to mark non-default
-  sorts `noindex`. The RSS feed (`/blog/feed.xml`) and `app/sitemap.ts` cache under the `posts` tag,
+  sorts `noindex`. The RSS feed (`/blog/feed.xml`) and `app/(frontend)/sitemap.ts` cache under the `posts` tag,
   which `revalidateBlogPost` invalidates.
 - **Dashboard widgets** (`src/widgets/`): async server components registered in `payload.config.ts`
   under `admin.dashboard.widgets`. Each widget has a `slug`, `Component` path, and optional
@@ -150,6 +161,26 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   `*.client.tsx` files and call server actions from `src/lib/actions/` for mutations.
 - **Server actions** (`src/lib/actions/`): `'use server'` functions for admin mutations (job
   rescheduling, cancellation, etc.). Use `useTransition` on the client side when calling them.
+- **Claude calls** (`src/lib/anthropic/`): every fetcher goes through `generateAnthropicText()`,
+  which owns the model IDs (`ANTHROPIC_MODEL`, Haiku 5.5; `ANTHROPIC_TRANSLATION_MODEL`, Sonnet
+  5.5, for résumé translation only), effort, timeout and output limit, and throws when
+  the answer was cut off or declined rather than returning partial text. Give the model the
+  content itself (wrapped in tags), never a URL: it cannot fetch. These modules are plain server
+  modules, not `'use server'` files, and the worker imports them too, so `server-only` (which
+  throws outside Next) is not an option. Callers that run inside a save (`generateAlt`) catch the
+  error so a Claude outage never blocks the write.
+- **Plugins** (`src/plugins/`): `redirects` and `references` are local Payload plugins that add the
+  `Redirects` and `References` collections; `bun run refs:backfill` rebuilds the reference index.
+- **Stories** live in `.storybook/components/*.stories.tsx`, not next to the components; the
+  design-foundation and shader docs are MDX under `.storybook/foundations/` and
+  `.storybook/shaders/`.
+- **`app/global-error.tsx`, `app/robots.ts` and `app/manifest.ts`** have to stay at the root of
+  `app/`: inside a route group Next silently ignores all three (no error, the URL just 404s).
+  `sitemap.ts` is the exception and works from `app/(frontend)/`. `global-error.tsx` replaces the
+  root layout, so it imports the stylesheet and fonts itself.
+- **Two `llms.txt`**: the root `llms.txt` describes this repository for coding agents and is
+  maintained by hand; `app/llms.txt/route.ts` serves the site's public `/llms.txt` from published
+  content.
 
 ## Environment-specific values
 
@@ -167,15 +198,16 @@ the Next.js bundle; their **handlers** are not. Each handler lives in `handlers/
 config points at it with `handler: handlerPath('<name>.ts')` (Payload loads string handlers at run
 time). A handler module must use `req.payload` instead of `getPayload({ config })`. The web process
 only enqueues jobs (never `runByID`); the worker
-(`scripts/start-worker.mjs`, polling every 5 seconds) runs them.
+(`scripts/start-worker.mjs`, polling every 5 seconds) runs them. The app process runs jobs itself
+only when `PAYLOAD_JOBS_ENABLE_APP_WORKERS=true` (default `false`).
 
 ## Security Guardrails (found during review — respect these when touching related code)
 
 - **SSE / Redis channels** (`app/(frontend)/api/sse/route.ts`): the `channel` query param is
   matched against an allowlist (`src/lib/sse/channels.ts`) before `subscribe()` ever sees it, and
-  per-job channels (`bilingual-translate:`, `seed-task:`) additionally require a signed-in
-  `payload.auth()` session. The public channels in `SSE_CHANNELS` (e.g. `service-status`) stay
-  unauthenticated by design. If you add a new channel that carries non-public data, add it to the
+  per-job channels (`bilingual-translate:`, `seed-task:`, `scheduled-job:`, `resume-generate:`)
+  additionally require a signed-in `payload.auth()` session. The public channels in `SSE_CHANNELS`
+  (e.g. `service-status`) stay unauthenticated by design. If you add a new channel that carries non-public data, add it to the
   authenticated branch rather than `SSE_CHANNELS` — see the route's own comments for the exact
   split.
 - **Raw SVG rendering**: `src/collections/ResumeCustomers` stores raw SVG markup rendered via
@@ -193,20 +225,37 @@ only enqueues jobs (never `runByID`); the worker
   `src/types/environment.ts` declares the schema and is the only place the full set of
   variables is enumerated. The one committed env file is `.env.test`, which holds dummy,
   format-valid values for E2E runs.
-- New authenticated API routes should mirror `app/(frontend)/api/preview/route.ts`'s pattern of
-  pairing a shared-secret check with a real `payload.auth()` session check where feasible.
+- **Semgrep** runs on every PR (`lint-and-test.yml`, rulesets `nodejs`, `typescript`, `react`,
+  `secrets`) and fails the check on any finding. A reviewed, accepted finding is marked on its own
+  line with `// nosemgrep: <rule> -- <reason>` (see `src/components/LogoCarousel/LogoCarousel.tsx`).
+- New authenticated API routes and server actions need a real `payload.auth()` session check, as
+  in the SSE route's per-job branch and `src/lib/actions/enqueueBilingualTranslation.ts` — a Server
+  Action is its own reachable endpoint, whichever page renders the button. Inline `'use server'`
+  functions in admin field components call `requireSession()` (`src/lib/actions/requireSession.ts`)
+  first. A server-side fetch of an uploaded file goes through `resolveOwnMediaUrl()`
+  (`src/lib/resolveOwnMediaUrl.ts`), which rejects any other origin. Compare shared secrets
+  with `crypto.timingSafeEqual` and accept only same-site relative redirect targets, as
+  `app/(frontend)/api/preview/route.ts` does (that route checks `PREVIEW_SECRET` only, no session).
+- **Production detection**: `NODE_ENV` cannot tell environments apart (every deployed image runs
+  `production`). Use `isProductionHost()` (`src/lib/isProductionHost.ts`), which compares
+  `SERVER_HOST` with `PRODUCTION_HOST` and reads an unset value as "not production". Outside
+  production `app/robots.ts` disallows all crawlers and `src/pdf/index.tsx` stamps
+  PDFs as DRAFT.
 
 ## Known Issues / Tech Debt (baseline, not blocking, but don't add more)
 
 - `bun run lint` passes but reports pre-existing warnings, mostly `no-explicit-any`, `no-unused-vars`,
-  `no-img-element` and the React Compiler rules (`set-state-in-effect`, `purity`, `refs`), which
+  `no-img-element`, the React Compiler rules (`set-state-in-effect`, `purity`, `refs`), and the
+  backlog of the `tailwindcss/*` and vendored `anti-slop/*` rules (`tools/oxlint/anti-slop/`), which
   `oxlint.config.ts` keeps at `warn` until they are cleaned up.
-- Leftover debug `console.log`s (e.g. `src/collections/ResumeJobs/index.ts`,
-  `src/blocks/ResumeDownloadsBlock/Renderer/Renderer.tsx`) and commented-out dead code (e.g.
-  `src/collections/ResumeSkillTags/index.ts`) exist and should be cleaned up opportunistically.
-- `package.json` `overrides` pins `postcss-merge-rules` to `9.0.4`: `9.0.6` throws
-  `RangeError: Invalid string length` while cssnano minifies Payload's admin CSS in the
-  production build. Lift the pin once a newer release builds cleanly (`bun run build`).
+- A leftover debug `console.log` (`src/components/VideoMedia/VideoMedia.tsx`) and commented-out dead
+  code (e.g. `src/collections/ResumeSkills/index.ts`,
+  `src/components/ResumeRenderer/sections/Hero/Hero.tsx`) exist and should be cleaned up
+  opportunistically.
+- `package.json` `overrides` pins `pdfjs-dist` to `5.4.296` because `patches/pdfjs-dist@5.4.296.patch`
+  targets that exact version (it gives the fake-worker import a default `workerSrc`, see
+  vercel/next.js#65406). Bumping `pdfjs-dist` means regenerating the patch.
+- The E2E job in `lint-and-test.yml` is commented out, so Playwright only runs locally.
 - No app-level rate limiting exists on public API routes.
 - No shared logging abstraction — error logging is ad hoc `console.error` calls.
 
@@ -217,11 +266,11 @@ only enqueues jobs (never `runByID`); the worker
   test; E2E specs live in `e2e/*.spec.ts` (never `*.spec.ts` under `src/`).
 - Shared mocks live in `vitest.setup.ts`: `payload` (`getPayload` stubbed via `importOriginal`
   spread — never replace the whole module, value imports from it are used at runtime),
-  `next/cache` and `redis`. `tailwind-merge`, `date-fns`, `slugify`, `pupa` and `neotraverse` are
-  intentionally NOT mocked — their real behavior is the contract under test.
+  `next/cache`, `server-only` and `redis`. `tailwind-merge`, `date-fns`, `slugify`, `pupa` and
+  `neotraverse` are intentionally NOT mocked — their real behavior is the contract under test.
 - `TZ=UTC` is forced in `vitest.setup.ts` and date tests depend on it. Anything touching
   `Interval.setToX()` or `getLocalISOString` needs `vi.useFakeTimers()` + `vi.setSystemTime()`.
-  Use `vi.stubEnv()` for env-dependent code (`SERVER_URL`, `PREVIEW_SECRET`).
+  Use `vi.stubEnv()` for env-dependent code (`SERVER_URL`, `SERVER_HOST`, `PRODUCTION_HOST`, `PREVIEW_SECRET`).
 - There is no CI-enforced coverage threshold; when fixing a bug, add a regression test near
   existing tests for that module if a suitable test file already exists.
 

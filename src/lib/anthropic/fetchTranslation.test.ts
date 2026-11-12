@@ -61,6 +61,7 @@ describe('fetchAnthropicTranslation', () => {
   it('sends the source HTML to the model and parses the translated result back into Lexical', async () => {
     generateTextMock.mockResolvedValue({
       text: '<p>Hallo Welt</p>',
+      finishReason: 'stop',
     })
 
     const result = await fetchAnthropicTranslation({
@@ -74,6 +75,7 @@ describe('fetchAnthropicTranslation', () => {
     expect(call[0].prompt).toContain('Hello world')
     expect(call[0].system).toContain('English')
     expect(call[0].system).toContain('German')
+    expect(call[0].model.modelId).toBe('claude-sonnet-5-5')
 
     const root = result?.root as unknown as {
       children: Array<{
@@ -103,6 +105,7 @@ describe('fetchAnthropicTranslation', () => {
   it("strips a leading '```html' + trailing '```' fence from the model output before parsing", async () => {
     generateTextMock.mockResolvedValue({
       text: '```html\n<p>Hallo Welt</p>\n```',
+      finishReason: 'stop',
     })
 
     const result = await fetchAnthropicTranslation({
