@@ -140,6 +140,12 @@ export default {
     'markdown',
   ],
   source: ['package.json', 'apps/*/package.json', 'packages/*/package.json'],
+  /**
+   * Families are pinned, not `sameRange`: every syncpack policy compares one
+   * dependency across several package.json files, so in this single-package
+   * repo only `pinVersion` holds two different dependencies to one version.
+   * To upgrade a family, change its pin and run `bun run packages:fix`.
+   */
   versionGroups: [
     {
       label: 'Independently versioned, despite the shared namespace',
@@ -155,31 +161,31 @@ export default {
       label: 'Payload CMS packages share a release train',
       dependencies: ['payload', '@payloadcms/**'],
       packages: ['**'],
-      policy: 'sameRange',
+      pinVersion: '^3.93.0',
     },
     {
       label: 'Storybook packages share a release train',
       dependencies: ['storybook', '@storybook/**'],
       packages: ['**'],
-      policy: 'sameRange',
+      pinVersion: '^10.6.0',
     },
     {
       label: 'Vitest packages share a release train',
       dependencies: ['vitest', '@vitest/**'],
       packages: ['**'],
-      policy: 'sameRange',
+      pinVersion: '^4.1.11',
     },
     {
       label: 'Playwright packages are pinned to one version',
       dependencies: ['playwright', '@playwright/**'],
       packages: ['**'],
-      policy: 'sameRange',
+      pinVersion: '~1.65.0',
     },
     {
       label: 'react and react-dom packages move together',
       dependencies: ['react', 'react-dom'],
       packages: ['**'],
-      policy: 'sameRange',
+      pinVersion: '^19.3.1',
     },
   ],
   semverGroups: [

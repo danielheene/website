@@ -39,7 +39,6 @@ bun run typecheck        # tsc --noEmit
 bun run analyze          # production build with @next/bundle-analyzer reports
 bun run lint             # oxlint + oxfmt --check (does NOT auto-fix)
 bun run lint:fix         # oxlint --fix + oxfmt (auto-fixes what it can)
-bun run format           # oxfmt (formatting and import order only)
 bun run test             # unit tests (Vitest)
 bun run packages:lint        # syncpack: dependency version groups
 bun run test:e2e         # Playwright E2E (needs docker compose up -d)
@@ -58,11 +57,12 @@ files import generated types from `src/types/payload.ts` and `@/types/collection
 Don't let those block your task, but do not introduce new lint errors or warnings, and prefer
 fixing warnings in files you already touch.
 
-`syncpack.config.mjs` pins `playwright` and `@playwright/*` to one version with `pinVersion`; to
-upgrade Playwright, change that value and run `bun run packages:fix`. `scripts/e2e-docker.sh` derives
-its image tag from the installed `@playwright/test`. The `sameRange` groups in that file (Payload,
-Storybook, Vitest, React) do not catch mismatches between different packages in this
-single-package repo: syncpack only compares one dependency across packages.
+`syncpack.config.mjs` pins each package family (Payload, Storybook, Vitest, Playwright, React) to
+one version with `pinVersion`; to upgrade a family, change its pin and run `bun run packages:fix`
+(`packages:update` skips pinned families). Pins rather than `sameRange`: syncpack only compares
+one dependency across packages, so in this single-package repo no policy catches `react` and
+`react-dom` drifting apart. `scripts/e2e-docker.sh` derives its image tag from the installed
+`@playwright/test`.
 
 Always spell scripts `bun run <script>`: bare `bun test` and `bun build` run Bun's own test runner
 and bundler, not the package scripts.
@@ -86,7 +86,7 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   4. `@/**` path-alias imports
   5. relative imports
   6. style imports
-  Run `bun run format` (or your editor's Oxc integration) instead of manually sorting imports.
+  Run `bun run lint:fix` (or your editor's Oxc integration) instead of manually sorting imports.
 - `tsconfig.json` has `"strict": false` — do not rely on the compiler to catch null/undefined
   bugs; be explicit and defensive, especially in Payload hooks and access-control functions.
 - `import type` vs. value imports is **not** enforced (`typescript/consistent-type-imports` is off) — either style is
