@@ -56,7 +56,6 @@ export const GeneratorFlagsField = (): TextField => ({
   hooks: {
     afterRead: [({ value }) => value ?? []],
   },
-  required: true,
   defaultValue: [],
   typescriptSchema: [
     () => ({
@@ -65,7 +64,6 @@ export const GeneratorFlagsField = (): TextField => ({
         $ref: '#/definitions/GeneratorFlag',
       },
       additionalItems: false,
-      required: true,
       default: [],
     }),
   ],

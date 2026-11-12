@@ -3,86 +3,42 @@ import { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-mongodb'
 import { SiteSettingsDefaults } from '@/globals/SiteSettings'
 import { CollectionSlug } from '@/types/collections'
 import { GlobalSlug } from '@/types/globals'
+import { Page } from '@/types/payload'
 
-export async function up({ payload, req: _req, session: _session }: MigrateUpArgs): Promise<void> {
-  const homePage = await payload.db.upsert({
-    collection: CollectionSlug.Pages,
-    where: {
-      slug: {
-        equals: 'home',
-      },
-    },
-    data: {
-      title: 'Home',
-      slug: 'home',
-      protected: true,
-      layout: 'home',
-      _status: 'published',
-    },
+export async function up({ payload, req, session: _session }: MigrateUpArgs): Promise<void> {
+  const migration = {
+    payload,
+    req,
+  }
+
+  const homePage = await createOrUpdatePage(migration, {
+    slug: 'home',
+    title: 'Home',
+    layout: 'home',
   })
 
-  const aboutMePage = await payload.db.upsert({
-    collection: CollectionSlug.Pages,
-    where: {
-      slug: {
-        equals: 'about-me',
-      },
-    },
-    data: {
-      title: 'About Me',
-      slug: 'about-me',
-      protected: true,
-      layout: 'default',
-      _status: 'published',
-    },
+  const aboutMePage = await createOrUpdatePage(migration, {
+    slug: 'about-me',
+    title: 'About Me',
+    layout: 'default',
   })
 
-  const resumePage = await payload.db.upsert({
-    collection: CollectionSlug.Pages,
-    where: {
-      slug: {
-        equals: 'resume',
-      },
-    },
-    data: {
-      title: 'Resume',
-      slug: 'resume',
-      protected: true,
-      layout: 'resume',
-      _status: 'published',
-    },
+  const resumePage = await createOrUpdatePage(migration, {
+    slug: 'resume',
+    title: 'Resume',
+    layout: 'resume',
   })
 
-  const legalNoticePage = await payload.db.upsert({
-    collection: CollectionSlug.Pages,
-    where: {
-      slug: {
-        equals: 'legal-notice',
-      },
-    },
-    data: {
-      title: 'Legal Notice',
-      slug: 'legal-notice',
-      protected: true,
-      layout: 'legal',
-      _status: 'published',
-    },
+  const legalNoticePage = await createOrUpdatePage(migration, {
+    slug: 'legal-notice',
+    title: 'Legal Notice',
+    layout: 'legal',
   })
 
-  const privacyPolicyPage = await payload.db.upsert({
-    collection: CollectionSlug.Pages,
-    where: {
-      slug: {
-        equals: 'privacy-policy',
-      },
-    },
-    data: {
-      title: 'Privacy Policy',
-      slug: 'privacy-policy',
-      protected: true,
-      layout: 'resume',
-      _status: 'published',
-    },
+  const privacyPolicyPage = await createOrUpdatePage(migration, {
+    slug: 'privacy-policy',
+    title: 'Privacy Policy',
+    layout: 'resume',
   })
 
   await payload.db.updateGlobal({
@@ -202,4 +158,55 @@ export async function down({
   session: _session,
 }: MigrateDownArgs): Promise<void> {
   // Migration code
+}
+
+async function createOrUpdatePage(
+  { payload, req }: Pick<MigrateUpArgs, 'payload' | 'req'>,
+  page: Pick<Page, 'slug' | 'title' | 'layout'>,
+): Promise<Page> {
+  const where = {
+    slug: {
+      equals: page.slug,
+    },
+  }
+
+  const data = {
+    ...page,
+    protected: true,
+    _status: 'published' as const,
+  }
+
+  // No Next context in the migrate CLI to revalidate from.
+  const context = {
+    skipRevalidate: true,
+  }
+
+  const { totalDocs } = await payload.count({
+    collection: CollectionSlug.Pages,
+    req,
+    where,
+  })
+
+  if (!totalDocs) {
+    return payload.create({
+      collection: CollectionSlug.Pages,
+      context,
+      data,
+      draft: false,
+      req,
+    })
+  }
+
+  const {
+    docs: [updated],
+  } = await payload.update({
+    collection: CollectionSlug.Pages,
+    context,
+    data,
+    draft: false,
+    req,
+    where,
+  })
+
+  return updated
 }

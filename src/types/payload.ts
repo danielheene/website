@@ -398,7 +398,7 @@ export interface MediaImage {
     [k: string]: unknown;
   } | null;
   blurDataURL?: string | null;
-  generatorFlags: GeneratorFlag[];
+  generatorFlags?: GeneratorFlag[];
   prefix?: string | null;
   _objectKey?: string | null;
   updatedAt: string;
@@ -533,7 +533,7 @@ export interface Page {
     title?: string | null;
     description?: string | null;
   };
-  generatorFlags: GeneratorFlag[];
+  generatorFlags?: GeneratorFlag[];
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -567,7 +567,7 @@ export interface MediaVideo {
         value: string | MediaImage;
       }[]
     | null;
-  generatorFlags: GeneratorFlag[];
+  generatorFlags?: GeneratorFlag[];
   prefix?: string | null;
   _objectKey?: string | null;
   updatedAt: string;
@@ -940,7 +940,7 @@ export interface BlogPostData {
     title?: string | null;
     description?: string | null;
   };
-  generatorFlags: GeneratorFlag[];
+  generatorFlags?: GeneratorFlag[];
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -1016,7 +1016,7 @@ export interface Topic {
     title?: string | null;
     description?: string | null;
   };
-  generatorFlags: GeneratorFlag[];
+  generatorFlags?: GeneratorFlag[];
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -1126,7 +1126,7 @@ export interface MediaDocument {
         value: string | MediaImage;
       }[]
     | null;
-  generatorFlags: GeneratorFlag[];
+  generatorFlags?: GeneratorFlag[];
   prefix?: string | null;
   _objectKey?: string | null;
   updatedAt: string;
@@ -1163,7 +1163,7 @@ export interface MediaAudio {
     };
     [k: string]: unknown;
   } | null;
-  generatorFlags: GeneratorFlag[];
+  generatorFlags?: GeneratorFlag[];
   prefix?: string | null;
   _objectKey?: string | null;
   updatedAt: string;
@@ -1188,7 +1188,7 @@ export interface ResumeCustomerData {
   title: string;
   slug: string;
   svg?: string | null;
-  generatorFlags: GeneratorFlag[];
+  generatorFlags?: GeneratorFlag[];
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1243,7 +1243,7 @@ export interface ResumeDocumentData {
     | number
     | boolean
     | null;
-  generatorFlags: GeneratorFlag[];
+  generatorFlags?: GeneratorFlag[];
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1448,7 +1448,7 @@ export interface ResumeJobData {
         value: string | ResumeSkillTagData;
       }[]
     | null;
-  generatorFlags: GeneratorFlag[];
+  generatorFlags?: GeneratorFlag[];
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -1476,7 +1476,7 @@ export interface ResumeSkillTagData {
     hasNextPage?: boolean;
     totalDocs?: number;
   };
-  generatorFlags: GeneratorFlag[];
+  generatorFlags?: GeneratorFlag[];
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1527,7 +1527,7 @@ export interface ResumeSkillData {
         value: string | ResumeSkillTagData;
       }[]
     | null;
-  generatorFlags: GeneratorFlag[];
+  generatorFlags?: GeneratorFlag[];
   createdAt: string;
   updatedAt: string;
   deletedAt?: string | null;
@@ -1566,7 +1566,7 @@ export interface ResumeProjectData {
         value: string | MediaImage;
       }[]
     | null;
-  generatorFlags: GeneratorFlag[];
+  generatorFlags?: GeneratorFlag[];
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -2516,7 +2516,7 @@ export interface PDFGeneratorSettings {
   generateThrottle?: number | null;
   timeoutBetweenJobs?: number | null;
   maximumRetries: number;
-  skillSorting?: SkillSorting;
+  skillSorting: SkillSorting;
   updatedAt?: string | null;
   createdAt?: string | null;
 }

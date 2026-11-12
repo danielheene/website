@@ -2,6 +2,8 @@ import { EventEmitter } from 'node:events'
 
 import { createClient } from 'redis'
 
+import { isCachedRedisValue } from '@/lib/typeGuards'
+
 export type RedisListener = (message: string) => void
 
 const createRedisClient = () =>
@@ -59,7 +61,7 @@ export const get = async <T extends object | string>(key: string): Promise<T | n
   const redis = await getClient()
   const data = await redis.get(key)
 
-  if (!data || typeof data !== 'string') return null
+  if (!isCachedRedisValue(data)) return null
 
   try {
     return JSON.parse(data) as T
@@ -82,9 +84,7 @@ export const set = async <T extends object | string>(
   const stringifiedValue = JSON.stringify(value)
 
   if (ttlSeconds) {
-    await redis.set(key, stringifiedValue, {
-      EX: ttlSeconds,
-    })
+    await redis.set(key, stringifiedValue, { expiration: { type: 'EX', value: ttlSeconds } })
   } else {
     await redis.set(key, stringifiedValue)
   }

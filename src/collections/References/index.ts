@@ -25,7 +25,7 @@ import { CollectionSlug } from '@/types/collections'
  * Being `hidden` it has no nav entry; reach it directly at
  * `/admin/collections/document-references`.
  */
-export const References: CollectionConfig = {
+export const References: CollectionConfig<CollectionSlug['DocumentReferences']> = {
   slug: CollectionSlug.DocumentReferences,
   access: {
     create: forbidden,

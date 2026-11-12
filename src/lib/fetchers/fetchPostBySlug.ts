@@ -7,58 +7,51 @@ import { BilingualLanguage, reduceDataToBilingualLanguage } from '@/lib/i18n'
 import { resolveRelations } from '@/lib/resolveRelation'
 import { CollectionData, CollectionSlug } from '@/types/collections'
 
-/**
- * Fetches a resume document by its slug, optionally resolving the special "latest" slug to the most recently created document.
- * Returns the document reduced to the requested bilingual language with relations resolved, or null if no document is found or an error occurs.
- *
- * @param slug - The document slug to fetch. Use "latest" to fetch the most recently created resume document.
- * @param draft - Whether to include draft document data when querying the collection.
- * @param locale - The bilingual language used to reduce localized document data.
- * @return The resolved resume document collection data, or null if the document cannot be found or fetched.
- */
-async function fetchDocumentBySlugRaw(
+async function fetchPostBySlugRaw(
   slug: string,
   draft: boolean,
   locale: BilingualLanguage,
-): Promise<CollectionData<CollectionSlug['ResumeDocuments']> | null> {
+): Promise<CollectionData<CollectionSlug['BlogPosts']> | null> {
   const payload = await getPayload({
     config,
   })
-
-  let realSlug: string = slug
-
-  if (slug === 'latest') {
-    try {
-      const {
-        docs: [latestDoc],
-      } = await payload.find({
-        collection: CollectionSlug.ResumeDocuments,
-        overrideAccess: true,
-        draft,
-        limit: 1,
-        sort: '-createdAt',
-      })
-
-      if (latestDoc && latestDoc.slug) {
-        realSlug = latestDoc.slug
-      }
-    } catch (error) {
-      console.error('[fetchDocumentBySlugRaw]', extractErrorMessage(error))
-    }
-  }
 
   try {
     const {
       docs: [doc],
     } = await payload.find({
-      collection: CollectionSlug.ResumeDocuments,
+      collection: CollectionSlug.BlogPosts,
       overrideAccess: true,
       draft,
       limit: 1,
       where: {
-        slug: {
-          equals: realSlug,
-        },
+        and: [
+          {
+            slug: {
+              equals: slug,
+            },
+          },
+          // Preview reads the newest version whatever its status: a published
+          // document without a pending draft has no 'draft' version to match.
+          ...(draft
+            ? []
+            : [
+                {
+                  or: [
+                    {
+                      _status: {
+                        equals: 'published' as const,
+                      },
+                    },
+                    {
+                      _status: {
+                        exists: false,
+                      },
+                    },
+                  ],
+                },
+              ]),
+        ],
       },
     })
 
@@ -66,38 +59,24 @@ async function fetchDocumentBySlugRaw(
 
     return resolveRelations(reduceDataToBilingualLanguage(doc, locale))
   } catch (error) {
-    console.error('[fetchDocumentBySlugRaw]', extractErrorMessage(error))
+    console.error('[fetchPostBySlugRaw]', extractErrorMessage(error))
 
     return null
   }
 }
 
-/**
- * Fetches a cached resume document by its slug and locale.
- *
- * @param slug - The unique slug identifying the resume document.
- * @param locale - The bilingual language locale used to retrieve the*/
-async function fetchDocumentBySlugCached(
+async function fetchPostBySlugCached(
   slug: string,
   locale: BilingualLanguage,
-): Promise<CollectionData<CollectionSlug['ResumeDocuments']> | null> {
+): Promise<CollectionData<CollectionSlug['BlogPosts']> | null> {
   'use cache'
   cacheLife('max')
-  cacheTag(CollectionSlug.ResumeDocuments, `${CollectionSlug.ResumeDocuments}:${slug}`)
+  cacheTag(CollectionSlug.BlogPosts, `${CollectionSlug.BlogPosts}:${slug}`)
 
-  return fetchDocumentBySlugRaw(slug, false, locale)
+  return fetchPostBySlugRaw(slug, false, locale)
 }
 
-/**
- * Fetches a resume document by its slug, optionally resolving the special "latest" slug to the most recently created document.
- * Returns the document reduced to the requested bilingual language with relations resolved, or null if no document is found or an error occurs.
- *
- * @param slug - The document slug to fetch. Use "latest" to fetch the most recently created resume document.
- * @param draft - Whether to include draft document data when querying the collection.
- * @param locale - The bilingual language used to reduce localized document data.
- * @return The resolved resume document collection data, or null if the document cannot be found or fetched.
- */
-export async function fetchDocumentBySlug({
+export async function fetchPostBySlug({
   slug,
   draft = false,
   locale = 'en',
@@ -105,10 +84,10 @@ export async function fetchDocumentBySlug({
   slug: string
   draft?: boolean
   locale?: BilingualLanguage
-}): Promise<CollectionData<CollectionSlug['ResumeDocuments']> | null> {
+}): Promise<CollectionData<CollectionSlug['BlogPosts']> | null> {
   if (draft) {
-    return fetchDocumentBySlugRaw(slug, true, locale)
+    return fetchPostBySlugRaw(slug, true, locale)
   }
 
-  return fetchDocumentBySlugCached(slug, locale)
+  return fetchPostBySlugCached(slug, locale)
 }

@@ -3,9 +3,8 @@ import { notFound } from 'next/navigation'
 import { ImageResponse } from 'takumi-js/response'
 
 import { fetchSiteSettingsCached } from '@/lib/fetchers'
+import { fetchPostBySlug } from '@/lib/fetchers/fetchPostBySlug'
 import { resolveOgBackground } from '@/lib/resolveOgBackground'
-
-import { queryPostBySlug } from './page'
 
 export const alt = 'Blog post'
 
@@ -23,7 +22,7 @@ type Props = {
 export default async function Image({ params }: Props) {
   const { slug } = await params
 
-  const post = await queryPostBySlug({
+  const post = await fetchPostBySlug({
     slug: slug ?? '',
   })
 

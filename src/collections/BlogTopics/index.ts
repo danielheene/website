@@ -17,6 +17,7 @@ import { generatePreviewPath } from '@/lib/generatePreviewPath'
 import { AdminGroup } from '@/types/admin-panel'
 import { RESERVED_TOPIC_SLUGS } from '@/types/blog'
 import { CollectionData, CollectionSlug } from '@/types/collections'
+import { Topic } from '@/types/payload'
 
 import { revalidateBlogTopic } from './hooks/revalidateBlogTopic'
 
@@ -76,27 +77,35 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
     delete: async ({
       req: { user, payload },
       id,
-    }: AccessArgs<CollectionData<CollectionSlug['BlogTopics']>>) => {
+      collectionConfig: { slug },
+    }: AccessArgs<Topic>) => {
       if (!user) return false
-      let references = 0
 
       try {
-        const { totalDocs } = await payload.find({
-          collection: CollectionSlug.BlogPosts,
+        const { totalDocs } = await payload.count({
+          collection: CollectionSlug.DocumentReferences,
           where: {
-            topics: {
-              contains: id,
-            },
+            and: [
+              {
+                targetCollection: {
+                  equals: slug,
+                },
+              },
+              {
+                targetId: {
+                  equals: id,
+                },
+              },
+            ],
           },
-          pagination: false,
         })
 
-        references += totalDocs
-      } catch (_) {
-        /* no references found */
-      }
+        return totalDocs === 0
+      } catch (error) {
+        payload.logger.error(error)
 
-      return references === 0
+        return false
+      }
     },
     read: authenticatedOrPublished,
     update: authenticated,

@@ -55,6 +55,7 @@ async function fetchDocumentBySlugRaw(
       overrideAccess: true,
       draft,
       limit: 1,
+      // No `_status` filter: the collection has no drafts, and Payload rejects the path.
       where: {
         slug: {
           equals: realSlug,
@@ -76,7 +77,8 @@ async function fetchDocumentBySlugRaw(
  * Fetches a cached resume document by its slug and locale.
  *
  * @param slug - The unique slug identifying the resume document.
- * @param locale - The bilingual language locale used to retrieve the*/
+ * @param locale - The bilingual language used to reduce localized document data.
+ */
 async function fetchDocumentBySlugCached(
   slug: string,
   locale: BilingualLanguage,
