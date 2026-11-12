@@ -2,7 +2,7 @@ import { ChildProcess, spawn } from 'node:child_process'
 import process from 'node:process'
 
 import { NextConfig } from 'next'
-import { PHASE_DEVELOPMENT_SERVER } from 'next/constants'
+import { PHASE_DEVELOPMENT_SERVER, type PHASE_TYPE } from 'next/constants'
 import { withPayload } from '@payloadcms/next/withPayload'
 
 import bundleAnalyzer from '@next/bundle-analyzer'
@@ -12,101 +12,13 @@ import { envSchema } from '@/types/environment'
 
 let server: ChildProcess | null = null
 
-const createTunnel = (token: string) =>
-  new Promise<ChildProcess | null>((resolve) => {
-    // No `shell: true`: the token is passed as its own argv entry rather than
-    // concatenated into a command string, which also silences DEP0190.
-    const childProcess = spawn('npx', ['wrangler', 'tunnel', 'run', '--token', token], {
-      stdio: 'ignore',
-    })
+export default async function buildConfig(phase: PHASE_TYPE): Promise<NextConfig> {
+  /* parse environment variables and normalize values */
+  parseEnvironment()
 
-    /**
-     *    Reap the tunnel with the dev server. Without this every `next dev`
-     *    leaves a live `wrangler tunnel run` behind, and they accumulate
-     *    silently across restarts.
-     *
-     *    Only `exit` is hooked: scripts/dev.mjs already forwards SIGINT/SIGTERM
-     *    to this process and re-raises them, so adding handlers here would
-     *    replace Node's default signal behaviour and let the wrapper's own
-     *    exit-code handling be pre-empted by a hardcoded `process.exit(0)`.
-     */
-    process.once('exit', () => {
-      if (!childProcess.killed) {
-        childProcess.kill('SIGTERM')
-      }
-    })
-
-    /**
-     *    `spawn` fires for npx itself, so it only proves the launcher started —
-     *    wrangler may still fail afterwards (missing binary, rejected token).
-     *    An early exit is therefore treated as a failed tunnel, and whichever
-     *    of the two settles first wins.
-     */
-    childProcess.once('spawn', () => {
-      resolve(childProcess)
-    })
-    childProcess.once('error', () => {
-      resolve(null)
-    })
-    childProcess.once('exit', (code) => {
-      if (code !== 0) resolve(null)
-    })
-  })
-
-export default async (phase, { defaultConfig: _defaultConfig }) => {
-  /**
-   *    The tunnel is opt-in via `bun run dev --tunnel`, which scripts/dev.mjs
-   *    translates into DEV_TUNNEL=1. Having the credentials in .env.local is
-   *    no longer enough to start it — otherwise every `next dev` opens a
-   *    public tunnel as a side effect of the file being present.
-   *
-   *    This runs before validation so the addresses it swaps in are the ones
-   *    the schema checks.
-   */
-  const tunnelRequested = phase === PHASE_DEVELOPMENT_SERVER && process.env.DEV_TUNNEL === '1'
-
-  if (tunnelRequested) {
-    const { CLOUDFLARE_TUNNEL_URL, CLOUDFLARE_TUNNEL_HOST, CLOUDFLARE_TUNNEL_TOKEN } = process.env
-
-    if (!CLOUDFLARE_TUNNEL_URL || !CLOUDFLARE_TUNNEL_HOST || !CLOUDFLARE_TUNNEL_TOKEN) {
-      console.error(
-        '\n[tunnel] --tunnel needs CLOUDFLARE_TUNNEL_URL, CLOUDFLARE_TUNNEL_HOST and CLOUDFLARE_TUNNEL_TOKEN\n',
-      )
-      process.exit(1)
-    }
-
-    process.env.SERVER_HOST = CLOUDFLARE_TUNNEL_HOST
-    process.env.SERVER_URL = CLOUDFLARE_TUNNEL_URL
-  }
-
-  /* Environment validation */
-  const parsedEnv = envSchema.safeParse(process.env)
-
-  if (!parsedEnv.success) {
-    console.error(`\n${z.prettifyError(parsedEnv.error)}\n`)
-    process.exit(1)
-  }
-
-  if (tunnelRequested) {
-    // Next reloads this config on edit; the tunnel outlives those reloads.
-    if (!server) {
-      server = await createTunnel(process.env.CLOUDFLARE_TUNNEL_TOKEN)
-
-      if (!server) {
-        console.error('\n[tunnel] failed to start `wrangler tunnel run` — is wrangler installed?\n')
-        process.exit(1)
-      }
-    }
-
-    /**
-     *    Only this process has the tunnel URL — .env.local is loaded by Next,
-     *    not by scripts/dev.mjs. Hand it to the wrapper, which splices it into
-     *    Next's address block and swallows this marker.
-     *
-     *    stderr, not stdout: Next captures stdout while the config loads, so a
-     *    marker written there never reaches the parent.
-     */
-    process.stderr.write(`__DEV_TUNNEL_URL__${process.env.SERVER_URL}\n`)
+  /* when next is called with DEV_TUNNEL=1, we need to set the server host and url */
+  if (phase === PHASE_DEVELOPMENT_SERVER && process.env.DEV_TUNNEL === '1') {
+    await initializeTunnel()
   }
 
   const nextConfig: NextConfig = {
@@ -275,9 +187,115 @@ export default async (phase, { defaultConfig: _defaultConfig }) => {
 
   const withBundleAnalyzer = bundleAnalyzer({
     enabled: process.env.ANALYZE === 'true',
+    openAnalyzer: process.env.CI !== 'true',
   })
 
   return withPayload(withBundleAnalyzer(nextConfig), {
     devBundleServerPackages: false,
   })
+}
+
+/**
+ * Parses environment variables and normalizes them.
+ */
+function parseEnvironment(): void {
+  const parsedEnv = envSchema.safeParse(process.env)
+
+  /* fail early when necessary env vars are missing */
+  if (!parsedEnv.success) {
+    console.error(`\n${z.prettifyError(parsedEnv.error)}\n`)
+    process.exit(1)
+  }
+
+  /* overwrite process.env with parsedEnv.data to enable normalized values */
+  Object.entries(parsedEnv.data).forEach(([key, value]) => {
+    // Assigning undefined would store the string 'undefined'.
+    if (value === undefined) {
+      delete process.env[key]
+
+      return
+    }
+
+    process.env[key] = value
+  })
+}
+
+/**
+ * Spawns a wrangler tunnel process and returns a promise that resolves to the
+ * spawned process or null if the process fails to start.
+ */
+function createTunnel(token: string) {
+  return new Promise<ChildProcess | null>((resolve) => {
+    // No `shell: true`: the token is passed as its own argv entry rather than
+    // concatenated into a command string, which also silences DEP0190.
+    const childProcess = spawn('npx', ['wrangler', 'tunnel', 'run', '--token', token], {
+      stdio: 'ignore',
+    })
+
+    /**
+     *    Reap the tunnel with the dev server. Without this every `next dev`
+     *    leaves a live `wrangler tunnel run` behind, and they accumulate
+     *    silently across restarts.
+     *
+     *    Only `exit` is hooked: scripts/dev.mjs already forwards SIGINT/SIGTERM
+     *    to this process and re-raises them, so adding handlers here would
+     *    replace Node's default signal behaviour and let the wrapper's own
+     *    exit-code handling be pre-empted by a hardcoded `process.exit(0)`.
+     */
+    process.once('exit', () => {
+      if (!childProcess.killed) {
+        childProcess.kill('SIGTERM')
+      }
+    })
+
+    /**
+     *    `spawn` fires for npx itself, so it only proves the launcher started —
+     *    wrangler may still fail afterwards (missing binary, rejected token).
+     *    An early exit is therefore treated as a failed tunnel, and whichever
+     *    of the two settles first wins.
+     */
+    childProcess.once('spawn', () => {
+      resolve(childProcess)
+    })
+    childProcess.once('error', () => {
+      resolve(null)
+    })
+    childProcess.once('exit', (code) => {
+      if (code !== 0) resolve(null)
+    })
+  })
+}
+
+async function initializeTunnel() {
+  const tunnelVarsAvailable =
+    !!process.env.CLOUDFLARE_TUNNEL_URL &&
+    !!process.env.CLOUDFLARE_TUNNEL_HOST &&
+    !!process.env.CLOUDFLARE_TUNNEL_TOKEN
+
+  if (!tunnelVarsAvailable) {
+    console.error(
+      '\n[tunnel] --tunnel needs CLOUDFLARE_TUNNEL_URL, CLOUDFLARE_TUNNEL_HOST and CLOUDFLARE_TUNNEL_TOKEN\n',
+    )
+    process.exit(1)
+  }
+
+  if (tunnelVarsAvailable) {
+    process.env.SERVER_HOST = process.env.CLOUDFLARE_TUNNEL_HOST
+    process.env.SERVER_URL = process.env.CLOUDFLARE_TUNNEL_URL
+
+    if (!server && !!process.env.CLOUDFLARE_TUNNEL_TOKEN) {
+      server = await createTunnel(process.env.CLOUDFLARE_TUNNEL_TOKEN)
+
+      if (!server) {
+        console.error('\n[tunnel] failed to start `wrangler tunnel run` — is wrangler installed?\n')
+        process.exit(1)
+      }
+
+      /**
+       *    stderr, not stdout: Next captures stdout while the config loads, so a
+       *    marker written there never reaches the parent.
+       */
+      process.stderr.write(`__DEV_TUNNEL_URL__${process.env.SERVER_URL}\n`)
+    }
+  }
 }

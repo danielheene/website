@@ -7,11 +7,7 @@
     "incremental": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "module": "esnext",
     "moduleResolution": "bundler",
     "noEmit": true,
@@ -27,26 +23,13 @@
     "strict": false,
     "target": "esnext",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@payload-config": [
-        "./payload.config.ts"
-      ],
-      "react": [
-        "./node_modules/@types/react"
-      ],
-      "react-dom": [
-        "./node_modules/@types/react-dom"
-      ],
-      "react-s"
+      "@/*": ["./src/*"],
+      "@payload-config": ["./payload.config.ts"],
+      "react": ["./node_modules/@types/react"],
+      "react-dom": ["./node_modules/@types/react-dom"]
     }
   },
-  "exclude": [
-    "node_modules",
-    "out",
-    "tools/oxlint/anti-slop"
-  ],
+  "exclude": ["node_modules", "out", "tools/oxlint/anti-slop"],
   "include": [
     "next-env.d.ts",
     "**/*.ts",
@@ -58,6 +41,6 @@
     ".storybook/**/*.ts",
     ".storybook/**/*.tsx",
     ".storybook/**/*.mdx",
-    "node_modules/storybook/dist/manager/runtime.js",
+    "node_modules/storybook/dist/manager/runtime.js"
   ]
 }

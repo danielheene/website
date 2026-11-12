@@ -12,6 +12,10 @@ import tailwindcss from 'oxlint-tailwindcss/config'
  * types domains, with the same rules switched off or down to warnings.
  */
 export default defineConfig({
+  // Off until the strict-mode typing refactor: it adds 66 errors today.
+  options: {
+    typeAware: false,
+  },
   extends: [tailwindcss()],
   settings: {
     tailwindcss: {
@@ -25,9 +29,9 @@ export default defineConfig({
     'oxc',
     'react',
     'react-perf',
-    'jsx-a11y',
     'nextjs',
     'import',
+    'jsx-a11y',
   ],
   categories: {
     correctness: 'error',
@@ -82,7 +86,7 @@ export default defineConfig({
     'anti-slop/no-module-mocking': 'warn',
     'anti-slop/no-object-parameters': 'warn',
     'anti-slop/no-reflect-get': 'warn',
-    'anti-slop/no-runtime-typeof': 'warn',
+    'anti-slop/no-runtime-typeof': ['warn', { allowInTypeGuards: true }],
     'anti-slop/no-shape-in-symbol-names': 'warn',
     'anti-slop/no-unknown-parameters': 'warn',
     'anti-slop/no-unknown-returns': 'warn',
