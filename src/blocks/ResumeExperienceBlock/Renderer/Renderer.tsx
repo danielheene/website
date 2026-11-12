@@ -1,5 +1,3 @@
-'use server'
-
 import { Suspense } from 'react'
 
 import { fetchResumeJobsCached } from '@/lib/fetchers/fetchResumeJobs'

@@ -1,5 +1,3 @@
-'use server'
-
 import { fetchPDFGeneratorSettings, fetchResumeSkills } from '@/lib/fetchers'
 import { type BilingualLanguage, translate } from '@/lib/i18n'
 import { DocumentSectionType, SkillSection } from '@/pdf/types'

@@ -1,5 +1,3 @@
-'use server'
-
 import { FieldHook } from 'payload'
 import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintext'
 

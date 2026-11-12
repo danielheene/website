@@ -1,5 +1,3 @@
-'use server'
-
 import { fetchResumeProjectsCached } from '@/lib/fetchers/fetchResumeProjects'
 import { reduceDataToBilingualLanguage } from '@/lib/i18n'
 import { resolveRelations } from '@/lib/resolveRelation'

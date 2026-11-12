@@ -1,5 +1,3 @@
-'use server'
-
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 
 import { fetchGlobalUserSettings } from '@/lib/fetchers'

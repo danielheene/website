@@ -16,8 +16,6 @@ const nanoid = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 5)
  * Retries until `ResumeDocuments` has no doc with that slug.
  */
 export const generateResumeId = async () => {
-  'use server'
-
   const payload = await getPayload({
     config,
   })

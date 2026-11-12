@@ -1,5 +1,3 @@
-'use server'
-
 import { fetchGlobalUserSettings } from '@/lib/fetchers'
 import { BilingualLanguage } from '@/lib/i18n'
 import { DocumentSectionType, IntroductionSection } from '@/pdf/types'

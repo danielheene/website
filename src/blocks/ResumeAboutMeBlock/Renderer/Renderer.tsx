@@ -1,5 +1,3 @@
-'use server'
-
 import { resolveRelations } from '@/lib/resolveRelation'
 import { ResumeAboutMeBlock } from '@/types/payload'
 

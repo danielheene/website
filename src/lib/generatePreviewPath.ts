@@ -1,5 +1,3 @@
-'use server'
-
 import { generateContentPath } from './generateContentPath'
 
 /**

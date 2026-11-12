@@ -1,5 +1,3 @@
-'use server'
-
 import Link from 'next/link'
 
 import { Headline } from '@/components/Headline'
