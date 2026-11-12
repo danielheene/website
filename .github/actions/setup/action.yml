@@ -17,7 +17,7 @@ runs:
         node-version: 26
 
     - name: Cache Bun packages
-      uses: actions/cache@v4 # TODO: pin to a commit SHA like the other actions
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ~/.bun/install/cache
         key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
