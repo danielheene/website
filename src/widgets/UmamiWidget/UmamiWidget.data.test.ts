@@ -5,6 +5,12 @@ vi.mock('@/lib/RedisHandler', () => ({
   set: vi.fn(async () => undefined),
 }))
 
+const requireSessionMock = vi.fn(async () => undefined)
+
+vi.mock('@/lib/actions/requireSession', () => ({
+  requireSession: () => requireSessionMock(),
+}))
+
 const { getToken } = await import('@/lib/umami/getToken')
 const { fetchWebsite } = await import('./UmamiWidget.data')
 
@@ -18,6 +24,16 @@ describe('UmamiWidget data', () => {
     vi.unstubAllEnvs()
     vi.unstubAllGlobals()
     vi.restoreAllMocks()
+  })
+
+  it('rejects without a session and never calls Umami', async () => {
+    const fetchMock = vi.fn()
+
+    vi.stubGlobal('fetch', fetchMock)
+    requireSessionMock.mockRejectedValueOnce(new Error('You must be signed in to do this.'))
+
+    await expect(fetchWebsite()).rejects.toThrow('You must be signed in to do this.')
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 
   it('returns null instead of throwing when Umami is unreachable', async () => {

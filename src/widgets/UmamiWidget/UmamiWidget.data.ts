@@ -2,6 +2,7 @@
 
 import { hoursToSeconds } from 'date-fns'
 
+import { requireSession } from '@/lib/actions/requireSession'
 import { get, set } from '@/lib/RedisHandler'
 import { getToken } from '@/lib/umami/getToken'
 
@@ -116,7 +117,13 @@ export type UmamiPageViews = {
   sessions: Metric[]
 }
 
+/**
+ * Every export of this module is a server action, a callable endpoint whichever
+ * page renders the widget, so each one checks the session itself.
+ */
 export const fetchWebsite = async () => {
+  await requireSession()
+
   const url = buildApiUrl('')
 
   return await fetcher<UmamiWebsite>(url)
@@ -127,6 +134,8 @@ export const fetchStats = async ({
   endAt,
   unit,
 }: UmamiStatsParams): Promise<UmamiStats | null> => {
+  await requireSession()
+
   const url = buildApiUrl('stats', {
     startAt,
     endAt,
@@ -140,6 +149,8 @@ export const fetchEvents = async ({
   startAt,
   endAt,
 }: UmamiEventsParams): Promise<UmamiEvent[] | null> => {
+  await requireSession()
+
   const url = buildApiUrl('metrics', {
     startAt,
     endAt,
@@ -153,6 +164,8 @@ export const fetchPaths = async ({
   startAt,
   endAt,
 }: UmamiPathsParams): Promise<UmamiPath[] | null> => {
+  await requireSession()
+
   const url = buildApiUrl('metrics', {
     startAt,
     endAt,
@@ -168,6 +181,8 @@ export const fetchPageViews = async ({
   timezone,
   unit,
 }: UmamiPageViewsParams): Promise<UmamiPageViews | null> => {
+  await requireSession()
+
   const url = buildApiUrl('pageviews', {
     startAt,
     endAt,
