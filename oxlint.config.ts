@@ -104,6 +104,7 @@ export default defineConfig({
     'typescript/no-explicit-any': 'warn',
     'typescript/no-unsafe-assignment': 'warn',
     'typescript/no-useless-default-assignment': 'warn',
+    'typescript/no-redundant-type-constituents': 'warn',
 
     'react/rules-of-hooks': 'error',
     'react/exhaustive-deps': 'warn',
