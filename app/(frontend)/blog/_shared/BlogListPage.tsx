@@ -131,7 +131,7 @@ const PostCard = ({ post }: { post: BlogPostData }) => {
       data-reveal-item
       className={cn(['group relative isolate h-80 overflow-hidden bg-background'])}
     >
-      <DuoTone>
+      <DuoTone contained className="absolute inset-0">
         {heroImageUrl && (
           <ImageMedia
             url={heroImageUrl}
@@ -147,6 +147,7 @@ const PostCard = ({ post }: { post: BlogPostData }) => {
             src={shaderThumbnail}
             alt=""
             fill
+            sizes="(min-width: 768px) 50vw, 100vw"
             className="absolute inset-0 size-full object-cover"
           />
         )}
