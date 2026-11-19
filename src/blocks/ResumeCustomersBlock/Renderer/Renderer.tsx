@@ -2,13 +2,13 @@ import { cacheLife, cacheTag } from 'next/cache'
 
 import { shuffle } from 'lodash-es'
 
-import type { LogoCarouselProps } from '@/components/LogoCarousel/LogoCarousel'
+import { customerLogoPath } from '@/collections/ResumeCustomers/logoPath'
 import type { BlockAnchors } from '@/lib/extractHeadings'
 import { fetchResumeCustomersCached } from '@/lib/fetchers/fetchResumeCustomers'
 import { CollectionSlug } from '@/types/collections'
 import type { ResumeCustomersBlock } from '@/types/payload'
 
-import { ResumeCustomersBlockClientRenderer } from './Renderer.client'
+import { type CustomerLogo, ResumeCustomersBlockClientRenderer } from './Renderer.client'
 
 const MARQUEE_ROWS = 5
 
@@ -17,7 +17,7 @@ const MARQUEE_ROWS = 5
  * the cache so server and client render the same rows; a new order comes with
  * the next change to the customers.
  */
-const shuffleIntoRows = async (logos: LogoCarouselProps['entries']) => {
+const shuffleIntoRows = async (logos: CustomerLogo[]) => {
   'use cache'
   cacheLife('max')
   cacheTag(CollectionSlug.ResumeCustomers)
@@ -36,15 +36,20 @@ export const ResumeCustomersBlockRenderer = async ({
   blockType,
   caption,
 }: ResumeCustomersBlock & BlockAnchors) => {
-  const logos = await fetchResumeCustomersCached()
+  const customers = await fetchResumeCustomersCached()
 
-  const rows = await shuffleIntoRows(
-    logos.map(({ id, svg, title: customer }) => ({
+  const logos = customers
+    .filter(({ slug, updatedAt }) => slug && updatedAt)
+    .map(({ id, slug, title: customer, updatedAt }) => ({
       id,
-      svg,
       title: customer,
-    })),
-  )
+      src: customerLogoPath({
+        slug,
+        updatedAt,
+      }),
+    }))
+
+  const rows = await shuffleIntoRows(logos)
 
   return (
     <ResumeCustomersBlockClientRenderer

@@ -2,19 +2,40 @@
 
 import { DiagonalMarquee } from '@/components/DiagonalMarquee'
 import { Headline } from '@/components/Headline'
-import { LogoCarouselProps, LogoCarouselTile } from '@/components/LogoCarousel/LogoCarousel'
 import { Reveal } from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
 import type { BlockAnchors } from '@/lib/extractHeadings'
 import { ResumeCustomersBlock } from '@/types/payload'
 
+export interface CustomerLogo {
+  id: string
+  title: string
+  /** The logo endpoint's versioned URL. */
+  src: string
+}
+
 interface ResumeCustomersBlockClientRendererProps extends ResumeCustomersBlock, BlockAnchors {
   title: string
-  logos: LogoCarouselProps['entries']
+  logos: CustomerLogo[]
   /** The marquee rows, each holding every logo in its own order. */
-  rows: LogoCarouselProps['entries'][]
+  rows: CustomerLogo[][]
 }
+
+/**
+ * The logo is a mask over the primary color, so the tile keeps its own
+ * background and padding and the SVG never enters the page's markup.
+ */
+const LogoTile = ({ src }: Pick<CustomerLogo, 'src'>) => (
+  <div className="flex aspect-4/3 h-full items-center justify-center rounded-3xl bg-white">
+    <div
+      className="size-3/5 bg-primary mask-contain mask-center mask-no-repeat"
+      style={{
+        maskImage: `url("${src}")`,
+      }}
+    />
+  </div>
+)
 
 export const ResumeCustomersBlockClientRenderer = ({
   anchorId,
@@ -27,17 +48,7 @@ export const ResumeCustomersBlockClientRenderer = ({
   return (
     <SectionContainer id={anchorId} title={title} variant="primary">
       <div className="relative isolate overflow-hidden py-24 lg:py-40">
-        <DiagonalMarquee
-          rows={rows}
-          renderItem={(logo) => (
-            <div className="aspect-4/3 h-full">
-              <LogoCarouselTile
-                {...logo}
-                className="flex items-center justify-center *:max-h-3/5 *:max-w-3/5"
-              />
-            </div>
-          )}
-        />
+        <DiagonalMarquee rows={rows} renderItem={({ src }) => <LogoTile src={src} />} />
 
         {/* Fade the band into the section at its top and bottom edges. */}
         <div
