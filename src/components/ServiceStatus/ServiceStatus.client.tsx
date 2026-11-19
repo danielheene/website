@@ -1,6 +1,6 @@
 'use client'
 
-import { type JSX, useEffect, useRef, useState } from 'react'
+import { type JSX, useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 
 import { secondsToMilliseconds } from 'date-fns'
@@ -29,52 +29,49 @@ export const ServiceStatusClient = ({
   fetchStatus,
   initialStatus,
 }: ServiceStatusProps): JSX.Element => {
-  const timeoutRef = useRef<NodeJS.Timeout>(null)
+  const fetchIntervalRef = useRef<NodeJS.Timeout>(null)
   const [status, setStatus] = useState<OverallStatus | null>(initialStatus)
 
-  useEffect(() => {
-    const refetch = () => {
-      fetchStatus().then(setStatus)
-      timeoutRef.current = setTimeout(refetch, secondsToMilliseconds(60))
-    }
-
-    timeoutRef.current = setTimeout(refetch, secondsToMilliseconds(60))
-
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current)
-    }
+  const processStatusFetching = useCallback(() => {
+    fetchStatus()
+      .then((status) => setStatus(status))
+      .catch((error) => console.error(error))
   }, [fetchStatus])
 
+  useEffect(() => {
+    fetchIntervalRef.current = setInterval(processStatusFetching, secondsToMilliseconds(60))
+
+    return () => {
+      if (fetchIntervalRef.current) clearInterval(fetchIntervalRef.current)
+    }
+  }, [processStatusFetching])
+
+  if (!status) return null
+
   return (
-    status && (
-      <Badge
-        asChild
-        color={STATUS_BADGE_COLOR[status.code]}
-        style="outline"
-        size="lg"
-        className={cn([
-          'gap-2 transition-colors',
-          // 'hover:bg-[color-mix(in_oklab,var(--badge-color)_35%,var(--color-white)_65%)]',
-          className,
-        ])}
+    <Badge
+      asChild
+      color={STATUS_BADGE_COLOR[status.code]}
+      style="outline"
+      size="lg"
+      className={cn(['gap-2 transition-colors', className])}
+    >
+      <Link
+        href={process.env.NEXT_PUBLIC_STATUS_PAGE_URL}
+        target="_blank"
+        rel="noopener noreferrer"
       >
-        <Link
-          href={process.env.NEXT_PUBLIC_STATUS_PAGE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {status.code !== OverallStatusCode.NoServices && (
-            <span
-              className={cn([
-                'relative inline-flex size-2',
-                'before:inline-flex before:size-2 before:rounded-full before:bg-current',
-                'after:absolute after:inline-flex after:size-full after:animate-ping after:rounded-full after:bg-current after:opacity-75',
-              ])}
-            />
-          )}
-          <span>{status.message}</span>
-        </Link>
-      </Badge>
-    )
+        {status.code !== OverallStatusCode.NoServices && (
+          <span
+            className={cn([
+              'relative inline-flex size-2',
+              'before:inline-flex before:size-2 before:rounded-full before:bg-current',
+              'after:absolute after:inline-flex after:size-full after:animate-ping after:rounded-full after:bg-current after:opacity-75',
+            ])}
+          />
+        )}
+        <span>{status.message}</span>
+      </Link>
+    </Badge>
   )
 }

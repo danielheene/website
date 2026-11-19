@@ -123,6 +123,7 @@ async function ResumeDocument({ params }: PageProps<'/resume/[slug]'>) {
     (item): item is HeroMediaItem => item !== null,
   )
 
+  // oxlint-disable-next-line anti-slop/no-runtime-typeof
   const documentEn = typeof resume.document_en?.value === 'object' ? resume.document_en.value : null
   const documentDe = typeof resume.document_de?.value === 'object' ? resume.document_de.value : null
 

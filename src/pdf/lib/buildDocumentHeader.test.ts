@@ -15,7 +15,11 @@ const baseSettings = {
     postCode: '12345',
     place: 'Berlin',
   },
-  telephone: '+491234567890',
+  phoneNumber: {
+    value: '+493012345678',
+    formatted: '+49 (0) 30 12345678',
+    uri: 'tel:+493012345678',
+  },
   email: 'daniel@heene.io',
   url: 'https://heene.io',
   sameAs: [
@@ -58,6 +62,46 @@ describe('buildDocumentHeader', () => {
     })
 
     await expect(buildDocumentHeader('en')).rejects.toThrow(/portrait/i)
+  })
+
+  it('builds the telephone link from the stored phone number', async () => {
+    fetchGlobalUserSettings.mockResolvedValue({
+      ...baseSettings,
+      portrait: {
+        regular: {
+          value: {
+            url: 'https://cdn.example.com/portrait.png',
+          },
+        },
+      },
+    })
+
+    const header = await buildDocumentHeader('en')
+
+    expect(header.telephone).toEqual({
+      label: '+49 (0) 30 12345678',
+      href: 'tel:+493012345678',
+    })
+  })
+
+  it('throws a clear error when the phone number is not set', async () => {
+    fetchGlobalUserSettings.mockResolvedValue({
+      ...baseSettings,
+      phoneNumber: {
+        value: '',
+        formatted: '',
+        uri: '',
+      },
+      portrait: {
+        regular: {
+          value: {
+            url: 'https://cdn.example.com/portrait.png',
+          },
+        },
+      },
+    })
+
+    await expect(buildDocumentHeader('en')).rejects.toThrow(/phoneNumber/)
   })
 
   it('throws a clear error when the portrait field is entirely missing', async () => {

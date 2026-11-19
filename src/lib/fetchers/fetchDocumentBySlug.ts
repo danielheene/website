@@ -7,6 +7,20 @@ import { BilingualLanguage, reduceDataToBilingualLanguage } from '@/lib/i18n'
 import { resolveRelations } from '@/lib/resolveRelation'
 import { CollectionData, CollectionSlug } from '@/types/collections'
 
+export type FetchedDocument = Pick<
+  CollectionData<CollectionSlug['ResumeDocuments']>,
+  | 'id'
+  | 'title'
+  | 'createdAt'
+  | 'slug'
+  | 'document_en'
+  | 'checksum_en'
+  | 'thumbnails_en'
+  | 'document_de'
+  | 'checksum_de'
+  | 'thumbnails_de'
+>
+
 /**
  * Fetches a resume document by its slug, optionally resolving the special "latest" slug to the most recently created document.
  * Returns the document reduced to the requested bilingual language with relations resolved, or null if no document is found or an error occurs.
@@ -20,13 +34,16 @@ async function fetchDocumentBySlugRaw(
   slug: string,
   draft: boolean,
   locale: BilingualLanguage,
-): Promise<CollectionData<CollectionSlug['ResumeDocuments']> | null> {
+): Promise<FetchedDocument | null> {
   const payload = await getPayload({
     config,
   })
 
   let realSlug: string = slug
 
+  /**
+   * Resolve the special "latest" slug to the most recently created document.
+   */
   if (slug === 'latest') {
     try {
       const {
@@ -37,6 +54,9 @@ async function fetchDocumentBySlugRaw(
         draft,
         limit: 1,
         sort: '-createdAt',
+        select: {
+          slug: true,
+        },
       })
 
       if (latestDoc && latestDoc.slug) {
@@ -47,6 +67,9 @@ async function fetchDocumentBySlugRaw(
     }
   }
 
+  /**
+   * Fetch the document by slug
+   */
   try {
     const {
       docs: [doc],
@@ -55,11 +78,22 @@ async function fetchDocumentBySlugRaw(
       overrideAccess: true,
       draft,
       limit: 1,
-      // No `_status` filter: the collection has no drafts, and Payload rejects the path.
       where: {
         slug: {
           equals: realSlug,
         },
+      },
+      select: {
+        id: true,
+        title: true,
+        createdAt: true,
+        slug: true,
+        document_en: true,
+        document_de: true,
+        thumbnails_en: true,
+        thumbnails_de: true,
+        checksum_en: true,
+        checksum_de: true,
       },
     })
 
@@ -82,7 +116,7 @@ async function fetchDocumentBySlugRaw(
 async function fetchDocumentBySlugCached(
   slug: string,
   locale: BilingualLanguage,
-): Promise<CollectionData<CollectionSlug['ResumeDocuments']> | null> {
+): Promise<FetchedDocument | null> {
   'use cache'
   cacheLife('max')
   cacheTag(CollectionSlug.ResumeDocuments, `${CollectionSlug.ResumeDocuments}:${slug}`)
@@ -107,7 +141,7 @@ export async function fetchDocumentBySlug({
   slug: string
   draft?: boolean
   locale?: BilingualLanguage
-}): Promise<CollectionData<CollectionSlug['ResumeDocuments']> | null> {
+}): Promise<FetchedDocument | null> {
   if (draft) {
     return fetchDocumentBySlugRaw(slug, true, locale)
   }

@@ -32,7 +32,7 @@ export const ResumeAboutMeBlockClientRenderer = ({
               height={portrait.value.height}
               width={portrait.value.width}
               className="mt-20 -mb-20 h-auto w-full object-bottom md:mt-32 md:-mb-32 lg:mt-40 lg:-mb-40"
-              // imgClassName="object-bottom"
+              imgClassName="object-bottom"
               sizes="50vw"
             />
           </div>

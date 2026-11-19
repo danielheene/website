@@ -42,7 +42,7 @@ export function generatePersonSchema(
 
   if (data.email) person.email = data.email
 
-  if (data.telephone) person.telephone = data.telephone
+  if (data.phoneNumber?.uri) person.telephone = data.phoneNumber.value
 
   // if (data.description) person.description = data.description
   if (data.sameAs && Array.isArray(data.sameAs) && data.sameAs.length > 0) {

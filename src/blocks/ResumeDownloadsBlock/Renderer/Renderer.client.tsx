@@ -73,23 +73,21 @@ export const ResumeDownloadsBlockClientRenderer = ({
           <div className="relative aspect-8/5 size-full min-h-[16rem]">
             {[...thumbnails_en]
               .reverse()
-              .map(
-                (thumbnail, index) =>
-                  index <= 3 && (
-                    <ResumePreviewImage
-                      {...thumbnail}
-                      key={thumbnail.id}
-                      className={cn([
-                        index === 0 &&
-                          'translate-x-[-24%] translate-y-[24%] -rotate-30 md:max-xl:translate-x-[-8%] md:max-xl:translate-y-[16%]',
-                        index === 1 &&
-                          'translate-x-[-12%] translate-y-[12%] -rotate-15 md:max-xl:translate-x-[-4%] md:max-xl:translate-y-[8%]',
-                        index === 2 &&
-                          '-rotate-7.5 translate-x-[-6%] translate-y-[6%] md:max-xl:translate-x-[-2%] md:max-xl:translate-y-[4%]',
-                      ])}
-                    />
-                  ),
-              )}
+              .slice(0, 3)
+              .map((thumbnail, index) => (
+                <ResumePreviewImage
+                  {...thumbnail}
+                  key={thumbnail.id}
+                  className={cn([
+                    index === 0 &&
+                      'translate-x-[-24%] translate-y-[24%] -rotate-30 md:max-xl:translate-x-[-8%] md:max-xl:translate-y-[16%]',
+                    index === 1 &&
+                      'translate-x-[-12%] translate-y-[12%] -rotate-15 md:max-xl:translate-x-[-4%] md:max-xl:translate-y-[8%]',
+                    index === 2 &&
+                      'translate-x-[-6%] translate-y-[6%] rotate-[-7.5deg] md:max-xl:translate-x-[-2%] md:max-xl:translate-y-[4%]',
+                  ])}
+                />
+              ))}
           </div>
         </div>
       </div>

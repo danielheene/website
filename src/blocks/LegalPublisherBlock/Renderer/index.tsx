@@ -1,4 +1,3 @@
-import parsePhoneNumber from 'libphonenumber-js'
 import { cn } from 'tailwind-variants'
 
 import { Button } from '@/components/Button'
@@ -6,15 +5,7 @@ import { Icon } from '@/components/Icon'
 import { fetchGlobalUserSettingsCached } from '@/lib/fetchers'
 
 export const LegalPublisherBlockRenderer = async () => {
-  const {
-    name,
-    address,
-    email,
-    telephone: telephoneRaw,
-    vatID,
-  } = await fetchGlobalUserSettingsCached('en')
-
-  const telephone = parsePhoneNumber(telephoneRaw)
+  const { name, address, email, phoneNumber, vatID } = await fetchGlobalUserSettingsCached('en')
 
   return (
     <section>
@@ -41,13 +32,17 @@ export const LegalPublisherBlockRenderer = async () => {
               <Icon name="mail" data-icon="inline-start" /> {email}
             </a>
           </Button>
-          <br />
-          <Button variant="link" asChild className="h-auto no-underline">
-            <a href={telephone.getURI()}>
-              <Icon name="phone" data-icon="inline-start" />
-              {telephone.formatInternational()}
-            </a>
-          </Button>
+          {phoneNumber?.uri && (
+            <>
+              <br />
+              <Button variant="link" asChild className="h-auto no-underline">
+                <a href={phoneNumber.uri}>
+                  <Icon name="phone" data-icon="inline-start" />
+                  {phoneNumber.formatted}
+                </a>
+              </Button>
+            </>
+          )}
         </p>
         {vatID && (
           <p>

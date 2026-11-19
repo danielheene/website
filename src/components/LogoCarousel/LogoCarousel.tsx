@@ -96,7 +96,7 @@ export function LogoCarouselTile({
       key={id}
       aria-label={title}
       className={cn(
-        'aspect-4/3 w-full rounded p-3',
+        'aspect-4/3 w-full rounded-3xl',
         'bg-white fill-primary',
         '*:size-full *:object-contain *:object-center',
       )}

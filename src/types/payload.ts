@@ -2588,7 +2588,7 @@ export interface GlobalUserSettings {
   taxID?: string | null;
   vatID?: string | null;
   duns?: string | null;
-  telephone?: string | null;
+  phoneNumber?: PhoneNumberData;
   email?: string | null;
   /**
    * This section describes your address information.
@@ -2626,6 +2626,15 @@ export interface GlobalUserSettings {
   };
   updatedAt?: string | null;
   createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PhoneNumberData".
+ */
+export interface PhoneNumberData {
+  value?: string | null;
+  formatted?: string | null;
+  uri?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2808,7 +2817,7 @@ export interface SettingsGlobalUserSelect<T extends boolean = true> {
   taxID?: T;
   vatID?: T;
   duns?: T;
-  telephone?: T;
+  phoneNumber?: T | PhoneNumberDataSelect<T>;
   email?: T;
   address?:
     | T
@@ -2839,6 +2848,15 @@ export interface SettingsGlobalUserSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PhoneNumberData_select".
+ */
+export interface PhoneNumberDataSelect<T extends boolean = true> {
+  value?: T;
+  formatted?: T;
+  uri?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

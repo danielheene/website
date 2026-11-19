@@ -26,19 +26,17 @@ export const SectionNavigationDisplay = ({
     (event: MouseEvent<HTMLAnchorElement>) => {
       event.preventDefault()
 
-      if ('getAttribute' in event.target && typeof event.target.getAttribute === 'function') {
-        const id = event.target.getAttribute('href')?.replace(/^#/, '')
-        const scrollTarget = document.getElementById(id)
+      const id = event.currentTarget.getAttribute('href').replace(/^#/, '')
+      const scrollTarget = document.getElementById(id)
 
-        if (scrollTarget) {
-          setScrollingToAnchor(id)
+      if (scrollTarget) {
+        setScrollingToAnchor(id)
 
-          scrollTarget.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-            inline: 'center',
-          })
-        }
+        scrollTarget.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+          inline: 'center',
+        })
       }
     },
     [setScrollingToAnchor],

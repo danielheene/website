@@ -1,4 +1,4 @@
-import { fetchLatestResumeDocument } from '@/lib/fetchers/fetchLatestResumeDocument'
+import { fetchDocumentBySlug } from '@/lib/fetchers/fetchDocumentBySlug'
 import { ResumeDownloadsBlock } from '@/types/payload'
 
 import { ResumeDownloadsBlockClientRenderer } from './Renderer.client'
@@ -8,7 +8,7 @@ export const ResumeDownloadsBlockRenderer = async ({
   blockType,
   caption,
 }: ResumeDownloadsBlock) => {
-  const latest = await fetchLatestResumeDocument()
+  const latest = await fetchDocumentBySlug({ slug: 'latest' })
 
   if (!latest) return null
 
