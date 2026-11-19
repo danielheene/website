@@ -23,20 +23,20 @@ const run = (doc: Partial<BlogPostData>, previousDoc: Partial<BlogPostData>, con
   } as unknown as HookArgs)
 
 describe('revalidateBlogPost', () => {
-  it('revalidates the post path and the posts tag on publish', () => {
+  it('revalidates the post path and the posts tag on publish', async () => {
     const doc = {
       slug: 'hello',
       _status: 'published' as const,
     }
 
-    expect(run(doc, doc)).toBe(doc)
+    expect(await run(doc, doc)).toBe(doc)
 
     expect(revalidatePath).toHaveBeenCalledWith('/blog/post/hello')
     expect(revalidateTag).toHaveBeenCalledWith('posts', 'max')
   })
 
-  it('revalidates the old path and the posts tag on unpublish', () => {
-    run(
+  it('revalidates the old path and the posts tag on unpublish', async () => {
+    await run(
       {
         slug: 'hello',
         _status: 'draft',
@@ -51,8 +51,8 @@ describe('revalidateBlogPost', () => {
     expect(revalidateTag).toHaveBeenCalledWith('posts', 'max')
   })
 
-  it('leaves caches alone for draft-only saves', () => {
-    run(
+  it('leaves caches alone for draft-only saves', async () => {
+    await run(
       {
         slug: 'hello',
         _status: 'draft',
@@ -67,21 +67,23 @@ describe('revalidateBlogPost', () => {
     expect(revalidateTag).not.toHaveBeenCalled()
   })
 
-  it('does not fail the write outside a Next context', () => {
-    vi.mocked(revalidatePath).mockImplementationOnce(() => {
+  it('does not fail the write when revalidation fails outside a Next context', async () => {
+    vi.mocked(revalidateTag).mockImplementationOnce(() => {
       throw new Error('Invariant: static generation store missing')
     })
+    vi.spyOn(globalThis, 'fetch').mockRejectedValueOnce(new Error('connection refused'))
+    vi.spyOn(console, 'error').mockImplementationOnce(() => {})
 
     const doc = {
       slug: 'hello',
       _status: 'published' as const,
     }
 
-    expect(run(doc, doc)).toBe(doc)
+    expect(await run(doc, doc)).toBe(doc)
   })
 
-  it('skips everything when asked to', () => {
-    run(
+  it('skips everything when asked to', async () => {
+    await run(
       {
         slug: 'hello',
         _status: 'published',

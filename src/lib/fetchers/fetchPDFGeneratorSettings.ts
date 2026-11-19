@@ -1,8 +1,9 @@
-import { cacheLife, cacheTag, revalidateTag } from 'next/cache'
+import { cacheLife, cacheTag } from 'next/cache'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
 import { type BilingualLanguage, reduceDataToBilingualLanguage } from '@/lib/i18n'
+import { revalidateCache } from '@/lib/revalidation/revalidateCache'
 import { type GlobalData, GlobalSlug } from '@/types/globals'
 
 export const fetchPDFGeneratorSettings = async (
@@ -29,5 +30,7 @@ export const fetchPDFGeneratorSettingsCached = async (locale: BilingualLanguage 
 }
 
 export const revalidatePDFGeneratorSettings = async (): Promise<void> => {
-  revalidateTag(GlobalSlug.PDFGeneratorSettings, 'max')
+  await revalidateCache({
+    tags: [GlobalSlug.PDFGeneratorSettings],
+  })
 }

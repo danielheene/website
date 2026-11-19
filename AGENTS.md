@@ -148,6 +148,9 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
 - **Revalidation**: Payload collection hooks call `revalidate*` helpers (e.g.
   `src/collections/Pages/hooks/revalidatePage.ts`) to invalidate Next.js cache tags after content
   changes — follow this pattern for any new collection that's rendered on the frontend.
+  Go through `revalidateCache` (`src/lib/revalidation/`), never `next/cache` directly: hooks also
+  fire in the jobs worker, where Next's revalidation APIs throw, and `revalidateCache` then falls
+  back to the app's `POST /api/revalidate` (bearer token derived from `PAYLOAD_SECRET`).
 - **Blog listings** (`/blog`, `/blog/<topic>`) paginate and sort via `?page=` / `?sort=`, read
   only inside the grid's Suspense boundary so the shell still prerenders. `src/lib/blog/listing.ts`
   owns the params (sort options, parsing, href building); `proxy.ts` uses it to redirect

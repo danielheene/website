@@ -1,9 +1,10 @@
-import { cacheLife, cacheTag, revalidateTag } from 'next/cache'
+import { cacheLife, cacheTag } from 'next/cache'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
 import { BilingualLanguage, reduceDataToBilingualLanguage } from '@/lib/i18n'
 import { resolveRelations } from '@/lib/resolveRelation'
+import { revalidateCache } from '@/lib/revalidation/revalidateCache'
 import { GlobalSlug } from '@/types/globals'
 
 export const fetchGlobalUserSettings = async (locale: BilingualLanguage = 'en') => {
@@ -28,5 +29,7 @@ export const fetchGlobalUserSettingsCached = async (locale: BilingualLanguage = 
 }
 
 export const revalidateGlobalUserSettings = async (): Promise<void> => {
-  revalidateTag(GlobalSlug.GlobalUserSettings, 'max')
+  await revalidateCache({
+    tags: [GlobalSlug.GlobalUserSettings],
+  })
 }
