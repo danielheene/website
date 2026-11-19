@@ -34,7 +34,7 @@ bun run dev              # Next.js dev server via scripts/dev.mjs (--tunnel open
 bun run dev:app          # plain `next dev`, without the tunnel wrapper
 bun run dev:storybook    # Storybook on :6006 (not started by `bun run dev`)
 bun run generate         # regenerate Next route types, Payload types + import map
-bun run build            # production build (`next build --webpack`)
+bun run build            # production build (`next build`, Turbopack)
 bun run typecheck        # tsc --noEmit
 bun run analyze          # production build with @next/bundle-analyzer reports
 bun run lint             # oxlint + oxfmt --check (does NOT auto-fix)

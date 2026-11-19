@@ -136,7 +136,7 @@ bun run dev:email        # React Email preview server (http://localhost:3005)
 | `bun run _payload` | Wrapper to execute Payload CLI commands (used by `migrate`, `generate` and the other scripts). |
 | `bun run _storybook` | Wrapper to execute Storybook CLI commands. |
 | `bun run analyze` | Production build with `@next/bundle-analyzer`; opens the bundle reports when it finishes. |
-| `bun run build` | Production build (`next build --webpack`). |
+| `bun run build` | Production build (`next build`, Turbopack). |
 | `bun run build:storybook` | Builds static Storybook documentation into `dist/`. |
 | `bun run chore:reinstall` | Cleans `node_modules` and `bun.lock`, then runs fresh `bun install`. |
 | `bun run ci` | Local convenience: runs database migrations and a full production build (CI itself runs the steps separately). |
