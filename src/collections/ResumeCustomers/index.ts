@@ -15,6 +15,8 @@ import { authenticatedOrPublished } from '@/lib/access/authenticatedOrPublished'
 import { sanitizeSvg } from '@/lib/sanitizeSvg'
 import { CollectionSlug } from '@/types/collections'
 
+import { logoEndpoint } from './endpoints/logo'
+
 export const ResumeCustomers: CollectionConfig<CollectionSlug['ResumeCustomers']> = {
   slug: CollectionSlug.ResumeCustomers,
   labels: {
@@ -50,6 +52,7 @@ export const ResumeCustomers: CollectionConfig<CollectionSlug['ResumeCustomers']
       },
     },
   },
+  endpoints: [logoEndpoint],
   orderable: true,
   fields: [
     TitleField(),
@@ -98,8 +101,8 @@ export const ResumeCustomers: CollectionConfig<CollectionSlug['ResumeCustomers']
                 /**
                  * Sanitizes on write, server-side. The admin panel runs uploads
                  * through `svgo` in the browser, but that is bypassable by
-                 * posting to the API — and this value is rendered with
-                 * `dangerouslySetInnerHTML` on the public resume page.
+                 * posting to the API — and the logo endpoint serves this value
+                 * as a public file.
                  */
                 beforeChange: [
                   ({ value }) => (typeof value === 'string' ? sanitizeSvg(value) : value),
