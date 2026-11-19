@@ -1,3 +1,10 @@
+# [1.17.0-rc.3](https://github.com/danielheene/website/compare/v1.17.0-rc.2...v1.17.0-rc.3) (2026-11-19)
+
+
+### Features
+
+* Open Graph route, structured data, feed caching, customers marquee and phone number ([#140](https://github.com/danielheene/website/issues/140)) ([3c155ed](https://github.com/danielheene/website/commit/3c155edfb643618dd647b5bc1f5f1a6985409850))
+
 # [1.17.0-rc.2](https://github.com/danielheene/website/compare/v1.17.0-rc.1...v1.17.0-rc.2) (2026-11-06)
 
 
