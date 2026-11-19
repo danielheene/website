@@ -173,6 +173,15 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   non-canonical forms (legacy `/page/<n>` segments, `page=1`, unknown sorts) and to mark non-default
   sorts `noindex`. The RSS feed (`/blog/feed.xml`) and `app/(frontend)/sitemap.ts` cache under the `posts` tag,
   which `revalidateBlogPost` invalidates.
+- **404s for unknown slugs**: with Cache Components the dynamic routes (`/[slug]`, `/blog/[slug]`,
+  `/blog/post/[slug]`, `/resume/[slug]`) send their prerendered shell, and so a `200`, before the
+  page can call `notFound()` — removing the page's `<Suspense>` or setting `instant = false` does
+  not change that. `proxy.ts` therefore checks the slug first (`src/lib/routeSlugs/`: the
+  published slugs per collection, cached in Redis for 5 minutes and cleared by each collection's
+  `invalidatePublishedSlugsHooks`) and rewrites unknown ones to `/404`, a route that calls
+  `notFound()` while prerendering and is served as a real `404`. Draft mode skips the check. A new
+  routable collection needs a case in `resolveRouteSlug` and the hooks; a new top-level static
+  route needs an entry in `RESERVED_FIRST_SEGMENTS`, or the proxy 404s it.
 - **Dashboard widgets** (`src/widgets/`): async server components registered in `payload.config.ts`
   under `admin.dashboard.widgets`. Each widget has a `slug`, `Component` path, and optional
   `minWidth`/`maxWidth`. Run `bun run generate` after adding a new widget so its slug is included in

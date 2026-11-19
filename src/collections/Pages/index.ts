@@ -18,6 +18,7 @@ import { TitleField } from '@/fields/Title'
 import { authenticated } from '@/lib/access/authenticated'
 import { authenticatedOrPublished } from '@/lib/access/authenticatedOrPublished'
 import { generatePreviewPath } from '@/lib/generatePreviewPath'
+import { invalidatePublishedSlugsHooks } from '@/lib/payloadHooks/invalidatePublishedSlugs'
 import { AdminGroup } from '@/types/admin-panel'
 import { BlockSlug } from '@/types/blocks'
 import { CollectionSlug } from '@/types/collections'
@@ -30,6 +31,8 @@ import { LEGAL_BLOCK_SLUGS, validatePageContent } from './utils/legalBlocks'
 const isRichTextLayout = (data: Partial<Page>) => data?.layout === PAGE_LAYOUT.RICH_TEXT
 
 const isSectionsLayout = (data: Partial<Page>) => data?.layout === PAGE_LAYOUT.SECTIONS
+
+const routeSlugHooks = invalidatePublishedSlugsHooks(CollectionSlug.Pages)
 
 export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
   slug: CollectionSlug.Pages,
@@ -249,7 +252,8 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
     GeneratorFlagsField(),
   ],
   hooks: {
-    afterChange: [revalidatePage],
+    afterChange: [revalidatePage, routeSlugHooks.afterChange],
+    afterDelete: [routeSlugHooks.afterDelete],
   },
   trash: true,
   versions: SINGLE_VERSION_DRAFTS,

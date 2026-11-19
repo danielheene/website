@@ -14,12 +14,15 @@ import { ToggleField } from '@/fields/Toggle'
 import { authenticated } from '@/lib/access/authenticated'
 import { authenticatedOrPublished } from '@/lib/access/authenticatedOrPublished'
 import { generatePreviewPath } from '@/lib/generatePreviewPath'
+import { invalidatePublishedSlugsHooks } from '@/lib/payloadHooks/invalidatePublishedSlugs'
 import { AdminGroup } from '@/types/admin-panel'
 import { RESERVED_TOPIC_SLUGS } from '@/types/blog'
 import { CollectionData, CollectionSlug } from '@/types/collections'
 import { Topic } from '@/types/payload'
 
 import { revalidateBlogTopic } from './hooks/revalidateBlogTopic'
+
+const routeSlugHooks = invalidatePublishedSlugsHooks(CollectionSlug.BlogTopics)
 
 export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
   slug: CollectionSlug.BlogTopics,
@@ -111,7 +114,8 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
     update: authenticated,
   },
   hooks: {
-    afterChange: [revalidateBlogTopic],
+    afterChange: [revalidateBlogTopic, routeSlugHooks.afterChange],
+    afterDelete: [routeSlugHooks.afterDelete],
   },
   fields: [
     /* -------------- Main  Content -------------- */

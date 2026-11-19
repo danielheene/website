@@ -14,6 +14,7 @@ import { TitleField } from '@/fields/Title'
 import { authenticated } from '@/lib/access/authenticated'
 import { authenticatedOrPublished } from '@/lib/access/authenticatedOrPublished'
 import { generatePreviewPath } from '@/lib/generatePreviewPath'
+import { invalidatePublishedSlugsHooks } from '@/lib/payloadHooks/invalidatePublishedSlugs'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 import { BlogPostData } from '@/types/payload'
@@ -21,6 +22,8 @@ import { BlogPostData } from '@/types/payload'
 import { enqueueGenerateExcerpt } from './hooks/enqueueGenerateExcerpt'
 import { generateReadingTime } from './hooks/generateReadingTime'
 import { revalidateBlogPost } from './hooks/revalidateBlogPost'
+
+const routeSlugHooks = invalidatePublishedSlugsHooks(CollectionSlug.BlogPosts)
 
 export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
   slug: CollectionSlug.BlogPosts,
@@ -82,7 +85,8 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
   },
   hooks: {
     beforeChange: [generateReadingTime],
-    afterChange: [revalidateBlogPost, enqueueGenerateExcerpt],
+    afterChange: [revalidateBlogPost, enqueueGenerateExcerpt, routeSlugHooks.afterChange],
+    afterDelete: [routeSlugHooks.afterDelete],
   },
   fields: [
     /* -------------- Main  Content -------------- */
