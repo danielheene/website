@@ -21,7 +21,7 @@
     "_payload": "NODE_OPTIONS=\"--import tsx/esm --trace-deprecation --disable-warning=DeprecationWarning\" payload --disable-transpile",
     "_storybook": "NODE_OPTIONS=\"--trace-deprecation --disable-warning=DeprecationWarning\" storybook",
     "analyze": "ANALYZE=true bun run build",
-    "build": "bun run _next build --webpack",
+    "build": "bun run _next build",
     "build:storybook": "bun run _storybook build --output-dir dist",
     "chore:reinstall": "rm -rf node_modules bun.lock && bun install",
     "ci": "bun run migrate && bun run build",
