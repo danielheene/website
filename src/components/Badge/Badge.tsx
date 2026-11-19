@@ -6,8 +6,8 @@ import { cn, tv, VariantProps } from 'tailwind-variants'
 export const badgeStyles = tv({
   base: cn([
     'flex w-fit items-center px-[0.5em] py-[0.25em]',
-    'font-mono font-medium select-none',
-    'border whitespace-nowrap',
+    'font-mono font-normal select-none',
+    'rounded-sm border whitespace-nowrap',
   ]),
   variants: {
     color: {

@@ -1,15 +1,9 @@
 'use client'
 
-import dynamic from 'next/dynamic'
-
 import { SHADER_PRESETS, type ShaderPresetKey } from '@/components/HeroMedia/shaderPresets'
 
 import { MediaPickerDrawer } from './MediaPickerDrawer'
-import { SHADER_COMPONENTS } from './shaderComponents'
-
-const ShaderPreviewCanvas = dynamic(() => import('./ShaderPreviewCanvas'), {
-  ssr: false,
-})
+import { ShaderThumbnail } from './ShaderThumbnail'
 
 export interface ShaderPickerDrawerProps {
   slug: string
@@ -19,11 +13,7 @@ export interface ShaderPickerDrawerProps {
 
 /**
  * Shader-preset source for the shared `MediaPickerDrawer` shell. Each card
- * renders its shader live — not a static screenshot.
- *
- * Running up to 4 live WebGL contexts at once here is intentional (per the
- * design's confirmed choice) — dynamic-imported with `ssr: false` since the
- * shader components touch `window` outside of any effect.
+ * shows the preset's preview image rather than running the shader live.
  */
 export const ShaderPickerDrawer = ({ slug, value, onSelectAction }: ShaderPickerDrawerProps) => {
   return (
@@ -33,9 +23,7 @@ export const ShaderPickerDrawer = ({ slug, value, onSelectAction }: ShaderPicker
         label: preset.label,
         onSelect: () => onSelectAction(preset.key),
         selected: value === preset.key,
-        thumbnail: (
-          <ShaderPreviewCanvas className="size-full" entry={SHADER_COMPONENTS[preset.key]} />
-        ),
+        thumbnail: <ShaderThumbnail presetKey={preset.key} />,
       }))}
       slug={slug}
       title="Select a shader background"

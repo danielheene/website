@@ -1,46 +1,40 @@
-import type { CreativeWorkLeaf, WithContext } from 'schema-dts'
+import type { CreativeWorkLeaf, ImageObjectLeaf } from 'schema-dts'
+
+import { jsonLdIds } from './ids'
 
 export interface CreativeWorkData {
+  siteUrl: string
   name: string
-  additionalType?: string
   description?: string
+  /** The client or context the work was made for. */
+  scope?: string | null
+  /** The post that writes about the work. */
   url?: string
-  image?: string
+  image?: ImageObjectLeaf
 }
 
-/**
- * Generates CreativeWork JSON-LD
- *
- * @example
- * ```typescript
- * const creativeWorkLd = generateCreativeWork({
- *   name: 'Portfolio Site',
- *   additionalType: 'WebSite',
- *   description: 'A personal portfolio built with Next.js.',
- *   url: 'https://danielheene.io/projects/portfolio',
- *   image: 'https://danielheene.io/projects/portfolio.jpg'
- * })
- * ```
- */
-export function generateCreativeWork(data: CreativeWorkData): WithContext<CreativeWorkLeaf> {
-  const creativeWork: WithContext<CreativeWorkLeaf> = {
-    '@context': 'https://schema.org',
+/** A project the site owner made, e.g. one listed on the resume. */
+export function generateCreativeWork(data: CreativeWorkData): CreativeWorkLeaf {
+  const work: CreativeWorkLeaf = {
     '@type': 'CreativeWork',
     name: data.name,
+    creator: {
+      '@id': jsonLdIds(data.siteUrl).person,
+    },
   }
 
-  if (data.additionalType) creativeWork.additionalType = data.additionalType
+  if (data.description) work.description = data.description
 
-  if (data.description) creativeWork.description = data.description
-
-  if (data.url) creativeWork.url = data.url
-
-  if (data.image) {
-    creativeWork.image = {
-      '@type': 'ImageObject',
-      url: data.image,
+  if (data.scope) {
+    work.funder = {
+      '@type': 'Organization',
+      name: data.scope,
     }
   }
 
-  return creativeWork
+  if (data.url) work.url = data.url
+
+  if (data.image) work.image = data.image
+
+  return work
 }

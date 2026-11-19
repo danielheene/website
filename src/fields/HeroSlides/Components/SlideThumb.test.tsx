@@ -28,27 +28,46 @@ vi.mock('@payloadcms/ui', () => ({
   useFormFields: (selector: (args: [FieldStateStub]) => unknown) => selector([formFields]),
 }))
 
+// `next/image` rewrites `src` through its optimizer; the stubs expose exactly
+// what the preview hands each media component.
+vi.mock('@/components/ImageMedia', () => ({
+  ImageMedia: ({
+    url,
+    blurDataURL,
+    alt = '',
+    'data-testid': testId,
+  }: {
+    url: string
+    blurDataURL?: string
+    alt?: string
+    'data-testid'?: string
+  }) => (
+    // oxlint-disable-next-line nextjs/no-img-element -- test stub
+    <img alt={alt} data-blur={blurDataURL} data-testid={testId} src={url} />
+  ),
+}))
+
+vi.mock('@/components/VideoMedia', () => ({
+  VideoMedia: ({
+    url,
+    thumbnailURL,
+    blurDataURL,
+  }: {
+    url: string
+    thumbnailURL?: string
+    blurDataURL?: string
+  }) => <video data-blur={blurDataURL} data-testid="video-media" poster={thumbnailURL} src={url} />,
+}))
+
 vi.mock('@/components/Icon', () => ({
   Icon: ({ name }: { name: string }) => <span data-testid={`icon-${name}`} />,
 }))
 
-vi.mock('./ShaderPreviewCanvas', () => ({
-  default: ({
-    entry,
-  }: {
-    entry: {
-      key: string
-    }
-  }) => <div data-testid="shader-preview">{entry.key}</div>,
-}))
-
 // `next/dynamic(() => import(...), { ssr: false })` never resolves
 // synchronously under Vitest/jsdom — the real dynamic loader stays pending
-// through the whole test, so the mocked module above never actually
-// renders. Mocking `next/dynamic` to a small stateful wrapper that resolves
-// the loader in an effect and re-renders once it does sidesteps that, while
-// still exercising the mocked `ShaderPreviewCanvas` module — `waitFor` in
-// the shader test below waits out that one extra render.
+// through the whole test. Mocking `next/dynamic` to a small stateful wrapper
+// that resolves the loader in an effect and re-renders once it does lets
+// dynamically imported children render.
 vi.mock('next/dynamic', () => ({
   default: (
     loader: () => Promise<{
@@ -161,7 +180,62 @@ describe('SlideThumb', () => {
     expect(container.querySelector('img')).toHaveAttribute('src', 'https://example.com/poster.webp')
   })
 
-  it('renders the live shader preview for a shader slide', async () => {
+  it('passes the image blur placeholder to ImageMedia', () => {
+    setFormFields({
+      'hero.slides.0.slideType': {
+        value: 'image',
+      },
+      'hero.slides.0.media': {
+        value: {
+          relationTo: 'images',
+          value: {
+            url: 'https://example.com/hero.webp',
+            blurDataURL: 'data:image/webp;base64,AAAA',
+          },
+        },
+      },
+    })
+
+    const { container } = render(<SlideThumb {...defaultProps} />)
+
+    expect(container.querySelector('img')).toHaveAttribute(
+      'data-blur',
+      'data:image/webp;base64,AAAA',
+    )
+  })
+
+  it('renders a video through VideoMedia with its poster and blur placeholder', () => {
+    setFormFields({
+      'hero.slides.0.slideType': {
+        value: 'video',
+      },
+      'hero.slides.0.media': {
+        value: {
+          relationTo: 'videos',
+          value: {
+            url: 'https://example.com/hero.mp4',
+            thumbnails: [
+              {
+                value: {
+                  url: 'https://example.com/poster.webp',
+                  blurDataURL: 'data:image/webp;base64,BBBB',
+                },
+              },
+            ],
+          },
+        },
+      },
+    })
+
+    render(<SlideThumb {...defaultProps} />)
+
+    const video = screen.getByTestId('video-media')
+    expect(video).toHaveAttribute('src', 'https://example.com/hero.mp4')
+    expect(video).toHaveAttribute('poster', 'https://example.com/poster.webp')
+    expect(video).toHaveAttribute('data-blur', 'data:image/webp;base64,BBBB')
+  })
+
+  it('renders the preset preview image for a shader slide', async () => {
     setFormFields({
       'hero.slides.0.slideType': {
         value: 'shader',
@@ -175,7 +249,9 @@ describe('SlideThumb', () => {
 
     // The mocked `next/dynamic` resolves its loader in an effect, one tick
     // after the initial render.
-    await waitFor(() => expect(screen.getByTestId('shader-preview')).toHaveTextContent('darkveil'))
+    await waitFor(() =>
+      expect(screen.getByTestId('shader-thumbnail')).toHaveAttribute('alt', 'Dark Veil'),
+    )
   })
 
   it('shows an empty state when the row has no media set yet', () => {

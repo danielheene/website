@@ -1,29 +1,26 @@
-'use client'
-
 import type { JSX, ReactNode } from 'react'
 
-import { SectionNavigationProvider } from '@/components/SectionNavigation'
-import type { ExtractedSection } from '@/lib/extractSections'
+import { SectionNavigation } from '@/components/SectionNavigation'
+import type { ExtractedHeading } from '@/lib/extractHeadings'
 import type { PageLayout } from '@/types/payload'
 
 interface PageContainerProps {
   layout?: PageLayout
   children: ReactNode
   /**
-   * Sections extracted from the page's blocks on the server. Passed straight to
-   * the navigation so it renders with the page.
+   * The page's block sections, extracted on the server so the navigation
+   * renders with the page.
    */
-  sections?: ExtractedSection[]
+  sections?: Pick<ExtractedHeading, 'id' | 'title'>[]
 }
 
 export const PageContainer = ({
-  layout: _layout = 'default',
-  sections,
+  layout: _layout = 'richText',
+  sections = [],
   children,
-}: PageContainerProps): JSX.Element => {
-  return (
-    <SectionNavigationProvider sections={sections}>
-      <main>{children}</main>
-    </SectionNavigationProvider>
-  )
-}
+}: PageContainerProps): JSX.Element => (
+  <>
+    <SectionNavigation sections={sections} />
+    <main>{children}</main>
+  </>
+)

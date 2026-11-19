@@ -1,6 +1,5 @@
 import Link from 'next/link'
 
-import parsePhoneNumber from 'libphonenumber-js'
 import { cn } from 'tailwind-variants'
 
 import { FooterLegalLinks } from '@/components/Footer/FooterLegalLinks'
@@ -18,7 +17,7 @@ export const Footer = async () => {
     footer: { column1, column2, column3, legalPages },
   } = await fetchSiteSettingsCached()
 
-  const { telephone, email, sameAs } = await fetchGlobalUserSettingsCached()
+  const { phoneNumber, email, sameAs } = await fetchGlobalUserSettingsCached()
 
   // Typed rather than inferred: these are hand-built `LinkFieldData` values
   // that never pass through the CMS, so an inferred `any[]` would let them
@@ -43,19 +42,13 @@ export const Footer = async () => {
     })
   }
 
-  // parsePhoneNumber returns undefined rather than throwing when it can't
-  // parse the input — a malformed or incomplete number stored in settings
-  // should just drop the telephone link, not crash the page render (and
-  // with it, the build's prerender step).
-  const parsedTelephone = telephone ? parsePhoneNumber(telephone) : undefined
-
-  if (parsedTelephone) {
+  if (phoneNumber?.uri) {
     socialLinks.push({
-      id: 'telephone',
+      id: 'phoneNumber',
       link: {
         linkType: 'custom',
-        url: parsedTelephone.getURI(),
-        text: 'Telephone',
+        url: phoneNumber.uri,
+        text: 'Phone Number',
         iconBefore: 'phone',
         newTab: true,
         iconOnly: true,

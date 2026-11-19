@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 
+import { ogImageMetadata } from '@/lib/og/ogImageMetadata'
+
 import { BlogListPage } from './_shared/BlogListPage'
 
 /**
@@ -13,4 +15,15 @@ export default function Page({ searchParams }: PageProps<'/blog'>) {
 
 export const generateMetadata = async (): Promise<Metadata> => ({
   title: 'Blog',
+  openGraph: {
+    title: 'Blog',
+    images: [
+      ogImageMetadata(
+        {
+          listing: 'blog',
+        },
+        'Blog',
+      ),
+    ],
+  },
 })

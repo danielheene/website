@@ -7,21 +7,23 @@ import { ImageMedia } from '@/components/ImageMedia'
 import { Reveal } from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
+import type { BlockAnchors } from '@/lib/extractHeadings'
 import { ResolvedRelations } from '@/lib/resolveRelation'
 import { ResumeAboutMeBlock } from '@/types/payload'
 
-interface ResumeAboutMeBlockClientRendererProps extends ResumeAboutMeBlock {
+interface ResumeAboutMeBlockClientRendererProps extends ResumeAboutMeBlock, BlockAnchors {
   title: string
   portrait: ResolvedRelations<ResumeAboutMeBlock['portrait']>
 }
 
 export const ResumeAboutMeBlockClientRenderer = ({
+  anchorId,
   blockType: _blockType,
   caption,
   portrait,
   title,
 }: ResumeAboutMeBlockClientRendererProps) => (
-  <SectionContainer title={title} variant="default">
+  <SectionContainer id={anchorId} title={title} variant="default">
     <div className="container grid min-h-screen grid-cols-12">
       <Reveal className="order-2 col-span-10 col-start-2 lg:order-1 lg:col-span-5 lg:col-start-1">
         {portrait && (
@@ -32,7 +34,7 @@ export const ResumeAboutMeBlockClientRenderer = ({
               height={portrait.value.height}
               width={portrait.value.width}
               className="mt-20 -mb-20 h-auto w-full object-bottom md:mt-32 md:-mb-32 lg:mt-40 lg:-mb-40"
-              // imgClassName="object-bottom"
+              imgClassName="object-bottom"
               sizes="50vw"
             />
           </div>

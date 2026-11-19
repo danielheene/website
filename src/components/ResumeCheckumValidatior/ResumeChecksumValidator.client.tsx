@@ -1,6 +1,6 @@
 'use client'
 
-import { ChangeEvent, DragEvent, useCallback, useId, useRef, useState } from 'react'
+import { ChangeEvent, DragEvent, useCallback, useEffect, useId, useRef, useState } from 'react'
 import Link from 'next/link'
 
 import { sha256 } from 'hash-wasm'
@@ -34,6 +34,16 @@ type FormState =
       result: ChecksumSearchResult | null
     }
 
+type Input =
+  | {
+      type: 'FILE'
+      value: File
+    }
+  | {
+      type: 'HASH'
+      value: string
+    }
+
 export const ResumeChecksumValidatorClient = ({ searchChecksum }: ChecksumValidatorClientProps) => {
   const id = useId()
   const inputRef = useRef<HTMLInputElement>(null)
@@ -45,46 +55,64 @@ export const ResumeChecksumValidatorClient = ({ searchChecksum }: ChecksumValida
 
   const [hoverActive, setHoverActive] = useState(false)
   const [dragActive, setDragActive] = useState(false)
-  const [fileName, setFileName] = useState<string | null>(null)
+  const [inputLabel, setInputLabel] = useState<string | null>(null)
 
-  const handleDragEnter = useCallback((event: DragEvent<HTMLLabelElement>) => {
+  const handleDragging = useCallback((event: DragEvent<HTMLLabelElement>) => {
     event.preventDefault()
-    setDragActive(true)
+    setHoverActive(true)
+
+    if (event.dataTransfer.items && event.dataTransfer.items.length > 0) {
+      const [item] = Array.from(event.dataTransfer.items)
+
+      if (item.kind === 'file' && item.type === 'application/pdf') {
+        return setDragActive(true)
+      }
+    }
+
+    return setDragActive(false)
   }, [])
 
-  const handleDragOver = useCallback((event: DragEvent<HTMLLabelElement>) => {
-    event.preventDefault()
-    setDragActive(true)
-  }, [])
-
-  const handleDragLeave = useCallback((event: DragEvent<HTMLLabelElement>) => {
+  const handleDraggingEnd = useCallback((event: DragEvent<HTMLLabelElement>) => {
     event.preventDefault()
     setDragActive(false)
+    setHoverActive(false)
   }, [])
 
-  const validateProvidedFile = useCallback(
-    (file: File | undefined) => {
-      if (!file) return
-      ;(async () => {
-        setFileName(file.name)
-        setFormState({
-          state: 'LOADING',
-          result: null,
-        })
+  const validateInput = useCallback(
+    async (input: Input): Promise<void> => {
+      if (input.type === 'FILE') {
+        setInputLabel(input.value.name)
+      }
 
-        const bytes = await file.bytes()
-        const hash = await sha256(bytes)
-        const result = await searchChecksum(hash)
+      if (input.type === 'HASH') {
+        setInputLabel(input.value)
+      }
 
-        setFormState({
-          state: 'LOADED',
-          result,
-        })
-        track('resume-validate', {
-          checksum: hash,
-          newerVersion: result?.newerVersions,
-        })
-      })()
+      setFormState({
+        state: 'LOADING',
+        result: null,
+      })
+
+      let hash: string
+
+      if (input.type === 'FILE') {
+        const bytes = await input.value.bytes()
+        hash = await sha256(bytes)
+      } else if (input.type === 'HASH') {
+        hash = input.value
+      }
+
+      const result = await searchChecksum(hash)
+
+      setFormState({
+        state: 'LOADED',
+        result,
+      })
+
+      track('resume-validate', {
+        checksum: hash,
+        newerVersion: result?.newerVersions,
+      })
     },
     [searchChecksum],
   )
@@ -92,28 +120,76 @@ export const ResumeChecksumValidatorClient = ({ searchChecksum }: ChecksumValida
   const handleDrop = useCallback(
     (event: DragEvent<HTMLLabelElement>) => {
       event.preventDefault()
-      setDragActive(false)
-      validateProvidedFile(event.dataTransfer.files[0])
+      event.stopPropagation()
+
+      const [file] = Array.from(event.dataTransfer.files).filter(
+        ({ type }) => type === 'application/pdf',
+      )
+
+      if (file) {
+        void validateInput({
+          type: 'FILE',
+          value: file,
+        })
+      }
     },
-    [validateProvidedFile],
+    [validateInput],
   )
 
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      validateProvidedFile(event.target.files?.[0])
+      const [file] = Array.from(event.target.files)
+
+      if (file) {
+        void validateInput({
+          type: 'FILE',
+          value: file,
+        })
+
+        event.target.value = ''
+      }
     },
-    [validateProvidedFile],
+    [validateInput],
   )
 
-  const reset = useCallback(() => {
-    setFileName(null)
-    setFormState({
-      state: 'INITIAL',
-      result: null,
-    })
+  const handlePaste = useCallback(
+    (event: ClipboardEvent) => {
+      if (event.clipboardData.items && event.clipboardData.items.length > 0) {
+        const [item] = Array.from(event.clipboardData.items)
 
-    if (inputRef.current) inputRef.current.value = ''
-  }, [])
+        if (item.kind === 'file' && item.type === 'application/pdf') {
+          const file = item.getAsFile()
+
+          if (file) {
+            void validateInput({
+              type: 'FILE',
+              value: file,
+            })
+          }
+        }
+
+        if (item.kind === 'string' && item.type === 'text/plain') {
+          const [data] = event.clipboardData.getData('text/plain').match(/^[a-fA-F0-9]{64}$/) ?? []
+
+          if (data) {
+            void validateInput({
+              type: 'HASH',
+              value: data,
+            })
+          }
+        }
+      }
+    },
+    [validateInput],
+  )
+
+  useEffect(() => {
+    window.addEventListener('paste', handlePaste)
+
+    return () => {
+      window.removeEventListener('paste', handlePaste)
+    }
+  }, [handlePaste])
 
   return (
     <div className="flex flex-col gap-8 md:flex-row md:items-start md:gap-32">
@@ -123,28 +199,30 @@ export const ResumeChecksumValidatorClient = ({ searchChecksum }: ChecksumValida
           className={cn([
             '[--dropzone-border-color:var(--color-border)]',
             '[--dropzone-text-color:var(--color-foreground)]',
-            '[--dropzone-background-color:var(--color-background)]',
+            '[--dropzone-background-color:var(--color-transparent)]',
             hoverActive && [
-              '[--dropzone-border-color:var(--color-foreground)]',
+              '[--dropzone-border-color:color-mix(in_oklch,var(--color-border),var(--color-foreground)_10%)]',
               '[--dropzone-text-color:var(--color-foreground)]',
-              '[--dropzone-background-color:color-mix(in_oklch,var(--color-card),var(--color-foreground)_2%)]',
+              '[--dropzone-background-color:color-mix(in_oklch,var(--color-transparent),var(--color-foreground)_2%)]',
             ],
             dragActive && [
               '[--dropzone-border-color:var(--color-primary)]',
               '[--dropzone-text-color:var(--color-primary)]',
-              '[--dropzone-background-color:color-mix(in_oklch,var(--color-background),var(--color-primary)_15%)]',
+              '[--dropzone-background-color:color-mix(in_oklch,var(--color-transparent),var(--color-primary)_15%)]',
             ],
             'border-(--dropzone-border-color) bg-(--dropzone-background-color) text-(--dropzone-text-color)',
             'group relative flex flex-col items-center justify-center gap-3 text-center',
-            'aspect-21-9 cursor-pointer border-2 border-dashed transition-colors',
+            'aspect-21-9 cursor-pointer rounded-md border-2 border-solid transition-colors',
           ])}
           onPointerEnter={() => setHoverActive(true)}
           onPointerOver={() => setHoverActive(true)}
           onPointerLeave={() => setHoverActive(false)}
           onPointerOut={() => setHoverActive(false)}
-          onDragEnter={handleDragEnter}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
+          onDragStart={handleDragging}
+          onDragEnter={handleDragging}
+          onDragOver={handleDragging}
+          onDragEnd={handleDraggingEnd}
+          onDragLeave={handleDraggingEnd}
           onDrop={handleDrop}
         >
           <Icon
@@ -166,7 +244,7 @@ export const ResumeChecksumValidatorClient = ({ searchChecksum }: ChecksumValida
             </span>
             <span className="text-xs text-muted-foreground">
               {state === 'LOADING'
-                ? fileName
+                ? inputLabel
                 : 'or click to browse — the file itself never leaves your browser'}
             </span>
           </div>
@@ -197,41 +275,30 @@ export const ResumeChecksumValidatorClient = ({ searchChecksum }: ChecksumValida
             .
           </p>
         )}
-        {state === 'LOADING' && (
-          <p className="font-mono text-sm text-muted-foreground md:text-base">
-            Hashing “{fileName}”…
-          </p>
-        )}
+
         {state === 'LOADED' && result && result.newerVersions > 0 && (
           <Banner variant="warning">
-            <span className="font-mono">{fileName}</span> is authentic, but a newer version has
-            since been generated.{' '}
+            <span className="font-mono">{inputLabel}</span> is valid, but a newer version has since
+            been generated.{' '}
             <Link href="/resume/latest" className="underline underline-offset-4">
               Get the latest version
             </Link>
             .
           </Banner>
         )}
+
         {state === 'LOADED' && result && result.newerVersions === 0 && (
           <Banner variant="success">
-            <span className="font-mono">{fileName}</span> is authentic and it's the latest available
+            <span className="font-mono">{inputLabel}</span> is valid and it's the latest available
             version.
           </Banner>
         )}
+
         {state === 'LOADED' && !result && (
           <Banner variant="error">
-            <span className="font-mono">{fileName}</span> does not match any resume this site has
+            <span className="font-mono">{inputLabel}</span> does not match any resume this site has
             generated. Treat it as untrusted.
           </Banner>
-        )}
-        {state === 'LOADED' && (
-          <button
-            type="button"
-            onClick={reset}
-            className="self-start text-xs tracking-wide text-muted-foreground uppercase underline underline-offset-4 hover:text-foreground"
-          >
-            Check another file
-          </button>
         )}
       </div>
     </div>

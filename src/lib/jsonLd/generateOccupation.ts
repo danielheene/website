@@ -1,72 +1,45 @@
-import type { EmployeeRole, Occupation, Organization, WithContext } from 'schema-dts'
+import type { Occupation, Role } from 'schema-dts'
 
 export interface OccupationData {
   name: string
   employer?: string
-  startDate?: string
-  endDate?: string
+  startDate?: string | null
+  endDate?: string | null
   responsibilities?: string[]
   skills?: string[]
 }
 
 /**
- * Generates `EmployeeRole` JSON-LD for a held position.
- *
- * schema.org models a *job someone held* as an `EmployeeRole` wrapping an
- * `Occupation`: the role carries the employer and the dates, while the
- * occupation carries what the work actually was. `Occupation` alone has no
- * `startDate`/`endDate`/employer, so a resume entry cannot be expressed with it.
- *
- * @example
- * ```typescript
- * const roleLd = generateOccupation({
- *   name: 'Senior Software Engineer',
- *   employer: 'ACME Inc.',
- *   startDate: '2020-01-01',
- *   endDate: '2022-01-01',
- *   responsibilities: ['Led the platform team'],
- *   skills: ['TypeScript', 'Next.js']
- * })
- * ```
+ * A job the person held, for `Person.hasOccupation`. schema.org dates a
+ * property's value through the Role pattern: the role repeats the property it
+ * wraps (`hasOccupation`) and carries the dates. `Occupation` has no employer
+ * property, so the employer goes into its description.
  */
-export function generateOccupation(data: OccupationData): WithContext<
-  EmployeeRole<Occupation, 'roleName'>
-> & {
-  worksFor?: Organization
-} {
+export function generateOccupation(data: OccupationData): Role<Occupation, 'hasOccupation'> {
   const occupation: Occupation = {
     '@type': 'Occupation',
     name: data.name,
+    ...(data.employer && {
+      description: `${data.name}, ${data.employer}`,
+    }),
+    ...(data.responsibilities &&
+      data.responsibilities.length > 0 && {
+        responsibilities: data.responsibilities,
+      }),
+    ...(data.skills &&
+      data.skills.length > 0 && {
+        skills: data.skills,
+      }),
   }
 
-  if (Array.isArray(data.responsibilities) && data.responsibilities.length > 0) {
-    occupation.responsibilities = data.responsibilities
+  return {
+    '@type': 'Role',
+    hasOccupation: occupation,
+    ...(data.startDate && {
+      startDate: data.startDate.slice(0, 10),
+    }),
+    ...(data.endDate && {
+      endDate: data.endDate.slice(0, 10),
+    }),
   }
-
-  if (Array.isArray(data.skills) && data.skills.length > 0) {
-    occupation.skills = data.skills
-  }
-
-  const role: WithContext<EmployeeRole<Occupation, 'roleName'>> & {
-    worksFor?: Organization
-  } = {
-    '@context': 'https://schema.org',
-    '@type': 'EmployeeRole',
-    roleName: occupation,
-  }
-
-  // `Role` carries no employer property of its own — schema.org expresses the
-  // organization as the value the role wraps.
-  if (data.employer) {
-    role.worksFor = {
-      '@type': 'Organization',
-      name: data.employer,
-    }
-  }
-
-  if (data.startDate) role.startDate = data.startDate
-
-  if (data.endDate) role.endDate = data.endDate
-
-  return role
 }

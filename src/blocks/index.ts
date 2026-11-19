@@ -3,8 +3,8 @@ import type { BlockSlug as RegisteredBlockSlug } from 'payload'
 import { CodeBlock } from '@/blocks/CodeBlock'
 import { FeatureCardsBlock } from '@/blocks/FeatureCardsBlock'
 import { HighlightBoxBlock } from '@/blocks/HighlightBoxBlock'
-import { LegalAuthorshipsBlock } from '@/blocks/LegalAuthorshipsBlock'
-import { LegalPublisherBlock } from '@/blocks/LegalPublisherBlock'
+import { LegalAttributionsBlock } from '@/blocks/LegalAttributionsBlock'
+import { LegalPublisherInformationBlock } from '@/blocks/LegalPublisherInformationBlock'
 import { LinkGroupBlock } from '@/blocks/LinkGroupBlock'
 import { ResumeAboutMeBlock } from '@/blocks/ResumeAboutMeBlock'
 import { ResumeContactBlock } from '@/blocks/ResumeContactBlock'
@@ -27,8 +27,8 @@ export const BLOCKS = [
   TwoColumnContentBlock,
 
   /* legal blocks */
-  LegalPublisherBlock,
-  LegalAuthorshipsBlock,
+  LegalPublisherInformationBlock,
+  LegalAttributionsBlock,
 
   /* resume related blocks */
   ResumeAboutMeBlock,

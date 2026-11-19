@@ -21,7 +21,7 @@ export const documentHeaderSchema = z.strictObject({
     city: z.string(),
   }),
   telephone: z.object({
-    label: z.string(),
+    label: z.string().min(1),
     href: z.templateLiteral(['tel:', z.e164()]),
   }),
   email: z.object({

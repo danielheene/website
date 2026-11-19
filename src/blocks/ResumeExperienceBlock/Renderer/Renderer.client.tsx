@@ -4,10 +4,12 @@ import type { JSX } from 'react'
 
 import { cn } from 'tailwind-variants'
 
+import { Badge } from '@/components/Badge'
 import { Headline } from '@/components/Headline'
 import { Reveal } from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
+import type { BlockAnchors } from '@/lib/extractHeadings'
 import { generateExperienceInterval, ReducedToBilingualLanguage } from '@/lib/i18n'
 import { isEmptyValue } from '@/lib/lexical/isEmptyValue'
 import { ResolvedRelations } from '@/lib/resolveRelation'
@@ -15,20 +17,21 @@ import { ResumeExperienceBlock, ResumeJobData, ResumeSkillTagData } from '@/type
 
 import { SkillChart } from './SkillChart'
 
-interface ResumeExperienceBlockClientRendererProps extends ResumeExperienceBlock {
+interface ResumeExperienceBlockClientRendererProps extends ResumeExperienceBlock, BlockAnchors {
   title: string
   jobs: ReducedToBilingualLanguage<ResolvedRelations<ResumeJobData>>[]
   skillTags: Pick<ResumeSkillTagData, 'id' | 'title' | 'slug' | 'interval'>[]
 }
 
 export const ResumeExperienceBlockClientRenderer = ({
+  anchorId,
   title,
   caption,
   jobs,
   skillTags,
 }: ResumeExperienceBlockClientRendererProps): JSX.Element => (
-  <SectionContainer title={title} variant="primary">
-    <div className={cn('container', 'my-24 lg:my-48', 'grid', 'gap-4', 'grid-cols-12')}>
+  <SectionContainer id={anchorId} title={title} variant="primary">
+    <div className={cn('container', 'py-24 lg:py-48', 'grid', 'gap-4', 'grid-cols-12')}>
       <div
         className={cn(
           'col-span-10 col-start-2 my-24 lg:col-span-5 lg:col-start-1 lg:my-48 xl:col-span-4',
@@ -41,9 +44,12 @@ export const ResumeExperienceBlockClientRenderer = ({
             </Headline>
           )}
           {caption && (
-            <div data-reveal-item>
-              <RichText className="text-inherit" data={caption} enableGutter={false} />
-            </div>
+            <RichText
+              className="text-inherit"
+              data={caption}
+              enableGutter={false}
+              data-reveal-item
+            />
           )}
           {skillTags && (
             <div data-reveal-item>
@@ -70,6 +76,7 @@ export const ResumeExperienceBlockClientRenderer = ({
               startDate,
               endDate,
               tasks,
+              skillTags,
               // technologies,
             }) => {
               const timeString = generateExperienceInterval({
@@ -110,24 +117,24 @@ export const ResumeExperienceBlockClientRenderer = ({
                               data={task}
                               enableGutter={false}
                               className={cn([
-                                'light relative w-full pl-4',
+                                'light relative w-full pl-4 text-[1rem] leading-[1.5rem]',
                                 '[&>p]:my-0 [&>p]:py-0',
-                                'before:absolute before:top-[0.65rem] before:left-0 before:block before:size-2 before:rounded-full before:bg-primary',
+                                'before:absolute before:top-[0.85rem] before:left-0 before:block before:size-1.5 before:-translate-y-1/2 before:rounded-full before:bg-primary',
                               ])}
                             />
                           ))}
                       </div>
                     )}
                     {/*<RichText data={content} enableGutter={false} className="w-full" />*/}
-                    {/*{technologies.length > 0 && (*/}
-                    {/*  <footer className="flex flex-wrap gap-2">*/}
-                    {/*    {technologies.map(({ id, label }) => (*/}
-                    {/*      <Badge key={id} color="primary">*/}
-                    {/*        {label}*/}
-                    {/*      </Badge>*/}
-                    {/*    ))}*/}
-                    {/*  </footer>*/}
-                    {/*)}*/}
+                    {skillTags.length > 0 && (
+                      <footer className="light flex flex-wrap gap-2" data-theme="light">
+                        {skillTags.map(({ value: { title, id } }) => (
+                          <Badge key={id} color="primary" style="solid">
+                            {title}
+                          </Badge>
+                        ))}
+                      </footer>
+                    )}
                   </article>
                 </Reveal>
               )

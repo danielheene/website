@@ -14,11 +14,21 @@ export const Header = async () => {
   const hasNavEntries = Array.isArray(mainNavigation.entries) && mainNavigation.entries.length > 0
 
   return (
-    <header id="header" className="absolute top-0 z-50 h-20 w-full">
+    <header
+      id="header"
+      className={cn([
+        'absolute top-0 z-50 h-20 w-full text-foreground',
+        // Over a hero (always the blue duotone) the header is white in both themes.
+        // The token override is for the nav links, whose button styles read
+        // `--color-foreground` directly.
+        '[body:has([data-hero])_&]:text-white',
+        '[body:has([data-hero])_&]:[--color-foreground:var(--color-white)]',
+      ])}
+    >
       <nav className={cn(['container mt-4 h-16', 'flex flex-row items-center justify-between'])}>
         <Link href="/" className="flex h-10 items-center" aria-label="Home">
-          <Logo variant="inline" className="hidden text-2xl text-foreground md:block" />
-          <Logo variant="square" className="block text-2xl text-foreground md:hidden" />
+          <Logo variant="inline" className="hidden text-3xl text-inherit md:block" />
+          <Logo variant="square" className="block text-3xl text-inherit md:hidden" />
         </Link>
 
         {hasNavEntries && (

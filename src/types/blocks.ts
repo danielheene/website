@@ -40,8 +40,8 @@ export const BlockSlug = {
   TrendingBlogPosts: 'TrendingBlogPostsBlock',
 
   /* legal blocks */
-  LegalPublisher: 'LegalPublisherBlock',
-  LegalAuthorships: 'LegalAuthorshipsBlock',
+  LegalPublisherInformation: 'LegalPublisherInformationBlock',
+  LegalAttributions: 'LegalAttributionsBlock',
 
   /* resume related blocks */
   ResumeAboutMe: 'ResumeAboutMeBlock',

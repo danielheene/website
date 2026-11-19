@@ -44,6 +44,7 @@ export const HeroMedia = ({
 
   return (
     <section
+      data-hero
       className={cn(
         // Fills the first desktop screen without trapping short viewports.
         'relative flex min-h-svh w-full flex-col overflow-hidden',
@@ -81,7 +82,16 @@ export const HeroMedia = ({
         </DuoTone>
       )}
 
-      {children && <div className="relative z-30 w-full">{children}</div>}
+      {hasVisual && (
+        // Keeps the white header readable over bright patches of the media.
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 z-20 h-60 bg-ease-to-b from-primary/70 to-transparent"
+        />
+      )}
+
+      {/* The visual is always the blue duotone, so text on it is white in both themes. */}
+      {children && <div className="relative z-30 w-full text-white">{children}</div>}
     </section>
   )
 }

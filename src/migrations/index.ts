@@ -5,6 +5,8 @@ import * as migration_00000004_recompute_stale_excerpts from './00000004_recompu
 import * as migration_00000005_manual_rich_text_excerpts from './00000005_manual_rich_text_excerpts'
 import * as migration_00000006_rich_text_page_blocks from './00000006_rich_text_page_blocks'
 import * as migration_00000007_backfill_draft_versions from './00000007_backfill_draft_versions'
+import * as migration_00000008_structured_phone_number from './00000008_structured_phone_number'
+import * as migration_00000009_page_layouts from './00000009_page_layouts'
 
 export const migrations = [
   {
@@ -41,5 +43,15 @@ export const migrations = [
     up: migration_00000007_backfill_draft_versions.up,
     down: migration_00000007_backfill_draft_versions.down,
     name: '00000007_backfill_draft_versions',
+  },
+  {
+    up: migration_00000008_structured_phone_number.up,
+    down: migration_00000008_structured_phone_number.down,
+    name: '00000008_structured_phone_number',
+  },
+  {
+    up: migration_00000009_page_layouts.up,
+    down: migration_00000009_page_layouts.down,
+    name: '00000009_page_layouts',
   },
 ]

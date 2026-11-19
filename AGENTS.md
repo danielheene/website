@@ -40,8 +40,10 @@ bun run analyze          # production build with @next/bundle-analyzer reports
 bun run lint             # oxlint + oxfmt --check (does NOT auto-fix)
 bun run lint:fix         # oxlint --fix + oxfmt (auto-fixes what it can)
 bun run test             # unit tests (Vitest)
-bun run packages:lint        # syncpack: dependency version groups
+bun run packages:lint    # syncpack: dependency version groups
 bun run test:e2e         # Playwright E2E (needs docker compose up -d)
+bun run migrate          # run pending Payload migrations (src/migrations/)
+bun run start:worker     # job worker: Payload jobs:run + health server (scripts/start-worker.mjs)
 ```
 
 Environment variables come from **Doppler**, but no script wraps `doppler run`. `bun run load-env`
@@ -148,6 +150,23 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
 - **Revalidation**: Payload collection hooks call `revalidate*` helpers (e.g.
   `src/collections/Pages/hooks/revalidatePage.ts`) to invalidate Next.js cache tags after content
   changes — follow this pattern for any new collection that's rendered on the frontend.
+  Go through `revalidateCache` (`src/lib/revalidation/`), never `next/cache` directly: hooks also
+  fire in the jobs worker, where Next's revalidation APIs throw, and `revalidateCache` then falls
+  back to the app's `POST /api/revalidate` (bearer token derived from `PAYLOAD_SECRET`).
+- **Page layouts**: a page is either `richText` (a `content` rich-text field, rendered like a blog
+  post by `ArticleLayout`: content column + sidebar with table of contents and `links`) or
+  `sections` (the `sections` blocks, rendered by `RenderBlocks`). Resume blocks are offered only
+  on the `resume` page, which alone gets the section navigation (`src/collections/Pages/constants.ts`).
+  The legal blocks live inside rich text and are validated to the legal page slugs, because
+  Lexical's `BlocksFeature` cannot offer blocks per document.
+- **Server-rendered rich-text blocks**: `RichText` is a Client Component, so a block whose
+  renderer is an async Server Component (the legal blocks) is listed in
+  `src/blocks/serverRenderedBlockSlugs.ts`, rendered ahead of time by `renderServerBlocks` and
+  passed to `RichText` as `renderedBlocks`, keyed by block id.
+- **Shaders** (`src/components/Shaders/`) must not call `WEBGL_lose_context.loseContext()` in their
+  effect cleanup: the canvas is React-owned, and a re-run on the same node (Strict Mode,
+  `<Activity>`) then gets a dead context. The admin shows each preset's `thumbnail.png`
+  (`ShaderThumbnail`) instead of live shaders.
 - **Blog listings** (`/blog`, `/blog/<topic>`) paginate and sort via `?page=` / `?sort=`, read
   only inside the grid's Suspense boundary so the shell still prerenders. `src/lib/blog/listing.ts`
   owns the params (sort options, parsing, href building); `proxy.ts` uses it to redirect
@@ -276,7 +295,7 @@ only when `PAYLOAD_JOBS_ENABLE_APP_WORKERS=true` (default `false`).
 
 <!-- BEGIN:nextjs-agent-rules -->
 
-# This is NOT the Next.js you know
+## This is NOT the Next.js you know
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
 

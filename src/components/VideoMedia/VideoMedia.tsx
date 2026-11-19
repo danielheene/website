@@ -55,7 +55,6 @@ export const VideoMedia = ({
 
   const handleLoadedData = useCallback(
     (event: SyntheticEvent<HTMLVideoElement>) => {
-      console.log(event)
       setLoaded(true)
       onLoadAction(event)
     },

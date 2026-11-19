@@ -1,49 +1,42 @@
-import type { BlogLeaf, WithContext } from 'schema-dts'
+import type { BlogLeaf } from 'schema-dts'
+
+import { jsonLdIds } from './ids'
 
 export interface BlogData {
-  name: string
-  description?: string
+  siteUrl: string
   url: string
-  image?: string
+  name: string
+  description?: string | null
+  /** Topic titles. */
   keywords?: string[]
 }
 
-/**
- * Generates Blog JSON-LD
- *
- * @example
- * ```typescript
- * const blogLd = generateBlog({
- *   name: 'My Blog',
- *   description: 'Insights about web development and design.',
- *   url: 'https://danielheene.io/blog',
- *   image: 'https://danielheene.io/blog-og.jpg',
- *   keywords: ['web development', 'design', 'coding']
- * })
- * ```
- */
-export function generateBlog(data: BlogData): WithContext<BlogLeaf> {
-  const blog: WithContext<BlogLeaf> = {
-    '@context': 'https://schema.org',
+/** The site's blog, published by the site owner. */
+export function generateBlog(data: BlogData): BlogLeaf {
+  const ids = jsonLdIds(data.siteUrl)
+
+  const blog: BlogLeaf = {
     '@type': 'Blog',
-    name: data.name,
+    '@id': ids.blog,
     url: data.url,
+    name: data.name,
+    inLanguage: 'en',
+    isPartOf: {
+      '@id': ids.website,
+    },
+    publisher: {
+      '@id': ids.person,
+    },
+    author: {
+      '@id': ids.person,
+    },
   }
 
-  if (data.description) {
-    blog.description = data.description
-  }
+  const description = data.description?.trim()
 
-  if (data.image) {
-    blog.image = {
-      '@type': 'ImageObject',
-      url: data.image,
-    }
-  }
+  if (description) blog.description = description
 
-  if (data.keywords && data.keywords.length > 0) {
-    blog.keywords = data.keywords.join(', ')
-  }
+  if (data.keywords && data.keywords.length > 0) blog.keywords = data.keywords.join(', ')
 
   return blog
 }

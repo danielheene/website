@@ -1,6 +1,5 @@
 import { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-mongodb'
 
-import { SiteSettingsDefaults } from '@/globals/SiteSettings'
 import { CollectionSlug } from '@/types/collections'
 import { GlobalSlug } from '@/types/globals'
 import { Page } from '@/types/payload'
@@ -14,39 +13,36 @@ export async function up({ payload, req, session: _session }: MigrateUpArgs): Pr
   const homePage = await createOrUpdatePage(migration, {
     slug: 'home',
     title: 'Home',
-    layout: 'home',
+    layout: 'sections',
   })
 
   const aboutMePage = await createOrUpdatePage(migration, {
     slug: 'about-me',
     title: 'About Me',
-    layout: 'default',
+    layout: 'sections',
   })
 
   const resumePage = await createOrUpdatePage(migration, {
     slug: 'resume',
     title: 'Resume',
-    layout: 'resume',
+    layout: 'sections',
   })
 
   const legalNoticePage = await createOrUpdatePage(migration, {
     slug: 'legal-notice',
     title: 'Legal Notice',
-    layout: 'legal',
+    layout: 'richText',
   })
 
   const privacyPolicyPage = await createOrUpdatePage(migration, {
     slug: 'privacy-policy',
     title: 'Privacy Policy',
-    layout: 'resume',
+    layout: 'richText',
   })
 
   await payload.db.updateGlobal({
     slug: GlobalSlug.SiteSettings,
     data: {
-      general: {
-        ...SiteSettingsDefaults.general,
-      },
       header: {
         mainNavigation: {
           entries: [

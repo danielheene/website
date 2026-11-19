@@ -2,6 +2,7 @@ import { SHADER_PRESET_MAP, type ShaderPresetKey } from '@/components/HeroMedia/
 
 type PopulatedMediaValue = {
   url?: string
+  blurDataURL?: string | null
   // Matches `MediaVideo['thumbnails']`'s real shape: a polymorphic upload
   // relation, populated or not.
   thumbnails?:
@@ -10,6 +11,7 @@ type PopulatedMediaValue = {
           | string
           | {
               url?: string
+              blurDataURL?: string | null
             }
       }[]
     | null
@@ -48,10 +50,14 @@ export type ResolvedSlideThumbnail =
   | {
       kind: 'image-url'
       url: string
+      blurDataURL?: string
     }
   | {
       kind: 'video-url'
       url: string
+      /** The poster frame and its blur placeholder, once thumbnails exist. */
+      posterUrl?: string
+      blurDataURL?: string
     }
   | {
       kind: 'empty'
@@ -59,9 +65,10 @@ export type ResolvedSlideThumbnail =
 
 /**
  * Resolves what a slide row's thumbnail should actually show: the shader
- * preset key (for a live `ShaderPreviewCanvas`), an image URL (the uploaded
- * image itself, or a video's poster frame), or nothing yet (a fresh/pending
- * row with no media set). Shared by `RowLabel`, `SlideThumb`, and
+ * preset key (for `ShaderThumbnail`'s preview image), an image URL with its
+ * blur placeholder, a video URL with its poster frame (or just the poster when
+ * the video URL is unknown), or nothing yet (a fresh/pending row with no media
+ * set). Shared by `RowLabel`, `SlideThumb`, and
  * `SingleSlideEditor` so every preview resolves the same way.
  *
  * `thumbnailCache` (the `id → {url}`/`{thumbnails}` map from
@@ -106,16 +113,22 @@ export const resolveSlideThumbnail = (
 
     const posterUrl = typeof posterThumbnail === 'object' ? posterThumbnail?.url : undefined
 
-    if (posterUrl)
-      return {
-        kind: 'image-url',
-        url: posterUrl,
-      }
+    const posterBlur =
+      (typeof posterThumbnail === 'object' ? posterThumbnail?.blurDataURL : undefined) ?? undefined
 
     if (rawUrl)
       return {
         kind: 'video-url',
         url: rawUrl,
+        posterUrl,
+        blurDataURL: posterBlur,
+      }
+
+    if (posterUrl)
+      return {
+        kind: 'image-url',
+        url: posterUrl,
+        blurDataURL: posterBlur,
       }
 
     return {
@@ -127,6 +140,7 @@ export const resolveSlideThumbnail = (
     return {
       kind: 'image-url',
       url: rawUrl,
+      blurDataURL: populated?.blurDataURL ?? undefined,
     }
 
   return {

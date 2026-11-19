@@ -749,7 +749,9 @@ export const Grainient = ({
       gl.deleteVertexArray(vao)
       gl.deleteProgram(field.program)
       gl.deleteProgram(composite.program)
-      gl.getExtension('WEBGL_lose_context')?.loseContext()
+      // No loseContext() here: the canvas is React-owned, and a re-run of this effect
+      // on the same node (Strict Mode, <Activity>) would get a dead context. The
+      // browser frees it once the canvas leaves the DOM.
     }
   }, [])
 

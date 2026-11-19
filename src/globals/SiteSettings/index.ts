@@ -7,7 +7,7 @@ import { TemplateField } from '@/fields/Template'
 import { authenticated } from '@/lib/access/authenticated'
 import { generateResumeDocumentHook } from '@/lib/payloadHooks/global'
 import { AdminGroup } from '@/types/admin-panel'
-import { GlobalData, GlobalSlug } from '@/types/globals'
+import { GlobalSlug } from '@/types/globals'
 
 import { revalidateDocument } from './hooks/revalidateDocument'
 
@@ -29,16 +29,6 @@ const NavEntries = (): ArrayField => ({
   interfaceName: 'NavEntries',
   fields: [...LinkField().fields],
 })
-
-export const SiteSettingsDefaults: Pick<GlobalData<GlobalSlug['SiteSettings']>, 'general'> = {
-  general: {
-    siteName: process.env.SERVER_HOST,
-    category: 'website',
-    siteHost: process.env.SERVER_HOST,
-    siteURL: process.env.SERVER_URL,
-    titleTemplate: '{{title}} | {{siteName}}',
-  },
-}
 
 export const SiteSettings: GlobalConfig = {
   slug: GlobalSlug.SiteSettings,
@@ -72,9 +62,6 @@ export const SiteSettings: GlobalConfig = {
               name: 'general',
               interfaceName: 'GeneralSettings',
               required: true,
-              defaultValue: {
-                ...SiteSettingsDefaults.general,
-              },
               fields: [
                 {
                   type: 'row',
@@ -82,8 +69,10 @@ export const SiteSettings: GlobalConfig = {
                     {
                       name: 'siteName',
                       label: 'Site Name',
-                      defaultValue: SiteSettingsDefaults.general.siteName,
                       type: 'text',
+                      hooks: {
+                        afterRead: [({ value }) => value || process.env.SERVER_HOST],
+                      },
                       admin: {
                         width: '50%',
                         description: 'The name of the site.',
@@ -92,7 +81,9 @@ export const SiteSettings: GlobalConfig = {
                     {
                       name: 'category',
                       type: 'text',
-                      defaultValue: SiteSettingsDefaults.general.category,
+                      hooks: {
+                        afterRead: [({ value }) => value || 'website'],
+                      },
                       admin: {
                         width: '50%',
                         description: 'This category is used for generating website metadata.',
@@ -107,7 +98,10 @@ export const SiteSettings: GlobalConfig = {
                       name: 'siteHost',
                       label: 'Site Host',
                       type: 'text',
-                      defaultValue: SiteSettingsDefaults.general.siteHost,
+                      virtual: true,
+                      hooks: {
+                        afterRead: [() => process.env.SERVER_HOST],
+                      },
                       admin: {
                         readOnly: true,
                         width: '50%',
@@ -118,7 +112,10 @@ export const SiteSettings: GlobalConfig = {
                       name: 'siteURL',
                       label: 'Site URL',
                       type: 'text',
-                      defaultValue: SiteSettingsDefaults.general.siteURL,
+                      virtual: true,
+                      hooks: {
+                        afterRead: [() => process.env.SERVER_URL],
+                      },
                       admin: {
                         readOnly: true,
                         width: '50%',
@@ -136,9 +133,10 @@ export const SiteSettings: GlobalConfig = {
                     'Title refers to the actual document title which is suffixed with siteName.',
                   renderLocale: ['en'],
                   data: {
-                    title: 'Lorem ipsum dolor sit amet',
+                    title:
+                      'This is an extra long example title template that is used for generating the title tag value on each page.',
                   },
-                  defaultValue: SiteSettingsDefaults.general.titleTemplate,
+                  defaultValue: '{title | trunc50 } | {siteName}',
                 }),
 
                 {

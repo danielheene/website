@@ -6,20 +6,22 @@ import { Headline } from '@/components/Headline'
 import { Reveal } from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
+import type { BlockAnchors } from '@/lib/extractHeadings'
 import { ResumeContactBlock } from '@/types/payload'
 
 import { ContactForm } from './ContactForm.client'
 
-interface ResumeContactBlockClientRendererProps extends ResumeContactBlock {
+interface ResumeContactBlockClientRendererProps extends ResumeContactBlock, BlockAnchors {
   title: string
 }
 
 export const ResumeContactBlockClientRenderer = ({
+  anchorId,
   blockType: _blockType,
   title,
   caption,
 }: ResumeContactBlockClientRendererProps) => (
-  <SectionContainer title={title} variant="default">
+  <SectionContainer id={anchorId} title={title} variant="default">
     <Reveal className={cn('container grid grid-cols-12 py-32', 'text-center')}>
       {title && (
         <div className="col-span-12 md:col-span-8 md:col-start-3" data-reveal-item>

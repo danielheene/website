@@ -1,6 +1,6 @@
 'use client'
 
-import { type SyntheticEvent, useCallback, useMemo, useState } from 'react'
+import { type SyntheticEvent, useCallback, useId, useMemo, useState } from 'react'
 import type { ImageProps } from 'next/image'
 import NextImage from 'next/image'
 
@@ -50,8 +50,9 @@ export const ImageMedia = ({
 }: ImageMediaProps) => {
   const [loaded, setLoaded] = useState<boolean>(false)
   const [revealed, setRevealed] = useState<boolean>(false)
+  const filterId = useId()
 
-  const fixedSrc = src ? new URL(src).pathname : undefined
+  const fixedSrc = src ? new URL(src, process.env.NEXT_PUBLIC_SERVER_URL).pathname : undefined
 
   const handleOnLoad = useCallback(
     (_event: SyntheticEvent<HTMLImageElement>) => {
@@ -77,7 +78,9 @@ export const ImageMedia = ({
       style={{
         aspectRatio,
       }}
-      className={cn(['contents', !fill && 'relative', className, loaded && loadedClassName])}
+      // `fill` images need a positioned parent of their own; otherwise the
+      // wrapper stays out of layout.
+      className={cn([fill ? 'absolute inset-0' : 'contents', className, loaded && loadedClassName])}
     >
       <NextImage
         alt={alt}
@@ -109,7 +112,7 @@ export const ImageMedia = ({
           aria-hidden="true"
           onAnimationEnd={() => setRevealed(true)}
         >
-          <filter id="blur" colorInterpolationFilters="sRGB">
+          <filter id={filterId} colorInterpolationFilters="sRGB">
             <feGaussianBlur stdDeviation="20" />
             <feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 100 -1" result="s" />
             <feFlood x="0" y="0" width="100%" height="100%" />
@@ -123,7 +126,7 @@ export const ImageMedia = ({
             x="0"
             y="0"
             preserveAspectRatio="none"
-            filter="url(#blur)"
+            filter={`url(#${filterId})`}
             href={blurDataURL}
           />
         </svg>

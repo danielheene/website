@@ -1,3 +1,1 @@
-export { SectionNavigationProvider } from './SectionNavigationProvider'
-
-export { useSectionNavigation } from './useSectionNavigation'
+export { SectionNavigation } from './SectionNavigation'

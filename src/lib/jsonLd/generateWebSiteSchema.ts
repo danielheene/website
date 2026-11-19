@@ -1,56 +1,42 @@
-import type { WebSiteLeaf, WithContext } from 'schema-dts'
+import type { WebSiteLeaf } from 'schema-dts'
 
+import { toSlideItems } from '@/components/HeroMedia/toSlideItems'
 import { GlobalData, GlobalSlug } from '@/types/globals'
 
-/**
- * Generates WebSite JSON-LD
- * @param data
- */
-export function generateWebSiteSchema({
-  general: data,
-}: GlobalData<GlobalSlug['SiteSettings']>): WithContext<WebSiteLeaf> {
-  const webSite: WithContext<WebSiteLeaf> = {
-    '@context': 'https://schema.org',
+import { absoluteUrl, jsonLdIds } from './ids'
+
+/** The site as a `WebSite`, published by the site owner. */
+export function generateWebSiteSchema(
+  { general }: GlobalData<GlobalSlug['SiteSettings']>,
+  siteUrl: string,
+): WebSiteLeaf {
+  const ids = jsonLdIds(siteUrl)
+
+  const webSite: WebSiteLeaf = {
     '@type': 'WebSite',
-    name: data.siteName,
-    url: data.siteURL,
+    '@id': ids.website,
+    name: general?.siteName,
+    url: general?.siteURL || siteUrl,
+    inLanguage: 'en',
+    publisher: {
+      '@id': ids.person,
+    },
   }
 
-  if (data.description) {
-    webSite.description = data.description?.replaceAll(/(\r?\n|\r\n?)/g, ' ')
-  }
+  const description = general?.description?.replaceAll(/\s+/g, ' ').trim()
 
-  const firstImageSlide = data.defaultOpengraphImage?.find(
-    (slide) => slide.slideType === 'image' && typeof slide.media === 'object',
+  if (description) webSite.description = description
+
+  const image = toSlideItems(general?.defaultOpengraphImage, '').find(
+    (slide) => slide.kind === 'image',
   )
 
-  const ogImageUrl =
-    firstImageSlide && typeof firstImageSlide.media === 'object' && 'url' in firstImageSlide.media
-      ? (
-          firstImageSlide.media as {
-            url?: string
-          }
-        ).url
-      : undefined
-
-  if (ogImageUrl) {
+  if (image?.kind === 'image') {
     webSite.image = {
       '@type': 'ImageObject',
-      url: ogImageUrl,
+      url: absoluteUrl(image.url, siteUrl),
     }
   }
-
-  // if (data.searchUrl) {
-  //   webSite.potentialAction = {
-  //     '@type': 'SearchAction',
-  //     target: {
-  //       '@type': 'EntryPoint',
-  //       urlTemplate: `${data.searchUrl}?q={search_term_string}`,
-  //     },
-  //     // @ts-expect-error - query-input is valid per Schema.org but not in schema-dts types
-  //     'query-input': 'required name=search_term_string',
-  //   }
-  // }
 
   return webSite
 }

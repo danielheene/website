@@ -6,19 +6,15 @@ import { Button, FieldError, FieldLabel, useDrawerSlug, useField, useModal } fro
 
 import { SHADER_PRESET_MAP, type ShaderPresetKey } from '@/components/HeroMedia/shaderPresets'
 
-import { SHADER_COMPONENTS } from './shaderComponents'
+import { ShaderThumbnail } from './ShaderThumbnail'
 
 const ShaderPickerDrawer = dynamic(() => import('./ShaderPickerDrawer'), {
   ssr: false,
 })
 
-const ShaderPreviewCanvas = dynamic(() => import('./ShaderPreviewCanvas'), {
-  ssr: false,
-})
-
 /**
  * Admin control for `HeroSlidesField`'s per-row `shader` sub-field. Shows the
- * current selection (label + a small live preview) and a button to open the
+ * current selection (label + its preview image) and a button to open the
  * full picker drawer.
  *
  * `path` is already row-qualified by Payload (e.g. `slides.0.shader`), so
@@ -41,10 +37,7 @@ const HeroSlideShaderField = ({ path, field, readOnly }: SelectFieldClientProps)
       <div className="flex items-center gap-3">
         {selectedPreset ? (
           <div className="h-16 w-24 overflow-hidden rounded-md border border-input">
-            <ShaderPreviewCanvas
-              className="size-full"
-              entry={SHADER_COMPONENTS[selectedPreset.key]}
-            />
+            <ShaderThumbnail presetKey={selectedPreset.key} />
           </div>
         ) : (
           <div className="flex h-16 w-24 items-center justify-center rounded-md border border-dashed border-input text-xs text-muted-foreground">

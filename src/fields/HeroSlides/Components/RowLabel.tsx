@@ -1,18 +1,13 @@
 'use client'
 
-import dynamic from 'next/dynamic'
 import { useRowLabel } from '@payloadcms/ui'
 
 import { resolveSlideThumbnail, type SlideRowData } from './resolveSlideThumbnail'
-import { SHADER_COMPONENTS } from './shaderComponents'
-
-const ShaderPreviewCanvas = dynamic(() => import('./ShaderPreviewCanvas'), {
-  ssr: false,
-})
+import { ShaderThumbnail } from './ShaderThumbnail'
 
 /**
- * Collapsed-row label for `HeroSlidesField`: a small live thumbnail — the
- * uploaded image, a video's poster frame, or the shader rendering live — next
+ * Collapsed-row label for `HeroSlidesField`: a small thumbnail — the
+ * uploaded image, a video's poster frame, or the shader's preview image — next
  * to a text label, instead of Payload's default "Slide 01".
  *
  * `useRowLabel` hands back this row's own sibling data directly, so it needs
@@ -29,13 +24,15 @@ export const RowLabel = () => {
     <div className="flex items-center gap-3">
       <div className="h-10 w-16 shrink-0 overflow-hidden rounded-sm border border-input bg-black/5">
         {thumbnail.kind === 'shader' ? (
-          <ShaderPreviewCanvas
-            className="size-full"
-            entry={SHADER_COMPONENTS[thumbnail.presetKey]}
-          />
-        ) : thumbnail.kind === 'image-url' ? (
+          <ShaderThumbnail presetKey={thumbnail.presetKey} />
+        ) : thumbnail.kind === 'image-url' ||
+          (thumbnail.kind === 'video-url' && thumbnail.posterUrl) ? (
           // oxlint-disable-next-line nextjs/no-img-element -- a tiny admin-only preview thumbnail, not a page asset
-          <img alt="" className="size-full object-cover" src={thumbnail.url} />
+          <img
+            alt=""
+            className="size-full object-cover"
+            src={thumbnail.kind === 'image-url' ? thumbnail.url : thumbnail.posterUrl}
+          />
         ) : null}
       </div>
       <span className="text-sm">

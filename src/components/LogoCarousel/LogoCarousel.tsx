@@ -89,16 +89,18 @@ export function LogoCarouselTile({
   id,
   svg,
   title,
-}: LogoCarouselProps['entries'][number]): JSX.Element {
+  className,
+}: LogoCarouselProps['entries'][number] & { className?: string }): JSX.Element {
   return (
     // oxlint-disable-next-line jsx-a11y/role-supports-aria-props
     <div
       key={id}
       aria-label={title}
       className={cn(
-        'aspect-4/3 w-full rounded p-3',
+        'aspect-4/3 w-full rounded-3xl',
         'bg-white fill-primary',
         '*:size-full *:object-contain *:object-center',
+        className,
       )}
       // oxlint-disable-next-line react/no-danger -- sanitized server-side by sanitizeSvg — on write via the ResumeCustomers beforeChange hook, and again in ResumeCustomersBlock/Renderer before reaching this component
       dangerouslySetInnerHTML={{

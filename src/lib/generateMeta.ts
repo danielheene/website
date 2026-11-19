@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 
 import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fetchers'
 import type { ReducedToBilingualLanguage } from '@/lib/i18n'
+import { ogImageMetadata } from '@/lib/og/ogImageMetadata'
+import type { OgCollection } from '@/lib/og/ogTarget'
 import type { BlogPostData, Page, Topic } from '@/types/payload'
 
 interface GenerateMetaArgs {
@@ -10,9 +12,11 @@ interface GenerateMetaArgs {
     | ReducedToBilingualLanguage<BlogPostData>
     | ReducedToBilingualLanguage<Topic>
     | null
+  /** The collection `doc` belongs to, which picks its Open Graph image. */
+  collection: Exclude<OgCollection, 'resume-documents'>
 }
 
-export const generateMeta = async ({ doc }: GenerateMetaArgs): Promise<Metadata> => {
+export const generateMeta = async ({ doc, collection }: GenerateMetaArgs): Promise<Metadata> => {
   const {
     general: { description, category, siteName },
   } = await fetchSiteSettingsCached()
@@ -33,14 +37,23 @@ export const generateMeta = async ({ doc }: GenerateMetaArgs): Promise<Metadata>
         url,
       },
     ],
-    // `images` is deliberately omitted: Next auto-discovers each route's
-    // sibling opengraph-image.tsx and infers its URL, so hand-computed image
-    // URLs here cannot drift out of sync with the generated images.
     openGraph: {
       type: 'website',
       title,
       description: metaDescription,
       siteName: siteName ?? undefined,
+      images: doc?.slug
+        ? [
+            ogImageMetadata(
+              {
+                collection,
+                slug: doc.slug,
+              },
+              title,
+              doc.updatedAt,
+            ),
+          ]
+        : undefined,
     },
   }
 }

@@ -1,9 +1,10 @@
-import { cacheLife, cacheTag, revalidateTag } from 'next/cache'
+import { cacheLife, cacheTag } from 'next/cache'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
 import { BilingualLanguage, reduceDataToBilingualLanguage } from '@/lib/i18n'
 import { resolveRelations } from '@/lib/resolveRelation'
+import { revalidateCache } from '@/lib/revalidation/revalidateCache'
 import { CollectionSlug } from '@/types/collections'
 
 export const fetchResumeSkills = async (locale: BilingualLanguage = 'en') => {
@@ -35,5 +36,7 @@ export const fetchResumeSkillsCached = async (locale: BilingualLanguage = 'en') 
 }
 
 export const revalidateResumeSkills = async (): Promise<void> => {
-  revalidateTag(CollectionSlug.ResumeSkills, 'max')
+  await revalidateCache({
+    tags: [CollectionSlug.ResumeSkills],
+  })
 }

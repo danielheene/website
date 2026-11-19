@@ -12,6 +12,7 @@ export const MetaTitleField = ({ titlePath }: MetaTitleFieldProps): TextField =>
   type: 'text',
   defaultValue: '',
   admin: {
+    readOnly: true,
     disableListColumn: true,
     disableBulkEdit: true,
     disableListFilter: true,
@@ -27,5 +28,6 @@ export const MetaTitleField = ({ titlePath }: MetaTitleFieldProps): TextField =>
   },
   hooks: {
     beforeValidate: [generateMetaTitleHook(titlePath)],
+    afterRead: [generateMetaTitleHook(titlePath)],
   },
 })

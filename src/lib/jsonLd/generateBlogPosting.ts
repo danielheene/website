@@ -1,137 +1,63 @@
-import type { BlogPostingLeaf, Person, WithContext } from 'schema-dts'
+import type { BlogPostingLeaf, ImageObjectLeaf } from 'schema-dts'
+
+import { jsonLdIds } from './ids'
 
 export interface BlogPostingData {
-  headline: string
-  alternativeHeadline?: string
-  description?: string
-  abstract?: string
+  siteUrl: string
   url: string
+  headline: string
+  description?: string | null
   datePublished: string
-  dateModified?: string
-  image?:
-    | string
-    | {
-        url: string
-        width?: number
-        height?: number
-        alt?: string
-      }
-  author?: {
-    name: string
-    url?: string
-  }
-  keywords?: string[]
-  articleSection?: string
-  articleBody?: string
-  timeRequired?: string
-  audio?: {
-    url: string
-    name?: string
-    description?: string
-  }
+  dateModified?: string | null
+  /** Hero images first, then the Open Graph card. */
+  images?: ImageObjectLeaf[]
+  /** Topic titles; the first is the primary one. */
+  topics?: string[]
+  wordCount?: number | null
+  /** Minutes. */
+  readingTime?: number | null
 }
 
-/**
- * Generates BlogPosting JSON-LD
- *
- * @example
- * ```typescript
- * const blogPostingLd = generateBlogPosting({
- *   headline: 'My First Blog Post',
- *   alternativeHeadline: 'A subline for the post',
- *   description: 'This is the excerpt of my first blog post.',
- *   url: 'https://danielheene.io/blog/my-first-post',
- *   datePublished: '2024-01-01T12:00:00Z',
- *   author: {
- *     name: 'Daniel Heene',
- *     url: 'https://danielheene.io'
- *   },
- *   keywords: ['web development', 'typescript'],
- *   articleSection: 'Technology',
- *   timeRequired: 'PT5M', // 5 minutes reading time
- *   audio: {
- *     url: 'https://danielheene.io/blog/my-first-post/audio.mp3',
- *     name: 'Audio version of My First Blog Post'
- *   }
- * })
- * ```
- */
-export function generateBlogPosting(data: BlogPostingData): WithContext<BlogPostingLeaf> {
-  const author: Person | undefined = data.author
-    ? {
-        '@type': 'Person',
-        name: data.author.name,
-        ...(data.author.url && {
-          url: data.author.url,
-        }),
-      }
-    : undefined
+/** A post by the site owner, in the site's blog. */
+export function generateBlogPosting(data: BlogPostingData): BlogPostingLeaf {
+  const ids = jsonLdIds(data.siteUrl)
 
-  const blogPosting: WithContext<BlogPostingLeaf> = {
-    '@context': 'https://schema.org',
+  const posting: BlogPostingLeaf = {
     '@type': 'BlogPosting',
-    headline: data.headline,
+    '@id': `${data.url}#article`,
     url: data.url,
+    headline: data.headline,
     datePublished: data.datePublished,
+    dateModified: data.dateModified || data.datePublished,
+    inLanguage: 'en',
     mainEntityOfPage: {
-      '@type': 'WebPage',
-      '@id': data.url,
+      '@id': `${data.url}#webpage`,
+    },
+    author: {
+      '@id': ids.person,
+    },
+    publisher: {
+      '@id': ids.person,
+    },
+    isPartOf: {
+      '@id': ids.blog,
     },
   }
 
-  if (data.alternativeHeadline) blogPosting.alternativeHeadline = data.alternativeHeadline
+  const description = data.description?.trim()
 
-  if (data.description) blogPosting.description = data.description
+  if (description) posting.description = description
 
-  if (data.abstract) blogPosting.abstract = data.abstract
+  if (data.images && data.images.length > 0) posting.image = data.images
 
-  if (data.dateModified) blogPosting.dateModified = data.dateModified
-
-  if (author) blogPosting.author = author
-
-  if (data.keywords && data.keywords.length > 0) blogPosting.keywords = data.keywords.join(', ')
-
-  if (data.articleSection) blogPosting.articleSection = data.articleSection
-
-  if (data.articleBody) blogPosting.articleBody = data.articleBody
-
-  if (data.timeRequired) blogPosting.timeRequired = data.timeRequired
-
-  if (data.audio) {
-    blogPosting.audio = {
-      '@type': 'AudioObject',
-      contentUrl: data.audio.url,
-      ...(data.audio.name && {
-        name: data.audio.name,
-      }),
-      ...(data.audio.description && {
-        description: data.audio.description,
-      }),
-    }
+  if (data.topics && data.topics.length > 0) {
+    posting.articleSection = data.topics[0]
+    posting.keywords = data.topics.join(', ')
   }
 
-  if (data.image) {
-    if (typeof data.image === 'string') {
-      blogPosting.image = {
-        '@type': 'ImageObject',
-        url: data.image,
-      }
-    } else {
-      blogPosting.image = {
-        '@type': 'ImageObject',
-        url: data.image.url,
-        ...(data.image.width && {
-          width: `${data.image.width}px`,
-        }),
-        ...(data.image.height && {
-          height: `${data.image.height}px`,
-        }),
-        ...(data.image.alt && {
-          caption: data.image.alt,
-        }),
-      }
-    }
-  }
+  if (data.wordCount) posting.wordCount = data.wordCount
 
-  return blogPosting
+  if (data.readingTime) posting.timeRequired = `PT${Math.max(1, Math.round(data.readingTime))}M`
+
+  return posting
 }

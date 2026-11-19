@@ -201,19 +201,19 @@ describe('seedPages', () => {
     expect(create).toHaveBeenCalledTimes(2)
   })
 
-  it('gives each page 2-4 content blocks, at least one RichTextBlock', async () => {
+  it('gives each page 2-4 section blocks, at least one RichTextBlock', async () => {
     find.mockResolvedValue({
       docs: [],
     })
     create.mockImplementation(async ({ collection, data }) => {
       if (collection === 'pages') {
-        expect(data.content.length).toBeGreaterThanOrEqual(2)
-        expect(data.content.length).toBeLessThanOrEqual(4)
+        expect(data.sections.length).toBeGreaterThanOrEqual(2)
+        expect(data.sections.length).toBeLessThanOrEqual(4)
         expect(
-          data.content.some((block: { blockType: string }) => block.blockType === 'RichTextBlock'),
+          data.sections.some((block: { blockType: string }) => block.blockType === 'RichTextBlock'),
         ).toBe(true)
 
-        for (const block of data.content) {
+        for (const block of data.sections) {
           expect(['RichTextBlock', 'CodeBlock', 'LinkGroupBlock']).toContain(block.blockType)
         }
       }

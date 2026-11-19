@@ -1,5 +1,6 @@
 import { JSX } from 'react'
 
+import { isEmpty, isString } from 'lodash-es'
 import { ClassValue, cn } from 'tailwind-variants'
 
 import { ImageMedia } from '@/components/ImageMedia'
@@ -18,21 +19,25 @@ export const ResumePreviewImage = ({
   className,
   url,
   blurDataURL,
-}: ResumePreviewImageProps): JSX.Element => (
-  <ImageMedia
-    style={{
-      aspectRatio: `${Math.round(width / height)}`,
-    }}
-    className={cn([
-      'absolute top-0 right-0 z-40 flex w-3/5',
-      'justify-center overflow-clip rounded-sm bg-background shadow-lg shadow-foreground/20',
-      className,
-    ])}
-    sizes="25vw, 33vw, 50vw, 75vw"
-    url={url}
-    blurDataURL={blurDataURL}
-    alt={''}
-    width={width}
-    height={height}
-  />
-)
+}: ResumePreviewImageProps): JSX.Element => {
+  if (!isString(url) || isEmpty(url)) return null
+
+  return (
+    <ImageMedia
+      style={{
+        aspectRatio: `${Math.round(width / height)}`,
+      }}
+      className={cn([
+        'absolute top-0 right-0 z-40 flex w-3/5',
+        'justify-center overflow-clip rounded-sm bg-background shadow-lg shadow-foreground/20',
+        className,
+      ])}
+      sizes="25vw, 33vw, 50vw, 75vw"
+      url={url}
+      blurDataURL={blurDataURL}
+      alt={''}
+      width={width}
+      height={height}
+    />
+  )
+}

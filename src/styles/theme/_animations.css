@@ -86,4 +86,16 @@
       opacity: 1;
     }
   }
+
+  /* DiagonalMarquee: the track holds two identical copies, so shifting it by
+   * half loops seamlessly. Each row sets its own animation-duration. */
+  --animate-diagonal-marquee: diagonal-marquee 80s linear infinite;
+  @keyframes diagonal-marquee {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
 }

@@ -792,7 +792,9 @@ export const Dither = ({
       gl.deleteVertexArray(vao)
       gl.deleteTexture(field)
       gl.deleteFramebuffer(framebuffer)
-      gl.getExtension('WEBGL_lose_context')?.loseContext()
+      // No loseContext() here: the canvas is React-owned, and a re-run of this effect
+      // on the same node (Strict Mode, <Activity>) would get a dead context. The
+      // browser frees it once the canvas leaves the DOM.
     }
   }, [])
 

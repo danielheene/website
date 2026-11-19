@@ -26,36 +26,13 @@ import {
   POSTS_PER_PAGE,
   parseBlogListingParams,
 } from '@/lib/blog/listing'
+import { fetchSiteSettingsCached } from '@/lib/fetchers'
+import { blogListingGraph, JsonLd, listedPostsGraph } from '@/lib/jsonLd'
 import { isEmptyValue } from '@/lib/lexical/isEmptyValue'
 import { CollectionSlug } from '@/types/collections'
 import type { BlogPostData, Topic } from '@/types/payload'
 
 import { FeaturedTopics } from '../[slug]/components/FeaturedTopics'
-
-export const queryPublishedTopicBySlug = async (slug: string): Promise<Topic | null> => {
-  'use cache'
-  cacheLife('max')
-  cacheTag(CollectionSlug.BlogTopics)
-
-  const payload = await getPayload({
-    config,
-  })
-
-  const { docs = [] } = await payload.find({
-    collection: CollectionSlug.BlogTopics,
-    draft: false,
-    limit: 1,
-    pagination: false,
-    overrideAccess: false,
-    where: {
-      slug: {
-        equals: slug,
-      },
-    },
-  })
-
-  return (docs[0] as Topic) ?? null
-}
 
 const queryPublishedPosts = async ({
   topicId,
@@ -131,7 +108,7 @@ const PostCard = ({ post }: { post: BlogPostData }) => {
       data-reveal-item
       className={cn(['group relative isolate h-80 overflow-hidden bg-background'])}
     >
-      <DuoTone>
+      <DuoTone contained className="absolute inset-0">
         {heroImageUrl && (
           <ImageMedia
             url={heroImageUrl}
@@ -147,6 +124,7 @@ const PostCard = ({ post }: { post: BlogPostData }) => {
             src={shaderThumbnail}
             alt=""
             fill
+            sizes="(min-width: 768px) 50vw, 100vw"
             className="absolute inset-0 size-full object-cover"
           />
         )}
@@ -218,10 +196,12 @@ const SortControl = ({ basePath, sort }: { basePath: string; sort: BlogSort }) =
 
 const PostsGrid = async ({
   topicId,
+  topicSlug,
   basePath,
   searchParams,
 }: {
   topicId?: string
+  topicSlug?: string
   basePath: string
   searchParams: BlogListPageProps['searchParams']
 }) => {
@@ -261,6 +241,14 @@ const PostsGrid = async ({
 
   return (
     <Reveal className={POSTS_GRID_CLASS}>
+      <JsonLd
+        nodes={listedPostsGraph({
+          siteUrl: process.env.SERVER_URL,
+          topicSlug,
+          // SAFETY: published posts always carry a slug and creation date.
+          posts: posts as BlogPostData[],
+        })}
+      />
       {totalDocs > 1 ? (
         <SortControl basePath={basePath} sort={sort} />
       ) : (
@@ -302,8 +290,25 @@ export interface BlogListPageProps {
 export const BlogListPage = async ({ topic, searchParams }: BlogListPageProps) => {
   const basePath = topic ? `${BLOG_PATH}/${topic.slug}` : BLOG_PATH
 
+  const {
+    general: { description },
+  } = await fetchSiteSettingsCached()
+
   return (
     <PageContainer>
+      <JsonLd
+        nodes={blogListingGraph({
+          siteUrl: process.env.SERVER_URL,
+          blogDescription: description,
+          topic: topic && {
+            slug: topic.slug,
+            title: topic.title,
+            description: topic.meta?.description,
+            content: topic.content,
+            hero: topic.hero,
+          },
+        })}
+      />
       <section className={cn(['w-full py-32'])}>
         <div className={cn(['container'])}>
           <div className={cn(['mx-auto grid w-full max-w-7xl gap-16 lg:grid-cols-12'])}>
@@ -355,7 +360,12 @@ export const BlogListPage = async ({ topic, searchParams }: BlogListPageProps) =
                   </div>
                 }
               >
-                <PostsGrid topicId={topic?.id} basePath={basePath} searchParams={searchParams} />
+                <PostsGrid
+                  topicId={topic?.id}
+                  topicSlug={topic?.slug}
+                  basePath={basePath}
+                  searchParams={searchParams}
+                />
               </Suspense>
             </div>
           </div>

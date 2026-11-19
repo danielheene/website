@@ -1,41 +1,41 @@
-// The Payload-free schema generators now live in @/lib and are re-exported
-// here so app-side imports of '@/lib/jsonLd' keep working unchanged.
-// `generatePersonSchema` and `generateWebSiteSchema` stay local: both read
-// Payload-generated types.
-export type { BlogData } from '@/lib/jsonLd/generateBlog'
+export type { BlogData } from './generateBlog'
 
-export { generateBlog } from '@/lib/jsonLd/generateBlog'
+export { generateBlog } from './generateBlog'
 
-export type { BlogPostingData } from '@/lib/jsonLd/generateBlogPosting'
+export type { BlogPostingData } from './generateBlogPosting'
 
-export { generateBlogPosting } from '@/lib/jsonLd/generateBlogPosting'
+export { generateBlogPosting } from './generateBlogPosting'
 
-export type { BreadcrumbItem } from '@/lib/jsonLd/generateBreadcrumbList'
+export type { BreadcrumbItem } from './generateBreadcrumbList'
 
-export { generateBreadcrumbList } from '@/lib/jsonLd/generateBreadcrumbList'
+export { generateBreadcrumbList } from './generateBreadcrumbList'
 
-export type { CollectionPageData } from '@/lib/jsonLd/generateCollectionPage'
+export type { CreativeWorkData } from './generateCreativeWork'
 
-export { generateCollectionPage } from '@/lib/jsonLd/generateCollectionPage'
+export { generateCreativeWork } from './generateCreativeWork'
 
-export type { CreativeWorkData } from '@/lib/jsonLd/generateCreativeWork'
+export type { DigitalDocumentData } from './generateDigitalDocument'
 
-export { generateCreativeWork } from '@/lib/jsonLd/generateCreativeWork'
+export { generateDigitalDocument } from './generateDigitalDocument'
 
-export type { OccupationData } from '@/lib/jsonLd/generateOccupation'
+export { generateItemList } from './generateItemList'
 
-export { generateOccupation } from '@/lib/jsonLd/generateOccupation'
+export type { OccupationData } from './generateOccupation'
 
-export type { OrganizationData } from '@/lib/jsonLd/generateOrganization'
-
-export { generateOrganization } from '@/lib/jsonLd/generateOrganization'
-
-export type { SoftwareSourceCodeData } from '@/lib/jsonLd/generateSoftwareSourceCode'
-
-export { generateSoftwareSourceCode } from '@/lib/jsonLd/generateSoftwareSourceCode'
-
-export { JsonLd } from '@/lib/jsonLd/JsonLd'
+export { generateOccupation } from './generateOccupation'
 
 export { generatePersonSchema } from './generatePersonSchema'
 
+export type { WebPageData } from './generateWebPage'
+
+export { generateWebPage } from './generateWebPage'
+
 export { generateWebSiteSchema } from './generateWebSiteSchema'
+
+export { jsonLdGraph } from './graph'
+
+export { absoluteUrl, jsonLdIds, pixels } from './ids'
+
+export { JsonLd } from './JsonLd'
+
+export * from './routeGraphs'

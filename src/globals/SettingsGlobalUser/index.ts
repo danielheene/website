@@ -1,4 +1,4 @@
-import type { GlobalConfig } from 'payload'
+import type { FieldHookArgs, GlobalConfig, TextField, ValidateOptions } from 'payload'
 
 import { AddressField } from '@/fields/Address'
 import { IconField } from '@/fields/Icon'
@@ -8,17 +8,23 @@ import { translate } from '@/lib/i18n'
 import { generateResumeDocumentHook } from '@/lib/payloadHooks/global'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
-import { GlobalSlug } from '@/types/globals'
+import { type GlobalData, GlobalSlug } from '@/types/globals'
+import type { GlobalUserSettings as GlobalUserSettingsType, PhoneNumberData } from '@/types/payload'
 import { LANGUAGE_CODE, LANGUAGE_PROFICIENCY } from '@/types/select-options'
 
 import { revalidateDocument } from './hooks/revalidateDocument'
+import { trimValueBeforeValidate } from './hooks/trimValueBeforeValidate'
+import {
+  formatPhoneNumber,
+  getPhoneNumberURI,
+  normalizePhoneNumber,
+  validatePhoneNumber,
+} from './phoneNumber'
 
 export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> = {
   slug: GlobalSlug.GlobalUserSettings,
   label: 'Global User Settings',
   access: {
-    // `versions: false` — there is no `_status` to filter on, so
-    // authenticatedOrPublished would break every access-enforced read
     read: authenticated,
     update: authenticated,
   },
@@ -94,7 +100,9 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                     {
                       name: 'firstName',
                       type: 'text',
-                      defaultValue: '',
+                      hooks: {
+                        beforeValidate: [trimValueBeforeValidate],
+                      },
                       admin: {
                         width: '50%',
                       },
@@ -102,7 +110,9 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                     {
                       name: 'lastName',
                       type: 'text',
-                      defaultValue: '',
+                      hooks: {
+                        beforeValidate: [trimValueBeforeValidate],
+                      },
                       admin: {
                         width: '50%',
                       },
@@ -113,8 +123,14 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                       virtual: true,
                       hooks: {
                         afterRead: [
-                          ({ siblingData: { firstName = '', lastName = '' } = {} }) => {
-                            return `${firstName} ${lastName}`.trim()
+                          ({
+                            siblingData,
+                          }: FieldHookArgs<
+                            GlobalData<GlobalSlug['GlobalUserSettings']>,
+                            string,
+                            GlobalData<GlobalSlug['GlobalUserSettings']>
+                          >) => {
+                            return `${siblingData.firstName ?? ''} ${siblingData.lastName ?? ''}`.trim()
                           },
                         ],
                       },
@@ -127,6 +143,9 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                     {
                       name: 'gender',
                       type: 'text',
+                      hooks: {
+                        beforeValidate: [trimValueBeforeValidate],
+                      },
                       admin: {
                         width: '50%',
                       },
@@ -134,6 +153,9 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                     {
                       name: 'pronouns',
                       type: 'text',
+                      hooks: {
+                        beforeValidate: [trimValueBeforeValidate],
+                      },
                       admin: {
                         width: '50%',
                       },
@@ -146,6 +168,9 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                     {
                       name: 'jobTitle',
                       type: 'text',
+                      hooks: {
+                        beforeValidate: [trimValueBeforeValidate],
+                      },
                       admin: {
                         width: '50%',
                       },
@@ -153,6 +178,9 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                     {
                       name: 'homeLocation',
                       type: 'text',
+                      hooks: {
+                        beforeValidate: [trimValueBeforeValidate],
+                      },
                       admin: {
                         width: '50%',
                       },
@@ -165,6 +193,9 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                     {
                       name: 'birthPlace',
                       type: 'text',
+                      hooks: {
+                        beforeValidate: [trimValueBeforeValidate],
+                      },
                       admin: {
                         width: '50%',
                       },
@@ -244,6 +275,9 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                       name: 'taxID',
                       label: 'Tax ID',
                       type: 'text',
+                      hooks: {
+                        beforeValidate: [trimValueBeforeValidate],
+                      },
                       admin: {
                         width: '33.3%',
                       },
@@ -252,6 +286,9 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                       name: 'vatID',
                       label: 'VAT ID',
                       type: 'text',
+                      hooks: {
+                        beforeValidate: [trimValueBeforeValidate],
+                      },
                       admin: {
                         width: '33.3%',
                       },
@@ -260,6 +297,9 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                       name: 'duns',
                       label: 'DUNS',
                       type: 'text',
+                      hooks: {
+                        beforeValidate: [trimValueBeforeValidate],
+                      },
                       admin: {
                         width: '33.3%',
                       },
@@ -285,11 +325,92 @@ export const GlobalUserSettings: GlobalConfig<GlobalSlug['GlobalUserSettings']> 
                   type: 'row',
                   fields: [
                     {
-                      name: 'telephone',
-                      type: 'text',
+                      type: 'group',
+                      name: 'phoneNumber',
+                      label: false,
+                      interfaceName: 'PhoneNumberData',
                       admin: {
+                        hideGutter: true,
                         width: '50%',
                       },
+                      fields: [
+                        {
+                          name: 'value',
+                          type: 'text',
+                          label: 'Phone Number',
+                          hasMany: false,
+                          validate: (
+                            value,
+                            {
+                              data,
+                            }: ValidateOptions<
+                              GlobalUserSettingsType,
+                              PhoneNumberData,
+                              TextField,
+                              string
+                            >,
+                          ) => {
+                            return validatePhoneNumber(value, data)
+                          },
+                          hooks: {
+                            beforeValidate: [
+                              trimValueBeforeValidate,
+                              ({
+                                value = '',
+                                data,
+                              }: FieldHookArgs<
+                                GlobalUserSettingsType,
+                                string,
+                                GlobalUserSettingsType
+                              >) => {
+                                return normalizePhoneNumber(value, data)
+                              },
+                            ],
+                          },
+                        },
+                        {
+                          name: 'formatted',
+                          type: 'text',
+                          admin: {
+                            hidden: true,
+                          },
+                          hooks: {
+                            afterRead: [
+                              ({
+                                data,
+                                siblingData,
+                              }: FieldHookArgs<
+                                GlobalUserSettingsType,
+                                string,
+                                PhoneNumberData
+                              >) => {
+                                return formatPhoneNumber(siblingData?.value, data)
+                              },
+                            ],
+                          },
+                        },
+                        {
+                          name: 'uri',
+                          type: 'text',
+                          admin: {
+                            hidden: true,
+                          },
+                          hooks: {
+                            afterRead: [
+                              ({
+                                data,
+                                siblingData,
+                              }: FieldHookArgs<
+                                GlobalUserSettingsType,
+                                string,
+                                PhoneNumberData
+                              >) => {
+                                return getPhoneNumberURI(siblingData?.value, data)
+                              },
+                            ],
+                          },
+                        },
+                      ],
                     },
                     {
                       name: 'email',
