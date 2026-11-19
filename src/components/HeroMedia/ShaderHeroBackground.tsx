@@ -55,9 +55,9 @@ const SHADER_COMPONENTS: Record<ShaderPresetKey, ReturnType<typeof dynamic>> = {
 }
 
 /**
- * Per-preset prop bundles sourced from each shader's `config.ts`.
- * The admin picker (`src/fields/HeroSlides/Components/shaderComponents.ts`)
- * keeps its own preview-tuned bundles — these are the production/public values.
+ * Per-preset prop bundles sourced from each shader's `config.ts`. The admin
+ * shows static preview images (`ShaderThumbnail`), so these are the only
+ * live values.
  */
 const SHADER_PROPS: Record<ShaderPresetKey, object> = {
   'crt-warp': crtWarpDefaults,

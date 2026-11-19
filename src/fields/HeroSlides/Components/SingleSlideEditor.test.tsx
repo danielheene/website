@@ -100,16 +100,6 @@ vi.mock('next/dynamic', () => ({
   },
 }))
 
-vi.mock('./ShaderPreviewCanvas', () => ({
-  default: ({
-    entry,
-  }: {
-    entry: {
-      key: string
-    }
-  }) => <div data-testid="shader-preview">{entry.key}</div>,
-}))
-
 vi.mock('./AddSlideMenu', () => ({
   AddSlideMenu: ({
     menuId,

@@ -1,7 +1,6 @@
 'use client'
 
 import { useMemo } from 'react'
-import dynamic from 'next/dynamic'
 import type { ArrayFieldClientProps } from 'payload'
 import { useFormFields } from '@payloadcms/ui'
 
@@ -12,12 +11,8 @@ import type { UnsplashSearchResult } from '@/lib/unsplash/types'
 
 import { AddSlideMenu } from './AddSlideMenu'
 import { resolveSlideThumbnail, type SlideRowData } from './resolveSlideThumbnail'
-import { SHADER_COMPONENTS } from './shaderComponents'
+import { ShaderThumbnail } from './ShaderThumbnail'
 import { useHeroSlideFieldEditor } from './useHeroSlideFieldEditor'
-
-const ShaderPreviewCanvas = dynamic(() => import('./ShaderPreviewCanvas'), {
-  ssr: false,
-})
 
 /**
  * The sidebar editor for `HeroSlidesField` — a single large 16:9 preview,
@@ -85,10 +80,7 @@ export const SingleSlideEditor = (props: ArrayFieldClientProps) => {
         </div>
       ) : thumbnail.kind === 'shader' ? (
         <DuoTone contained className="size-full">
-          <ShaderPreviewCanvas
-            className="size-full"
-            entry={SHADER_COMPONENTS[thumbnail.presetKey]}
-          />
+          <ShaderThumbnail presetKey={thumbnail.presetKey} />
         </DuoTone>
       ) : thumbnail.kind === 'image-url' ? (
         <DuoTone contained className="size-full">

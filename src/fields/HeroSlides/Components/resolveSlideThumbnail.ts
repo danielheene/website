@@ -59,7 +59,7 @@ export type ResolvedSlideThumbnail =
 
 /**
  * Resolves what a slide row's thumbnail should actually show: the shader
- * preset key (for a live `ShaderPreviewCanvas`), an image URL (the uploaded
+ * preset key (for `ShaderThumbnail`'s preview image), an image URL (the uploaded
  * image itself, or a video's poster frame), or nothing yet (a fresh/pending
  * row with no media set). Shared by `RowLabel`, `SlideThumb`, and
  * `SingleSlideEditor` so every preview resolves the same way.

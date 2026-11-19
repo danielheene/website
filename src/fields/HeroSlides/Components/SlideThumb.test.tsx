@@ -32,23 +32,11 @@ vi.mock('@/components/Icon', () => ({
   Icon: ({ name }: { name: string }) => <span data-testid={`icon-${name}`} />,
 }))
 
-vi.mock('./ShaderPreviewCanvas', () => ({
-  default: ({
-    entry,
-  }: {
-    entry: {
-      key: string
-    }
-  }) => <div data-testid="shader-preview">{entry.key}</div>,
-}))
-
 // `next/dynamic(() => import(...), { ssr: false })` never resolves
 // synchronously under Vitest/jsdom — the real dynamic loader stays pending
-// through the whole test, so the mocked module above never actually
-// renders. Mocking `next/dynamic` to a small stateful wrapper that resolves
-// the loader in an effect and re-renders once it does sidesteps that, while
-// still exercising the mocked `ShaderPreviewCanvas` module — `waitFor` in
-// the shader test below waits out that one extra render.
+// through the whole test. Mocking `next/dynamic` to a small stateful wrapper
+// that resolves the loader in an effect and re-renders once it does lets
+// dynamically imported children render.
 vi.mock('next/dynamic', () => ({
   default: (
     loader: () => Promise<{
@@ -161,7 +149,7 @@ describe('SlideThumb', () => {
     expect(container.querySelector('img')).toHaveAttribute('src', 'https://example.com/poster.webp')
   })
 
-  it('renders the live shader preview for a shader slide', async () => {
+  it('renders the preset preview image for a shader slide', async () => {
     setFormFields({
       'hero.slides.0.slideType': {
         value: 'shader',
@@ -175,7 +163,9 @@ describe('SlideThumb', () => {
 
     // The mocked `next/dynamic` resolves its loader in an effect, one tick
     // after the initial render.
-    await waitFor(() => expect(screen.getByTestId('shader-preview')).toHaveTextContent('darkveil'))
+    await waitFor(() =>
+      expect(screen.getByTestId('shader-thumbnail')).toHaveAttribute('alt', 'Dark Veil'),
+    )
   })
 
   it('shows an empty state when the row has no media set yet', () => {

@@ -1,6 +1,5 @@
 'use client'
 
-import dynamic from 'next/dynamic'
 import { useFormFields } from '@payloadcms/ui'
 
 import { Button } from '@/components/Button'
@@ -16,11 +15,7 @@ import {
   resolveSlideThumbnail,
   type SlideRowData,
 } from './resolveSlideThumbnail'
-import { SHADER_COMPONENTS } from './shaderComponents'
-
-const ShaderPreviewCanvas = dynamic(() => import('./ShaderPreviewCanvas'), {
-  ssr: false,
-})
+import { ShaderThumbnail } from './ShaderThumbnail'
 
 export interface SlideThumbProps {
   /** This row's dotted path, e.g. `hero.slides.2`. */
@@ -51,7 +46,7 @@ export interface SlideThumbProps {
 }
 
 /**
- * One filmstrip box: the slide's live thumbnail at rest, with a hover-only
+ * One filmstrip box: the slide's thumbnail at rest, with a hover-only
  * toolbar (reorder-left, remove, replace, reorder-right) layered over it —
  * per the "WHEN MANY" sketch. The reorder carets are *not* carousel
  * navigation; they move this slide earlier/later in the array. A separate
@@ -102,10 +97,7 @@ export const SlideThumb = ({
         </div>
       ) : thumbnail.kind === 'shader' ? (
         <DuoTone contained className="size-full">
-          <ShaderPreviewCanvas
-            className="size-full"
-            entry={SHADER_COMPONENTS[thumbnail.presetKey]}
-          />
+          <ShaderThumbnail presetKey={thumbnail.presetKey} />
         </DuoTone>
       ) : thumbnail.kind === 'image-url' ? (
         <DuoTone contained className="size-full">
