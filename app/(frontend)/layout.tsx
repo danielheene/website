@@ -31,8 +31,7 @@ export default async function RootLayout({
     fetchSiteSettingsCached(),
   ])
 
-  const personSchema = generatePersonSchema(globalUserSettings)
-  const webSiteSchema = generateWebSiteSchema(SiteSettings)
+  const siteUrl = process.env.SERVER_URL
 
   return (
     <html
@@ -48,7 +47,12 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <JsonLd data={[personSchema, webSiteSchema]} />
+        <JsonLd
+          nodes={[
+            generatePersonSchema(globalUserSettings, siteUrl),
+            generateWebSiteSchema(SiteSettings, siteUrl),
+          ]}
+        />
       </head>
       <body>
         {/*

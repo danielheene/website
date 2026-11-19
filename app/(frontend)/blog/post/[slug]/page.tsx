@@ -13,7 +13,7 @@ import { HeroMedia } from '@/components/HeroMedia'
 import { PageFallback } from '@/components/PageFallback'
 import { fetchPostBySlug } from '@/lib/fetchers/fetchPostBySlug'
 import { generateMeta } from '@/lib/generateMeta'
-import { generateBlogPosting, generateBreadcrumbList } from '@/lib/jsonLd'
+import { JsonLd, pixels, postGraph } from '@/lib/jsonLd'
 import { ogImageMetadata } from '@/lib/og/ogImageMetadata'
 import { placeholderParams } from '@/lib/placeholderParams'
 import { CollectionSlug } from '@/types/collections'
@@ -79,7 +79,6 @@ async function BlogPost({ params }: PageProps<'/blog/post/[slug]'>) {
   // changes the static type; the stored link group has the LinkGroupData shape.
   const linkGroup = links as LinkGroupData
   const baseUrl = process.env.SERVER_URL
-  const postUrl = `${baseUrl}/blog/post/${slug}`
 
   // topics are a polymorphic hasMany relation — only populated entries are usable
   const topicList = (topics ?? [])
@@ -97,45 +96,30 @@ async function BlogPost({ params }: PageProps<'/blog/post/[slug]'>) {
     updatedAt,
   )
 
-  // structured data wants an absolute URL
-  const heroImageData = {
-    ...ogImage,
-    url: new URL(ogImage.url, baseUrl).href,
-  }
-
-  // Generate BlogPosting schema
-  // oxlint-disable-next-line no-unused-vars
-  const blogPostingSchema = generateBlogPosting({
-    headline: title,
-    url: postUrl,
-    datePublished: createdAt,
-    dateModified: updatedAt || createdAt,
-    image: heroImageData,
-    author: {
-      name: 'Daniel Heene',
-      url: baseUrl,
+  const structuredData = postGraph({
+    siteUrl: baseUrl,
+    slug,
+    title,
+    description: post.meta?.description,
+    excerpt: post.excerpt,
+    createdAt,
+    updatedAt,
+    hero,
+    topics,
+    wordCount: post.wordCount,
+    readingTime: post.readingTime,
+    ogImage: {
+      '@type': 'ImageObject',
+      url: new URL(ogImage.url, baseUrl).href,
+      width: pixels(ogImage.width),
+      height: pixels(ogImage.height),
+      caption: ogImage.alt,
     },
-    // keywords: postTags,
   })
-
-  // Generate BreadcrumbList schema
-  // oxlint-disable-next-line no-unused-vars
-  const breadcrumbSchema = generateBreadcrumbList([
-    {
-      name: 'Home',
-      url: baseUrl,
-    },
-    // {
-    //   name: categoryName,
-    //   url: `${baseUrl}/categories/${categorySlug}`,
-    // },
-    {
-      name: title,
-    },
-  ])
 
   return (
     <div className="flex w-full flex-col bg-background text-foreground">
+      <JsonLd nodes={structuredData} />
       <div className="flex flex-1 items-center justify-center">
         <section className="w-full">
           <HeroMedia fallbackAlt={title} slides={hero?.slides}>
