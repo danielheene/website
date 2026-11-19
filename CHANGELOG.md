@@ -10,6 +10,18 @@
 
 * **resume:** serve customer logos from an endpoint and mask the marquee tiles ([#144](https://github.com/danielheene/website/issues/144)) ([32433a2](https://github.com/danielheene/website/commit/32433a25f5a3a4545290497dafaa977ae921f0a9))
 
+# [1.17.0-rc.5](https://github.com/danielheene/website/compare/v1.17.0-rc.4...v1.17.0-rc.5) (2026-11-19)
+
+
+### Bug Fixes
+
+* **build:** keep image symlinks relative and build production with Turbopack ([#143](https://github.com/danielheene/website/issues/143)) ([6087670](https://github.com/danielheene/website/commit/608767095c36041877a780cd8ff8797b2db0e2e5))
+
+
+### Performance Improvements
+
+* **resume:** serve customer logos from an endpoint and mask the marquee tiles ([#144](https://github.com/danielheene/website/issues/144)) ([32433a2](https://github.com/danielheene/website/commit/32433a25f5a3a4545290497dafaa977ae921f0a9))
+
 # [1.17.0-rc.4](https://github.com/danielheene/website/compare/v1.17.0-rc.3...v1.17.0-rc.4) (2026-11-19)
 
 
