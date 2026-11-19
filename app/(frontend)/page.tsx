@@ -1,5 +1,5 @@
-import PageTemplate, { generateMetadata } from './[slug]/page'
+import Page, { generateMetadata } from './[slug]/page'
 
-export default PageTemplate
+export default Page
 
 export { generateMetadata }
