@@ -1,5 +1,6 @@
 import type { ImageObjectLeaf, PersonLeaf, Thing } from 'schema-dts'
 
+import { RESUME_PAGE_SLUG } from '@/collections/Pages/constants'
 import { generateContentURL } from '@/lib/generateContentURL'
 import { isMediaDocument } from '@/lib/typeGuards'
 import { CollectionSlug } from '@/types/collections'
@@ -128,9 +129,11 @@ export interface CareerInput {
 export const careerGraph = ({ siteUrl, jobs, skillTags, projects }: CareerInput): Thing[] => {
   const ids = jsonLdIds(siteUrl)
 
+  // /resume is a document in the pages collection; the resume-documents
+  // collection only serves the generated PDFs under /resume/<slug>.
   const resumeUrl = generateContentURL({
     collection: CollectionSlug.Pages,
-    slug: 'resume',
+    slug: RESUME_PAGE_SLUG,
   })
 
   const person: PersonLeaf = {
@@ -453,9 +456,10 @@ export const resumeDocumentGraph = (resume: ResumeDocumentGraphInput): Thing[] =
       homeCrumb(),
       {
         name: 'Resume',
+        // the resume page itself, a pages document
         url: generateContentURL({
           collection: CollectionSlug.Pages,
-          slug: 'resume',
+          slug: RESUME_PAGE_SLUG,
         }),
       },
       {
