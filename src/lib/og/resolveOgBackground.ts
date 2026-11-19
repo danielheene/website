@@ -1,0 +1,35 @@
+import { SHADER_PRESET_MAP } from '@/components/HeroMedia/shaderPresets'
+import { toSlideItems } from '@/components/HeroMedia/toSlideItems'
+
+const slideImageSrc = (slides: unknown): string | undefined => {
+  const [firstSlide] = toSlideItems(slides, '')
+
+  if (firstSlide?.kind === 'image') return firstSlide.url
+
+  if (firstSlide?.kind === 'video') return firstSlide.poster
+
+  if (firstSlide?.kind === 'shader') return SHADER_PRESET_MAP[firstSlide.presetKey]?.thumbnail.src
+
+  return undefined
+}
+
+/**
+ * The absolute URL of a still that stands in for a hero in an Open Graph
+ * image: the first slide's image, a video's poster frame or a shader's
+ * thumbnail. Only the first slide counts, since a static image can't depict a
+ * carousel. Falls back to `fallbackSlides` (the site-wide default) when the
+ * document's own hero yields nothing.
+ */
+export const resolveOgBackground = (
+  slides: unknown,
+  fallbackSlides?: unknown,
+): string | undefined => {
+  for (const source of [slides, fallbackSlides]) {
+    const src = slideImageSrc(source)
+
+    // The renderer fetches by URL, so bundled assets need the server's origin.
+    if (src) return new URL(src, process.env.SERVER_URL).href
+  }
+
+  return undefined
+}

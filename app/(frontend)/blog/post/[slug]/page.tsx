@@ -14,11 +14,10 @@ import { PageFallback } from '@/components/PageFallback'
 import { fetchPostBySlug } from '@/lib/fetchers/fetchPostBySlug'
 import { generateMeta } from '@/lib/generateMeta'
 import { generateBlogPosting, generateBreadcrumbList } from '@/lib/jsonLd'
+import { ogImageMetadata } from '@/lib/og/ogImageMetadata'
 import { placeholderParams } from '@/lib/placeholderParams'
 import { CollectionSlug } from '@/types/collections'
 import { LinkGroupData } from '@/types/payload'
-
-import { size } from './opengraph-image'
 
 export async function generateStaticParams() {
   const payload = await getPayload({
@@ -89,11 +88,19 @@ async function BlogPost({ params }: PageProps<'/blog/post/[slug]'>) {
 
   const primaryTopic = topicList[0]
 
+  const ogImage = ogImageMetadata(
+    {
+      collection: CollectionSlug.BlogPosts,
+      slug,
+    },
+    title,
+    updatedAt,
+  )
+
+  // structured data wants an absolute URL
   const heroImageData = {
-    url: `${postUrl}/opengraph-image`,
-    width: size.width,
-    height: size.height,
-    alt: title,
+    ...ogImage,
+    url: new URL(ogImage.url, baseUrl).href,
   }
 
   // Generate BlogPosting schema
@@ -208,5 +215,6 @@ export async function generateMetadata({
 
   return generateMeta({
     doc,
+    collection: CollectionSlug.BlogPosts,
   })
 }

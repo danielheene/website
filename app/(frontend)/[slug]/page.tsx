@@ -143,5 +143,6 @@ export async function generateMetadata({ params }: PageProps<'/[slug]'>): Promis
 
   return generateMeta({
     doc,
+    collection: CollectionSlug.Pages,
   })
 }

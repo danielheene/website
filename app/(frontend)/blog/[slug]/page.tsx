@@ -3,12 +3,13 @@ import { notFound } from 'next/navigation'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
+import { fetchPublishedTopicBySlug } from '@/lib/fetchers/fetchPublishedTopicBySlug'
 import { generateMeta } from '@/lib/generateMeta'
 import { placeholderParams } from '@/lib/placeholderParams'
 import { RESERVED_TOPIC_SLUGS } from '@/types/blog'
 import { CollectionSlug } from '@/types/collections'
 
-import { BlogListPage, queryPublishedTopicBySlug } from '../_shared/BlogListPage'
+import { BlogListPage } from '../_shared/BlogListPage'
 
 export async function generateStaticParams() {
   const payload = await getPayload({
@@ -44,7 +45,7 @@ export default async function Page({ params, searchParams }: PageProps<'/blog/[s
   // `/blog/post/...` is handled by its own route, `/blog/page/...` by the proxy
   if (RESERVED_TOPIC_SLUGS.includes(slug)) notFound()
 
-  const topic = await queryPublishedTopicBySlug(slug)
+  const topic = await fetchPublishedTopicBySlug(slug)
 
   if (!topic) notFound()
 
@@ -60,9 +61,10 @@ export async function generateMetadata({ params }: PageProps<'/blog/[slug]'>): P
     }
   }
 
-  const topic = await queryPublishedTopicBySlug(slug)
+  const topic = await fetchPublishedTopicBySlug(slug)
 
   return generateMeta({
     doc: topic,
+    collection: CollectionSlug.BlogTopics,
   })
 }

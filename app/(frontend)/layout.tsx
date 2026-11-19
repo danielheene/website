@@ -18,6 +18,8 @@ import PPSupplySans from '@/fonts/pp-supply-sans/next'
 import { BLOG_FEED_PATH } from '@/lib/blog/feed'
 import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fetchers'
 import { generatePersonSchema, generateWebSiteSchema, JsonLd } from '@/lib/jsonLd'
+import { ogImageMetadata } from '@/lib/og/ogImageMetadata'
+import { CollectionSlug } from '@/types/collections'
 
 export default async function RootLayout({
   children,
@@ -83,6 +85,18 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(process.env.SERVER_URL),
     title: SiteSettings.general?.siteName,
+    // the home card, for routes that set no Open Graph image of their own
+    openGraph: {
+      images: [
+        ogImageMetadata(
+          {
+            collection: CollectionSlug.Pages,
+            slug: 'home',
+          },
+          SiteSettings.general?.siteName ?? '',
+        ),
+      ],
+    },
 
     // feed autodiscovery (`<link rel="alternate" type="application/rss+xml">`)
     alternates: {
