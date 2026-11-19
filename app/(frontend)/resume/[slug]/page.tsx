@@ -17,6 +17,7 @@ import { ResumeNewerVersionsChecker } from '@/components/ResumeNewerVersionsChec
 import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fetchers'
 import { fetchDocumentBySlug } from '@/lib/fetchers/fetchDocumentBySlug'
 import { generateContentURL } from '@/lib/generateContentURL'
+import { JsonLd, resumeDocumentGraph } from '@/lib/jsonLd'
 import { ogImageMetadata } from '@/lib/og/ogImageMetadata'
 import { placeholderParams } from '@/lib/placeholderParams'
 import { resumeDocumentDescription } from '@/lib/resumeDocumentDescription'
@@ -143,8 +144,32 @@ async function ResumeDocument({ params }: PageProps<'/resume/[slug]'>) {
     },
   ].filter((entry): entry is ChecksumEntry => Boolean(entry))
 
+  const { name } = await fetchGlobalUserSettingsCached()
+
+  const structuredData = resumeDocumentGraph({
+    siteUrl: process.env.SERVER_URL,
+    slug: resume.slug,
+    title: resume.title,
+    description: resumeDocumentDescription(resume.createdAt, name),
+    createdAt: resume.createdAt,
+    files: [
+      {
+        language: 'en',
+        media: documentEn,
+        checksum: resume.checksum_en,
+      },
+      {
+        language: 'de',
+        media: documentDe,
+        checksum: resume.checksum_de,
+      },
+    ],
+    thumbnail: thumbnailEn ?? thumbnailDe,
+  })
+
   return (
     <div>
+      <JsonLd nodes={structuredData} />
       <section
         className={cn([
           'relative overflow-hidden',

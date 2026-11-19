@@ -14,8 +14,14 @@ import { PageContainer } from '@/components/PageContainer'
 import { PageFallback } from '@/components/PageFallback'
 import { RichText } from '@/components/RichText'
 import { extractHeadings } from '@/lib/extractHeadings'
+import {
+  fetchResumeJobsCached,
+  fetchResumeProjectsCached,
+  fetchResumeSkillTagsCached,
+} from '@/lib/fetchers'
 import { fetchPageBySlug } from '@/lib/fetchers/fetchPageBySlug'
 import { generateMeta } from '@/lib/generateMeta'
+import { careerGraph, JsonLd, pageGraph } from '@/lib/jsonLd'
 import { isEmptyValue } from '@/lib/lexical/isEmptyValue'
 import { placeholderParams } from '@/lib/placeholderParams'
 import { highlightRichText } from '@/lib/shiki/highlightRichText'
@@ -62,7 +68,7 @@ export default async function PageShell(props: PageProps<'/[slug]'>) {
 }
 
 async function Page({ params }: PageProps<'/[slug]'>) {
-  const { slug } = await params
+  const { slug = 'home' } = await params
   const { isEnabled: draft } = await draftMode()
 
   const page = await fetchPageBySlug({ slug, draft })
@@ -87,8 +93,41 @@ async function Page({ params }: PageProps<'/[slug]'>) {
     ? await highlightRichText(hero?.content)
     : undefined
 
+  const siteUrl = process.env.SERVER_URL
+  const isResume = slug === RESUME_PAGE_SLUG
+
+  const [jobs, skillTags, projects] = isResume
+    ? await Promise.all([
+        fetchResumeJobsCached(),
+        fetchResumeSkillTagsCached(),
+        fetchResumeProjectsCached(),
+      ])
+    : [[], [], []]
+
   return (
     <PageContainer layout={layout} sections={navigationSections}>
+      <JsonLd
+        nodes={[
+          ...pageGraph({
+            siteUrl,
+            slug,
+            title,
+            description: page.meta?.description,
+            hero,
+            createdAt: page.createdAt,
+            updatedAt: page.updatedAt,
+            isProfile: isResume,
+          }),
+          ...(isResume
+            ? careerGraph({
+                siteUrl,
+                jobs,
+                skillTags,
+                projects,
+              })
+            : []),
+        ]}
+      />
       <HeroMedia
         align={useCustomHeroContent ? 'center' : 'bottom'}
         className="border-b-2 border-b-primary"
