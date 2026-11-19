@@ -11,6 +11,7 @@ import { format } from 'date-fns'
 import { ArticleSidebar, TableOfContents } from '@/components/ArticleSidebar'
 import { LinkList } from '@/components/ArticleSidebar/LinkList'
 import { HeroMedia } from '@/components/HeroMedia'
+import { PageFallback } from '@/components/PageFallback'
 import { RichText } from '@/components/RichText'
 import { extractHeadings } from '@/lib/extractHeadings'
 import { fetchPostBySlug } from '@/lib/fetchers/fetchPostBySlug'
@@ -64,7 +65,7 @@ export async function generateStaticParams() {
 
 export default async function BlogPostShell(props: PageProps<'/blog/post/[slug]'>) {
   return (
-    <Suspense>
+    <Suspense fallback={<PageFallback />}>
       <BlogPost {...props} />
     </Suspense>
   )

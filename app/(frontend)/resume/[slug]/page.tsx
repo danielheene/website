@@ -11,6 +11,7 @@ import { cn } from 'tailwind-variants'
 
 import { ResumeDownloadButton } from '@/blocks/ResumeDownloadsBlock/Renderer/ResumeDownloadButton'
 import type { HeroMediaItem } from '@/components/HeroMedia/HeroSlide'
+import { PageFallback } from '@/components/PageFallback'
 import { ResumeChecksumValidator } from '@/components/ResumeCheckumValidatior/ResumeChecksumValidator'
 import { ResumeNewerVersionsChecker } from '@/components/ResumeNewerVersionsChecker'
 import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fetchers'
@@ -77,7 +78,7 @@ export async function generateStaticParams() {
 
 export default async function ResumeDocumentShell(props: PageProps<'/resume/[slug]'>) {
   return (
-    <Suspense>
+    <Suspense fallback={<PageFallback />}>
       <ResumeDocument {...props} />
     </Suspense>
   )
