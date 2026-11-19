@@ -79,8 +79,8 @@ async function BlogPost({ params }: PageProps<'/blog/post/[slug]'>) {
   // SAFETY: the fetcher reduces localized fields to one language, which only
   // changes the static type; the stored link group has the LinkGroupData shape.
   const linkGroup = links as LinkGroupData
-  const baseUrl = process.env.SERVER_URL || 'https://danielheene.de'
-  const postUrl = `${baseUrl}/posts/${slug}`
+  const baseUrl = process.env.SERVER_URL
+  const postUrl = `${baseUrl}/blog/post/${slug}`
 
   // topics are a polymorphic hasMany relation — only populated entries are usable
   const topicList = (topics ?? [])
@@ -90,7 +90,7 @@ async function BlogPost({ params }: PageProps<'/blog/post/[slug]'>) {
   const primaryTopic = topicList[0]
 
   const heroImageData = {
-    url: `${baseUrl}/blog/post/${slug}/opengraph-image`,
+    url: `${postUrl}/opengraph-image`,
     width: size.width,
     height: size.height,
     alt: title,

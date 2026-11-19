@@ -78,11 +78,10 @@ export default async function RootLayout({
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const serverUrl = process.env.SERVER_URL
   const SiteSettings = await fetchSiteSettingsCached()
 
   return {
-    metadataBase: serverUrl ? new URL(serverUrl) : undefined,
+    metadataBase: new URL(process.env.SERVER_URL),
     title: SiteSettings.general?.siteName,
 
     // feed autodiscovery (`<link rel="alternate" type="application/rss+xml">`)

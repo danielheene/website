@@ -158,7 +158,7 @@ export default async function buildConfig(phase: PHASE_TYPE): Promise<NextConfig
           headers: [
             {
               key: 'Access-Control-Allow-Origin',
-              value: process.env.SERVER_URL ?? '*',
+              value: process.env.SERVER_URL,
             },
             {
               key: 'Access-Control-Allow-Methods',

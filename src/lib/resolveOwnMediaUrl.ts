@@ -9,7 +9,7 @@ export const resolveOwnMediaUrl = (url: string | null | undefined): URL => {
     throw new Error('The image has no URL yet.')
   }
 
-  const origin = new URL(process.env.SERVER_URL ?? '').origin
+  const origin = new URL(process.env.SERVER_URL).origin
   const resolved = new URL(url, origin)
 
   if (resolved.origin !== origin) {
