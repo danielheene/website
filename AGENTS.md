@@ -229,13 +229,14 @@ only when `PAYLOAD_JOBS_ENABLE_APP_WORKERS=true` (default `false`).
   (e.g. `service-status`) stay unauthenticated by design. If you add a new channel that carries non-public data, add it to the
   authenticated branch rather than `SSE_CHANNELS` — see the route's own comments for the exact
   split.
-- **Raw SVG rendering**: `src/collections/ResumeCustomers` stores raw SVG markup rendered via
-  `dangerouslySetInnerHTML` in `src/components/LogoCarousel/LogoCarousel.tsx`. It is sanitized
-  server-side on write by a `beforeChange` hook (`src/lib/sanitizeSvg.ts`, DOMPurify with an
-  explicit tag/attribute deny-list) — the admin UI's client-side `svgo` pass is a bypassable
-  optimizer, not the security boundary. Route any other raw-HTML/SVG field through the same
-  `sanitizeSvg` helper (or an equivalent real, server-side sanitizer) before it's ever rendered
-  unescaped.
+- **Raw SVG**: `src/collections/ResumeCustomers` stores raw SVG markup. The frontend never
+  injects it: the collection's logo endpoint (`endpoints/logo.ts`,
+  `/api/resume-customers/<slug>/logo.svg`) serves it as a file with a locked-down CSP, and the
+  resume marquee uses that URL as a CSS mask. It is sanitized server-side on write by a
+  `beforeChange` hook and again when served (`src/lib/sanitizeSvg.ts`, DOMPurify with an explicit
+  tag/attribute deny-list) — the admin UI's client-side `svgo` pass is a bypassable optimizer, not
+  the security boundary. Route any other raw-HTML/SVG field through the same `sanitizeSvg` helper
+  (or an equivalent real, server-side sanitizer) before it's ever rendered unescaped.
 - **`CRON_SECRET`** is declared in `src/types/environment.ts` but not enforced anywhere — there
   is no cron route yet. If you add one, validate this secret explicitly (ideally with
   `crypto.timingSafeEqual`, not `!==`).
@@ -246,7 +247,7 @@ only when `PAYLOAD_JOBS_ENABLE_APP_WORKERS=true` (default `false`).
   format-valid values for E2E runs.
 - **Semgrep** runs on every PR (`lint-and-test.yml`, rulesets `nodejs`, `typescript`, `react`,
   `secrets`) and fails the check on any finding. A reviewed, accepted finding is marked on its own
-  line with `// nosemgrep: <rule> -- <reason>` (see `src/components/LogoCarousel/LogoCarousel.tsx`).
+  line with `// nosemgrep: <rule> -- <reason>` (see `src/lib/jsonLd/JsonLd.tsx`).
 - New authenticated API routes and server actions need a real `payload.auth()` session check, as
   in the SSE route's per-job branch and `src/lib/actions/enqueueBilingualTranslation.ts` — a Server
   Action is its own reachable endpoint, whichever page renders the button. Inline `'use server'`

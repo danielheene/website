@@ -5,7 +5,6 @@ import { getPayload } from 'payload'
 import { BilingualLanguage, reduceDataToBilingualLanguage } from '@/lib/i18n'
 import { resolveRelations } from '@/lib/resolveRelation'
 import { revalidateCache } from '@/lib/revalidation/revalidateCache'
-import { sanitizeSvg } from '@/lib/sanitizeSvg'
 import { CollectionSlug } from '@/types/collections'
 
 export const fetchResumeCustomers = async (locale: BilingualLanguage = 'en') => {
@@ -18,6 +17,12 @@ export const fetchResumeCustomers = async (locale: BilingualLanguage = 'en') => 
     draft: false,
     pagination: false,
     limit: 0,
+    // the logo itself is served by the logo endpoint
+    select: {
+      title: true,
+      slug: true,
+      updatedAt: true,
+    },
     // runs with overrideAccess, so never-published drafts must be excluded here
     where: {
       _status: {
@@ -26,20 +31,7 @@ export const fetchResumeCustomers = async (locale: BilingualLanguage = 'en') => 
     },
   })
 
-  const resolved = await resolveRelations(reduceDataToBilingualLanguage(docs, locale))
-
-  /**
-   * Sanitized on read as well as on write: rows saved before the
-   * `ResumeCustomers` `beforeChange` hook existed still hold whatever was
-   * stored then, and `LogoCarousel` renders this with
-   * `dangerouslySetInnerHTML`. Done here — inside the caller's `use cache`
-   * boundary — because DOMPurify's JSDOM backing reads the current time, which
-   * a bare prerender is not allowed to observe.
-   */
-  return resolved.map((customer) => ({
-    ...customer,
-    svg: typeof customer.svg === 'string' ? sanitizeSvg(customer.svg) : customer.svg,
-  }))
+  return resolveRelations(reduceDataToBilingualLanguage(docs, locale))
 }
 
 export const fetchResumeCustomersCached = async (locale: BilingualLanguage = 'en') => {
