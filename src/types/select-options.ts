@@ -1,8 +1,11 @@
 export const PAGE_LAYOUT = {
-  DEFAULT: 'default',
-  HOME: 'home',
-  RESUME: 'resume',
-  LEGAL: 'legal',
+  RICH_TEXT: 'richText',
+  SECTIONS: 'sections',
+} as const
+
+export const PAGE_LAYOUT_LABEL = {
+  [PAGE_LAYOUT.RICH_TEXT]: 'RichText Content',
+  [PAGE_LAYOUT.SECTIONS]: 'Section Content',
 } as const
 
 /**

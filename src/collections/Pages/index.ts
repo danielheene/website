@@ -1,7 +1,5 @@
 import type { AccessArgs, CollectionConfig, FilterOptionsProps } from 'payload'
 
-import { startCase } from 'lodash-es'
-
 import { PAGE_BLOCK_SLUGS } from '@/blocks'
 import { revalidatePage } from '@/collections/Pages/hooks/revalidatePage'
 import {
@@ -10,6 +8,7 @@ import {
 } from '@/collections/shared/singleVersionDrafts'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { HeroSlidesField } from '@/fields/HeroSlides'
+import { LinkGroupField } from '@/fields/LinkGroup'
 import { MetaField } from '@/fields/Meta'
 import { ProtectedField } from '@/fields/Protected'
 import { RichTextField } from '@/fields/RichText'
@@ -23,9 +22,14 @@ import { AdminGroup } from '@/types/admin-panel'
 import { BlockSlug } from '@/types/blocks'
 import { CollectionSlug } from '@/types/collections'
 import type { Page } from '@/types/payload'
-import { PAGE_LAYOUT } from '@/types/select-options'
+import { PAGE_LAYOUT, PAGE_LAYOUT_LABEL } from '@/types/select-options'
 
 import { getFilteredBlocks } from './utils/getFilteredBlocks'
+import { LEGAL_BLOCK_SLUGS, validatePageContent } from './utils/legalBlocks'
+
+const isRichTextLayout = (data: Partial<Page>) => data?.layout === PAGE_LAYOUT.RICH_TEXT
+
+const isSectionsLayout = (data: Partial<Page>) => data?.layout === PAGE_LAYOUT.SECTIONS
 
 export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
   slug: CollectionSlug.Pages,
@@ -118,10 +122,11 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
           return !doc?.protected
         },
       },
-      defaultValue: 'default',
+      defaultValue: PAGE_LAYOUT.RICH_TEXT,
+      required: true,
       interfaceName: 'PageLayout',
       options: Object.values(PAGE_LAYOUT).map((layout) => ({
-        label: startCase(layout),
+        label: PAGE_LAYOUT_LABEL[layout],
         value: layout,
       })),
       admin: {
@@ -192,8 +197,26 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
         {
           label: 'Content',
           fields: [
-            {
+            // Same name and editor as BlogPosts' `content`, so both render through
+            // the shared article layout.
+            RichTextField({
               name: 'content',
+              editorVariant: 'post',
+              modifyBlocks: (blocks) => [
+                ...blocks,
+                BlockSlug.TwoColumnContent,
+                ...(LEGAL_BLOCK_SLUGS as typeof blocks),
+              ],
+              overrides: {
+                label: false,
+                validate: validatePageContent,
+                admin: {
+                  condition: (data) => isRichTextLayout(data),
+                },
+              },
+            }),
+            {
+              name: 'sections',
               type: 'blocks',
               label: false,
               blocks: [],
@@ -201,12 +224,20 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
               minRows: 1,
               filterOptions: ({ data }: FilterOptionsProps<Page>) => getFilteredBlocks(data),
               admin: {
+                condition: (data) => isSectionsLayout(data),
                 disableListColumn: true,
                 disableListFilter: true,
                 disableGroupBy: true,
               },
             },
           ],
+        },
+        {
+          label: 'Links',
+          admin: {
+            condition: (data) => isRichTextLayout(data),
+          },
+          fields: [LinkGroupField()],
         },
         {
           label: 'SEO',

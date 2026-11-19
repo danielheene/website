@@ -8,17 +8,13 @@ import { getPayload } from 'payload'
 
 import { format } from 'date-fns'
 
-import { ArticleSidebar, TableOfContents } from '@/components/ArticleSidebar'
-import { LinkList } from '@/components/ArticleSidebar/LinkList'
+import { ArticleLayout } from '@/components/ArticleLayout'
 import { HeroMedia } from '@/components/HeroMedia'
 import { PageFallback } from '@/components/PageFallback'
-import { RichText } from '@/components/RichText'
-import { extractHeadings } from '@/lib/extractHeadings'
 import { fetchPostBySlug } from '@/lib/fetchers/fetchPostBySlug'
 import { generateMeta } from '@/lib/generateMeta'
 import { generateBlogPosting, generateBreadcrumbList } from '@/lib/jsonLd'
 import { placeholderParams } from '@/lib/placeholderParams'
-import { highlightRichText } from '@/lib/shiki/highlightRichText'
 import { CollectionSlug } from '@/types/collections'
 import { LinkGroupData } from '@/types/payload'
 
@@ -80,13 +76,11 @@ async function BlogPost({ params }: PageProps<'/blog/post/[slug]'>) {
   if (!post) return notFound()
 
   const { title, content, hero, createdAt, updatedAt, topics, links } = post
+  // SAFETY: the fetcher reduces localized fields to one language, which only
+  // changes the static type; the stored link group has the LinkGroupData shape.
+  const linkGroup = links as LinkGroupData
   const baseUrl = process.env.SERVER_URL || 'https://danielheene.de'
   const postUrl = `${baseUrl}/posts/${slug}`
-
-  const headings = extractHeadings(content)
-  // Shiki is server-only, so code blocks are highlighted here and handed to
-  // RichText, which renders on the client
-  const highlightedCode = await highlightRichText(content)
 
   // topics are a polymorphic hasMany relation — only populated entries are usable
   const topicList = (topics ?? [])
@@ -136,7 +130,7 @@ async function BlogPost({ params }: PageProps<'/blog/post/[slug]'>) {
   return (
     <div className="flex w-full flex-col bg-background text-foreground">
       <div className="flex flex-1 items-center justify-center">
-        <section className="w-full pb-32">
+        <section className="w-full">
           <HeroMedia fallbackAlt={title} slides={hero?.slides}>
             <div className="pt-40 pb-16">
               <div className="container flex flex-col items-center gap-8 text-center">
@@ -195,43 +189,11 @@ async function BlogPost({ params }: PageProps<'/blog/post/[slug]'>) {
             </div>
           </HeroMedia>
 
-          <div className="container pt-20">
-            <div className="mx-auto grid w-full max-w-7xl items-start gap-16 lg:grid-cols-12">
-              {/* scroll-mt keeps TOC anchor targets clear of the fixed header */}
-              <article className="min-w-0 lg:col-span-8 [&_h2]:scroll-mt-24 [&_h3]:scroll-mt-24 [&_h4]:scroll-mt-24">
-                {content ? (
-                  // RichText is a Client Component that calls randomUUID(), which
-                  // Cache Components requires to sit behind a Suspense boundary
-                  <Suspense fallback={<div className="h-96 animate-pulse rounded-lg bg-muted" />}>
-                    <RichText
-                      data={content}
-                      enableGutter={false}
-                      highlightedCode={highlightedCode}
-                    />
-                  </Suspense>
-                ) : (
-                  <p className="text-muted-foreground">This post has no content yet.</p>
-                )}
-              </article>
-
-              <ArticleSidebar
-                className="w-auto lg:col-span-4"
-                sections={[
-                  headings &&
-                    headings.length > 0 && {
-                      title: 'On This Page',
-                      children: <TableOfContents headings={headings} />,
-                    },
-
-                  links &&
-                    links.length > 0 && {
-                      title: 'Links',
-                      children: <LinkList links={links as LinkGroupData} />,
-                    },
-                ].filter(Boolean)}
-              />
-            </div>
-          </div>
+          <ArticleLayout
+            content={content}
+            links={linkGroup}
+            emptyMessage="This post has no content yet."
+          />
         </section>
       </div>
     </div>

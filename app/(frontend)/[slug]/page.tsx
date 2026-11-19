@@ -6,19 +6,22 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 
 import { RenderBlocks } from '@/blocks/RenderBlocks'
-import { ArticleSidebar, TableOfContents } from '@/components/ArticleSidebar'
+import { RESUME_PAGE_SLUG } from '@/collections/Pages/constants'
+import { ArticleLayout } from '@/components/ArticleLayout'
 import { Headline } from '@/components/Headline'
 import { HeroMedia } from '@/components/HeroMedia'
 import { PageContainer } from '@/components/PageContainer'
+import { PageFallback } from '@/components/PageFallback'
 import { RichText } from '@/components/RichText'
 import { extractHeadings } from '@/lib/extractHeadings'
-import { extractSections } from '@/lib/extractSections'
 import { fetchPageBySlug } from '@/lib/fetchers/fetchPageBySlug'
 import { generateMeta } from '@/lib/generateMeta'
 import { isEmptyValue } from '@/lib/lexical/isEmptyValue'
 import { placeholderParams } from '@/lib/placeholderParams'
 import { highlightRichText } from '@/lib/shiki/highlightRichText'
 import { CollectionSlug } from '@/types/collections'
+import type { LinkGroupData } from '@/types/payload'
+import { PAGE_LAYOUT } from '@/types/select-options'
 
 export async function generateStaticParams() {
   const payload = await getPayload({
@@ -52,29 +55,30 @@ export async function generateStaticParams() {
 
 export default async function PageShell(props: PageProps<'/[slug]'>) {
   return (
-    <Suspense>
+    <Suspense fallback={<PageFallback />}>
       <Page {...props} />
     </Suspense>
   )
 }
 
 async function Page({ params }: PageProps<'/[slug]'>) {
-  const { slug = 'home' } = await params
+  const { slug } = await params
   const { isEnabled: draft } = await draftMode()
 
   const page = await fetchPageBySlug({ slug, draft })
 
   if (!page) notFound()
 
-  const { title, layout, hero, content } = page
+  const { title, layout, hero, content, sections, links } = page
+  // SAFETY: the fetcher reduces localized fields to one language, which only
+  // changes the static type; the stored link group has the LinkGroupData shape.
+  const linkGroup = links as LinkGroupData
 
-  const legalHeadings =
-    layout === 'legal'
-      ? (content ?? []).flatMap((block) => {
-          const lexical = (block as { content?: unknown }).content
-
-          return extractHeadings(lexical)
-        })
+  // Only the resume page gets the section navigation. Same extraction
+  // `RenderBlocks` runs, so these ids match the rendered anchors.
+  const navigationSections =
+    layout === PAGE_LAYOUT.SECTIONS && slug === RESUME_PAGE_SLUG
+      ? extractHeadings(sections ?? []).filter(({ kind }) => kind === 'section')
       : []
 
   const useCustomHeroContent = hero?.contentType === 'custom' && !isEmptyValue(hero.content)
@@ -84,7 +88,7 @@ async function Page({ params }: PageProps<'/[slug]'>) {
     : undefined
 
   return (
-    <PageContainer layout={layout} sections={extractSections(content)}>
+    <PageContainer layout={layout} sections={navigationSections}>
       <HeroMedia
         align={useCustomHeroContent ? 'center' : 'bottom'}
         className="border-b-2 border-b-primary"
@@ -122,26 +126,10 @@ async function Page({ params }: PageProps<'/[slug]'>) {
           )
         )}
       </HeroMedia>
-      {layout === 'legal' ? (
-        <div className="container py-20">
-          <div className="mx-auto grid w-full max-w-7xl items-start gap-16 lg:grid-cols-12">
-            <div className="min-w-0 lg:col-span-8 [&_h2]:scroll-mt-24 [&_h3]:scroll-mt-24 [&_h4]:scroll-mt-24">
-              <RenderBlocks blocks={content} />
-            </div>
-            <ArticleSidebar
-              className="w-auto lg:col-span-4"
-              sections={[
-                legalHeadings &&
-                  legalHeadings.length > 0 && {
-                    title: 'On This Page',
-                    children: <TableOfContents headings={legalHeadings} />,
-                  },
-              ]}
-            />
-          </div>
-        </div>
+      {layout === PAGE_LAYOUT.SECTIONS ? (
+        <RenderBlocks blocks={sections} />
       ) : (
-        <RenderBlocks blocks={content} />
+        <ArticleLayout content={content} links={linkGroup} />
       )}
 
       {/*{draft && <LivePreviewListener />}*/}

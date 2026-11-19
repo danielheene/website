@@ -151,6 +151,20 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   Go through `revalidateCache` (`src/lib/revalidation/`), never `next/cache` directly: hooks also
   fire in the jobs worker, where Next's revalidation APIs throw, and `revalidateCache` then falls
   back to the app's `POST /api/revalidate` (bearer token derived from `PAYLOAD_SECRET`).
+- **Page layouts**: a page is either `richText` (a `content` rich-text field, rendered like a blog
+  post by `ArticleLayout`: content column + sidebar with table of contents and `links`) or
+  `sections` (the `sections` blocks, rendered by `RenderBlocks`). Resume blocks are offered only
+  on the `resume` page, which alone gets the section navigation (`src/collections/Pages/constants.ts`).
+  The legal blocks live inside rich text and are validated to the legal page slugs, because
+  Lexical's `BlocksFeature` cannot offer blocks per document.
+- **Server-rendered rich-text blocks**: `RichText` is a Client Component, so a block whose
+  renderer is an async Server Component (the legal blocks) is listed in
+  `src/blocks/serverRenderedBlockSlugs.ts`, rendered ahead of time by `renderServerBlocks` and
+  passed to `RichText` as `renderedBlocks`, keyed by block id.
+- **Shaders** (`src/components/Shaders/`) must not call `WEBGL_lose_context.loseContext()` in their
+  effect cleanup: the canvas is React-owned, and a re-run on the same node (Strict Mode,
+  `<Activity>`) then gets a dead context. The admin shows each preset's `thumbnail.png`
+  (`ShaderThumbnail`) instead of live shaders.
 - **Blog listings** (`/blog`, `/blog/<topic>`) paginate and sort via `?page=` / `?sort=`, read
   only inside the grid's Suspense boundary so the shell still prerenders. `src/lib/blog/listing.ts`
   owns the params (sort options, parsing, href building); `proxy.ts` uses it to redirect

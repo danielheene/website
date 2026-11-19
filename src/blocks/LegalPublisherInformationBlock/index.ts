@@ -2,12 +2,12 @@ import { Block } from 'payload'
 
 import { BlockGroup, BlockSlug } from '@/types/blocks'
 
-export const LegalPublisherBlock: Block = {
-  slug: BlockSlug.LegalPublisher,
-  interfaceName: BlockSlug.LegalPublisher,
+export const LegalPublisherInformationBlock: Block = {
+  slug: BlockSlug.LegalPublisherInformation,
+  interfaceName: BlockSlug.LegalPublisherInformation,
   labels: {
-    singular: 'Legal Publisher',
-    plural: 'Legal Publishers',
+    singular: 'Publisher Information',
+    plural: 'Publisher Information',
   },
   admin: {
     group: BlockGroup.Legal,
@@ -15,17 +15,11 @@ export const LegalPublisherBlock: Block = {
   },
   fields: [
     {
-      type: 'text',
-      name: 'title',
-      hooks: {
-        afterRead: [({ value }) => value || 'Publisher Information'],
-      },
-    },
-    {
       type: 'ui',
+      name: 'adminInfo',
       admin: {
         components: {
-          Field: '@/blocks/LegalPublisherBlock/AdminInfo',
+          Field: '@/blocks/LegalPublisherInformationBlock/AdminInfo',
         },
       },
     },

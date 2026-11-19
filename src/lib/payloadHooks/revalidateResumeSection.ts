@@ -5,11 +5,11 @@ import type {
   RequestContext,
 } from 'payload'
 
+import { RESUME_PAGE_SLUG } from '@/collections/Pages/constants'
 import { generateContentPath } from '@/lib/generateContentPath'
 import { revalidateCache } from '@/lib/revalidation/revalidateCache'
 import { CollectionSlug } from '@/types/collections'
 import type { GlobalSlugValue } from '@/types/globals'
-import type { PageLayout } from '@/types/payload'
 
 interface RevalidateResumeSectionHookOptions {
   doc: any
@@ -32,7 +32,7 @@ const revalidateResumeSection = async ({
 
   payload.logger.info(`Revalidating Resume Section: ${slug}`)
 
-  // Pages with the resume layout render this section, so they go stale with it.
+  // The resume page renders this section, so it goes stale with it.
   let paths: string[] = []
 
   try {
@@ -41,8 +41,8 @@ const revalidateResumeSection = async ({
       draft: false,
       limit: 9999,
       where: {
-        layout: {
-          equals: 'resume' satisfies PageLayout,
+        slug: {
+          equals: RESUME_PAGE_SLUG,
         },
       },
       select: {

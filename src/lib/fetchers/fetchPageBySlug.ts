@@ -104,11 +104,11 @@ async function fetchPageBySlugCached(
  * @return A promise that resolves to the matching page data, or null if no page is found.
  */
 export async function fetchPageBySlug({
-  slug,
+  slug = 'home',
   draft = false,
   locale = 'en',
 }: {
-  slug: string
+  slug?: string
   draft?: boolean
   locale?: BilingualLanguage
 }): Promise<CollectionData<CollectionSlug['Pages']> | null> {

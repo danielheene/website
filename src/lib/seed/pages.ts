@@ -194,7 +194,7 @@ const linkGroupBlock = (random: Random) => ({
   })),
 })
 
-const pageBlocks = (seed: string): Page['content'] => {
+const pageBlocks = (seed: string): Page['sections'] => {
   const random = createRandom(seed)
   const builders = [twoColumnBlock, codeContentBlock, linkGroupBlock]
 
@@ -214,7 +214,7 @@ const pageBlocks = (seed: string): Page['content'] => {
     blocks.push(richTextBlock(random))
   }
 
-  return blocks as unknown as Page['content']
+  return blocks as unknown as Page['sections']
 }
 
 /**
@@ -344,13 +344,13 @@ export const seedPages = async (
         title: pageTitleFor(index),
         protected: false,
         slug,
-        layout: 'default',
+        layout: 'sections',
         generatorFlags: ['seeded-dummy'],
         hero: {
           contentType: 'title',
           slides,
         },
-        content: pageBlocks(slug),
+        sections: pageBlocks(slug),
       },
       draft: false,
     })

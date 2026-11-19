@@ -23,7 +23,7 @@ export type GeneratorFlag =
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "PageLayout".
  */
-export type PageLayout = ('default' | 'home' | 'resume' | 'legal') | null;
+export type PageLayout = 'richText' | 'sections';
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "LinkGroupData".
@@ -135,8 +135,8 @@ export interface Config {
     LinkGroupBlock: LinkGroupBlock;
     RichTextBlock: RichTextBlock;
     TwoColumnContentBlock: TwoColumnContentBlock;
-    LegalPublisherBlock: LegalPublisherBlock;
-    LegalAuthorshipsBlock: LegalAuthorshipsBlock;
+    LegalPublisherInformationBlock: LegalPublisherInformationBlock;
+    LegalAttributionsBlock: LegalAttributionsBlock;
     ResumeAboutMeBlock: ResumeAboutMeBlock;
     ResumeContactBlock: ResumeContactBlock;
     ResumeCustomersBlock: ResumeCustomersBlock;
@@ -458,7 +458,7 @@ export interface Page {
   title: string;
   protected: boolean;
   slug: string;
-  layout?: PageLayout;
+  layout: PageLayout;
   hero?: {
     slides?:
       | {
@@ -507,15 +507,30 @@ export interface Page {
       [k: string]: unknown;
     } | null;
   };
-  content?:
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  sections?:
     | (
         | CodeBlock
         | FeatureCardsBlock
         | HighlightBoxBlock
         | LinkGroupBlock
         | RichTextBlock
-        | LegalPublisherBlock
-        | LegalAuthorshipsBlock
+        | LegalPublisherInformationBlock
+        | LegalAttributionsBlock
         | ResumeAboutMeBlock
         | ResumeContactBlock
         | ResumeCustomersBlock
@@ -525,6 +540,7 @@ export interface Page {
         | TrendingBlogPostsBlock
       )[]
     | null;
+  links?: LinkGroupData;
   /**
    * This field group contains meta information for SEO purposes.
    * It includes fields for title, description, and SERP optimization.
@@ -642,21 +658,21 @@ export interface RichTextBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "LegalPublisherBlock".
+ * via the `definition` "LegalPublisherInformationBlock".
  */
-export interface LegalPublisherBlock {
+export interface LegalPublisherInformationBlock {
   id?: string | null;
   blockName?: string | null;
-  blockType: 'LegalPublisherBlock';
+  blockType: 'LegalPublisherInformationBlock';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "LegalAuthorshipsBlock".
+ * via the `definition` "LegalAttributionsBlock".
  */
-export interface LegalAuthorshipsBlock {
+export interface LegalAttributionsBlock {
   id?: string | null;
   blockName?: string | null;
-  blockType: 'LegalAuthorshipsBlock';
+  blockType: 'LegalAttributionsBlock';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1947,7 +1963,9 @@ export interface PagesSelect<T extends boolean = true> {
         contentType?: T;
         content?: T;
       };
-  content?: T | {};
+  content?: T;
+  sections?: T | {};
+  links?: T | LinkGroupDataSelect<T>;
   meta?:
     | T
     | {
