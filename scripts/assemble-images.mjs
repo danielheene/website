@@ -13,7 +13,7 @@
  */
 
 import { spawnSync } from 'node:child_process'
-import { cpSync, existsSync, mkdirSync, rmSync } from 'node:fs'
+import { cpSync, existsSync, mkdirSync, readdirSync, readlinkSync, rmSync } from 'node:fs'
 import path from 'node:path'
 
 const root = process.cwd()
@@ -35,6 +35,10 @@ const copy = (from, to = from) => {
   cpSync(source, path.join(out, to), {
     recursive: true,
     dereference: false,
+    // Without this, cpSync rewrites relative links as absolute paths into the
+    // source tree, which don't exist inside the image. Turbopack resolves its
+    // hashed externals (`.next/node_modules/pino-<hash>`) through such links.
+    verbatimSymlinks: true,
     filter: (file) => !NOT_SHIPPED.test(file),
   })
 }
@@ -100,5 +104,36 @@ mkdirSync(out, {
 })
 
 assemblers[target]()
+
+/**
+ * An image only works if every link in it resolves inside the image: catch
+ * absolute, escaping or dangling links here rather than at container boot.
+ */
+const assertSelfContainedLinks = () => {
+  const problems = readdirSync(out, {
+    recursive: true,
+    withFileTypes: true,
+  })
+    .filter((entry) => entry.isSymbolicLink())
+    .flatMap((entry) => {
+      const link = path.join(entry.parentPath, entry.name)
+      const destination = readlinkSync(link)
+      const resolved = path.resolve(entry.parentPath, destination)
+      const relativeLink = path.relative(out, link)
+
+      if (path.isAbsolute(destination)) return [`${relativeLink} -> ${destination} (absolute)`]
+
+      if (path.relative(out, resolved).startsWith('..'))
+        return [`${relativeLink} -> ${destination} (outside out/${target})`]
+
+      if (!existsSync(resolved)) return [`${relativeLink} -> ${destination} (missing)`]
+
+      return []
+    })
+
+  if (problems.length > 0) fail(`broken links in out/${target}:\n  ${problems.join('\n  ')}`)
+}
+
+assertSelfContainedLinks()
 
 console.info(`[assemble-images] out/${target} ready`)
