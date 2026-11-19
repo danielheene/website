@@ -1,7 +1,9 @@
 import type { JSX } from 'react'
+import { BlocksFieldServerComponent } from 'payload'
 
 import { cn } from 'tailwind-variants'
 
+import { Headline } from '@/components/Headline'
 import { Icon } from '@/components/Icon'
 import { ImageMedia } from '@/components/ImageMedia/ImageMedia'
 import RichText from '@/components/RichText'
@@ -14,14 +16,19 @@ import { collectMediaCredits } from '@/lib/collectMediaCredits'
  * Assets with credits that are not referenced anywhere are intentionally
  * omitted — an attribution list should cover what is published, nothing more.
  */
-export const LegalAuthorshipsBlockRenderer = async (): Promise<JSX.Element | null> => {
+export const LegalAuthorshipsBlockRenderer: BlocksFieldServerComponent = async ({
+  siblingData,
+}): Promise<JSX.Element | null> => {
   const credits = await collectMediaCredits()
+  const { title } = siblingData
 
   if (credits.length === 0) return null
 
   return (
     <section>
-      <h2 className="mb-4 font-mono text-3xl font-semibold">Attributions / Resource Credits</h2>
+      <Headline variant="section" className="mb-4">
+        {title}
+      </Headline>
 
       <ul className={cn(['m-0 flex list-none flex-col gap-6 p-0'])}>
         {credits.map((credit) => (

@@ -15,11 +15,17 @@ export const LegalPublisherBlock: Block = {
   },
   fields: [
     {
+      type: 'text',
+      name: 'title',
+      hooks: {
+        afterRead: [({ value }) => value || 'Publisher Information'],
+      },
+    },
+    {
       type: 'ui',
-      name: 'Publisher',
       admin: {
         components: {
-          Field: '@/blocks/LegalPublisherBlock/Renderer',
+          Field: '@/blocks/LegalPublisherBlock/AdminInfo',
         },
       },
     },

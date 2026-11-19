@@ -1,14 +1,22 @@
+import { UIFieldServerComponent } from 'payload'
+
 import { cn } from 'tailwind-variants'
 
 import { Button } from '@/components/Button'
+import { Headline } from '@/components/Headline'
 import { Icon } from '@/components/Icon'
 import { fetchGlobalUserSettingsCached } from '@/lib/fetchers'
 
-export const LegalPublisherBlockRenderer = async () => {
+export const LegalPublisherBlockRenderer: UIFieldServerComponent = async ({ siblingData }) => {
   const { name, address, email, phoneNumber, vatID } = await fetchGlobalUserSettingsCached('en')
+  const { title } = siblingData
 
   return (
     <section>
+      <Headline variant="section" className="mb-4">
+        {title}
+      </Headline>
+
       <address
         className={cn([
           'flex flex-col gap-4',

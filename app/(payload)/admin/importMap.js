@@ -42,6 +42,8 @@ import { default as default_739727f92d93200cec032c1e61a6cb15 } from '@/fields/To
 import { default as default_22b4891c4f5fa760ee9f626882377967 } from '@/fields/Protected/components/FieldComponent'
 import { default as default_3eebcce1355034e6e200a781f1871c37 } from '@/fields/HeroSlides/Components/FilmstripEditor'
 import { ColumnsBlock as ColumnsBlock_0c2b6cc0bda54e7d1c0c3cc849fe83e0 } from '@/blocks/TwoColumnContentBlock/components/ColumnsBlock'
+import { default as default_394968cb3b5f686086c068a60b66bf1f } from '@/blocks/LegalPublisherInformationBlock/AdminInfo'
+import { default as default_359d7db5811a6351a1432a3c0a7d6c1b } from '@/blocks/LegalAttributionsBlock/AdminInfo'
 import { AltField as AltField_24f51e17ebe211ea3e1b6c287f79c7cc } from '@/collections/MediaImages/components'
 import { UnsplashSearch as UnsplashSearch_5e5cb6c43e4b5799bbd5217d983bc5d0 } from '@/components/AdminPanel/UnsplashSearch'
 import { MediaScopeTabs as MediaScopeTabs_4629bc42a060e6d23d7d57d776e5da7b } from '@/components/AdminPanel/MediaScopeTabs'
@@ -72,8 +74,6 @@ import { default as default_25737e4ba5d8de2c3d84ba8d21bbf4ab } from '@/globals/S
 import { default as default_e59c21704d4dab5076151afaebd7876b } from '@/fields/Address/components/LabelComponent'
 import { default as default_741a914cdfef7b5df9221de4f2e22dd9 } from '@/fields/Address/components/FieldComponent'
 import { default as default_8a51036bc2d88e014190cca6baa944f2 } from '@/globals/SettingsGlobalUser/components/SameAsRowLabel'
-import { default as default_7fee387b14eeaddab1962311bb67b35e } from '@/blocks/LegalPublisherBlock/Renderer'
-import { default as default_fc395b9a25a9319ce396eaf2d5ad72f0 } from '@/blocks/LegalAuthorshipsBlock/AdminInfo'
 import { default as default_dbb6fe4ada93d1133d8de1ea56eb20d6 } from '@/fields/ResumeBlock/components/FieldComponent'
 import { Nav as Nav_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { Icon as Icon_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
@@ -132,6 +132,8 @@ export const importMap = {
   "@/fields/Protected/components/FieldComponent#default": default_22b4891c4f5fa760ee9f626882377967,
   "@/fields/HeroSlides/Components/FilmstripEditor#default": default_3eebcce1355034e6e200a781f1871c37,
   "@/blocks/TwoColumnContentBlock/components/ColumnsBlock#ColumnsBlock": ColumnsBlock_0c2b6cc0bda54e7d1c0c3cc849fe83e0,
+  "@/blocks/LegalPublisherInformationBlock/AdminInfo#default": default_394968cb3b5f686086c068a60b66bf1f,
+  "@/blocks/LegalAttributionsBlock/AdminInfo#default": default_359d7db5811a6351a1432a3c0a7d6c1b,
   "@/collections/MediaImages/components#AltField": AltField_24f51e17ebe211ea3e1b6c287f79c7cc,
   "@/components/AdminPanel/UnsplashSearch#UnsplashSearch": UnsplashSearch_5e5cb6c43e4b5799bbd5217d983bc5d0,
   "@/components/AdminPanel/MediaScopeTabs#MediaScopeTabs": MediaScopeTabs_4629bc42a060e6d23d7d57d776e5da7b,
@@ -162,8 +164,6 @@ export const importMap = {
   "@/fields/Address/components/LabelComponent#default": default_e59c21704d4dab5076151afaebd7876b,
   "@/fields/Address/components/FieldComponent#default": default_741a914cdfef7b5df9221de4f2e22dd9,
   "@/globals/SettingsGlobalUser/components/SameAsRowLabel#default": default_8a51036bc2d88e014190cca6baa944f2,
-  "@/blocks/LegalPublisherBlock/Renderer#default": default_7fee387b14eeaddab1962311bb67b35e,
-  "@/blocks/LegalAuthorshipsBlock/AdminInfo#default": default_fc395b9a25a9319ce396eaf2d5ad72f0,
   "@/fields/ResumeBlock/components/FieldComponent#default": default_dbb6fe4ada93d1133d8de1ea56eb20d6,
   "@/components/AdminPanel#Nav": Nav_a316a6ec12a12cd0fe58ccec01a444ca,
   "@/components/AdminPanel#Icon": Icon_a316a6ec12a12cd0fe58ccec01a444ca,
