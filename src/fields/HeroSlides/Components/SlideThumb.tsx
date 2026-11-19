@@ -6,6 +6,8 @@ import { Button } from '@/components/Button'
 import { DuoTone } from '@/components/DuoTone'
 import type { ShaderPresetKey } from '@/components/HeroMedia/shaderPresets'
 import { Icon } from '@/components/Icon'
+import { ImageMedia } from '@/components/ImageMedia'
+import { VideoMedia } from '@/components/VideoMedia'
 import type { UnsplashSearchResult } from '@/lib/unsplash/types'
 import type { MediaImage, MediaVideo } from '@/types/payload'
 
@@ -101,19 +103,20 @@ export const SlideThumb = ({
         </DuoTone>
       ) : thumbnail.kind === 'image-url' ? (
         <DuoTone contained className="size-full">
-          {/* oxlint-disable-next-line nextjs/no-img-element -- a tiny admin-only picker thumbnail, not a page asset */}
-          <img alt="" className="size-full object-cover" src={thumbnail.url} />
+          <ImageMedia blurDataURL={thumbnail.blurDataURL} fill sizes="450px" url={thumbnail.url} />
         </DuoTone>
       ) : thumbnail.kind === 'video-url' ? (
         <DuoTone contained className="size-full">
-          {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-          <video
+          <VideoMedia
             autoPlay
-            className="size-full object-cover"
+            blurDataURL={thumbnail.blurDataURL}
+            className="size-full"
+            controls={false}
             loop
             muted
             playsInline
-            src={thumbnail.url}
+            thumbnailURL={thumbnail.posterUrl}
+            url={thumbnail.url}
           />
         </DuoTone>
       ) : (

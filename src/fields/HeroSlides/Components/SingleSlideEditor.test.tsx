@@ -69,6 +69,37 @@ vi.mock('@/lib/unsplash/importPhoto', () => ({
   importPhoto: vi.fn(),
 }))
 
+// `next/image` rewrites `src` through its optimizer; the stubs expose exactly
+// what the preview hands each media component.
+vi.mock('@/components/ImageMedia', () => ({
+  ImageMedia: ({
+    url,
+    blurDataURL,
+    alt = '',
+    'data-testid': testId,
+  }: {
+    url: string
+    blurDataURL?: string
+    alt?: string
+    'data-testid'?: string
+  }) => (
+    // oxlint-disable-next-line nextjs/no-img-element -- test stub
+    <img alt={alt} data-blur={blurDataURL} data-testid={testId} src={url} />
+  ),
+}))
+
+vi.mock('@/components/VideoMedia', () => ({
+  VideoMedia: ({
+    url,
+    thumbnailURL,
+    blurDataURL,
+  }: {
+    url: string
+    thumbnailURL?: string
+    blurDataURL?: string
+  }) => <video data-blur={blurDataURL} data-testid="video-media" poster={thumbnailURL} src={url} />,
+}))
+
 vi.mock('@/components/Icon', () => ({
   Icon: ({ name }: { name: string }) => <span data-testid={`icon-${name}`} />,
 }))

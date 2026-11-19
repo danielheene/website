@@ -28,6 +28,37 @@ vi.mock('@payloadcms/ui', () => ({
   useFormFields: (selector: (args: [FieldStateStub]) => unknown) => selector([formFields]),
 }))
 
+// `next/image` rewrites `src` through its optimizer; the stubs expose exactly
+// what the preview hands each media component.
+vi.mock('@/components/ImageMedia', () => ({
+  ImageMedia: ({
+    url,
+    blurDataURL,
+    alt = '',
+    'data-testid': testId,
+  }: {
+    url: string
+    blurDataURL?: string
+    alt?: string
+    'data-testid'?: string
+  }) => (
+    // oxlint-disable-next-line nextjs/no-img-element -- test stub
+    <img alt={alt} data-blur={blurDataURL} data-testid={testId} src={url} />
+  ),
+}))
+
+vi.mock('@/components/VideoMedia', () => ({
+  VideoMedia: ({
+    url,
+    thumbnailURL,
+    blurDataURL,
+  }: {
+    url: string
+    thumbnailURL?: string
+    blurDataURL?: string
+  }) => <video data-blur={blurDataURL} data-testid="video-media" poster={thumbnailURL} src={url} />,
+}))
+
 vi.mock('@/components/Icon', () => ({
   Icon: ({ name }: { name: string }) => <span data-testid={`icon-${name}`} />,
 }))
@@ -147,6 +178,61 @@ describe('SlideThumb', () => {
     const { container } = render(<SlideThumb {...defaultProps} />)
 
     expect(container.querySelector('img')).toHaveAttribute('src', 'https://example.com/poster.webp')
+  })
+
+  it('passes the image blur placeholder to ImageMedia', () => {
+    setFormFields({
+      'hero.slides.0.slideType': {
+        value: 'image',
+      },
+      'hero.slides.0.media': {
+        value: {
+          relationTo: 'images',
+          value: {
+            url: 'https://example.com/hero.webp',
+            blurDataURL: 'data:image/webp;base64,AAAA',
+          },
+        },
+      },
+    })
+
+    const { container } = render(<SlideThumb {...defaultProps} />)
+
+    expect(container.querySelector('img')).toHaveAttribute(
+      'data-blur',
+      'data:image/webp;base64,AAAA',
+    )
+  })
+
+  it('renders a video through VideoMedia with its poster and blur placeholder', () => {
+    setFormFields({
+      'hero.slides.0.slideType': {
+        value: 'video',
+      },
+      'hero.slides.0.media': {
+        value: {
+          relationTo: 'videos',
+          value: {
+            url: 'https://example.com/hero.mp4',
+            thumbnails: [
+              {
+                value: {
+                  url: 'https://example.com/poster.webp',
+                  blurDataURL: 'data:image/webp;base64,BBBB',
+                },
+              },
+            ],
+          },
+        },
+      },
+    })
+
+    render(<SlideThumb {...defaultProps} />)
+
+    const video = screen.getByTestId('video-media')
+    expect(video).toHaveAttribute('src', 'https://example.com/hero.mp4')
+    expect(video).toHaveAttribute('poster', 'https://example.com/poster.webp')
+    expect(video).toHaveAttribute('data-blur', 'data:image/webp;base64,BBBB')
   })
 
   it('renders the preset preview image for a shader slide', async () => {

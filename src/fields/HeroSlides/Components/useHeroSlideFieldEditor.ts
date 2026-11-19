@@ -22,9 +22,11 @@ import { useHeroSlideUploads } from './useHeroSlideUploads'
 // moment a doc is picked) instead of ever trusting form state for this.
 const imageThumbnailValue = (doc: MediaImage) => ({
   url: doc.url,
+  blurDataURL: doc.blurDataURL,
 })
 
 const videoThumbnailValue = (doc: MediaVideo) => ({
+  url: doc.url,
   thumbnails: doc.thumbnails,
 })
 

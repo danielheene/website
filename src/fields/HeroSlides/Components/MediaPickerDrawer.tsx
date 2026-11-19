@@ -81,7 +81,7 @@ export const MediaPickerDrawer = ({
             }}
             type="button"
           >
-            <div className="aspect-video w-full overflow-hidden rounded-sm bg-black/5">
+            <div className="relative aspect-video w-full overflow-hidden rounded-sm bg-black/5">
               {item.thumbnail}
             </div>
             <span className="line-clamp-1 text-sm font-medium">{item.label}</span>

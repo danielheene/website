@@ -7,6 +7,8 @@ import { useFormFields } from '@payloadcms/ui'
 import { Button } from '@/components/Button'
 import { DuoTone } from '@/components/DuoTone'
 import { Icon } from '@/components/Icon'
+import { ImageMedia } from '@/components/ImageMedia'
+import { VideoMedia } from '@/components/VideoMedia'
 import type { UnsplashSearchResult } from '@/lib/unsplash/types'
 
 import { AddSlideMenu } from './AddSlideMenu'
@@ -84,19 +86,25 @@ export const SingleSlideEditor = (props: ArrayFieldClientProps) => {
         </DuoTone>
       ) : thumbnail.kind === 'image-url' ? (
         <DuoTone contained className="size-full">
-          {/* oxlint-disable-next-line nextjs/no-img-element -- a small admin-only sidebar preview, not a page asset */}
-          <img alt="" className="size-full object-cover" src={thumbnail.url} />
+          <ImageMedia
+            blurDataURL={thumbnail.blurDataURL}
+            fill
+            sizes="(max-width: 768px) 100vw, 400px"
+            url={thumbnail.url}
+          />
         </DuoTone>
       ) : thumbnail.kind === 'video-url' ? (
         <DuoTone contained className="size-full">
-          {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-          <video
+          <VideoMedia
             autoPlay
-            className="size-full object-cover"
+            blurDataURL={thumbnail.blurDataURL}
+            className="size-full"
+            controls={false}
             loop
             muted
             playsInline
-            src={thumbnail.url}
+            thumbnailURL={thumbnail.posterUrl}
+            url={thumbnail.url}
           />
         </DuoTone>
       ) : !hasRow ? (

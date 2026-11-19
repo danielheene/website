@@ -25,9 +25,14 @@ export const RowLabel = () => {
       <div className="h-10 w-16 shrink-0 overflow-hidden rounded-sm border border-input bg-black/5">
         {thumbnail.kind === 'shader' ? (
           <ShaderThumbnail presetKey={thumbnail.presetKey} />
-        ) : thumbnail.kind === 'image-url' ? (
+        ) : thumbnail.kind === 'image-url' ||
+          (thumbnail.kind === 'video-url' && thumbnail.posterUrl) ? (
           // oxlint-disable-next-line nextjs/no-img-element -- a tiny admin-only preview thumbnail, not a page asset
-          <img alt="" className="size-full object-cover" src={thumbnail.url} />
+          <img
+            alt=""
+            className="size-full object-cover"
+            src={thumbnail.kind === 'image-url' ? thumbnail.url : thumbnail.posterUrl}
+          />
         ) : null}
       </div>
       <span className="text-sm">

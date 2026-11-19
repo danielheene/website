@@ -3,6 +3,7 @@
 import { cn } from 'tailwind-variants'
 
 import { SHADER_PRESET_MAP, type ShaderPresetKey } from '@/components/HeroMedia/shaderPresets'
+import { ImageMedia } from '@/components/ImageMedia'
 
 export interface ShaderThumbnailProps {
   presetKey: ShaderPresetKey
@@ -21,11 +22,13 @@ export const ShaderThumbnail = ({ presetKey, className }: ShaderThumbnailProps) 
 
   return (
     // oxlint-disable-next-line nextjs/no-img-element -- a small admin-only preview, not a page asset
-    <img
+    <ImageMedia
       alt={preset.label}
-      className={cn('size-full object-cover', className)}
+      className={cn('absolute inset-0 size-full object-cover', className)}
       data-testid="shader-thumbnail"
-      src={preset.thumbnail.src}
+      url={preset.thumbnail.src}
+      blurDataURL={preset.thumbnail.blurDataURL}
+      fill
     />
   )
 }
