@@ -13,11 +13,6 @@ export const LegalAttributionsBlock: Block = {
     group: BlockGroup.Legal,
     disableBlockName: true,
   },
-  /**
-   * Content-free block: the credits list is derived at render time from the
-   * media assets actually referenced on the site, so there is nothing to edit
-   * here. See `LegalAttributionsBlock/Renderer`.
-   */
   fields: [
     {
       type: 'ui',
