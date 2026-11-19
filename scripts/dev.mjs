@@ -24,7 +24,7 @@ const forwarded = argv.filter((arg) => arg !== '--tunnel')
 const require = createRequire(import.meta.url)
 const nextCli = path.join(path.dirname(require.resolve('next/package.json')), 'dist/bin/next')
 
-const child = spawn(process.execPath, [nextCli, 'dev', ...forwarded], {
+const child = spawn(process.execPath, [nextCli, 'dev', '--webpack', ...forwarded], {
   // Both streams are piped only when the tunnel line has to be spliced into
   // the startup banner; otherwise Next writes straight through untouched.
   stdio: tunnel ? ['inherit', 'pipe', 'pipe'] : 'inherit',
