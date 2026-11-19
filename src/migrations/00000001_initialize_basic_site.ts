@@ -1,6 +1,5 @@
 import { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-mongodb'
 
-import { SiteSettingsDefaults } from '@/globals/SiteSettings'
 import { CollectionSlug } from '@/types/collections'
 import { GlobalSlug } from '@/types/globals'
 import { Page } from '@/types/payload'
@@ -44,9 +43,6 @@ export async function up({ payload, req, session: _session }: MigrateUpArgs): Pr
   await payload.db.updateGlobal({
     slug: GlobalSlug.SiteSettings,
     data: {
-      general: {
-        ...SiteSettingsDefaults.general,
-      },
       header: {
         mainNavigation: {
           entries: [
