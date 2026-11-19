@@ -12,7 +12,7 @@ export default async function NotFound() {
 
   return (
     <HeroMedia align="center" fallbackAlt="" slides={errorHero}>
-      <div className="container flex flex-col items-center py-32 text-center text-foreground">
+      <div className="container flex flex-col items-center py-32 text-center">
         <div className="mb-20 font-pp-supply-mono drop-shadow-md">
           <h1 className="text-9xl">404</h1>
           <p className="text-3xl">This page could not be found.</p>

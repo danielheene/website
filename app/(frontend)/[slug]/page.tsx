@@ -106,7 +106,7 @@ async function Page({ params }: PageProps<'/[slug]'>) {
                   enableGutter={false}
                   enableProse={false}
                   highlightedCode={highlightedHeroCode}
-                  className="textshadow-lg font-mono text-4xl leading-tight text-balance text-foreground shadow-primary/75 [&_h1]:text-4xl [&_h2]:text-3xl [&_h3]:text-2xl [&_p]:text-4xl"
+                  className="textshadow-lg font-mono text-4xl leading-tight text-balance shadow-primary/75 [&_h1]:text-4xl [&_h2]:text-3xl [&_h3]:text-2xl [&_p]:text-4xl"
                 />
               </Suspense>
             </div>
@@ -117,7 +117,7 @@ async function Page({ params }: PageProps<'/[slug]'>) {
               <div className="container">
                 <Headline
                   variant="page-title"
-                  className="textshadow-lg text-balance text-foreground shadow-primary/75"
+                  className="textshadow-lg text-balance shadow-primary/75"
                 >
                   {title}
                 </Headline>

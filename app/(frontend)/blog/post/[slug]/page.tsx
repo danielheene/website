@@ -135,9 +135,9 @@ async function BlogPost({ params }: PageProps<'/blog/post/[slug]'>) {
             <div className="pt-40 pb-16">
               <div className="container flex flex-col items-center gap-8 text-center">
                 <nav aria-label="breadcrumb">
-                  <ol className="flex flex-wrap items-center justify-center gap-1.5 text-sm wrap-break-word text-foreground/70 sm:gap-2.5">
+                  <ol className="flex flex-wrap items-center justify-center gap-1.5 text-sm wrap-break-word text-white/70 sm:gap-2.5">
                     <li className="inline-flex items-center gap-1.5">
-                      <Link className="transition-colors hover:text-foreground" href="/blog">
+                      <Link className="transition-colors hover:text-white" href="/blog">
                         Blog
                       </Link>
                     </li>
@@ -148,7 +148,7 @@ async function BlogPost({ params }: PageProps<'/blog/post/[slug]'>) {
                         </li>
                         <li className="inline-flex items-center gap-1.5">
                           <Link
-                            className="transition-colors hover:text-foreground"
+                            className="transition-colors hover:text-white"
                             href={`/blog/${primaryTopic.slug}`}
                           >
                             {primaryTopic.title}
@@ -158,7 +158,7 @@ async function BlogPost({ params }: PageProps<'/blog/post/[slug]'>) {
                     )}
                   </ol>
                 </nav>
-                <div className="flex w-full max-w-5xl flex-col gap-5 text-white">
+                <div className="flex w-full max-w-5xl flex-col gap-5">
                   <div className="flex items-center justify-center gap-2.5 font-mono text-sm font-semibold text-white/80">
                     <time dateTime={createdAt}>{format(createdAt, 'MMMM d, yyyy')}</time>
                   </div>
@@ -166,7 +166,7 @@ async function BlogPost({ params }: PageProps<'/blog/post/[slug]'>) {
                     {title}
                   </h1>
                   {post.meta?.description && (
-                    <p className="text-xl leading-[1.4] text-pretty text-foreground/80">
+                    <p className="text-xl leading-[1.4] text-pretty text-white/80">
                       {post.meta.description}
                     </p>
                   )}
@@ -176,7 +176,7 @@ async function BlogPost({ params }: PageProps<'/blog/post/[slug]'>) {
                         <li key={topic.id}>
                           <Link
                             href={`/blog/${topic.slug}`}
-                            className="rounded-full border border-foreground/25 bg-background/30 px-3 py-1 font-mono text-xs backdrop-blur-sm transition-colors hover:bg-background/60"
+                            className="rounded-full border border-white/25 bg-white/10 px-3 py-1 font-mono text-xs backdrop-blur-sm transition-colors hover:bg-white/20"
                           >
                             {topic.title}
                           </Link>
