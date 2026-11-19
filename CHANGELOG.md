@@ -1,3 +1,10 @@
+# [1.17.0-rc.4](https://github.com/danielheene/website/compare/v1.17.0-rc.3...v1.17.0-rc.4) (2026-11-19)
+
+
+### Bug Fixes
+
+* **status:** keep the live service status out of prerendering ([#141](https://github.com/danielheene/website/issues/141)) ([c52595c](https://github.com/danielheene/website/commit/c52595cedbfe7d86e3c64d24f11a59a76b124c62))
+
 # [1.17.0-rc.3](https://github.com/danielheene/website/compare/v1.17.0-rc.2...v1.17.0-rc.3) (2026-11-19)
 
 

@@ -100,7 +100,7 @@ export async function up({ payload, req, session: _session }: MigrateUpArgs): Pr
             {
               linkType: 'custom',
               text: 'All Topics',
-              url: '/blog/topics',
+              url: '/blog/all-topics',
             },
           ],
         },

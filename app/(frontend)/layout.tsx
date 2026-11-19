@@ -21,6 +21,8 @@ import { generatePersonSchema, generateWebSiteSchema, JsonLd } from '@/lib/jsonL
 import { ogImageMetadata } from '@/lib/og/ogImageMetadata'
 import { CollectionSlug } from '@/types/collections'
 
+export const instant = false
+
 export default async function RootLayout({
   children,
 }: {
@@ -73,7 +75,9 @@ export default async function RootLayout({
           <SkipToMainContent targetId="main-content" />
           <Header />
           <ViewTransition name="page-content" update="page-transition" default="none">
-            <div id="main-content">{children}</div>
+            <div id="main-content" className="min-h-screen">
+              {children}
+            </div>
           </ViewTransition>
           <Footer />
         </AllProviders>
