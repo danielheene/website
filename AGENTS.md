@@ -40,8 +40,10 @@ bun run analyze          # production build with @next/bundle-analyzer reports
 bun run lint             # oxlint + oxfmt --check (does NOT auto-fix)
 bun run lint:fix         # oxlint --fix + oxfmt (auto-fixes what it can)
 bun run test             # unit tests (Vitest)
-bun run packages:lint        # syncpack: dependency version groups
+bun run packages:lint    # syncpack: dependency version groups
 bun run test:e2e         # Playwright E2E (needs docker compose up -d)
+bun run migrate          # run pending Payload migrations (src/migrations/)
+bun run start:worker     # job worker: Payload jobs:run + health server (scripts/start-worker.mjs)
 ```
 
 Environment variables come from **Doppler**, but no script wraps `doppler run`. `bun run load-env`
@@ -293,7 +295,7 @@ only when `PAYLOAD_JOBS_ENABLE_APP_WORKERS=true` (default `false`).
 
 <!-- BEGIN:nextjs-agent-rules -->
 
-# This is NOT the Next.js you know
+## This is NOT the Next.js you know
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
 
