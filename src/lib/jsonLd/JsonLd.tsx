@@ -21,7 +21,7 @@ export function JsonLd({ nodes }: JsonLdProps) {
       type="application/ld+json"
       // oxlint-disable-next-line react/no-danger -- / is escaped as <\/ to prevent </script> injection
       dangerouslySetInnerHTML={{
-        __html: JSON.stringify(graph).replace(/<\//g, '<\\/'),
+        __html: JSON.stringify(graph).replace(/<\//g, '<\\/'), // nosemgrep: react-dangerouslysetinnerhtml -- reviewed, see the oxlint-disable reason above
       }}
     />
   )
