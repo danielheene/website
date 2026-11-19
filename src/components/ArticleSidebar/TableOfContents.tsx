@@ -1,54 +1,29 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import type { MouseEvent } from 'react'
 
 import { cn } from 'tailwind-variants'
 
 import type { ExtractedHeading } from '@/lib/extractHeadings'
+import { useScrollSpy } from '@/lib/hooks/useScrollSpy'
 
 export interface TableOfContentsProps {
   headings: ExtractedHeading[]
 }
 
 export const TableOfContents = ({ headings }: TableOfContentsProps) => {
-  const [activeId, setActiveId] = useState<string>(headings[0]?.id ?? '')
-
-  useEffect(() => {
-    if (headings.length === 0) return
-
-    const updateActive = () => {
-      const readingLine = window.innerHeight / 3
-
-      const passed = headings.filter((heading) => {
-        const element = document.getElementById(heading.id)
-
-        return element ? element.getBoundingClientRect().top <= readingLine : false
-      })
-
-      // near the bottom the last heading wins, otherwise nothing would be
-      // reachable for short final sections
-      const atBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 2
-
-      const next = atBottom
-        ? headings[headings.length - 1]
-        : (passed[passed.length - 1] ?? headings[0])
-
-      setActiveId((current) => (current === next.id ? current : next.id))
-    }
-
-    updateActive()
-    window.addEventListener('scroll', updateActive, {
-      passive: true,
-    })
-    window.addEventListener('resize', updateActive)
-
-    return () => {
-      window.removeEventListener('scroll', updateActive)
-      window.removeEventListener('resize', updateActive)
-    }
-  }, [headings])
+  const { activeId, scrollTo } = useScrollSpy(headings.map(({ id }) => id))
 
   if (headings.length === 0) return null
+
+  const handleClick = (event: MouseEvent<HTMLAnchorElement>, id: string) => {
+    event.preventDefault()
+    scrollTo(id)
+  }
+
+  // Indent relative to the shallowest entry, so a list starting at h2 is not
+  // indented as a whole.
+  const minLevel = Math.min(...headings.map(({ level }) => level))
 
   return (
     <ul className="flex flex-col gap-1 border-l border-border">
@@ -56,10 +31,11 @@ export const TableOfContents = ({ headings }: TableOfContentsProps) => {
         <li key={id}>
           <a
             href={`#${id}`}
+            onClick={(event) => handleClick(event, id)}
             aria-current={activeId === id ? 'location' : undefined}
             className={cn([
               '-ml-px block border-l py-1 text-sm leading-snug transition-colors',
-              level >= 3 ? 'pl-6' : 'pl-3',
+              level > minLevel ? 'pl-6' : 'pl-3',
               activeId === id
                 ? 'border-primary font-medium text-foreground'
                 : 'border-transparent text-muted-foreground hover:text-foreground',

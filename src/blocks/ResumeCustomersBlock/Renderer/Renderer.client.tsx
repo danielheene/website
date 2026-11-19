@@ -5,21 +5,23 @@ import { LogoCarousel, LogoCarouselProps } from '@/components/LogoCarousel/LogoC
 import { Reveal } from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
+import type { BlockAnchors } from '@/lib/extractHeadings'
 import { ResumeCustomersBlock } from '@/types/payload'
 
-interface ResumeCustomersBlockClientRendererProps extends ResumeCustomersBlock {
+interface ResumeCustomersBlockClientRendererProps extends ResumeCustomersBlock, BlockAnchors {
   title: string
   logos: LogoCarouselProps['entries']
 }
 
 export const ResumeCustomersBlockClientRenderer = ({
+  anchorId,
   blockType: _blockType,
   title,
   caption,
   logos,
 }: ResumeCustomersBlockClientRendererProps) => {
   return (
-    <SectionContainer title={title} variant="primary">
+    <SectionContainer id={anchorId} title={title} variant="primary">
       <div className="container py-16 lg:py-32">
         <Reveal className="grid grid-cols-12 items-center gap-8">
           <div className="col-span-12 mb-16 flex flex-col justify-center gap-12 lg:col-span-4 lg:col-start-2 lg:mb-0">

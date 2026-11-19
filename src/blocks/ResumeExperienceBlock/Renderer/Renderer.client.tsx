@@ -9,6 +9,7 @@ import { Headline } from '@/components/Headline'
 import { Reveal } from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
+import type { BlockAnchors } from '@/lib/extractHeadings'
 import { generateExperienceInterval, ReducedToBilingualLanguage } from '@/lib/i18n'
 import { isEmptyValue } from '@/lib/lexical/isEmptyValue'
 import { ResolvedRelations } from '@/lib/resolveRelation'
@@ -16,19 +17,20 @@ import { ResumeExperienceBlock, ResumeJobData, ResumeSkillTagData } from '@/type
 
 import { SkillChart } from './SkillChart'
 
-interface ResumeExperienceBlockClientRendererProps extends ResumeExperienceBlock {
+interface ResumeExperienceBlockClientRendererProps extends ResumeExperienceBlock, BlockAnchors {
   title: string
   jobs: ReducedToBilingualLanguage<ResolvedRelations<ResumeJobData>>[]
   skillTags: Pick<ResumeSkillTagData, 'id' | 'title' | 'slug' | 'interval'>[]
 }
 
 export const ResumeExperienceBlockClientRenderer = ({
+  anchorId,
   title,
   caption,
   jobs,
   skillTags,
 }: ResumeExperienceBlockClientRendererProps): JSX.Element => (
-  <SectionContainer title={title} variant="primary">
+  <SectionContainer id={anchorId} title={title} variant="primary">
     <div className={cn('container', 'py-24 lg:py-48', 'grid', 'gap-4', 'grid-cols-12')}>
       <div
         className={cn(

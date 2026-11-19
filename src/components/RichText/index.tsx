@@ -2,7 +2,7 @@
 
 // import { MediaBlock } from '@/blocks/MediaBlock/Component'
 
-import type { HTMLAttributes } from 'react'
+import type { HTMLAttributes, ReactNode } from 'react'
 import type {
   DefaultNodeTypes,
   DefaultTypedEditorState,
@@ -25,12 +25,13 @@ import { cn } from 'tailwind-variants'
 import { CodeBlockShell } from '@/blocks/CodeBlock/Renderer/CodeBlockShell'
 import { HighlightBox } from '@/blocks/HighlightBoxBlock/Renderer/HighlightBox'
 import { LinkGroupBlockRenderer } from '@/blocks/LinkGroupBlock/Renderer'
+import { SERVER_RENDERED_BLOCK_SLUGS } from '@/blocks/serverRenderedBlockSlugs'
 import { Columns } from '@/blocks/TwoColumnContentBlock/Renderer/Columns'
 import { Icon } from '@/components/Icon'
 import { ImageMedia } from '@/components/ImageMedia'
 import { VideoMedia } from '@/components/VideoMedia'
+import { createHeadingIdGenerator, lexicalNodeText } from '@/lib/extractHeadings'
 import { generateContentURL } from '@/lib/generateContentURL'
-import { generateSlug } from '@/lib/generateSlug'
 import { codeBlockKey, type HighlightedCodeMap } from '@/lib/shiki/codeBlockKey'
 import { type BlockData, BlockSlug } from '@/types/blocks'
 import { CollectionSlug } from '@/types/collections'
@@ -53,14 +54,19 @@ const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
 }
 
 const buildJsxConverters =
-  (highlightedCode: HighlightedCodeMap): JSXConvertersFunction<NodeTypes> =>
+  (
+    highlightedCode: HighlightedCodeMap,
+    headingIds?: string[],
+    renderedBlocks: Record<string, ReactNode> = {},
+  ): JSXConvertersFunction<NodeTypes> =>
   ({ defaultConverters }) => {
     /**
-     * Heading ids are assigned in document order with the same slug +
-     * de-duplication rules as `extractHeadings`, so table-of-contents anchors
-     * always resolve to the rendered heading.
+     * Heading ids follow document order. `headingIds` comes from the page-wide
+     * `extractHeadings` run (see `RenderBlocks`), so ids stay unique across
+     * blocks; without it the same rules run locally for this document alone.
      */
-    const headingIds = new Map<string, number>()
+    const generateHeadingId = createHeadingIdGenerator()
+    let headingIndex = 0
 
     // Document-order counter for checklist item input/label ids — the same
     // scheme as `headingIds` above, reset per render. Payload's own
@@ -187,18 +193,13 @@ const buildJsxConverters =
           nodes: node.children,
         })
 
-        const title = node.children
-          .map((child) => ('text' in child && typeof child.text === 'string' ? child.text : ''))
-          .join('')
-          .trim()
+        const title = lexicalNodeText(node).trim()
 
-        const base = generateSlug(title)
-        const count = headingIds.get(base) ?? 0
-        headingIds.set(base, count + 1)
+        if (!title) return <Tag>{children}</Tag>
 
-        return (
-          <Tag id={title ? (count === 0 ? base : `${base}-${count}`) : undefined}>{children}</Tag>
-        )
+        const id = headingIds?.[headingIndex++] ?? generateHeadingId(title)
+
+        return <Tag id={id}>{children}</Tag>
       },
       /** Inline icon node inserted by the IconPicker Lexical feature. */
       icon: ({ node }) => {
@@ -242,6 +243,15 @@ const buildJsxConverters =
         // editor variant, which has no BlocksFeature and so cannot contain
         // code blocks; nothing needs pre-highlighting here.
         [BlockSlug.HighlightBox]: ({ node }) => <HighlightBox {...node.fields} />,
+        // Async Server Components, rendered ahead of time by
+        // `renderServerBlocks`; a block without an entry renders nothing.
+        ...Object.fromEntries(
+          SERVER_RENDERED_BLOCK_SLUGS.map((slug) => [
+            slug,
+            ({ node }: { node: SerializedBlockNode<BlockData> }) =>
+              renderedBlocks[node.fields.id] ?? null,
+          ]),
+        ),
         // banner: ({ node }) => <BannerBlock className="col-start-2 mb-4" {...node.fields} />,
         // mediaBlock: ({ node }) => (
         //   <MediaBlock
@@ -269,6 +279,10 @@ type Props = {
    * cannot run here.
    */
   highlightedCode?: HighlightedCodeMap
+  /** Precomputed heading ids, in document order — see `extractHeadings`. */
+  headingIds?: string[]
+  /** Server-rendered blocks by block id — see `renderServerBlocks`. */
+  renderedBlocks?: Record<string, ReactNode>
 } & HTMLAttributes<HTMLDivElement>
 
 export function RichText(props: Props) {
@@ -277,12 +291,14 @@ export function RichText(props: Props) {
     enableProse = true,
     enableGutter = true,
     highlightedCode = {},
+    headingIds,
+    renderedBlocks,
     ...rest
   } = props
 
   return (
     <ConvertRichText
-      converters={buildJsxConverters(highlightedCode)}
+      converters={buildJsxConverters(highlightedCode, headingIds, renderedBlocks)}
       className={cn([
         'payload-richtext',
         enableGutter && 'container',

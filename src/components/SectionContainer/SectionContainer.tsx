@@ -1,17 +1,14 @@
-'use client'
+import type { ReactNode } from 'react'
 
-import { type ReactNode, useEffect } from 'react'
-
-import slugify from '@sindresorhus/slugify'
 import { cn } from 'tailwind-variants'
-import { useIntersectionObserver } from 'usehooks-ts'
 
-import { useSectionNavigation } from '../SectionNavigation'
+import { createAnchorId } from '@/lib/extractHeadings'
 
 export interface SectionContainerProps {
   /**
-   * Anchor source. Falls back to `title` so the anchor reads as `/resume#about-me`
-   * rather than `#resumeaboutmeblock`.
+   * Anchor id, normally the block's `anchorId` from `RenderBlocks` so it is
+   * unique on the page and matches the section navigation. Falls back to the
+   * slugified `title` (`/resume#about-me`).
    */
   id?: string
   title: string
@@ -20,43 +17,19 @@ export interface SectionContainerProps {
 }
 
 export const SectionContainer = ({
-  id: rawId,
+  id,
   title,
   variant = 'default',
   children,
-}: SectionContainerProps) => {
-  const [observerRef, isObserving, _entry] = useIntersectionObserver({
-    threshold: [0.1, 0.25],
-    rootMargin: '-10%',
-  })
-
-  const { setActiveAnchor } = useSectionNavigation()
-
-  const id = slugify(rawId || title)
-
-  useEffect(() => {
-    if (id && isObserving) setActiveAnchor(id)
-  }, [isObserving, id, setActiveAnchor])
-
-  return (
-    <section
-      id={id}
-      className={cn([
-        'relative m-0 shrink-0 grow-0 p-0',
-
-        variant === 'default' && 'bg-background text-foreground',
-        variant === 'primary' && 'bg-primary text-primary-foreground',
-      ])}
-    >
-      <div
-        ref={observerRef}
-        className={cn([
-          'min-h-50',
-          // 'py-20 md:py-32 lg:py-40',
-        ])}
-      >
-        {children}
-      </div>
-    </section>
-  )
-}
+}: SectionContainerProps) => (
+  <section
+    id={id || createAnchorId(title)}
+    className={cn([
+      'relative m-0 min-h-[50vh] shrink-0 grow-0 p-0',
+      variant === 'default' && 'bg-background text-foreground',
+      variant === 'primary' && 'bg-primary text-primary-foreground',
+    ])}
+  >
+    {children}
+  </section>
+)

@@ -8,23 +8,25 @@ import { Headline } from '@/components/Headline'
 import { Reveal } from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
+import type { BlockAnchors } from '@/lib/extractHeadings'
 import { CollectionData, CollectionSlug } from '@/types/collections'
 import { ResumeProjectsBlock } from '@/types/payload'
 
 import { Entry } from './Entry'
 
-interface ResumeProjectsBlockClientRendererProps extends ResumeProjectsBlock {
+interface ResumeProjectsBlockClientRendererProps extends ResumeProjectsBlock, BlockAnchors {
   title: string
   projects: CollectionData<CollectionSlug['ResumeProjects']>[]
 }
 
 export const ResumeProjectsBlockClientRenderer = ({
+  anchorId,
   blockType: _blockType,
   caption,
   title,
   projects,
 }: ResumeProjectsBlockClientRendererProps): JSX.Element => (
-  <SectionContainer title={title} variant="default">
+  <SectionContainer id={anchorId} title={title} variant="default">
     <div className={cn('container', 'py-32', 'flex', 'flex-col', 'gap-32')}>
       <Reveal className={cn('text-center', 'mb-14', 'flex flex-col gap-24')}>
         {title && (

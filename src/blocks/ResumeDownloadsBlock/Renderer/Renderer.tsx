@@ -1,13 +1,15 @@
+import type { BlockAnchors } from '@/lib/extractHeadings'
 import { fetchDocumentBySlug } from '@/lib/fetchers/fetchDocumentBySlug'
 import { ResumeDownloadsBlock } from '@/types/payload'
 
 import { ResumeDownloadsBlockClientRenderer } from './Renderer.client'
 
 export const ResumeDownloadsBlockRenderer = async ({
+  anchorId,
   title,
   blockType,
   caption,
-}: ResumeDownloadsBlock) => {
+}: ResumeDownloadsBlock & BlockAnchors) => {
   const latest = await fetchDocumentBySlug({ slug: 'latest' })
 
   if (!latest) return null
@@ -16,6 +18,7 @@ export const ResumeDownloadsBlockRenderer = async ({
 
   return (
     <ResumeDownloadsBlockClientRenderer
+      anchorId={anchorId}
       title={title}
       blockType={blockType}
       caption={caption}

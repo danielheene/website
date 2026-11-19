@@ -9,11 +9,12 @@ import { Headline } from '@/components/Headline'
 import { Reveal } from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
+import type { BlockAnchors } from '@/lib/extractHeadings'
 import { MediaDocument, MediaImage, ResumeDownloadsBlock } from '@/types/payload'
 
 import { ResumeDownloadButton } from './ResumeDownloadButton'
 
-interface ResumeDownloadsBlockClientRendererProps extends ResumeDownloadsBlock {
+interface ResumeDownloadsBlockClientRendererProps extends ResumeDownloadsBlock, BlockAnchors {
   title: string
   document_en: MediaDocument
   document_de: MediaDocument
@@ -22,6 +23,7 @@ interface ResumeDownloadsBlockClientRendererProps extends ResumeDownloadsBlock {
 }
 
 export const ResumeDownloadsBlockClientRenderer = ({
+  anchorId,
   title,
   caption,
   blockType: _blockType,
@@ -30,7 +32,7 @@ export const ResumeDownloadsBlockClientRenderer = ({
   thumbnails_en,
   thumbnails_de: _thumbnails_de,
 }: ResumeDownloadsBlockClientRendererProps): JSX.Element => (
-  <SectionContainer title={title} variant="default">
+  <SectionContainer id={anchorId} title={title} variant="default">
     <div className="container">
       <div className="relative flex flex-col overflow-hidden rounded-md bg-primary p-6 text-primary-foreground md:flex-row md:p-12 lg:p-20">
         <Reveal className="mb-72 flex flex-col items-center justify-center gap-8 md:mb-0 md:w-2/3 lg:shrink-0 xl:w-1/2">

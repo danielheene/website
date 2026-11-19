@@ -1,12 +1,13 @@
 import { ElementType, Suspense } from 'react'
 
+import { LegalAttributionsBlockRenderer } from '@/blocks/LegalAttributionsBlock/Renderer'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { extractHeadings, getBlockAnchors } from '@/lib/extractHeadings'
 import { type BlockData, BlockSlug, RegisteredBlockSlug } from '@/types/blocks'
 
 import { CodeBlockRenderer } from './CodeBlock/Renderer'
 import { FeatureCardsBlockRenderer } from './FeatureCardsBlock/Renderer'
-import { LegalAuthorshipsBlockRenderer } from './LegalAuthorshipsBlock/Renderer'
-import { LegalPublisherBlockRenderer } from './LegalPublisherBlock/Renderer'
+import { LegalPublisherInformationBlockRenderer } from './LegalPublisherInformationBlock/Renderer'
 import { LinkGroupBlockRenderer } from './LinkGroupBlock/Renderer'
 import { ResumeAboutMeBlockRenderer } from './ResumeAboutMeBlock/Renderer'
 import { ResumeContactBlockRenderer } from './ResumeContactBlock/Renderer'
@@ -23,8 +24,8 @@ const blockComponentMap = {
   [BlockSlug.Code]: CodeBlockRenderer,
   [BlockSlug.FeatureCards]: FeatureCardsBlockRenderer,
   [BlockSlug.TrendingBlogPosts]: TrendingBlogPostsBlockRenderer,
-  [BlockSlug.LegalPublisher]: LegalPublisherBlockRenderer,
-  [BlockSlug.LegalAuthorships]: LegalAuthorshipsBlockRenderer,
+  [BlockSlug.LegalPublisherInformation]: LegalPublisherInformationBlockRenderer,
+  [BlockSlug.LegalAttributions]: LegalAttributionsBlockRenderer,
   [BlockSlug.ResumeAboutMe]: ResumeAboutMeBlockRenderer,
   [BlockSlug.ResumeCustomers]: ResumeCustomersBlockRenderer,
   [BlockSlug.ResumeContact]: ResumeContactBlockRenderer,
@@ -39,6 +40,10 @@ interface BlockRendererProps {
 
 export const RenderBlocks = ({ blocks }: BlockRendererProps) => {
   const hasBlocks = blocks && Array.isArray(blocks) && blocks.length > 0
+
+  // One shared extraction, so section and heading ids are unique across the
+  // page and match the navigation built from `extractHeadings(blocks)`.
+  const headings = hasBlocks ? extractHeadings(blocks) : []
 
   return hasBlocks
     ? blocks.map((block, index) => {
@@ -59,7 +64,7 @@ export const RenderBlocks = ({ blocks }: BlockRendererProps) => {
               */
               <ErrorBoundary key={index} name={blockType}>
                 <Suspense>
-                  <Block {...block} />
+                  <Block {...block} {...getBlockAnchors(headings, index)} />
                 </Suspense>
               </ErrorBoundary>
             )
