@@ -2,14 +2,9 @@ import { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-mongodb'
 
 import type { AttributionValue } from '@/lib/attribution'
 import { attributionToCredits, creditsToAttribution } from '@/lib/migrations/creditsToAttribution'
-import { CollectionSlug } from '@/types/collections'
 
-const MEDIA_COLLECTIONS = [
-  CollectionSlug.MediaImages,
-  CollectionSlug.MediaVideos,
-  CollectionSlug.MediaAudios,
-  CollectionSlug.MediaDocuments,
-] as const
+// the stored names when this ran; 00000011 later renamed `documents` to `files`
+const MEDIA_COLLECTIONS = ['images', 'videos', 'audios', 'documents'] as const
 
 type StoredMedia = {
   _id: unknown
@@ -26,7 +21,7 @@ type StoredMedia = {
  */
 export async function up({ payload, session }: MigrateUpArgs): Promise<void> {
   for (const slug of MEDIA_COLLECTIONS) {
-    const collection = payload.db.collections[slug].collection
+    const collection = payload.db.connection.collection(slug)
 
     const docs = await collection
       .find<StoredMedia>({ credits: { $exists: true } }, { session })
@@ -55,7 +50,7 @@ export async function up({ payload, session }: MigrateUpArgs): Promise<void> {
 
 export async function down({ payload, session }: MigrateDownArgs): Promise<void> {
   for (const slug of MEDIA_COLLECTIONS) {
-    const collection = payload.db.collections[slug].collection
+    const collection = payload.db.connection.collection(slug)
 
     const docs = await collection
       .find<StoredMedia>({ attribution: { $exists: true } }, { session })

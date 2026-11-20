@@ -22,7 +22,7 @@ const run: TaskHandler<TaskSlug['GenerateResumeFile']> = async ({ input, req: { 
   payload.logger.info(`Uploading resume file: ${filename}`)
 
   const { id, checksum } = await payload.create({
-    collection: CollectionSlug.MediaDocuments,
+    collection: CollectionSlug.MediaFiles,
     data: {
       createdAt,
       generatorFlags: ['resume-asset', 'thumbnail', 'document'],

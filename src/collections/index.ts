@@ -3,7 +3,7 @@ import type { CollectionSlug } from 'payload'
 import { BlogPosts } from '@/collections/BlogPosts'
 import { BlogTopics } from '@/collections/BlogTopics'
 import { MediaAudios } from '@/collections/MediaAudios'
-import { MediaDocuments } from '@/collections/MediaDocuments'
+import { MediaFiles } from '@/collections/MediaFiles'
 import { MediaImages } from '@/collections/MediaImages'
 import { MediaVideos } from '@/collections/MediaVideos'
 import { Pages } from '@/collections/Pages'
@@ -24,7 +24,7 @@ export const COLLECTIONS = [
   /* Media Upload Collections */
   MediaImages,
   MediaVideos,
-  MediaDocuments,
+  MediaFiles,
   MediaAudios,
 
   /* Resume Collections */

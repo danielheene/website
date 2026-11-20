@@ -14,7 +14,7 @@ const MEDIA_COLLECTIONS: MediaCollectionSlug[] = [
   CollectionSlug.MediaImages,
   CollectionSlug.MediaVideos,
   CollectionSlug.MediaAudios,
-  CollectionSlug.MediaDocuments,
+  CollectionSlug.MediaFiles,
 ]
 
 export interface MediaCreditUsage {
@@ -39,7 +39,7 @@ export interface MediaCredit {
   /**
    * A small preview image for the asset, when one is available: the image's
    * own thumbnail size for `MediaImages`, or the related cover image for
-   * `MediaVideos`/`MediaDocuments`. `MediaAudios` has no thumbnail generation
+   * `MediaVideos`/`MediaFiles`. `MediaAudios` has no thumbnail generation
    * yet, so this is `null` there.
    */
   thumbnailUrl: string | null
@@ -113,7 +113,7 @@ const resolveSourceLabel = async (
 /**
  * Resolves a small preview image URL for a media doc: the doc's own
  * `thumbnail` image size for `MediaImages`, or the first related cover image
- * (populated at depth 1) for `MediaVideos`/`MediaDocuments`. Falls back to the
+ * (populated at depth 1) for `MediaVideos`/`MediaFiles`. Falls back to the
  * full-size `url` when no dedicated thumbnail exists, and to `null` for
  * collections without any image representation (`MediaAudios`).
  */
@@ -133,7 +133,7 @@ const resolveThumbnailUrl = (
     return sizes?.thumbnail?.url || (doc.url as string | null) || null
   }
 
-  if (collection === CollectionSlug.MediaVideos || collection === CollectionSlug.MediaDocuments) {
+  if (collection === CollectionSlug.MediaVideos || collection === CollectionSlug.MediaFiles) {
     const thumbnails = doc.thumbnails as
       | {
           value?:
@@ -248,7 +248,7 @@ export const collectMediaCredits = async (): Promise<MediaCredit[]> => {
   await Promise.all(
     [...idsByCollection.entries()].map(async ([collection, ids]) => {
       const needsThumbnailRelation =
-        collection === CollectionSlug.MediaVideos || collection === CollectionSlug.MediaDocuments
+        collection === CollectionSlug.MediaVideos || collection === CollectionSlug.MediaFiles
 
       const { docs } = await payload.find({
         collection,

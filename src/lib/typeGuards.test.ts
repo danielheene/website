@@ -4,7 +4,7 @@ import {
   isHeroMedia,
   isHeroMediaArray,
   isMediaAudio,
-  isMediaDocument,
+  isMediaFile,
   isMediaImage,
   isMediaImageReference,
   isMediaObject,
@@ -54,8 +54,8 @@ describe('mime type guards', () => {
     expect(isMediaImage(video)).toBe(false)
     expect(isMediaVideo(video)).toBe(true)
     expect(isMediaVideo(doc)).toBe(false)
-    expect(isMediaDocument(doc)).toBe(true)
-    expect(isMediaDocument(audio)).toBe(false)
+    expect(isMediaFile(doc)).toBe(true)
+    expect(isMediaFile(audio)).toBe(false)
     expect(isMediaAudio(audio)).toBe(true)
     expect(isMediaAudio(image)).toBe(false)
   })

@@ -2,7 +2,7 @@ import type { ImageObjectLeaf, PersonLeaf, Thing } from 'schema-dts'
 
 import { RESUME_PAGE_SLUG } from '@/collections/Pages/constants'
 import { generateContentURL } from '@/lib/generateContentURL'
-import { isMediaDocument } from '@/lib/typeGuards'
+import { isMediaFile } from '@/lib/typeGuards'
 import { CollectionSlug } from '@/types/collections'
 
 import { generateBlog } from './generateBlog'
@@ -419,7 +419,7 @@ export const resumeDocumentGraph = (resume: ResumeDocumentGraphInput): Thing[] =
   const name = resume.title || 'Resume'
 
   const files = resume.files.flatMap(({ language, media, checksum }): DocumentFile[] =>
-    isMediaDocument(media) && media.url
+    isMediaFile(media) && media.url
       ? [
           {
             language,

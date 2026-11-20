@@ -32,13 +32,13 @@ const run: TaskHandler<TaskSlug['CreateResumeDocument']> = async ({ input, req: 
       createdAt,
       jobId,
       document_en: {
-        relationTo: CollectionSlug.MediaDocuments,
+        relationTo: CollectionSlug.MediaFiles,
         value: resumeFileIdEn,
       },
       checksum_en: resumeFileChecksumEn,
       thumbnails_en: toMediaImageRelations(resumeThumbnailIdsEn),
       document_de: {
-        relationTo: CollectionSlug.MediaDocuments,
+        relationTo: CollectionSlug.MediaFiles,
         value: resumeFileIdDe,
       },
       checksum_de: resumeFileChecksumDe,
