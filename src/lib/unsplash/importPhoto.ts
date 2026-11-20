@@ -5,7 +5,7 @@ import { getPayload } from 'payload'
 
 import { CollectionSlug } from '@/types/collections'
 
-import { buildCreditsValue } from './buildCreditsValue'
+import { buildUnsplashAttribution } from './buildAttribution'
 import type { UnsplashApiPhoto } from './types'
 
 const UNSPLASH_API_BASE = 'https://api.unsplash.com'
@@ -118,7 +118,7 @@ export const importPhoto = async ({
     collection: CollectionSlug.MediaImages,
     data: {
       generatorFlags: ['unsplash-import'],
-      credits: buildCreditsValue({
+      attribution: buildUnsplashAttribution({
         photographerName: photo.user.name,
         photographerProfileUrl: photo.user.links.html,
       }),

@@ -6,7 +6,7 @@ import { CollectionSlug, type CollectionSlugValue } from '@/types/collections'
 export const MEDIA_COLLECTIONS: CollectionSlugValue[] = [
   CollectionSlug.MediaImages,
   CollectionSlug.MediaVideos,
-  CollectionSlug.MediaDocuments,
+  CollectionSlug.MediaFiles,
   CollectionSlug.MediaAudios,
 ]
 

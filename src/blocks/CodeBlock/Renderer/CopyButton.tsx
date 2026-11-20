@@ -4,8 +4,10 @@ import { useState } from 'react'
 import { CopyIcon } from '@payloadcms/ui/icons/Copy'
 
 import { Button } from '@/components/Button'
+import { UmamiEvent } from '@/lib/umami/events'
+import { track } from '@/lib/umami/track'
 
-export function CopyButton({ code }: { code: string }) {
+export function CopyButton({ code, language }: { code: string; language?: string }) {
   const [text, setText] = useState('Copy')
 
   function updateCopyStatus() {
@@ -27,6 +29,7 @@ export function CopyButton({ code }: { code: string }) {
         onClick={async () => {
           await navigator.clipboard.writeText(code)
           updateCopyStatus()
+          track(UmamiEvent.CodeCopy, { language: language ?? 'plain' })
         }}
       >
         <CopyIcon />

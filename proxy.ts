@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 
 import { resolveBlogListingUrl } from '@/lib/blog/listing'
 import { fetchRedirect } from '@/lib/redirects/redirectCache'
+import { isValidatedPath, normalizePath, NOT_FOUND_PATH } from '@/lib/routeIndex/paths'
+import { hasRoute } from '@/lib/routeIndex/routeIndexStore'
+
+// Set by `draftMode().enable()`.
+const DRAFT_MODE_COOKIE = '__prerender_bypass'
 
 /** Paths that must never be redirected, regardless of stored rows. */
 const REDIRECT_EXEMPT = ['/admin', '/api', '/_next', '/next']
@@ -31,6 +36,27 @@ const lookupRedirect = async (request: NextRequest) => {
   }
 }
 
+/**
+ * Whether the frontend has nothing at this path. With Cache Components the
+ * dynamic routes send their prerendered shell, and with it a `200`, before the
+ * page runs `notFound()`, so a real `404` has to be decided here, against the
+ * route index the sitemap is built from.
+ *
+ * Draft mode previews unpublished documents and skips the check. Failures
+ * answer "known": a lookup must never take down a page.
+ */
+const isUnknownPath = async (request: NextRequest): Promise<boolean> => {
+  const { pathname } = request.nextUrl
+
+  if (request.cookies.has(DRAFT_MODE_COOKIE) || !isValidatedPath(pathname)) return false
+
+  try {
+    return !(await hasRoute(normalizePath(pathname)))
+  } catch {
+    return false
+  }
+}
+
 export default async function proxy(request: NextRequest) {
   const redirect = await lookupRedirect(request)
 
@@ -55,6 +81,10 @@ export default async function proxy(request: NextRequest) {
 
   if (listing?.redirect) {
     return NextResponse.redirect(new URL(listing.redirect, request.url), 308)
+  }
+
+  if (await isUnknownPath(request)) {
+    return NextResponse.rewrite(new URL(NOT_FOUND_PATH, request.url))
   }
 
   const response = NextResponse.next()

@@ -163,7 +163,7 @@ describe('toSlideItems', () => {
           {
             slideType: 'image',
             media: {
-              relationTo: 'documents',
+              relationTo: 'files',
               value: {
                 id: 'doc-1',
                 url: 'https://example.com/a.pdf',

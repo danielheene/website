@@ -32,7 +32,6 @@ export default async function buildConfig(phase: PHASE_TYPE): Promise<NextConfig
     output: 'standalone',
 
     experimental: {
-      turbopackServerFastRefresh: true,
       serverActions: {
         bodySizeLimit: '10mb',
       },
@@ -131,6 +130,17 @@ export default async function buildConfig(phase: PHASE_TYPE): Promise<NextConfig
       contentDispositionType: 'inline',
       contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
       dangerouslyAllowSVG: true,
+    },
+
+    async redirects() {
+      return [
+        {
+          // shared résumé PDF links from before the documents collection became files
+          source: '/api/documents/file/:filename*',
+          destination: '/api/files/file/:filename*',
+          permanent: true,
+        },
+      ]
     },
 
     async headers() {

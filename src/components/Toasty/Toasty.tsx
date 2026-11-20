@@ -3,6 +3,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
+import { UmamiEvent } from '@/lib/umami/events'
 import { track } from '@/lib/umami/track'
 
 const audioContents = [
@@ -545,7 +546,7 @@ export const Toasty = function Toasty(): React.JSX.Element {
    */
   React.useEffect(() => {
     if (audioBuffer && imageBlob && success) {
-      track('toasty')
+      track(UmamiEvent.Toasty)
 
       const audioBufferNode = audioContextRef.current.createBufferSource()
 

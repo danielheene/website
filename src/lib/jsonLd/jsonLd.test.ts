@@ -138,7 +138,12 @@ describe('heroImageObjects', () => {
       heroImageObjects(
         [
           imageSlide({
-            credits: lexical('Photo by Jane'),
+            attribution: {
+              authorName: 'Jane',
+              authorURL: 'https://jane.test',
+              studioName: 'Unsplash',
+              license: 'unsplash',
+            },
           }),
           {
             slideType: 'shader',
@@ -172,7 +177,13 @@ describe('heroImageObjects', () => {
           unitText: 'px',
         },
         caption: 'Alt',
-        creditText: 'Photo by Jane',
+        creditText: 'Jane / Unsplash',
+        creator: {
+          '@type': 'Person',
+          name: 'Jane',
+          url: 'https://jane.test',
+        },
+        license: 'https://unsplash.com/license',
       },
     ])
   })

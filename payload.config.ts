@@ -271,8 +271,9 @@ export const config = buildConfig({
         [CollectionSlug.MediaVideos]: {
           prefix: CollectionSlug.MediaVideos,
         },
-        [CollectionSlug.MediaDocuments]: {
-          prefix: CollectionSlug.MediaDocuments,
+        [CollectionSlug.MediaFiles]: {
+          // the collection was named `documents`; its stored objects stay under that key prefix
+          prefix: 'documents',
         },
         [CollectionSlug.MediaAudios]: {
           prefix: CollectionSlug.MediaAudios,

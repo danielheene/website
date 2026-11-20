@@ -144,9 +144,9 @@ export const AdminPanelNavigation: AdminNavigationGroup[] = [
       },
       {
         type: AdminNavigationType.Collection,
-        slug: CollectionSlug.MediaDocuments,
-        label: 'Documents',
-        icon: 'ri:file-text-line',
+        slug: CollectionSlug.MediaFiles,
+        label: 'Files',
+        icon: 'ri:file-line',
       },
     ],
   },

@@ -153,6 +153,11 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   Go through `revalidateCache` (`src/lib/revalidation/`), never `next/cache` directly: hooks also
   fire in the jobs worker, where Next's revalidation APIs throw, and `revalidateCache` then falls
   back to the app's `POST /api/revalidate` (bearer token derived from `PAYLOAD_SECRET`).
+  Invalidation is collection-wide on purpose (`pages`, `posts`, `topics`, not `pages:<slug>`):
+  cached documents embed populated relations (link titles, topics, media url/alt/credits), so a
+  per-document tag would miss the documents that show the changed one. Media collections
+  (`revalidateMediaUsageHooks`) clear the content tags too, topics clear `posts` and
+  `featuredTopics`, and the references plugin clears `document-references` after syncing.
 - **Page layouts**: a page is either `richText` (a `content` rich-text field, rendered like a blog
   post by `ArticleLayout`: content column + sidebar with table of contents and `links`) or
   `sections` (the `sections` blocks, rendered by `RenderBlocks`). Resume blocks are offered only
@@ -171,8 +176,21 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   only inside the grid's Suspense boundary so the shell still prerenders. `src/lib/blog/listing.ts`
   owns the params (sort options, parsing, href building); `proxy.ts` uses it to redirect
   non-canonical forms (legacy `/page/<n>` segments, `page=1`, unknown sorts) and to mark non-default
-  sorts `noindex`. The RSS feed (`/blog/feed.xml`) and `app/(frontend)/sitemap.ts` cache under the `posts` tag,
-  which `revalidateBlogPost` invalidates.
+  sorts `noindex`. The RSS feed (`/blog/feed.xml`) caches under the `posts` tag, which `revalidateBlogPost`
+  invalidates; the sitemap reads the route index (below).
+- **Route index, sitemap and 404s** (`src/lib/routeIndex/`): one Redis hash lists every path the
+  frontend serves (published pages, topics and posts, résumé documents, `/blog`, `/resume/latest`,
+  `/resume/validate`) with an `indexable` flag and `lastModified`. `app/(frontend)/sitemap.ts`
+  renders its indexable entries; `proxy.ts` rewrites any other path to `/404`, a route that calls
+  `notFound()` while prerendering and so is served as a real `404`. That check has to live in the
+  proxy: with Cache Components the dynamic routes send their prerendered shell, and so a `200`,
+  before a page can call `notFound()` (removing the page's `<Suspense>` or `instant = false`
+  doesn't change that). Unchecked: `/_next`, `/admin`, `/api`, any path whose last segment has a
+  dot (files), and draft mode. Each routed collection's `routeIndexHooks` adds or removes its
+  document's path during the save and queues the `buildRouteIndex` task (superseding, exclusive),
+  which rebuilds the whole hash; a missing hash is built inline by the first request that needs
+  it. A new routable collection or static route has to be added to `buildRouteIndex`, or the
+  proxy 404s it.
 - **Dashboard widgets** (`src/widgets/`): async server components registered in `payload.config.ts`
   under `admin.dashboard.widgets`. Each widget has a `slug`, `Component` path, and optional
   `minWidth`/`maxWidth`. Run `bun run generate` after adding a new widget so its slug is included in
@@ -188,6 +206,15 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   modules, not `'use server'` files, and the worker imports them too, so `server-only` (which
   throws outside Next) is not an option. Callers that run inside a save (`generateAlt`) catch the
   error so a Claude outage never blocks the write.
+- **Media attribution**: every media collection carries the `attribution` group
+  (`AttributionField`, `src/fields/Attribution/`: author, studio/platform, license, notes).
+  Read it through `resolveAttribution` (`src/lib/attribution.ts`), which also decides whether
+  anything is credited. The legal page lists each credited file with the published documents
+  using it (`collectMediaCredits`); globals count as use but are not listed.
+- **Analytics events**: custom Umami events are named in `src/lib/umami/events.ts` and sent with
+  `track()` (`src/lib/umami/track.ts`), which skips signed-in sessions and the admin. Contact,
+  outbound, feed and file links are tracked by one delegated listener (`UmamiLinkTracking`), so
+  links need no handlers of their own; give a link `download` when it sends its own event.
 - **Plugins** (`src/plugins/`): `redirects` and `references` are local Payload plugins that add the
   `Redirects` and `References` collections; `bun run refs:backfill` rebuilds the reference index.
 - **Stories** live in `.storybook/components/*.stories.tsx`, not next to the components; the
@@ -237,6 +264,9 @@ only when `PAYLOAD_JOBS_ENABLE_APP_WORKERS=true` (default `false`).
   tag/attribute deny-list) — the admin UI's client-side `svgo` pass is a bypassable optimizer, not
   the security boundary. Route any other raw-HTML/SVG field through the same `sanitizeSvg` helper
   (or an equivalent real, server-side sanitizer) before it's ever rendered unescaped.
+- **Uploaded files** (`src/collections/MediaFiles`) are served from the site's own origin, so
+  its `mimeTypes` allowlist leaves out every type a browser renders as a page or script (HTML,
+  SVG, XHTML, JavaScript). Keep it that way when adding types.
 - **`CRON_SECRET`** is declared in `src/types/environment.ts` but not enforced anywhere — there
   is no cron route yet. If you add one, validate this secret explicitly (ideally with
   `crypto.timingSafeEqual`, not `!==`).

@@ -1,16 +1,19 @@
 import type { CollectionConfig } from 'payload'
 
+import { AttributionField } from '@/fields/Attribution'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { scopeMediaAssets } from '@/fields/GeneratorFlags/baseFilter'
-import { RichTextField } from '@/fields/RichText'
 import { anyone } from '@/lib/access/anyone'
 import { authenticated } from '@/lib/access/authenticated'
 import { generateChecksum } from '@/lib/payloadHooks/collection'
+import { revalidateMediaUsageHooks } from '@/lib/payloadHooks/revalidateMediaUsage'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 
 import { generateAlt } from './hooks/generateAlt'
 import { generateBlurDataURL } from './hooks/generateBlurDataURL'
+
+const mediaUsageHooks = revalidateMediaUsageHooks(CollectionSlug.MediaImages)
 
 export const MediaImages: CollectionConfig<CollectionSlug['MediaImages']> = {
   slug: CollectionSlug.MediaImages,
@@ -23,6 +26,8 @@ export const MediaImages: CollectionConfig<CollectionSlug['MediaImages']> = {
   },
   hooks: {
     beforeChange: [generateChecksum, generateBlurDataURL, generateAlt],
+    afterChange: [mediaUsageHooks.afterChange],
+    afterDelete: [mediaUsageHooks.afterDelete],
   },
   admin: {
     baseFilter: scopeMediaAssets,
@@ -47,6 +52,8 @@ export const MediaImages: CollectionConfig<CollectionSlug['MediaImages']> = {
     alt: true,
     width: true,
     height: true,
+    // structured data credits the image wherever it is shown
+    attribution: true,
   },
   access: {
     create: authenticated,
@@ -119,10 +126,7 @@ export const MediaImages: CollectionConfig<CollectionSlug['MediaImages']> = {
         disableListFilter: true,
       },
     },
-    RichTextField({
-      name: 'credits',
-      editorVariant: 'caption',
-    }),
+    AttributionField(),
     {
       name: 'blurDataURL',
       type: 'text',

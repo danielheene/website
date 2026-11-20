@@ -1,5 +1,6 @@
 import { autoTranslateBilingualField } from './autoTranslateBilingualField'
 import { buildLocalizedResumeData } from './buildLocalizedResumeData'
+import { buildRouteIndex } from './buildRouteIndex'
 import { calculateSkillTagInterval } from './calculateSkillTagInterval'
 import { calculateSkillTagType } from './calculateSkillTagType'
 import { createResumeDocument } from './createResumeDocument'
@@ -32,4 +33,5 @@ export const TASKS = [
   heartbeatPing,
   seedCollection,
   syncSkillSorting,
+  buildRouteIndex,
 ]

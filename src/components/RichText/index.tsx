@@ -229,6 +229,7 @@ const buildJsxConverters =
             <CodeBlockShell
               code={code}
               html={highlightedCode[codeBlockKey(code, node.fields.language)]}
+              language={node.fields.language ?? undefined}
             />
           )
         },

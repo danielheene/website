@@ -1,15 +1,9 @@
+import { cacheLife, cacheTag } from 'next/cache'
 import { getPayload } from 'payload'
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const getMock = vi.fn()
-const setMock = vi.fn()
 const getTokenMock = vi.fn()
-
-vi.mock('@/lib/RedisHandler', () => ({
-  get: (...args: unknown[]) => getMock(...args),
-  set: (...args: unknown[]) => setMock(...args),
-}))
 
 vi.mock('@/lib/umami/getToken', () => ({
   getToken: (...args: unknown[]) => getTokenMock(...args),
@@ -35,7 +29,6 @@ describe('fetchTrendingBlogPosts', () => {
     vi.stubGlobal('fetch', fetchMock)
     vi.stubEnv('NEXT_PUBLIC_UMAMI_URL', 'https://umami.example.com')
     vi.stubEnv('NEXT_PUBLIC_UMAMI_SITE_ID', 'site-abc')
-    getMock.mockResolvedValue(null)
     getTokenMock.mockResolvedValue('token-abc')
 
     findMock.mockReset()
@@ -279,32 +272,6 @@ describe('fetchTrendingBlogPosts', () => {
     expect(result).toBeNull()
   })
 
-  it('returns cached data without calling fetch on a cache hit', async () => {
-    getMock.mockResolvedValue([
-      {
-        x: '/blog/post/cached',
-        y: 7,
-      },
-    ])
-    findMock.mockResolvedValue({
-      docs: [docFor('cached')],
-    })
-
-    const result = await fetchTrendingBlogPosts({
-      days: 7,
-      limit: 10,
-    })
-
-    expect(result).toEqual([
-      {
-        slug: 'cached',
-        views: 7,
-        post: docFor('cached'),
-      },
-    ])
-    expect(fetchMock).not.toHaveBeenCalled()
-  })
-
   it('returns null when fetch/auth fails, without throwing', async () => {
     fetchMock.mockRejectedValue(new Error('network error'))
 
@@ -328,24 +295,58 @@ describe('fetchTrendingBlogPosts', () => {
     expect(fetchMock).not.toHaveBeenCalled()
   })
 
-  it('caches the fetched metrics with a 45 minute TTL', async () => {
+  it('only resolves published posts', async () => {
     fetchMock.mockResolvedValue({
       json: async () => [
         {
           x: '/blog/post/foo',
-          y: 10,
+          y: 3,
         },
       ],
-    })
-    findMock.mockResolvedValue({
-      docs: [docFor('foo')],
     })
 
     await fetchTrendingBlogPosts({
       days: 7,
-      limit: 10,
+      limit: 4,
     })
 
-    expect(setMock).toHaveBeenCalledWith(expect.any(String), expect.any(Array), 60 * 45)
+    expect(findMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          _status: {
+            equals: 'published',
+          },
+        }),
+      }),
+    )
+  })
+
+  it('caches a result for 45 minutes under the posts tag', async () => {
+    fetchMock.mockResolvedValue({
+      json: async () => [],
+    })
+
+    await fetchTrendingBlogPosts({
+      days: 7,
+      limit: 4,
+    })
+
+    expect(cacheTag).toHaveBeenCalledWith('posts', 'trending-blog-posts')
+    expect(cacheLife).toHaveBeenCalledWith(
+      expect.objectContaining({
+        revalidate: 60 * 45,
+      }),
+    )
+  })
+
+  it('keeps a failed lookup only for minutes', async () => {
+    getTokenMock.mockResolvedValue(null)
+
+    await fetchTrendingBlogPosts({
+      days: 7,
+      limit: 4,
+    })
+
+    expect(cacheLife).toHaveBeenCalledWith('minutes')
   })
 })

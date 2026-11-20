@@ -1,15 +1,18 @@
 import type { CollectionConfig } from 'payload'
 
+import { AttributionField } from '@/fields/Attribution'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { scopeMediaAssets } from '@/fields/GeneratorFlags/baseFilter'
-import { RichTextField } from '@/fields/RichText'
 import { anyone } from '@/lib/access/anyone'
 import { authenticated } from '@/lib/access/authenticated'
 import { generateChecksum } from '@/lib/payloadHooks/collection'
+import { revalidateMediaUsageHooks } from '@/lib/payloadHooks/revalidateMediaUsage'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 
 import { generateThumbnail } from './hooks/generateThumbnail'
+
+const mediaUsageHooks = revalidateMediaUsageHooks(CollectionSlug.MediaAudios)
 
 export const MediaAudios: CollectionConfig<CollectionSlug['MediaAudios']> = {
   slug: CollectionSlug.MediaAudios,
@@ -22,7 +25,8 @@ export const MediaAudios: CollectionConfig<CollectionSlug['MediaAudios']> = {
   },
   hooks: {
     beforeChange: [generateChecksum],
-    afterChange: [generateThumbnail],
+    afterChange: [generateThumbnail, mediaUsageHooks.afterChange],
+    afterDelete: [mediaUsageHooks.afterDelete],
   },
   admin: {
     baseFilter: scopeMediaAssets,
@@ -73,10 +77,7 @@ export const MediaAudios: CollectionConfig<CollectionSlug['MediaAudios']> = {
       },
     },
 
-    RichTextField({
-      name: 'credits',
-      editorVariant: 'caption',
-    }),
+    AttributionField(),
 
     GeneratorFlagsField(),
   ],

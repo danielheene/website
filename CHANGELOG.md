@@ -1,3 +1,38 @@
+# [1.17.0-rc.10](https://github.com/danielheene/website/compare/v1.17.0-rc.9...v1.17.0-rc.10) (2026-11-20)
+
+
+### Features
+
+* **analytics:** track theme, contact, copy, link and 404 events in Umami ([#149](https://github.com/danielheene/website/issues/149)) ([43ace21](https://github.com/danielheene/website/commit/43ace21b4a154c2989976c57fb0bc5c956845343))
+
+# [1.17.0-rc.9](https://github.com/danielheene/website/compare/v1.17.0-rc.8...v1.17.0-rc.9) (2026-11-20)
+
+
+### Features
+
+* **media:** rename the documents collection to files and accept more file types ([#148](https://github.com/danielheene/website/issues/148)) ([2fd0049](https://github.com/danielheene/website/commit/2fd0049ffbda9fcebbff0a8b38e1bb2cbf125198))
+
+# [1.17.0-rc.8](https://github.com/danielheene/website/compare/v1.17.0-rc.7...v1.17.0-rc.8) (2026-11-20)
+
+
+### Features
+
+* **media:** structured attribution field for all media, replacing the credits rich text ([#147](https://github.com/danielheene/website/issues/147)) ([58c0e6a](https://github.com/danielheene/website/commit/58c0e6a81716c135550a5e2b0610afc7796974ae))
+
+# [1.17.0-rc.7](https://github.com/danielheene/website/compare/v1.17.0-rc.6...v1.17.0-rc.7) (2026-11-20)
+
+
+### Bug Fixes
+
+* **cache:** trending-posts caching, missing invalidations, dead Turbopack setting ([#146](https://github.com/danielheene/website/issues/146)) ([71f1887](https://github.com/danielheene/website/commit/71f188798145d577aacebed5e46e4b7d2469d65f))
+
+# [1.17.0-rc.6](https://github.com/danielheene/website/compare/v1.17.0-rc.5...v1.17.0-rc.6) (2026-11-20)
+
+
+### Bug Fixes
+
+* **routing:** real 404s from a route index shared with the sitemap ([#145](https://github.com/danielheene/website/issues/145)) ([414832e](https://github.com/danielheene/website/commit/414832e418d81be48c16fcf14c6852b95a29d7b6))
+
 # [1.17.0-rc.5](https://github.com/danielheene/website/compare/v1.17.0-rc.4...v1.17.0-rc.5) (2026-11-19)
 
 

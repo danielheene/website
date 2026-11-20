@@ -32,5 +32,12 @@ export const CodeBlockRenderer = async ({
     language: language ?? undefined,
   })
 
-  return <CodeBlockShell className={className} code={code} html={html} />
+  return (
+    <CodeBlockShell
+      className={className}
+      code={code}
+      html={html}
+      language={language ?? undefined}
+    />
+  )
 }

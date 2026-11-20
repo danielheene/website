@@ -6,6 +6,8 @@ import { cn } from 'tailwind-variants'
 
 import { Button } from '@/components/Button'
 import { type ContactFormState, submitContactForm } from '@/lib/actions/submitContactForm'
+import { UmamiEvent } from '@/lib/umami/events'
+import { track } from '@/lib/umami/track'
 
 const initialState: ContactFormState = {
   status: 'idle',
@@ -32,6 +34,16 @@ export const ContactForm = () => {
       formRef.current?.reset()
     }
   }, [state.status])
+
+  // every submission returns a new state object, so repeated errors count too
+  useEffect(() => {
+    if (state.status === 'idle') return
+
+    track(UmamiEvent.ContactForm, {
+      status: state.status,
+      ...(state.status === 'error' && { reason: state.fieldErrors ? 'validation' : 'server' }),
+    })
+  }, [state])
 
   return (
     <form
