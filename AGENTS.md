@@ -171,8 +171,21 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   only inside the grid's Suspense boundary so the shell still prerenders. `src/lib/blog/listing.ts`
   owns the params (sort options, parsing, href building); `proxy.ts` uses it to redirect
   non-canonical forms (legacy `/page/<n>` segments, `page=1`, unknown sorts) and to mark non-default
-  sorts `noindex`. The RSS feed (`/blog/feed.xml`) and `app/(frontend)/sitemap.ts` cache under the `posts` tag,
-  which `revalidateBlogPost` invalidates.
+  sorts `noindex`. The RSS feed (`/blog/feed.xml`) caches under the `posts` tag, which `revalidateBlogPost`
+  invalidates; the sitemap reads the route index (below).
+- **Route index, sitemap and 404s** (`src/lib/routeIndex/`): one Redis hash lists every path the
+  frontend serves (published pages, topics and posts, résumé documents, `/blog`, `/resume/latest`,
+  `/resume/validate`) with an `indexable` flag and `lastModified`. `app/(frontend)/sitemap.ts`
+  renders its indexable entries; `proxy.ts` rewrites any other path to `/404`, a route that calls
+  `notFound()` while prerendering and so is served as a real `404`. That check has to live in the
+  proxy: with Cache Components the dynamic routes send their prerendered shell, and so a `200`,
+  before a page can call `notFound()` (removing the page's `<Suspense>` or `instant = false`
+  doesn't change that). Unchecked: `/_next`, `/admin`, `/api`, any path whose last segment has a
+  dot (files), and draft mode. Each routed collection's `routeIndexHooks` adds or removes its
+  document's path during the save and queues the `buildRouteIndex` task (superseding, exclusive),
+  which rebuilds the whole hash; a missing hash is built inline by the first request that needs
+  it. A new routable collection or static route has to be added to `buildRouteIndex`, or the
+  proxy 404s it.
 - **Dashboard widgets** (`src/widgets/`): async server components registered in `payload.config.ts`
   under `admin.dashboard.widgets`. Each widget has a `slug`, `Component` path, and optional
   `minWidth`/`maxWidth`. Run `bun run generate` after adding a new widget so its slug is included in
