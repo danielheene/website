@@ -5,6 +5,8 @@ import { useState } from 'react'
 import { cn } from 'tailwind-variants'
 
 import { Icon } from '@/components/Icon'
+import { UmamiEvent } from '@/lib/umami/events'
+import { track } from '@/lib/umami/track'
 
 export interface ChecksumEntry {
   locale: string
@@ -26,6 +28,7 @@ export const ChecksumRow = ({ label, checksum }: ChecksumEntry) => {
     try {
       await navigator.clipboard.writeText(checksum)
       setCopied(true)
+      track(UmamiEvent.ChecksumCopy, { label })
       setTimeout(() => setCopied(false), 1500)
     } catch {
       // Clipboard access can fail (permissions, insecure context); the

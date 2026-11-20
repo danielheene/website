@@ -13,6 +13,8 @@ type CodeBlockShellProps = {
    * run.
    */
   html?: string
+  /** Sent with the copy event. */
+  language?: string
 }
 
 /**
@@ -21,10 +23,15 @@ type CodeBlockShellProps = {
  * Contains no server-only imports, so it is safe to render from a Client
  * Component as well as from the async Server Component.
  */
-export const CodeBlockShell = ({ className, code, html }: CodeBlockShellProps): JSX.Element => (
+export const CodeBlockShell = ({
+  className,
+  code,
+  html,
+  language,
+}: CodeBlockShellProps): JSX.Element => (
   <div className={cn(['not-prose group/code relative rounded-md border border-border', className])}>
     <div className="absolute top-2 right-2 z-10 opacity-0 transition-opacity group-hover/code:opacity-100 focus-within:opacity-100">
-      <CopyButton code={code} />
+      <CopyButton code={code} language={language} />
     </div>
 
     {html ? (
