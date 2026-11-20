@@ -7,6 +7,7 @@ import * as migration_00000006_rich_text_page_blocks from './00000006_rich_text_
 import * as migration_00000007_backfill_draft_versions from './00000007_backfill_draft_versions'
 import * as migration_00000008_structured_phone_number from './00000008_structured_phone_number'
 import * as migration_00000009_page_layouts from './00000009_page_layouts'
+import * as migration_00000010_media_attribution from './00000010_media_attribution'
 
 export const migrations = [
   {
@@ -53,5 +54,10 @@ export const migrations = [
     up: migration_00000009_page_layouts.up,
     down: migration_00000009_page_layouts.down,
     name: '00000009_page_layouts',
+  },
+  {
+    up: migration_00000010_media_attribution.up,
+    down: migration_00000010_media_attribution.down,
+    name: '00000010_media_attribution',
   },
 ]

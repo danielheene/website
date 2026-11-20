@@ -1,9 +1,9 @@
 import type { CollectionConfig } from 'payload'
 
+import { AttributionField } from '@/fields/Attribution'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { scopeMediaAssets } from '@/fields/GeneratorFlags/baseFilter'
 import { MediaField } from '@/fields/Media'
-import { RichTextField } from '@/fields/RichText'
 import { anyone } from '@/lib/access/anyone'
 import { authenticated } from '@/lib/access/authenticated'
 import { generateChecksum } from '@/lib/payloadHooks/collection'
@@ -82,10 +82,7 @@ export const MediaVideos: CollectionConfig<CollectionSlug['MediaVideos']> = {
       },
     },
 
-    RichTextField({
-      name: 'credits',
-      editorVariant: 'caption',
-    }),
+    AttributionField(),
 
     MediaField({
       name: 'thumbnails',

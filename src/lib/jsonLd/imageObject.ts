@@ -2,6 +2,7 @@ import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintex
 
 import type { ImageObjectLeaf } from 'schema-dts'
 
+import { attributionText, resolveAttribution } from '@/lib/attribution'
 import type { MediaImage } from '@/types/payload'
 
 import { absoluteUrl, pixels } from './ids'
@@ -21,7 +22,7 @@ export const lexicalToText = (value: unknown): string | undefined => {
 }
 
 export type ImageLike = Pick<MediaImage, 'url'> &
-  Partial<Pick<MediaImage, 'width' | 'height' | 'alt' | 'credits'>>
+  Partial<Pick<MediaImage, 'width' | 'height' | 'alt' | 'attribution'>>
 
 /**
  * A populated image upload. The images collection's default populate omits
@@ -35,7 +36,7 @@ export const isImageLike = (value: unknown): value is ImageLike =>
   typeof value.url === 'string' &&
   value.url.length > 0
 
-/** An uploaded image as an `ImageObject`, with its credits as `creditText`. */
+/** An uploaded image as an `ImageObject`, credited with its attribution. */
 export const toImageObject = (media: ImageLike, siteUrl: string): ImageObjectLeaf | undefined => {
   if (!media.url) return undefined
 
@@ -53,9 +54,23 @@ export const toImageObject = (media: ImageLike, siteUrl: string): ImageObjectLea
 
   if (media.alt) image.caption = media.alt
 
-  const credits = lexicalToText(media.credits)
+  const attribution = resolveAttribution(media.attribution)
 
-  if (credits) image.creditText = credits
+  if (!attribution) return image
+
+  const creditText = attributionText(attribution) ?? lexicalToText(attribution.notes)
+
+  if (creditText) image.creditText = creditText
+
+  if (attribution.author) {
+    image.creator = {
+      '@type': 'Person',
+      name: attribution.author.name,
+      ...(attribution.author.url?.startsWith('http') && { url: attribution.author.url }),
+    }
+  }
+
+  if (attribution.license?.url) image.license = attribution.license.url
 
   return image
 }

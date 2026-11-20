@@ -96,11 +96,11 @@ describe('importPhoto', () => {
     const [call] = payloadCreateMock.mock.calls
     expect(call[0].collection).toBe('images')
     expect(call[0].data.generatorFlags).toEqual(['unsplash-import'])
-    // The link text lives in the node's `children`, not `fields.text` (which
-    // exists only to satisfy `linkFeatureFields`' validation) — the
-    // photographer link is the credits paragraph's first child. See
-    // buildCreditsValue.
-    expect(call[0].data.credits.root.children[0].children[0].children[0].text).toBe('Jane Doe')
+    expect(call[0].data.attribution).toMatchObject({
+      authorName: 'Jane Doe',
+      studioName: 'Unsplash',
+      license: 'unsplash',
+    })
     expect(call[0].file.data).toBeInstanceOf(Buffer)
     expect(call[0].file.mimetype).toBe('image/jpeg')
 
