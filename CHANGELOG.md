@@ -1,3 +1,10 @@
+# [1.17.0-rc.10](https://github.com/danielheene/website/compare/v1.17.0-rc.9...v1.17.0-rc.10) (2026-11-20)
+
+
+### Features
+
+* **analytics:** track theme, contact, copy, link and 404 events in Umami ([#149](https://github.com/danielheene/website/issues/149)) ([43ace21](https://github.com/danielheene/website/commit/43ace21b4a154c2989976c57fb0bc5c956845343))
+
 # [1.17.0-rc.9](https://github.com/danielheene/website/compare/v1.17.0-rc.8...v1.17.0-rc.9) (2026-11-20)
 
 
