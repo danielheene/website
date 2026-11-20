@@ -11,6 +11,8 @@ import { withThemeByClassName } from '@storybook/addon-themes'
 import * as addonThemesPreview from '@storybook/addon-themes/preview'
 import { definePreview } from '@storybook/nextjs-vite'
 
+import { TooltipProvider } from '@/components/AdminPanel/TooltipProvider'
+
 export default definePreview({
   addons: [addonA11yPreview, addonDocsPreview, addonThemesPreview, addonA11y()],
   parameters: {
@@ -32,6 +34,12 @@ export default definePreview({
   },
   tags: ['autodocs'],
   decorators: [
+    // `Tooltip` renders no Provider of its own; the app mounts one globally
+    (Story) => (
+      <TooltipProvider>
+        <Story />
+      </TooltipProvider>
+    ),
     withThemeByClassName({
       defaultTheme: 'light',
       themes: {
