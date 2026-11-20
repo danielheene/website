@@ -211,6 +211,10 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   Read it through `resolveAttribution` (`src/lib/attribution.ts`), which also decides whether
   anything is credited. The legal page lists each credited file with the published documents
   using it (`collectMediaCredits`); globals count as use but are not listed.
+- **Analytics events**: custom Umami events are named in `src/lib/umami/events.ts` and sent with
+  `track()` (`src/lib/umami/track.ts`), which skips signed-in sessions and the admin. Contact,
+  outbound, feed and file links are tracked by one delegated listener (`UmamiLinkTracking`), so
+  links need no handlers of their own; give a link `download` when it sends its own event.
 - **Plugins** (`src/plugins/`): `redirects` and `references` are local Payload plugins that add the
   `Redirects` and `References` collections; `bun run refs:backfill` rebuilds the reference index.
 - **Stories** live in `.storybook/components/*.stories.tsx`, not next to the components; the

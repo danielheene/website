@@ -8,6 +8,7 @@ import { cn } from 'tailwind-variants'
 
 import { Banner } from '@/components/Banner'
 import { Icon } from '@/components/Icon'
+import { UmamiEvent } from '@/lib/umami/events'
 import { track } from '@/lib/umami/track'
 import { ResumeDocumentData } from '@/types/payload'
 
@@ -109,7 +110,7 @@ export const ResumeChecksumValidatorClient = ({ searchChecksum }: ChecksumValida
         result,
       })
 
-      track('resume-validate', {
+      track(UmamiEvent.ResumeValidate, {
         checksum: hash,
         newerVersion: result?.newerVersions,
       })

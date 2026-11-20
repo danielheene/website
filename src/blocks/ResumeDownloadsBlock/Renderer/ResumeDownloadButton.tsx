@@ -3,6 +3,7 @@
 import { cn } from 'tailwind-variants'
 
 import { Button } from '@/components/Button'
+import { resumeDownloadEvent } from '@/lib/umami/events'
 import { track } from '@/lib/umami/track'
 
 export const ResumeDownloadButton = ({
@@ -38,7 +39,7 @@ export const ResumeDownloadButton = ({
         download={fileName}
         aria-label={`${label}: ${subline}`}
         onClick={() =>
-          track(`resume-download-${locale}`, {
+          track(resumeDownloadEvent(locale), {
             slug,
             fileName,
           })

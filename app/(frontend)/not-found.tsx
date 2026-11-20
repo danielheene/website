@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Button } from '@/components/Button'
 import { HeroMedia } from '@/components/HeroMedia'
 import { Icon } from '@/components/Icon'
+import { TrackNotFound } from '@/components/UmamiLinkTracking'
 import { fetchSiteSettingsCached } from '@/lib/fetchers'
 
 export default async function NotFound() {
@@ -12,6 +13,7 @@ export default async function NotFound() {
 
   return (
     <HeroMedia align="center" fallbackAlt="" slides={errorHero}>
+      <TrackNotFound />
       <div className="container flex flex-col items-center py-32 text-center">
         <div className="mb-20 font-pp-supply-mono drop-shadow-md">
           <h1 className="text-9xl">404</h1>

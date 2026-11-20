@@ -10,6 +10,7 @@ import { Header } from '@/components/Header'
 import { AllProviders } from '@/components/Providers'
 import { SkipToMainContent } from '@/components/SkipToMainContent'
 import { Toasty } from '@/components/Toasty'
+import { UmamiLinkTracking } from '@/components/UmamiLinkTracking'
 import { UmamiSuppressionFlag } from '@/components/UmamiSuppressionFlag'
 import PPFramaText from '@/fonts/pp-frama-text/next'
 import PPFrama from '@/fonts/pp-frama/next'
@@ -82,6 +83,7 @@ export default async function RootLayout({
           <Footer />
         </AllProviders>
         <Toasty />
+        <UmamiLinkTracking />
       </body>
     </html>
   )
