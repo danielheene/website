@@ -1,3 +1,10 @@
+# [1.17.0-rc.9](https://github.com/danielheene/website/compare/v1.17.0-rc.8...v1.17.0-rc.9) (2026-11-20)
+
+
+### Features
+
+* **media:** rename the documents collection to files and accept more file types ([#148](https://github.com/danielheene/website/issues/148)) ([2fd0049](https://github.com/danielheene/website/commit/2fd0049ffbda9fcebbff0a8b38e1bb2cbf125198))
+
 # [1.17.0-rc.8](https://github.com/danielheene/website/compare/v1.17.0-rc.7...v1.17.0-rc.8) (2026-11-20)
 
 
