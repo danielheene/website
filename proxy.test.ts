@@ -2,20 +2,18 @@ import { NextRequest } from 'next/server'
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { CollectionSlug } from '@/types/collections'
-
 import proxy from './proxy'
 
-const KNOWN_PAGE_SLUGS = ['any-path', 'old-path', 'same-path']
+const KNOWN_PATHS = ['/', '/blog', '/any-path', '/old-path', '/same-path', '/blog/post/hello-world']
 
-const { fetchRedirect, fetchPublishedSlugs } = vi.hoisted(() => ({
+const { fetchRedirect, hasRoute } = vi.hoisted(() => ({
   fetchRedirect: vi.fn(async () => null),
-  fetchPublishedSlugs: vi.fn(async (): Promise<string[]> => []),
+  hasRoute: vi.fn(async (_path: string): Promise<boolean> => true),
 }))
 
 // oxlint-disable-next-line anti-slop/no-module-mocking -- the proxy is Next's entry point and takes no injected dependencies
-vi.mock('@/lib/routeSlugs/publishedSlugs', () => ({
-  fetchPublishedSlugs,
+vi.mock('@/lib/routeIndex/routeIndexStore', () => ({
+  hasRoute,
 }))
 
 vi.mock('@/lib/redirects/redirectCache', () => ({
@@ -25,11 +23,11 @@ vi.mock('@/lib/redirects/redirectCache', () => ({
 afterEach(() => {
   fetchRedirect.mockClear()
   fetchRedirect.mockResolvedValue(null)
-  fetchPublishedSlugs.mockReset()
-  fetchPublishedSlugs.mockResolvedValue(KNOWN_PAGE_SLUGS)
+  hasRoute.mockReset()
+  hasRoute.mockImplementation(async (path) => KNOWN_PATHS.includes(path))
 })
 
-fetchPublishedSlugs.mockResolvedValue(KNOWN_PAGE_SLUGS)
+hasRoute.mockImplementation(async (path) => KNOWN_PATHS.includes(path))
 
 describe('proxy redirects', () => {
   it('redirects to a stored destination', async () => {
@@ -114,44 +112,25 @@ describe('proxy blog listing canonicalisation', () => {
   })
 })
 
-describe('proxy unknown slugs', () => {
+describe('proxy unknown paths', () => {
   const rewriteOf = (response: Response) => response.headers.get('x-middleware-rewrite')
 
-  it('rewrites an unknown page slug to the 404 route', async () => {
+  it('rewrites a path missing from the route index to the 404 route', async () => {
     const response = await proxy(new NextRequest('https://site.test/missing'))
 
     expect(rewriteOf(response)).toBe('https://site.test/404')
   })
 
-  it('passes known slugs through', async () => {
-    const response = await proxy(new NextRequest('https://site.test/any-path'))
-
-    expect(rewriteOf(response)).toBeNull()
-  })
-
-  it('looks up the collection of the matched route', async () => {
-    fetchPublishedSlugs.mockResolvedValue(['hello-world'])
-
-    const known = await proxy(new NextRequest('https://site.test/blog/post/hello-world'))
-    const unknown = await proxy(new NextRequest('https://site.test/blog/post/missing'))
-
-    expect(fetchPublishedSlugs).toHaveBeenCalledWith(CollectionSlug.BlogPosts)
-    expect(rewriteOf(known)).toBeNull()
-    expect(rewriteOf(unknown)).toBe('https://site.test/404')
-  })
-
-  it('rejects reserved topic slugs without a lookup', async () => {
-    const response = await proxy(new NextRequest('https://site.test/blog/post'))
+  it('checks deeper paths too', async () => {
+    const response = await proxy(new NextRequest('https://site.test/a/b/c'))
 
     expect(rewriteOf(response)).toBe('https://site.test/404')
-    expect(fetchPublishedSlugs).not.toHaveBeenCalled()
   })
 
-  it('serves the latest résumé without a lookup', async () => {
-    const response = await proxy(new NextRequest('https://site.test/resume/latest'))
-
-    expect(rewriteOf(response)).toBeNull()
-    expect(fetchPublishedSlugs).not.toHaveBeenCalled()
+  it('passes known paths through, ignoring a trailing slash', async () => {
+    for (const path of ['/any-path', '/blog/post/hello-world', '/any-path/']) {
+      expect(rewriteOf(await proxy(new NextRequest(`https://site.test${path}`)))).toBeNull()
+    }
   })
 
   it('skips the check in draft mode', async () => {
@@ -160,20 +139,26 @@ describe('proxy unknown slugs', () => {
     })
 
     expect(rewriteOf(await proxy(request))).toBeNull()
-    expect(fetchPublishedSlugs).not.toHaveBeenCalled()
+    expect(hasRoute).not.toHaveBeenCalled()
   })
 
   it('lets the request through when the lookup fails', async () => {
-    fetchPublishedSlugs.mockRejectedValue(new Error('redis down'))
+    hasRoute.mockRejectedValue(new Error('redis down'))
 
     expect(rewriteOf(await proxy(new NextRequest('https://site.test/missing')))).toBeNull()
   })
 
-  it('leaves files, the home page and static routes alone', async () => {
-    for (const path of ['/', '/blog', '/blog/feed.xml', '/robots.txt', '/api/health']) {
+  it('lets files and the framework, admin and API routes through unchecked', async () => {
+    for (const path of [
+      '/_next/static/a.js',
+      '/admin/x',
+      '/api/health',
+      '/robots.txt',
+      '/blog/feed.xml',
+    ]) {
       expect(rewriteOf(await proxy(new NextRequest(`https://site.test${path}`)))).toBeNull()
     }
 
-    expect(fetchPublishedSlugs).not.toHaveBeenCalled()
+    expect(hasRoute).not.toHaveBeenCalled()
   })
 })

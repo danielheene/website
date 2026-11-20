@@ -2,13 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 
 import { resolveBlogListingUrl } from '@/lib/blog/listing'
 import { fetchRedirect } from '@/lib/redirects/redirectCache'
-import { fetchPublishedSlugs } from '@/lib/routeSlugs/publishedSlugs'
-import {
-  isReservedSlug,
-  isVirtualSlug,
-  NOT_FOUND_PATH,
-  resolveRouteSlug,
-} from '@/lib/routeSlugs/resolveRouteSlug'
+import { isValidatedPath, normalizePath, NOT_FOUND_PATH } from '@/lib/routeIndex/paths'
+import { hasRoute } from '@/lib/routeIndex/routeIndexStore'
 
 // Set by `draftMode().enable()`.
 const DRAFT_MODE_COOKIE = '__prerender_bypass'
@@ -42,26 +37,21 @@ const lookupRedirect = async (request: NextRequest) => {
 }
 
 /**
- * Whether the path names a document its dynamic route can't serve. With Cache
- * Components those routes send their prerendered shell, and with it a `200`,
- * before the page runs `notFound()`, so a real `404` has to be decided here.
+ * Whether the frontend has nothing at this path. With Cache Components the
+ * dynamic routes send their prerendered shell, and with it a `200`, before the
+ * page runs `notFound()`, so a real `404` has to be decided here, against the
+ * route index the sitemap is built from.
  *
  * Draft mode previews unpublished documents and skips the check. Failures
  * answer "known": a lookup must never take down a page.
  */
-const isUnknownSlug = async (request: NextRequest): Promise<boolean> => {
-  if (request.cookies.has(DRAFT_MODE_COOKIE)) return false
+const isUnknownPath = async (request: NextRequest): Promise<boolean> => {
+  const { pathname } = request.nextUrl
 
-  const route = resolveRouteSlug(request.nextUrl.pathname)
-
-  if (!route || isVirtualSlug(route)) return false
-
-  if (isReservedSlug(route)) return true
+  if (request.cookies.has(DRAFT_MODE_COOKIE) || !isValidatedPath(pathname)) return false
 
   try {
-    const slugs = await fetchPublishedSlugs(route.collection)
-
-    return !slugs.includes(route.slug)
+    return !(await hasRoute(normalizePath(pathname)))
   } catch {
     return false
   }
@@ -93,7 +83,7 @@ export default async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(listing.redirect, request.url), 308)
   }
 
-  if (await isUnknownSlug(request)) {
+  if (await isUnknownPath(request)) {
     return NextResponse.rewrite(new URL(NOT_FOUND_PATH, request.url))
   }
 

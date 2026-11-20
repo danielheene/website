@@ -18,7 +18,7 @@ import { TitleField } from '@/fields/Title'
 import { authenticated } from '@/lib/access/authenticated'
 import { authenticatedOrPublished } from '@/lib/access/authenticatedOrPublished'
 import { generatePreviewPath } from '@/lib/generatePreviewPath'
-import { invalidatePublishedSlugsHooks } from '@/lib/payloadHooks/invalidatePublishedSlugs'
+import { routeIndexHooks } from '@/lib/payloadHooks/routeIndexHooks'
 import { AdminGroup } from '@/types/admin-panel'
 import { BlockSlug } from '@/types/blocks'
 import { CollectionSlug } from '@/types/collections'
@@ -32,7 +32,7 @@ const isRichTextLayout = (data: Partial<Page>) => data?.layout === PAGE_LAYOUT.R
 
 const isSectionsLayout = (data: Partial<Page>) => data?.layout === PAGE_LAYOUT.SECTIONS
 
-const routeSlugHooks = invalidatePublishedSlugsHooks(CollectionSlug.Pages)
+const routeIndexHook = routeIndexHooks(CollectionSlug.Pages)
 
 export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
   slug: CollectionSlug.Pages,
@@ -252,8 +252,8 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
     GeneratorFlagsField(),
   ],
   hooks: {
-    afterChange: [revalidatePage, routeSlugHooks.afterChange],
-    afterDelete: [routeSlugHooks.afterDelete],
+    afterChange: [revalidatePage, routeIndexHook.afterChange],
+    afterDelete: [routeIndexHook.afterDelete],
   },
   trash: true,
   versions: SINGLE_VERSION_DRAFTS,

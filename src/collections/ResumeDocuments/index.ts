@@ -8,7 +8,7 @@ import { TitleField } from '@/fields/Title'
 import { authenticated } from '@/lib/access/authenticated'
 import { forbidden } from '@/lib/access/forbidden'
 import { generateContentURL } from '@/lib/generateContentURL'
-import { invalidatePublishedSlugsHooks } from '@/lib/payloadHooks/invalidatePublishedSlugs'
+import { routeIndexHooks } from '@/lib/payloadHooks/routeIndexHooks'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 
@@ -42,7 +42,7 @@ const uploadDefaults = {
   ]),
 }
 
-const routeSlugHooks = invalidatePublishedSlugsHooks(CollectionSlug.ResumeDocuments)
+const routeIndexHook = routeIndexHooks(CollectionSlug.ResumeDocuments)
 
 export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']> = {
   slug: CollectionSlug.ResumeDocuments,
@@ -65,8 +65,8 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
     delete: forbidden,
   },
   hooks: {
-    afterChange: [revalidateLatestResumeDocument, routeSlugHooks.afterChange],
-    afterDelete: [routeSlugHooks.afterDelete],
+    afterChange: [revalidateLatestResumeDocument, routeIndexHook.afterChange],
+    afterDelete: [routeIndexHook.afterDelete],
   },
   admin: {
     useAsTitle: 'title',
