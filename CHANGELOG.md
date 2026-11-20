@@ -1,3 +1,10 @@
+# [1.17.0-rc.8](https://github.com/danielheene/website/compare/v1.17.0-rc.7...v1.17.0-rc.8) (2026-11-20)
+
+
+### Features
+
+* **media:** structured attribution field for all media, replacing the credits rich text ([#147](https://github.com/danielheene/website/issues/147)) ([58c0e6a](https://github.com/danielheene/website/commit/58c0e6a81716c135550a5e2b0610afc7796974ae))
+
 # [1.17.0-rc.7](https://github.com/danielheene/website/compare/v1.17.0-rc.6...v1.17.0-rc.7) (2026-11-20)
 
 
