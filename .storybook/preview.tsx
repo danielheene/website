@@ -12,6 +12,7 @@ import * as addonThemesPreview from '@storybook/addon-themes/preview'
 import { definePreview } from '@storybook/nextjs-vite'
 
 import { TooltipProvider } from '@/components/AdminPanel/TooltipProvider'
+import { DuoTone } from '@/components/DuoTone'
 
 export default definePreview({
   addons: [addonA11yPreview, addonDocsPreview, addonThemesPreview, addonA11y()],
@@ -33,7 +34,32 @@ export default definePreview({
     docs: {} as DocsTypes['parameters']['docs'],
   },
   tags: ['autodocs'],
+  globalTypes: {
+    duoTone: {
+      description: 'Shows shaders under the brand duotone, as the hero renders them',
+      toolbar: {
+        title: 'DuoTone',
+        icon: 'contrast',
+        items: [
+          { value: 'off', title: 'DuoTone off' },
+          { value: 'on', title: 'DuoTone on' },
+        ],
+        dynamicTitle: true,
+      },
+    },
+  },
+  initialGlobals: {
+    duoTone: 'off',
+  },
   decorators: [
+    (Story, { globals, title }) =>
+      globals.duoTone === 'on' && title.startsWith('Shaders/') ? (
+        <DuoTone contained>
+          <Story />
+        </DuoTone>
+      ) : (
+        <Story />
+      ),
     // `Tooltip` renders no Provider of its own; the app mounts one globally
     (Story) => (
       <TooltipProvider>
