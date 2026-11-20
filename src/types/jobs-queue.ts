@@ -21,6 +21,7 @@ export const TaskSlug = {
   AutoTranslateBilingualField: 'autoTranslateBilingualField',
   SeedCollection: 'seedCollection',
   SyncSkillSorting: 'syncSkillSorting',
+  BuildRouteIndex: 'buildRouteIndex',
 } as const
 
 export type TaskSlug = typeof TaskSlug
