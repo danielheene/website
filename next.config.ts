@@ -32,7 +32,6 @@ export default async function buildConfig(phase: PHASE_TYPE): Promise<NextConfig
     output: 'standalone',
 
     experimental: {
-      turbopackServerFastRefresh: true,
       serverActions: {
         bodySizeLimit: '10mb',
       },
