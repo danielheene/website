@@ -168,22 +168,45 @@ describe('renderTemplateCore', () => {
       expect(result).toBe('abcdefghij')
     })
 
-    it('keeps the dynamic trunc filter working', async () => {
-      const { result, error } = await render('{title | trunc10}', {
-        title: 'abcdefghijklmnop',
+    it('keeps the dynamic trunc filter working, cutting at a word boundary', async () => {
+      const { result, error } = await render('{title | trunc12}', {
+        title: 'Payload CMS internationalisation',
       })
 
       expect(error).toBeNull()
-      expect(result).toBe('abcdefg...')
+      expect(result).toBe('Payload CMS…')
     })
 
-    it('keeps the Mar prefix filter working', async () => {
-      const { result, error } = await render('{title | Markus}', {
-        title: 'anything',
+    it('stops truncating at the first word that does not fit', async () => {
+      const { result } = await render('{title | trunc12}', {
+        title: 'aaaa bbbbbbbbbb c',
       })
 
-      expect(error).toBeNull()
-      expect(result).toBe('Markus')
+      expect(result).toBe('aaaa…')
+    })
+
+    it('cuts a first word longer than the limit mid-word', async () => {
+      const { result } = await render('{title | trunc10}', {
+        title: 'Internationalisation',
+      })
+
+      expect(result).toBe('Internati…')
+    })
+
+    it('leaves values within the limit untouched', async () => {
+      const { result } = await render('{title | trunc50}', {
+        title: 'About me',
+      })
+
+      expect(result).toBe('About me')
+    })
+
+    it('resolves filters registered under an exact, case-sensitive name', async () => {
+      const { result } = await render('{date | MM}-{date | yyyy}', {
+        date: '2026-08-13',
+      })
+
+      expect(result).toBe('08-2026')
     })
 
     it('still fails for an unknown filter', async () => {

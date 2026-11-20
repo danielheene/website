@@ -1,3 +1,10 @@
+# [1.17.0-rc.6](https://github.com/danielheene/website/compare/v1.17.0-rc.5...v1.17.0-rc.6) (2026-11-20)
+
+
+### Bug Fixes
+
+* **routing:** real 404s from a route index shared with the sitemap ([#145](https://github.com/danielheene/website/issues/145)) ([414832e](https://github.com/danielheene/website/commit/414832e418d81be48c16fcf14c6852b95a29d7b6))
+
 # [1.17.0-rc.5](https://github.com/danielheene/website/compare/v1.17.0-rc.4...v1.17.0-rc.5) (2026-11-19)
 
 

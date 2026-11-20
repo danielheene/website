@@ -1,9 +1,12 @@
+// oxlint-disable anti-slop/no-reflect-get -- the Proxy traps below forward to their target, which is what Reflect.get is for
 import { getPayload, type PayloadRequest } from 'payload'
 
 import slugify from '@sindresorhus/slugify'
 import { format } from 'date-fns'
 import {
   camelCase,
+  isFunction,
+  isString,
   kebabCase,
   lowerCase,
   lowerFirst,
@@ -79,14 +82,12 @@ const globalsFetchState = {
   inFlight: false,
 }
 
-type TemplateFilter = (value: string) => string
-
 /**
  * Filters are registered lowercase, but the admin help panel documents (and
  * editors therefore write) camelCase names such as `kebabCase`. pupa looks
  * filters up case-sensitively, so both spellings have to resolve.
  */
-const TEMPLATE_FILTERS: Record<string, TemplateFilter> = {
+const TEMPLATE_FILTERS = {
   trim: trim,
   trimstart: trimStart,
   trimend: trimEnd,
@@ -105,7 +106,9 @@ const TEMPLATE_FILTERS: Record<string, TemplateFilter> = {
   MM: (value: string) => format(value, 'MM'),
   dd: (value: string) => format(value, 'dd'),
   yyyy: (value: string) => format(value, 'yyyy'),
-}
+} as const
+
+type TemplateFilter = (typeof TEMPLATE_FILTERS)[keyof typeof TEMPLATE_FILTERS]
 
 /**
  * Case-insensitive fallback index. Only consulted after an exact lookup misses,
@@ -121,6 +124,7 @@ const TEMPLATE_FILTER_ALIASES = new Map<string, TemplateFilter>(
  * `globalsFetchInFlight` above). Empty rather than throwing: a degraded
  * label beats an unrenderable one.
  */
+// SAFETY: only the fields renderTemplateCore reads are needed; the rest of each global stays unset.
 const EMPTY_TEMPLATE_GLOBALS: TemplateGlobals = {
   site: {
     general: {
@@ -146,6 +150,7 @@ const loadTemplateGlobals = async (
   req?: PayloadRequest,
 ): Promise<TemplateGlobals> => {
   const cacheKey = `${GLOBALS_CONTEXT_KEY}:${locale}`
+  // SAFETY: this key is only ever written below, with this promise.
   const cached = req?.context?.[cacheKey] as Promise<TemplateGlobals> | undefined
 
   if (cached) return cached
@@ -181,6 +186,15 @@ const loadTemplateGlobals = async (
 
   return pending
 }
+
+const isNanoIdProperty = (prop: unknown): prop is `nanoid${number}` =>
+  typeof prop === 'string' && /^nanoid[0-9]*$/.test(prop)
+
+const isLengthFilterProperty = (prop: unknown): prop is `len${number}` =>
+  typeof prop === 'string' && /^len[0-9]+$/.test(prop)
+
+const isTruncateFilterProperty = (prop: unknown): prop is `trunc${number}` =>
+  typeof prop === 'string' && /^trunc[0-9]+$/.test(prop)
 
 export const renderTemplateCore = async ({
   template,
@@ -246,7 +260,7 @@ export const renderTemplateCore = async ({
         },
         {
           get(target, prop, receiver) {
-            if (typeof prop === 'string' && /^nanoid[0-9]*$/.test(prop)) {
+            if (isNanoIdProperty(prop)) {
               const maxLength = parseInt(prop.replace('nanoid', ''), 10) || 7
 
               return data?.nanoid?.substring(0, maxLength) || nanoid(maxLength)
@@ -260,13 +274,11 @@ export const renderTemplateCore = async ({
       {
         filters: new Proxy(TEMPLATE_FILTERS, {
           get(target, prop, receiver) {
-            if (typeof prop === 'string' && prop.startsWith('Mar')) return () => 'Markus'
-
             /**
              * Custom filter to slice a string to a specified length
              * e.g. { id | len10 } will slice the value of id to the first 10 characters
              */
-            if (typeof prop === 'string' && /^len[0-9]+$/.test(prop)) {
+            if (isLengthFilterProperty(prop)) {
               const maxLength = parseInt(prop.replace('len', ''), 10)
 
               return (value: string) => value.slice(0, maxLength)
@@ -274,31 +286,46 @@ export const renderTemplateCore = async ({
 
             /**
              * Custom filter to truncate a string to a specified length with ellipsis
-             * e.g. { string | trunc10 } will truncate the value of string to the first 7 characters and append '...'
+             * e.g. { string | trunc10 } will truncate the value of string to the first 9 characters and append '…'
              */
-            if (typeof prop === 'string' && /^trunc[0-9]+$/.test(prop)) {
+            if (isTruncateFilterProperty(prop)) {
               const maxLength = parseInt(prop.replace('trunc', ''), 10)
 
-              return (value: string) => {
+              return (value: string): string => {
                 if (value.length <= maxLength) return value
 
-                return `${value.slice(0, maxLength - 3)}...`
+                let truncated = ''
+
+                for (const word of value.split(' ')) {
+                  const next = truncated ? `${truncated} ${word}` : word
+
+                  if (next.length >= maxLength) break
+
+                  truncated = next
+                }
+
+                // a first word longer than the limit is cut mid-word
+                return `${truncated || value.slice(0, maxLength - 1)}…`
               }
             }
 
             /**
              * Exact match first: `MM`, `dd` and `yyyy` are registered under those
-             * exact keys and would not survive a blanket lowercase normalisation.
+             * exact keys and would not survive a blanket lowercase normalization.
              */
-            const exactMatch = Reflect.get(target, prop, receiver)
+            const exactMatch: unknown = Reflect.get(target, prop, receiver)
 
-            if (exactMatch !== undefined) return exactMatch
+            if (isFunction(exactMatch)) return exactMatch
+
+            if (!isString(prop)) return undefined
 
             /**
              * Fallback so the camelCase names the admin help panel documents
              * (`kebabCase`, `upperFirst`, …) resolve to their lowercase filter.
              */
-            if (typeof prop === 'string') return TEMPLATE_FILTER_ALIASES.get(prop.toLowerCase())
+            const templateFilter = TEMPLATE_FILTER_ALIASES.get(prop.toLowerCase())
+
+            if (isFunction(templateFilter)) return templateFilter
 
             return undefined
           },

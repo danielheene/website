@@ -244,6 +244,7 @@ export interface Config {
       heartbeatPing: TaskHeartbeatPing;
       seedCollection: TaskSeedCollection;
       syncSkillSorting: TaskSyncSkillSorting;
+      buildRouteIndex: TaskBuildRouteIndex;
       createCollectionExport: TaskCreateCollectionExport;
       createCollectionImport: TaskCreateCollectionImport;
       schedulePublish: TaskSchedulePublish;
@@ -1451,6 +1452,7 @@ export interface PayloadJob {
           | 'heartbeatPing'
           | 'seedCollection'
           | 'syncSkillSorting'
+          | 'buildRouteIndex'
           | 'createCollectionExport'
           | 'createCollectionImport'
           | 'schedulePublish';
@@ -1506,6 +1508,7 @@ export interface PayloadJob {
         | 'heartbeatPing'
         | 'seedCollection'
         | 'syncSkillSorting'
+        | 'buildRouteIndex'
         | 'createCollectionExport'
         | 'createCollectionImport'
         | 'schedulePublish'
@@ -3356,6 +3359,16 @@ export interface TaskSeedCollection {
 export interface TaskSyncSkillSorting {
   input?: unknown;
   output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskBuildRouteIndex".
+ */
+export interface TaskBuildRouteIndex {
+  input?: unknown;
+  output: {
+    paths?: number | null;
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
