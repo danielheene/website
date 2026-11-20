@@ -206,6 +206,11 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   modules, not `'use server'` files, and the worker imports them too, so `server-only` (which
   throws outside Next) is not an option. Callers that run inside a save (`generateAlt`) catch the
   error so a Claude outage never blocks the write.
+- **Media attribution**: every media collection carries the `attribution` group
+  (`AttributionField`, `src/fields/Attribution/`: author, studio/platform, license, notes).
+  Read it through `resolveAttribution` (`src/lib/attribution.ts`), which also decides whether
+  anything is credited. The legal page lists each credited file with the published documents
+  using it (`collectMediaCredits`); globals count as use but are not listed.
 - **Plugins** (`src/plugins/`): `redirects` and `references` are local Payload plugins that add the
   `Redirects` and `References` collections; `bun run refs:backfill` rebuilds the reference index.
 - **Stories** live in `.storybook/components/*.stories.tsx`, not next to the components; the

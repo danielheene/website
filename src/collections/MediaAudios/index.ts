@@ -1,8 +1,8 @@
 import type { CollectionConfig } from 'payload'
 
+import { AttributionField } from '@/fields/Attribution'
 import { GeneratorFlagsField } from '@/fields/GeneratorFlags'
 import { scopeMediaAssets } from '@/fields/GeneratorFlags/baseFilter'
-import { RichTextField } from '@/fields/RichText'
 import { anyone } from '@/lib/access/anyone'
 import { authenticated } from '@/lib/access/authenticated'
 import { generateChecksum } from '@/lib/payloadHooks/collection'
@@ -77,10 +77,7 @@ export const MediaAudios: CollectionConfig<CollectionSlug['MediaAudios']> = {
       },
     },
 
-    RichTextField({
-      name: 'credits',
-      editorVariant: 'caption',
-    }),
+    AttributionField(),
 
     GeneratorFlagsField(),
   ],

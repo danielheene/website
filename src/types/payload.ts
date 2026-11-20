@@ -383,21 +383,51 @@ export interface MediaImage {
   id: string;
   checksum?: string | null;
   alt?: string | null;
-  credits?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
+  /**
+   * Shown on the legal page wherever this file is used on the site.
+   */
+  attribution?: {
+    authorName?: string | null;
+    authorURL?: string | null;
+    studioName?: string | null;
+    studioURL?: string | null;
+    license?:
+      | (
+          | 'all-rights-reserved'
+          | 'own-work'
+          | 'unsplash'
+          | 'pexels'
+          | 'pixabay'
+          | 'public-domain'
+          | 'cc0-1.0'
+          | 'cc-by-4.0'
+          | 'cc-by-sa-4.0'
+          | 'cc-by-nd-4.0'
+          | 'cc-by-nc-4.0'
+          | 'cc-by-nc-sa-4.0'
+          | 'cc-by-nc-nd-4.0'
+          | 'mit'
+          | 'ofl-1.1'
+          | 'royalty-free'
+          | 'other'
+        )
+      | null;
+    notes?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
         version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
   blurDataURL?: string | null;
   generatorFlags?: GeneratorFlag[];
   prefix?: string | null;
@@ -563,21 +593,51 @@ export interface Page {
 export interface MediaVideo {
   id: string;
   checksum?: string | null;
-  credits?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
+  /**
+   * Shown on the legal page wherever this file is used on the site.
+   */
+  attribution?: {
+    authorName?: string | null;
+    authorURL?: string | null;
+    studioName?: string | null;
+    studioURL?: string | null;
+    license?:
+      | (
+          | 'all-rights-reserved'
+          | 'own-work'
+          | 'unsplash'
+          | 'pexels'
+          | 'pixabay'
+          | 'public-domain'
+          | 'cc0-1.0'
+          | 'cc-by-4.0'
+          | 'cc-by-sa-4.0'
+          | 'cc-by-nd-4.0'
+          | 'cc-by-nc-4.0'
+          | 'cc-by-nc-sa-4.0'
+          | 'cc-by-nc-nd-4.0'
+          | 'mit'
+          | 'ofl-1.1'
+          | 'royalty-free'
+          | 'other'
+        )
+      | null;
+    notes?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
         version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
   thumbnails?:
     | {
         relationTo: 'images';
@@ -1122,21 +1182,51 @@ export interface User {
 export interface MediaDocument {
   id: string;
   checksum?: string | null;
-  credits?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
+  /**
+   * Shown on the legal page wherever this file is used on the site.
+   */
+  attribution?: {
+    authorName?: string | null;
+    authorURL?: string | null;
+    studioName?: string | null;
+    studioURL?: string | null;
+    license?:
+      | (
+          | 'all-rights-reserved'
+          | 'own-work'
+          | 'unsplash'
+          | 'pexels'
+          | 'pixabay'
+          | 'public-domain'
+          | 'cc0-1.0'
+          | 'cc-by-4.0'
+          | 'cc-by-sa-4.0'
+          | 'cc-by-nd-4.0'
+          | 'cc-by-nc-4.0'
+          | 'cc-by-nc-sa-4.0'
+          | 'cc-by-nc-nd-4.0'
+          | 'mit'
+          | 'ofl-1.1'
+          | 'royalty-free'
+          | 'other'
+        )
+      | null;
+    notes?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
         version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
   thumbnails?:
     | {
         relationTo: 'images';
@@ -1165,21 +1255,51 @@ export interface MediaDocument {
 export interface MediaAudio {
   id: string;
   checksum?: string | null;
-  credits?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
+  /**
+   * Shown on the legal page wherever this file is used on the site.
+   */
+  attribution?: {
+    authorName?: string | null;
+    authorURL?: string | null;
+    studioName?: string | null;
+    studioURL?: string | null;
+    license?:
+      | (
+          | 'all-rights-reserved'
+          | 'own-work'
+          | 'unsplash'
+          | 'pexels'
+          | 'pixabay'
+          | 'public-domain'
+          | 'cc0-1.0'
+          | 'cc-by-4.0'
+          | 'cc-by-sa-4.0'
+          | 'cc-by-nd-4.0'
+          | 'cc-by-nc-4.0'
+          | 'cc-by-nc-sa-4.0'
+          | 'cc-by-nc-nd-4.0'
+          | 'mit'
+          | 'ofl-1.1'
+          | 'royalty-free'
+          | 'other'
+        )
+      | null;
+    notes?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
         version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
   generatorFlags?: GeneratorFlag[];
   prefix?: string | null;
   _objectKey?: string | null;
@@ -2014,7 +2134,16 @@ export interface UsersSelect<T extends boolean = true> {
 export interface ImagesSelect<T extends boolean = true> {
   checksum?: T;
   alt?: T;
-  credits?: T;
+  attribution?:
+    | T
+    | {
+        authorName?: T;
+        authorURL?: T;
+        studioName?: T;
+        studioURL?: T;
+        license?: T;
+        notes?: T;
+      };
   blurDataURL?: T;
   generatorFlags?: T;
   prefix?: T;
@@ -2051,7 +2180,16 @@ export interface ImagesSelect<T extends boolean = true> {
  */
 export interface VideosSelect<T extends boolean = true> {
   checksum?: T;
-  credits?: T;
+  attribution?:
+    | T
+    | {
+        authorName?: T;
+        authorURL?: T;
+        studioName?: T;
+        studioURL?: T;
+        license?: T;
+        notes?: T;
+      };
   thumbnails?: T;
   generatorFlags?: T;
   prefix?: T;
@@ -2074,7 +2212,16 @@ export interface VideosSelect<T extends boolean = true> {
  */
 export interface DocumentsSelect<T extends boolean = true> {
   checksum?: T;
-  credits?: T;
+  attribution?:
+    | T
+    | {
+        authorName?: T;
+        authorURL?: T;
+        studioName?: T;
+        studioURL?: T;
+        license?: T;
+        notes?: T;
+      };
   thumbnails?: T;
   generatorFlags?: T;
   prefix?: T;
@@ -2097,7 +2244,16 @@ export interface DocumentsSelect<T extends boolean = true> {
  */
 export interface AudiosSelect<T extends boolean = true> {
   checksum?: T;
-  credits?: T;
+  attribution?:
+    | T
+    | {
+        authorName?: T;
+        authorURL?: T;
+        studioName?: T;
+        studioURL?: T;
+        license?: T;
+        notes?: T;
+      };
   generatorFlags?: T;
   prefix?: T;
   _objectKey?: T;

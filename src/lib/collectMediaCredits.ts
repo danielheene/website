@@ -1,9 +1,14 @@
 import { cacheLife, cacheTag } from 'next/cache'
 import config from '@payload-config'
 import { getPayload, type Payload } from 'payload'
-import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 
-import { CollectionSlug, type MediaCollectionSlug } from '@/types/collections'
+import { resolveAttribution, type ResolvedAttribution } from '@/lib/attribution'
+import { generateContentPath } from '@/lib/generateContentPath'
+import {
+  COLLECTION_PREFIX_MAP,
+  CollectionSlug,
+  type MediaCollectionSlug,
+} from '@/types/collections'
 
 const MEDIA_COLLECTIONS: MediaCollectionSlug[] = [
   CollectionSlug.MediaImages,
@@ -13,23 +18,24 @@ const MEDIA_COLLECTIONS: MediaCollectionSlug[] = [
 ]
 
 export interface MediaCreditUsage {
-  /** Slug of the collection (or global) the asset is used in. */
+  /** Slug of the collection the asset is used in. */
   collection: string
   /**
-   * Human-readable name of the collection (or global) the asset is used in,
-   * e.g. "Job" or "Blog Post" — a document's own title alone (e.g. "Resume")
-   * doesn't say what kind of content it is.
+   * Singular label of that collection, e.g. "Page" or "Blog Post": a title
+   * alone (e.g. "Resume") doesn't say what kind of content it is.
    */
   collectionLabel: string
-  /** Human-readable title of the referencing document. */
-  label: string
+  /** Title of the referencing document, when it has one. */
+  title: string | null
+  /** The document's public path, for collections rendered at their own URL. */
+  href: string | null
 }
 
 export interface MediaCredit {
   id: string
   collection: MediaCollectionSlug
   filename: string
-  credits: DefaultTypedEditorState
+  attribution: ResolvedAttribution
   /**
    * A small preview image for the asset, when one is available: the image's
    * own thumbnail size for `MediaImages`, or the related cover image for
@@ -37,71 +43,29 @@ export interface MediaCredit {
    * yet, so this is `null` there.
    */
   thumbnailUrl: string | null
-  /** Every place the asset is referenced, de-duplicated and sorted by label. */
+  /** Every published document using the asset, de-duplicated and sorted by title. */
   usages: MediaCreditUsage[]
 }
 
-/**
- * A lexical editor state is "empty" when it has no children, or only children
- * that carry no text. Payload stores an empty paragraph rather than `null` when
- * a rich text field is cleared, so `exists`/`!= null` checks are not enough.
- */
-const hasCreditsContent = (credits: unknown): credits is DefaultTypedEditorState => {
-  if (!credits || typeof credits !== 'object') return false
+type SourceLabel = Omit<MediaCreditUsage, 'collection'>
 
-  const root = (credits as DefaultTypedEditorState).root
-
-  if (!root || !Array.isArray(root.children) || root.children.length === 0) return false
-
-  const collectText = (node: unknown): string => {
-    if (!node || typeof node !== 'object') return ''
-
-    const record = node as {
-      text?: unknown
-      children?: unknown
-    }
-
-    let text = typeof record.text === 'string' ? record.text : ''
-
-    if (Array.isArray(record.children)) {
-      for (const child of record.children) text += collectText(child)
-    }
-
-    return text
-  }
-
-  return root.children.some((child) => collectText(child).trim() !== '')
-}
-
-interface SourceLabel {
-  /** Human-readable name of the collection/global itself, e.g. "Job", "Blog Post", "Site Settings". */
-  collectionLabel: string
-  /** Human-readable title of the referencing document. `null` for globals, which have no per-doc title. */
-  docLabel: string | null
-}
+// a global is public site-wide content but no place to point to
+const GLOBAL_SOURCE = 'global'
 
 /**
- * Resolves the display info of a referencing document: the collection's own
- * label (so "Job" or "Blog Post" is visible, not just the slug) plus the
- * document's title, honouring each collection's own `useAsTitle` rather than
- * assuming every collection uses `title` (resume jobs use `employer`, skills
- * use `name_label`, and so on). A doc's title alone can be ambiguous — e.g. a
- * `ResumeDocuments` entry titled "Resume" — so callers should show both.
+ * Resolves how a referencing document is listed: its collection's label, its
+ * title (each collection's own `useAsTitle`: resume jobs use `employer`,
+ * skills `name_label`) and, for collections with their own URL, its path.
+ * Globals resolve to GLOBAL_SOURCE: in use, but not listed. Documents the
+ * public can't see (unpublished drafts, deleted ones) resolve to null.
  */
 const resolveSourceLabel = async (
   payload: Payload,
   sourceCollection: string,
   sourceId: string,
   sourceType: string,
-): Promise<SourceLabel | null> => {
-  if (sourceType === 'global') {
-    const global = payload.config.globals.find(({ slug }) => slug === sourceCollection)
-
-    return {
-      collectionLabel: (global?.label as string) || sourceCollection,
-      docLabel: null,
-    }
-  }
+): Promise<SourceLabel | typeof GLOBAL_SOURCE | null> => {
+  if (sourceType === 'global') return GLOBAL_SOURCE
 
   const collection = payload.config.collections.find(({ slug }) => slug === sourceCollection)
 
@@ -109,6 +73,8 @@ const resolveSourceLabel = async (
 
   const collectionLabel = (collection.labels?.singular as string) || sourceCollection
   const titleField = collection.admin?.useAsTitle || 'id'
+  const hasDrafts = Boolean(collection.versions?.drafts)
+  const hasPath = sourceCollection in COLLECTION_PREFIX_MAP
 
   try {
     const doc = await payload.findByID({
@@ -117,14 +83,25 @@ const resolveSourceLabel = async (
       depth: 0,
       select: {
         [titleField]: true,
+        ...(hasDrafts && { _status: true }),
+        ...(hasPath && { slug: true }),
       } as never,
     })
 
-    const title = (doc as Record<string, unknown>)?.[titleField]
+    // SAFETY: only the selected fields are read, each type-checked below.
+    const fields = doc as unknown as Record<string, unknown>
+
+    // the main document holds the last published state; a never-published one is a draft
+    if (hasDrafts && fields._status !== 'published') return null
+
+    const title = fields[titleField]
+    const slug = fields.slug
 
     return {
       collectionLabel,
-      docLabel: typeof title === 'string' && title.trim() !== '' ? title : null,
+      title: typeof title === 'string' && title.trim() !== '' ? title : null,
+      href:
+        hasPath && typeof slug === 'string' ? generateContentPath(sourceCollection, slug) : null,
     }
   } catch {
     // The source document may have been deleted before its reference rows were
@@ -185,8 +162,8 @@ const resolveThumbnailUrl = (
 }
 
 /**
- * Collects every media asset that carries a credit line *and* is actually
- * referenced somewhere on the site, together with the documents referencing it.
+ * Collects every media asset that carries an attribution *and* is used
+ * somewhere the public can see, together with the documents using it.
  *
  * Reads the `document-references` bookkeeping table so unused assets are not
  * attributed, then batch-fetches the referenced media per collection — one
@@ -198,6 +175,9 @@ export const collectMediaCredits = async (): Promise<MediaCredit[]> => {
   cacheTag(CollectionSlug.DocumentReferences)
 
   for (const collection of MEDIA_COLLECTIONS) cacheTag(collection)
+
+  // the usage list shows these documents' titles and only their published ones
+  cacheTag(CollectionSlug.Pages, CollectionSlug.BlogPosts, CollectionSlug.BlogTopics)
 
   // Created inside the cache scope: a `Payload` instance is not serializable,
   // so it cannot be passed across a `'use cache'` boundary as an argument.
@@ -241,7 +221,7 @@ export const collectMediaCredits = async (): Promise<MediaCredit[]> => {
 
   // Resolve each distinct source document once, not once per reference row.
   const sourceKey = (collection: string, id: string) => `${collection}:${id}`
-  const sourceLabels = new Map<string, SourceLabel | null>()
+  const sourceLabels = new Map<string, SourceLabel | typeof GLOBAL_SOURCE | null>()
 
   await Promise.all(
     [
@@ -279,7 +259,7 @@ export const collectMediaCredits = async (): Promise<MediaCredit[]> => {
         },
         select: {
           filename: true,
-          credits: true,
+          attribution: true,
           url: true,
           sizes: true,
           ...(needsThumbnailRelation
@@ -294,9 +274,12 @@ export const collectMediaCredits = async (): Promise<MediaCredit[]> => {
       })
 
       for (const doc of docs) {
-        if (!hasCreditsContent(doc.credits)) continue
+        const attribution = resolveAttribution(doc.attribution)
+
+        if (!attribution) continue
 
         const usages = new Map<string, MediaCreditUsage>()
+        let isPublic = false
 
         for (const reference of references) {
           if (reference.targetCollection !== collection) continue
@@ -307,27 +290,29 @@ export const collectMediaCredits = async (): Promise<MediaCredit[]> => {
 
           if (!source) continue
 
-          // Globals have no per-doc title; collection docs show both their
-          // type and title since the title alone can be ambiguous (e.g. a
-          // Resume Document entry titled "Resume").
-          const label = source.docLabel
-            ? `${source.collectionLabel}: ${source.docLabel}`
-            : source.collectionLabel
+          isPublic = true
 
-          usages.set(`${reference.sourceCollection}:${label}`, {
+          if (source === GLOBAL_SOURCE) continue
+
+          usages.set(`${reference.sourceCollection}:${reference.sourceId}`, {
             collection: reference.sourceCollection,
-            collectionLabel: source.collectionLabel,
-            label,
+            ...source,
           })
         }
+
+        // credited only where the public can see it in use
+        if (!isPublic) continue
 
         credits.push({
           id: String(doc.id),
           collection,
           filename: doc.filename ?? '',
-          credits: doc.credits as DefaultTypedEditorState,
-          thumbnailUrl: resolveThumbnailUrl(collection, doc),
-          usages: [...usages.values()].sort((a, b) => a.label.localeCompare(b.label)),
+          attribution,
+          // SAFETY: resolveThumbnailUrl only reads `url`, `sizes` and `thumbnails`, checking each.
+          thumbnailUrl: resolveThumbnailUrl(collection, doc as unknown as Record<string, unknown>),
+          usages: [...usages.values()].sort((a, b) =>
+            (a.title ?? a.collectionLabel).localeCompare(b.title ?? b.collectionLabel),
+          ),
         })
       }
     }),
