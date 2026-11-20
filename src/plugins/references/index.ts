@@ -16,6 +16,7 @@ import {
   syncReferences,
   type TargetUsage,
 } from '@/lib/references'
+import { revalidateCache } from '@/lib/revalidation/revalidateCache'
 import { CollectionSlug } from '@/types/collections'
 
 export interface ReferencesPluginOptions {
@@ -174,19 +175,32 @@ const withReferenceTracking = (
           throw error
         }
 
+        // the media credits list where each file is used
+        if (!context?.skipRevalidate) {
+          await revalidateCache({
+            tags: [CollectionSlug.DocumentReferences],
+          })
+        }
+
         return doc
       },
       ...(collection.hooks?.afterChange ?? []),
     ],
     // likewise first, so cleanup is not skipped by an earlier hook throwing
     afterDelete: [
-      async ({ doc, req }) => {
+      async ({ doc, req, context }) => {
         await clearReferences({
           payload: req.payload,
           req,
           sourceCollection: collection.slug,
           sourceId: String(doc.id),
         })
+
+        if (!context?.skipRevalidate) {
+          await revalidateCache({
+            tags: [CollectionSlug.DocumentReferences],
+          })
+        }
 
         return doc
       },
