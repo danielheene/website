@@ -31,6 +31,11 @@ export default defineMain({
       files: '*.stories.tsx',
     },
     {
+      directory: './emails',
+      titlePrefix: 'Emails',
+      files: '*.stories.tsx',
+    },
+    {
       directory: './shaders',
       titlePrefix: 'Shaders',
       files: '*.@(mdx|tsx)',
