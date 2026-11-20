@@ -7,10 +7,13 @@ import { MediaField } from '@/fields/Media'
 import { anyone } from '@/lib/access/anyone'
 import { authenticated } from '@/lib/access/authenticated'
 import { generateChecksum } from '@/lib/payloadHooks/collection'
+import { revalidateMediaUsageHooks } from '@/lib/payloadHooks/revalidateMediaUsage'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 
 import { generateThumbnails } from './hooks/generateThumbnails'
+
+const mediaUsageHooks = revalidateMediaUsageHooks(CollectionSlug.MediaDocuments)
 
 export const MediaDocuments: CollectionConfig<CollectionSlug['MediaDocuments']> = {
   slug: CollectionSlug.MediaDocuments,
@@ -23,7 +26,8 @@ export const MediaDocuments: CollectionConfig<CollectionSlug['MediaDocuments']> 
   },
   hooks: {
     beforeChange: [generateChecksum],
-    afterChange: [generateThumbnails],
+    afterChange: [generateThumbnails, mediaUsageHooks.afterChange],
+    afterDelete: [mediaUsageHooks.afterDelete],
   },
   admin: {
     baseFilter: scopeMediaAssets,
