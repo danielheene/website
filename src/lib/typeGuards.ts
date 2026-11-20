@@ -1,11 +1,11 @@
 import * as util from 'node:util'
 
 import { CollectionSlug } from '@/types/collections'
-import type { MediaAudio, MediaDocument, MediaImage, MediaVideo } from '@/types/payload'
+import type { MediaAudio, MediaFile, MediaImage, MediaVideo } from '@/types/payload'
 
 export const isMediaObject = (
   media: unknown,
-): media is MediaImage | MediaVideo | MediaDocument | MediaAudio =>
+): media is MediaImage | MediaVideo | MediaFile | MediaAudio =>
   media && typeof media === 'object' && 'mimeType' in media && typeof media.mimeType === 'string'
 
 export const isMediaImage = (media: unknown): media is MediaImage =>
@@ -14,8 +14,9 @@ export const isMediaImage = (media: unknown): media is MediaImage =>
 export const isMediaVideo = (media: unknown): media is MediaVideo =>
   isMediaObject(media) && media.mimeType.startsWith('video/')
 
-export const isMediaDocument = (media: unknown): media is MediaDocument =>
-  isMediaObject(media) && media.mimeType.startsWith('application/')
+// the files collection takes any type the image, video and audio collections don't
+export const isMediaFile = (media: unknown): media is MediaFile =>
+  isMediaObject(media) && !/^(image|video|audio)\//.test(media.mimeType)
 
 export const isMediaAudio = (media: unknown): media is MediaAudio =>
   isMediaObject(media) && media.mimeType.startsWith('audio/')

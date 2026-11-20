@@ -152,7 +152,7 @@ export interface Config {
     users: User;
     images: MediaImage;
     videos: MediaVideo;
-    documents: MediaDocument;
+    files: MediaFile;
     audios: MediaAudio;
     'resume-customers': ResumeCustomerData;
     'resume-documents': ResumeDocumentData;
@@ -185,7 +185,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     images: ImagesSelect<false> | ImagesSelect<true>;
     videos: VideosSelect<false> | VideosSelect<true>;
-    documents: DocumentsSelect<false> | DocumentsSelect<true>;
+    files: FilesSelect<false> | FilesSelect<true>;
     audios: AudiosSelect<false> | AudiosSelect<true>;
     'resume-customers': ResumeCustomersSelect<false> | ResumeCustomersSelect<true>;
     'resume-documents': ResumeDocumentsSelect<false> | ResumeDocumentsSelect<true>;
@@ -1177,9 +1177,9 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "documents".
+ * via the `definition` "files".
  */
-export interface MediaDocument {
+export interface MediaFile {
   id: string;
   checksum?: string | null;
   /**
@@ -1343,12 +1343,12 @@ export interface ResumeDocumentData {
   checksum_en?: string | null;
   checksum_de?: string | null;
   document_en?: {
-    relationTo: 'documents';
-    value: string | MediaDocument;
+    relationTo: 'files';
+    value: string | MediaFile;
   } | null;
   document_de?: {
-    relationTo: 'documents';
-    value: string | MediaDocument;
+    relationTo: 'files';
+    value: string | MediaFile;
   } | null;
   thumbnails_en?:
     | {
@@ -1896,8 +1896,8 @@ export interface PayloadLockedDocument {
         value: string | MediaVideo;
       } | null)
     | ({
-        relationTo: 'documents';
-        value: string | MediaDocument;
+        relationTo: 'files';
+        value: string | MediaFile;
       } | null)
     | ({
         relationTo: 'audios';
@@ -2208,9 +2208,9 @@ export interface VideosSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "documents_select".
+ * via the `definition` "files_select".
  */
-export interface DocumentsSelect<T extends boolean = true> {
+export interface FilesSelect<T extends boolean = true> {
   checksum?: T;
   attribution?:
     | T
@@ -3386,7 +3386,7 @@ export interface TaskCreateCollectionExport {
       | 'users'
       | 'images'
       | 'videos'
-      | 'documents'
+      | 'files'
       | 'audios'
       | 'resume-customers'
       | 'resume-documents'

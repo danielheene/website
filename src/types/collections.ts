@@ -15,7 +15,7 @@ export const CollectionSlug = {
   /* Media Upload Collections */
   MediaImages: 'images',
   MediaVideos: 'videos',
-  MediaDocuments: 'documents',
+  MediaFiles: 'files',
   MediaAudios: 'audios',
 
   /* Resume Collections */
@@ -50,7 +50,7 @@ export type CollectionSlugValue = CollectionSlug[CollectionSlugKey] & string
 
 export type MediaCollectionSlug =
   | CollectionSlug['MediaImages']
-  | CollectionSlug['MediaDocuments']
+  | CollectionSlug['MediaFiles']
   | CollectionSlug['MediaVideos']
   | CollectionSlug['MediaAudios']
 

@@ -13,16 +13,53 @@ import { CollectionSlug } from '@/types/collections'
 
 import { generateThumbnails } from './hooks/generateThumbnails'
 
-const mediaUsageHooks = revalidateMediaUsageHooks(CollectionSlug.MediaDocuments)
+const FILE_MIME_TYPES = [
+  'application/pdf',
+  // archives and installers (.zip, .tar.gz, .7z, .rar, .dmg, .pkg)
+  'application/zip',
+  'application/x-zip-compressed',
+  'application/gzip',
+  'application/x-gzip',
+  'application/x-tar',
+  'application/x-7z-compressed',
+  'application/vnd.rar',
+  'application/x-rar-compressed',
+  'application/x-apple-diskimage',
+  'application/x-xar',
+  // data and text
+  'application/json',
+  'text/markdown',
+  'text/x-markdown',
+  'text/plain',
+  'text/csv',
+  // office documents
+  'application/msword',
+  'application/vnd.ms-excel',
+  'application/vnd.ms-powerpoint',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'application/rtf',
+  'application/epub+zip',
+  // fonts
+  'font/ttf',
+  'font/otf',
+  'font/woff',
+  'font/woff2',
+  // binaries without a registered type, e.g. Pixelmator's .pxd
+  'application/octet-stream',
+]
 
-export const MediaDocuments: CollectionConfig<CollectionSlug['MediaDocuments']> = {
-  slug: CollectionSlug.MediaDocuments,
+const mediaUsageHooks = revalidateMediaUsageHooks(CollectionSlug.MediaFiles)
+
+export const MediaFiles: CollectionConfig<CollectionSlug['MediaFiles']> = {
+  slug: CollectionSlug.MediaFiles,
   typescript: {
-    interface: 'MediaDocument',
+    interface: 'MediaFile',
   },
   labels: {
-    singular: 'Document',
-    plural: 'Documents',
+    singular: 'File',
+    plural: 'Files',
   },
   hooks: {
     beforeChange: [generateChecksum],
@@ -53,7 +90,9 @@ export const MediaDocuments: CollectionConfig<CollectionSlug['MediaDocuments']> 
     withMetadata: false,
     hideRemoveFile: true,
     displayPreview: true,
-    mimeTypes: ['application/pdf'],
+    // images, video and audio have their own collections; renderable types
+    // (HTML, SVG, XHTML) stay out, as files are served from this origin
+    mimeTypes: FILE_MIME_TYPES,
     adminThumbnail: ({ doc }) => {
       if (Array.isArray(doc.thumbnails) && doc.thumbnails.length > 0) {
         const thumbnailFilename = String(doc.filename).replace(/\.[^/.]+$/, '-1-thumbnail.png')

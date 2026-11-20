@@ -260,6 +260,9 @@ only when `PAYLOAD_JOBS_ENABLE_APP_WORKERS=true` (default `false`).
   tag/attribute deny-list) — the admin UI's client-side `svgo` pass is a bypassable optimizer, not
   the security boundary. Route any other raw-HTML/SVG field through the same `sanitizeSvg` helper
   (or an equivalent real, server-side sanitizer) before it's ever rendered unescaped.
+- **Uploaded files** (`src/collections/MediaFiles`) are served from the site's own origin, so
+  its `mimeTypes` allowlist leaves out every type a browser renders as a page or script (HTML,
+  SVG, XHTML, JavaScript). Keep it that way when adding types.
 - **`CRON_SECRET`** is declared in `src/types/environment.ts` but not enforced anywhere — there
   is no cron route yet. If you add one, validate this secret explicitly (ideally with
   `crypto.timingSafeEqual`, not `!==`).

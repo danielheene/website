@@ -157,7 +157,7 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
           type: 'upload',
           name: 'document_en',
           label: 'EN',
-          relationTo: [CollectionSlug.MediaDocuments],
+          relationTo: [CollectionSlug.MediaFiles],
           maxDepth: 0,
           admin: {
             ...adminDefaults,
@@ -168,7 +168,7 @@ export const ResumeDocuments: CollectionConfig<CollectionSlug['ResumeDocuments']
           type: 'upload',
           name: 'document_de',
           label: 'DE',
-          relationTo: [CollectionSlug.MediaDocuments],
+          relationTo: [CollectionSlug.MediaFiles],
           maxDepth: 0,
           admin: {
             ...adminDefaults,

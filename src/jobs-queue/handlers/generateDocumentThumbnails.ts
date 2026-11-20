@@ -14,7 +14,7 @@ import { TaskSlug } from '@/types/jobs-queue'
 /**
  * Render a PDF document's pages to thumbnail images and attach them.
  *
- * Old thumbnails are deleted before the new ones are created: `MediaDocuments`'
+ * Old thumbnails are deleted before the new ones are created: `MediaFiles`'
  * `adminThumbnail` builds its preview URL from a fixed filename pattern, so
  * the new files must land on those exact names, not whatever
  * `getSafeFileName` renames them to if the old ones are still there. The
@@ -27,7 +27,7 @@ const run: TaskHandler<TaskSlug['GenerateDocumentThumbnails']> = async ({
   payload.logger.info(`Generating thumbnails for document: ${documentId}`)
 
   const document = await payload.findByID({
-    collection: CollectionSlug.MediaDocuments,
+    collection: CollectionSlug.MediaFiles,
     id: documentId,
     showHiddenFields: true,
     select: {
@@ -88,7 +88,7 @@ const run: TaskHandler<TaskSlug['GenerateDocumentThumbnails']> = async ({
   }
 
   await payload.update({
-    collection: CollectionSlug.MediaDocuments,
+    collection: CollectionSlug.MediaFiles,
     id: documentId,
     data: {
       thumbnails: toMediaImageRelations(ids),

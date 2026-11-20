@@ -10,14 +10,14 @@ import { Reveal } from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
 import type { BlockAnchors } from '@/lib/extractHeadings'
-import { MediaDocument, MediaImage, ResumeDownloadsBlock } from '@/types/payload'
+import { MediaFile, MediaImage, ResumeDownloadsBlock } from '@/types/payload'
 
 import { ResumeDownloadButton } from './ResumeDownloadButton'
 
 interface ResumeDownloadsBlockClientRendererProps extends ResumeDownloadsBlock, BlockAnchors {
   title: string
-  document_en: MediaDocument
-  document_de: MediaDocument
+  document_en: MediaFile
+  document_de: MediaFile
   thumbnails_en: MediaImage[]
   thumbnails_de: MediaImage[]
 }

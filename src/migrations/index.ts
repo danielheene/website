@@ -8,6 +8,7 @@ import * as migration_00000007_backfill_draft_versions from './00000007_backfill
 import * as migration_00000008_structured_phone_number from './00000008_structured_phone_number'
 import * as migration_00000009_page_layouts from './00000009_page_layouts'
 import * as migration_00000010_media_attribution from './00000010_media_attribution'
+import * as migration_00000011_rename_documents_to_files from './00000011_rename_documents_to_files'
 
 export const migrations = [
   {
@@ -59,5 +60,10 @@ export const migrations = [
     up: migration_00000010_media_attribution.up,
     down: migration_00000010_media_attribution.down,
     name: '00000010_media_attribution',
+  },
+  {
+    up: migration_00000011_rename_documents_to_files.up,
+    down: migration_00000011_rename_documents_to_files.down,
+    name: '00000011_rename_documents_to_files',
   },
 ]

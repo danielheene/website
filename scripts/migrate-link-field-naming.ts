@@ -52,7 +52,7 @@ const TARGET_COLLECTIONS = [
   CollectionSlug.ResumeProjects,
   CollectionSlug.MediaImages,
   CollectionSlug.MediaVideos,
-  CollectionSlug.MediaDocuments,
+  CollectionSlug.MediaFiles,
   CollectionSlug.MediaAudios,
   'globals',
 ]
