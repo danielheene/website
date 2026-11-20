@@ -1,3 +1,10 @@
+# [1.17.0-rc.7](https://github.com/danielheene/website/compare/v1.17.0-rc.6...v1.17.0-rc.7) (2026-11-20)
+
+
+### Bug Fixes
+
+* **cache:** trending-posts caching, missing invalidations, dead Turbopack setting ([#146](https://github.com/danielheene/website/issues/146)) ([71f1887](https://github.com/danielheene/website/commit/71f188798145d577aacebed5e46e4b7d2469d65f))
+
 # [1.17.0-rc.6](https://github.com/danielheene/website/compare/v1.17.0-rc.5...v1.17.0-rc.6) (2026-11-20)
 
 
