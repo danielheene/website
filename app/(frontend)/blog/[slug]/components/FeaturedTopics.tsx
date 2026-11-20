@@ -5,6 +5,7 @@ import { getPayload } from 'payload'
 
 import { cn } from 'tailwind-variants'
 
+import { FEATURED_TOPICS_TAG } from '@/lib/blog/featuredTopics'
 import { generateContentPath } from '@/lib/generateContentPath'
 import { CollectionSlug } from '@/types/collections'
 
@@ -15,7 +16,7 @@ interface FeaturedTopicsProps {
 const fetchFeaturedTopics = async () => {
   'use cache'
   cacheLife('max')
-  cacheTag('featuredTopics', CollectionSlug.BlogPosts)
+  cacheTag(FEATURED_TOPICS_TAG, CollectionSlug.BlogPosts)
 
   const payload = await getPayload({
     config,

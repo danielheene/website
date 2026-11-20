@@ -6,11 +6,14 @@ import { RichTextField } from '@/fields/RichText'
 import { anyone } from '@/lib/access/anyone'
 import { authenticated } from '@/lib/access/authenticated'
 import { generateChecksum } from '@/lib/payloadHooks/collection'
+import { revalidateMediaUsageHooks } from '@/lib/payloadHooks/revalidateMediaUsage'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 
 import { generateAlt } from './hooks/generateAlt'
 import { generateBlurDataURL } from './hooks/generateBlurDataURL'
+
+const mediaUsageHooks = revalidateMediaUsageHooks(CollectionSlug.MediaImages)
 
 export const MediaImages: CollectionConfig<CollectionSlug['MediaImages']> = {
   slug: CollectionSlug.MediaImages,
@@ -23,6 +26,8 @@ export const MediaImages: CollectionConfig<CollectionSlug['MediaImages']> = {
   },
   hooks: {
     beforeChange: [generateChecksum, generateBlurDataURL, generateAlt],
+    afterChange: [mediaUsageHooks.afterChange],
+    afterDelete: [mediaUsageHooks.afterDelete],
   },
   admin: {
     baseFilter: scopeMediaAssets,

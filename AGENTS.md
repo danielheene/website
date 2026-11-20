@@ -153,6 +153,11 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   Go through `revalidateCache` (`src/lib/revalidation/`), never `next/cache` directly: hooks also
   fire in the jobs worker, where Next's revalidation APIs throw, and `revalidateCache` then falls
   back to the app's `POST /api/revalidate` (bearer token derived from `PAYLOAD_SECRET`).
+  Invalidation is collection-wide on purpose (`pages`, `posts`, `topics`, not `pages:<slug>`):
+  cached documents embed populated relations (link titles, topics, media url/alt/credits), so a
+  per-document tag would miss the documents that show the changed one. Media collections
+  (`revalidateMediaUsageHooks`) clear the content tags too, topics clear `posts` and
+  `featuredTopics`, and the references plugin clears `document-references` after syncing.
 - **Page layouts**: a page is either `richText` (a `content` rich-text field, rendered like a blog
   post by `ArticleLayout`: content column + sidebar with table of contents and `links`) or
   `sections` (the `sections` blocks, rendered by `RenderBlocks`). Resume blocks are offered only
