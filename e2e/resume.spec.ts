@@ -22,7 +22,22 @@ test.describe('resume documents', () => {
     ).toHaveText('Resume Document')
     // `latest` is the newest by definition, so it never checks for newer ones.
     await expect(page.getByText('newer version of my resume')).toHaveCount(0)
-    await expect(page.locator('#validate')).toBeVisible()
+    // the validator moved to its own slug; the document page links to it
+    await expect(page.getByRole('link', { name: 'document validator' })).toHaveAttribute(
+      'href',
+      '/resume/validate',
+    )
+  })
+
+  test('/resume/validate renders the checksum validator', async ({ page }) => {
+    const response = await page.goto('/resume/validate')
+
+    expect(response?.status()).toBe(200)
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+      }),
+    ).toHaveText('Validate a document')
   })
 
   test('a superseded document links to the latest one', async ({ page }) => {

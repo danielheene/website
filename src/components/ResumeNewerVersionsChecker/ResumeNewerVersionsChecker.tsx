@@ -25,9 +25,8 @@ const ResumeNewerVersionsCheckerBanner = async ({
 
   return newerVersions ? (
     <Banner variant="warning" inverse>
-      {messages.hasNewerVersions}&ensp;
       <Link href="/resume/latest" className="underline underline-offset-2">
-        here
+        {messages.hasNewerVersions}&ensp; here
       </Link>
       .
     </Banner>

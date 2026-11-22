@@ -17,7 +17,10 @@ export type RouteIndex = Record<string, RouteEntry>
 
 export const LATEST_RESUME_PATH = '/resume/latest'
 
-export const RESUME_VALIDATE_PATH = '/resume/validate'
+/** The `/resume/[slug]` value that renders the document validator instead of a document. */
+export const RESUME_VALIDATE_SLUG = 'validate'
+
+export const RESUME_VALIDATE_PATH = `/resume/${RESUME_VALIDATE_SLUG}`
 
 const entry = (indexable: boolean, ...dates: (string | null | undefined)[]): RouteEntry => {
   const lastModified = latest(...dates)

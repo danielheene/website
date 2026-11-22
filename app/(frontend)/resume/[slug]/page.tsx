@@ -10,7 +10,6 @@ import { format } from 'date-fns'
 import { cn } from 'tailwind-variants'
 
 import { ResumeDownloadButton } from '@/blocks/ResumeDownloadsBlock/Renderer/ResumeDownloadButton'
-import type { HeroMediaItem } from '@/components/HeroMedia/HeroSlide'
 import { PageFallback } from '@/components/PageFallback'
 import { ResumeChecksumValidator } from '@/components/ResumeCheckumValidatior/ResumeChecksumValidator'
 import { ResumeNewerVersionsChecker } from '@/components/ResumeNewerVersionsChecker'
@@ -21,14 +20,13 @@ import { JsonLd, resumeDocumentGraph } from '@/lib/jsonLd'
 import { ogImageMetadata } from '@/lib/og/ogImageMetadata'
 import { placeholderParams } from '@/lib/placeholderParams'
 import { resumeDocumentDescription } from '@/lib/resumeDocumentDescription'
+import { RESUME_VALIDATE_PATH, RESUME_VALIDATE_SLUG } from '@/lib/routeIndex/buildRouteIndex'
+import { isMediaImage } from '@/lib/typeGuards'
 import { CollectionSlug } from '@/types/collections'
 import { MediaImage } from '@/types/payload'
 
 import { ChecksumEntry, ChecksumRow } from './components/ChecksumFootnote.client'
-import { ResumePreviewCarousel } from './components/ResumePreviewCarousel'
-
-/** Anchor id for the checksum-validation section, linked from the caption above the fold. */
-const validateAnchorId = 'validate'
+import { ResumePreviewCarousel, type ResumePreviewPage } from './components/ResumePreviewCarousel'
 
 /**
  * Reserved slug value that resolves to whichever document is actually
@@ -36,17 +34,19 @@ const validateAnchorId = 'validate'
  */
 const LATEST_RESUME_SLUG = 'latest'
 
-/** First populated thumbnail for a locale, or `null` if that set is empty/unpopulated. */
-const firstThumbnail = (
-  thumbnails: {
-    relationTo: 'images'
-    value: string | MediaImage
-  }[] = [],
-): MediaImage | null => {
-  const populated = thumbnails.find((thumbnail) => typeof thumbnail.value === 'object')
+type ThumbnailEntries = {
+  relationTo: 'images'
+  value: string | MediaImage
+}[]
 
-  return (populated?.value as MediaImage | undefined) ?? null
-}
+/** The populated page thumbnails of a locale, in page order. */
+const populatedThumbnails = (thumbnails: ThumbnailEntries = []): MediaImage[] =>
+  thumbnails.flatMap(({ value }) => (isMediaImage(value) ? [value] : []))
+
+const toPreviewPages = (thumbnails: MediaImage[], locale: string): ResumePreviewPage[] =>
+  thumbnails.flatMap(({ id, url, blurDataURL }) =>
+    url ? [{ id: `${id}-${locale}`, url, blurDataURL }] : [],
+  )
 
 export async function generateStaticParams() {
   const payload = await getPayload({
@@ -71,7 +71,10 @@ export async function generateStaticParams() {
 
   return [
     {
-      slug: 'latest',
+      slug: LATEST_RESUME_SLUG,
+    },
+    {
+      slug: RESUME_VALIDATE_SLUG,
     },
     ...docs.map(({ slug }) => ({
       slug,
@@ -87,8 +90,26 @@ export default async function ResumeDocumentShell(props: PageProps<'/resume/[slu
   )
 }
 
+/** `/resume/validate`: checks an uploaded PDF against the published checksums. */
+const ResumeValidator = () => (
+  <section className="bg-background pt-40 pb-16 text-foreground sm:pb-20">
+    <div className="container">
+      <h1 className="mb-10 font-mono text-2xl font-medium tracking-tight md:mb-12 md:text-3xl">
+        Validate a document
+      </h1>
+      <Suspense
+        fallback={<div className="text-sm text-muted-foreground md:text-base">Loading…</div>}
+      >
+        <ResumeChecksumValidator />
+      </Suspense>
+    </div>
+  </section>
+)
+
 async function ResumeDocument({ params }: PageProps<'/resume/[slug]'>) {
   const { slug } = await params
+
+  if (slug === RESUME_VALIDATE_SLUG) return <ResumeValidator />
   const { isEnabled: draft } = await draftMode()
 
   const isLatestSlug = slug === LATEST_RESUME_SLUG
@@ -96,36 +117,13 @@ async function ResumeDocument({ params }: PageProps<'/resume/[slug]'>) {
 
   if (!resume) return notFound()
 
-  const thumbnailEn = firstThumbnail(resume.thumbnails_en)
-  const thumbnailDe = firstThumbnail(resume.thumbnails_de)
+  const thumbnailsEn = populatedThumbnails(resume.thumbnails_en)
+  const thumbnailsDe = populatedThumbnails(resume.thumbnails_de)
 
-  // Cross-fades between both locales' previews when both exist; falls back
-  // to whichever single one is populated, or nothing (the white placeholder
-  // stays bare) when neither is.
-  const previewItemsOrGaps: (HeroMediaItem | null)[] = [
-    thumbnailEn
-      ? {
-          kind: 'image' as const,
-          id: `${thumbnailEn.id}-en`,
-          url: thumbnailEn.url,
-          alt: '',
-          blurDataURL: thumbnailEn.blurDataURL,
-        }
-      : null,
-    thumbnailDe
-      ? {
-          kind: 'image' as const,
-          id: `${thumbnailDe.id}-de`,
-          url: thumbnailDe.url,
-          alt: '',
-          blurDataURL: thumbnailDe.blurDataURL,
-        }
-      : null,
-  ]
-
-  const previewItems: HeroMediaItem[] = previewItemsOrGaps.filter(
-    (item): item is HeroMediaItem => item !== null,
-  )
+  const previewPages = {
+    en: toPreviewPages(thumbnailsEn, 'en'),
+    de: toPreviewPages(thumbnailsDe, 'de'),
+  }
 
   // oxlint-disable-next-line anti-slop/no-runtime-typeof
   const documentEn = typeof resume.document_en?.value === 'object' ? resume.document_en.value : null
@@ -164,7 +162,7 @@ async function ResumeDocument({ params }: PageProps<'/resume/[slug]'>) {
         checksum: resume.checksum_de,
       },
     ],
-    thumbnail: thumbnailEn ?? thumbnailDe,
+    thumbnail: thumbnailsEn[0] ?? thumbnailsDe[0] ?? null,
   })
 
   return (
@@ -178,7 +176,7 @@ async function ResumeDocument({ params }: PageProps<'/resume/[slug]'>) {
         ])}
       >
         <div className="container flex flex-col py-24 sm:py-32 lg:flex-row lg:items-center lg:gap-16 lg:py-30 xl:gap-32 xl:py-40">
-          <div className="flex flex-col text-primary-foreground lg:w-1/2 lg:gap-10">
+          <div className="flex flex-col gap-8 text-primary-foreground lg:w-1/2 lg:gap-10">
             <div>
               <h1 className="font-mono text-3xl font-medium tracking-tight md:text-4xl">
                 Resume Document
@@ -236,36 +234,18 @@ async function ResumeDocument({ params }: PageProps<'/resume/[slug]'>) {
               <Link href="/resume" className="underline underline-offset-4">
                 always up to date web version
               </Link>
-              . Want to make sure a PDF you already have hasn't been tampered with?{' '}
-              <a href={`#${validateAnchorId}`} className="underline underline-offset-4">
-                Validate it below
-              </a>
+              . Want to make sure a PDF you already have hasn't been tampered with? Check it against
+              the published checksums with the{' '}
+              <Link href={RESUME_VALIDATE_PATH} className="underline underline-offset-4">
+                document validator
+              </Link>
               .
             </p>
           </div>
 
-          <div className="flex justify-center lg:w-1/2 lg:justify-end">
-            <div
-              className={cn([
-                'aspect-210/297 h-[45svh] w-auto max-w-full sm:h-[55svh] lg:h-[60svh]',
-                'relative overflow-hidden bg-white shadow-2xl shadow-black/40',
-              ])}
-            >
-              {previewItems.length > 0 && <ResumePreviewCarousel items={previewItems} />}
-            </div>
+          <div className="mt-16 flex justify-center lg:mt-0 lg:w-1/2">
+            <ResumePreviewCarousel pages={previewPages} />
           </div>
-        </div>
-      </section>
-      <section id={validateAnchorId} className="bg-background py-16 text-foreground sm:py-20">
-        <div className="container">
-          <h2 className="mb-10 font-mono text-2xl font-medium tracking-tight md:mb-12 md:text-3xl">
-            Validate a document
-          </h2>
-          <Suspense
-            fallback={<div className="text-sm text-muted-foreground md:text-base">Loading…</div>}
-          >
-            <ResumeChecksumValidator />
-          </Suspense>
         </div>
       </section>
     </div>
@@ -274,6 +254,17 @@ async function ResumeDocument({ params }: PageProps<'/resume/[slug]'>) {
 
 export async function generateMetadata({ params }: PageProps<'/resume/[slug]'>): Promise<Metadata> {
   const { slug } = await params
+
+  if (slug === RESUME_VALIDATE_SLUG) {
+    return {
+      title: 'Validate a resume document',
+      description: 'Check that a resume PDF matches the published checksum of its original.',
+      alternates: {
+        canonical: new URL(RESUME_VALIDATE_PATH, process.env.SERVER_URL).href,
+      },
+    }
+  }
+
   const resume = await fetchDocumentBySlug({ slug })
 
   const {

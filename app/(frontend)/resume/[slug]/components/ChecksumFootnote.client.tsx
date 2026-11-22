@@ -43,7 +43,7 @@ export const ChecksumRow = ({ label, checksum }: ChecksumEntry) => {
       title={checksum}
       aria-label={`Copy ${label} checksum`}
       className={cn([
-        'group flex items-center gap-2 self-center text-xs',
+        'group flex min-h-6 items-center gap-2 self-center text-xs',
         'cursor-pointer opacity-70 transition-opacity hover:opacity-100',
       ])}
     >
