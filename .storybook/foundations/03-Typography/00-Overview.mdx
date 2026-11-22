@@ -1,0 +1,47 @@
+import { Meta, Unstyled } from '@storybook/addon-docs/blocks'
+
+import { FontFaceMeta, FontSample, RunningText } from '../components/Typeset.tsx'
+
+<Meta title="Typography/Overview" />
+
+# Typography
+
+The site uses four faces from Pangram Pangram. Body text is PP Frama Text (`font-sans`), code and
+headings in running text are PP Supply Mono (`font-mono`). Each face has its own page with every
+size in every weight.
+
+## PP Frama
+
+<Unstyled>
+  <FontFaceMeta face="pp-frama" />
+  <FontSample face="pp-frama" />
+</Unstyled>
+
+## PP Frama Text
+
+<Unstyled>
+  <FontFaceMeta face="pp-frama-text" />
+  <FontSample face="pp-frama-text" />
+</Unstyled>
+
+## PP Supply Mono
+
+<Unstyled>
+  <FontFaceMeta face="pp-supply-mono" />
+  <FontSample face="pp-supply-mono" />
+</Unstyled>
+
+## PP Supply Sans
+
+<Unstyled>
+  <FontFaceMeta face="pp-supply-sans" />
+  <FontSample face="pp-supply-sans" />
+</Unstyled>
+
+## Running text
+
+Longer copy as blog posts and rich-text pages set it, with the site's `prose` styles.
+
+<Unstyled>
+  <RunningText />
+</Unstyled>

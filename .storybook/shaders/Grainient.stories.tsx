@@ -291,7 +291,7 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <div className="rounded-2xl mx-auto w-full max-w-5xl overflow-hidden border border-neutral-800 bg-neutral-950 shadow-2xl">
+      <div className="mx-auto w-full max-w-5xl overflow-hidden rounded-2xl border border-gray-800 bg-gray-950 shadow-2xl">
         <div className="relative aspect-16/9 w-full">
           <Story />
         </div>

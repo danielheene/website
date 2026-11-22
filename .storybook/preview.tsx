@@ -7,15 +7,17 @@ import addonA11y from '@storybook/addon-a11y'
 import * as addonA11yPreview from '@storybook/addon-a11y/preview'
 import { DocsTypes } from '@storybook/addon-docs'
 import * as addonDocsPreview from '@storybook/addon-docs/preview'
-import { withThemeByClassName } from '@storybook/addon-themes'
-import * as addonThemesPreview from '@storybook/addon-themes/preview'
 import { definePreview } from '@storybook/nextjs-vite'
 
 import { TooltipProvider } from '@/components/AdminPanel/TooltipProvider'
 import { DuoTone } from '@/components/DuoTone'
 
+import { LightDocsContainer } from './LightDocsContainer'
+import { StoryCanvasTheme } from './StoryCanvasTheme'
+import { applyDarkMode, DARK_MODE_GLOBAL, DUO_TONE_GLOBAL } from './toolbarGlobals'
+
 export default definePreview({
-  addons: [addonA11yPreview, addonDocsPreview, addonThemesPreview, addonA11y()],
+  addons: [addonA11yPreview, addonDocsPreview, addonA11y()],
   parameters: {
     nextjs: {
       appDirectory: true,
@@ -31,29 +33,19 @@ export default definePreview({
       },
       exclude: ['className', 'children'],
     },
-    docs: {} as DocsTypes['parameters']['docs'],
+    docs: {
+      container: LightDocsContainer,
+    } as DocsTypes['parameters']['docs'],
   },
   tags: ['autodocs'],
-  globalTypes: {
-    duoTone: {
-      description: 'Shows shaders under the brand duotone, as the hero renders them',
-      toolbar: {
-        title: 'DuoTone',
-        icon: 'contrast',
-        items: [
-          { value: 'off', title: 'DuoTone off' },
-          { value: 'on', title: 'DuoTone on' },
-        ],
-        dynamicTitle: true,
-      },
-    },
-  },
+  // toggled by the toolbar buttons in manager.tsx
   initialGlobals: {
-    duoTone: 'off',
+    [DARK_MODE_GLOBAL]: false,
+    [DUO_TONE_GLOBAL]: false,
   },
   decorators: [
-    (Story, { globals, title }) =>
-      globals.duoTone === 'on' && title.startsWith('Shaders/') ? (
+    (Story, { globals }) =>
+      globals[DUO_TONE_GLOBAL] === true ? (
         <DuoTone contained>
           <Story />
         </DuoTone>
@@ -66,13 +58,23 @@ export default definePreview({
         <Story />
       </TooltipProvider>
     ),
-    withThemeByClassName({
-      defaultTheme: 'light',
-      themes: {
-        light: 'light',
-        dark: 'dark',
-        primary: 'primary',
-      },
-    }),
+    (Story, { globals, viewMode }) => {
+      const isDark = globals[DARK_MODE_GLOBAL] === true
+
+      // a docs page themes each story's canvas, not the page around it
+      if (viewMode === 'docs') {
+        applyDarkMode(false)
+
+        return (
+          <StoryCanvasTheme isDark={isDark}>
+            <Story />
+          </StoryCanvasTheme>
+        )
+      }
+
+      applyDarkMode(isDark)
+
+      return <Story />
+    },
   ],
 })

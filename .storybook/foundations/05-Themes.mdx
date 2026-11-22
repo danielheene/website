@@ -1,0 +1,16 @@
+import { Meta, Unstyled } from '@storybook/addon-docs/blocks'
+
+import { ThemePreview } from './components/ThemePreview.tsx'
+
+<Meta title="Themes" />
+
+# Themes
+
+The site has a light and a dark theme. Every semantic color token is a `light-dark()` pair, and
+the `.light` / `.dark` class sets `color-scheme`, which picks the side. Each card below applies its
+theme to itself alone, so both always show, whatever the theme toggle in the toolbar is set to.
+Hover a token for its custom property and its resolved value in that theme.
+
+<Unstyled>
+  <ThemePreview />
+</Unstyled>

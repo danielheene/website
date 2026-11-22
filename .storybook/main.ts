@@ -23,7 +23,7 @@ export default defineMain({
     {
       directory: './foundations',
       titlePrefix: 'Foundations',
-      files: '*.mdx',
+      files: '**/*.mdx',
     },
     {
       directory: './components',
@@ -41,12 +41,15 @@ export default defineMain({
       files: '*.@(mdx|tsx)',
     },
   ],
-  staticDirs: ['../public'],
+  staticDirs: [
+    '../public',
+    // also at `/static`, where `dev:email` serves it, so the emails' preview sample works in both
+    { from: '../public', to: '/static' },
+  ],
   addons: [
     '@storybook/addon-a11y',
     '@storybook/addon-docs',
     '@storybook/addon-onboarding',
-    '@storybook/addon-themes',
     '@storybook/addon-mcp',
   ],
   typescript: {
