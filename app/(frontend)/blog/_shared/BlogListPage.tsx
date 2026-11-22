@@ -33,6 +33,7 @@ import { CollectionSlug } from '@/types/collections'
 import type { BlogPostData, Topic } from '@/types/payload'
 
 import { FeaturedTopics } from '../[slug]/components/FeaturedTopics'
+import { TopicIntro } from '../[slug]/components/TopicIntro'
 
 const queryPublishedPosts = async ({
   topicId,
@@ -311,23 +312,17 @@ export const BlogListPage = async ({ topic, searchParams }: BlogListPageProps) =
       />
       <section className={cn(['w-full py-32'])}>
         <div className={cn(['container'])}>
-          <div className={cn(['mx-auto grid w-full max-w-7xl gap-16 lg:grid-cols-12'])}>
+          <div className={cn(['grid w-full gap-16 lg:grid-cols-12'])}>
             <header
               className={cn([
                 'top-10 flex h-fit flex-col items-center gap-5 text-center lg:sticky lg:col-span-4 lg:items-start lg:gap-8 lg:text-left',
               ])}
             >
-              <h1 className={cn(['font-mono text-4xl font-extrabold lg:text-5xl'])}>
-                {topic ? topic.title : 'All Posts'}
-              </h1>
-              {topic?.content && !isEmptyValue(topic.content) && (
-                <RichText
-                  data={topic.content}
-                  enableGutter={false}
-                  enableProse={false}
-                  className={cn(['text-muted-foreground lg:text-xl'])}
-                />
-              )}
+              <TopicIntro title={topic ? topic.title : 'All Posts'}>
+                {topic?.content && !isEmptyValue(topic.content) && (
+                  <RichText data={topic.content} enableGutter={false} enableProse={false} />
+                )}
+              </TopicIntro>
               <div
                 data-orientation="horizontal"
                 role="none"
@@ -336,7 +331,7 @@ export const BlogListPage = async ({ topic, searchParams }: BlogListPageProps) =
                   'shrink-0 bg-border data-horizontal:h-px data-horizontal:w-full data-vertical:w-px data-vertical:self-stretch',
                 ])}
               />
-              <nav>
+              <nav className={cn(['w-full min-w-0'])}>
                 <Suspense>
                   <FeaturedTopics currentSlug={topic ? topic.slug : '/'} />
                 </Suspense>

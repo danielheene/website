@@ -34,7 +34,7 @@ export const ArticleLayout = async ({
 
   return (
     <div className="container pt-20 pb-32">
-      <div className="mx-auto grid w-full max-w-7xl items-start gap-16 lg:grid-cols-12">
+      <div className="grid w-full items-start gap-16 lg:grid-cols-12">
         {/* scroll-mt keeps TOC anchor targets clear of the fixed header */}
         <article className="min-w-0 lg:col-span-8 [&_h2]:scroll-mt-24 [&_h3]:scroll-mt-24 [&_h4]:scroll-mt-24">
           {content ? (

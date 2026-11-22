@@ -16,7 +16,7 @@ import PPFramaText from '@/fonts/pp-frama-text/next'
 import PPFrama from '@/fonts/pp-frama/next'
 import PPSupplyMono from '@/fonts/pp-supply-mono/next'
 import PPSupplySans from '@/fonts/pp-supply-sans/next'
-import { BLOG_FEED_PATH } from '@/lib/blog/feed'
+import { BLOG_FEED_ALTERNATES } from '@/lib/blog/feed'
 import { fetchGlobalUserSettingsCached, fetchSiteSettingsCached } from '@/lib/fetchers'
 import { generatePersonSchema, generateWebSiteSchema, JsonLd } from '@/lib/jsonLd'
 import { ogImageMetadata } from '@/lib/og/ogImageMetadata'
@@ -108,16 +108,8 @@ export async function generateMetadata(): Promise<Metadata> {
       ],
     },
 
-    // feed autodiscovery (`<link rel="alternate" type="application/rss+xml">`)
     alternates: {
-      types: {
-        'application/rss+xml': [
-          {
-            url: BLOG_FEED_PATH,
-            title: 'Blog',
-          },
-        ],
-      },
+      types: BLOG_FEED_ALTERNATES,
     },
 
     icons: [
@@ -166,4 +158,15 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   colorScheme: 'light dark',
+  // the page background in each scheme (`--background`), so the browser bar blends into the page
+  themeColor: [
+    {
+      media: '(prefers-color-scheme: light)',
+      color: '#ffffff',
+    },
+    {
+      media: '(prefers-color-scheme: dark)',
+      color: '#0a0a0a',
+    },
+  ],
 }

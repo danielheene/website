@@ -76,13 +76,17 @@ export const FeaturedTopics = async ({ currentSlug = '/' }: FeaturedTopicsProps)
         <Link
           href={generateContentPath(CollectionSlug.BlogTopics, slug)}
           key={slug}
+          title={title}
           className={cn([
-            'font-mono text-lg font-medium',
+            // one line each: the title truncates, the post count stays visible
+            'flex min-w-0 font-mono text-lg font-medium',
             slug === currentSlug ? 'opacity-100' : 'opacity-50',
           ])}
         >
-          {title}
-          {relatedPosts?.totalDocs > 0 && <span className="ml-1">({relatedPosts.totalDocs})</span>}
+          <span className="truncate">{title}</span>
+          {relatedPosts?.totalDocs > 0 && (
+            <span className="ml-1 shrink-0">({relatedPosts.totalDocs})</span>
+          )}
         </Link>
       ))}
     </div>

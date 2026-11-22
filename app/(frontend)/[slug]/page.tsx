@@ -5,6 +5,8 @@ import { notFound } from 'next/navigation'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
+import { cn } from 'tailwind-variants'
+
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RESUME_PAGE_SLUG } from '@/collections/Pages/constants'
 import { ArticleLayout } from '@/components/ArticleLayout'
@@ -129,8 +131,9 @@ async function Page({ params }: PageProps<'/[slug]'>) {
         ]}
       />
       <HeroMedia
-        align={useCustomHeroContent ? 'center' : 'bottom'}
-        className="border-b-2 border-b-primary"
+        align="center"
+        // a hero holding only the title doesn't need the full first screen
+        className={cn(['border-b-2 border-b-primary', !useCustomHeroContent && 'min-h-[66vh]'])}
         fallbackAlt={title || 'Hero Image'}
         slides={hero?.slides}
       >
@@ -152,11 +155,11 @@ async function Page({ params }: PageProps<'/[slug]'>) {
           </div>
         ) : (
           title && (
-            <div className="pt-40 pb-20">
+            <div className="py-20">
               <div className="container">
                 <Headline
                   variant="page-title"
-                  className="textshadow-lg text-balance shadow-primary/75"
+                  className="textshadow-lg text-center text-balance shadow-primary/75"
                 >
                   {title}
                 </Headline>

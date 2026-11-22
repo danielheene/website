@@ -128,7 +128,10 @@ async function BlogPost({ params }: PageProps<'/blog/post/[slug]'>) {
                 <nav aria-label="breadcrumb">
                   <ol className="flex flex-wrap items-center justify-center gap-1.5 text-sm wrap-break-word text-white/70 sm:gap-2.5">
                     <li className="inline-flex items-center gap-1.5">
-                      <Link className="transition-colors hover:text-white" href="/blog">
+                      <Link
+                        className="inline-flex min-h-6 items-center transition-colors hover:text-white"
+                        href="/blog"
+                      >
                         Blog
                       </Link>
                     </li>
@@ -139,7 +142,7 @@ async function BlogPost({ params }: PageProps<'/blog/post/[slug]'>) {
                         </li>
                         <li className="inline-flex items-center gap-1.5">
                           <Link
-                            className="transition-colors hover:text-white"
+                            className="inline-flex min-h-6 items-center transition-colors hover:text-white"
                             href={`/blog/${primaryTopic.slug}`}
                           >
                             {primaryTopic.title}
