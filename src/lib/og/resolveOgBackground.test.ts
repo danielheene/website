@@ -88,7 +88,7 @@ describe('resolveOgBackground', () => {
     )
   })
 
-  it('is undefined when neither source has a still', () => {
-    expect(resolveOgBackground([], [])).toBeUndefined()
+  it('uses the bundled dither background when neither source has a still', () => {
+    expect(resolveOgBackground([], [])).toBe('https://daniel.heene.io/og-background-fallback.webp')
   })
 })

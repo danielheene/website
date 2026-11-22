@@ -1,6 +1,9 @@
 /** Open Graph image route; Payload already owns `/api/og` for the admin. */
 export const OG_IMAGE_PATH = '/api/og-image'
 
+// Background when neither the document nor Site Settings has one: the email dither, cropped to size.
+export const OG_BACKGROUND_FALLBACK_PATH = '/og-background-fallback.webp'
+
 export const OG_SIZE = {
   width: 1200,
   height: 630,

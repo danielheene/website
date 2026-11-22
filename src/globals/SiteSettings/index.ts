@@ -155,9 +155,13 @@ export const SiteSettings: GlobalConfig = {
                   },
                   fields: [
                     SectionGroupField({
-                      label: 'Default Opengraph Image',
+                      label: 'Fallback Open Graph Background',
                       description: `
-                        This image is used as fallback if no document image is available
+                        Background of a page's Open Graph image when its hero has no image. The
+                        title, description and logo are still drawn on top, so this is not used
+                        as a complete Open Graph image. Left empty, the cards fall back to
+                        public/og-background-fallback.webp; a card that fails to render is
+                        replaced by public/og-image-fallback.webp
                       `,
                       hideGutter: true,
                       overrides: {
@@ -167,7 +171,7 @@ export const SiteSettings: GlobalConfig = {
                       },
                       fields: [
                         HeroSlidesField({
-                          name: 'defaultOpengraphImage',
+                          name: 'fallbackOgBackground',
                           position: undefined,
                           editorVariant: 'single',
                         }),
@@ -176,7 +180,8 @@ export const SiteSettings: GlobalConfig = {
                     SectionGroupField({
                       label: 'Error Page Hero',
                       description: `
-                        The selected item is used to render the error page hero
+                        The selected item is used to render the error page hero. Left empty, the
+                        error page falls back to public/not-found-fallback.webp
                       `,
                       hideGutter: true,
                       overrides: {

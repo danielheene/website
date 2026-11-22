@@ -34,7 +34,15 @@ export const PDFGeneratorSettings: GlobalConfig<GlobalSlug['PDFGeneratorSettings
     group: AdminGroup.Settings,
     components: {
       elements: {
-        beforeDocumentControls: ['@/globals/PDFGeneratorSettings/components/GenerateButton'],
+        beforeDocumentControls: [
+          {
+            path: '@/components/AdminPanel/SyncSkillSortingAction#SyncSkillSortingAction',
+            clientProps: {
+              variant: 'button',
+            },
+          },
+          '@/globals/PDFGeneratorSettings/components/GenerateButton',
+        ],
       },
     },
   },

@@ -2,9 +2,26 @@ import Link from 'next/link'
 
 import { Button } from '@/components/Button'
 import { HeroMedia } from '@/components/HeroMedia'
+import { toSlideItems } from '@/components/HeroMedia/toSlideItems'
 import { Icon } from '@/components/Icon'
 import { TrackNotFound } from '@/components/UmamiLinkTracking'
 import { fetchSiteSettingsCached } from '@/lib/fetchers'
+import { CollectionSlug } from '@/types/collections'
+
+// Shown when Site Settings has no error hero: one image slide in the shape `HeroMedia` reads.
+const FALLBACK_HERO = [
+  {
+    slideType: 'image',
+    media: {
+      relationTo: CollectionSlug.MediaImages,
+      value: {
+        id: 'not-found-fallback',
+        url: '/not-found-fallback.webp',
+        alt: '',
+      },
+    },
+  },
+]
 
 export default async function NotFound() {
   const {
@@ -12,7 +29,11 @@ export default async function NotFound() {
   } = await fetchSiteSettingsCached()
 
   return (
-    <HeroMedia align="center" fallbackAlt="" slides={errorHero}>
+    <HeroMedia
+      align="center"
+      fallbackAlt=""
+      slides={toSlideItems(errorHero, '').length > 0 ? errorHero : FALLBACK_HERO}
+    >
       <TrackNotFound />
       <div className="container flex flex-col items-center py-32 text-center">
         <div className="mb-20 font-pp-supply-mono drop-shadow-md">

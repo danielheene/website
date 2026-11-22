@@ -11,7 +11,7 @@ import { type OgImageProps, renderOgImage } from './renderOgImage'
 import { resolveOgBackground } from './resolveOgBackground'
 
 interface SiteDefaults {
-  /** `SiteSettings.general.defaultOpengraphImage`, the fallback background. */
+  /** `SiteSettings.general.fallbackOgBackground`, the background when a document has none. */
   slides: unknown
   /** The site description, the fallback for documents without a meta description. */
   description: string | null | undefined
@@ -98,13 +98,13 @@ const ogImageProps = async (target: OgTarget, site: SiteDefaults): Promise<OgIma
 export const renderOgImageForTarget = async (target: OgTarget) => {
   const [
     {
-      general: { defaultOpengraphImage, description },
+      general: { fallbackOgBackground, description },
     },
     { name },
   ] = await Promise.all([fetchSiteSettingsCached(), fetchGlobalUserSettingsCached()])
 
   const props = await ogImageProps(target, {
-    slides: defaultOpengraphImage,
+    slides: fallbackOgBackground,
     description,
     name,
   })

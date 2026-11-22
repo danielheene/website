@@ -27,7 +27,7 @@ export function generateWebSiteSchema(
 
   if (description) webSite.description = description
 
-  const image = toSlideItems(general?.defaultOpengraphImage, '').find(
+  const image = toSlideItems(general?.fallbackOgBackground, '').find(
     (slide) => slide.kind === 'image',
   )
 

@@ -351,7 +351,7 @@ describe('generateWebSiteSchema', () => {
   it('takes the image from the first populated image slide', () => {
     expect(
       site({
-        defaultOpengraphImage: [
+        fallbackOgBackground: [
           {
             slideType: 'shader',
             shader: 'silk',
