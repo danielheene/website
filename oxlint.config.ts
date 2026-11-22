@@ -197,5 +197,13 @@ export default defineConfig({
         'eslint/no-undef': 'off',
       },
     },
+    {
+      // react-email compiles these classes with its own theme (`src/emails/theme.ts`: `-dark`
+      // tokens, `font-heading`, the `mobile:` variant), which the frontend entry point lacks.
+      files: ['src/emails/**'],
+      rules: {
+        'tailwindcss/no-unknown-classes': 'off',
+      },
+    },
   ],
 })

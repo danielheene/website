@@ -1,14 +1,14 @@
 import { Heading, Section, Text } from 'react-email'
 
 import { EmailLayout } from '@/emails/components/EmailLayout'
+import { PREVIEW_SITE, type EmailSite } from '@/emails/site'
 
 export type ContactFormConfirmationEmailProps = {
   message: string
   name: string
-  /** First name of the site owner, shown as the sign-off. */
+  /** First name of the site owner, named as who received the message and gets back to them. */
   ownerFirstName?: string
-  siteName: string
-  siteUrl: string
+  site: EmailSite
 }
 
 /**
@@ -21,25 +21,30 @@ export const ContactFormConfirmationEmail = ({
   message,
   name,
   ownerFirstName,
-  siteName,
-  siteUrl,
+  site,
 }: ContactFormConfirmationEmailProps) => (
   <EmailLayout
-    previewText={`We've received your message to ${siteName}`}
-    siteName={siteName}
-    siteUrl={siteUrl}
+    previewText={`We've received your message to ${site.name}`}
+    context={`You received this email because you sent a message through the contact form on ${site.name}.`}
+    site={site}
   >
-    <Heading as="h1" className="m-0 mb-4 text-xl font-bold text-neutral-900">
-      Thanks for reaching out, {name}
+    <Heading
+      as="h1"
+      className="font-heading mobile:text-4xl m-0 text-5xl leading-none font-medium uppercase"
+    >
+      Message received
     </Heading>
-    <Text className="m-0 mb-6 text-sm text-neutral-600">
-      This confirms {ownerFirstName ?? 'we'} received your message
+    <Text className="m-0 mt-8 text-base">
+      Thanks for reaching out, {name}. This confirms {ownerFirstName ?? 'we'} received your message
       {ownerFirstName ? ` and will get back to you soon` : ''}. Here's a copy for your records:
     </Text>
-    <Section className="rounded-md border border-solid border-neutral-200 bg-neutral-50 p-4">
-      <Text className="m-0 text-sm whitespace-pre-line text-neutral-900">{message}</Text>
+    {/* the prose blockquote (`frontend.css`): primary bar, muted italic text */}
+    <Section className="my-6 border-0 border-l-2 border-solid border-primary pl-4">
+      <Text className="dark:text-muted-foreground-dark m-0 text-base text-muted-foreground italic">
+        {message}
+      </Text>
     </Section>
-    <Text className="m-0 mt-6 text-sm text-neutral-600">
+    <Text className="dark:text-muted-foreground-dark m-0 text-sm text-muted-foreground">
       Need to add anything? Just reply to this email
       {ownerFirstName ? ` — it goes straight to ${ownerFirstName}` : ''}.
     </Text>
@@ -47,12 +52,11 @@ export const ContactFormConfirmationEmail = ({
 )
 
 ContactFormConfirmationEmail.PreviewProps = {
-  name: 'Ada Lovelace',
   message:
     "Hi! I came across your work and would love to chat about a potential collaboration. Let me know if you're free sometime this week.",
+  name: 'Ada Lovelace',
   ownerFirstName: 'Daniel',
-  siteName: 'heene.io',
-  siteUrl: 'https://heene.io',
+  site: PREVIEW_SITE,
 } satisfies ContactFormConfirmationEmailProps
 
 export default ContactFormConfirmationEmail

@@ -7,6 +7,7 @@ import { z } from 'zod'
 
 import { ContactFormConfirmationEmail } from '@/emails/ContactFormConfirmationEmail'
 import { ContactFormNotificationEmail } from '@/emails/ContactFormNotificationEmail'
+import { getEmailSite } from '@/emails/getEmailSite'
 import { renderEmail } from '@/emails/render'
 import { extractErrorMessage } from '@/lib/extractErrorMessage'
 import { GlobalSlug } from '@/types/globals'
@@ -87,8 +88,7 @@ export const submitContactForm = async (
       }
     }
 
-    const siteName = process.env.SERVER_HOST
-    const siteUrl = process.env.SERVER_URL
+    const site = await getEmailSite(payload)
 
     const notification = await renderEmail(
       ContactFormNotificationEmail({
@@ -96,8 +96,7 @@ export const submitContactForm = async (
         email,
         message,
         ownerFirstName: ownerFirstName ?? undefined,
-        siteName,
-        siteUrl,
+        site,
       }),
     )
 
@@ -118,15 +117,14 @@ export const submitContactForm = async (
           name,
           message,
           ownerFirstName: ownerFirstName ?? undefined,
-          siteName,
-          siteUrl,
+          site,
         }),
       )
 
       await payload.sendEmail({
         to: `${name} <${email}>`,
         replyTo: recipientEmail,
-        subject: `We've received your message to ${siteName}`,
+        subject: `We've received your message to ${site.name}`,
         html: confirmation.html,
         text: confirmation.text,
       })

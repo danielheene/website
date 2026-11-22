@@ -5,6 +5,7 @@ import { hoursToSeconds, minutesToMilliseconds } from 'date-fns'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 
+import { authEmails } from './authEmails'
 import { loginAfterCreate } from './hooks/loginAfterCreate'
 
 // The create-first-user view renders every collection field regardless of admin.hidden
@@ -65,6 +66,7 @@ export const Users: CollectionConfig = {
     tokenExpiration: hoursToSeconds(24 * 14),
     maxLoginAttempts: 5,
     lockTime: minutesToMilliseconds(5),
+    ...authEmails,
   },
   timestamps: true,
   versions: false,

@@ -27,7 +27,7 @@
     "ci": "bun run migrate && bun run build",
     "dev": "NODE_OPTIONS=\"--import tsx/esm --trace-deprecation --disable-warning=DeprecationWarning\" node scripts/dev.mjs",
     "dev:app": "bun run _next dev",
-    "dev:email": "bun run _email dev --dir src/emails --port 3005",
+    "dev:email": "ln -sfn ../../public src/emails/static && bun run _email dev --dir src/emails --port 3005",
     "dev:storybook": "bun run _storybook dev -p 6006",
     "generate": "bun run generate:next-types && bun run generate:payload-types && bun run generate:importmap",
     "generate:importmap": "bun run _payload generate:importmap",

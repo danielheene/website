@@ -1,36 +1,68 @@
+// oxlint-disable typescript/unbound-method
 import type { TailwindConfig } from 'react-email'
 import { pixelBasedPreset } from 'react-email'
 
+import plugin from 'tailwindcss/plugin'
+
+import PPFrama from '@/fonts/pp-frama/email'
+import PPSupplyMono from '@/fonts/pp-supply-mono/email'
+
 /**
- * Tailwind theme for React Email templates.
+ * Light and dark values of the frontend's theme tokens (`_colors.css`), as hex: most inboxes,
+ * notably Outlook desktop, don't understand `oklch()` or `light-dark()`. Light is the default;
+ * the `dark:` variant (`prefers-color-scheme`) switches to the `-dark` values where the client
+ * supports it. The dark border is 10% white in the theme, blended here over the dark background
+ * because Outlook ignores alpha.
+ */
+const tokens = {
+  background: ['#FFFFFF', '#0A0A0A'],
+  foreground: ['#0A0A0A', '#FAFAFA'],
+  card: ['#FFFFFF', '#171717'],
+  'card-foreground': ['#0A0A0A', '#FAFAFA'],
+  muted: ['#F5F5F5', '#262626'],
+  'muted-foreground': ['#737373', '#A1A1A1'],
+  border: ['#E5E5E5', '#232323'],
+  'primary-foreground': ['#EFF6FF', '#EFF6FF'],
+} as const
+
+const tokenColors = Object.fromEntries(
+  Object.entries(tokens).flatMap(([name, [light, dark]]) => [
+    [name, light],
+    [`${name}-dark`, dark],
+  ]),
+)
+
+const fontStack = (font: { family: string; fallback: readonly string[] }) => [
+  `'${font.family}'`,
+  ...font.fallback,
+]
+
+/**
+ * Tailwind theme for the React Email templates, adapted from the frontend's.
  *
- * `react-email`'s bundled Tailwind compiler compiles utility classes into literal inline
- * styles at render time, so it can't read the site's CSS-first Tailwind v4
- * theme (`src/styles/theme/*.css`) the way the Next.js app does. This file
- * re-declares the subset of that theme email clients can actually render:
+ * `react-email`'s bundled Tailwind compiles utility classes into inline styles at render time, so
+ * it can't read the site's CSS-first theme (`src/styles/theme/*.css`). This file re-declares what
+ * email clients can render: the theme tokens and the primary scale as hex, the font roles (body
+ * PP Frama Text like `font-sans`, headlines PP Supply Sans, small print PP Supply Mono like
+ * `font-mono`, loaded by `EmailFonts`), and the radius scale (`_radii.css`) in px.
+ * `pixelBasedPreset` turns Tailwind's rem-based spacing and text scale, which the frontend uses
+ * unchanged, into px, since email clients handle relative units inconsistently.
  *
- * - Brand colors as hex, converted from the `oklch()` values in
- *   `_colors.css` (most inboxes, notably Outlook desktop, don't understand
- *   `oklch()`).
- * - The neutral scale, using the hex values already documented as comments
- *   in `_colors.css`.
- * - The font fallback stack Next.js falls back to before the self-hosted
- *   webfont loads (`src/fonts/pp-frama-text/next.ts`) — email clients never
- *   load the webfont at all, so the fallback *is* the font.
- * - The site's border-radius scale (`_radii.css`), converted from `rem` to
- *   `px` since email clients handle relative units inconsistently.
- *
- * `pixelBasedPreset` swaps Tailwind's default rem-based spacing/font-size
- * scale for a px-based one, for the same reason.
- *
- * Keep the values below in sync with `src/styles/theme/_colors.css`,
- * `src/styles/theme/_fonts.css`, and `src/styles/theme/_radii.css`.
+ * Keep the values in sync with `src/styles/theme/_colors.css` and `src/styles/theme/_radii.css`.
  */
 export const emailTheme: TailwindConfig = {
+  plugins: [
+    plugin(({ addVariant }) => {
+      // the container's max width, below which the layout tightens its padding
+      addVariant('mobile', '@media (max-width: 600px)')
+    }),
+  ],
+  presets: [pixelBasedPreset],
+
   theme: {
     extend: {
-      ...pixelBasedPreset.theme.extend,
       colors: {
+        ...tokenColors,
         primary: {
           50: '#E9E9FE',
           100: '#D6D7FD',
@@ -45,46 +77,13 @@ export const emailTheme: TailwindConfig = {
           950: '#010236',
           DEFAULT: '#1D27F2',
         },
-        secondary: {
-          50: '#CBFCF1',
-          100: '#B7FBEC',
-          200: '#91F9E2',
-          300: '#6AF6D8',
-          400: '#44F4CE',
-          500: '#1DF2C4',
-          600: '#0BCBA2',
-          700: '#099678',
-          800: '#06614D',
-          900: '#032C23',
-          950: '#01120E',
-          DEFAULT: '#1DF2C4',
-        },
-        neutral: {
-          50: '#FAFAFA',
-          100: '#F5F5F5',
-          200: '#E5E5E5',
-          300: '#D4D4D4',
-          400: '#A1A1A1',
-          500: '#737373',
-          600: '#525252',
-          700: '#404040',
-          800: '#262626',
-          900: '#171717',
-          950: '#0A0A0A',
-        },
         white: '#FFFFFF',
         black: '#000000',
       },
       fontFamily: {
-        sans: [
-          'ui-sans-serif',
-          'system-ui',
-          'sans-serif',
-          'Apple Color Emoji',
-          'Segoe UI Emoji',
-          'Segoe UI Symbol',
-          'Noto Color Emoji',
-        ],
+        sans: fontStack(PPFrama),
+        heading: fontStack(PPSupplyMono),
+        mono: fontStack(PPSupplyMono),
       },
       borderRadius: {
         xs: '2px',

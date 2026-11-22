@@ -23,6 +23,8 @@ storybook-static/
 
 # react-email dev server cache (bun run dev:email)
 .react-email
+# dev:email links public/ here: the preview server only serves `<dir>/static` at `/static`
+src/emails/static
 
 .env
 .env.*
