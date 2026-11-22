@@ -10,9 +10,13 @@ import { Reveal } from '@/components/Reveal'
 import RichText from '@/components/RichText'
 import { SectionContainer } from '@/components/SectionContainer'
 import type { BlockAnchors } from '@/lib/extractHeadings'
+import { isEmptyValue } from '@/lib/lexical/isEmptyValue'
 import { MediaFile, MediaImage, ResumeDownloadsBlock } from '@/types/payload'
 
 import { ResumeDownloadButton } from './ResumeDownloadButton'
+
+// Offset and tilt per sheet, from the top sheet down.
+const SHEET_CLASSES = ['rotate-0', 'translate-x-[-12%] -rotate-6', 'translate-x-[-24%] -rotate-12']
 
 interface ResumeDownloadsBlockClientRendererProps extends ResumeDownloadsBlock, BlockAnchors {
   title: string
@@ -34,23 +38,28 @@ export const ResumeDownloadsBlockClientRenderer = ({
 }: ResumeDownloadsBlockClientRendererProps): JSX.Element => (
   <SectionContainer id={anchorId} title={title} variant="default">
     <div className="container">
-      <div className="relative flex flex-col overflow-hidden rounded-md bg-primary p-6 text-primary-foreground md:flex-row md:p-12 lg:p-20">
-        <Reveal className="mb-72 flex flex-col items-center justify-center gap-8 md:mb-0 md:w-2/3 lg:shrink-0 xl:w-1/2">
+      <div className="relative overflow-hidden rounded-md bg-primary text-primary-foreground md:flex md:min-h-120 lg:min-h-136">
+        <Reveal
+          className={cn([
+            'relative z-10 flex flex-col items-center justify-center gap-8 text-center',
+            'px-6 pt-12 pb-72 sm:px-12 md:w-3/5 md:py-16 md:pr-0 md:pl-12 lg:py-20 lg:pl-16 xl:w-1/2',
+          ])}
+        >
           <Headline variant="section" data-reveal-item>
             {title}
           </Headline>
-          <div data-reveal-item>
-            <RichText
-              data={caption}
-              enableGutter={false}
-              className="px-8 text-primary-foreground"
-            />
-          </div>
+          {!isEmptyValue(caption) && (
+            <div data-reveal-item>
+              <RichText
+                data={caption}
+                enableGutter={false}
+                enableProse={false}
+                className="text-lg text-primary-foreground/90 md:text-xl"
+              />
+            </div>
+          )}
 
-          <div
-            data-reveal-item
-            className="text-background-foreground flex flex-col justify-center gap-8 md:flex-row"
-          >
+          <div data-reveal-item className="grid w-full max-w-xl gap-4 sm:grid-cols-2 md:gap-6">
             {document_en?.url && (
               <ResumeDownloadButton
                 locale="en"
@@ -71,26 +80,26 @@ export const ResumeDownloadsBlockClientRenderer = ({
             )}
           </div>
         </Reveal>
-        <div className="absolute right-1/2 bottom-0 mr-6 h-min w-[110%] max-w-md translate-x-1/2 md:-right-36 md:mr-0 md:w-3/4 md:max-w-xl md:translate-x-0 lg:mt-auto xl:relative xl:right-0 xl:size-full xl:max-w-full">
-          <div className="relative aspect-8/5 size-full min-h-[16rem]">
-            {[...thumbnails_en]
-              .reverse()
-              .slice(0, 3)
-              .map((thumbnail, index) => (
-                <ResumePreviewImage
-                  {...thumbnail}
-                  key={thumbnail.id}
-                  className={cn([
-                    index === 0 &&
-                      'translate-x-[-24%] translate-y-[24%] -rotate-30 md:max-xl:translate-x-[-8%] md:max-xl:translate-y-[16%]',
-                    index === 1 &&
-                      'translate-x-[-12%] translate-y-[12%] -rotate-15 md:max-xl:translate-x-[-4%] md:max-xl:translate-y-[8%]',
-                    index === 2 &&
-                      'translate-x-[-6%] translate-y-[6%] rotate-[-7.5deg] md:max-xl:translate-x-[-2%] md:max-xl:translate-y-[4%]',
-                  ])}
-                />
-              ))}
-          </div>
+
+        {/* the first pages as a fanned stack of sheets, cut off by the box's bottom-right corner */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute right-0 bottom-0 h-64 w-full md:h-full md:w-2/5 xl:w-1/2"
+        >
+          {thumbnails_en
+            .slice(0, SHEET_CLASSES.length)
+            .reverse()
+            .map((thumbnail, index, sheets) => (
+              <ResumePreviewImage
+                {...thumbnail}
+                key={thumbnail.id}
+                className={cn([
+                  'right-[8%] -bottom-1/4 h-[110%] origin-bottom-right md:bottom-[-14%] md:h-[88%]',
+                  // the top sheet (page 1) is the last one rendered
+                  SHEET_CLASSES[sheets.length - 1 - index],
+                ])}
+              />
+            ))}
         </div>
       </div>
     </div>

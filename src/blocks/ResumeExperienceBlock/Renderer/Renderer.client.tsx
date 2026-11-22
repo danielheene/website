@@ -96,8 +96,9 @@ export const ResumeExperienceBlockClientRenderer = ({
                       'rounded-sm',
                     )}
                   >
-                    <header className="row flex justify-between font-mono">
-                      <h3 className="flex flex-col">
+                    {/* the date range sits above the title on phones, where both won't fit side by side */}
+                    <header className="flex flex-col-reverse gap-1 font-mono sm:flex-row sm:justify-between sm:gap-4">
+                      <h3 className="flex min-w-0 flex-col">
                         <span className="text-sm font-medium lg:text-lg">{employer}</span>
                         <span className="text-xl font-extrabold text-primary lg:text-2xl">
                           {title}

@@ -6,16 +6,12 @@ import { ClassValue, cn } from 'tailwind-variants'
 import { ImageMedia } from '@/components/ImageMedia'
 import { MediaImage } from '@/types/payload'
 
-interface ResumePreviewImageProps extends Pick<
-  MediaImage,
-  'width' | 'height' | 'url' | 'blurDataURL'
-> {
-  className: ClassValue
+interface ResumePreviewImageProps extends Pick<MediaImage, 'url' | 'blurDataURL'> {
+  className?: ClassValue
 }
 
+/** One page thumbnail as a DIN A4 sheet (210 × 297); the image covers the sheet. */
 export const ResumePreviewImage = ({
-  width,
-  height,
   className,
   url,
   blurDataURL,
@@ -23,21 +19,19 @@ export const ResumePreviewImage = ({
   if (!isString(url) || isEmpty(url)) return null
 
   return (
-    <ImageMedia
-      style={{
-        aspectRatio: `${Math.round(width / height)}`,
-      }}
+    <div
       className={cn([
-        'absolute top-0 right-0 z-40 flex w-3/5',
-        'justify-center overflow-clip rounded-sm bg-background shadow-lg shadow-foreground/20',
+        'absolute aspect-210/297 overflow-clip rounded-sm bg-white shadow-xl shadow-black/30',
         className,
       ])}
-      sizes="25vw, 33vw, 50vw, 75vw"
-      url={url}
-      blurDataURL={blurDataURL}
-      alt={''}
-      width={width}
-      height={height}
-    />
+    >
+      <ImageMedia
+        fill
+        sizes="(min-width: 768px) 25vw, 50vw"
+        url={url}
+        blurDataURL={blurDataURL}
+        alt=""
+      />
+    </div>
   )
 }

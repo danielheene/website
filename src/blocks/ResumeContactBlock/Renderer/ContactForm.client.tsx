@@ -13,8 +13,9 @@ const initialState: ContactFormState = {
   status: 'idle',
 }
 
+// underlined fields, the label sitting above the value inside the same row
 const inputStyles = cn(
-  'w-full rounded-none border border-border bg-transparent px-4 py-3',
+  'w-full rounded-none border-0 border-b border-border bg-transparent px-0 pt-1 pb-3',
   'text-base placeholder:text-muted-foreground',
   'transition-colors outline-none',
   'focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30',
@@ -46,15 +47,13 @@ export const ContactForm = () => {
   }, [state])
 
   return (
-    <form
-      ref={formRef}
-      action={formAction}
-      noValidate
-      className="col-span-12 my-8 flex flex-col gap-6 text-left md:col-span-8 md:col-start-3"
-    >
+    <form ref={formRef} action={formAction} noValidate className="flex flex-col gap-8 text-left">
       <div className="flex flex-col gap-2">
-        <label htmlFor={nameId} className="font-mono text-sm tracking-wide uppercase">
-          Name
+        <label
+          htmlFor={nameId}
+          className="font-mono text-xs tracking-wide text-muted-foreground uppercase"
+        >
+          Name*
         </label>
         <input
           id={nameId}
@@ -75,8 +74,11 @@ export const ContactForm = () => {
       </div>
 
       <div className="flex flex-col gap-2">
-        <label htmlFor={emailId} className="font-mono text-sm tracking-wide uppercase">
-          Email
+        <label
+          htmlFor={emailId}
+          className="font-mono text-xs tracking-wide text-muted-foreground uppercase"
+        >
+          Email*
         </label>
         <input
           id={emailId}
@@ -97,13 +99,16 @@ export const ContactForm = () => {
       </div>
 
       <div className="flex flex-col gap-2">
-        <label htmlFor={messageId} className="font-mono text-sm tracking-wide uppercase">
-          Message
+        <label
+          htmlFor={messageId}
+          className="font-mono text-xs tracking-wide text-muted-foreground uppercase"
+        >
+          Message*
         </label>
         <textarea
           id={messageId}
           name="message"
-          rows={6}
+          rows={4}
           required
           maxLength={5000}
           aria-invalid={Boolean(state.fieldErrors?.message)}
@@ -128,15 +133,21 @@ export const ContactForm = () => {
         <input id={companyId} name="company" type="text" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <div className="flex flex-col items-start gap-3">
-        <Button type="submit" variant="default" disabled={isPending}>
-          {isPending ? 'Sending…' : 'Send message'}
+      <div className="mt-4 flex flex-col items-start gap-3">
+        <Button
+          type="submit"
+          variant="default"
+          size="lg"
+          startIcon="mdi:subdirectory-arrow-right"
+          disabled={isPending}
+        >
+          {isPending ? 'Sending…' : 'Get in touch'}
         </Button>
 
         {state.status === 'success' && (
-          <p role="status" className="text-sm text-muted-foreground">
+          <output className="text-sm text-muted-foreground">
             Thanks for reaching out — I'll get back to you soon.
-          </p>
+          </output>
         )}
         {state.status === 'error' && state.message && !state.fieldErrors && (
           <p role="alert" className="text-sm text-destructive">
