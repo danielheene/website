@@ -138,7 +138,8 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   functions), `hooks/` (React hooks), `payloadHooks/` (Payload collection/global lifecycle hooks —
   distinct from `hooks/`, don't conflate the two), `anthropic/` and `mapbox/` (external API
   clients, same shape as `unsplash/`), plus `actions/`, `fetchers/`, `date/`, `i18n/`, `jsonLd/`,
-  `blog/`, `lexical/`, `migrations/`, `redirects/`, `references/`, `seed/`, `shiki/`, `sse/`,
+  `blog/`, `documentTasks/`, `lexical/`, `migrations/`, `redirects/`, `references/`, `seed/`,
+  `shiki/`, `sse/`,
   `umami/`, `unsplash/`. A new external API client or hook goes in the matching subfolder; a
   handful of genuinely standalone utilities stay flat at the top of `src/lib/`.
 - **Collections/Blocks/Fields/Globals** are factory-function based — most fields (e.g.
@@ -178,6 +179,13 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   non-canonical forms (legacy `/page/<n>` segments, `page=1`, unknown sorts) and to mark non-default
   sorts `noindex`. The RSS feed (`/blog/feed.xml`) caches under the `posts` tag, which `revalidateBlogPost`
   invalidates; the sitemap reads the route index (below).
+- **Résumé documents** (`/resume/[slug]`): two slugs are reserved, `latest` (the newest document)
+  and `validate` (`RESUME_VALIDATE_SLUG`), which renders the checksum validator in the same route
+  instead of a document.
+- **Fallback assets** in `public/` stand in when Site Settings leaves a field empty:
+  `og-background-fallback.webp` (Open Graph card background), `og-image-fallback.webp` (the finished
+  card served when one fails to render) and `not-found-fallback.webp` (error page hero). The
+  `-fallback` suffix marks them; keep it when adding one.
 - **Route index, sitemap and 404s** (`src/lib/routeIndex/`): one Redis hash lists every path the
   frontend serves (published pages, topics and posts, résumé documents, `/blog`, `/resume/latest`,
   `/resume/validate`) with an `indexable` flag and `lastModified`. `app/(frontend)/sitemap.ts`
@@ -185,8 +193,8 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   `notFound()` while prerendering and so is served as a real `404`. That check has to live in the
   proxy: with Cache Components the dynamic routes send their prerendered shell, and so a `200`,
   before a page can call `notFound()` (removing the page's `<Suspense>` or `instant = false`
-  doesn't change that). Unchecked: `/_next`, `/admin`, `/api`, any path whose last segment has a
-  dot (files), and draft mode. Each routed collection's `routeIndexHooks` adds or removes its
+  doesn't change that). Unchecked: `/_next`, `/admin`, `/api`, `/stats` (the Umami rewrite, which
+  runs after the proxy), any path whose last segment has a dot (files), and draft mode. Each routed collection's `routeIndexHooks` adds or removes its
   document's path during the save and queues the `buildRouteIndex` task (superseding, exclusive),
   which rebuilds the whole hash; a missing hash is built inline by the first request that needs
   it. A new routable collection or static route has to be added to `buildRouteIndex`, or the
@@ -204,8 +212,8 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   the answer was cut off or declined rather than returning partial text. Give the model the
   content itself (wrapped in tags), never a URL: it cannot fetch. These modules are plain server
   modules, not `'use server'` files, and the worker imports them too, so `server-only` (which
-  throws outside Next) is not an option. Callers that run inside a save (`generateAlt`) catch the
-  error so a Claude outage never blocks the write.
+  throws outside Next) is not an option. Document tasks that combine Claude with other work
+  (`processImage`, `generateMeta`) catch the error, so an outage costs only the Claude field.
 - **Media attribution**: every media collection carries the `attribution` group
   (`AttributionField`, `src/fields/Attribution/`: author, studio/platform, license, notes).
   Read it through `resolveAttribution` (`src/lib/attribution.ts`), which also decides whether
@@ -217,6 +225,24 @@ Commits. Use the existing types (`feat`, `fix`, `chore`, `refactor`, `docs`,
   links need no handlers of their own; give a link `download` when it sends its own event.
 - **Plugins** (`src/plugins/`): `redirects` and `references` are local Payload plugins that add the
   `Redirects` and `References` collections; `bun run refs:backfill` rebuilds the reference index.
+  `documentTasks` adds the document-task entries to each applicable collection's ⋯ menus.
+- **Document tasks** (`src/lib/documentTasks/`): every field derived from a document after a save
+  (meta title/description, excerpt, reading time, image sizes/blur/alt, video and PDF thumbnails,
+  skill tags, references, revalidation) is a per-document job, never inline hook work. Its input is
+  only `{ collection, id, ref, steps }`; the handler loads the latest version itself and writes with
+  `latestWriteOptions` (whose `triggeredByTask` context keeps the hook from queueing again). Each
+  job's concurrency key is `<keyPrefix>:<slug or filename>` (collection in between for tasks that
+  span collections), exclusive and superseding; `enqueueDocumentTask` merges the steps of a job
+  still waiting under that key. The list view's menu and `bun run regenerate` go through the
+  `regenerate` task, which queues one job per document. A new derived field becomes a step or a
+  task in `DOCUMENT_TASK_DEFINITIONS`.
+- **Migrations and fixtures**: `src/migrations/` holds one baseline (the protected pages, their
+  navigation and `applyPageFixtures`, `src/lib/seed/fixtures.ts`). Add a migration only to reshape
+  data that already exists; content a fresh database needs to render goes into the fixtures, which
+  fill empty fields only (`bun run seed:fixtures`).
+- **Large screens**: beyond 1920px the root font size grows with the viewport
+  (`src/styles/frontend.css`), so rem-based layout scales up on large and smart screens. Size
+  layout in rem (Tailwind's scale), not px, or it won't follow.
 - **Stories** live in `.storybook/components/*.stories.tsx`, not next to the components; the
   design-foundation and shader docs are MDX under `.storybook/foundations/` and
   `.storybook/shaders/`.

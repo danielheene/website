@@ -114,14 +114,15 @@ bun run dev:email        # React Email preview server (http://localhost:3005)
 ## Entry Points
 
 - **Next.js App Router**:
-  - `app/(frontend)/`: Public website pages, layouts, and route handlers: `/api/preview`, `/api/sse`, `/api/health`, `/api/icons/collection`, `/blog/feed.xml` and `/download/resume.pdf`. CMS pages are under `[slug]/`, the blog under `blog/`, resume documents under `resume/[slug]/`.
+  - `app/(frontend)/`: Public website pages, layouts, and route handlers: `/api/preview`, `/api/sse`, `/api/health`, `/api/icons/png`, `/blog/feed.xml` and `/download/resume.pdf`. CMS pages are under `[slug]/`, the blog under `blog/`, resume documents under `resume/[slug]/`.
   - `app/(payload)/`: Payload CMS admin panel (`/admin`) and Payload's REST API (`/api/*`; GraphQL is disabled).
   - `app/llms.txt/`: The site's public `/llms.txt`, generated from published pages, posts and topics (unrelated to the repository's own `llms.txt` in the project root).
   - `app/robots.ts`, `app/manifest.ts`, `app/global-error.tsx`: Crawler rules, the web app manifest and the root error boundary. These three have to stay at the root of `app/`; Next.js does not pick them up inside a route group. `robots.txt` disallows everything unless `SERVER_HOST` equals `PRODUCTION_HOST`.
   - `app/(frontend)/sitemap.ts`: The sitemap.
-- **Request Proxy**: `proxy.ts` (Next.js 16's replacement for `middleware.ts`) canonicalizes blog listing URLs and marks non-default sorts `noindex`.
+- **Request Proxy**: `proxy.ts` (Next.js 16's replacement for `middleware.ts`) resolves redirects, canonicalizes blog listing URLs, marks non-default sorts `noindex`, and rewrites paths missing from the route index to `/404` (`/_next`, `/admin`, `/api`, `/stats` and files are let through).
 - **Payload Configuration**: `payload.config.ts` in the project root, integrated into Next.js via `withPayload` in `next.config.ts`.
 - **Jobs Queue & Worker**: `src/jobs-queue/` and standalone background worker entrypoint `scripts/start-worker.mjs` with `scripts/health-server.ts`. The web process only enqueues jobs; the worker runs them.
+- **Document Tasks**: per-document jobs (meta, excerpt, reading time, image processing, video/PDF thumbnails, skill tags, references, revalidation) defined in `src/lib/documentTasks/`. Hooks queue them after a save, and the admin's edit and list views offer them in the ⋯ menu with a step picker; the list view and `bun run regenerate` queue one job per document.
 - **Dev Runner**: `scripts/dev.mjs` (a `next dev` wrapper that owns the `--tunnel` flag).
 - **Environment Loader**: `scripts/load-env.mjs` (fetches active Doppler secrets into `.env.local`).
 
@@ -159,8 +160,10 @@ bun run dev:email        # React Email preview server (http://localhost:3005)
 | `bun run packages:update` | Updates dependency versions using Syncpack. |
 | `bun run prepare` | Installs Lefthook Git hooks. |
 | `bun run refs:backfill` | Rebuilds content reference index table. |
+| `bun run regenerate` | Queues a document task for every document of a collection: `bun run regenerate <task> <collection> [step ...]` (e.g. `generateMeta pages description`). |
 | `bun run release` | Runs semantic-release to calculate version, tag, and publish changelog. |
 | `bun run release:dry-run` | Runs semantic-release in dry-run mode. |
+| `bun run seed:fixtures` | Fills the protected pages' empty fixture fields (résumé block captions, legal notice blocks); existing content stays. |
 | `bun run seed:pages` | Seeds fixture pages (`-- --count <n>`, default 10; `seed:pages:clean` removes them). |
 | `bun run seed:pages:clean` | Removes fixture pages. |
 | `bun run seed:posts` | Seeds fixture blog posts and media (`-- --count <n>`, default 10; `seed:posts:clean` removes them). |
@@ -272,7 +275,7 @@ The source of truth is declared as a Zod schema in `src/types/environment.ts`. I
 ├── app/                          # Next.js App Router
 │   ├── (frontend)/               # Public website routes, layouts, and API routes
 │   │   ├── [slug]/               # CMS-driven pages
-│   │   ├── api/                  # Route handlers (preview, sse, health, icons/collection)
+│   │   ├── api/                  # Route handlers (preview, sse, health, icons/png)
 │   │   ├── blog/                 # Blog listing, topics, posts, and the RSS feed (feed.xml)
 │   │   ├── download/             # /download/resume.pdf redirect
 │   │   ├── resume/               # Resume documents by slug
@@ -297,7 +300,7 @@ The source of truth is declared as a Zod schema in `src/types/environment.ts`. I
 │   ├── jobs-queue/               # Payload job tasks, workflows, their handlers, and health checks
 │   ├── lib/                      # Utilities, grouped by domain: access/, hooks/, payloadHooks/, actions/,
 │   │                             #   fetchers/, sse/, seed/, redirects/, references/, anthropic/, etc.
-│   ├── migrations/               # Database migration scripts
+│   ├── migrations/               # One baseline migration: the protected pages, navigation and fixtures
 │   ├── pdf/                      # PDF resume generator components (@react-pdf/renderer)
 │   ├── plugins/                  # Custom Payload plugins (redirects, references)
 │   ├── styles/                   # CSS and Tailwind 4 stylesheets
@@ -390,6 +393,9 @@ bun run seed:pages:clean     # Removes seeded pages
 # Seed Resume Documents
 bun run seed:resume-documents        # Creates an older and a newer resume document (no PDFs)
 bun run seed:resume-documents:clean  # Removes them
+
+# Fill the protected pages' empty fixture fields (also applied by the baseline migration)
+bun run seed:fixtures
 ```
 
 The same seed/clean logic (`src/lib/seed/`) is also available from the admin panel, where it runs as a queued job.

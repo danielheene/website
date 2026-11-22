@@ -53,7 +53,7 @@ generated from published content by `app/llms.txt/route.ts`.
 ## Source Layout
 
 - [app/](app): Next.js App Router — `(frontend)` for the public site, its route handlers
-  (preview, sse, health, icons/collection, the blog RSS feed, the resume download) and
+  (preview, sse, health, icons/png, the blog RSS feed, the resume download) and
   `sitemap.ts`; `(payload)` for the admin panel and Payload's REST API; `llms.txt/` for the
   site's public `/llms.txt`; `robots.ts`, `manifest.ts` and `global-error.tsx`, which have to
   stay at the root of `app/`.
@@ -78,12 +78,17 @@ generated from published content by `app/llms.txt/route.ts`.
   authenticated.
 - [src/jobs-queue/](src/jobs-queue): Payload Jobs Queue task/workflow configs plus their
   handlers (`handlers/`), which only the standalone worker runs.
-- [src/plugins/](src/plugins): Local Payload plugins (redirects, references).
+- [src/lib/documentTasks/](src/lib/documentTasks): Per-document jobs (meta, excerpt, reading
+  time, image processing, thumbnails, skill tags, references, revalidation): definitions, step
+  selection, concurrency keys and enqueueing; hooks, the admin menus and `bun run regenerate` use
+  them.
+- [src/plugins/](src/plugins): Local Payload plugins (redirects, references, document-task menus).
 - [src/widgets/](src/widgets): Payload dashboard widgets (async server components registered in
   `payload.config.ts`; client parts call server actions from `src/lib/actions/`).
 - [src/emails/](src/emails): React Email templates (contact form notifications).
 - [src/pdf/](src/pdf): PDF generation for the resume export.
-- [src/migrations/](src/migrations): Payload database migrations.
+- [src/migrations/](src/migrations): One baseline migration (protected pages, navigation and the
+  page fixtures from `src/lib/seed/fixtures.ts`).
 - [scripts/](scripts): Dev runner, worker entrypoint, env loader, seeders, image assembly.
 - [e2e/](e2e): Playwright E2E specs — structural smoke tests, not content assertions.
 
