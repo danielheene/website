@@ -168,7 +168,7 @@
     }
   }
 
-  /* The icon picker is a search+grid, not a form needing the usual drawer
+  /* The icon picker and the Unsplash search are a search+grid, not a form needing the usual drawer
    * near-full-width panel — narrowed to a third of the viewport so it reads
    * as a docked panel rather than covering the page, while still scaling
    * with the window. min-width keeps the icon grid and collection tabs from
@@ -178,7 +178,8 @@
    * @payloadcms/ui Drawer component), which no plain stylesheet rule
    * (cascade layers included) can outrank on its own.
    */
-  .icon-picker-drawer .drawer__content {
+  .icon-picker-drawer .drawer__content,
+  .unsplash-search-drawer .drawer__content {
     width: 33% !important;
     min-width: 475px !important;
   }
@@ -187,11 +188,12 @@
    * Gutter) is a plain padded div with no height or flex behavior of its
    * own — the IconPicker h-full/flex-1 chain has nothing to resolve against
    * without this, so its icon grid still falls back to a small intrinsic
-   * height instead of filling the drawer. Scoped to this drawer only, since
+   * height instead of filling the drawer. Scoped to these drawers only, since
    * other drawers keep a plain form that should grow with its fields rather
    * than being pinned to the drawer height.
    */
-  .icon-picker-drawer .drawer__content-children {
+  .icon-picker-drawer .drawer__content-children,
+  .unsplash-search-drawer .drawer__content-children {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -209,7 +211,8 @@
    * 50px is reserved below so the icon grid does not run flush to the
    * drawer edge.
    */
-  .icon-picker-drawer .drawer__content-children > div:not(.drawer__header) {
+  .icon-picker-drawer .drawer__content-children > div:not(.drawer__header),
+  .unsplash-search-drawer .drawer__content-children > div:not(.drawer__header) {
     padding-bottom: 50px;
   }
 

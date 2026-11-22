@@ -17,7 +17,7 @@ interface ServiceStatusProps {
 
 /** Maps each overall status to the Badge color that carries the same meaning. */
 const STATUS_BADGE_COLOR: Record<OverallStatusCode, BadgeProps['color']> = {
-  [OverallStatusCode.NoServices]: 'neutral',
+  [OverallStatusCode.NoServices]: 'gray',
   [OverallStatusCode.PartialDown]: 'warning',
   [OverallStatusCode.AllDown]: 'error',
   [OverallStatusCode.Maintenance]: 'info',
@@ -53,7 +53,6 @@ export const ServiceStatusClient = ({
       asChild
       color={STATUS_BADGE_COLOR[status.code]}
       style="outline"
-      size="lg"
       className={cn(['gap-2 transition-colors', className])}
     >
       <Link

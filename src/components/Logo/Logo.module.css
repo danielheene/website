@@ -11,7 +11,7 @@
 }
 
 .Logo--white {
-  @apply text-neutral-50;
+  @apply text-gray-50;
 }
 
 .Logo--black {

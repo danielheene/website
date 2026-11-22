@@ -29,7 +29,7 @@ export const buttonStyles = tv({
         '[--button-border-color:var(--color-primary)] hover:[--button-border-color:color-mix(in_oklch,var(--color-primary),var(--color-transparent)_20%)]',
       ],
       inverse: [
-        '[--button-text-color:var(--color-neutral-800)] hover:[--button-text-color:var(--color-primary)]',
+        '[--button-text-color:var(--color-gray-800)] hover:[--button-text-color:var(--color-primary)]',
         '[--button-background-color:var(--color-primary-foreground)]',
         '[--button-border-color:var(--color-primary-foreground)]',
       ],

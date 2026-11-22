@@ -74,7 +74,7 @@ export const FieldComponent = memo(
                   'rounded-md border-none',
                   variant === 'default' &&
                     'hover:bg-primary-accent bg-primary text-primary-foreground',
-                  variant === 'primary' && 'bg-white text-primary hover:bg-neutral-300',
+                  variant === 'primary' && 'bg-white text-primary hover:bg-gray-300',
                 ])}
                 onClick={() => setShowFields(true)}
               >

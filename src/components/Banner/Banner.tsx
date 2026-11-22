@@ -28,7 +28,7 @@ export const bannerStyles = tv({
   ],
   variants: {
     variant: {
-      [BannerVariant.Neutral]: ['[--banner-color:var(--color-neutral-700)]'],
+      [BannerVariant.Neutral]: ['[--banner-color:var(--color-gray-700)]'],
       [BannerVariant.Info]: ['[--banner-color:var(--color-info-600)]'],
       [BannerVariant.Success]: ['[--banner-color:var(--color-success-600)]'],
       [BannerVariant.Warning]: ['[--banner-color:var(--color-warning-700)]'],

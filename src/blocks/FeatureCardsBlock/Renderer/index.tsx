@@ -24,12 +24,7 @@ const SIZE_CLASSES: Record<FeatureCardSize, string> = {
 /** Literal class strings, so Tailwind picks every gradient up. */
 const COLOR_CLASSES: Record<FeatureCardColor, string> = {
   primary: 'from-primary-400 via-primary-600 to-primary-950 text-white',
-  secondary: 'from-secondary-400 via-secondary-600 to-secondary-950 text-white',
-  slate: 'from-slate-400 via-slate-600 to-slate-950 text-white',
   gray: 'from-gray-400 via-gray-600 to-gray-950 text-white',
-  zinc: 'from-zinc-400 via-zinc-600 to-zinc-950 text-white',
-  neutral: 'from-neutral-400 via-neutral-600 to-neutral-950 text-white',
-  stone: 'from-stone-400 via-stone-600 to-stone-950 text-white',
   red: 'from-red-400 via-red-600 to-red-950 text-white',
   orange: 'from-orange-400 via-orange-600 to-orange-950 text-white',
   amber: 'from-amber-400 via-amber-600 to-amber-950 text-black',

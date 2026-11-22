@@ -12,11 +12,11 @@
   .nav-footer__trigger {
     @apply w-full m-0 p-1.5 flex flex-row items-center gap-3;
     @apply cursor-pointer rounded-md overflow-hidden border-none;
-    @apply bg-neutral-100/10 hover:bg-neutral-100/20 text-neutral-50;
+    @apply bg-gray-100/10 hover:bg-gray-100/20 text-gray-50;
   }
 
   .nav-footer__trigger--active {
-    @apply bg-neutral-100/20;
+    @apply bg-gray-100/20;
   }
 
   .nav:not(.nav--open) .nav-footer__trigger {
@@ -54,7 +54,7 @@
     @apply w-[calc(var(--nav-width-open)-var(--nav-spacing))];
     @apply m-0 p-1.5 -translate-y-[calc(100%+1rem)];
     @apply flex flex-col gap-2 overflow-hidden rounded-md;
-    @apply bg-neutral-50/90 dark:bg-neutral-950/90 backdrop-blur-xs;
+    @apply bg-gray-50/90 dark:bg-gray-950/90 backdrop-blur-xs;
   }
 
   .nav-footer__dropdown-header {
@@ -69,15 +69,15 @@
     @apply relative w-full h-8 p-1.5 pl-10;
     @apply flex flex-row justify-between items-center;
     @apply no-underline cursor-pointer leading-0 font-mono rounded-md border-none;
-    @apply bg-neutral/0 hover:bg-neutral-800/10 dark:hover:bg-neutral-200/10;
-    @apply text-neutral-950 dark:text-neutral-50;
+    @apply bg-gray/0 hover:bg-gray-800/10 dark:hover:bg-gray-200/10;
+    @apply text-gray-950 dark:text-gray-50;
     @apply [&>svg]:absolute [&>svg]:left-5 [&>svg]:top-4;
     @apply [&>svg]:-translate-x-1/2 [&>svg]:-translate-y-1/2;
     @apply [&>svg]:transition-opacity;
   }
 
   .nav-footer__item--static {
-    @apply cursor-default hover:bg-neutral/0;
+    @apply cursor-default hover:bg-gray/0;
   }
 
   .nav-footer__item-icon--hidden {

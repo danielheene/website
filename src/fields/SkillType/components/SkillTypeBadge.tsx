@@ -8,7 +8,7 @@ type SkillTypeBadgeProps = {
 }
 
 export const SkillTypeBadge = ({ label, value }: SkillTypeBadgeProps) => {
-  const color = SKILL_TYPE_BADGE_COLOR[value as keyof typeof SKILL_TYPE_BADGE_COLOR] ?? 'neutral'
+  const color = SKILL_TYPE_BADGE_COLOR[value as keyof typeof SKILL_TYPE_BADGE_COLOR] ?? 'gray'
 
   return (
     <Badge color={color} size="sm">
