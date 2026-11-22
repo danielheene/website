@@ -10,12 +10,7 @@ export type FeatureCardSize = (typeof FEATURE_CARD_SIZES)[number]
 
 export const FEATURE_CARD_COLORS = [
   'primary',
-  'secondary',
-  'slate',
   'gray',
-  'zinc',
-  'neutral',
-  'stone',
   'red',
   'orange',
   'amber',
@@ -57,6 +52,10 @@ export const FeatureCardsBlock: Block = {
   admin: {
     group: BlockGroup.General,
     disableBlockName: true,
+    images: {
+      thumbnail: '/payload/blocks/general-feature-cards-thumbnail.svg',
+      icon: '/payload/blocks/general-feature-cards-icon.svg',
+    },
   },
   fields: [
     {

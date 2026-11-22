@@ -12,6 +12,10 @@ export const LegalAttributionsBlock: Block = {
   admin: {
     group: BlockGroup.Legal,
     disableBlockName: true,
+    images: {
+      thumbnail: '/payload/blocks/legal-attributions-thumbnail.svg',
+      icon: '/payload/blocks/legal-attributions-icon.svg',
+    },
   },
   fields: [
     {

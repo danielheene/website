@@ -19,6 +19,10 @@ export const HighlightBoxBlock: Block = {
   admin: {
     group: BlockGroup.General,
     disableBlockName: true,
+    images: {
+      thumbnail: '/payload/blocks/general-highlight-box-thumbnail.svg',
+      icon: '/payload/blocks/general-highlight-box-icon.svg',
+    },
   },
   fields: [
     RichTextField({

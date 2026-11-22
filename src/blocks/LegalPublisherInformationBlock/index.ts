@@ -12,6 +12,10 @@ export const LegalPublisherInformationBlock: Block = {
   admin: {
     group: BlockGroup.Legal,
     disableBlockName: true,
+    images: {
+      thumbnail: '/payload/blocks/legal-publisher-information-thumbnail.svg',
+      icon: '/payload/blocks/legal-publisher-information-icon.svg',
+    },
   },
   fields: [
     {

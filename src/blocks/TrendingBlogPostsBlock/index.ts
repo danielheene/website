@@ -12,6 +12,10 @@ export const TrendingBlogPostsBlock: Block = {
   admin: {
     group: BlockGroup.Blog,
     disableBlockName: true,
+    images: {
+      thumbnail: '/payload/blocks/blog-trending-posts-thumbnail.svg',
+      icon: '/payload/blocks/blog-trending-posts-icon.svg',
+    },
   },
   fields: [
     {
