@@ -13,7 +13,6 @@
         "@payloadcms/kv-redis": "^3.93.0",
         "@payloadcms/live-preview-react": "^3.93.0",
         "@payloadcms/next": "^3.93.0",
-        "@payloadcms/plugin-import-export": "^3.93.0",
         "@payloadcms/richtext-lexical": "^3.93.0",
         "@payloadcms/storage-s3": "^3.93.0",
         "@payloadcms/translations": "^3.93.0",
@@ -85,7 +84,6 @@
         "@storybook/addon-docs": "^10.6.0",
         "@storybook/addon-mcp": "^10.6.0",
         "@storybook/addon-onboarding": "^10.6.0",
-        "@storybook/addon-themes": "^10.6.0",
         "@storybook/nextjs-vite": "^10.6.0",
         "@tailwindcss/postcss": "^4.2.4",
         "@testing-library/dom": "^10.4.2",
@@ -814,8 +812,6 @@
 
     "@payloadcms/plugin-cloud-storage": ["@payloadcms/plugin-cloud-storage@3.93.0", "", { "dependencies": { "@payloadcms/ui": "3.93.0", "find-node-modules": "^2.1.3", "range-parser": "^1.2.1" }, "peerDependencies": { "payload": "3.93.0", "react": "^19.0.1 || ^19.1.2 || ^19.2.1", "react-dom": "^19.0.1 || ^19.1.2 || ^19.2.1" } }, "sha512-eQ9pEh4Wfy0xR4cUkdxL0vzkjHiextA4yixzZusITWUXpG5cRyAchgmdC4y6UWuaxCf0VOfV6ytY9LeXfp/lVA=="],
 
-    "@payloadcms/plugin-import-export": ["@payloadcms/plugin-import-export@3.93.0", "", { "dependencies": { "@faceless-ui/modal": "3.0.0", "@payloadcms/translations": "3.93.0", "@payloadcms/ui": "3.93.0", "csv-parse": "5.6.0", "csv-stringify": "6.5.2", "qs-esm": "8.0.1" }, "peerDependencies": { "payload": "3.93.0" } }, "sha512-oqpwiSszeg7t7fNjYiEv752bHvpG3yMH9wD4N6iLJCtYfxWGvwMgz1wO1IgkOkY0tCwvjSXkOoLA+jBAwhwfrw=="],
-
     "@payloadcms/richtext-lexical": ["@payloadcms/richtext-lexical@3.93.0", "", { "dependencies": { "@lexical/clipboard": "0.50.0", "@lexical/headless": "0.50.0", "@lexical/html": "0.50.0", "@lexical/link": "0.50.0", "@lexical/list": "0.50.0", "@lexical/mark": "0.50.0", "@lexical/react": "0.50.0", "@lexical/rich-text": "0.50.0", "@lexical/selection": "0.50.0", "@lexical/table": "0.50.0", "@lexical/utils": "0.50.0", "@payloadcms/translations": "3.93.0", "@payloadcms/ui": "3.93.0", "acorn": "8.16.0", "bson-objectid": "2.0.4", "csstype": "3.1.3", "dequal": "2.0.3", "escape-html": "1.0.3", "jsox": "1.2.121", "lexical": "0.50.0", "mdast-util-from-markdown": "2.0.2", "mdast-util-mdx-jsx": "3.1.3", "micromark-extension-mdx-jsx": "3.0.1", "qs-esm": "8.0.1", "react-error-boundary": "4.1.2", "ts-essentials": "10.0.3", "uuid": "13.0.2" }, "peerDependencies": { "@faceless-ui/modal": "3.0.0", "@faceless-ui/scroll-info": "2.0.0", "@payloadcms/next": "3.93.0", "payload": "3.93.0", "react": "^19.0.1 || ^19.1.2 || ^19.2.1", "react-dom": "^19.0.1 || ^19.1.2 || ^19.2.1" } }, "sha512-hyeq4ZEVSdBqR8vG2PxryY8cC2ECrcnGPD1sb1K/1UHK27OhzMWUPTMBRdSzTAopIBjEP5xZLHbR2k+jqykK6Q=="],
 
     "@payloadcms/storage-s3": ["@payloadcms/storage-s3@3.93.0", "", { "dependencies": { "@aws-sdk/client-s3": "^3.614.0", "@aws-sdk/lib-storage": "^3.614.0", "@aws-sdk/s3-request-presigner": "^3.614.0", "@payloadcms/plugin-cloud-storage": "3.93.0" }, "peerDependencies": { "payload": "3.93.0" } }, "sha512-OrLjFFh35I9j+QwzdtOg5llD4IZKP9vZtH05nRdc3FEqd1fDCvsRxJ9VMCjoIQZMPYxy9s71XyaJvHbRR9oZzw=="],
@@ -1057,8 +1053,6 @@
     "@storybook/addon-mcp": ["@storybook/addon-mcp@10.6.5", "", { "dependencies": { "@tmcp/adapter-valibot": "^0.1.5", "@tmcp/transport-http": "^0.8.5", "tmcp": "^1.19.4", "valibot": "^1.4.0" }, "peerDependencies": { "@storybook/addon-vitest": "^10.6.5", "storybook": "^10.6.5" }, "optionalPeers": ["@storybook/addon-vitest"] }, "sha512-i8TNgzBWguyGdb45+7VTcAqQr/wn3nSDSD6aW8yZtvVee+jv3CtaEjVFGmQbCdNHIQjYN0hqWW4Cg7vmqlISGg=="],
 
     "@storybook/addon-onboarding": ["@storybook/addon-onboarding@10.6.5", "", { "peerDependencies": { "storybook": "^10.6.5" } }, "sha512-mKuSyuCnZ4FG9lTeON9//UHBUFzSFezaVsWGFjdpuhM4MDIy0AvJBXTb4dHvr48QEqokFJCU4Tt8SOoyK69bwA=="],
-
-    "@storybook/addon-themes": ["@storybook/addon-themes@10.6.5", "", { "dependencies": { "ts-dedent": "^2.0.0" }, "peerDependencies": { "storybook": "^10.6.5" } }, "sha512-2x6M1vWafp/cDUJzGRkGpVpB6sF4VIuVgpPTyCfEOLtF3S7HaIBalnWqDJ0JvQ/t2e7qtUXKCHZ1C7gREdYOsw=="],
 
     "@storybook/builder-vite": ["@storybook/builder-vite@10.6.5", "", { "dependencies": { "ts-dedent": "^2.0.0" }, "peerDependencies": { "storybook": "^10.6.5", "vite": "^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0" } }, "sha512-udrGjg3yt38pz4FxplypXxw1creIGS7N6QS8xfvTFM8MQNtPyojT/gZdd4fhX0dFrQx5MMuJEYJA5gUBiPsLtg=="],
 
@@ -1513,10 +1507,6 @@
     "csso": ["csso@5.0.5", "", { "dependencies": { "css-tree": "~2.2.0" } }, "sha512-0LrrStPOdJj+SPCCrGhzryycLjwcgUSHBtxNA8aIDxf0GLsRh1cKYhB00Gd1lDOS4yGH69+SNn13+TWbVHETFQ=="],
 
     "csstype": ["csstype@3.2.3", "", {}, "sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ=="],
-
-    "csv-parse": ["csv-parse@5.6.0", "", {}, "sha512-l3nz3euub2QMg5ouu5U09Ew9Wf6/wQ8I++ch1loQ0ljmzhmfZYrH9fflS22i/PQEvsPvxCwxgz5q7UB8K1JO4Q=="],
-
-    "csv-stringify": ["csv-stringify@6.5.2", "", {}, "sha512-RFPahj0sXcmUyjrObAK+DOWtMvMIFV328n4qZJhgX3x2RqkQgOTU2mCUmiFR0CzM6AzChlRSUErjiJeEt8BaQA=="],
 
     "d3-array": ["d3-array@3.2.5", "", { "dependencies": { "internmap": "1 - 2" } }, "sha512-Th8qGXoBalmWsstpkuhmBuTsBQIFqYOJtjlBvNVvBfJ8E3uYusBUwUR8HU20U0qKKQkgCvKyR1YjiozWadk5QA=="],
 

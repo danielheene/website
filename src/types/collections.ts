@@ -31,9 +31,7 @@ export const CollectionSlug = {
   Redirects: 'redirects',
 
   /* Payload Internal Collections */
-  PayloadExports: 'payload-exports',
   PayloadFolders: 'payload-folders',
-  PayloadImports: 'payload-imports',
   PayloadJobs: 'payload-jobs',
   PayloadKVS: 'payload-kvs',
   PayloadLockedDocuments: 'payload-locked-documents',

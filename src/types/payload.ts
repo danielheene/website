@@ -162,8 +162,6 @@ export interface Config {
     'resume-skill-tags': ResumeSkillTagData;
     'document-references': DocumentReference;
     redirects: Redirect;
-    exports: Export;
-    'payload-imports': PayloadImport;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -195,8 +193,6 @@ export interface Config {
     'resume-skill-tags': ResumeSkillTagsSelect<false> | ResumeSkillTagsSelect<true>;
     'document-references': DocumentReferencesSelect<false> | DocumentReferencesSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
-    exports: ExportsSelect<false> | ExportsSelect<true>;
-    'payload-imports': PayloadImportsSelect<false> | PayloadImportsSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -230,8 +226,12 @@ export interface Config {
     tasks: {
       generateDocumentThumbnails: TaskGenerateDocumentThumbnails;
       generateVideoThumbnails: TaskGenerateVideoThumbnails;
-      calculateSkillTagInterval: TaskCalculateSkillTagInterval;
-      calculateSkillTagType: TaskCalculateSkillTagType;
+      calculateSkillTag: TaskCalculateSkillTag;
+      calculateReadingTime: TaskCalculateReadingTime;
+      generateMeta: TaskGenerateMeta;
+      processImage: TaskProcessImage;
+      syncReferences: TaskSyncReferences;
+      revalidateDocument: TaskRevalidateDocument;
       generateBlogPostExcerpt: TaskGenerateBlogPostExcerpt;
       generateLocalizedResumeDocument: TaskGenerateLocalizedResumeDocument;
       generateResumeFilename: TaskGenerateResumeFilename;
@@ -245,8 +245,7 @@ export interface Config {
       seedCollection: TaskSeedCollection;
       syncSkillSorting: TaskSyncSkillSorting;
       buildRouteIndex: TaskBuildRouteIndex;
-      createCollectionExport: TaskCreateCollectionExport;
-      createCollectionImport: TaskCreateCollectionImport;
+      regenerate: TaskRegenerate;
       schedulePublish: TaskSchedulePublish;
       inline: {
         input: unknown;
@@ -331,12 +330,7 @@ export interface FeatureCardsBlock {
         size: 'third' | 'half' | 'twoThirds' | 'full';
         color:
           | 'primary'
-          | 'secondary'
-          | 'slate'
           | 'gray'
-          | 'zinc'
-          | 'neutral'
-          | 'stone'
           | 'red'
           | 'orange'
           | 'amber'
@@ -1438,8 +1432,12 @@ export interface PayloadJob {
           | 'inline'
           | 'generateDocumentThumbnails'
           | 'generateVideoThumbnails'
-          | 'calculateSkillTagInterval'
-          | 'calculateSkillTagType'
+          | 'calculateSkillTag'
+          | 'calculateReadingTime'
+          | 'generateMeta'
+          | 'processImage'
+          | 'syncReferences'
+          | 'revalidateDocument'
           | 'generateBlogPostExcerpt'
           | 'generateLocalizedResumeDocument'
           | 'generateResumeFilename'
@@ -1453,8 +1451,7 @@ export interface PayloadJob {
           | 'seedCollection'
           | 'syncSkillSorting'
           | 'buildRouteIndex'
-          | 'createCollectionExport'
-          | 'createCollectionImport'
+          | 'regenerate'
           | 'schedulePublish';
         taskID: string;
         input?:
@@ -1494,8 +1491,12 @@ export interface PayloadJob {
         | 'inline'
         | 'generateDocumentThumbnails'
         | 'generateVideoThumbnails'
-        | 'calculateSkillTagInterval'
-        | 'calculateSkillTagType'
+        | 'calculateSkillTag'
+        | 'calculateReadingTime'
+        | 'generateMeta'
+        | 'processImage'
+        | 'syncReferences'
+        | 'revalidateDocument'
         | 'generateBlogPostExcerpt'
         | 'generateLocalizedResumeDocument'
         | 'generateResumeFilename'
@@ -1509,8 +1510,7 @@ export interface PayloadJob {
         | 'seedCollection'
         | 'syncSkillSorting'
         | 'buildRouteIndex'
-        | 'createCollectionExport'
-        | 'createCollectionImport'
+        | 'regenerate'
         | 'schedulePublish'
       )
     | null;
@@ -1787,82 +1787,6 @@ export interface Redirect {
   origin?: ('manual' | 'slug-change') | null;
   updatedAt: string;
   createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "exports".
- */
-export interface Export {
-  id: string;
-  name?: string | null;
-  format: 'csv' | 'json';
-  limit?: number | null;
-  page?: number | null;
-  sort?: string | null;
-  sortOrder?: ('asc' | 'desc') | null;
-  drafts?: ('yes' | 'no') | null;
-  selectionToUse?: ('currentSelection' | 'currentFilters' | 'all') | null;
-  fields?: string[] | null;
-  collectionSlug: string;
-  where?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-imports".
- */
-export interface PayloadImport {
-  id: string;
-  collectionSlug: string;
-  importMode?: ('create' | 'update' | 'upsert') | null;
-  matchField?: string | null;
-  status?: ('pending' | 'completed' | 'partial' | 'failed') | null;
-  summary?: {
-    imported?: number | null;
-    updated?: number | null;
-    total?: number | null;
-    issues?: number | null;
-    issueDetails?:
-      | {
-          [k: string]: unknown;
-        }
-      | unknown[]
-      | string
-      | number
-      | boolean
-      | null;
-  };
-  prefix?: string | null;
-  _objectKey?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2415,66 +2339,6 @@ export interface RedirectsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "exports_select".
- */
-export interface ExportsSelect<T extends boolean = true> {
-  name?: T;
-  format?: T;
-  limit?: T;
-  page?: T;
-  sort?: T;
-  sortOrder?: T;
-  drafts?: T;
-  selectionToUse?: T;
-  fields?: T;
-  collectionSlug?: T;
-  where?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-imports_select".
- */
-export interface PayloadImportsSelect<T extends boolean = true> {
-  collectionSlug?: T;
-  importMode?: T;
-  matchField?: T;
-  status?: T;
-  summary?:
-    | T
-    | {
-        imported?: T;
-        updated?: T;
-        total?: T;
-        issues?: T;
-        issueDetails?: T;
-      };
-  prefix?: T;
-  _objectKey?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-jobs_select".
  */
 export interface PayloadJobsSelect<T extends boolean = true> {
@@ -2580,7 +2444,7 @@ export interface GeneralSettings {
    * This description is used for generating website metadata.  This description is also used as fallback if no document description is available.
    */
   description?: string | null;
-  defaultOpengraphImage?:
+  fallbackOgBackground?:
     | {
         slideType?: ('image' | 'video' | 'shader') | null;
         /**
@@ -2873,7 +2737,7 @@ export interface GeneralSettingsSelect<T extends boolean = true> {
   siteURL?: T;
   titleTemplate?: T;
   description?: T;
-  defaultOpengraphImage?:
+  fallbackOgBackground?:
     | T
     | {
         slideType?: T;
@@ -3106,7 +2970,9 @@ export interface CollectionsWidget {
  */
 export interface TaskGenerateDocumentThumbnails {
   input: {
-    documentId: string;
+    collection: string;
+    id: string;
+    ref?: string | null;
     maxThumbnails?: number | null;
   };
   output: {
@@ -3119,8 +2985,9 @@ export interface TaskGenerateDocumentThumbnails {
  */
 export interface TaskGenerateVideoThumbnails {
   input: {
-    videoId: string;
-    timestampInSeconds?: number | null;
+    collection: string;
+    id: string;
+    ref?: string | null;
   };
   output: {
     thumbnailIDs?: string[] | null;
@@ -3128,26 +2995,90 @@ export interface TaskGenerateVideoThumbnails {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TaskCalculateSkillTagInterval".
+ * via the `definition` "TaskCalculateSkillTag".
  */
-export interface TaskCalculateSkillTagInterval {
+export interface TaskCalculateSkillTag {
   input: {
-    skillTagId: string;
+    collection: string;
+    id: string;
+    ref?: string | null;
+    steps?: ('interval' | 'type')[] | null;
   };
   output: {
     interval?: number | null;
+    type?: string | null;
   };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TaskCalculateSkillTagType".
+ * via the `definition` "TaskCalculateReadingTime".
  */
-export interface TaskCalculateSkillTagType {
+export interface TaskCalculateReadingTime {
   input: {
-    skillTagId: string;
+    collection: string;
+    id: string;
+    ref?: string | null;
   };
   output: {
-    type?: string | null;
+    updated?: boolean | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskGenerateMeta".
+ */
+export interface TaskGenerateMeta {
+  input: {
+    collection: string;
+    id: string;
+    ref?: string | null;
+    steps?: ('title' | 'description')[] | null;
+  };
+  output: {
+    updated?: boolean | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskProcessImage".
+ */
+export interface TaskProcessImage {
+  input: {
+    collection: string;
+    id: string;
+    ref?: string | null;
+    steps?: ('sizes' | 'blur' | 'alt')[] | null;
+  };
+  output: {
+    updated?: boolean | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskSyncReferences".
+ */
+export interface TaskSyncReferences {
+  input: {
+    collection: string;
+    id: string;
+    ref?: string | null;
+  };
+  output: {
+    references?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskRevalidateDocument".
+ */
+export interface TaskRevalidateDocument {
+  input: {
+    collection: string;
+    id: string;
+    ref?: string | null;
+  };
+  output: {
+    updated?: boolean | null;
   };
 }
 /**
@@ -3156,7 +3087,9 @@ export interface TaskCalculateSkillTagType {
  */
 export interface TaskGenerateBlogPostExcerpt {
   input: {
-    postId: string;
+    collection: string;
+    id: string;
+    ref?: string | null;
   };
   output: {
     generated?: boolean | null;
@@ -3372,71 +3305,26 @@ export interface TaskBuildRouteIndex {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TaskCreateCollectionExport".
+ * via the `definition` "TaskRegenerate".
  */
-export interface TaskCreateCollectionExport {
+export interface TaskRegenerate {
   input: {
-    id: string;
-    name: string;
-    batchSize?: number | null;
-    collectionSlug:
-      | 'posts'
-      | 'topics'
-      | 'pages'
-      | 'users'
-      | 'images'
-      | 'videos'
-      | 'files'
-      | 'audios'
-      | 'resume-customers'
-      | 'resume-documents'
-      | 'resume-jobs'
-      | 'resume-projects'
-      | 'resume-skills'
-      | 'resume-skill-tags'
-      | 'document-references'
-      | 'redirects'
-      | 'exports'
-      | 'payload-imports';
-    drafts?: ('yes' | 'no') | null;
-    exportCollection: string;
-    fields?: string[] | null;
-    format: 'csv' | 'json';
-    limit?: number | null;
-    locale?: string | null;
-    maxLimit?: number | null;
-    page?: number | null;
-    sort?: string | null;
-    userCollection?: string | null;
-    userID?: string | null;
-    where?:
-      | {
-          [k: string]: unknown;
-        }
-      | unknown[]
-      | string
-      | number
-      | boolean
-      | null;
+    task:
+      | 'generateMeta'
+      | 'generateBlogPostExcerpt'
+      | 'calculateReadingTime'
+      | 'processImage'
+      | 'generateVideoThumbnails'
+      | 'generateDocumentThumbnails'
+      | 'calculateSkillTag'
+      | 'syncReferences'
+      | 'revalidateDocument';
+    collection: string;
+    steps?: string[] | null;
   };
-  output?: unknown;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TaskCreateCollectionImport".
- */
-export interface TaskCreateCollectionImport {
-  input: {
-    importId: string;
-    importCollection: string;
-    userID?: string | null;
-    userCollection?: string | null;
-    batchSize?: number | null;
-    debug?: boolean | null;
-    defaultVersionStatus?: ('draft' | 'published') | null;
-    maxLimit?: number | null;
+  output: {
+    queued?: number | null;
   };
-  output?: unknown;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

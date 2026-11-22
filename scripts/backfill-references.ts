@@ -22,8 +22,6 @@ const SKIPPED_COLLECTIONS = new Set<string>([
   CollectionSlug.PayloadMigrations,
   CollectionSlug.PayloadPreferences,
   CollectionSlug.PayloadQueryPresets,
-  CollectionSlug.PayloadExports,
-  CollectionSlug.PayloadImports,
   CollectionSlug.PayloadFolders,
 ])
 

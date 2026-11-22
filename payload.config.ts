@@ -5,7 +5,6 @@ import { fileURLToPath } from 'node:url'
 import { buildConfig } from 'payload'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { redisKVAdapter } from '@payloadcms/kv-redis'
-import { importExportPlugin } from '@payloadcms/plugin-import-export'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { s3Storage } from '@payloadcms/storage-s3'
 
@@ -224,41 +223,6 @@ export const config = buildConfig({
     referencesPlugin(),
     documentTasksPlugin(),
     redirectsPlugin(),
-    importExportPlugin({
-      overrideImportCollection: ({ collection }) => {
-        return {
-          ...collection,
-          slug: CollectionSlug.PayloadImports,
-        }
-      },
-      collections: [
-        CollectionSlug.BlogPosts,
-        CollectionSlug.BlogTopics,
-        CollectionSlug.Pages,
-        CollectionSlug.ResumeCustomers,
-        CollectionSlug.ResumeJobs,
-        CollectionSlug.ResumeProjects,
-        CollectionSlug.ResumeSkills,
-        CollectionSlug.ResumeSkillTags,
-      ].map((slug) => ({
-        slug,
-        export: {
-          format: 'json',
-          disableJobsQueue: true,
-          disableSave: true,
-          limit: 10000,
-          batchSize: 1000,
-        },
-        import: {
-          // Run synchronously in the same request so req.file.data is still
-          // available — avoids a URL round-trip to S3 that fails inside Docker.
-          disableJobsQueue: true,
-          defaultVersionStatus: 'published',
-          limit: 10000,
-          batchSize: 1000,
-        },
-      })),
-    }),
     // nestedDocsPlugin({
     //   collections: [CollectionSlug['ResumeSkills']],
     //
@@ -279,9 +243,6 @@ export const config = buildConfig({
         },
         [CollectionSlug.MediaAudios]: {
           prefix: CollectionSlug.MediaAudios,
-        },
-        [CollectionSlug.PayloadImports]: {
-          prefix: CollectionSlug.PayloadImports,
         },
       },
       useCompositePrefixes: true,

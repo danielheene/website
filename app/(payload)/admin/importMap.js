@@ -36,8 +36,7 @@ import { default as default_5cd5a0625b914484130ffe3d9b213fa8 } from '@/fields/Me
 import { default as default_a57516f3ad5847138e2e9cad77905a21 } from '@/fields/Meta/MetaDescriptionField/FieldComponent'
 import { default as default_12d303178d17fe8b227602206bf99ee0 } from '@/fields/SectionGroup/components/DescriptionComponent'
 import { SeedActions as SeedActions_51b46a0db5b98e49ecd919f9ce43dfec } from '@/components/AdminPanel/SeedActions'
-import { ExportListMenuItem as ExportListMenuItem_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
-import { ImportListMenuItem as ImportListMenuItem_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
+import { DocumentTasksMenu as DocumentTasksMenu_23f14744c123f90336499c36cea957c7 } from '@/components/AdminPanel/DocumentTasksMenu'
 import { default as default_739727f92d93200cec032c1e61a6cb15 } from '@/fields/Toggle/components/FieldComponent'
 import { default as default_22b4891c4f5fa760ee9f626882377967 } from '@/fields/Protected/components/FieldComponent'
 import { default as default_3eebcce1355034e6e200a781f1871c37 } from '@/fields/HeroSlides/Components/FilmstripEditor'
@@ -52,19 +51,8 @@ import { default as default_ee50e315ea91373bea7c5cab35816793 } from '@/fields/Bi
 import { TitleCell as TitleCell_3a407bf736e5866813b6184057396d3e } from '@/collections/ResumeSkills/components/TitleCell'
 import { Cell as Cell_822978a92ed8f57ad8d5da5db15f09dd } from '@/fields/SkillType/components/Cell'
 import { FieldComponent as FieldComponent_413a10a2944a606962b03541e8b89884 } from '@/fields/SkillType/components/FieldComponent'
+import { SyncSkillSortingAction as SyncSkillSortingAction_da283495eedb677fdd7a740b1ed467f2 } from '@/components/AdminPanel/SyncSkillSortingAction'
 import { TitleCell as TitleCell_eab0adc6b2c3bb5719752856cbc2ffde } from '@/collections/ResumeSkillTags/components/TitleCell'
-import { FormatField as FormatField_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
-import { LimitField as LimitField_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
-import { Page as Page_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
-import { SortBy as SortBy_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
-import { SortOrder as SortOrder_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
-import { SelectionToUseField as SelectionToUseField_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
-import { FieldsToExport as FieldsToExport_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
-import { CollectionField as CollectionField_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
-import { ExportPreview as ExportPreview_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
-import { ExportSaveButton as ExportSaveButton_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
-import { ImportPreview as ImportPreview_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
-import { ImportSaveButton as ImportSaveButton_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
 import { JobsQueueTabs as JobsQueueTabs_507e78068112f224b6312ac61b483f9c } from '@/components/AdminPanel/JobsQueueTabs'
 import { default as default_eab0cf681484e45124c7c61673362c49 } from '@/fields/Template/Components/FieldComponent'
 import { default as default_184096423d48b3396fdb451647a008e7 } from '@/fields/Duration/components/FieldComponent'
@@ -79,7 +67,6 @@ import { Nav as Nav_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminP
 import { Icon as Icon_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { Logo as Logo_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
 import { TooltipProvider as TooltipProvider_a316a6ec12a12cd0fe58ccec01a444ca } from '@/components/AdminPanel'
-import { ImportExportProvider as ImportExportProvider_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 import { StatusBannersWidget as StatusBannersWidget_520e3069c7e11d3b5b05991c8b487452 } from '@/widgets/StatusBannersWidget'
 import { ScheduledJobsWidget as ScheduledJobsWidget_5a82a9e565d2b9686dc0a96e9db621b7 } from '@/widgets/ScheduledJobsWidget'
@@ -126,8 +113,7 @@ export const importMap = {
   "@/fields/Meta/MetaDescriptionField/FieldComponent#default": default_a57516f3ad5847138e2e9cad77905a21,
   "@/fields/SectionGroup/components/DescriptionComponent#default": default_12d303178d17fe8b227602206bf99ee0,
   "@/components/AdminPanel/SeedActions#SeedActions": SeedActions_51b46a0db5b98e49ecd919f9ce43dfec,
-  "@payloadcms/plugin-import-export/rsc#ExportListMenuItem": ExportListMenuItem_cdf7e044479f899a31f804427d568b36,
-  "@payloadcms/plugin-import-export/rsc#ImportListMenuItem": ImportListMenuItem_cdf7e044479f899a31f804427d568b36,
+  "@/components/AdminPanel/DocumentTasksMenu#DocumentTasksMenu": DocumentTasksMenu_23f14744c123f90336499c36cea957c7,
   "@/fields/Toggle/components/FieldComponent#default": default_739727f92d93200cec032c1e61a6cb15,
   "@/fields/Protected/components/FieldComponent#default": default_22b4891c4f5fa760ee9f626882377967,
   "@/fields/HeroSlides/Components/FilmstripEditor#default": default_3eebcce1355034e6e200a781f1871c37,
@@ -142,19 +128,8 @@ export const importMap = {
   "@/collections/ResumeSkills/components/TitleCell#TitleCell": TitleCell_3a407bf736e5866813b6184057396d3e,
   "@/fields/SkillType/components/Cell#Cell": Cell_822978a92ed8f57ad8d5da5db15f09dd,
   "@/fields/SkillType/components/FieldComponent#FieldComponent": FieldComponent_413a10a2944a606962b03541e8b89884,
+  "@/components/AdminPanel/SyncSkillSortingAction#SyncSkillSortingAction": SyncSkillSortingAction_da283495eedb677fdd7a740b1ed467f2,
   "@/collections/ResumeSkillTags/components/TitleCell#TitleCell": TitleCell_eab0adc6b2c3bb5719752856cbc2ffde,
-  "@payloadcms/plugin-import-export/rsc#FormatField": FormatField_cdf7e044479f899a31f804427d568b36,
-  "@payloadcms/plugin-import-export/rsc#LimitField": LimitField_cdf7e044479f899a31f804427d568b36,
-  "@payloadcms/plugin-import-export/rsc#Page": Page_cdf7e044479f899a31f804427d568b36,
-  "@payloadcms/plugin-import-export/rsc#SortBy": SortBy_cdf7e044479f899a31f804427d568b36,
-  "@payloadcms/plugin-import-export/rsc#SortOrder": SortOrder_cdf7e044479f899a31f804427d568b36,
-  "@payloadcms/plugin-import-export/rsc#SelectionToUseField": SelectionToUseField_cdf7e044479f899a31f804427d568b36,
-  "@payloadcms/plugin-import-export/rsc#FieldsToExport": FieldsToExport_cdf7e044479f899a31f804427d568b36,
-  "@payloadcms/plugin-import-export/rsc#CollectionField": CollectionField_cdf7e044479f899a31f804427d568b36,
-  "@payloadcms/plugin-import-export/rsc#ExportPreview": ExportPreview_cdf7e044479f899a31f804427d568b36,
-  "@payloadcms/plugin-import-export/rsc#ExportSaveButton": ExportSaveButton_cdf7e044479f899a31f804427d568b36,
-  "@payloadcms/plugin-import-export/rsc#ImportPreview": ImportPreview_cdf7e044479f899a31f804427d568b36,
-  "@payloadcms/plugin-import-export/rsc#ImportSaveButton": ImportSaveButton_cdf7e044479f899a31f804427d568b36,
   "@/components/AdminPanel/JobsQueueTabs#JobsQueueTabs": JobsQueueTabs_507e78068112f224b6312ac61b483f9c,
   "@/fields/Template/Components/FieldComponent#default": default_eab0cf681484e45124c7c61673362c49,
   "@/fields/Duration/components/FieldComponent#default": default_184096423d48b3396fdb451647a008e7,
@@ -169,7 +144,6 @@ export const importMap = {
   "@/components/AdminPanel#Icon": Icon_a316a6ec12a12cd0fe58ccec01a444ca,
   "@/components/AdminPanel#Logo": Logo_a316a6ec12a12cd0fe58ccec01a444ca,
   "@/components/AdminPanel#TooltipProvider": TooltipProvider_a316a6ec12a12cd0fe58ccec01a444ca,
-  "@payloadcms/plugin-import-export/rsc#ImportExportProvider": ImportExportProvider_cdf7e044479f899a31f804427d568b36,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
   "@/widgets/StatusBannersWidget#StatusBannersWidget": StatusBannersWidget_520e3069c7e11d3b5b05991c8b487452,
   "@/widgets/ScheduledJobsWidget#ScheduledJobsWidget": ScheduledJobsWidget_5a82a9e565d2b9686dc0a96e9db621b7,
