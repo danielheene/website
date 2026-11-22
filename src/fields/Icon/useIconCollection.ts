@@ -2,7 +2,15 @@
 
 import { useEffect, useState } from 'react'
 
-import { EMPTY_COLLECTION, type IconCategory, type IconCollection } from './collection'
+import { ICONIFY_API } from '@/components/Icon/api'
+
+import {
+  type CollectionResponse,
+  EMPTY_COLLECTION,
+  type IconCategory,
+  type IconCollection,
+  parseCollection,
+} from './collection'
 
 export interface UseIconCollectionOptions {
   /** Iconify collection prefix, e.g. `simple-icons`. */
@@ -28,11 +36,8 @@ export interface UseIconCollectionResult {
 }
 
 /**
- * One collection's names, held for the page's lifetime.
- *
- * The server route already caches across requests and instances; this second
- * layer just spares a round trip when switching back to a tab already opened in
- * this session, and keeps the grid from flashing empty while a search runs.
+ * One collection's names, held for the page's lifetime: spares a round trip when switching back to
+ * a tab already opened in this session, and keeps the grid from flashing empty while a search runs.
  */
 const cache = new Map<string, IconCollection>()
 
@@ -80,15 +85,17 @@ export const useIconCollection = ({
 
     const load = async () => {
       try {
-        // the route proxies Iconify and caches the parsed result server-side,
-        // so this receives the normalised shape ready to use
-        const response = await fetch(`/api/icons/collection?prefix=${encodeURIComponent(prefix)}`, {
-          signal: controller.signal,
-        })
+        const response = await fetch(
+          `${ICONIFY_API}/collection?prefix=${encodeURIComponent(prefix)}`,
+          {
+            signal: controller.signal,
+          },
+        )
 
         if (!response.ok) throw new Error(`Icon collection failed (HTTP ${response.status})`)
 
-        const resolved = (await response.json()) as IconCollection
+        // SAFETY: the Iconify API's documented `/collection` response
+        const resolved = parseCollection(prefix, (await response.json()) as CollectionResponse)
 
         cache.set(prefix, resolved)
         setCollection(resolved)

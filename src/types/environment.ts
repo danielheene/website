@@ -68,9 +68,9 @@ export const envSchema = z.object({
   /**
    * Self-hosted Iconify API.
    *
-   * Public because the browser resolves icon SVGs and runs picker searches
-   * against it directly; the cached `/api/icons/collection` route uses the same
-   * origin server-side.
+   * Public because the browser resolves icon SVGs, loads the picker's collections
+   * and runs its searches against it directly; the email icon route
+   * (`/api/icons/png`) uses the same origin server-side.
    */
   NEXT_PUBLIC_ICONIFY_API: z.url().default('https://icons.heene.io'),
 

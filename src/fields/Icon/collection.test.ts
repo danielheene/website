@@ -1,34 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { isAllowedPrefix, parseCollection } from './collection'
-import { FAVORITE_COLLECTIONS } from './favorites'
-
-describe('isAllowedPrefix', () => {
-  it('accepts every collection the picker offers as a tab', () => {
-    // a tab the picker renders but the route rejects would be a dead tab
-    for (const collection of FAVORITE_COLLECTIONS) {
-      expect(isAllowedPrefix(collection.prefix, FAVORITE_COLLECTIONS)).toBe(true)
-    }
-  })
-
-  it('rejects a missing prefix', () => {
-    expect(isAllowedPrefix(null, FAVORITE_COLLECTIONS)).toBe(false)
-    expect(isAllowedPrefix('', FAVORITE_COLLECTIONS)).toBe(false)
-  })
-
-  it('rejects a collection outside the favorites', () => {
-    // the prefix reaches an upstream fetch URL, so anything unlisted must not
-    // pass — otherwise the route proxies (and caches) arbitrary requests
-    expect(isAllowedPrefix('some-other-set', FAVORITE_COLLECTIONS)).toBe(false)
-  })
-
-  it('rejects traversal and injection attempts outright', () => {
-    expect(isAllowedPrefix('../../etc/passwd', FAVORITE_COLLECTIONS)).toBe(false)
-    expect(isAllowedPrefix('simple-icons&foo=bar', FAVORITE_COLLECTIONS)).toBe(false)
-    // near-misses must not pass either
-    expect(isAllowedPrefix('simple-icons ', FAVORITE_COLLECTIONS)).toBe(false)
-  })
-})
+import { parseCollection } from './collection'
 
 describe('parseCollection', () => {
   it('qualifies flat sets and declares no categories', () => {

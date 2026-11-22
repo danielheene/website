@@ -1,11 +1,4 @@
-/**
- * Shape of an Iconify `/collection` response and the normalisation applied to
- * it, shared by the cached route handler and the client hook that consumes it.
- *
- * Deliberately free of `'use client'` and of any React import: the route
- * handler runs on the server, so this module has to be importable from both
- * sides.
- */
+/** Shape of an Iconify `/collection` response and the normalisation the picker applies to it. */
 
 /** One category of a collection, as offered by the picker's category filter. */
 export interface IconCategory {
@@ -38,21 +31,6 @@ export const EMPTY_COLLECTION: IconCollection = {
   icons: [],
   categories: [],
 }
-
-/**
- * Narrow an untrusted `?prefix=` to one of the favorite collections.
- *
- * The prefix ends up in an upstream `fetch` URL, so passing it through unchecked
- * would make the route an open proxy to any Iconify collection — and its cache a
- * place anyone could fill by requesting arbitrary prefixes. Only the sets the
- * picker actually offers as tabs are proxied.
- */
-export const isAllowedPrefix = (
-  prefix: string | null,
-  allowed: readonly {
-    prefix: string
-  }[],
-): prefix is string => Boolean(prefix) && allowed.some((entry) => entry.prefix === prefix)
 
 /**
  * Normalise one `/collection` response into a flat list plus its categories.
