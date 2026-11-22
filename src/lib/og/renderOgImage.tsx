@@ -27,9 +27,9 @@ const getRenderer = (): Promise<Renderer> => {
     const renderer = new Renderer()
 
     const [sans, mono, frama] = await Promise.all([
-      readFile(join(process.cwd(), 'src/fonts/pp-supply-sans/files/pp-supply-sans-500.ttf')),
-      readFile(join(process.cwd(), 'src/fonts/pp-supply-mono/files/pp-supply-mono-400.ttf')),
-      readFile(join(process.cwd(), 'src/fonts/pp-frama/files/pp-frama-400-normal.ttf')),
+      readFile(join(process.cwd(), 'public/fonts/pp-supply-sans/pp-supply-sans-500.ttf')),
+      readFile(join(process.cwd(), 'public/fonts/pp-supply-mono/pp-supply-mono-400.ttf')),
+      readFile(join(process.cwd(), 'public/fonts/pp-frama/pp-frama-400-normal.ttf')),
     ])
 
     await renderer.registerFont({
