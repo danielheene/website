@@ -9,7 +9,7 @@ import { hasRoute } from '@/lib/routeIndex/routeIndexStore'
 const DRAFT_MODE_COOKIE = '__prerender_bypass'
 
 /** Paths that must never be redirected, regardless of stored rows. */
-const REDIRECT_EXEMPT = ['/admin', '/api', '/_next', '/next']
+const REDIRECT_EXEMPT = ['/admin', '/api', '/_next', '/next', '/stats']
 
 /**
  * Resolves a redirect for the current request.

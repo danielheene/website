@@ -3,8 +3,9 @@ import { generateContentPath } from '@/lib/generateContentPath'
 /** The path the proxy rewrites unknown paths to; its page 404s while prerendering. */
 export const NOT_FOUND_PATH = '/404'
 
-// Framework, admin and API routes: never in the index, always let through.
-const UNVALIDATED_PREFIXES = ['/_next', '/admin', '/api']
+// Framework, admin and API routes, and the `/stats` rewrite to Umami (the proxy runs before
+// rewrites): never in the index, always let through.
+const UNVALIDATED_PREFIXES = ['/_next', '/admin', '/api', '/stats']
 
 /** Drops trailing slashes, keeping `/` itself. */
 export const normalizePath = (pathname: string): string =>

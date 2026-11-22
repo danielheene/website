@@ -24,6 +24,8 @@ describe('isValidatedPath', () => {
     '/admin/collections/pages',
     '/api',
     '/api/health',
+    // the Umami collect endpoint behind the `/stats` rewrite
+    '/stats/api/send',
     '/robots.txt',
     '/blog/feed.xml',
     '/download/resume.pdf',
