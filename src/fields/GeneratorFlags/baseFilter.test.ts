@@ -100,3 +100,45 @@ describe('scopeMediaAssets', () => {
     expect(inList).not.toContain('unsplash-import')
   })
 })
+
+const ROUTES = {
+  admin: '/admin',
+  api: '/api',
+}
+
+const atURL = (url: string, query: Record<string, unknown> = {}) =>
+  ({
+    req: {
+      url,
+      query,
+      payload: {
+        config: {
+          routes: ROUTES,
+        },
+      },
+    },
+  }) as unknown as BaseFilterArgs
+
+describe('scopeMediaAssets in list drawers', () => {
+  it('leaves a drawer request unfiltered, so the drawer lists every file', () => {
+    // `render-list` builds its request without a route: the URL is the server root
+    expect(scopeMediaAssets(atURL('http://localhost:3000'))).toBeNull()
+    expect(scopeMediaAssets(atURL('http://localhost:3000/'))).toBeNull()
+  })
+
+  it('still scopes the list page and REST requests', () => {
+    const uploaded = scopeMediaAssets(withScope())
+
+    expect(scopeMediaAssets(atURL('http://localhost:3000/admin/collections/images'))).toEqual(
+      uploaded,
+    )
+    expect(scopeMediaAssets(atURL('http://localhost:3000/api/images'))).toEqual(uploaded)
+    expect(
+      scopeMediaAssets(
+        atURL('http://localhost:3000/admin/collections/images?scope=generated', {
+          [MEDIA_SCOPE_PARAM]: MediaScope.Generated,
+        }),
+      ),
+    ).toEqual(scopeMediaAssets(withScope(MediaScope.Generated)))
+  })
+})

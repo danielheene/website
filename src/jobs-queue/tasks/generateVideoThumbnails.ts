@@ -1,5 +1,9 @@
 import type { TaskConfig } from 'payload'
 
+import {
+  documentTaskConcurrency,
+  documentTaskInputSchema,
+} from '@/jobs-queue/lib/documentTaskConfig'
 import { handlerPath } from '@/jobs-queue/lib/handlerPath'
 import { TaskSlug } from '@/types/jobs-queue'
 
@@ -16,23 +20,8 @@ export const generateVideoThumbnails: TaskConfig<TaskSlug['GenerateVideoThumbnai
   slug: TaskSlug.GenerateVideoThumbnails,
   label: 'Generate Video Thumbnails',
   retries: 3,
-  concurrency: {
-    key: ({ input }) => `${TaskSlug.GenerateVideoThumbnails}:${input.videoId}`,
-    exclusive: true,
-    supersedes: true,
-  },
-  inputSchema: [
-    {
-      name: 'videoId',
-      type: 'text',
-      required: true,
-    },
-    {
-      name: 'timestampInSeconds',
-      type: 'number',
-      defaultValue: 0,
-    },
-  ],
+  concurrency: documentTaskConcurrency(TaskSlug.GenerateVideoThumbnails),
+  inputSchema: documentTaskInputSchema(TaskSlug.GenerateVideoThumbnails),
   outputSchema: [
     {
       name: 'thumbnailIDs',

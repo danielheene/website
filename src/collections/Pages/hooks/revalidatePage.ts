@@ -4,7 +4,7 @@ import { revalidateCache } from '@/lib/revalidation/revalidateCache'
 import { CollectionSlug } from '@/types/collections'
 import type { Page } from '@/types/payload'
 
-const toPagePath = (slug: string) => (slug === 'home' ? '/' : `/${slug}`)
+export const toPagePath = (slug: string) => (slug === 'home' ? '/' : `/${slug}`)
 
 export const revalidatePage: CollectionAfterChangeHook<Page> = async ({
   doc,

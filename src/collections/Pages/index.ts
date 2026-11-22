@@ -18,6 +18,7 @@ import { TitleField } from '@/fields/Title'
 import { authenticated } from '@/lib/access/authenticated'
 import { authenticatedOrPublished } from '@/lib/access/authenticatedOrPublished'
 import { generatePreviewPath } from '@/lib/generatePreviewPath'
+import { enqueueGenerateMeta } from '@/lib/payloadHooks/enqueueGenerateMeta'
 import { routeIndexHooks } from '@/lib/payloadHooks/routeIndexHooks'
 import { AdminGroup } from '@/types/admin-panel'
 import { BlockSlug } from '@/types/blocks'
@@ -252,7 +253,11 @@ export const Pages: CollectionConfig<CollectionSlug['Pages']> = {
     GeneratorFlagsField(),
   ],
   hooks: {
-    afterChange: [revalidatePage, routeIndexHook.afterChange],
+    afterChange: [
+      revalidatePage,
+      enqueueGenerateMeta(CollectionSlug.Pages),
+      routeIndexHook.afterChange,
+    ],
     afterDelete: [routeIndexHook.afterDelete],
   },
   trash: true,

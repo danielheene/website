@@ -1,6 +1,8 @@
 import type { CollectionAfterChangeHook } from 'payload'
 
-import { QueueSlug, TaskSlug } from '@/types/jobs-queue'
+import { enqueueDocumentTask } from '@/lib/documentTasks/enqueueDocumentTask'
+import { CollectionSlug } from '@/types/collections'
+import { TaskSlug } from '@/types/jobs-queue'
 import { MediaFile } from '@/types/payload'
 
 export const generateThumbnails: CollectionAfterChangeHook<MediaFile> = async ({
@@ -15,13 +17,15 @@ export const generateThumbnails: CollectionAfterChangeHook<MediaFile> = async ({
   // page thumbnails are rendered with pdf.js
   if (doc.mimeType !== 'application/pdf') return doc
 
-  if ((operation === 'create' || operation === 'update') && doc.checksum !== previousDoc.checksum) {
-    await req.payload.jobs.queue({
+  if (
+    (operation === 'create' || operation === 'update') &&
+    doc.checksum !== previousDoc?.checksum
+  ) {
+    await enqueueDocumentTask({
+      payload: req.payload,
       task: TaskSlug.GenerateDocumentThumbnails,
-      queue: QueueSlug.HookHandler,
-      input: {
-        documentId: doc.id,
-      },
+      collection: CollectionSlug.MediaFiles,
+      doc,
     })
   }
 }

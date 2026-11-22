@@ -10,14 +10,17 @@ import type {
 import { APIError } from 'payload'
 
 import { References } from '@/collections/References'
-import {
-  clearReferences,
-  findTargetUsages,
-  syncReferences,
-  type TargetUsage,
-} from '@/lib/references'
-import { revalidateCache } from '@/lib/revalidation/revalidateCache'
+import { enqueueDocumentTask } from '@/lib/documentTasks/enqueueDocumentTask'
+import { findTargetUsages, syncReferences, type TargetUsage } from '@/lib/references'
 import { CollectionSlug } from '@/types/collections'
+import { TaskSlug } from '@/types/jobs-queue'
+
+import { ALWAYS_EXCLUDED } from './excludedCollections'
+
+/** What the plugin leaves in `config.custom.references` for the `syncReferences` task. */
+export type ReferencesCustomConfig = {
+  trackCollections?: string[]
+}
 
 export interface ReferencesPluginOptions {
   /** Skip tracking for these collection slugs. */
@@ -50,20 +53,6 @@ export interface ReferencesPluginOptions {
   preventReferencedDeletes?: boolean
   enabled?: boolean
 }
-
-/** Collections that must never be scanned — the table itself, plus churn-heavy internals. */
-const ALWAYS_EXCLUDED = new Set<string>([
-  CollectionSlug.DocumentReferences,
-  CollectionSlug.PayloadJobs,
-  CollectionSlug.PayloadKVS,
-  CollectionSlug.PayloadLockedDocuments,
-  CollectionSlug.PayloadMigrations,
-  CollectionSlug.PayloadPreferences,
-  CollectionSlug.PayloadQueryPresets,
-  CollectionSlug.PayloadExports,
-  CollectionSlug.PayloadImports,
-  CollectionSlug.PayloadFolders,
-])
 
 /** How many usages are named before the rest are summarised as a count. */
 const MAX_LISTED_USAGES = 5
@@ -132,75 +121,40 @@ const describeUsages = async (
   return remainder > 0 ? `${described.join(', ')} and ${remainder} more` : described.join(', ')
 }
 
-const withReferenceTracking = (
-  collection: CollectionConfig,
-  blocks?: Block[],
-  only?: string[],
-): CollectionConfig => ({
+const withReferenceTracking = (collection: CollectionConfig): CollectionConfig => ({
   ...collection,
   hooks: {
     ...collection.hooks,
     /**
-     *    Tracking runs *before* the collection's own hooks.
+     *    Queues the `syncReferences` task, which reads the saved document and rewrites its rows
+     *    (or clears them once the document is gone), then clears the media credits' cache.
      *
-     *    Payload awaits afterChange hooks in order, so anything that throws
-     *    earlier in the chain skips everything after it. Several collections
-     *    revalidate paths here, which throws outside a Next.js request scope
-     *    (Local API, jobs, seeds) — appending would silently cost the save its
-     *    references while the write itself succeeded.
+     *    Queued *before* the collection's own hooks: Payload awaits afterChange hooks in order,
+     *    so anything that throws earlier in the chain would skip it.
      */
     afterChange: [
       async ({ doc, req, context }) => {
         if (context?.skipReferences) return doc
 
-        try {
-          await syncReferences({
-            payload: req.payload,
-            req,
-            sourceCollection: collection.slug,
-            sourceId: String(doc.id),
-            data: doc,
-            fields: collection.fields,
-            blocks,
-            only,
-          })
-        } catch (error) {
-          // name the source: a bare failure here is hard to trace back, since
-          // the save itself still looks like it succeeded
-          req.payload.logger.error(
-            `[references] failed to sync ${collection.slug}/${doc.id}: ${
-              error instanceof Error ? error.message : String(error)
-            }`,
-          )
-          throw error
-        }
-
-        // the media credits list where each file is used
-        if (!context?.skipRevalidate) {
-          await revalidateCache({
-            tags: [CollectionSlug.DocumentReferences],
-          })
-        }
+        await enqueueDocumentTask({
+          payload: req.payload,
+          task: TaskSlug.SyncReferences,
+          collection: collection.slug,
+          doc,
+        })
 
         return doc
       },
       ...(collection.hooks?.afterChange ?? []),
     ],
-    // likewise first, so cleanup is not skipped by an earlier hook throwing
     afterDelete: [
-      async ({ doc, req, context }) => {
-        await clearReferences({
+      async ({ doc, req }) => {
+        await enqueueDocumentTask({
           payload: req.payload,
-          req,
-          sourceCollection: collection.slug,
-          sourceId: String(doc.id),
+          task: TaskSlug.SyncReferences,
+          collection: collection.slug,
+          doc,
         })
-
-        if (!context?.skipRevalidate) {
-          await revalidateCache({
-            tags: [CollectionSlug.DocumentReferences],
-          })
-        }
 
         return doc
       },
@@ -326,11 +280,18 @@ export const referencesPlugin =
 
     return {
       ...incomingConfig,
+      // read by the `syncReferences` task, which has the config but not these options
+      custom: {
+        ...incomingConfig.custom,
+        references: {
+          trackCollections,
+        } satisfies ReferencesCustomConfig,
+      },
       collections: [
         ...(incomingConfig.collections ?? []).map((collection) => {
           if (excludedCollections.has(collection.slug)) return collection
 
-          const tracked = withReferenceTracking(collection, incomingConfig.blocks, trackCollections)
+          const tracked = withReferenceTracking(collection)
 
           // undefined (the default) guards everything tracked; an explicit list
           // narrows it, and [] disables the guard without touching tracking

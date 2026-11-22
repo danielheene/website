@@ -14,6 +14,7 @@ import { ToggleField } from '@/fields/Toggle'
 import { authenticated } from '@/lib/access/authenticated'
 import { authenticatedOrPublished } from '@/lib/access/authenticatedOrPublished'
 import { generatePreviewPath } from '@/lib/generatePreviewPath'
+import { enqueueGenerateMeta } from '@/lib/payloadHooks/enqueueGenerateMeta'
 import { routeIndexHooks } from '@/lib/payloadHooks/routeIndexHooks'
 import { AdminGroup } from '@/types/admin-panel'
 import { RESERVED_TOPIC_SLUGS } from '@/types/blog'
@@ -114,7 +115,11 @@ export const BlogTopics: CollectionConfig<CollectionSlug['BlogTopics']> = {
     update: authenticated,
   },
   hooks: {
-    afterChange: [revalidateBlogTopic, routeIndexHook.afterChange],
+    afterChange: [
+      revalidateBlogTopic,
+      enqueueGenerateMeta(CollectionSlug.BlogTopics),
+      routeIndexHook.afterChange,
+    ],
     afterDelete: [routeIndexHook.afterDelete],
   },
   fields: [

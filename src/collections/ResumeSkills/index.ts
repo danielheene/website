@@ -66,6 +66,7 @@ export const ResumeSkills: CollectionConfig<CollectionSlug['ResumeSkills']> = {
       limits: [50, 100],
     },
     components: {
+      listMenuItems: ['@/components/AdminPanel/SyncSkillSortingAction#SyncSkillSortingAction'],
       views: {
         edit: {
           versions: {

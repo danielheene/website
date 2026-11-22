@@ -10,8 +10,7 @@ import { revalidateMediaUsageHooks } from '@/lib/payloadHooks/revalidateMediaUsa
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 
-import { generateAlt } from './hooks/generateAlt'
-import { generateBlurDataURL } from './hooks/generateBlurDataURL'
+import { enqueueProcessImage } from './hooks/enqueueProcessImage'
 
 const mediaUsageHooks = revalidateMediaUsageHooks(CollectionSlug.MediaImages)
 
@@ -25,8 +24,8 @@ export const MediaImages: CollectionConfig<CollectionSlug['MediaImages']> = {
     plural: 'Images',
   },
   hooks: {
-    beforeChange: [generateChecksum, generateBlurDataURL, generateAlt],
-    afterChange: [mediaUsageHooks.afterChange],
+    beforeChange: [generateChecksum],
+    afterChange: [enqueueProcessImage, mediaUsageHooks.afterChange],
     afterDelete: [mediaUsageHooks.afterDelete],
   },
   admin: {
@@ -75,7 +74,7 @@ export const MediaImages: CollectionConfig<CollectionSlug['MediaImages']> = {
         name: 'thumbnail',
         width: 500,
         height: 500,
-        fit: 'contain',
+        fit: 'cover',
         background: 'transparent',
         position: 'center',
         generateImageName: ({ originalName, sizeName, extension }) => {

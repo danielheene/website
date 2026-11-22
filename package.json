@@ -44,6 +44,7 @@
     "packages:update": "syncpack update",
     "prepare": "lefthook install",
     "refs:backfill": "bun run _payload run scripts/backfill-references.ts",
+    "regenerate": "bun run _payload run scripts/regenerate.ts --",
     "release": "semantic-release",
     "release:dry-run": "semantic-release --dry-run --no-ci",
     "seed:pages": "bun run _payload run scripts/seed-pages.ts",

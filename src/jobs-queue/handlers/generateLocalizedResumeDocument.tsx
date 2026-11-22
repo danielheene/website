@@ -1,5 +1,6 @@
 import type { TaskHandler } from 'payload'
 
+import { CollectionSlug } from '@/types/collections'
 import { TaskSlug } from '@/types/jobs-queue'
 
 const ALL_PAGES = Number.MAX_SAFE_INTEGER
@@ -46,7 +47,8 @@ const run: TaskHandler<TaskSlug['GenerateLocalizedResumeDocument']> = async ({
     `BuildResumeThumbnails:${locale}`,
     {
       input: {
-        documentId: resumeFileId,
+        collection: CollectionSlug.MediaFiles,
+        id: resumeFileId,
         maxThumbnails: ALL_PAGES,
       },
     },

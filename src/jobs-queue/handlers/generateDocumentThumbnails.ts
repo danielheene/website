@@ -21,7 +21,7 @@ import { TaskSlug } from '@/types/jobs-queue'
  * delete is best-effort so a failure there can't block regeneration.
  */
 const run: TaskHandler<TaskSlug['GenerateDocumentThumbnails']> = async ({
-  input: { documentId, maxThumbnails },
+  input: { id: documentId, maxThumbnails },
   req: { payload },
 }) => {
   payload.logger.info(`Generating thumbnails for document: ${documentId}`)

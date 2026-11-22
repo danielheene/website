@@ -1,4 +1,4 @@
-import type { BaseFilter, Where } from 'payload'
+import type { BaseFilter, PayloadRequest, Where } from 'payload'
 
 import { GENERATED_ASSET_FLAGS } from './index'
 
@@ -54,9 +54,29 @@ export const buildMediaScopeWhere = (scope: MediaScope): Where | null => {
  * Scopes the media collections to hand-uploaded assets, task-generated ones, or
  * everything.
  *
- * Applies to the list view *and* to relationship pickers and Lexical internal
- * links — generated thumbnails are no more wanted in a link picker than in the
- * list, which is what makes this preferable to a query preset.
+ * Applies to the list view *and* to Lexical internal links — generated
+ * thumbnails are no more wanted in a link picker than in the list, which is
+ * what makes this preferable to a query preset. List drawers are left
+ * unfiltered (see `isListDrawerRequest`).
  */
 export const scopeMediaAssets: BaseFilter = ({ req }) =>
-  buildMediaScopeWhere(resolveMediaScope(req.query?.[MEDIA_SCOPE_PARAM]))
+  isListDrawerRequest(req)
+    ? null
+    : buildMediaScopeWhere(resolveMediaScope(req.query?.[MEDIA_SCOPE_PARAM]))
+
+/**
+ * Whether the request renders a list drawer (a picker opened from a field).
+ *
+ * Drawers load their list through Payload's `render-list` server function, whose request is built
+ * without a route (`initReq` → `createLocalReq`), so its URL sits at the server root and carries no
+ * `?scope=`. Page renders sit under the admin route and REST requests under the API route; both keep
+ * the scope. Drawers always list every file, and `MediaScopeTabs` stays hidden there.
+ */
+export const isListDrawerRequest = (req: PayloadRequest): boolean => {
+  if (!req.url) return false
+
+  const { pathname } = new URL(req.url, 'http://localhost')
+  const routes = req.payload?.config?.routes
+
+  return Boolean(routes) && !pathname.startsWith(routes.admin) && !pathname.startsWith(routes.api)
+}

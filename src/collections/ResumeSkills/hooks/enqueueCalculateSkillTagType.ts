@@ -3,24 +3,26 @@ import type { CollectionAfterChangeHook, CollectionAfterDeleteHook, PayloadReque
 import { difference, get, union } from 'lodash-es'
 
 import { isUnpublishedDraftSave } from '@/collections/shared/isUnpublishedDraftSave'
-import { QueueSlug, TaskSlug } from '@/types/jobs-queue'
+import { enqueueDocumentTaskById } from '@/lib/documentTasks/enqueueDocumentTask'
+import { CollectionSlug } from '@/types/collections'
+import { TaskSlug } from '@/types/jobs-queue'
 import type { ResumeSkillData } from '@/types/payload'
 
 const queueForTags = async (req: PayloadRequest, skillTagIds: string[]) => {
   for (const skillTagId of skillTagIds) {
-    await req.payload.jobs.queue({
-      task: TaskSlug.CalculateSkillTagType,
-      input: {
-        skillTagId,
-      },
-      queue: QueueSlug.HookHandler,
+    await enqueueDocumentTaskById({
+      payload: req.payload,
+      task: TaskSlug.CalculateSkillTag,
+      collection: CollectionSlug.ResumeSkillTags,
+      id: skillTagId,
+      steps: ['type'],
     })
   }
 }
 
 /**
- * Re-resolves the type of every skill tag a skill change can affect (see
- * `calculateSkillTagType`).
+ * Re-resolves the type of every skill tag a skill change can affect (the `type` step of
+ * `calculateSkillTag`).
  *
  * A changed skill type, publish state or trash state moves every tag the skill
  * had before or has now; otherwise only the tags added or removed need it.

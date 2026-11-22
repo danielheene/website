@@ -10,7 +10,12 @@ type FieldComponentClientProps = {
   titlePath: string
 } & TextFieldClientProps
 
-export const FieldComponentClient = ({ path, field, titlePath }: FieldComponentClientProps) => {
+export const FieldComponentClient = ({
+  path,
+  field,
+  titlePath,
+  readOnly,
+}: FieldComponentClientProps) => {
   const prevTitle = useRef<string>(null)
 
   const { value: title } = useField<string>({
@@ -24,11 +29,15 @@ export const FieldComponentClient = ({ path, field, titlePath }: FieldComponentC
   useEffect(() => {
     if (!title || title === prevTitle.current) return
 
-    Promise.resolve(generateMetaTitle(title)).then((nextValue) => {
-      setValue(nextValue)
-      prevTitle.current = title
-    })
+    void generateMetaTitle(title)
+      .then((nextValue) => {
+        setValue(nextValue)
+        prevTitle.current = title
+      })
+      .catch((error) => {
+        console.error(error)
+      })
   }, [title, setValue])
 
-  return <TextField path={path} field={field} />
+  return <TextField path={path} field={field} readOnly={readOnly} />
 }

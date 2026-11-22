@@ -304,7 +304,6 @@ export const renderTemplateCore = async ({
                   truncated = next
                 }
 
-                // a first word longer than the limit is cut mid-word
                 return `${truncated || value.slice(0, maxLength - 1)}…`
               }
             }

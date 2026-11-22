@@ -20,6 +20,7 @@ import { TASKS } from '@/jobs-queue/tasks'
 import { WORKFLOWS } from '@/jobs-queue/workflows'
 import { authenticated } from '@/lib/access/authenticated'
 import { useSendAdapter } from '@/lib/useSendAdapter'
+import { documentTasksPlugin } from '@/plugins/documentTasks'
 import { redirectsPlugin } from '@/plugins/redirects'
 import { referencesPlugin } from '@/plugins/references'
 import { CollectionSlug } from '@/types/collections'
@@ -221,6 +222,7 @@ export const config = buildConfig({
   localization: false,
   plugins: [
     referencesPlugin(),
+    documentTasksPlugin(),
     redirectsPlugin(),
     importExportPlugin({
       overrideImportCollection: ({ collection }) => {

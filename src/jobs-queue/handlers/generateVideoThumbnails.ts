@@ -77,7 +77,7 @@ const sampleToPng = async (sample: VideoSample) => {
  * block regeneration.
  */
 const run: TaskHandler<TaskSlug['GenerateVideoThumbnails']> = async ({
-  input: { videoId, timestampInSeconds },
+  input: { id: videoId },
   req: { payload },
 }) => {
   const video = await payload.findByID({
@@ -104,7 +104,7 @@ const run: TaskHandler<TaskSlug['GenerateVideoThumbnails']> = async ({
 
   const sample = await extractThumbnail({
     data,
-    timestampInSeconds: timestampInSeconds ?? 0,
+    timestampInSeconds: 0,
   })
 
   const { width, height, buffer } = await sampleToPng(sample).finally(() => sample.close())

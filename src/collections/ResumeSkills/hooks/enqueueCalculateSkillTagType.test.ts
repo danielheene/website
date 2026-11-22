@@ -23,13 +23,17 @@ const createReq = () => {
         jobs: {
           queue,
         },
+        // the tag's slug for the job key; a tag without one falls back to its id
+        findByID: vi.fn(async () => null),
+        // no queued job to merge steps with
+        find: vi.fn(async () => ({ docs: [] })),
       },
     },
   }
 }
 
 const queuedTagIds = (queue: ReturnType<typeof vi.fn>) =>
-  queue.mock.calls.map(([args]) => args.input.skillTagId).sort()
+  queue.mock.calls.map(([args]) => args.input.id).sort()
 
 // oxlint-disable-next-line typescript/no-explicit-any -- hooks only read the fields these tests pass
 type HookArgs = any
@@ -54,9 +58,12 @@ describe('enqueueCalculateSkillTagType', () => {
 
     expect(queuedTagIds(queue)).toEqual(['a', 'c'])
     expect(queue).toHaveBeenCalledWith({
-      task: TaskSlug.CalculateSkillTagType,
+      task: TaskSlug.CalculateSkillTag,
       input: {
-        skillTagId: 'a',
+        collection: 'resume-skill-tags',
+        id: 'a',
+        ref: 'a',
+        steps: ['type'],
       },
       queue: QueueSlug.HookHandler,
     })

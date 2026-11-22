@@ -12,7 +12,6 @@ export const MetaTitleField = ({ titlePath }: MetaTitleFieldProps): TextField =>
   type: 'text',
   defaultValue: '',
   admin: {
-    readOnly: true,
     disableListColumn: true,
     disableBulkEdit: true,
     disableListFilter: true,
@@ -22,12 +21,13 @@ export const MetaTitleField = ({ titlePath }: MetaTitleFieldProps): TextField =>
         path: '@/fields/Meta/MetaTitleField/FieldComponent',
         serverProps: {
           titlePath,
+          readOnly: true,
         },
       },
     },
   },
   hooks: {
-    beforeValidate: [generateMetaTitleHook(titlePath)],
+    // a missing title still reads as the rendered template; saves queue `generateMeta` (enqueueGenerateMeta)
     afterRead: [generateMetaTitleHook(titlePath)],
   },
 })

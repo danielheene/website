@@ -10,8 +10,16 @@ export const FieldComponent: TextFieldServerComponent = async ({
   path,
   clientField,
   titlePath,
+  readOnly,
 }: TitleFieldProps) => {
-  return <FieldComponentClient field={clientField} path={path} titlePath={titlePath} />
+  return (
+    <FieldComponentClient
+      field={clientField}
+      path={path}
+      titlePath={titlePath}
+      readOnly={readOnly}
+    />
+  )
 }
 
 export default FieldComponent

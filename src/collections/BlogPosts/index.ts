@@ -14,13 +14,14 @@ import { TitleField } from '@/fields/Title'
 import { authenticated } from '@/lib/access/authenticated'
 import { authenticatedOrPublished } from '@/lib/access/authenticatedOrPublished'
 import { generatePreviewPath } from '@/lib/generatePreviewPath'
+import { enqueueGenerateMeta } from '@/lib/payloadHooks/enqueueGenerateMeta'
 import { routeIndexHooks } from '@/lib/payloadHooks/routeIndexHooks'
 import { AdminGroup } from '@/types/admin-panel'
 import { CollectionSlug } from '@/types/collections'
 import { BlogPostData } from '@/types/payload'
 
+import { enqueueCalculateReadingTime } from './hooks/enqueueCalculateReadingTime'
 import { enqueueGenerateExcerpt } from './hooks/enqueueGenerateExcerpt'
-import { generateReadingTime } from './hooks/generateReadingTime'
 import { revalidateBlogPost } from './hooks/revalidateBlogPost'
 
 const routeIndexHook = routeIndexHooks(CollectionSlug.BlogPosts)
@@ -84,8 +85,13 @@ export const BlogPosts: CollectionConfig<CollectionSlug['BlogPosts']> = {
     },
   },
   hooks: {
-    beforeChange: [generateReadingTime],
-    afterChange: [revalidateBlogPost, enqueueGenerateExcerpt, routeIndexHook.afterChange],
+    afterChange: [
+      revalidateBlogPost,
+      enqueueGenerateExcerpt,
+      enqueueCalculateReadingTime,
+      enqueueGenerateMeta(CollectionSlug.BlogPosts),
+      routeIndexHook.afterChange,
+    ],
     afterDelete: [routeIndexHook.afterDelete],
   },
   fields: [

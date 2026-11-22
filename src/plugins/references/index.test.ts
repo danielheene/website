@@ -2,7 +2,9 @@ import type { CollectionConfig, Config } from 'payload'
 
 import { describe, expect, it, vi } from 'vitest'
 
+import { syncReferences } from '@/lib/references'
 import { CollectionSlug } from '@/types/collections'
+import { TaskSlug } from '@/types/jobs-queue'
 
 import { referencesPlugin } from './index'
 
@@ -224,8 +226,6 @@ describe('referencesPlugin', () => {
   })
 
   it('records references from an upload field nested in a block', async () => {
-    const config = applyPlugin([CollectionSlug.Pages])
-
     const created: Record<string, unknown>[] = []
 
     const payload = {
@@ -241,10 +241,12 @@ describe('referencesPlugin', () => {
       },
     }
 
-    const track = findCollection(config, CollectionSlug.Pages)?.hooks?.afterChange?.at(0)
-
-    await (track as unknown as (args: unknown) => Promise<unknown>)({
-      doc: {
+    await syncReferences({
+      // oxlint-disable-next-line typescript/no-explicit-any -- the sync only calls the methods stubbed above
+      payload: payload as any,
+      sourceCollection: CollectionSlug.Pages,
+      sourceId: 'page-1',
+      data: {
         id: 'page-1',
         _status: 'published',
         content: [
@@ -258,10 +260,6 @@ describe('referencesPlugin', () => {
           },
         ],
       },
-      req: {
-        payload,
-      },
-      context: {},
     })
 
     expect(created).toEqual([
@@ -275,7 +273,7 @@ describe('referencesPlugin', () => {
     ])
   })
 
-  it('tracks references even when another afterChange hook throws', async () => {
+  it('queues the reference sync even when another afterChange hook throws', async () => {
     // revalidatePath throws outside a Next.js request scope; tracking must not
     // depend on unrelated hooks succeeding
     const failing: CollectionConfig = {
@@ -295,18 +293,11 @@ describe('referencesPlugin', () => {
       globals: [],
     } as unknown as Config) as Config
 
-    const created: Record<string, unknown>[] = []
+    const queue = vi.fn()
 
     const payload = {
-      delete: vi.fn().mockResolvedValue({}),
-      create: vi.fn(async ({ data }: { data: Record<string, unknown> }) => {
-        created.push(data)
-
-        return data
-      }),
-      logger: {
-        info: vi.fn(),
-        error: vi.fn(),
+      jobs: {
+        queue,
       },
     }
 
@@ -335,7 +326,16 @@ describe('referencesPlugin', () => {
       })(),
     ).rejects.toThrow(/static generation store/)
 
-    expect(created).toHaveLength(1)
+    expect(queue).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        task: TaskSlug.SyncReferences,
+        input: {
+          collection: CollectionSlug.Pages,
+          id: 'page-1',
+          ref: 'page-1',
+        },
+      }),
+    )
   })
 
   it('still blocks when a real usage accompanies a redirect', async () => {

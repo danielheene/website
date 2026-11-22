@@ -100,7 +100,7 @@ describe('generateLocalizedResumeDocument', () => {
       'BuildResumeThumbnails:en',
       expect.objectContaining({
         input: expect.objectContaining({
-          documentId: 'file-1',
+          id: 'file-1',
         }),
       }),
     )

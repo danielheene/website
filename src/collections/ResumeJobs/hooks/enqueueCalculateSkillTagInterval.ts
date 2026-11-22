@@ -3,7 +3,9 @@ import { CollectionAfterChangeHook } from 'payload'
 import { difference, get, union } from 'lodash-es'
 
 import { isUnpublishedDraftSave } from '@/collections/shared/isUnpublishedDraftSave'
-import { QueueSlug, TaskSlug } from '@/types/jobs-queue'
+import { enqueueDocumentTaskById } from '@/lib/documentTasks/enqueueDocumentTask'
+import { CollectionSlug } from '@/types/collections'
+import { TaskSlug } from '@/types/jobs-queue'
 import { ResumeJobData } from '@/types/payload'
 
 /**
@@ -21,8 +23,8 @@ import { ResumeJobData } from '@/types/payload'
  * only the tags that differ between states are marked for recalculation, optimizing processing
  * by avoiding unnecessary updates to unchanged tags.
  *
- * For each affected tag, a CalculateSkillTagInterval task is queued to asynchronously update
- * the skill tag's interval data.
+ * For each affected tag, a `calculateSkillTag` job (interval step) is queued to update the tag's
+ * interval.
  *
  * @type {CollectionAfterChangeHook<ResumeJobData>}
  */
@@ -73,12 +75,12 @@ export const enqueueCalculateSkillTagInterval: CollectionAfterChangeHook<ResumeJ
     : union(difference(prevTags, nextTags), difference(nextTags, prevTags))
 
   for (const changedTag of changedTags) {
-    await req.payload.jobs.queue({
-      task: TaskSlug.CalculateSkillTagInterval,
-      input: {
-        skillTagId: changedTag,
-      },
-      queue: QueueSlug.HookHandler,
+    await enqueueDocumentTaskById({
+      payload: req.payload,
+      task: TaskSlug.CalculateSkillTag,
+      collection: CollectionSlug.ResumeSkillTags,
+      id: changedTag,
+      steps: ['interval'],
     })
   }
 }

@@ -27,7 +27,8 @@ export const syncSkillSorting: TaskConfig<TaskSlug['SyncSkillSorting']> = {
   // one job per change; `supersedes` collapses them into whichever job runs
   // last, since only the end state matters for reconciliation.
   concurrency: {
-    key: () => TaskSlug.SyncSkillSorting,
+    key: () => 'sync-skill-sorting',
+    exclusive: true,
     supersedes: true,
   },
   handler: handlerPath('syncSkillSorting.ts'),

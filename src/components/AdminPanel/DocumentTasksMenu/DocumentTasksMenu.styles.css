@@ -1,0 +1,11 @@
+.document-tasks-menu__body {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--base) * 0.75);
+}
+
+.document-tasks-menu__steps {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--base) * 0.5);
+}

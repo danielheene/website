@@ -7,8 +7,12 @@
 export const TaskSlug = {
   GenerateDocumentThumbnails: 'generateDocumentThumbnails',
   GenerateVideoThumbnails: 'generateVideoThumbnails',
-  CalculateSkillTagInterval: 'calculateSkillTagInterval',
-  CalculateSkillTagType: 'calculateSkillTagType',
+  CalculateSkillTag: 'calculateSkillTag',
+  CalculateReadingTime: 'calculateReadingTime',
+  GenerateMeta: 'generateMeta',
+  ProcessImage: 'processImage',
+  SyncReferences: 'syncReferences',
+  RevalidateDocument: 'revalidateDocument',
   GenerateBlogPostExcerpt: 'generateBlogPostExcerpt',
   GenerateLocalizedResumeDocument: 'generateLocalizedResumeDocument',
   GenerateResumeFilename: 'generateResumeFilename',
@@ -22,6 +26,7 @@ export const TaskSlug = {
   SeedCollection: 'seedCollection',
   SyncSkillSorting: 'syncSkillSorting',
   BuildRouteIndex: 'buildRouteIndex',
+  Regenerate: 'regenerate',
 } as const
 
 export type TaskSlug = typeof TaskSlug
