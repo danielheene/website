@@ -47,6 +47,7 @@
     "regenerate": "bun run _payload run scripts/regenerate.ts --",
     "release": "semantic-release",
     "release:dry-run": "semantic-release --dry-run --no-ci",
+    "seed:fixtures": "bun run _payload run scripts/seed-fixtures.ts",
     "seed:pages": "bun run _payload run scripts/seed-pages.ts",
     "seed:pages:clean": "bun run _payload run scripts/seed-pages.ts -- --clean",
     "seed:posts": "bun run _payload run scripts/seed-posts.ts",

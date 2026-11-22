@@ -1,5 +1,6 @@
 import { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-mongodb'
 
+import { applyPageFixtures } from '@/lib/seed/fixtures'
 import { CollectionSlug } from '@/types/collections'
 import { GlobalSlug } from '@/types/globals'
 import { Page } from '@/types/payload'
@@ -145,6 +146,11 @@ export async function up({ payload, req, session: _session }: MigrateUpArgs): Pr
         },
       },
     },
+  })
+
+  await applyPageFixtures({
+    payload,
+    req,
   })
 }
 
