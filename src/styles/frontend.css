@@ -19,7 +19,6 @@
 
 @custom-variant light (&:where(.light, .light *, [data-theme="light"], [data-theme="light"] *));
 @custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
-@custom-variant primary (&:where(.primary, .primary *));
 
 @source inline("col-span-{1..12..1}");
 @source inline("col-start-{1..12..1}");
@@ -36,6 +35,17 @@
   html,
   body {
     @apply h-full min-h-full font-sans antialiased scroll-smooth;
+  }
+
+  /*
+   * Large and smart screens: the root size grows with the viewport beyond 1920px (16px there,
+   * 32px at 3840px), and every rem-based size with it, so the layout scales up as a whole
+   * instead of leaving a narrow column in the middle.
+   */
+  @media (min-width: 120rem) {
+    html {
+      font-size: calc(100vw / 120);
+    }
   }
 
   body {

@@ -79,7 +79,7 @@ describe('FooterLegalLinks', () => {
     ).toBeInTheDocument()
   })
 
-  it('renders an empty navigation list gracefully if entries are null or empty', async () => {
+  it('renders only the llms.txt link if entries are null or empty', async () => {
     const element = await FooterLegalLinks({
       entries: null,
     })
@@ -87,6 +87,10 @@ describe('FooterLegalLinks', () => {
     const { container } = render(element)
 
     expect(fetchSiteSettingsCachedMock).not.toHaveBeenCalled()
-    expect(container.querySelectorAll('a')).toHaveLength(0)
+
+    const links = container.querySelectorAll('a')
+
+    expect(links).toHaveLength(1)
+    expect(links[0].getAttribute('href')).toBe('/llms.txt')
   })
 })

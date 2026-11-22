@@ -95,25 +95,23 @@ export const Footer = async () => {
       ])}
     >
       <section className="container before:my-20 before:block before:h-px before:bg-foreground/50">
+        <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
+          <Link href="/">
+            <Logo variant="inline" className="h-6 md:h-8 lg:h-10" />
+          </Link>
+          <FooterThemeSwitch />
+        </div>
         <div className="relative grid grid-cols-12 gap-4 lg:gap-6 xl:gap-8">
           <div className="col-span-12 flex flex-col gap-8 2xl:col-span-6">
-            <Link href="/">
-              <Logo
-                variant="inline"
-                className="mb-(--footer-header-gap) h-(--footer-header-height)"
-              />
-            </Link>
             <FooterSocialLinks socialLinks={socialLinks} />
-            <ServiceStatus />
           </div>
           <div className="col-span-12 flex flex-col gap-8 2xl:col-span-6">
             <FooterNavGroups navGroups={navGroups} className="w-full" />
           </div>
-          <div className="absolute top-0 right-0"></div>
         </div>
 
         <div className="mt-8 flex flex-col justify-between gap-4 border-t py-8 md:flex-row md:items-center md:text-left">
-          <FooterThemeSwitch />
+          <ServiceStatus />
           <FooterLegalLinks entries={legalPages.entries} />
         </div>
       </section>
