@@ -1,7 +1,15 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Button, Modal, toast, useListDrawerContext, useModal } from '@payloadcms/ui'
+import { useRouter } from 'next/navigation'
+import {
+  Button,
+  Drawer,
+  toast,
+  useDrawerSlug,
+  useListDrawerContext,
+  useModal,
+} from '@payloadcms/ui'
 
 import { extractErrorMessage } from '@/lib/extractErrorMessage'
 import { importPhoto } from '@/lib/unsplash/importPhoto'
@@ -12,10 +20,10 @@ import { CollectionSlug } from '@/types/collections'
 
 import './UnsplashSearch.styles.css'
 
-const MODAL_SLUG = 'unsplash-search-modal'
-
 export const UnsplashSearch = () => {
   const { openModal, closeModal } = useModal()
+  const drawerSlug = useDrawerSlug('unsplash-search')
+  const router = useRouter()
   // Only meaningful when this component happens to render inside an upload
   // field's picker drawer — `isInDrawer` is false (and `onSelect` undefined)
   // when it's reached from the standalone MediaImages list instead.
@@ -100,85 +108,107 @@ export const UnsplashSearch = () => {
             doc,
             docID: doc.id,
           })
+        } else {
+          // the list view is server-rendered, so the new image shows only after a refresh
+          router.refresh()
         }
 
-        closeModal(MODAL_SLUG)
+        closeModal(drawerSlug)
       } catch (importError) {
         toast.error(extractErrorMessage(importError))
       } finally {
         setIsImporting(null)
       }
     },
-    [closeModal, isInDrawer, onSelect],
+    [closeModal, drawerSlug, isInDrawer, onSelect, router],
   )
+
+  const trimmed = query.trim()
 
   return (
     <>
-      <Button type="button" buttonStyle="pill" size="small" onClick={() => openModal(MODAL_SLUG)}>
+      <Button type="button" buttonStyle="pill" size="small" onClick={() => openModal(drawerSlug)}>
         Search Unsplash…
       </Button>
 
-      <Modal slug={MODAL_SLUG} className="unsplash-search-modal">
-        <div className="unsplash-search-modal__body">
-          <h3>Search Unsplash</h3>
-
-          {isConfigured === false && (
-            <p className="unsplash-search-modal__error">
-              Unsplash isn't configured. Set `UNSPLASH_ACCESS_KEY` to enable this.
+      {/* the icon picker's drawer (`IconPickerDrawer`): docked panel, Payload's input styles */}
+      <Drawer slug={drawerSlug} title="Search Unsplash" className="unsplash-search-drawer">
+        <div className="flex size-full flex-col gap-3">
+          {isConfigured === false ? (
+            <p role="alert" className="text-sm text-destructive">
+              Unsplash isn&apos;t configured. Set `UNSPLASH_ACCESS_KEY` to enable this.
             </p>
-          )}
-
-          {isConfigured !== false && (
+          ) : (
             <>
               <input
                 aria-label="Search Unsplash"
-                className="unsplash-search-modal__input"
+                className="payload-form-input w-full"
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Search for a photo…"
-                type="text"
+                type="search"
                 value={query}
               />
 
-              {error && <p className="unsplash-search-modal__error">{error}</p>}
-
-              {!error && query.trim() && !isSearching && results.length === 0 && (
-                <p className="unsplash-search-modal__empty">No results for "{query.trim()}".</p>
+              {error && (
+                <p role="alert" className="text-sm text-destructive">
+                  {error}
+                </p>
               )}
 
-              <div className="unsplash-search-modal__grid">
-                {results.map((result) => (
-                  <button
-                    aria-label={`Import "${result.description || 'Unsplash photo'}" by ${result.photographerName}`}
-                    className="unsplash-search-modal__thumb"
-                    disabled={isImporting !== null}
-                    key={result.id}
-                    onClick={() => handleImport(result.id)}
-                    type="button"
-                  >
-                    {/** oxlint-disable-next-line nextjs/no-img-element -- thumbnail preview of Unsplash search results, not the imported asset, so next/image optimization isn't warranted */}
-                    <img alt={result.description} loading="lazy" src={result.thumbUrl} />
-                    <span className="unsplash-search-modal__credit">{result.photographerName}</span>
-                    {isImporting === result.id && (
-                      <span className="unsplash-search-modal__importing">Importing…</span>
-                    )}
-                  </button>
-                ))}
-              </div>
+              {isSearching && results.length === 0 && (
+                <p className="text-sm text-muted-foreground">Searching…</p>
+              )}
 
-              {results.length > 0 && page < totalPages && (
-                <Button
-                  buttonStyle="secondary"
-                  disabled={isSearching}
-                  onClick={handleLoadMore}
-                  type="button"
-                >
-                  {isSearching ? 'Loading…' : 'Load more'}
-                </Button>
+              {!error && !trimmed && (
+                <p className="text-sm text-muted-foreground">Search for a photo to import.</p>
+              )}
+
+              {!error && trimmed && !isSearching && results.length === 0 && (
+                <p className="text-sm text-muted-foreground">
+                  No results for &quot;{trimmed}&quot;.
+                </p>
+              )}
+
+              {results.length > 0 && (
+                <div className="min-h-0 flex-1 scrollbar-none overflow-y-auto">
+                  <div className="grid grid-cols-2 gap-2">
+                    {results.map((result) => (
+                      <button
+                        aria-label={`Import "${result.description || 'Unsplash photo'}" by ${result.photographerName}`}
+                        className="unsplash-search-drawer__thumb"
+                        disabled={isImporting !== null}
+                        key={result.id}
+                        onClick={() => handleImport(result.id)}
+                        type="button"
+                      >
+                        {/* oxlint-disable-next-line nextjs/no-img-element -- thumbnail preview of Unsplash search results, not the imported asset, so next/image optimization isn't warranted */}
+                        <img alt={result.description} loading="lazy" src={result.thumbUrl} />
+                        <span className="unsplash-search-drawer__credit">
+                          {result.photographerName}
+                        </span>
+                        {isImporting === result.id && (
+                          <span className="unsplash-search-drawer__importing">Importing…</span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+
+                  {page < totalPages && (
+                    <Button
+                      buttonStyle="secondary"
+                      disabled={isSearching}
+                      onClick={handleLoadMore}
+                      type="button"
+                    >
+                      {isSearching ? 'Loading…' : 'Load more'}
+                    </Button>
+                  )}
+                </div>
               )}
             </>
           )}
         </div>
-      </Modal>
+      </Drawer>
     </>
   )
 }
